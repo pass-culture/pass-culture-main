@@ -72,13 +72,6 @@ def get_offer(offer_id: int) -> (str, int):
     return jsonify(serialize_offer(offer, current_user)), 200
 
 
-@app.route('/offers/activation', methods=['GET'])
-@login_required
-def list_activation_offers() -> (str, int):
-    query = find_activation_offers(current_user.departementCode)
-    return handle_rest_get_list(Offer, query=query, includes=OFFER_INCLUDES)
-
-
 @app.route('/offers', methods=['POST'])
 @login_or_api_key_required
 @expect_json_data

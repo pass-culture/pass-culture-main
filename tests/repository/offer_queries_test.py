@@ -228,8 +228,27 @@ class FindActivationOffersTest:
 
 class FindOffersTest:
     @clean_database
+    def test_returns_offers_sorted_by_id_desc(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        offer2 = create_offer_with_thing_product(venue)
+        repository.save(user_offerer, offer1, offer2)
+
+        # When
+        offers = build_find_offers_with_filter_parameters(
+            user=user,
+        ).all()
+
+        # Then
+        assert offers[0].id > offers[1].id
+
+    @clean_database
     def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_venue(self, app):
-        user = create_user(email='offerer@email.com')
+        user = create_user()
         offerer1 = create_offerer(siren='123456789')
         offerer2 = create_offerer(siren='987654321')
         ko_offerer3 = create_offerer(siren='123456780')
@@ -326,7 +345,8 @@ class QueryOfferWithRemainingStocksTest:
         offers_count = Offer.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
-            .filter((StockSQLEntity.quantity == None) | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+            .filter((StockSQLEntity.quantity == None) | (
+                    (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -350,7 +370,8 @@ class QueryOfferWithRemainingStocksTest:
         offers_count = Offer.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
-            .filter((StockSQLEntity.quantity == None) | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+            .filter((StockSQLEntity.quantity == None) | (
+                    (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -373,7 +394,8 @@ class QueryOfferWithRemainingStocksTest:
         offers_count = Offer.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
-            .filter((StockSQLEntity.quantity == None) | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+            .filter((StockSQLEntity.quantity == None) | (
+                    (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -397,7 +419,8 @@ class QueryOfferWithRemainingStocksTest:
         offers_count = Offer.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
-            .filter((StockSQLEntity.quantity == None) | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+            .filter((StockSQLEntity.quantity == None) | (
+                    (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -421,7 +444,8 @@ class QueryOfferWithRemainingStocksTest:
         offers_count = Offer.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
-            .filter((StockSQLEntity.quantity == None) | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+            .filter((StockSQLEntity.quantity == None) | (
+                    (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
