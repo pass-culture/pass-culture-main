@@ -1,0 +1,11 @@
+[MESSAGES CONTROL]
+
+disable=import-error,
+        missing-module-docstring,
+        missing-class-docstring,
+        missing-function-docstring,
+        no-name-in-module
+
+[FORMAT]
+
+max-line-length=200

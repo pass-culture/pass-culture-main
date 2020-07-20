@@ -48,6 +48,7 @@ pip==19.3.1
 pip-licenses==1.15.2
 PostgreSQL-Audit==0.10.0
 pygsheets
+pylint==2.5.3
 PyMemoize==1.0.3
 pyparsing==2.4.5
 pytest==5.2.2
