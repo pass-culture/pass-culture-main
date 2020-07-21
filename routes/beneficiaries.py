@@ -12,7 +12,7 @@ from workers.beneficiary_job import beneficiary_job
 @app.route("/beneficiaries/current", methods=["GET"])
 @login_required
 def get_beneficiary_profile():
-    user = find_user_by_email(current_user.email)
+    user = current_user._get_current_object()
     return jsonify(as_dict(user, includes=CURRENT_BENEFICIARY_INCLUDES)), 200
 
 @app.route('/beneficiaries/licence_verify', methods=['POST'])
