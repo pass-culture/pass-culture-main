@@ -6,6 +6,8 @@ import React from 'react'
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import { MemoryRouter } from 'react-router'
 import OfferTile from '../OfferTile/OfferTile'
+import OffersWithCover from '../../domain/ValueObjects/OffersWithCover'
+import Icon from '../../../../layout/Icon/Icon'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -181,5 +183,44 @@ describe('src | components | Module', () => {
     expect(offerTile).toHaveLength(0)
     const title = wrapper.find(Module).find({ children: 'Les offres près de chez toi!' })
     expect(title).toHaveLength(0)
+  })
+
+  it('should render a cover when provided', async () => {
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [offerOne],
+          nbHits: 0,
+          nbPages: 0,
+          page: 0,
+        })
+      })
+    )
+
+    const cover = 'https://www.link-to-my-image.com'
+    const props = {
+      historyPush: jest.fn(),
+      module: new OffersWithCover({
+        algolia,
+        cover,
+        display,
+      }),
+      row: 1,
+    }
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Module {...props} />
+      </MemoryRouter>
+    )
+    await wrapper.update()
+
+    // then
+    const imageCover = wrapper.find(Module).find(`img[src="${cover}"]`)
+    expect(imageCover).toHaveLength(1)
+    const icon = wrapper.find(Icon)
+    expect(icon).toHaveLength(1)
+    expect(icon.prop('svg')).toBe('ico-swipe-tile')
   })
 })

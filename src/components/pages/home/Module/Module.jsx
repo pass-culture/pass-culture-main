@@ -6,27 +6,28 @@ import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import { parseAlgoliaParameters } from '../domain/parseAlgoliaParameters'
 import Offers from '../domain/ValueObjects/Offers'
 import OfferTile from './OfferTile/OfferTile'
+import Icon from '../../../layout/Icon/Icon'
 
 class Module extends Component {
   constructor(props) {
     super(props)
     this.state = {
       hits: [],
-      isSwitching: false,
+      isSwitching: false
     }
     this.swipeRatio = 0.2
   }
 
   componentDidMount() {
     const {
-      module: { algolia },
+      module: { algolia }
     } = this.props
     const parsedParameters = parseAlgoliaParameters(algolia)
 
     fetchAlgolia(parsedParameters).then(data => {
       const { hits } = data
       this.setState({
-        hits: hits,
+        hits: hits
       })
     })
   }
@@ -38,11 +39,12 @@ class Module extends Component {
   render() {
     const {
       historyPush,
-      module: { display },
-      row,
+      module: { cover, display },
+      row
     } = this.props
     const { hits, isSwitching } = this.state
     const atLeastOneHit = hits.length > 0
+    const tiles = cover ? [cover, ...hits] : [...hits]
 
     return (
       atLeastOneHit && (
@@ -60,14 +62,39 @@ class Module extends Component {
               onTransitionEnd={this.onTransitionEnd}
               slideClassName="module-slides"
             >
-              {hits.map(hit => (
-                <OfferTile
-                  historyPush={historyPush}
-                  hit={hit}
-                  isSwitching={isSwitching}
-                  key={`${row}${hit.offer.id}`}
-                />
-              ))}
+              {tiles.map(tile => {
+                if (!tile.offer) {
+                  return (
+                    <li
+                      className="offer-cover-wrapper"
+                      key={`${row}-offer-cover`}
+                    >
+                      <div className="ofw-image-wrapper">
+                        <img
+                          alt=""
+                          className="ofw-image"
+                          src={tile}
+                        />
+                        <div className="ofw-swipe-icon-wrapper">
+                          <Icon
+                            className="ofw-swipe-icon"
+                            svg="ico-swipe-tile"
+                          />
+                        </div>
+                      </div>
+                    </li>
+                  )
+                } else {
+                  return (
+                    <OfferTile
+                      historyPush={historyPush}
+                      hit={tile}
+                      isSwitching={isSwitching}
+                      key={`${row}${tile.offer.id}`}
+                    />
+                  )
+                }
+              })}
             </SwipeableViews>
           </ul>
         </div>
@@ -79,7 +106,7 @@ class Module extends Component {
 Module.propTypes = {
   historyPush: PropTypes.func.isRequired,
   module: PropTypes.instanceOf(Offers).isRequired,
-  row: PropTypes.number.isRequired,
+  row: PropTypes.number.isRequired
 }
 
 export default Module

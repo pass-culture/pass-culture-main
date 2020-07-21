@@ -6,7 +6,6 @@ import { MemoryRouter } from 'react-router'
 import Icon from '../../../layout/Icon/Icon'
 import { fetchLastHomepage } from '../../../../vendor/contentful/contentful'
 import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
-import ModuleWithCover from '../ModuleWithCover/ModuleWithCover'
 import Module from '../Module/Module'
 import Offers from '../domain/ValueObjects/Offers'
 import BusinessPane from '../domain/ValueObjects/BusinessPane'
@@ -81,7 +80,7 @@ describe('src | components | Home', () => {
     expect(title).toHaveLength(1)
   })
 
-  it('should render a module with cover component when module is for offers with cover', async () => {
+  it('should render a module component when module is for offers with cover', async () => {
     // given
     fetchLastHomepage.mockResolvedValue([new OffersWithCover({})])
 
@@ -94,7 +93,7 @@ describe('src | components | Home', () => {
     await wrapper.update()
 
     // then
-    const moduleWithCover = wrapper.find(ModuleWithCover)
+    const moduleWithCover = wrapper.find(Module)
     expect(moduleWithCover).toHaveLength(1)
   })
 

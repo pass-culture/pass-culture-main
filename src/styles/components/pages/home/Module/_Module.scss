@@ -16,4 +16,41 @@
   &:first-child h1 {
     color: $white;
   }
+
+  .offer-cover-wrapper {
+    margin-left: 2%;
+    width: 97%;
+
+    .ofw-image-wrapper {
+      position: relative;
+
+      .ofw-image {
+        box-shadow: 0 rem(2px) rem(4px) 0 $black-shadow;
+        background-color: $grey;
+        border-radius: rem(8px);
+        height: rem(195px);
+        object-fit: cover;
+        margin-bottom: rem(5px);
+        width: 100%;
+      }
+    }
+  }
+}
+
+.ofw-swipe-icon-wrapper {
+  align-items: center;
+  display: flex;
+  bottom: rem(3px);
+  border-bottom-left-radius: rem(8px);
+  border-bottom-right-radius: rem(8px);
+  justify-content: flex-end;
+  padding-right: rem(15px);
+  position: absolute;
+  height: 100%;
+  width: 100%;
+
+  .ofw-swipe-icon {
+    height: rem(32px);
+    width: rem(22px);
+  }
 }
