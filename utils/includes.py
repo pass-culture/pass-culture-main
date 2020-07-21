@@ -170,6 +170,21 @@ USER_INCLUDES = [
     'needsToSeeTutorials'
 ]
 
+CURRENT_BENEFICIARY_INCLUDES = [
+    '-culturalSurveyId',
+    '-culturalSurveyFilledDate',
+    '-hasSeenTutorials',
+    '-password',
+    '-resetPasswordToken',
+    '-resetPasswordTokenValidityLimit',
+    '-validationToken',
+    'expenses',
+    'wallet_balance',
+    'wallet_is_activated',
+    'wallet_date_created',
+    'needsToSeeTutorials'
+]
+
 WEBAPP_GET_BOOKING_INCLUDES = [
     "completedUrl",
     'isEventExpired',
