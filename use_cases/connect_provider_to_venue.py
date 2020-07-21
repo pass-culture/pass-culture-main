@@ -90,7 +90,7 @@ def check_venue_can_be_synchronized_with_titelive(venue: VenueSQLEntity):
         raise errors
 
 def _get_synchronization_error_message(provider_name: str, siret: Optional[str]) -> str:
-    error_message_with_siret = f'L’importation d’offres avec {provider_name} n’est pas disponible pour le SIRET {siret}'
-    error_message_without_siret = f'L’importation d’offres avec {provider_name} n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.'
-
-    return error_message_without_siret if not siret else error_message_with_siret
+    if siret:
+        return f'L’importation d’offres avec {provider_name} n’est pas disponible pour le SIRET {siret}'
+    else:
+        return f'L’importation d’offres avec {provider_name} n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.'
