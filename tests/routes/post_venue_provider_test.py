@@ -282,5 +282,5 @@ class Post:
 
             # Then
             assert response.status_code == 422
-            assert response.json['provider'] == ["L’importation d’offres avec Titelive n’est pas disponible pour le siret 12345678912345"]
+            assert response.json['provider'] == ["L’importation d’offres avec Titelive n’est pas disponible pour le SIRET 12345678912345"]
             assert VenueProvider.query.count() == 0

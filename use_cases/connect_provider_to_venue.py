@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Dict
+from typing import Dict, Optional
 
 from domain.libraires import can_be_synchronized_with_libraires
 from domain.titelive import can_be_synchronized_with_titelive
@@ -76,15 +76,21 @@ def _create_allocine_venue_provider(allocine_theater_id: str, payload: Dict, ven
     return allocine_venue_provider
 
 def check_venue_can_be_synchronized_with_libraires(venue: VenueSQLEntity):
-    if not can_be_synchronized_with_libraires(venue.siret):
+    if not venue.siret or not can_be_synchronized_with_libraires(venue.siret):
         errors = ApiErrors()
         errors.status_code = 422
-        errors.add_error('provider', f'L’importation d’offres avec LesLibraires n’est pas disponible pour le siret {venue.siret}')
+        errors.add_error('provider', _get_synchronization_error_message('LesLibraires', venue.siret))
         raise errors
 
 def check_venue_can_be_synchronized_with_titelive(venue: VenueSQLEntity):
-    if not can_be_synchronized_with_titelive(venue.siret):
+    if not venue.siret or not can_be_synchronized_with_titelive(venue.siret):
         errors = ApiErrors()
         errors.status_code = 422
-        errors.add_error('provider', f'L’importation d’offres avec Titelive n’est pas disponible pour le siret {venue.siret}')
+        errors.add_error('provider', _get_synchronization_error_message('Titelive', venue.siret))
         raise errors
+
+def _get_synchronization_error_message(provider_name: str, siret: Optional[str]) -> str:
+    error_message_with_siret = f'L’importation d’offres avec {provider_name} n’est pas disponible pour le SIRET {siret}'
+    error_message_without_siret = f'L’importation d’offres avec {provider_name} n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.'
+
+    return error_message_without_siret if not siret else error_message_with_siret

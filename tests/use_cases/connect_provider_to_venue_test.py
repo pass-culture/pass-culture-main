@@ -100,7 +100,30 @@ class UseCaseTest:
                     connect_provider_to_venue(provider_type, venue_provider_payload)
 
                 # then
-                assert error.value.errors['provider'] == ['L’importation d’offres avec LesLibraires n’est pas disponible pour le siret 12345678912345']
+                assert error.value.errors['provider'] == ['L’importation d’offres avec LesLibraires n’est pas disponible pour le SIRET 12345678912345']
+
+            @clean_database
+            def test_should_not_connect_venue_to_libraires_provider_if_venue_has_no_siret(self, app):
+                # Given
+                offerer = create_offerer()
+                venue = create_venue(offerer, siret=None, is_virtual=True)
+                provider = activate_provider('LibrairesStocks')
+
+                repository.save(venue)
+
+                provider_type = LibrairesStocks
+
+                venue_provider_payload = {
+                    'providerId': humanize(provider.id),
+                    'venueId': humanize(venue.id),
+                }
+
+                # when
+                with pytest.raises(ApiErrors) as error:
+                    connect_provider_to_venue(provider_type, venue_provider_payload)
+
+                # then
+                assert error.value.errors['provider'] == ['L’importation d’offres avec LesLibraires n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.']
 
         class WhenProviderIsTiteLive:
             @clean_database
@@ -154,7 +177,30 @@ class UseCaseTest:
                     connect_provider_to_venue(provider_type, venue_provider_payload)
 
                 # then
-                assert error.value.errors['provider'] == ['L’importation d’offres avec Titelive n’est pas disponible pour le siret 12345678912345']
+                assert error.value.errors['provider'] == ['L’importation d’offres avec Titelive n’est pas disponible pour le SIRET 12345678912345']
+
+            @clean_database
+            def test_should_not_connect_venue_to_titelive_provider_if_venue_has_no_siret(self, app):
+                # Given
+                offerer = create_offerer()
+                venue = create_venue(offerer, siret=None, is_virtual=True)
+                provider = activate_provider('TiteLiveStocks')
+
+                repository.save(venue)
+
+                provider_type = TiteLiveStocks
+
+                venue_provider_payload = {
+                    'providerId': humanize(provider.id),
+                    'venueId': humanize(venue.id),
+                }
+
+                # when
+                with pytest.raises(ApiErrors) as error:
+                    connect_provider_to_venue(provider_type, venue_provider_payload)
+
+                # then
+                assert error.value.errors['provider'] == ['L’importation d’offres avec Titelive n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.']
 
 
         class WhenProviderIsSomethingElse:
