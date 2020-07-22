@@ -56,6 +56,7 @@ const routes = [
   },
   {
     component: EligibilityCheck,
+    exact: true,
     path: '/verification-eligibilite',
     title: 'Eligibilité',
   },

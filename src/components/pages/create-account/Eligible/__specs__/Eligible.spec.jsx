@@ -1,6 +1,7 @@
 import { mount } from 'enzyme'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
+import { act } from 'react-dom/test-utils'
 
 import Eligible from '../Eligible'
 
@@ -40,13 +41,30 @@ describe('eligible page', () => {
       const goBackHomeLink = wrapper.find('a[href="/beta"]')
       expect(goBackHomeLink).toHaveLength(1)
     })
+
+    it('should display an enable button to start inscription', () => {
+      // when
+      const wrapper = mount(
+        <MemoryRouter>
+          <Eligible />
+        </MemoryRouter>
+      )
+
+      // then
+      const button = wrapper.find('button[type="button"]')
+      expect(button).toHaveLength(1)
+      expect(button.prop('disabled')).toBe(false)
+      expect(button.text()).toBe('Commencer l’inscription')
+    })
   })
 
   describe('on confirmation click', () => {
-    it('should redirect on id-check page with correct token', async () => {
-      // given
+    beforeEach(()=>{
       delete window.location
       window.location = { href: 'inital-url' }
+    })
+    it('should redirect on id-check page with correct token', async () => {
+      // given
       const wrapper = mount(
         <MemoryRouter>
           <Eligible />
@@ -61,6 +79,25 @@ describe('eligible page', () => {
       expect(window.location.href).toBe(
         'https://id-check-url/premiere-page?licence_token=recaptcha-token'
       )
+    })
+
+    it('should disable the button to start inscription', () => {
+      // given
+      const wrapper = mount(
+        <MemoryRouter>
+          <Eligible />
+        </MemoryRouter>
+      )
+      const button = wrapper.find('button[type="button"]')
+
+      // when
+      act(() => {
+        button.invoke('onClick')()
+      })
+      wrapper.update()
+
+      // then
+      expect(wrapper.find('button[type="button"]').prop('disabled')).toBe(true)
     })
   })
 })
