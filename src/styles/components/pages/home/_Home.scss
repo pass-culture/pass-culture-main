@@ -3,7 +3,6 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: $navbar-height;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -54,4 +53,5 @@
 
 .hw-modules {
   margin-top: rem(-115px);
+  margin-bottom: $navbar-height + rem(20px);
 }
