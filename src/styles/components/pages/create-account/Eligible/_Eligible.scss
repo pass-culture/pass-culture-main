@@ -36,18 +36,37 @@
   }
 
   .eligible-sign-up-button {
+    align-items: center;
     background-color: $white;
     border: none;
     border-radius: 24px;
     box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
     color: $primary;
     cursor: pointer;
+    display: flex;
     font-size: rem(16px);
     font-weight: bold;
+    justify-content: center;
     margin: 0 auto;
+    max-height: rem(50px);
     outline: none;
     padding: rem(15px) 0;
     width: 80%;
+
+    &:disabled{
+      background-color: rgba(255, 255, 255, 0.3);
+      cursor: not-allowed;
+      opacity: 1;
+    }
+  }
+
+  img{
+    -webkit-animation: spin 4s infinite linear;
+  }
+
+  @-webkit-keyframes spin {
+    0%  {-webkit-transform: rotate(0deg);}
+    100% {-webkit-transform: rotate(360deg);}
   }
 
   .home-page-link {

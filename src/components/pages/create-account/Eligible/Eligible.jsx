@@ -1,15 +1,20 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { ID_CHECK_URL } from '../../../../utils/config'
 import { Animation } from '../Animation/Animation'
 import { getReCaptchaToken } from '../utils/recaptcha'
+import Icon from '../../../layout/Icon/Icon'
 
 const Eligible = () => {
-  const handleClick = useCallback(() =>
-    getReCaptchaToken().then(
-      token => (window.location.href = `${ID_CHECK_URL}?licence_token=${token}`)
-    )
+  const [isDisable, setIsDisable] = useState(false)
+
+  const handleClick = useCallback(() => {
+      setIsDisable(true)
+      getReCaptchaToken().then(
+        token => (window.location.href = `${ID_CHECK_URL}?licence_token=${token}`)
+      )
+    }
   )
 
   return (
@@ -26,10 +31,12 @@ const Eligible = () => {
       <div className="buttons-container">
         <button
           className="eligible-sign-up-button"
+          disabled={isDisable}
           onClick={handleClick}
           type="button"
         >
-          {'Commencer l’inscription'}
+          { !isDisable && 'Commencer l’inscription'}
+          { isDisable && <Icon svg="icon-eligible-spinner" /> }
         </button>
         <Link
           className="home-page-link"
