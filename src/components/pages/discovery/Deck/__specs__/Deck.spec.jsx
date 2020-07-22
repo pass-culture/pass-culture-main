@@ -44,6 +44,7 @@ describe('src | components | pages | discovery | Deck | Deck', () => {
       // then
       expect(wrapper.state()).toStrictEqual({
         refreshKey: 0,
+        versoPositionBeforeScroll: undefined,
       })
     })
 

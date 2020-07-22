@@ -2,17 +2,18 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import Draggable from 'react-draggable'
 
+import getIsTransitionDetailsUrl from '../../../../utils/getIsTransitionDetailsUrl'
+import getUrlWithoutDetailsPart from '../../../../utils/getUrlWithoutDetailsPart'
+import isDetailsView from '../../../../utils/isDetailsView'
+import CloseLink from '../../../layout/Header/CloseLink/CloseLink'
 import CardContainer from './Card/CardContainer'
 import NavigationContainer from './Navigation/NavigationContainer'
-import CloseLink from '../../../layout/Header/CloseLink/CloseLink'
-import isDetailsView from '../../../../utils/isDetailsView'
-import getUrlWithoutDetailsPart from '../../../../utils/getUrlWithoutDetailsPart'
-import getIsTransitionDetailsUrl from '../../../../utils/getIsTransitionDetailsUrl'
 
 class Deck extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
+      versoPositionBeforeScroll: undefined,
       refreshKey: 0,
     }
   }
@@ -46,6 +47,13 @@ class Deck extends PureComponent {
     if (noDataTimeout) clearTimeout(noDataTimeout)
   }
 
+  handleOnStart = () => {
+    const versoPositionBeforeScroll = document
+      .getElementsByClassName('verso-header')[0]
+      .getBoundingClientRect()
+    this.setState({ versoPositionBeforeScroll })
+  }
+
   handleOnStop = (event, data) => {
     const {
       currentRecommendation,
@@ -54,11 +62,13 @@ class Deck extends PureComponent {
       verticalSlideRatio,
       width,
     } = this.props
+    const { versoPositionBeforeScroll } = this.state
 
     const index = (currentRecommendation && currentRecommendation.index) || 0
     const offset = (data.x + width * index) / width
 
-    if (data.y > height * verticalSlideRatio) {
+    const isSwipingDownWhileAlreadyOnTop = versoPositionBeforeScroll.top >= -30 && data.y > 0
+    if (isSwipingDownWhileAlreadyOnTop) {
       this.onHandleCloseCardDetails()
     } else if (data.y < -height * verticalSlideRatio) {
       this.handleShowCardDetails()
@@ -124,6 +134,7 @@ class Deck extends PureComponent {
     if (removedDetailsUrl) {
       history.push(removedDetailsUrl)
     }
+    this.setState({ versoPositionBeforeScroll: undefined })
   }
 
   buildCloseToUrl = () => {
@@ -158,6 +169,7 @@ class Deck extends PureComponent {
         bounds={draggableBounds}
         enableUserSelectHack={false}
         key={refreshKey}
+        onStart={this.handleOnStart}
         onStop={this.handleOnStop}
         position={position}
       >
