@@ -5,9 +5,8 @@ import PropTypes from 'prop-types'
 import { Animation } from '../Animation/Animation'
 import ContactSaved from '../ContactSaved/ContactSaved'
 import { handleCheckEmailFormat } from '../utils/checkEmailFormat'
-import { handleRequestMailingService } from '../repository/handleRequestMailingService'
 
-const EligibleSoon = ({birthDate, postalCode}) => {
+const EligibleSoon = ({ birthDate, postalCode }) => {
   const [emailValue, setEmailValue] = useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
 
@@ -18,16 +17,7 @@ const EligibleSoon = ({birthDate, postalCode}) => {
 
   const handleSubmit = useCallback(event => {
     event.preventDefault()
-
-    const userInformations = {
-      birthDate: birthDate,
-      email: emailValue,
-      postalCode: postalCode,
-    }
-
-    handleRequestMailingService(userInformations).then((hasBeenSubmitted)=>{
-      hasBeenSubmitted ? setHasSubmitted(true) : false
-    })
+    setHasSubmitted(true)
   }, [])
 
   const isEmailValid = handleCheckEmailFormat(emailValue)
@@ -54,6 +44,7 @@ const EligibleSoon = ({birthDate, postalCode}) => {
             onChange={handleEmailInputChange}
             placeholder="Adresse email"
             type="email"
+            value={emailValue}
           />
           <button
             className="submit-button"
