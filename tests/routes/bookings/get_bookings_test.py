@@ -2,7 +2,8 @@ from unittest.mock import patch
 
 from repository import repository
 from tests.conftest import clean_database, TestClient
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+    create_stock
 from tests.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
 
 
@@ -17,9 +18,9 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=offer, price=0)
+            stock = create_stock(offer=offer, price=0)
             offer2 = create_offer_with_thing_product(venue)
-            stock2 = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=offer2, price=0)
+            stock2 = create_stock(offer=offer2, price=0)
             booking1 = create_booking(user=user1, stock=stock, token='ABCDEF', venue=venue)
             booking2 = create_booking(user=user2, stock=stock, token='GHIJK', venue=venue)
             booking3 = create_booking(user=user1, stock=stock2, token='BBBBB', venue=venue)
@@ -38,17 +39,14 @@ class Get:
             assert 'qrCode' not in first_booking
             assert 'completedUrl' in first_booking
             assert 'isEventExpired' in first_booking
-            assert 'mediation' in first_booking
-            assert 'thumbUrl' in first_booking
             assert 'offer' in first_booking['stock']
-            assert 'isBookable' in first_booking['stock']
             assert 'isEventExpired' in first_booking['stock']
             assert 'isDigital' in first_booking['stock']['offer']
             assert 'isEvent' in first_booking['stock']['offer']
             assert 'isFullyBooked' in first_booking['stock']['offer']
             assert 'offerType' in first_booking['stock']['offer']
             assert 'product' in first_booking['stock']['offer']
-            assert 'thumbUrl' in first_booking['stock']['offer']['product']
+            assert 'thumb_url' in first_booking['stock']['offer']
             assert 'stocks' in first_booking['stock']['offer']
             assert 'isBookable' in first_booking['stock']['offer']['stocks'][0]
             assert 'venue' in first_booking['stock']['offer']
@@ -84,17 +82,14 @@ class Get:
             assert 'qrCode' in first_booking
             assert 'completedUrl' in first_booking
             assert 'isEventExpired' in first_booking
-            assert 'mediation' in first_booking
-            assert 'thumbUrl' in first_booking
             assert 'offer' in first_booking['stock']
-            assert 'isBookable' in first_booking['stock']
             assert 'isEventExpired' in first_booking['stock']
             assert 'isDigital' in first_booking['stock']['offer']
             assert 'isEvent' in first_booking['stock']['offer']
             assert 'isFullyBooked' in first_booking['stock']['offer']
             assert 'offerType' in first_booking['stock']['offer']
             assert 'product' in first_booking['stock']['offer']
-            assert 'thumbUrl' in first_booking['stock']['offer']['product']
+            assert 'thumb_url' in first_booking['stock']['offer']
             assert 'stocks' in first_booking['stock']['offer']
             assert 'isBookable' in first_booking['stock']['offer']['stocks'][0]
             assert 'venue' in first_booking['stock']['offer']

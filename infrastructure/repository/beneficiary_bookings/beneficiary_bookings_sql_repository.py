@@ -1,7 +1,8 @@
-from typing import List, Dict
+from typing import List
 
 from domain.beneficiary_bookings.beneficiary_bookings import BeneficiaryBookings, BeneficiaryBooking
 from domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
+from infrastructure.repository.beneficiary_bookings.stock_domain_converter import to_domain
 from models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, Offer, VenueSQLEntity
 from models.db import db
 
@@ -11,9 +12,11 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
         bookings_view = self._get_bookings_information(beneficiary_id)
 
         offers_ids = [bv.offerId for bv in bookings_view]
-        stocks = StockSQLEntity.query \
+        stocks_sql_entity = StockSQLEntity.query \
             .filter(StockSQLEntity.offerId.in_(offers_ids)) \
             .all()
+
+        stocks = [to_domain(stock_sql_entity) for stock_sql_entity in stocks_sql_entity]
 
         beneficiary_bookings = []
         for booking_view in bookings_view:
@@ -39,6 +42,11 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
                     beginningDatetime=booking_view.beginningDatetime,
                     venueId=booking_view.venueId,
                     departementCode=booking_view.departementCode,
+                    withdrawalDetails=booking_view.withdrawalDetails,
+                    isDuo=booking_view.isDuo,
+                    extraData=booking_view.extraData,
+                    durationMinutes=booking_view.durationMinutes,
+                    description=booking_view.description,
                 )
             )
         return BeneficiaryBookings(bookings=beneficiary_bookings, stocks=stocks)
@@ -77,6 +85,13 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
                            StockSQLEntity.beginningDatetime,
                            VenueSQLEntity.id.label("venueId"),
                            VenueSQLEntity.departementCode,
+                           Offer.withdrawalDetails,
+                           Offer.isDuo,
+                           Offer.extraData,
+                           Offer.durationMinutes,
+                           Offer.description,
+                           Offer.mediaUrls,
+                           Offer.isNational,
                            ) \
             .all()
         return bookings_view
