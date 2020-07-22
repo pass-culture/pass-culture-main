@@ -47,8 +47,9 @@ export const fetchLastHomepage = () => {
             })
         } else {
           return new BusinessPane({
+            firstLine: fields[CONTENT_FIELDS.FIRST_LINE],
             image: `https:${fields[CONTENT_FIELDS.IMAGE].fields[CONTENT_FIELDS.FILE].url}`,
-            title: fields[CONTENT_FIELDS.TITLE],
+            secondLine: fields[CONTENT_FIELDS.SECOND_LINE],
             url: fields[CONTENT_FIELDS.URL]
           })
         }

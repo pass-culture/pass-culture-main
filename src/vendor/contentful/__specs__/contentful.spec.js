@@ -64,7 +64,8 @@ describe('src | vendor | contentful', () => {
                   }
                 }
               },
-              title: 'my-title',
+              firstLine: 'my first line',
+              secondLine: 'my second line',
               url: 'my-url'
             },
             sys: {
@@ -86,13 +87,14 @@ describe('src | vendor | contentful', () => {
     const modules = await fetchLastHomepage()
 
     // then
-    const informationPane = new BusinessPane({
+    const business = new BusinessPane({
+        firstLine: 'my first line',
         image: 'https://my-image-url',
-        title: 'my-title',
+        secondLine: 'my second line',
         url: 'my-url'
       }
     )
-    expect(modules).toStrictEqual([informationPane])
+    expect(modules).toStrictEqual([business])
   })
 
   it('should return a module for Offers when an algolia module without cover', async () => {

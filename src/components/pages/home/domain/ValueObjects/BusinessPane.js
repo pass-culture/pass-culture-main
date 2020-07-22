@@ -1,7 +1,8 @@
 export default class BusinessPane {
-  constructor({ image, title, url }) {
+  constructor({ firstLine, image, secondLine, url }) {
+    this.firstLine = firstLine
     this.image = image
-    this.title = title
+    this.secondLine = secondLine
     this.url = url
   }
 }

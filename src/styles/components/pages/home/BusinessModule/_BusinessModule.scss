@@ -1,0 +1,47 @@
+.business-module-wrapper {
+  padding: 0 rem(20px) rem(24px);
+  margin-left: 1.5%;
+  width: 97.5%;
+
+  .bmw-image-wrapper {
+    position: relative;
+
+    .bmw-image {
+      border-radius: rem(8px);
+      box-shadow: 0 rem(2px) rem(4px) 0 $black-shadow;
+      height: rem(97px);
+      object-fit: cover;
+      width: 100%;
+    }
+
+    .bmw-text-wrapper {
+      @include button;
+
+      color: $white;
+      display: flex;
+      flex-direction: column;
+      bottom: rem(2px);
+      justify-content: center;
+      padding-left: rem(26px);
+      position: absolute;
+      height: 100%;
+      width: 90%;
+    }
+
+    .bmw-icon-wrapper {
+      align-items: center;
+      display: flex;
+      bottom: rem(2px);
+      justify-content: flex-end;
+      padding-right: rem(15px);
+      position: absolute;
+      height: 100%;
+      width: 100%;
+
+      .bmw-next-icon {
+        height: rem(40px);
+        width: rem(40px);
+      }
+    }
+  }
+}

@@ -1,30 +1,50 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Icon from '../../../layout/Icon/Icon'
 
 const BusinessModule = ({ module }) => {
-  const { image, title, url } = module
+  const { firstLine, image, secondLine, url } = module
+
   return (
-    <div>
-      <img
-        alt=""
-        src={image}
-      />
-      <h1>
-        {title}
-      </h1>
-      <span>
-        {url}
-      </span>
+    <div className="business-module-wrapper">
+      <a
+        href={url}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <div className="bmw-image-wrapper">
+          <img
+            alt=""
+            className="bmw-image"
+            src={image}
+          />
+          <div className="bmw-text-wrapper">
+            <span>
+              {firstLine}
+            </span>
+            <span>
+              {secondLine}
+            </span>
+          </div>
+          <div className="bmw-icon-wrapper">
+            <Icon
+              className="bmw-next-icon"
+              svg="ico-arrow-next"
+            />
+          </div>
+        </div>
+      </a>
     </div>
   )
 }
 
 BusinessModule.propTypes = {
   module: PropTypes.shape({
+    firstLine: PropTypes.string,
     image: PropTypes.string,
-    title: PropTypes.string,
-    url: PropTypes.string,
-  }).isRequired,
+    secondLine: PropTypes.string,
+    url: PropTypes.string
+  }).isRequired
 }
 
 export default BusinessModule
