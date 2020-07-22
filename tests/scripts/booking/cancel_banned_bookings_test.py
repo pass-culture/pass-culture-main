@@ -7,7 +7,7 @@ from scripts.booking.cancel_banned_bookings import cancel_banned_bookings
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_stock, create_venue, create_offerer, \
     create_user, create_deposit, create_payment, create_payment_status
-from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 
 class CancelBannedBookingsTest:
