@@ -218,31 +218,31 @@ def _build_bookings_recap_query(user_id: int) -> Query:
         .filter(UserOfferer.userId == user_id) \
         .filter(UserOfferer.validationToken == None) \
         .with_entities(
-            BookingSQLEntity.token.label("bookingToken"),
-            BookingSQLEntity.dateCreated.label("bookingDate"),
-            BookingSQLEntity.isCancelled.label("isCancelled"),
-            BookingSQLEntity.isUsed.label("isUsed"),
-            BookingSQLEntity.quantity.label("quantity"),
-            BookingSQLEntity.amount.label("bookingAmount"),
-            BookingSQLEntity.dateUsed.label("dateUsed"),
-            BookingSQLEntity.cancellationDate.label("cancellationDate"),
-            Offer.name.label("offerName"),
-            Offer.id.label("offerId"),
-            Offer.extraData.label("offerExtraData"),
-            Payment.currentStatus.label("paymentStatus"),
-            Payment.lastProcessedDate.label("paymentDate"),
-            UserSQLEntity.firstName.label("beneficiaryFirstname"),
-            UserSQLEntity.lastName.label("beneficiaryLastname"),
-            UserSQLEntity.email.label("beneficiaryEmail"),
-            StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
-            VenueSQLEntity.departementCode.label('venueDepartementCode'),
-            Offerer.name.label('offererName'),
-            Offerer.postalCode.label('offererPostalCode'),
-            VenueSQLEntity.id.label('venueId'),
-            VenueSQLEntity.name.label('venueName'),
-            VenueSQLEntity.publicName.label('venuePublicName'),
-            VenueSQLEntity.isVirtual.label('venueIsVirtual'),
-        )
+        BookingSQLEntity.token.label("bookingToken"),
+        BookingSQLEntity.dateCreated.label("bookingDate"),
+        BookingSQLEntity.isCancelled.label("isCancelled"),
+        BookingSQLEntity.isUsed.label("isUsed"),
+        BookingSQLEntity.quantity.label("quantity"),
+        BookingSQLEntity.amount.label("bookingAmount"),
+        BookingSQLEntity.dateUsed.label("dateUsed"),
+        BookingSQLEntity.cancellationDate.label("cancellationDate"),
+        Offer.name.label("offerName"),
+        Offer.id.label("offerId"),
+        Offer.extraData.label("offerExtraData"),
+        Payment.currentStatus.label("paymentStatus"),
+        Payment.lastProcessedDate.label("paymentDate"),
+        UserSQLEntity.firstName.label("beneficiaryFirstname"),
+        UserSQLEntity.lastName.label("beneficiaryLastname"),
+        UserSQLEntity.email.label("beneficiaryEmail"),
+        StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
+        VenueSQLEntity.departementCode.label('venueDepartementCode'),
+        Offerer.name.label('offererName'),
+        Offerer.postalCode.label('offererPostalCode'),
+        VenueSQLEntity.id.label('venueId'),
+        VenueSQLEntity.name.label('venueName'),
+        VenueSQLEntity.publicName.label('venuePublicName'),
+        VenueSQLEntity.isVirtual.label('venueIsVirtual'),
+    )
 
 
 def _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings: List[object],
@@ -298,7 +298,8 @@ def _serialize_thing_booking_recap(booking: object) -> ThingBookingRecap:
         venue_identifier=booking.venueId,
         date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
-        cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking),
+        cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate,
+                                                        booking=booking),
         venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
         venue_is_virtual=booking.venueIsVirtual
     )
@@ -323,7 +324,8 @@ def _serialize_book_booking_recap(booking: object) -> BookBookingRecap:
         venue_identifier=booking.venueId,
         date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
-        cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking),
+        cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate,
+                                                        booking=booking),
         venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
         venue_is_virtual=booking.venueIsVirtual
     )
@@ -350,7 +352,8 @@ def _serialize_event_booking_recap(booking: object) -> EventBookingRecap:
         ),
         date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
-        cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking),
+        cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate,
+                                                        booking=booking),
         venue_identifier=booking.venueId,
         venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
         venue_is_virtual=booking.venueIsVirtual
@@ -435,21 +438,6 @@ def find_not_used_and_not_cancelled() -> List[BookingSQLEntity]:
     return BookingSQLEntity.query \
         .filter(BookingSQLEntity.isUsed == False) \
         .filter(BookingSQLEntity.isCancelled == False) \
-        .all()
-
-
-def find_for_my_bookings_page(user_id: int) -> List[BookingSQLEntity]:
-    offer_types = ['ThingType.ACTIVATION', 'EventType.ACTIVATION']
-    return BookingSQLEntity.query \
-        .join(StockSQLEntity) \
-        .join(Offer) \
-        .filter(~Offer.type.in_(offer_types)) \
-        .distinct(BookingSQLEntity.stockId) \
-        .filter(BookingSQLEntity.userId == user_id) \
-        .order_by(BookingSQLEntity.stockId,
-                  BookingSQLEntity.isCancelled,
-                  BookingSQLEntity.dateCreated.desc()
-                  ) \
         .all()
 
 
