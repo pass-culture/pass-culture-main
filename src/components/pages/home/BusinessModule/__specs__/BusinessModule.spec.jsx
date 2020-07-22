@@ -43,6 +43,7 @@ describe('src | components | BusinessModule', () => {
 
     // then
     const image = wrapper.find('img').at(0)
+    expect(image.prop('alt')).toBe('')
     expect(image.prop('src')).toBe(props.module.image)
   })
 
@@ -71,7 +72,6 @@ describe('src | components | BusinessModule', () => {
 
     // then
     const icon = wrapper.find(Icon)
-    expect(icon).toHaveLength(1)
     expect(icon.prop('svg')).toBe('ico-arrow-next')
   })
 })

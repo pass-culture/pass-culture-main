@@ -1,7 +1,6 @@
 .business-module-wrapper {
-  padding: 0 rem(20px) rem(24px);
-  margin-left: 1.5%;
-  width: 97.5%;
+  padding: 0 1.45rem rem(24px) calc(1.25rem + 1.5%);
+  width: 100%;
 
   .bmw-image-wrapper {
     position: relative;
@@ -20,7 +19,7 @@
       color: $white;
       display: flex;
       flex-direction: column;
-      bottom: rem(2px);
+      bottom: 0;
       justify-content: center;
       padding-left: rem(26px);
       position: absolute;
@@ -31,17 +30,12 @@
     .bmw-icon-wrapper {
       align-items: center;
       display: flex;
-      bottom: rem(2px);
+      bottom: 0;
       justify-content: flex-end;
       padding-right: rem(15px);
       position: absolute;
       height: 100%;
       width: 100%;
-
-      .bmw-next-icon {
-        height: rem(40px);
-        width: rem(40px);
-      }
     }
   }
 }
