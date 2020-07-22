@@ -42,7 +42,7 @@ describe('eligible page', () => {
       expect(goBackHomeLink).toHaveLength(1)
     })
 
-    it('should display an enable button to start inscription', () => {
+    it('should display an enabled button to start inscription', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
@@ -59,7 +59,7 @@ describe('eligible page', () => {
   })
 
   describe('on confirmation click', () => {
-    beforeEach(()=>{
+    beforeEach(() => {
       delete window.location
       window.location = { href: 'inital-url' }
     })

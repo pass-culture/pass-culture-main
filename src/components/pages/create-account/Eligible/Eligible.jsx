@@ -7,10 +7,10 @@ import { getReCaptchaToken } from '../utils/recaptcha'
 import Icon from '../../../layout/Icon/Icon'
 
 const Eligible = () => {
-  const [isDisable, setIsDisable] = useState(false)
+  const [isDisabled, setIsDisabled] = useState(false)
 
   const handleClick = useCallback(() => {
-      setIsDisable(true)
+      setIsDisabled(true)
       getReCaptchaToken().then(
         token => (window.location.href = `${ID_CHECK_URL}?licence_token=${token}`)
       )
@@ -31,12 +31,13 @@ const Eligible = () => {
       <div className="buttons-container">
         <button
           className="eligible-sign-up-button"
-          disabled={isDisable}
+          disabled={isDisabled}
           onClick={handleClick}
           type="button"
         >
-          { !isDisable && 'Commencer l’inscription'}
-          { isDisable && <Icon svg="icon-eligible-spinner" /> }
+          { !isDisabled
+            ? 'Commencer l’inscription'
+            : <Icon svg="icon-eligible-spinner" /> }
         </button>
         <Link
           className="home-page-link"
