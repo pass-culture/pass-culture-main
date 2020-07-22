@@ -1,4 +1,5 @@
-import { requestData } from 'redux-thunk-data/lib/requestData'
+import { requestData } from 'redux-thunk-data'
+
 import { resolveCurrentUser } from '../../../hocs/with-login/withLogin'
 
 export const updateUser = (formValues, handleSubmitFail, handleSubmitSuccess) =>

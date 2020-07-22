@@ -57,7 +57,7 @@ const Profile = ({ history, match, user }) => {
           </Route>
           <Route
             exact
-            path={`${match.path}`}
+            path={match.path}
           >
             <MainView
               historyPush={history.push}

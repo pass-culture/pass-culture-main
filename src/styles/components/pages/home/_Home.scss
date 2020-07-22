@@ -16,7 +16,7 @@
   height: rem(280px);
   padding-bottom: rem(30px);
 
-  h1 {
+  .hw-pseudo {
     @include title1();
 
     color: $white;
@@ -30,7 +30,7 @@
     white-space: nowrap;
   }
 
-  span {
+  .hw-wallet {
     @include body();
 
     color: $white;
@@ -54,4 +54,12 @@
 .hw-modules {
   margin-top: rem(-115px);
   margin-bottom: $navbar-height + rem(20px);
+}
+
+.home-details {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }

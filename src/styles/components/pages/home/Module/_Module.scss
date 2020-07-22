@@ -19,20 +19,17 @@
 
   .offer-cover-wrapper {
     margin-left: 2%;
+    position: relative;
     width: 97%;
 
-    .ofw-image-wrapper {
-      position: relative;
-
-      .ofw-image {
-        box-shadow: 0 rem(2px) rem(4px) 0 $black-shadow;
-        background-color: $grey;
-        border-radius: rem(8px);
-        height: rem(195px);
-        object-fit: cover;
-        margin-bottom: rem(5px);
-        width: 100%;
-      }
+    .ofw-image {
+      box-shadow: 0 rem(2px) rem(4px) 0 $black-shadow;
+      background-color: $grey;
+      border-radius: rem(8px);
+      height: rem(195px);
+      object-fit: cover;
+      margin-bottom: rem(5px);
+      width: 100%;
     }
   }
 }

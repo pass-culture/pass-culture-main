@@ -29,6 +29,7 @@ describe('src | components | Home', () => {
       history: {
         push: jest.fn(),
       },
+      match: {},
       user: {
         publicName: 'Iron Man',
         wallet_balance: 200.1,

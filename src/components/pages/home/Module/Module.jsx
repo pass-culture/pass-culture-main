@@ -13,34 +13,38 @@ class Module extends Component {
     super(props)
     this.state = {
       hits: [],
-      isSwitching: false
+      isSwitching: false,
     }
     this.swipeRatio = 0.2
   }
 
   componentDidMount() {
     const {
-      module: { algolia }
+      module: { algolia },
     } = this.props
     const parsedParameters = parseAlgoliaParameters(algolia)
 
     fetchAlgolia(parsedParameters).then(data => {
       const { hits } = data
       this.setState({
-        hits: hits
+        hits: hits,
       })
     })
   }
 
-  onSwitching = () => this.setState({ isSwitching: true })
+  onSwitching = () => {
+    this.setState({ isSwitching: true })
+  }
 
-  onTransitionEnd = () => this.setState({ isSwitching: false })
+  onTransitionEnd = () => {
+    this.setState({ isSwitching: false })
+  }
 
   render() {
     const {
       historyPush,
       module: { cover, display },
-      row
+      row,
     } = this.props
     const { hits, isSwitching } = this.state
     const atLeastOneHit = hits.length > 0
@@ -48,7 +52,7 @@ class Module extends Component {
 
     return (
       atLeastOneHit && (
-        <div className="module-wrapper">
+        <section className="module-wrapper">
           <h1>
             {display.title}
           </h1>
@@ -60,6 +64,7 @@ class Module extends Component {
               hysteresis={this.swipeRatio}
               onSwitching={this.onSwitching}
               onTransitionEnd={this.onTransitionEnd}
+              resistance
               slideClassName="module-slides"
             >
               {tiles.map(tile => {
@@ -69,18 +74,16 @@ class Module extends Component {
                       className="offer-cover-wrapper"
                       key={`${row}-offer-cover`}
                     >
-                      <div className="ofw-image-wrapper">
-                        <img
-                          alt=""
-                          className="ofw-image"
-                          src={tile}
+                      <img
+                        alt=""
+                        className="ofw-image"
+                        src={tile}
+                      />
+                      <div className="ofw-swipe-icon-wrapper">
+                        <Icon
+                          className="ofw-swipe-icon"
+                          svg="ico-swipe-tile"
                         />
-                        <div className="ofw-swipe-icon-wrapper">
-                          <Icon
-                            className="ofw-swipe-icon"
-                            svg="ico-swipe-tile"
-                          />
-                        </div>
                       </div>
                     </li>
                   )
@@ -97,7 +100,7 @@ class Module extends Component {
               })}
             </SwipeableViews>
           </ul>
-        </div>
+        </section>
       )
     )
   }
@@ -106,7 +109,7 @@ class Module extends Component {
 Module.propTypes = {
   historyPush: PropTypes.func.isRequired,
   module: PropTypes.instanceOf(Offers).isRequired,
-  row: PropTypes.number.isRequired
+  row: PropTypes.number.isRequired,
 }
 
 export default Module

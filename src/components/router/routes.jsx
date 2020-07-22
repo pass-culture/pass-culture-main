@@ -29,7 +29,6 @@ const routes = [
     component: BetaPageContainer,
     exact: true,
     path: '/',
-    sensitive: true,
   },
   {
     component: BetaPageContainer,

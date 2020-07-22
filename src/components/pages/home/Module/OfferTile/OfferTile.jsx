@@ -8,6 +8,10 @@ import { DEFAULT_THUMB_URL } from '../../../../../utils/thumb'
 
 export const noOp = () => false
 
+const preventDefault = event => {
+  event.preventDefault()
+}
+
 const OfferTile = ({ historyPush, hit, isSwitching }) => {
   const { offer, venue } = hit
   const offerDates = offer.isEvent
@@ -16,11 +20,8 @@ const OfferTile = ({ historyPush, hit, isSwitching }) => {
   const formattedPrice = formatResultPrice(offer.priceMin, offer.priceMax, offer.isDuo)
   function goToOffer() {
     if (!isSwitching) {
-      historyPush(`/offre/details/${offer.id}`)
+      historyPush(`accueil/details/${offer.id}`)
     }
-  }
-  function preventDefault(event) {
-    event.preventDefault()
   }
 
   return (
