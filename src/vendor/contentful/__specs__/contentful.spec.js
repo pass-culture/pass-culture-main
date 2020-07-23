@@ -250,12 +250,12 @@ describe('src | vendor | contentful', () => {
     const modules = await fetchLastHomepage()
 
     // then
-    const offersWithCover = new ExclusivityPane({
+    const exclusivityPane = new ExclusivityPane({
         alt: 'my alt text',
         image: 'https://my-image-url',
         offerId: 'AE'
       }
     )
-    expect(modules).toStrictEqual([offersWithCover])
+    expect(modules).toStrictEqual([exclusivityPane])
   })
 })
