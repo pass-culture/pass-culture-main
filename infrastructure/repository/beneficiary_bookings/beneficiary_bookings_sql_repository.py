@@ -54,7 +54,6 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
                     latitude=booking_view.latitude,
                     longitude=booking_view.longitude,
                     price=booking_view.price,
-                    stocks=[stock for stock in stocks if stock.offerId == booking_view.offerId],
                 )
             )
         return BeneficiaryBookings(bookings=beneficiary_bookings, stocks=stocks)

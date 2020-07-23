@@ -20,11 +20,11 @@ def serialize_beneficiary_bookings(beneficiary_bookings: BeneficiaryBookings, wi
 
 def serialize_stock_for_beneficiary_booking(stock: Stock) -> Dict:
     return {
-        "dateCreated": stock.dateCreated,
-        "beginningDatetime": stock.beginningDatetime,
-        "bookingLimitDatetime": stock.bookingLimitDatetime,
+        "dateCreated": serialize(stock.dateCreated),
+        "beginningDatetime": serialize(stock.beginningDatetime),
+        "bookingLimitDatetime": serialize(stock.bookingLimitDatetime),
+        "dateModified": serialize(stock.dateModified),
         "offerId": humanize(stock.offerId),
-        "dateModified": stock.dateModified,
         "quantity": stock.quantity,
         "price": stock.price,
         "id": humanize(stock.id),
@@ -87,6 +87,5 @@ def serialize_benefeciary_booking(beneficiary_booking: BeneficiaryBooking, seria
         "userId": humanize(beneficiary_booking.userId),
     }
     if with_qr_code:
-        dictified_booking["qrCode"] = "FAKE_QR_CODE"
-        # dictified_booking["qrCode"] = beneficiary_booking.qr_code
+        dictified_booking["qrCode"] = beneficiary_booking.qr_code
     return dictified_booking
