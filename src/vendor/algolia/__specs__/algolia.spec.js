@@ -7,7 +7,7 @@ jest.mock('algoliasearch')
 jest.mock('../../../utils/config', () => ({
   ALGOLIA_APPLICATION_ID: 'appId',
   ALGOLIA_INDEX_NAME: 'indexName',
-  ALGOLIA_SEARCH_API_KEY: 'apiKey'
+  ALGOLIA_SEARCH_API_KEY: 'apiKey',
 }))
 jest.mock('../../../components/pages/search/utils/date/time', () => ({
   TIMESTAMP: {
@@ -17,14 +17,14 @@ jest.mock('../../../components/pages/search/utils/date/time', () => ({
     getAllFromTimeRangeAndDate: jest.fn(),
     WEEK_END: {
       getFirstFromDate: jest.fn(),
-      getAllFromTimeRangeAndDate: jest.fn()
+      getAllFromTimeRangeAndDate: jest.fn(),
     },
     WEEK: {
       getLastFromDate: jest.fn(),
-      getAllFromTimeRangeAndDate: jest.fn()
-    }
+      getAllFromTimeRangeAndDate: jest.fn(),
+    },
   },
-  computeTimeRangeFromHoursToSeconds: jest.fn()
+  computeTimeRangeFromHoursToSeconds: jest.fn(),
 }))
 
 describe('fetchAlgolia', () => {
@@ -48,12 +48,12 @@ describe('fetchAlgolia', () => {
 
     // when
     fetchAlgolia({
-      keywords: keywords
+      keywords: keywords,
     })
 
     // then
     expect(search).toHaveBeenCalledWith(keywords, {
-      page: 0
+      page: 0,
     })
   })
 
@@ -65,14 +65,14 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         geolocation: null,
-        keywords: keywords
+        keywords: keywords,
       })
 
       // then
       expect(algoliasearch).toHaveBeenCalledWith(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
       expect(initIndex).toHaveBeenCalledWith(ALGOLIA_INDEX_NAME)
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -80,12 +80,12 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: '',
-        page: 0
+        page: 0,
       })
 
       // then
       expect(search).toHaveBeenCalledWith('', {
-        page: 0
+        page: 0,
       })
     })
   })
@@ -96,20 +96,20 @@ describe('fetchAlgolia', () => {
       const keywords = 'searched keywords'
       const geolocation = {
         latitude: 42,
-        longitude: 43
+        longitude: 43,
       }
 
       // when
       fetchAlgolia({
         geolocation,
-        keywords
+        keywords,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         aroundLatLng: '42, 43',
         aroundRadius: 'all',
-        page: 0
+        page: 0,
       })
     })
 
@@ -118,18 +118,18 @@ describe('fetchAlgolia', () => {
       const keywords = 'searched keywords'
       const geolocation = {
         latitude: null,
-        longitude: null
+        longitude: null,
       }
 
       // when
       fetchAlgolia({
         geolocation: geolocation,
-        keywords: keywords
+        keywords: keywords,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -138,21 +138,21 @@ describe('fetchAlgolia', () => {
       const keywords = 'searched keywords'
       const geolocation = {
         latitude: 42,
-        longitude: 43
+        longitude: 43,
       }
 
       // when
       fetchAlgolia({
         geolocation: geolocation,
         keywords: keywords,
-        searchAround: false
+        searchAround: false,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         aroundLatLng: '42, 43',
         aroundRadius: 'all',
-        page: 0
+        page: 0,
       })
     })
 
@@ -161,7 +161,7 @@ describe('fetchAlgolia', () => {
       const keywords = 'searched keywords'
       const geolocation = {
         latitude: 42,
-        longitude: 43
+        longitude: 43,
       }
 
       // when
@@ -169,14 +169,14 @@ describe('fetchAlgolia', () => {
         aroundRadius: 15,
         geolocation: geolocation,
         keywords: keywords,
-        searchAround: true
+        searchAround: true,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         aroundLatLng: '42, 43',
         aroundRadius: 15000,
-        page: 0
+        page: 0,
       })
     })
 
@@ -185,7 +185,7 @@ describe('fetchAlgolia', () => {
       const keywords = 'searched keywords'
       const geolocation = {
         latitude: 42,
-        longitude: 43
+        longitude: 43,
       }
 
       // when
@@ -193,14 +193,14 @@ describe('fetchAlgolia', () => {
         aroundRadius: 0,
         geolocation: geolocation,
         keywords: keywords,
-        searchAround: true
+        searchAround: true,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         aroundLatLng: '42, 43',
         aroundRadius: 1,
-        page: 0
+        page: 0,
       })
     })
   })
@@ -214,12 +214,12 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerCategories: offerCategories
+        offerCategories: offerCategories,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -231,13 +231,13 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerCategories: offerCategories
+        offerCategories: offerCategories,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: [['offer.category:LECON']],
-        page: 0
+        page: 0,
       })
     })
 
@@ -249,13 +249,13 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerCategories: offerCategories
+        offerCategories: offerCategories,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: [['offer.category:SPECTACLE', 'offer.category:LIVRE']],
-        page: 0
+        page: 0,
       })
     })
   })
@@ -269,12 +269,12 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        sortBy: sortBy
+        sortBy: sortBy,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
       expect(initIndex).toHaveBeenCalledWith('indexName_by_proximity')
     })
@@ -285,12 +285,12 @@ describe('fetchAlgolia', () => {
 
       // when
       fetchAlgolia({
-        keywords: keywords
+        keywords: keywords,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
       expect(initIndex).toHaveBeenCalledWith('indexName')
     })
@@ -303,12 +303,12 @@ describe('fetchAlgolia', () => {
 
       // when
       fetchAlgolia({
-        keywords: keywords
+        keywords: keywords,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -318,19 +318,19 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: true,
         isEvent: false,
-        isThing: false
+        isThing: false,
       }
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: ['offer.isDigital:true'],
-        page: 0
+        page: 0,
       })
     })
 
@@ -340,18 +340,18 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: false,
         isEvent: false,
-        isThing: false
+        isThing: false,
       }
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -361,19 +361,19 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: false,
         isEvent: false,
-        isThing: true
+        isThing: true,
       }
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: ['offer.isDigital:false', 'offer.isThing:true'],
-        page: 0
+        page: 0,
       })
     })
 
@@ -383,19 +383,19 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: false,
         isEvent: true,
-        isThing: false
+        isThing: false,
       }
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: ['offer.isEvent:true'],
-        page: 0
+        page: 0,
       })
     })
 
@@ -405,19 +405,19 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: true,
         isEvent: false,
-        isThing: true
+        isThing: true,
       }
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: ['offer.isThing:true'],
-        page: 0
+        page: 0,
       })
     })
 
@@ -427,19 +427,19 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: true,
         isEvent: true,
-        isThing: false
+        isThing: false,
       }
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: [['offer.isDigital:true', 'offer.isEvent:true']],
-        page: 0
+        page: 0,
       })
     })
 
@@ -449,19 +449,19 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: false,
         isEvent: true,
-        isThing: true
+        isThing: true,
       }
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: ['offer.isDigital:false'],
-        page: 0
+        page: 0,
       })
     })
 
@@ -471,18 +471,18 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: true,
         isEvent: true,
-        isThing: true
+        isThing: true,
       }
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -492,18 +492,18 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: false,
         isEvent: false,
-        isThing: false
+        isThing: false,
       }
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
   })
@@ -516,12 +516,12 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerIsDuo: false
+        offerIsDuo: false,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -533,13 +533,13 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerIsDuo: offerIsDuo
+        offerIsDuo: offerIsDuo,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: ['offer.isDuo:true'],
-        page: 0
+        page: 0,
       })
     })
   })
@@ -552,12 +552,12 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerIsNew: false
+        offerIsNew: false,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -570,13 +570,13 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerIsNew: offerIsNew
+        offerIsNew: offerIsNew,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         numericFilters: ['offer.stocksDateCreated: 1588762412 TO 1589453612'],
-        page: 0
+        page: 0,
       })
     })
   })
@@ -592,12 +592,12 @@ describe('fetchAlgolia', () => {
       fetchAlgolia({
         keywords: keywords,
         isFree,
-        priceRange
+        priceRange,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -611,13 +611,13 @@ describe('fetchAlgolia', () => {
       fetchAlgolia({
         keywords,
         offerIsFree,
-        priceRange
+        priceRange,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         numericFilters: ['offer.prices = 0'],
-        page: 0
+        page: 0,
       })
     })
 
@@ -631,13 +631,13 @@ describe('fetchAlgolia', () => {
       fetchAlgolia({
         keywords,
         offerIsFree,
-        priceRange
+        priceRange,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         numericFilters: ['offer.prices: 0 TO 50'],
-        page: 0
+        page: 0,
       })
     })
   })
@@ -656,8 +656,8 @@ describe('fetchAlgolia', () => {
           keywords,
           date: {
             option: 'today',
-            selectedDate
-          }
+            selectedDate,
+          },
         })
 
         // Then
@@ -665,7 +665,7 @@ describe('fetchAlgolia', () => {
         expect(TIMESTAMP.getLastOfDate).toHaveBeenCalledWith(selectedDate)
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [`offer.dates: 123456789 TO 987654321`],
-          page: 0
+          page: 0,
         })
       })
 
@@ -681,8 +681,8 @@ describe('fetchAlgolia', () => {
           keywords,
           date: {
             option: 'currentWeek',
-            selectedDate
-          }
+            selectedDate,
+          },
         })
 
         // Then
@@ -690,7 +690,7 @@ describe('fetchAlgolia', () => {
         expect(TIMESTAMP.WEEK.getLastFromDate).toHaveBeenCalledWith(selectedDate)
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [`offer.dates: 123456789 TO 987654321`],
-          page: 0
+          page: 0,
         })
       })
 
@@ -706,8 +706,8 @@ describe('fetchAlgolia', () => {
           keywords,
           date: {
             option: 'currentWeekEnd',
-            selectedDate
-          }
+            selectedDate,
+          },
         })
 
         // Then
@@ -715,7 +715,7 @@ describe('fetchAlgolia', () => {
         expect(TIMESTAMP.WEEK.getLastFromDate).toHaveBeenCalledWith(selectedDate)
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [`offer.dates: 123456789 TO 987654321`],
-          page: 0
+          page: 0,
         })
       })
 
@@ -731,8 +731,8 @@ describe('fetchAlgolia', () => {
           keywords,
           date: {
             option: 'picked',
-            selectedDate
-          }
+            selectedDate,
+          },
         })
 
         // Then
@@ -740,7 +740,7 @@ describe('fetchAlgolia', () => {
         expect(TIMESTAMP.getLastOfDate).toHaveBeenCalledWith(selectedDate)
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [`offer.dates: 123456789 TO 987654321`],
-          page: 0
+          page: 0,
         })
       })
     })
@@ -758,7 +758,7 @@ describe('fetchAlgolia', () => {
         expect(computeTimeRangeFromHoursToSeconds).toHaveBeenCalledWith(timeRange)
         expect(search).toHaveBeenCalledWith('', {
           numericFilters: [`offer.times: 64800 TO 79200`],
-          page: 0
+          page: 0,
         })
       })
     })
@@ -776,16 +776,16 @@ describe('fetchAlgolia', () => {
           keywords,
           date: {
             option: 'today',
-            selectedDate
+            selectedDate,
           },
-          timeRange: timeRange
+          timeRange: timeRange,
         })
 
         // Then
         expect(TIMESTAMP.getAllFromTimeRangeAndDate).toHaveBeenCalledWith(selectedDate, timeRange)
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [`offer.dates: 123 TO 124`],
-          page: 0
+          page: 0,
         })
       })
 
@@ -797,7 +797,7 @@ describe('fetchAlgolia', () => {
         TIMESTAMP.WEEK.getAllFromTimeRangeAndDate.mockReturnValue([
           [123, 124],
           [225, 226],
-          [327, 328]
+          [327, 328],
         ])
 
         // When
@@ -805,21 +805,21 @@ describe('fetchAlgolia', () => {
           keywords,
           date: {
             option: 'currentWeek',
-            selectedDate
+            selectedDate,
           },
-          timeRange: timeRange
+          timeRange: timeRange,
         })
 
         // Then
         expect(TIMESTAMP.WEEK.getAllFromTimeRangeAndDate).toHaveBeenCalledWith(
           selectedDate,
-          timeRange
+          timeRange,
         )
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [
-            [`offer.dates: 123 TO 124`, `offer.dates: 225 TO 226`, `offer.dates: 327 TO 328`]
+            [`offer.dates: 123 TO 124`, `offer.dates: 225 TO 226`, `offer.dates: 327 TO 328`],
           ],
-          page: 0
+          page: 0,
         })
       })
 
@@ -835,19 +835,19 @@ describe('fetchAlgolia', () => {
           keywords,
           date: {
             option: 'currentWeekEnd',
-            selectedDate
+            selectedDate,
           },
-          timeRange: timeRange
+          timeRange: timeRange,
         })
 
         // Then
         expect(TIMESTAMP.WEEK_END.getAllFromTimeRangeAndDate).toHaveBeenCalledWith(
           selectedDate,
-          timeRange
+          timeRange,
         )
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [[`offer.dates: 123 TO 124`, `offer.dates: 225 TO 226`]],
-          page: 0
+          page: 0,
         })
       })
 
@@ -863,16 +863,16 @@ describe('fetchAlgolia', () => {
           keywords,
           date: {
             option: 'picked',
-            selectedDate
+            selectedDate,
           },
-          timeRange: timeRange
+          timeRange: timeRange,
         })
 
         // Then
         expect(TIMESTAMP.getAllFromTimeRangeAndDate).toHaveBeenCalledWith(selectedDate, timeRange)
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [`offer.dates: 123 TO 124`],
-          page: 0
+          page: 0,
         })
       })
     })
@@ -891,15 +891,15 @@ describe('fetchAlgolia', () => {
       fetchAlgolia({
         date: {
           option: 'picked',
-          selectedDate
+          selectedDate,
         },
-        offerIsFree: isFree
+        offerIsFree: isFree,
       })
 
       // Then
       expect(search).toHaveBeenCalledWith(keywords, {
         numericFilters: ['offer.prices = 0', 'offer.dates: 123456789 TO 987654321'],
-        page: 0
+        page: 0,
       })
     })
 
@@ -913,13 +913,13 @@ describe('fetchAlgolia', () => {
       // When
       fetchAlgolia({
         timeRange,
-        offerIsFree: isFree
+        offerIsFree: isFree,
       })
 
       // Then
       expect(search).toHaveBeenCalledWith(keywords, {
         numericFilters: ['offer.prices = 0', 'offer.times: 123456789 TO 987654321'],
-        page: 0
+        page: 0,
       })
     })
 
@@ -927,7 +927,7 @@ describe('fetchAlgolia', () => {
       // Given
       TIMESTAMP.WEEK_END.getAllFromTimeRangeAndDate.mockReturnValue([
         [123456789, 987654321],
-        [123, 1234]
+        [123, 1234],
       ])
       const keywords = ''
       const isFree = true
@@ -937,19 +937,19 @@ describe('fetchAlgolia', () => {
       fetchAlgolia({
         date: {
           option: 'currentWeekEnd',
-          selectedDate
+          selectedDate,
         },
         timeRange: [18, 22],
-        offerIsFree: isFree
+        offerIsFree: isFree,
       })
 
       // Then
       expect(search).toHaveBeenCalledWith(keywords, {
         numericFilters: [
           'offer.prices = 0',
-          ['offer.dates: 123456789 TO 987654321', 'offer.dates: 123 TO 1234']
+          ['offer.dates: 123456789 TO 987654321', 'offer.dates: 123 TO 1234'],
         ],
-        page: 0
+        page: 0,
       })
     })
 
@@ -957,14 +957,14 @@ describe('fetchAlgolia', () => {
       // given
       const geolocation = {
         latitude: 42,
-        longitude: 43
+        longitude: 43,
       }
       const keywords = 'searched keywords'
       const offerCategories = ['LECON', 'VISITE']
       const offerTypes = {
         isDigital: true,
         isEvent: false,
-        isThing: false
+        isThing: false,
       }
       const page = 2
       const sortBy = '_by_price'
@@ -976,7 +976,7 @@ describe('fetchAlgolia', () => {
         offerCategories: offerCategories,
         offerTypes: offerTypes,
         page: page,
-        sortBy: sortBy
+        sortBy: sortBy,
       })
 
       // then
@@ -984,7 +984,7 @@ describe('fetchAlgolia', () => {
         page: page,
         facetFilters: [['offer.category:LECON', 'offer.category:VISITE'], 'offer.isDigital:true'],
         aroundLatLng: '42, 43',
-        aroundRadius: 'all'
+        aroundRadius: 'all',
       })
       expect(initIndex).toHaveBeenCalledWith('indexName_by_price')
     })
@@ -993,7 +993,7 @@ describe('fetchAlgolia', () => {
       // given
       const geolocation = {
         latitude: 42,
-        longitude: 43
+        longitude: 43,
       }
       const keywords = ''
       const offerCategories = ['PRATIQUE', 'SPECTACLE']
@@ -1001,7 +1001,7 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: false,
         isEvent: true,
-        isThing: false
+        isThing: false,
       }
       const sortBy = '_by_price'
 
@@ -1012,7 +1012,7 @@ describe('fetchAlgolia', () => {
         offerCategories,
         offerIsDuo,
         offerTypes,
-        sortBy
+        sortBy,
       })
 
       // then
@@ -1020,10 +1020,10 @@ describe('fetchAlgolia', () => {
         page: 0,
         facetFilters: [
           ['offer.category:PRATIQUE', 'offer.category:SPECTACLE'],
-          'offer.isEvent:true'
+          'offer.isEvent:true',
         ],
         aroundLatLng: '42, 43',
-        aroundRadius: 'all'
+        aroundRadius: 'all',
       })
       expect(initIndex).toHaveBeenCalledWith('indexName_by_price')
     })
@@ -1032,7 +1032,7 @@ describe('fetchAlgolia', () => {
       // given
       const geolocation = {
         latitude: 42,
-        longitude: 43
+        longitude: 43,
       }
       const keywords = ''
       const offerCategories = ['PRATIQUE', 'SPECTACLE']
@@ -1041,7 +1041,7 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: false,
         isEvent: true,
-        isThing: false
+        isThing: false,
       }
       const sortBy = '_by_price'
 
@@ -1053,7 +1053,7 @@ describe('fetchAlgolia', () => {
         offerIsDuo,
         priceRange,
         offerTypes,
-        sortBy
+        sortBy,
       })
 
       // then
@@ -1062,11 +1062,11 @@ describe('fetchAlgolia', () => {
         facetFilters: [
           ['offer.category:PRATIQUE', 'offer.category:SPECTACLE'],
           'offer.isEvent:true',
-          'offer.isDuo:true'
+          'offer.isDuo:true',
         ],
         numericFilters: ['offer.prices: 5 TO 40'],
         aroundLatLng: '42, 43',
-        aroundRadius: 'all'
+        aroundRadius: 'all',
       })
       expect(initIndex).toHaveBeenCalledWith('indexName_by_price')
     })
@@ -1079,12 +1079,12 @@ describe('fetchAlgolia', () => {
 
       // when
       fetchAlgolia({
-        tags: tags
+        tags: tags,
       })
 
       // then
       expect(search).toHaveBeenCalledWith('', {
-        page: 0
+        page: 0,
       })
     })
 
@@ -1094,7 +1094,7 @@ describe('fetchAlgolia', () => {
 
       // when
       fetchAlgolia({
-        tags: tags
+        tags: tags,
       })
 
       // then
@@ -1103,9 +1103,9 @@ describe('fetchAlgolia', () => {
         facetFilters: [
           [
             'offer.tags:Semaine du 14 juillet',
-            'offer.tags:Offre cinema spéciale pass culture'
-          ]
-        ]
+            'offer.tags:Offre cinema spéciale pass culture',
+          ],
+        ],
       })
     })
   })

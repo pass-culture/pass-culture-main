@@ -17,20 +17,20 @@ export const fetchAlgolia = ({
                                offerTypes = {
                                  isDigital: false,
                                  isEvent: false,
-                                 isThing: false
+                                 isThing: false,
                                },
                                page = 0,
                                priceRange = [],
                                sortBy = '',
                                searchAround = false,
                                tags = [],
-                               timeRange = []
+                               timeRange = [],
                              } = {}) => {
   const searchParameters = {
     page: page,
     ...buildFacetFilters(offerCategories, offerTypes, offerIsDuo, tags),
     ...buildNumericFilters(offerIsFree, priceRange, date, offerIsNew, timeRange),
-    ...buildGeolocationParameter(aroundRadius, geolocation, searchAround)
+    ...buildGeolocationParameter(aroundRadius, geolocation, searchAround),
   }
   const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
   const index = client.initIndex(ALGOLIA_INDEX_NAME + sortBy)
@@ -131,13 +131,13 @@ const buildDateAndTimePredicate = (date, timeRange) => {
     case DATE_FILTER.CURRENT_WEEK.value:
       dateFilter = TIMESTAMP.WEEK.getAllFromTimeRangeAndDate(date.selectedDate, timeRange).map(
         timestampsRangeForADay =>
-          getDatePredicate(timestampsRangeForADay[0], timestampsRangeForADay[1])
+          getDatePredicate(timestampsRangeForADay[0], timestampsRangeForADay[1]),
       )
       break
     case DATE_FILTER.CURRENT_WEEK_END.value:
       dateFilter = TIMESTAMP.WEEK_END.getAllFromTimeRangeAndDate(date.selectedDate, timeRange).map(
         timestampsRangeForADay =>
-          getDatePredicate(timestampsRangeForADay[0], timestampsRangeForADay[1])
+          getDatePredicate(timestampsRangeForADay[0], timestampsRangeForADay[1]),
       )
       break
     default:
@@ -214,7 +214,7 @@ const buildGeolocationParameter = (aroundRadius, geolocation, searchAround) => {
 
       return {
         aroundLatLng: `${latitude}, ${longitude}`,
-        aroundRadius: searchAround ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS
+        aroundRadius: searchAround ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS,
       }
     }
   }
@@ -228,7 +228,7 @@ const computeRadiusInMeters = (aroundRadius, searchAround) => {
 }
 
 const buildTagsPredicate = tags => {
-  if (tags.length > 0){
+  if (tags.length > 0) {
     return tags.map(tag => `${FACETS.OFFER_TAGS}:${tag}`)
   }
 }
