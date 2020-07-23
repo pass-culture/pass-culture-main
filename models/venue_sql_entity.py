@@ -1,5 +1,6 @@
+from datetime import datetime
 from sqlalchemy import TEXT, BigInteger, Boolean, CheckConstraint, Column, \
-    ForeignKey, Integer, Numeric, String
+    DateTime, ForeignKey, Integer, Numeric, String
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
@@ -107,6 +108,10 @@ class VenueSQLEntity(PcObject,
     venueLabelId = Column(Integer,
                           ForeignKey('venue_label.id'),
                           nullable=True)
+
+    dateCreated = Column(DateTime,
+                         nullable=True,
+                         default=datetime.utcnow)
 
     def store_departement_code(self):
         self.departementCode = PostalCode(self.postalCode).get_departement_code()

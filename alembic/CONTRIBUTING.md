@@ -12,15 +12,21 @@ pc alembic stamp head
 pc alembic revision -m "nom_de_la_revision"
 ```
 
+Selon votre configuration, vous pourriez avoir besoin de changer le groupe et l'utilisateur de la revision ainsi créée
+```bash
+cd alembic/versions
+sudo chown <user>:<group> <revision_file>
+```
+
 3. Une fois la fonction upgrade remplie
 
 ```bash
 pc alembic upgrade <id>
 ```
 
-## Do 
+## Do
 
-Il est possible d'effectuer une migration soit par des commandes SQL : 
+Il est possible d'effectuer une migration soit par des commandes SQL :
 
 ```SQL
 ALTER TABLE "booking" ADD COLUMN amount numeric(10,2);
@@ -35,7 +41,7 @@ op.add_column('venue_provider', sa.Column('syncWorkerId', sa.VARCHAR(24), nullab
 
 ## Don't
 
-Lorsque vous souhaitez modifier la structure de plusieurs tables en même temps, 
+Lorsque vous souhaitez modifier la structure de plusieurs tables en même temps,
 il ne faut pas utiliser la même transaction pour l'ensemble.
 
 Eviter de faire :
@@ -46,7 +52,7 @@ op.add_column('offer', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), null
 ```
 
 Mais faire plutôt :
- 
+
 ```python
 op.add_column('stock', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), nullable=False, server_default="{}"))
 op.execute("COMMIT")

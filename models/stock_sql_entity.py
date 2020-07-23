@@ -30,7 +30,7 @@ class StockSQLEntity(PcObject,
                      SoftDeletableMixin,
                      VersionedMixin):
     __tablename__ = 'stock'
-    
+
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)

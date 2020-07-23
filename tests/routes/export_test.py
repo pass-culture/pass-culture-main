@@ -195,6 +195,7 @@ def test_pending_validation_return_only_requested_data(app):
               'bookingEmail': 'john.doe@test.com',
               'city': 'Montreuil',
               'comment': 'comment because no siret',
+              'dateCreated': serialize(venue.dateCreated),
               'departementCode': '93',
               'fieldsUpdated': [],
               'id': humanize(venue.id),
