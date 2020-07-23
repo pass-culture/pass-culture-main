@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Optional, Dict
 
 from domain.beneficiary_bookings.stock import Stock
+from domain.bookings import generate_qr_code
 from models.offer_type import ProductType, ThingType, EventType
 from utils.human_ids import humanize
 
@@ -126,6 +127,16 @@ class BeneficiaryBooking:
     @property
     def is_fully_booked(self):
         return self.offerIsFullyBooked
+
+    @property
+    def qr_code(self):
+        if not self.is_event_expired and not self.isCancelled:
+            return generate_qr_code(booking_token=self.token,
+                                    offer_extra_data=self.extraData)
+        if not self.isUsed and not self.isCancelled:
+            return generate_qr_code(booking_token=self.token,
+                                    offer_extra_data=self.extraData)
+        return None
 
 
 class BeneficiaryBookings:
