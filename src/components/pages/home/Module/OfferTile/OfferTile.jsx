@@ -18,6 +18,7 @@ const OfferTile = ({ historyPush, hit, isSwitching }) => {
     ? `${formatSearchResultDate(venue.departementCode, offer.dates)} - `
     : ''
   const formattedPrice = formatResultPrice(offer.priceMin, offer.priceMax, offer.isDuo)
+
   function goToOffer() {
     if (!isSwitching) {
       historyPush(`accueil/details/${offer.id}`)

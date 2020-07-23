@@ -4,6 +4,10 @@
     white-space: nowrap;
   }
 
+  .two-items {
+    @extend .one-item-medium;
+  }
+
   h1 {
     @include title4();
 
@@ -49,5 +53,17 @@
   .ofw-swipe-icon {
     height: rem(32px);
     width: rem(22px);
+  }
+}
+
+.ofw-two-tiles-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 99%;
+  overflow-x: hidden;
+  
+  .offer-tile-wrapper {
+    max-width: 47%;
   }
 }

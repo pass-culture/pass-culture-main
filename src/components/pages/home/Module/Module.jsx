@@ -5,8 +5,11 @@ import SwipeableViews from 'react-swipeable-views'
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import { parseAlgoliaParameters } from '../domain/parseAlgoliaParameters'
 import Offers from '../domain/ValueObjects/Offers'
+import Cover from './Cover/Cover'
+import { buildArrayOf } from './domain/functions'
 import OfferTile from './OfferTile/OfferTile'
-import Icon from '../../../layout/Icon/Icon'
+import { PANE_LAYOUT } from '../domain/layout'
+import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
 
 class Module extends Component {
   constructor(props) {
@@ -40,15 +43,72 @@ class Module extends Component {
     this.setState({ isSwitching: false })
   }
 
-  render() {
+  renderOneItem = () => {
+    const {
+      historyPush,
+      module: { cover },
+      row,
+    } = this.props
+    const { hits, isSwitching } = this.state
+    const tiles = cover ? [cover, ...hits] : [...hits]
+
+    return (
+      tiles.map(tile => {
+        const firstTileIsACover = !tile.offer
+        return firstTileIsACover ?
+          <Cover img={tile} />
+          :
+          <OfferTile
+            historyPush={historyPush}
+            hit={tile}
+            isSwitching={isSwitching}
+            key={`${row}${tile.offer.id}`}
+          />
+      })
+    )
+  }
+
+  renderTwoItems = () => {
     const {
       historyPush,
       module: { cover, display },
       row,
     } = this.props
     const { hits, isSwitching } = this.state
+    const tiles = buildArrayOf({ cover, hits })
+    return (
+      tiles.map(tile => {
+        const firstTileIsACover = !tile[0].offer
+        const offersArePaired = tile.length === 2
+        return firstTileIsACover ?
+          <Cover img={tile} />
+          :
+          <div className="ofw-two-tiles-wrapper">
+            <OfferTile
+              historyPush={historyPush}
+              hit={tile[0]}
+              isSwitching={isSwitching}
+              key={`${row}${tile[0].offer.id}`}
+              layout={display.layout}
+            />
+            {offersArePaired && (
+              <OfferTile
+                historyPush={historyPush}
+                hit={tile[1]}
+                isSwitching={isSwitching}
+                key={`${row}${tile[1].offer.id}`}
+                layout={display.layout}
+              />)}
+          </div>
+      }))
+  }
+
+  render() {
+    const {
+      module: { display },
+    } = this.props
+    const { hits } = this.state
     const atLeastOneHit = hits.length > 0
-    const tiles = cover ? [cover, ...hits] : [...hits]
 
     return (
       atLeastOneHit && (
@@ -67,37 +127,9 @@ class Module extends Component {
               resistance
               slideClassName="module-slides"
             >
-              {tiles.map(tile => {
-                if (!tile.offer) {
-                  return (
-                    <li
-                      className="offer-cover-wrapper"
-                      key={`${row}-offer-cover`}
-                    >
-                      <img
-                        alt=""
-                        className="ofw-image"
-                        src={tile}
-                      />
-                      <div className="ofw-swipe-icon-wrapper">
-                        <Icon
-                          className="ofw-swipe-icon"
-                          svg="ico-swipe-tile"
-                        />
-                      </div>
-                    </li>
-                  )
-                } else {
-                  return (
-                    <OfferTile
-                      historyPush={historyPush}
-                      hit={tile}
-                      isSwitching={isSwitching}
-                      key={`${row}${tile.offer.id}`}
-                    />
-                  )
-                }
-              })}
+              {display.layout === PANE_LAYOUT['TWO-ITEMS'] ?
+                this.renderTwoItems() :
+                this.renderOneItem()}
             </SwipeableViews>
           </ul>
         </section>
@@ -108,7 +140,7 @@ class Module extends Component {
 
 Module.propTypes = {
   historyPush: PropTypes.func.isRequired,
-  module: PropTypes.instanceOf(Offers).isRequired,
+  module: PropTypes.instanceOf(Offers, OffersWithCover).isRequired,
   row: PropTypes.number.isRequired,
 }
 
