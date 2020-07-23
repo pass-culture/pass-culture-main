@@ -72,12 +72,12 @@ jobs:
       - run:
           name: Generate requirements print
           command: md5sum ./requirements.txt > requirements.md5
-          when: always
+          when: on_fail
       - save_cache:
           key: pass-culture-api-requirements-checksum-{{ .Revision }}
           paths:
             - requirements.md5
-          when: always
+          when: on_fail
 
   tests-data-analytics:
     docker:
