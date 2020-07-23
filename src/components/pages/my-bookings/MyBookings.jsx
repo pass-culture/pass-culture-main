@@ -37,7 +37,7 @@ class MyBookings extends PureComponent {
   }
 
   render() {
-    const { bookings, isQrCodeFeatureDisabled } = this.props
+    const { bookings, isQrCodeFeatureDisabled, match } = this.props
     const { hasError, isLoading } = this.state
     const hasNoBookings = bookings.length === 0
 
@@ -49,40 +49,42 @@ class MyBookings extends PureComponent {
     }
 
     return (
-      <Switch>
-        <Route
-          exact
-          path="/reservations"
-        >
-          <MyBookingsListsContainer isEmpty={hasNoBookings} />
-        </Route>
-        <Route
-          exact
-          path="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?"
-          sensitive
-        >
-          <HeaderContainer
-            shouldBackFromDetails
-            title="Réservations"
-          />
-          <MyBookingDetailsContainer bookingPath="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)/:cancellation(annulation)?/:confirmation(confirmation)?" />
-        </Route>
-        <Route
-          exact
-          path="/reservations/:details(details)/:bookingId([A-Z0-9]+)/:qrcode(qrcode)"
-          sensitive
-        >
-          {!isQrCodeFeatureDisabled && (
-            <Fragment>
+      <Fragment>
+        <MyBookingsListsContainer isEmpty={hasNoBookings} />
+
+        <Switch>
+          <Route
+            exact
+            path={`${match.path}/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
+            sensitive
+          >
+            <div className="offer-details">
               <HeaderContainer
-                backTo="/reservations"
+                shouldBackFromDetails
                 title="Réservations"
               />
-              <QrCodeContainer />
-            </Fragment>
-          )}
-        </Route>
-      </Switch>
+              <MyBookingDetailsContainer
+                bookingPath={`${match.path}/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)/:cancellation(annulation)?/:confirmation(confirmation)?`}
+              />
+            </div>
+          </Route>
+          <Route
+            exact
+            path={`${match.path}/:details(details)/:bookingId([A-Z0-9]+)/:qrcode(qrcode)`}
+            sensitive
+          >
+            {!isQrCodeFeatureDisabled && (
+              <div className="offer-details">
+                <HeaderContainer
+                  backTo={match.path}
+                  title="Réservations"
+                />
+                <QrCodeContainer />
+              </div>
+            )}
+          </Route>
+        </Switch>
+      </Fragment>
     )
   }
 }
@@ -98,6 +100,7 @@ MyBookings.propTypes = {
     params: PropTypes.shape({
       details: PropTypes.string,
     }).isRequired,
+    path: PropTypes.string.isRequired,
   }).isRequired,
   requestGetBookings: PropTypes.func.isRequired,
 }

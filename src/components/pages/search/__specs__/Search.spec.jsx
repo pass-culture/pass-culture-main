@@ -28,6 +28,7 @@ describe('components | Search', () => {
       history: createBrowserHistory(),
       match: {
         params: {},
+        path: '/recherche',
       },
       redirectToSearchMainPage: jest.fn(),
     }

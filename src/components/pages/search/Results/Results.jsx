@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 import { toast } from 'react-toastify'
 
+import trackSearchKeyWords from '../../../../tracking/trackSearchKeyWords'
 import { isGeolocationEnabled } from '../../../../utils/geolocation'
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import { DEFAULT_RADIUS_IN_KILOMETERS } from '../../../../vendor/algolia/filters'
@@ -17,7 +18,6 @@ import Header from '../Header/Header'
 import { EmptyResult } from './EmptyResult/EmptyResult'
 import ResultDetailContainer from './ResultsList/ResultDetail/ResultDetailContainer'
 import { ResultsList } from './ResultsList/ResultsList'
-import trackSearchKeyWords from '../../../../tracking/trackSearchKeyWords'
 
 const SEARCH_RESULTS_URI = '/recherche/resultats'
 
@@ -65,15 +65,12 @@ class Results extends PureComponent {
       place: placeFromUrlOrProps,
       resultsCount: 0,
       results: [],
-      scrollPosition: 0,
       searchedKeywords: '',
-      shouldGoBackToScrollPosition: false,
       sortCriterionLabel: this.getSortCriterionLabelFromIndex(sortByFromUrlOrProps),
       totalPagesNumber: 0,
       userGeolocation: props.userGeolocation,
     }
     this.inputRef = React.createRef()
-    this.scrollRef = React.createRef()
   }
 
   componentDidMount() {
@@ -88,21 +85,6 @@ class Results extends PureComponent {
       const keyWords = queryParams['mots-cles']
       trackSearchKeyWords(keyWords, categories)
     }
-  }
-
-  componentDidUpdate() {
-    const { shouldGoBackToScrollPosition, scrollPosition } = this.state
-    const scrollRef = this.scrollRef.current
-
-    if (shouldGoBackToScrollPosition && scrollRef) {
-      scrollRef.scrollTo(0, scrollPosition)
-      // eslint-disable-next-line react/no-did-update-set-state
-      this.setState({ shouldGoBackToScrollPosition: false })
-    }
-  }
-
-  retrieveScrollPosition = () => {
-    this.setState({ shouldGoBackToScrollPosition: true })
   }
 
   getCategoriesFromUrlOrProps = categoriesFromProps => {
@@ -342,11 +324,6 @@ class Results extends PureComponent {
     redirectToSearchMainPage()
   }
 
-  shouldBackFromDetails = () => {
-    const { match } = this.props
-    return Boolean(match.params.details)
-  }
-
   handleResetButtonClick = () => {
     this.setState({
       keywordsToSearch: '',
@@ -360,24 +337,9 @@ class Results extends PureComponent {
     })
   }
 
-  handleOnScroll = event => {
+  handleOnScroll = () => {
     this.inputRef.current.blur()
-    this.rememberScrollPosition(event.target)
   }
-
-  rememberScrollPosition = eventTarget => {
-    const { scrollPosition: previousScrollPosition } = this.state
-    const resultHeight = 100
-
-    const currentScrollPosition = eventTarget.scrollTop
-    const distance = currentScrollPosition - previousScrollPosition
-    const scrollHeight = Math.sign(distance) * distance
-
-    if (scrollHeight > resultHeight) {
-      this.setState({ scrollPosition: currentScrollPosition })
-    }
-  }
-
   getSortCriterionLabelFromIndex = index => {
     const criterionLabels = Object.keys(SORT_CRITERIA).map(criterionKey => {
       return SORT_CRITERIA[criterionKey].index === index ? SORT_CRITERIA[criterionKey].label : ''
@@ -461,119 +423,120 @@ class Results extends PureComponent {
     const isSearchEmpty = !isLoading && results.length === 0
 
     return (
-      <Switch>
-        <Route
-          exact
-          path={SEARCH_RESULTS_URI}
-        >
-          <main className="search-results-page">
-            <Header
-              onBackButtonClick={this.handleBackButtonClick}
-              onResetClick={this.handleResetButtonClick}
-              onSearchChange={this.handleOnTextInputChange}
-              onSubmit={this.handleOnSubmit}
-              ref={this.inputRef}
-              value={keywordsToSearch}
-            />
-            <div
-              className="sr-items-wrapper"
-              onScroll={this.handleOnScroll}
-              ref={this.scrollRef}
-            >
-              <div className="sr-spinner">
-                {isLoading && <Spinner label="Recherche en cours" />}
-              </div>
-              {isSearchEmpty && (
-                <EmptyResult
-                  onNewSearchAroundMe={this.handleNewSearchAroundMe}
-                  searchedKeywords={searchedKeywords}
-                />
-              )}
-              {results.length > 0 && (
-                <ResultsList
-                  currentPage={currentPage}
-                  geolocation={searchAround.place ? placeGeolocation : userGeolocation}
-                  isLoading={isLoading}
-                  loadMore={this.fetchNextOffers}
-                  onSortClick={this.handleGoTo('tri')}
-                  results={results}
-                  resultsCount={resultsCount}
-                  search={search}
-                  sortCriterionLabel={sortCriterionLabel}
-                  totalPagesNumber={totalPagesNumber}
-                />
-              )}
+      <Fragment>
+        <main className="search-results-page">
+          <Header
+            onBackButtonClick={this.handleBackButtonClick}
+            onResetClick={this.handleResetButtonClick}
+            onSearchChange={this.handleOnTextInputChange}
+            onSubmit={this.handleOnSubmit}
+            ref={this.inputRef}
+            value={keywordsToSearch}
+          />
+          <div
+            className="sr-items-wrapper"
+            onScroll={this.handleOnScroll}
+          >
+            <div className="sr-spinner">
+              {isLoading && <Spinner label="Recherche en cours" />}
             </div>
-            {!isSearchEmpty && (
-              <div className="sr-filter-wrapper">
-                <button
-                  className="sr-filter-button"
-                  onClick={this.handleGoTo('filtres')}
-                  type="button"
-                >
-                  <Icon
-                    alt="Filtrer les résultats"
-                    svg="filtrer"
-                  />
-                  <span className="sr-filter-button-text">
-                    {'Filtrer'}
-                  </span>
-                  {numberOfActiveFilters > 0 && (
-                    <span
-                      className="sr-filter-button-counter"
-                      data-test="sr-filter-button-counter"
-                    >
-                      {numberOfActiveFilters}
-                    </span>
-                  )}
-                </button>
-              </div>
+            {isSearchEmpty && (
+              <EmptyResult
+                onNewSearchAroundMe={this.handleNewSearchAroundMe}
+                searchedKeywords={searchedKeywords}
+              />
             )}
-          </main>
-        </Route>
-        <Route
-          path={`${SEARCH_RESULTS_URI}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
-        >
-          <HeaderContainer
-            backActionOnClick={this.retrieveScrollPosition}
-            shouldBackFromDetails={this.shouldBackFromDetails()}
-            title="Recherche"
-          />
-          <ResultDetailContainer />
-        </Route>
-        <Route path={`${SEARCH_RESULTS_URI}/filtres`}>
-          <Filters
-            history={history}
-            initialFilters={filters}
-            match={match}
-            offers={{
-              hits: results,
-              nbHits: resultsCount,
-              nbPages: totalPagesNumber,
-            }}
-            parse={parse}
-            place={place}
-            showFailModal={this.showFailModal}
-            updateFilteredOffers={this.updateFilteredOffers}
-            updateFilters={this.updateFilters}
-            updateNumberOfActiveFilters={this.updateNumberOfActiveFilters}
-            updatePlace={this.updatePlace}
-            userGeolocation={userGeolocation}
-          />
-        </Route>
-        <Route path={`${SEARCH_RESULTS_URI}/tri`}>
-          <CriteriaSort
-            activeCriterionLabel={sortCriterionLabel}
-            backTo={`${SEARCH_RESULTS_URI}${search}`}
-            criteria={SORT_CRITERIA}
-            geolocation={searchAround.place ? placeGeolocation : userGeolocation}
-            history={history}
-            match={match}
-            onCriterionSelection={this.handleSortCriterionSelection}
-            title="Trier par"
-          />
-        </Route>
-      </Switch>
+            {results.length > 0 && (
+              <ResultsList
+                currentPage={currentPage}
+                geolocation={searchAround.place ? placeGeolocation : userGeolocation}
+                isLoading={isLoading}
+                loadMore={this.fetchNextOffers}
+                onSortClick={this.handleGoTo('tri')}
+                results={results}
+                resultsCount={resultsCount}
+                search={search}
+                sortCriterionLabel={sortCriterionLabel}
+                totalPagesNumber={totalPagesNumber}
+              />
+            )}
+          </div>
+          {!isSearchEmpty && (
+            <div className="sr-filter-wrapper">
+              <button
+                className="sr-filter-button"
+                onClick={this.handleGoTo('filtres')}
+                type="button"
+              >
+                <Icon
+                  alt="Filtrer les résultats"
+                  svg="filtrer"
+                />
+                <span className="sr-filter-button-text">
+                  {'Filtrer'}
+                </span>
+                {numberOfActiveFilters > 0 && (
+                  <span
+                    className="sr-filter-button-counter"
+                    data-test="sr-filter-button-counter"
+                  >
+                    {numberOfActiveFilters}
+                  </span>
+                )}
+              </button>
+            </div>
+          )}
+        </main>
+        <Switch>
+          <Route
+            path={`${SEARCH_RESULTS_URI}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
+          >
+            <div className="offer-details">
+              <HeaderContainer
+                shouldBackFromDetails
+                title="Recherche"
+              />
+              <ResultDetailContainer />
+            </div>
+          </Route>
+          <Route path={`${SEARCH_RESULTS_URI}/filtres`}>
+            <div className="offer-details">
+              <Filters
+                history={history}
+                initialFilters={filters}
+                match={match}
+                offers={{
+                  hits: results,
+                  nbHits: resultsCount,
+                  nbPages: totalPagesNumber,
+                }}
+                parse={parse}
+                place={place}
+                showFailModal={this.showFailModal}
+                updateFilteredOffers={this.updateFilteredOffers}
+                updateFilters={this.updateFilters}
+                updateNumberOfActiveFilters={this.updateNumberOfActiveFilters}
+                updatePlace={this.updatePlace}
+                userGeolocation={userGeolocation}
+              />
+            </div>
+          </Route>
+          <Route path={`${SEARCH_RESULTS_URI}/tri`}>
+            <div className="offer-details">
+              <CriteriaSort
+                activeCriterionLabel={sortCriterionLabel}
+                backTo={`${SEARCH_RESULTS_URI}${search}`}
+                criteria={SORT_CRITERIA}
+                geolocation={searchAround.place ? placeGeolocation : userGeolocation}
+                history={history}
+                match={match}
+                onCriterionSelection={this.handleSortCriterionSelection}
+                title="Trier par"
+              />
+            </div>
+          </Route>
+        </Switch>
+      </Fragment>
     )
   }
 }

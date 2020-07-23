@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
-import { Route } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 
 import DeckContainer from './Deck/DeckContainer'
 import BookingContainer from '../../layout/Booking/BookingContainer'
 import BookingCancellationContainer from '../../layout/BookingCancellation/BookingCancellationContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
-import isCancelView from '../../../utils/isCancelView'
 import { MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS } from './utils/utils'
+import NotMatch from '../not-match/NotMatch'
 
 class Discovery extends PureComponent {
   constructor(props) {
@@ -133,36 +133,46 @@ class Discovery extends PureComponent {
     })
   }
 
-  renderBooking = () => {
-    const { currentRecommendation } = this.props
-    return <BookingContainer recommendation={currentRecommendation} />
-  }
-
-  renderBookingCancellation = () => <BookingCancellationContainer />
-
-  renderDeck = () => <DeckContainer handleRequestPutRecommendations={this.updateRecommendations} />
-
   render() {
-    const { match } = this.props
+    const { currentRecommendation, match } = this.props
     const { hasError, hasNoMoreRecommendations, isLoading, hasError500 } = this.state
-    const cancelView = isCancelView(match)
 
     return (
       <Fragment>
         {!hasNoMoreRecommendations && !isLoading && (
           <main className="discovery-page no-padding page">
-            <Route
-              key="route-discovery-deck"
-              path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
-              render={this.renderDeck}
-              sensitive
-            />
-            <Route
-              key="route-discovery-booking"
-              path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
-              render={cancelView ? this.renderBookingCancellation : this.renderBooking}
-              sensitive
-            />
+            <Switch>
+              <Route
+                exact
+                path={`${match.path}/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
+                sensitive
+              >
+                <Route
+                  exact
+                  path={`${match.path}/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?`}
+                  sensitive
+                >
+                  <DeckContainer handleRequestPutRecommendations={this.updateRecommendations} />
+                </Route>
+                <Route
+                  exact
+                  path={`${match.path}/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?`}
+                  sensitive
+                >
+                  <BookingContainer recommendation={currentRecommendation} />
+                </Route>
+                <Route
+                  exact
+                  path={`${match.path}/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)/:cancellation(annulation)/:confirmation(confirmation)`}
+                  sensitive
+                >
+                  <BookingCancellationContainer />
+                </Route>
+              </Route>
+              <Route>
+                <NotMatch />
+              </Route>
+            </Switch>
           </main>
         )}
         {(isLoading || hasError500 || hasError || hasNoMoreRecommendations) && (
@@ -197,6 +207,7 @@ Discovery.propTypes = {
       view: PropTypes.string,
       offerId: PropTypes.string,
     }),
+    path: PropTypes.string.isRequired,
   }).isRequired,
   readRecommendations: PropTypes.arrayOf(PropTypes.shape()),
   recommendations: PropTypes.arrayOf(PropTypes.shape()),

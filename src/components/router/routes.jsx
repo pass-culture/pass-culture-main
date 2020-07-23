@@ -79,17 +79,7 @@ const routes = [
   },
   {
     component: OfferContainer,
-    exact: true,
-    path:
-      '/offre' +
-      '/:details(details|transition)?' +
-      '/:offerId([A-Z0-9]+)?' +
-      '/:mediationId(vide|[A-Z0-9]+)?' +
-      '/:booking(reservation)?' +
-      '/:bookingId([A-Z0-9]+)?' +
-      '/:cancellation(annulation)?' +
-      '/:confirmation(confirmation)?',
-    sensitive: true,
+    path: '/offre/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId(vide|[A-Z0-9]+)?',
     title: 'Détail de l’offre',
   },
   /* ---------------------------------------------------
@@ -101,40 +91,16 @@ const routes = [
    ---------------------------------------------------  */
   {
     component: DiscoveryContainer,
-    exact: true,
     icon: IcoNavDiscovery,
     to: '/decouverte',
-    path:
-      '/decouverte' +
-      '/:offerId([A-Z0-9]+)?' +
-      '/:mediationId([A-Z0-9]+)?' +
-      '/:details(details|transition)?' +
-      '/:booking(reservation)?' +
-      '/:bookingId([A-Z0-9]+)?' +
-      '/:cancellation(annulation)?' +
-      '/:confirmation(confirmation)?',
-    sensitive: true,
+    path: '/decouverte/:offerId([A-Z0-9]+)?/:mediationId([A-Z0-9]+)?',
     title: 'Les offres',
   },
   {
     component: SearchContainer,
-    exact: true,
-    featureName: 'SEARCH_ALGOLIA',
     icon: IcoNavSearch,
     to: '/recherche',
-    path:
-      '/recherche' +
-      '/(resultats|criteres-localisation/place|criteres-localisation|criteres-categorie|criteres-tri)?' +
-      '/(filtres|tri)?' +
-      '/(localisation|localisation/place)?' +
-      '/:details(details|transition)?' +
-      '/:offerId([A-Z0-9]+)?' +
-      '/:mediationId(vide|[A-Z0-9]+)?' +
-      '/:booking(reservation)?' +
-      '/:bookingId([A-Z0-9]+)?' +
-      '/:cancellation(annulation)?' +
-      '/:confirmation(confirmation)?',
-    sensitive: true,
+    path: '/recherche',
     title: 'Recherche',
   },
   {
@@ -147,35 +113,16 @@ const routes = [
   },
   {
     component: MyBookingsContainer,
-    exact: true,
     icon: IcoNavBookings,
     to: '/reservations',
-    path:
-      '/reservations' +
-      '/:details(details|transition)?' +
-      '/:bookingId([A-Z0-9]+)?' +
-      '/:booking(reservation)?' +
-      '/:cancellation(annulation)?' +
-      '/:confirmation(confirmation)?' +
-      '/:qrcode(qrcode)?',
-    sensitive: true,
+    path: '/reservations',
     title: 'Réservations',
   },
   {
     component: MyFavoritesContainer,
-    exact: true,
     icon: IcoNavFavorites,
     to: '/favoris',
-    path:
-      '/favoris' +
-      '/:details(details|transition)?' +
-      '/:offerId([A-Z0-9]+)?' +
-      '/:mediationId(vide|[A-Z0-9]+)?' +
-      '/:booking(reservation)?' +
-      '/:bookingId([A-Z0-9]+)?' +
-      '/:cancellation(annulation)?' +
-      '/:confirmation(confirmation)?',
-    sensitive: true,
+    path: '/favoris',
     title: 'Favoris',
   },
   {

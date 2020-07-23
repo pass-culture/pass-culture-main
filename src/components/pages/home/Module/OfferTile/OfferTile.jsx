@@ -21,7 +21,7 @@ const OfferTile = ({ historyPush, hit, isSwitching }) => {
 
   function goToOffer() {
     if (!isSwitching) {
-      historyPush(`accueil/details/${offer.id}`)
+      historyPush(`/accueil/details/${offer.id}`)
     }
   }
 

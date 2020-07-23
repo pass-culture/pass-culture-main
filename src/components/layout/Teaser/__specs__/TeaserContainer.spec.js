@@ -14,6 +14,9 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
         thumbUrl: 'fake/thumb/url',
       },
       isEditMode: false,
+      match: {
+        path: '/fake-url',
+      },
     }
     state = {
       data: {
@@ -95,7 +98,7 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
         // then
         expect(props).toStrictEqual({
           date: 'du 21/07/2000 au 21/08/2030',
-          detailsUrl: '//details/o1/vide',
+          detailsUrl: '/fake-url/details/o1/vide',
           handleToggleTeaser: expect.any(Function),
           humanizeRelativeDistance: '10 km',
           isEditMode: false,
@@ -125,7 +128,7 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
         // then
         expect(props).toStrictEqual({
           date: 'du 21/07/2000 au 21/08/2030',
-          detailsUrl: '//details/o1/vide',
+          detailsUrl: '/fake-url/details/o1/vide',
           handleToggleTeaser: expect.any(Function),
           humanizeRelativeDistance: '10 km',
           isEditMode: false,

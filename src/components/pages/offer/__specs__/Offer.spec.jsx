@@ -1,75 +1,65 @@
 import { mount } from 'enzyme'
-import { createMemoryHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { Router } from 'react-router'
-import getMockStore from '../../../../utils/mockStore'
+import { MemoryRouter } from 'react-router'
 
+import getMockStore from '../../../../utils/mockStore'
 import DetailsContainer from '../../../layout/Details/DetailsContainer'
 import CloseLink from '../../../layout/Header/CloseLink/CloseLink'
-import OfferContainer from '../OfferContainer'
+import Offer from '../Offer'
 
-jest.mock('../../../hocs/with-login/withRequiredLogin', () => WrappedComponent => props => (
-  <WrappedComponent {...props} />
-))
-
-describe('offerContainer', () => {
+describe('offer', () => {
   let props
 
   beforeEach(() => {
     props = {
+      getOfferById: jest.fn(),
       match: {
-        params: {
-          details: 'details',
-          offerId: 'o1',
-        },
+        path: '/offre/details/ME/FA',
       },
     }
   })
 
-  describe('when I am logged in', () => {
-    it('should display a close link, details and footer for a given offer', () => {
-      // given
-      const mockHistory = createMemoryHistory()
-      const mockStore = getMockStore({
-        data: (
-          state = {
-            bookings: [],
-            favorites: [],
-            mediations: [],
-            offers: [],
-            stocks: [],
-            recommendations: [],
-            users: [
-              {
-                id: 'Rt4R45ETEs',
-                wallet_balance: 0,
-              },
-            ],
-          }
-        ) => state,
-        geolocation: (
-          state = {
-            latitude: 1,
-            longitude: 2,
-          }
-        ) => state,
-      })
-
-      // when
-      const wrapper = mount(
-        <Provider store={mockStore}>
-          <Router history={mockHistory}>
-            <OfferContainer {...props} />
-          </Router>
-        </Provider>
-      )
-
-      // then
-      const closeLink = wrapper.find(CloseLink)
-      const offerDetails = wrapper.find(DetailsContainer)
-      expect(closeLink).toHaveLength(1)
-      expect(offerDetails).toHaveLength(1)
+  it('should display a close link and details for a given offer', () => {
+    // given
+    const mockStore = getMockStore({
+      data: (
+        state = {
+          bookings: [],
+          favorites: [],
+          mediations: [],
+          offers: [],
+          stocks: [],
+          recommendations: [],
+          users: [
+            {
+              id: 'Rt4R45ETEs',
+              wallet_balance: 0,
+            },
+          ],
+        }
+      ) => state,
+      geolocation: (
+        state = {
+          latitude: 1,
+          longitude: 2,
+        }
+      ) => state,
     })
+
+    // when
+    const wrapper = mount(
+      <Provider store={mockStore}>
+        <MemoryRouter initialEntries={['/offre/details/ME/FA']}>
+          <Offer {...props} />
+        </MemoryRouter>
+      </Provider>
+    )
+
+    // then
+    const closeLink = wrapper.find(CloseLink)
+    const offerDetails = wrapper.find(DetailsContainer)
+    expect(closeLink).toHaveLength(1)
+    expect(offerDetails.prop('getOfferById')).toBe(props.getOfferById)
   })
 })

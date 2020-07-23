@@ -3,6 +3,7 @@ import { parse } from 'query-string'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 
+import NotMatch from '../not-match/NotMatch'
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA, SORT_CRITERIA } from './Criteria/criteriaEnums'
 import CriteriaCategory from './CriteriaCategory/CriteriaCategory'
 import CriteriaLocation from './CriteriaLocation/CriteriaLocation'
@@ -125,7 +126,7 @@ class Search extends PureComponent {
       <Switch>
         <Route
           exact
-          path="/recherche"
+          path={match.path}
         >
           <Home
             categoryCriterion={categoryCriterion}
@@ -135,7 +136,7 @@ class Search extends PureComponent {
             userGeolocation={userGeolocation}
           />
         </Route>
-        <Route path="/recherche/resultats">
+        <Route path={`${match.path}/resultats`}>
           <Results
             criteria={{
               categories: categoryCriterion.facetFilter ? [categoryCriterion.facetFilter] : [],
@@ -151,10 +152,10 @@ class Search extends PureComponent {
             userGeolocation={userGeolocation}
           />
         </Route>
-        <Route path="/recherche/criteres-localisation">
+        <Route path={`${match.path}/criteres-localisation`}>
           <CriteriaLocation
             activeCriterionLabel={geolocationCriterion.params.label}
-            backTo="/recherche"
+            backTo={match.path}
             criteria={GEOLOCATION_CRITERIA}
             geolocation={userGeolocation}
             history={history}
@@ -165,10 +166,10 @@ class Search extends PureComponent {
             title="Localisation"
           />
         </Route>
-        <Route path="/recherche/criteres-categorie">
+        <Route path={`${match.path}/criteres-categorie`}>
           <CriteriaCategory
             activeCriterionLabel={categoryCriterion.label}
-            backTo="/recherche"
+            backTo={match.path}
             criteria={CATEGORY_CRITERIA}
             history={history}
             match={match}
@@ -176,10 +177,10 @@ class Search extends PureComponent {
             title="Catégories"
           />
         </Route>
-        <Route path="/recherche/criteres-tri">
+        <Route path={`${match.path}/criteres-tri`}>
           <CriteriaSort
             activeCriterionLabel={sortCriterion.label}
-            backTo="/recherche"
+            backTo={match.path}
             criteria={SORT_CRITERIA}
             geolocation={userGeolocation}
             history={history}
@@ -187,6 +188,9 @@ class Search extends PureComponent {
             onCriterionSelection={this.handleSortCriterionSelection}
             title="Trier par"
           />
+        </Route>
+        <Route>
+          <NotMatch />
         </Route>
       </Switch>
     )

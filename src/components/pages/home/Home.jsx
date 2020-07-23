@@ -99,7 +99,7 @@ class Home extends Component {
           path={`${match.path}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
           sensitive
         >
-          <div className="home-details">
+          <div className="offer-details">
             <HeaderContainer
               backTo="/accueil"
               title="Offre"

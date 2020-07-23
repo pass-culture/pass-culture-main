@@ -45,11 +45,6 @@ const stubRef = wrapper => {
       blur: jest.fn(),
     },
   }
-  instance['scrollRef'] = {
-    current: {
-      scrollTo: jest.fn(),
-    },
-  }
 }
 
 describe('components | Results', () => {
@@ -852,7 +847,7 @@ describe('components | Results', () => {
       expect(header.prop('backActionOnClick')).toStrictEqual(
         wrapper.instance().retrieveScrollPosition
       )
-      expect(header.prop('shouldBackFromDetails')).toBe(false)
+      expect(header.prop('shouldBackFromDetails')).toBe(true)
       expect(header.prop('title')).toBe('Recherche')
     })
 
@@ -2092,9 +2087,7 @@ describe('components | Results', () => {
         },
         results: [{ objectID: 'AG', offer: { name: 'Livre nul' } }],
         resultsCount: 1,
-        scrollPosition: 0,
         searchedKeywords: 'vas-y',
-        shouldGoBackToScrollPosition: false,
         sortCriterionLabel: 'Pertinence',
         totalPagesNumber: 0,
         userGeolocation: {
@@ -2491,10 +2484,8 @@ describe('components | Results', () => {
       )
 
       // then
-      const form = wrapper.find('form')
       const searchDetails = wrapper.find(SearchAlgoliaDetailsContainer)
       expect(searchDetails).toHaveLength(1)
-      expect(form).toHaveLength(0)
     })
 
     it('should render filters page when current route is /recherche/resultats/filtres', () => {
@@ -2716,32 +2707,6 @@ describe('components | Results', () => {
         // then
         const header = wrapper.find(HeaderContainer)
         expect(header).toHaveLength(1)
-      })
-    })
-
-    describe('scroll', () => {
-      it('should scroll to last known position when coming back from details page', async () => {
-        // Given
-        fetchAlgolia.mockReturnValue(
-          new Promise(resolve => {
-            resolve({
-              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
-              nbHits: 1,
-              nbPages: 0,
-              page: 0,
-            })
-          })
-        )
-        const wrapper = await shallow(<Results {...props} />)
-        stubRef(wrapper)
-        const resultsList = wrapper.find(ResultsList).closest('div')
-        resultsList.simulate('scroll', { target: { scrollTop: 1030 } })
-
-        // When
-        wrapper.instance().retrieveScrollPosition()
-
-        // Then
-        expect(wrapper.instance().scrollRef.current.scrollTo).toHaveBeenCalledWith(0, 1030)
       })
     })
   })

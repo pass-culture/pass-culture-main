@@ -1,47 +1,83 @@
-import configureStore from 'redux-mock-store'
-import { createMemoryHistory } from 'history'
 import { mount } from 'enzyme'
-import { Provider } from 'react-redux'
 import React from 'react'
-import { Router } from 'react-router-dom'
-import thunk from 'redux-thunk'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router-dom'
 
+import getMockStore from '../../../../utils/mockStore'
 import Booking from '../../../layout/Booking/Booking'
 import MyFavorites from '../MyFavorites'
-import state from '../../../../mocks/state'
 
 describe('my favorites', () => {
   let fakeMatomo
+  let mockStore
 
   beforeEach(() => {
     fakeMatomo = {
       push: jest.fn(),
     }
     window._paq = fakeMatomo
+    mockStore = getMockStore({
+      data: (
+        state = {
+          bookings: [
+            {
+              stockId: 's1',
+            },
+          ],
+          favorites: [],
+          mediations: [],
+          offers: [
+            {
+              id: 'o1',
+              isEvent: true,
+              product: {
+                thumbUrl: '',
+              },
+            },
+          ],
+          recommendations: [],
+          stocks: [
+            {
+              id: 's1',
+              offerId: 'o1',
+            },
+          ],
+          users: [
+            {
+              wallet_balance: 0,
+            },
+          ],
+        }
+      ) => state,
+      geolocation: (
+        state = {
+          latitude: 1,
+          longitude: 2,
+        }
+      ) => state,
+    })
   })
 
   it('should display the title "Favoris"', () => {
     // given
-    const buildStore = configureStore([thunk])
-    const store = buildStore(state)
-    const history = createMemoryHistory()
     const props = {
       deleteFavorites: jest.fn(),
       loadMyFavorites: jest.fn(),
+      match: {
+        path: '/favoris',
+      },
       myFavorites: [],
     }
-
-    history.push('/favoris')
 
     jest.spyOn(props, 'loadMyFavorites').mockImplementation((fail, success) => success())
 
     // when
     const wrapper = mount(
-      <Router history={history}>
-        <Provider store={store}>
+      <MemoryRouter initialEntries={[props.match.path]}>
+        <Provider store={mockStore}>
           <MyFavorites {...props} />
         </Provider>
-      </Router>
+      </MemoryRouter>
     )
 
     // then
@@ -53,12 +89,12 @@ describe('my favorites', () => {
     describe('when on details page I can initiate booking', () => {
       it('should open booking component with offerId and mediationId on url', () => {
         // given
-        const buildStore = configureStore([thunk])
-        const store = buildStore(state)
-        const history = createMemoryHistory()
         const props = {
           deleteFavorites: jest.fn(),
           loadMyFavorites: jest.fn(),
+          match: {
+            path: '/favoris',
+          },
           myFavorites: [
             {
               id: 1,
@@ -75,15 +111,14 @@ describe('my favorites', () => {
             },
           ],
         }
-        history.push('/favoris/details/AM3A/B4/reservation')
 
         // when
         const wrapper = mount(
-          <Router history={history}>
-            <Provider store={store}>
+          <MemoryRouter initialEntries={[`${props.match.path}/details/AM3A/B4/reservation`]}>
+            <Provider store={mockStore}>
               <MyFavorites {...props} />
             </Provider>
-          </Router>
+          </MemoryRouter>
         )
 
         // then
@@ -93,12 +128,12 @@ describe('my favorites', () => {
 
       it('should open booking component with no mediationId on url', () => {
         // given
-        const buildStore = configureStore([thunk])
-        const store = buildStore(state)
-        const history = createMemoryHistory()
         const props = {
           deleteFavorites: jest.fn(),
           loadMyFavorites: jest.fn(),
+          match: {
+            path: '/favoris',
+          },
           myFavorites: [
             {
               id: 1,
@@ -112,13 +147,12 @@ describe('my favorites', () => {
         }
 
         // when
-        history.push('/favoris/details/AM3A/vide/reservation')
         const wrapper = mount(
-          <Router history={history}>
-            <Provider store={store}>
+          <MemoryRouter initialEntries={[`${props.match.path}/details/AM3A/vide/reservation`]}>
+            <Provider store={mockStore}>
               <MyFavorites {...props} />
             </Provider>
-          </Router>
+          </MemoryRouter>
         )
 
         // then

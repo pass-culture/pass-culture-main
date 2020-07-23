@@ -29,7 +29,7 @@ export const humanizeBeginningDateTime = (hasBookings, state, booking) => {
 }
 
 export const mapStateToProps = (state, ownProps) => {
-  const { handleToggleTeaser, item, isEditMode } = ownProps
+  const { handleToggleTeaser, item, isEditMode, match } = ownProps
   const { offerId, mediationId } = item
   const offer = selectOfferById(state, offerId)
   const { dateRange, isActive, hasBookingLimitDatetimesPassed, isFullyBooked, venue } = offer
@@ -42,9 +42,9 @@ export const mapStateToProps = (state, ownProps) => {
     venue.latitude,
     venue.longitude
   )
-  const { pathname, search } = location
+  const { search } = location
   const stringifiedMediationId = mediationId ? `/${mediationId}` : '/vide'
-  const detailsUrl = `${pathname}/details/${offer.id}${stringifiedMediationId}${search}`
+  const detailsUrl = `${match.path}/details/${offer.id}${stringifiedMediationId}${search}`
   const humanizeRelativeDate = humanizeBeginningDateTime(hasBookings, state, booking)
   const statuses = reservationStatuses(
     isActive,

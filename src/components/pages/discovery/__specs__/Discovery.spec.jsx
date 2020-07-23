@@ -24,6 +24,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       },
       match: {
         params: {},
+        path: '',
       },
       readRecommendations: [],
       recommendations: [],
@@ -132,7 +133,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       })
 
       // then
-      expect(wrapper.find(Route)).toHaveLength(2)
+      expect(wrapper.find(Route)).toHaveLength(5)
       expect(wrapper.find(LoaderContainer)).toHaveLength(0)
     })
 

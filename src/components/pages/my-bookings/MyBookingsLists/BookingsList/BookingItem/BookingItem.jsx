@@ -9,10 +9,8 @@ import { humanizeDate } from '../../../../../../utils/date/date'
 import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
 import DuoOfferContainer from '../../../../../layout/DuoOffer/DuoOfferContainer'
 
-const getDetailsUrl = (bookingId, location) => {
-  const { pathname, search } = location
-  return `${pathname}/details/${bookingId}${search}`
-}
+const getDetailsUrl = (bookingId, location) =>
+  `/reservations/details/${bookingId}${location.search}`
 
 const getQrCodeUrl = detailsUrl => `${detailsUrl}/qrcode`
 
