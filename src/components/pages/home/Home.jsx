@@ -12,19 +12,21 @@ import Offers from './domain/ValueObjects/Offers'
 import OffersWithCover from './domain/ValueObjects/OffersWithCover'
 import Module from './Module/Module'
 import OfferDetailsContainer from './OfferDetails/OfferDetailsContainer'
+import ExclusivityPane from './domain/ValueObjects/ExclusivityPane'
+import ExclusivityModule from './ExclusivityModule/ExclusivityModule'
 
 class Home extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      modules: [],
+      modules: []
     }
   }
 
   componentDidMount() {
     fetchLastHomepage().then(modules =>
       this.setState({
-        modules: modules,
+        modules: modules
       })
     )
   }
@@ -33,17 +35,30 @@ class Home extends Component {
     const { history } = this.props
 
     if (module instanceof Offers || module instanceof OffersWithCover) {
-      return (<Module
-        historyPush={history.push}
-        key={`${row}-module`}
-        module={module}
-        row={row}
-              />)
+      return (
+        <Module
+          historyPush={history.push}
+          key={`${row}-module`}
+          module={module}
+          row={row}
+        />
+      )
+    } else {
+      if (module instanceof ExclusivityPane){
+        return (
+          <ExclusivityModule
+            key={`${row}-exclusivity-module`}
+            module={module}
+          />
+        )
+      }
+      return (
+        <BusinessModule
+          key={`${row}-business-module`}
+          module={module}
+        />
+      )
     }
-    return (<BusinessModule
-      key={`${row}-business-module`}
-      module={module}
-            />)
   }
 
   render() {
@@ -102,8 +117,8 @@ Home.propTypes = {
   match: PropTypes.shape().isRequired,
   user: PropTypes.shape({
     publicName: PropTypes.string,
-    wallet_balance: PropTypes.number,
-  }).isRequired,
+    wallet_balance: PropTypes.number
+  }).isRequired
 }
 
 export default Home

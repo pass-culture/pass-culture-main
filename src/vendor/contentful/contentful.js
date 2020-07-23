@@ -4,12 +4,13 @@ import { CONTENT_FIELDS, CONTENT_TYPES } from './constants'
 import OffersWithCover from '../../components/pages/home/domain/ValueObjects/OffersWithCover'
 import Offers from '../../components/pages/home/domain/ValueObjects/Offers'
 import BusinessPane from '../../components/pages/home/domain/ValueObjects/BusinessPane'
+import ExclusivityPane from '../../components/pages/home/domain/ValueObjects/ExclusivityPane'
 
 const DEPTH_LEVEL = 2
 
-const isAlgoliaModule = module => {
+const matchesContentType = (module, contentType) => {
   const { sys: { contentType: { sys: { id } } } } = module
-  return id === CONTENT_TYPES.ALGOLIA
+  return id === contentType
 }
 
 const initClient = () => {
@@ -31,7 +32,7 @@ export const fetchLastHomepage = () => {
       return modules.map(module => {
         const { fields } = module
 
-        if (isAlgoliaModule(module)) {
+        if (matchesContentType(module, CONTENT_TYPES.ALGOLIA)) {
           const algoliaParameters = fields[CONTENT_FIELDS.ALGOLIA].fields
           const displayParameters = fields[CONTENT_FIELDS.DISPLAY].fields
 
@@ -46,6 +47,13 @@ export const fetchLastHomepage = () => {
               display: displayParameters
             })
         } else {
+          if (matchesContentType(module, CONTENT_TYPES.EXCLUSIVITY)) {
+            return new ExclusivityPane({
+              alt: fields[CONTENT_FIELDS.ALT],
+              image: `https:${fields[CONTENT_FIELDS.IMAGE].fields[CONTENT_FIELDS.FILE].url}`,
+              offerId: fields[CONTENT_FIELDS.OFFER_ID]
+            })
+          }
           return new BusinessPane({
             firstLine: fields[CONTENT_FIELDS.FIRST_LINE],
             image: `https:${fields[CONTENT_FIELDS.IMAGE].fields[CONTENT_FIELDS.FILE].url}`,

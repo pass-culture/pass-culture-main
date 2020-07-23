@@ -10,6 +10,8 @@ import Module from '../Module/Module'
 import Offers from '../domain/ValueObjects/Offers'
 import BusinessPane from '../domain/ValueObjects/BusinessPane'
 import BusinessModule from '../BusinessModule/BusinessModule'
+import ExclusivityPane from '../domain/ValueObjects/ExclusivityPane'
+import ExclusivityModule from '../ExclusivityModule/ExclusivityModule'
 
 jest.mock('../../../../vendor/contentful/contentful', () => ({
   fetchLastHomepage: jest.fn(),
@@ -135,6 +137,29 @@ describe('src | components | Home', () => {
 
     // then
     const module = wrapper.find(BusinessModule)
+    expect(module).toHaveLength(1)
+  })
+
+  it('should render an exclusivity module component when module is for an exclusive offer', async () => {
+    // given
+    fetchLastHomepage.mockResolvedValue([
+      new ExclusivityPane({
+        alt: 'my alt text',
+        image: 'https://www.link-to-my-image.com',
+        offerId: 'AE',
+      }),
+    ])
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+    await wrapper.update()
+
+    // then
+    const module = wrapper.find(ExclusivityModule)
     expect(module).toHaveLength(1)
   })
 })

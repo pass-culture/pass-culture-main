@@ -1,0 +1,16 @@
+.exclusivity-module-wrapper {
+  padding: 0 1.45rem rem(24px) calc(1.25rem + 1.5%);
+  width: 100%;
+
+  .emw-image-wrapper {
+    position: relative;
+
+    .emw-image {
+      border-radius: rem(8px);
+      box-shadow: 0 rem(2px) rem(4px) 0 $black-shadow;
+      height: rem(290px);
+      object-fit: cover;
+      width: 100%;
+    }
+  }
+}

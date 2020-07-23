@@ -5,6 +5,7 @@ import { CONTENT_TYPES } from '../constants'
 import { PANE_LAYOUT } from '../../../components/pages/home/domain/layout'
 import Offers from '../../../components/pages/home/domain/ValueObjects/Offers'
 import OffersWithCover from '../../../components/pages/home/domain/ValueObjects/OffersWithCover'
+import ExclusivityPane from '../../../components/pages/home/domain/ValueObjects/ExclusivityPane'
 
 jest.mock('contentful', () => ({
   createClient: jest.fn()
@@ -210,5 +211,51 @@ describe('src | vendor | contentful', () => {
 
     // then
     expect(modules).toStrictEqual([])
+  })
+
+  it('should return a module for ExclusivityPane when an exclusity module', async () => {
+    // given
+    const module = {
+      fields: {
+        modules: [
+          {
+            fields: {
+              alt: 'my alt text',
+              image: {
+                fields: {
+                  file: {
+                    url: '//my-image-url'
+                  }
+                }
+              },
+              offerId: 'AE',
+              title: 'my title',
+            },
+            sys: {
+              contentType: {
+                sys: { id: CONTENT_TYPES.EXCLUSIVITY }
+              }
+            }
+          }
+        ]
+      }
+    }
+    createClient.mockReturnValue({
+      getEntries: jest.fn().mockResolvedValue({
+        items: [module]
+      })
+    })
+
+    // when
+    const modules = await fetchLastHomepage()
+
+    // then
+    const offersWithCover = new ExclusivityPane({
+        alt: 'my alt text',
+        image: 'https://my-image-url',
+        offerId: 'AE'
+      }
+    )
+    expect(modules).toStrictEqual([offersWithCover])
   })
 })
