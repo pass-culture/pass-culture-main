@@ -3,7 +3,6 @@ from domain.beneficiary.beneficiary_repository import BeneficiaryRepository
 from domain.booking.booking import Booking
 from domain.booking.booking_repository import BookingRepository
 from domain.booking.booking_validator import check_offer_already_booked, check_quantity_is_valid
-from domain.expenses import get_expenses
 from domain.services.notification.notification_service import NotificationService
 from domain.stock.stock import Stock
 from domain.stock.stock_repository import StockRepository
@@ -39,9 +38,8 @@ class BookAnOffer:
         check_stock_is_bookable(stock)
 
         booking = self._create_booking_with_booking_information(booking_information, stock, user)
-        bookings = self.booking_repository.find_active_bookings_by_user_id(booking_information.user_id)
+        expenses = self.booking_repository.get_expenses_by_user_id(booking_information.user_id)
 
-        expenses = get_expenses(bookings)
         check_expenses_limits(expenses, booking)
 
         booking_saved = self.booking_repository.save(booking)

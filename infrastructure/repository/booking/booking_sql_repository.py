@@ -1,21 +1,26 @@
-from typing import List
+from typing import List, Dict
 
 from domain.booking.booking import Booking
 from domain.booking.booking_exceptions import BookingDoesntExist
 from domain.booking.booking_repository import BookingRepository
+from domain.expenses import get_expenses
 from infrastructure.repository.booking import booking_domain_converter
 from models import BookingSQLEntity, StockSQLEntity
 from repository import repository
+from sqlalchemy.orm import Query, joinedload
 
 
 class BookingSQLRepository(BookingRepository):
-    def find_active_bookings_by_user_id(self, user_id: int) -> List[Booking]:
-        booking_sql_entities: List = BookingSQLEntity.query \
+    def get_expenses_by_user_id(self, user_id: int) -> Dict:
+        bookings_query = BookingSQLEntity.query \
             .filter_by(userId=user_id) \
-            .filter_by(isCancelled=False) \
-            .all()
+            .filter_by(isCancelled=False)
 
-        return [booking_domain_converter.to_domain(booking_sql_entity) for booking_sql_entity in booking_sql_entities]
+        bookings = bookings_query.options(
+            joinedload(BookingSQLEntity.stock).
+            joinedload(StockSQLEntity.offer)).all()
+
+        return get_expenses(bookings)
 
     def find_not_cancelled_booking_by(self, offer_id: int, user_id: int) -> Booking:
         booking_sql_entity = BookingSQLEntity.query \

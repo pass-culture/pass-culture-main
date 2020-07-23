@@ -11,14 +11,16 @@ from sqlalchemy import Binary, \
     String, \
     Text
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, joinedload
 from sqlalchemy.sql import expression
 
 from domain.expenses import get_expenses
+from models.booking_sql_entity import BookingSQLEntity
 from models.db import Model, db
 from models.deposit import Deposit
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.pc_object import PcObject
+from models.stock_sql_entity import StockSQLEntity
 from models.user_offerer import UserOfferer, RightsType
 from models.versioned_mixin import VersionedMixin
 
@@ -136,9 +138,15 @@ class UserSQLEntity(PcObject,
         self.resetPasswordToken = None
         self.resetPasswordTokenValidityLimit = None
 
+    def bookings_query(self):
+        return db.session.query(BookingSQLEntity).with_parent(self)
+
     @property
     def expenses(self):
-        return get_expenses(self.userBookings)
+        bookings = self.bookings_query().options(
+            joinedload(BookingSQLEntity.stock).
+            joinedload(StockSQLEntity.offer)).all()
+        return get_expenses(bookings)
 
     @property
     def real_wallet_balance(self):

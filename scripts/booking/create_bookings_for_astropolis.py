@@ -11,7 +11,7 @@ from models import BookingSQLEntity, StockSQLEntity, Offer, UserSQLEntity, ApiEr
 from utils.logger import logger
 
 
-def create_bookings_for_astropolis(offer_one_id: int, offer_two_id: int, offer_three_id: int):
+def create_bookings_for_astropolis(offer_one_id: int, offer_two_id: int, offer_three_id: int) -> None:
     stock_offer_three = StockSQLEntity.query.filter(StockSQLEntity.offerId == offer_three_id).first()
 
     beneficiaries_who_have_booked_offer_one = UserSQLEntity.query \
@@ -41,8 +41,7 @@ def create_bookings_for_astropolis(offer_one_id: int, offer_two_id: int, offer_t
         for beneficiary_id in beneficiary_ids_for_booking_creation:
             beneficiary = beneficiary_sql_repository.find_beneficiary_by_user_id(user_id=beneficiary_id)
             stock = stock_sql_repository.find_stock_by_id(stock_id=stock_offer_three.id)
-            bookings = booking_sql_repository.find_active_bookings_by_user_id(user_id=beneficiary_id)
-            expenses = get_expenses(bookings)
+            expenses = booking_sql_repository.get_expenses_by_user_id(user_id=beneficiary_id)
 
             try:
                 new_booking = Booking(beneficiary=beneficiary, stock=stock, amount=stock.price, quantity=1,

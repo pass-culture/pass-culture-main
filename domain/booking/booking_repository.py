@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import Dict
 
 from domain.booking.booking import Booking
+from sqlalchemy.orm import Query
 
 
 class BookingRepository(ABC):
     @abstractmethod
-    def find_active_bookings_by_user_id(self, user_id: int) -> List[Booking]:
+    def get_expenses_by_user_id(self, user_id: int) -> Dict:
         pass
 
     @abstractmethod

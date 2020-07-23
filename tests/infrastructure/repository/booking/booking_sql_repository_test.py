@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import patch
 
 from domain.booking.booking import Booking
 from domain.booking.booking_exceptions import BookingDoesntExist
@@ -14,14 +15,16 @@ from tests.model_creators.generic_creators import create_booking, \
     create_venue, create_stock, create_deposit
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
 
+from models import BookingSQLEntity, StockSQLEntity
 
 class BookingSQLRepositoryTest:
-    class FindActiveBookingsByUserIdTest:
+    class GetExpensesByUserIdTest:
         def setup_method(self):
             self.booking_sql_repository = BookingSQLRepository()
 
         @clean_database
-        def test_returns_a_list_of_not_cancelled_bookings(self, app):
+        @patch('infrastructure.repository.booking.booking_sql_repository.get_expenses')
+        def test_returns_a_list_of_not_cancelled_bookings(self, get_expenses_mock, app):
             # given
             user = create_user()
             offerer = create_offerer()
@@ -34,14 +37,21 @@ class BookingSQLRepositoryTest:
             booking_sql_entity3 = create_booking(user=user, stock=book_stock, venue=venue_online)
             repository.save(booking_sql_entity1, booking_sql_entity2, booking_sql_entity3)
 
-            booking1 = booking_domain_converter.to_domain(booking_sql_entity1)
+            expected_expenses = {'expenses': 'dict'}
+            get_expenses_mock.return_value = expected_expenses
 
             # when
-            bookings = self.booking_sql_repository.find_active_bookings_by_user_id(user.id)
+            expenses = self.booking_sql_repository.get_expenses_by_user_id(user.id)
 
             # then
+            assert expenses == expected_expenses
+
+            args, kargs = get_expenses_mock.call_args
+            (bookings,) = args
             assert len(bookings) == 2
-            assert booking1 not in bookings
+            assert booking_sql_entity1 not in bookings
+            assert booking_sql_entity2 in bookings
+            assert booking_sql_entity3 in bookings
 
     class SaveTest:
         def setup_method(self):
