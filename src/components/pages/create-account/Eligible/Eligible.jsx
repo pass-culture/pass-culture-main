@@ -10,12 +10,11 @@ const Eligible = () => {
   const [isDisabled, setIsDisabled] = useState(false)
 
   const handleClick = useCallback(() => {
-      setIsDisabled(true)
-      getReCaptchaToken().then(
-        token => (window.location.href = `${ID_CHECK_URL}?licence_token=${token}`)
-      )
-    }
-  )
+    setIsDisabled(true)
+    getReCaptchaToken().then(
+      token => (window.location.href = `${ID_CHECK_URL}?licence_token=${token}`)
+    )
+  })
 
   return (
     <main className="eligible-page">
@@ -35,9 +34,7 @@ const Eligible = () => {
           onClick={handleClick}
           type="button"
         >
-          { !isDisabled
-            ? 'Commencer l’inscription'
-            : <Icon svg="icon-eligible-spinner" /> }
+          {isDisabled ? <Icon svg="icon-eligible-spinner" /> : 'Commencer l’inscription'}
         </button>
         <Link
           className="home-page-link"
