@@ -57,8 +57,7 @@ jobs:
             - pass-culture-api-requirements-checksum-
       - run:
           name: Check if the requirements have changed
-          command: |
-            md5sum --status -c requirements.md5;
+          command: md5sum --status -c requirements.md5;
       - run:
           name: Build docker image when requirements have changed
           command: docker build -t passcultureapp/api-flask:latest .
