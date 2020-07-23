@@ -1,42 +1,36 @@
 import algoliasearch from 'algoliasearch'
 import { DATE_FILTER } from '../../components/pages/search/Filters/filtersEnums'
-import {
-  computeTimeRangeFromHoursToSeconds,
-  TIMESTAMP,
-} from '../../components/pages/search/utils/date/time'
-import {
-  ALGOLIA_APPLICATION_ID,
-  ALGOLIA_INDEX_NAME,
-  ALGOLIA_SEARCH_API_KEY,
-} from '../../utils/config'
+import { computeTimeRangeFromHoursToSeconds, TIMESTAMP } from '../../components/pages/search/utils/date/time'
+import { ALGOLIA_APPLICATION_ID, ALGOLIA_INDEX_NAME, ALGOLIA_SEARCH_API_KEY } from '../../utils/config'
 import { FACETS } from './facets'
 import { DEFAULT_RADIUS_IN_KILOMETERS, FILTERS, RADIUS_IN_METERS_FOR_NO_OFFERS } from './filters'
 
 export const fetchAlgolia = ({
-  aroundRadius = DEFAULT_RADIUS_IN_KILOMETERS,
-  date = null,
-  geolocation = null,
-  keywords = '',
-  offerCategories = [],
-  offerIsDuo = false,
-  offerIsFree = false,
-  offerIsNew = false,
-  offerTypes = {
-    isDigital: false,
-    isEvent: false,
-    isThing: false,
-  },
-  page = 0,
-  priceRange = [],
-  sortBy = '',
-  searchAround = false,
-  timeRange = [],
-} = {}) => {
+                               aroundRadius = DEFAULT_RADIUS_IN_KILOMETERS,
+                               date = null,
+                               geolocation = null,
+                               keywords = '',
+                               offerCategories = [],
+                               offerIsDuo = false,
+                               offerIsFree = false,
+                               offerIsNew = false,
+                               offerTypes = {
+                                 isDigital: false,
+                                 isEvent: false,
+                                 isThing: false
+                               },
+                               page = 0,
+                               priceRange = [],
+                               sortBy = '',
+                               searchAround = false,
+                               tags = [],
+                               timeRange = []
+                             } = {}) => {
   const searchParameters = {
     page: page,
-    ...buildFacetFilters(offerCategories, offerTypes, offerIsDuo),
+    ...buildFacetFilters(offerCategories, offerTypes, offerIsDuo, tags),
     ...buildNumericFilters(offerIsFree, priceRange, date, offerIsNew, timeRange),
-    ...buildGeolocationParameter(aroundRadius, geolocation, searchAround),
+    ...buildGeolocationParameter(aroundRadius, geolocation, searchAround)
   }
   const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
   const index = client.initIndex(ALGOLIA_INDEX_NAME + sortBy)
@@ -44,7 +38,7 @@ export const fetchAlgolia = ({
   return index.search(keywords, searchParameters)
 }
 
-const buildFacetFilters = (offerCategories, offerTypes, offerIsDuo) => {
+const buildFacetFilters = (offerCategories, offerTypes, offerIsDuo, tags) => {
   if (offerCategories.length === 0 && offerTypes == null && offerIsDuo === false) {
     return
   }
@@ -64,6 +58,11 @@ const buildFacetFilters = (offerCategories, offerTypes, offerIsDuo) => {
   const offerIsDuoPredicate = buildOfferIsDuoPredicate(offerIsDuo)
   if (offerIsDuoPredicate) {
     facetFilters.push(offerIsDuoPredicate)
+  }
+
+  const tagsPredicate = buildTagsPredicate(tags)
+  if (tagsPredicate) {
+    facetFilters.push(tagsPredicate)
   }
 
   const atLeastOneFacetFilter = facetFilters.length > 0
@@ -215,7 +214,7 @@ const buildGeolocationParameter = (aroundRadius, geolocation, searchAround) => {
 
       return {
         aroundLatLng: `${latitude}, ${longitude}`,
-        aroundRadius: searchAround ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS,
+        aroundRadius: searchAround ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS
       }
     }
   }
@@ -226,4 +225,10 @@ const computeRadiusInMeters = (aroundRadius, searchAround) => {
     return RADIUS_IN_METERS_FOR_NO_OFFERS
   }
   return aroundRadius * 1000
+}
+
+const buildTagsPredicate = tags => {
+  if (tags.length > 0){
+    return tags.map(tag => `${FACETS.OFFER_TAGS}:${tag}`)
+  }
 }

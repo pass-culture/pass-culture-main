@@ -7,5 +7,6 @@ export const FACETS = {
   OFFER_IS_THING: 'offer.isThing',
   OFFER_DATE: 'offer.dates',
   OFFER_TIME: 'offer.times',
+  OFFER_TAGS: 'offer.tags',
   OFFER_STOCKS_DATE_CREATED: 'offer.stocksDateCreated',
 }

@@ -20,8 +20,17 @@ export const parseAlgoliaParameters = parameters => {
   const keys = Object.keys(parameters)
 
   keys.forEach(key => {
-    if (key === algoliaParametersFromContentful.CATEGORIES) {
-      parsedParameters['offerCategories'] = parameters[key]
+    switch (key) {
+      case algoliaParametersFromContentful.CATEGORIES:
+        if (parameters[key].length > 0) {
+          parsedParameters['offerCategories'] = parameters[key]
+        }
+        break
+      case algoliaParametersFromContentful.TAGS:
+        if (parameters[key].length > 0) {
+          parsedParameters['tags'] = parameters[key]
+        }
+        break
     }
   })
   return parsedParameters
