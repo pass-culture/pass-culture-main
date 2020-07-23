@@ -43,14 +43,13 @@ class Get:
             assert 'isEventExpired' in first_booking['stock']
             assert 'isDigital' in first_booking['stock']['offer']
             assert 'isEvent' in first_booking['stock']['offer']
-            assert 'isFullyBooked' in first_booking['stock']['offer']
             assert 'offerType' in first_booking['stock']['offer']
-            assert 'product' in first_booking['stock']['offer']
             assert 'thumb_url' in first_booking['stock']['offer']
             assert 'stocks' in first_booking['stock']['offer']
-            assert 'isBookable' in first_booking['stock']['offer']['stocks'][0]
             assert 'venue' in first_booking['stock']['offer']
             assert 'validationToken' not in first_booking['stock']['offer']['venue']
+            assert 'isFullyBooked' in first_booking['stock']['offer']
+            assert 'isBookable' in first_booking['stock']['offer']['stocks'][0]
 
         @patch('routes.bookings.feature_queries.is_active', return_value=True)
         @clean_database
