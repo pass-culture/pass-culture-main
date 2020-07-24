@@ -1,10 +1,12 @@
 from flask_admin.helpers import get_form_data
 from flask_login import current_user
-from wtforms import Form, SelectField, StringField, TextAreaField
+from wtforms import Form, StringField, TextAreaField, SelectField
 
 from admin.base_configuration import BaseAdminView
+from connectors import redis
 from domain.user_activation import is_import_status_change_allowed, IMPORT_STATUS_MODIFICATION_RULE
-from models import ImportStatus, BeneficiaryImport
+from flask_app import app
+from models import ImportStatus, BeneficiaryImport, Offer
 from repository import repository
 
 
@@ -13,11 +15,13 @@ class OfferAdminView(BaseAdminView):
     can_edit = True
     can_delete = False
     column_list = ['id', 'name', 'type', 'baseScore', 'criteria']
-    column_labels = dict(name='Nom', type='Type',
-                         baseScore='Score', criteria='Tag')
+    column_labels = dict(name='Nom', type='Type', baseScore='Score', criteria='Tag')
     column_searchable_list = ['name']
     column_filters = ['type']
     form_columns = ['criteria']
+
+    def on_model_change(self, form: Form, offer: Offer, is_created=False):
+        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
 
 class CriteriaAdminView(BaseAdminView):
@@ -25,8 +29,7 @@ class CriteriaAdminView(BaseAdminView):
     can_edit = True
     can_delete = True
     column_list = ['id', 'name', 'description', 'scoreDelta']
-    column_labels = dict(
-        name='Nom', description='Description', scoreDelta='Score')
+    column_labels = dict(name='Nom', description='Description', scoreDelta='Score')
     column_searchable_list = ['name', 'description']
     column_filters = []
     form_columns = ['name', 'description', 'scoreDelta']
@@ -35,8 +38,7 @@ class CriteriaAdminView(BaseAdminView):
 class OffererAdminView(BaseAdminView):
     can_edit = True
     column_list = ['id', 'name', 'siren', 'city', 'postalCode', 'address']
-    column_labels = dict(name='Nom', siren='SIREN', city='Ville',
-                         postalCode='Code postal', address='Adresse')
+    column_labels = dict(name='Nom', siren='SIREN', city='Ville', postalCode='Code postal', address='Adresse')
     column_searchable_list = ['name', 'siren']
     column_filters = ['postalCode', 'city']
     form_columns = ['name', 'siren', 'city', 'postalCode', 'address']
@@ -75,16 +77,14 @@ class VenueAdminView(BaseAdminView):
 class FeatureAdminView(BaseAdminView):
     can_edit = True
     column_list = ['name', 'description', 'isActive']
-    column_labels = dict(
-        name='Nom', description='Description', isActive='Activé')
+    column_labels = dict(name='Nom', description='Description', isActive='Activé')
     form_columns = ['isActive']
 
 
 class BeneficiaryImportView(BaseAdminView):
     can_edit = True
     column_list = ['beneficiary.firstName', 'beneficiary.lastName', 'beneficiary.email', 'beneficiary.postalCode',
-                   'source', 'sourceId', 'applicationId',
-                   'currentStatus', 'updatedAt', 'detail', 'authorEmail']
+                   'source', 'sourceId', 'applicationId', 'currentStatus', 'updatedAt', 'detail', 'authorEmail']
     column_labels = {
         'applicationId': 'Id de dossier',
         'authorEmail': 'Statut modifié par',
@@ -101,8 +101,9 @@ class BeneficiaryImportView(BaseAdminView):
     column_searchable_list = ['beneficiary.email',
                               'applicationId']
     column_filters = ['currentStatus']
-    column_sortable_list = ['beneficiary.email', 'beneficiary.firstName', 'beneficiary.lastName', 'beneficiary.postalCode',
-                            'applicationId', 'source', 'sourceId', 'currentStatus', 'updatedAt', 'detail', 'authorEmail']
+    column_sortable_list = ['beneficiary.email', 'beneficiary.firstName', 'beneficiary.lastName',
+                            'beneficiary.postalCode', 'applicationId', 'source', 'sourceId', 'currentStatus',
+                            'updatedAt', 'detail', 'authorEmail']
 
     def edit_form(self, obj=None):
         class _NewStatusForm(Form):
@@ -125,9 +126,7 @@ class BeneficiaryImportView(BaseAdminView):
         new_status = ImportStatus(new_status_form.status.data)
 
         if is_import_status_change_allowed(beneficiary_import.currentStatus, new_status):
-            beneficiary_import.setStatus(
-                new_status, detail=new_status_form.detail.data, author=current_user)
+            beneficiary_import.setStatus(new_status, detail=new_status_form.detail.data, author=current_user)
             repository.save(beneficiary_import)
         else:
-            new_status_form.status.errors.append(
-                IMPORT_STATUS_MODIFICATION_RULE)
+            new_status_form.status.errors.append(IMPORT_STATUS_MODIFICATION_RULE)

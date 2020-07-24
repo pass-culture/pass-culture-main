@@ -7,7 +7,7 @@ from algolia.infrastructure.builder import build_object
 from models import EventType
 from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue
+from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue, create_criterion
 from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 from utils.human_ids import humanize
 
@@ -98,6 +98,7 @@ class BuildObjectTest:
                 'stageDirector': None,
                 'stocksDateCreated': [1606820400.0, 1607166000.0, 1607673600.0],
                 'thumbUrl': f'http://localhost/storage/thumbs/products/{humanized_product_id}',
+                'tags': [],
                 'times': [32400],
                 'type': 'Écouter',
                 'visa': None,
@@ -387,3 +388,174 @@ class BuildObjectTest:
         # Then
         assert result['_geoloc']['lat'] == 47.158459
         assert result['_geoloc']['lng'] == 2.409289
+
+    @clean_database
+    @freeze_time('2020-10-15 09:00:00')
+    def test_should_return_algolia_object_with_one_tag_when_one_criterion(self, app):
+        # Given
+        in_four_days = datetime.utcnow() + timedelta(days=4)
+        offerer = create_offerer(name='Offerer name', idx=1)
+        venue = create_venue(offerer=offerer,
+                             city='Paris',
+                             idx=2,
+                             latitude=48.8638689,
+                             longitude=2.3380198,
+                             name='Venue name',
+                             public_name='Venue public name')
+        criterion = create_criterion(description="Ma super offre", name="Mon tag associé", score_delta=0)
+        offer = create_offer_with_event_product(venue=venue,
+                                                description='Un lit sous une rivière',
+                                                withdrawal_details='A emporter sur place',
+                                                idx=3,
+                                                is_active=True,
+                                                event_name='Event name',
+                                                event_type=EventType.MUSIQUE,
+                                                thumb_count=1,
+                                                date_created=datetime(2020, 1, 1, 10, 0, 0))
+        offer.criteria = [criterion]
+        stock1 = create_stock(quantity=10,
+                              date_created=datetime(2020, 12, 5, 11, 0, 0),
+                              beginning_datetime=in_four_days,
+                              offer=offer,
+                              price=10)
+        repository.save(stock1)
+        humanized_product_id = humanize(offer.product.id)
+
+        # When
+        result = build_object(offer)
+
+        # Then
+        assert result == {
+            'objectID': 'AM',
+            'offer': {
+                'author': None,
+                'category': 'MUSIQUE',
+                'dateCreated': 1577872800.0,
+                'dates': [1603098000.0],
+                'description': 'Un lit sous une rivière',
+                'withdrawalDetails': 'A emporter sur place',
+                'id': 'AM',
+                'isbn': None,
+                'isDuo': False,
+                'isDigital': False,
+                'isEvent': True,
+                'isThing': False,
+                'label': 'Concert ou festival',
+                'name': 'Event name',
+                'musicSubType': None,
+                'musicType': None,
+                'performer': None,
+                'prices': [Decimal('10.00')],
+                'priceMin': Decimal('10.00'),
+                'priceMax': Decimal('10.00'),
+                'showSubType': None,
+                'showType': None,
+                'speaker': None,
+                'stageDirector': None,
+                'stocksDateCreated': [1607166000.0],
+                'thumbUrl': f'http://localhost/storage/thumbs/products/{humanized_product_id}',
+                'tags': ["Mon tag associé"],
+                'times': [32400],
+                'type': 'Écouter',
+                'visa': None,
+            },
+            'offerer': {
+                'name': 'Offerer name',
+            },
+            'venue': {
+                'city': 'Paris',
+                'departementCode': '93',
+                'name': 'Venue name',
+                'publicName': 'Venue public name'
+            },
+            '_geoloc': {
+                'lat': 48.86387,
+                'lng': 2.33802
+            }
+        }
+
+    @clean_database
+    @freeze_time('2020-10-15 09:00:00')
+    def test_should_return_algolia_object_with_two_tags_when_two_criterion(self, app):
+        # Given
+        in_four_days = datetime.utcnow() + timedelta(days=4)
+        offerer = create_offerer(name='Offerer name', idx=1)
+        venue = create_venue(offerer=offerer,
+                             city='Paris',
+                             idx=2,
+                             latitude=48.8638689,
+                             longitude=2.3380198,
+                             name='Venue name',
+                             public_name='Venue public name')
+        criterion1 = create_criterion(description="Ma super offre", name="Mon tag associé", score_delta=0)
+        criterion2 = create_criterion(description="Avengers", name="Iron Man mon super héros", score_delta=0)
+        offer = create_offer_with_event_product(venue=venue,
+                                                description='Un lit sous une rivière',
+                                                withdrawal_details='A emporter sur place',
+                                                idx=3,
+                                                is_active=True,
+                                                event_name='Event name',
+                                                event_type=EventType.MUSIQUE,
+                                                thumb_count=1,
+                                                date_created=datetime(2020, 1, 1, 10, 0, 0))
+        offer.criteria = [criterion1, criterion2]
+        stock1 = create_stock(quantity=10,
+                              date_created=datetime(2020, 12, 5, 11, 0, 0),
+                              beginning_datetime=in_four_days,
+                              offer=offer,
+                              price=10)
+        repository.save(stock1)
+        humanized_product_id = humanize(offer.product.id)
+
+        # When
+        result = build_object(offer)
+
+        # Then
+        assert result == {
+            'objectID': 'AM',
+            'offer': {
+                'author': None,
+                'category': 'MUSIQUE',
+                'dateCreated': 1577872800.0,
+                'dates': [1603098000.0],
+                'description': 'Un lit sous une rivière',
+                'withdrawalDetails': 'A emporter sur place',
+                'id': 'AM',
+                'isbn': None,
+                'isDuo': False,
+                'isDigital': False,
+                'isEvent': True,
+                'isThing': False,
+                'label': 'Concert ou festival',
+                'name': 'Event name',
+                'musicSubType': None,
+                'musicType': None,
+                'performer': None,
+                'prices': [Decimal('10.00')],
+                'priceMin': Decimal('10.00'),
+                'priceMax': Decimal('10.00'),
+                'showSubType': None,
+                'showType': None,
+                'speaker': None,
+                'stageDirector': None,
+                'stocksDateCreated': [1607166000.0],
+                'thumbUrl': f'http://localhost/storage/thumbs/products/{humanized_product_id}',
+                'tags': ["Mon tag associé", "Iron Man mon super héros"],
+                'times': [32400],
+                'type': 'Écouter',
+                'visa': None,
+            },
+            'offerer': {
+                'name': 'Offerer name',
+            },
+            'venue': {
+                'city': 'Paris',
+                'departementCode': '93',
+                'name': 'Venue name',
+                'publicName': 'Venue public name'
+            },
+            '_geoloc': {
+                'lat': 48.86387,
+                'lng': 2.33802
+            }
+        }

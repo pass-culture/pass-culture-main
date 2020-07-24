@@ -38,6 +38,7 @@ def build_object(offer: Offer) -> Dict:
         times = [get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in active_and_bookable_stocks]
     date_created = datetime.timestamp(offer.dateCreated)
     stocks_date_created = [datetime.timestamp(stock.dateCreated) for stock in active_and_bookable_stocks]
+    tags = [criterion.name for criterion in offer.criteria]
 
     object_to_index = {
         'objectID': humanize_offer_id,
@@ -67,6 +68,7 @@ def build_object(offer: Offer) -> Dict:
             'stageDirector': stage_director,
             'stocksDateCreated': sorted(stocks_date_created),
             'thumbUrl': offer.thumb_url,
+            'tags': tags,
             'times': list(set(times)),
             'type': offer.offerType['sublabel'],
             'visa': visa,
