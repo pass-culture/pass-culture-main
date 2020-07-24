@@ -7,8 +7,8 @@ class ValidateSaveMailingContactRequestTest:
     def should_raise_exception_when_email_not_provided(self):
         # Given
         request = {
-            "date_of_birth": "2003-03-05",
-            "department_code": "27"
+            "dateOfBirth": "2003-03-05",
+            "departmentCode": "27"
         }
 
         # When
@@ -22,7 +22,7 @@ class ValidateSaveMailingContactRequestTest:
         # Given
         request = {
             "email": "beneficiary@example.com",
-            "department_code": "27"
+            "departmentCode": "27"
         }
 
         # When
@@ -36,7 +36,7 @@ class ValidateSaveMailingContactRequestTest:
         # Given
         request = {
             "email": "beneficiary@example.com",
-            "date_of_birth": "2003-03-05"
+            "dateOfBirth": "2003-03-05"
         }
 
         # When

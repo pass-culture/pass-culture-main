@@ -45,8 +45,8 @@ class MailjetNotificationService(NotificationService):
         creation_response = create_contact(beneficiary_contact.email)
 
         status_code = creation_response.status_code
-        if status_code != 200 and status_code != 400:
-            raise AddNewBeneficiaryContactException('mailjet', creation_response.json()['ErrorMessage'])
+        if status_code != 201 and status_code != 400:
+            raise AddNewBeneficiaryContactException('mailjet', creation_response.reason)
 
         date_of_birth = datetime.fromisoformat(beneficiary_contact.date_of_birth)
         date_of_birth_timestamp = int(datetime(date_of_birth.year, date_of_birth.month, date_of_birth.day).timestamp())
@@ -54,7 +54,7 @@ class MailjetNotificationService(NotificationService):
 
         status_code = update_response.status_code
         if status_code != 200 and status_code != 400:
-            raise AddNewBeneficiaryContactException('mailjet', update_response.json()['ErrorMessage'])
+            raise AddNewBeneficiaryContactException('mailjet', update_response.reason)
 
 
     def add_contact_to_eligible_soon_list(self, beneficiary_contact: BeneficiaryContact) -> None:
@@ -62,5 +62,5 @@ class MailjetNotificationService(NotificationService):
         add_to_list_response = add_contact_to_list(beneficiary_contact.email, list_id)
 
         status_code = add_to_list_response.status_code
-        if status_code != 200 and status_code != 400:
-            raise AddNewBeneficiaryContactException('mailjet', add_to_list_response.json()['ErrorMessage'])
+        if status_code != 201 and status_code != 400:
+            raise AddNewBeneficiaryContactException('mailjet', add_to_list_response.reason)

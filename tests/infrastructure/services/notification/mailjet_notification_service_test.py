@@ -19,11 +19,13 @@ class MailjetNotificationServiceTest:
             # Given
             beneficiary_contact = BeneficiaryContact('beneficiary@example.com', '2003-03-05', '98')
             birth_date_timestamp = 1046822400
-            mock_response = Mock()
-            mock_response.status_code = 200
+            mock_response_create = Mock()
+            mock_response_informations = Mock()
+            mock_response_create.status_code = 201
+            mock_response_informations.status_code = 200
 
-            create_contact_mock.return_value = mock_response
-            add_contact_info_mock.return_value = mock_response
+            create_contact_mock.return_value = mock_response_create
+            add_contact_info_mock.return_value = mock_response_informations
 
             # When
             self.notification_service.create_mailing_contact(beneficiary_contact)
@@ -34,14 +36,13 @@ class MailjetNotificationServiceTest:
 
 
         @patch('infrastructure.services.notification.mailjet_notification_service.create_contact')
-        def test_raises_error_on_creation_when_status_code_not_200_or_400(self, create_contact_mock):
+        def test_raises_error_on_creation_when_status_code_not_201_or_400(self, create_contact_mock):
             # Given
             beneficiary_contact = BeneficiaryContact('beneficiary@example.com', '2003-03-05', '98')
             mock_response = Mock()
             mock_response.status_code = 500
-            mock_response.json.return_value = {
-                'ErrorMessage': 'Error Create Contact'
-            }
+            mock_response.reason = 'Error creating contact'
+
             create_contact_mock.return_value = mock_response
 
             # When
@@ -49,7 +50,7 @@ class MailjetNotificationServiceTest:
                 self.notification_service.create_mailing_contact(beneficiary_contact)
 
             # Then
-            assert error.value.errors['mailjet'] == ['Error Create Contact']
+            assert error.value.errors['mailjet'] == ['Error creating contact']
 
 
     class AddContactToEligibleSoonListTest:
@@ -62,7 +63,7 @@ class MailjetNotificationServiceTest:
             # Given
             beneficiary_contact = BeneficiaryContact('beneficiary@example.com', '2003-03-05', '98')
             mock_response = Mock()
-            mock_response.status_code = 200
+            mock_response.status_code = 201
             add_contact_to_list_mock.return_value = mock_response
 
             # When
@@ -73,19 +74,18 @@ class MailjetNotificationServiceTest:
 
         @patch.dict('os.environ', {'MAILJET_NOT_YET_ELIGIBLE_LIST_ID': MOCK_MAILJET_LIST_ID})
         @patch('infrastructure.services.notification.mailjet_notification_service.add_contact_to_list')
-        def test_raises_error_on_list_addition_when_status_code_not_200_or_400(self, add_contact_to_list_mock):
+        def test_raises_error_on_list_addition_when_status_code_not_201_or_400(self, add_contact_to_list_mock):
             # Given
             beneficiary_contact = BeneficiaryContact('beneficiary@example.com', '2003-03-05', '98')
             mock_response = Mock()
             mock_response.status_code = 500
-            mock_response.json.return_value = {
-                'ErrorMessage': 'Error Add List'
-            }
+            mock_response.reason = 'Error adding to list'
+
             add_contact_to_list_mock.return_value = mock_response
             # When
             with pytest.raises(AddNewBeneficiaryContactException) as error:
                 self.notification_service.add_contact_to_eligible_soon_list(beneficiary_contact)
 
             # Then
-            assert error.value.errors['mailjet'] == ['Error Add List']
+            assert error.value.errors['mailjet'] == ['Error adding to list']
 

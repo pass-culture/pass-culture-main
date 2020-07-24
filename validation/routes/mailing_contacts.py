@@ -8,12 +8,12 @@ def validate_save_mailing_contact_request(json: Dict):
         errors.add_error('email', 'L\'email est manquant')
         raise errors
 
-    if 'date_of_birth' not in json or not json['date_of_birth']:
+    if 'dateOfBirth' not in json or not json['dateOfBirth']:
         errors = ApiErrors()
         errors.add_error('date_of_birth', 'La date de naissance est manquante')
         raise errors
 
-    if 'department_code' not in json or not json['department_code']:
+    if 'departmentCode' not in json or not json['departmentCode']:
         errors = ApiErrors()
         errors.add_error('department_code', 'Le code département est manquant')
         raise errors
