@@ -9,15 +9,17 @@
 
   .otw-venue {
     @include caption();
+
     overflow: hidden;
-    text-overflow:ellipsis;
+    text-overflow: ellipsis;
   }
 
   .otw-offer-info {
     @include caption();
+
     color: $grey-dark;
     overflow: hidden;
-    text-overflow:ellipsis;
+    text-overflow: ellipsis;
   }
 
   .otw-image-wrapper {

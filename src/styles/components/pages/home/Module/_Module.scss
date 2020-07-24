@@ -1,11 +1,7 @@
 .module-wrapper {
-  .one-item-medium {
+  .one-item-medium .two-items {
     padding: 0 rem(20px) rem(24px);
     white-space: nowrap;
-  }
-
-  .two-items {
-    @extend .one-item-medium;
   }
 
   h1 {
@@ -40,14 +36,14 @@
 
 .ofw-swipe-icon-wrapper {
   align-items: center;
-  display: flex;
   bottom: rem(3px);
   border-bottom-left-radius: rem(8px);
   border-bottom-right-radius: rem(8px);
+  display: flex;
+  height: 100%;
   justify-content: flex-end;
   padding-right: rem(15px);
   position: absolute;
-  height: 100%;
   width: 100%;
 
   .ofw-swipe-icon {
@@ -60,9 +56,9 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 99%;
   overflow-x: hidden;
-  
+  width: 99%;
+
   .offer-tile-wrapper {
     max-width: 47%;
   }

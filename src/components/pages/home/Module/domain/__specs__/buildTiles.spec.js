@@ -1,4 +1,4 @@
-import { buildArrayOf } from '../functions'
+import { buildArrayOf } from '../buildTiles'
 
 describe('buildTwoBlocsTile', () => {
   it('should return an array containing an array with cover', () => {
@@ -61,7 +61,7 @@ describe('buildTwoBlocsTile', () => {
     expect(result).toStrictEqual([[hit1, hit2]])
   })
 
-  it('should return an array containing an array with three hits', () => {
+  it('should return an array containing an array with two hits and another with one hit', () => {
     // Given
     const hit1 = {
       offer: {

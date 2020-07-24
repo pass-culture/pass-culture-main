@@ -9,7 +9,7 @@ describe('src | components | Cover', () => {
 
   beforeEach(() => {
     props = {
-      img: 'https://www.link-to-my-image.com'
+      img: 'https://www.link-to-my-image.com',
     }
   })
 
@@ -18,26 +18,24 @@ describe('src | components | Cover', () => {
     const wrapper = mount(
       <MemoryRouter>
         <Cover {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     // Then
     const image = wrapper.find('img').at(0)
     expect(image.prop('src')).toBe('https://www.link-to-my-image.com')
-
   })
+
   it('should render a swipe icon on top of the image', () => {
     // When
     const wrapper = mount(
       <MemoryRouter>
         <Cover {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     // Then
     const icon = wrapper.find(Icon)
     expect(icon.prop('svg')).toBe('ico-swipe-tile')
-
   })
-
 })

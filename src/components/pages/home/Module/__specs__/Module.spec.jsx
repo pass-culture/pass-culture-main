@@ -223,6 +223,4 @@ describe('src | components | Module', () => {
     expect(icon).toHaveLength(1)
     expect(icon.prop('svg')).toBe('ico-swipe-tile')
   })
-
-
 })
