@@ -4,7 +4,8 @@
     "plugin:react/all",
     "plugin:jsx-a11y/strict",
     "plugin:import/errors",
-    "plugin:jest/all"
+    "plugin:jest/all",
+    "plugin:react-hooks/recommended"
   ],
   "env": {
     "browser": true,
@@ -35,6 +36,7 @@
     "react/no-set-state": "off",
     "react/require-optimization": "off",
     "react/static-property-placement": "off",
+    "react-hooks/exhaustive-deps": "warn",
     "semi": ["error", "never"]
   },
   "overrides": [
