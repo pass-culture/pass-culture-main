@@ -60,7 +60,7 @@ const EligibilityCheck = () => {
       const ageEligibilityValue = checkIfAgeIsEligible(dateOfBirthInputValue)
       setComponentToRender(ageEligibilityValue)
     },
-    [postalCodeInputValue, dateOfBirthInputValue]
+    [dateOfBirthInputValue]
   )
 
   switch (componentToRender) {
@@ -68,7 +68,10 @@ const EligibilityCheck = () => {
       return checkIfDepartmentIsEligible(postalCodeInputValue) ? (
         <Eligible />
       ) : (
-        <IneligibleDepartment />
+        <IneligibleDepartment
+          birthDate={dateOfBirthInputValue}
+          postalCode={postalCodeInputValue}
+        />
       )
     case ELIGIBILITY_VALUES.TOO_YOUNG:
       return <IneligibleUnderEighteen />

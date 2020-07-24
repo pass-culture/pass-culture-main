@@ -6,6 +6,7 @@ import { act } from 'react-dom/test-utils'
 import EligibilityCheck from '../EligibilityCheck'
 import { checkIfAgeIsEligible } from '../domain/checkIfAgeIsEligible'
 import { checkIfDepartmentIsEligible } from '../domain/checkIfDepartmentIsEligible'
+import IneligibleDepartment from '../IneligibleDepartment/IneligibleDepartment'
 
 jest.mock('../domain/checkIfAgeIsEligible', () => {
   const originalModule = jest.requireActual('../domain/checkIfAgeIsEligible')
@@ -297,7 +298,7 @@ describe('eligibility check page', () => {
         wrapper.update()
 
         // then
-        expect(wrapper.find({ children: 'IneligibleDepartment' })).toHaveLength(1)
+        expect(wrapper.find(IneligibleDepartment)).toHaveLength(1)
       })
     })
 
