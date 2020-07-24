@@ -1,5 +1,6 @@
 .module-wrapper {
-  .one-item-medium .two-items {
+  .one-item-medium,
+  .two-items {
     padding: 0 rem(20px) rem(24px);
     white-space: nowrap;
   }
