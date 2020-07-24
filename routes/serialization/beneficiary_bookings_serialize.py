@@ -9,16 +9,16 @@ from utils.human_ids import humanize
 def serialize_beneficiary_bookings(beneficiary_bookings: BeneficiaryBookings, with_qr_code: bool = False) -> List:
     results = []
     for beneficiary_booking in beneficiary_bookings.bookings:
-        serialized_stocks = serialize_stocks_for_beneficiary_bookings(beneficiary_booking.offerId,
-                                                                      beneficiary_bookings.stocks)
-        serialized_booking = serialize_beneficiary_booking(beneficiary_booking,
-                                                           serialized_stocks,
-                                                           with_qr_code=with_qr_code)
+        serialized_stocks = _serialize_stocks_for_beneficiary_bookings(beneficiary_booking.offerId,
+                                                                       beneficiary_bookings.stocks)
+        serialized_booking = _serialize_beneficiary_booking(beneficiary_booking,
+                                                            serialized_stocks,
+                                                            with_qr_code=with_qr_code)
         results.append(serialized_booking)
     return results
 
 
-def serialize_stock_for_beneficiary_booking(stock: Stock) -> Dict:
+def _serialize_stock_for_beneficiary_booking(stock: Stock) -> Dict:
     return {
         "dateCreated": serialize(stock.dateCreated),
         "beginningDatetime": serialize(stock.beginningDatetime),
@@ -31,12 +31,12 @@ def serialize_stock_for_beneficiary_booking(stock: Stock) -> Dict:
     }
 
 
-def serialize_stocks_for_beneficiary_bookings(matched_offer_id: int, stocks: List[Stock]) -> List[Dict]:
-    return [serialize_stock_for_beneficiary_booking(stock) for stock in stocks if stock.offerId == matched_offer_id]
+def _serialize_stocks_for_beneficiary_bookings(matched_offer_id: int, stocks: List[Stock]) -> List[Dict]:
+    return [_serialize_stock_for_beneficiary_booking(stock) for stock in stocks if stock.offerId == matched_offer_id]
 
 
-def serialize_beneficiary_booking(beneficiary_booking: BeneficiaryBooking, serialized_stocks: List[Dict],
-                                  with_qr_code: bool = False) -> Dict:
+def _serialize_beneficiary_booking(beneficiary_booking: BeneficiaryBooking, serialized_stocks: List[Dict],
+                                   with_qr_code: bool = False) -> Dict:
     dictified_booking = {
         "completedUrl": beneficiary_booking.booking_access_url,
         "isEventExpired": beneficiary_booking.is_event_expired,
