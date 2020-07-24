@@ -291,7 +291,8 @@ def _offer_has_stocks_compatible_with_days_intervals(days_intervals):
 
 
 def build_find_offers_with_filter_parameters(
-        user: UserSQLEntity,
+        user_id: int,
+        user_is_admin: bool,
         offerer_id: int = None,
         venue_id: int = None,
         keywords_string: str = None
@@ -306,12 +307,12 @@ def build_find_offers_with_filter_parameters(
             .join(VenueSQLEntity) \
             .filter(VenueSQLEntity.managingOffererId == offerer_id)
 
-    if not user.isAdmin:
+    if not user_is_admin:
         query = query \
             .join(VenueSQLEntity) \
             .join(Offerer) \
             .join(UserOfferer) \
-            .filter(UserOfferer.user == user) \
+            .filter(UserOfferer.userId == user_id) \
             .filter(UserOfferer.validationToken == None)
 
     if keywords_string is not None:

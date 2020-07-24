@@ -1,17 +1,20 @@
 import secrets
-from unittest.mock import patch, ANY
+from unittest.mock import patch
 
+from domain.pro_offers.paginated_offers import PaginatedOffers
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
 from tests.model_creators.specific_creators import create_offer_with_thing_product
+from use_cases.list_offers_for_pro_user import OffersRequestParameters
 from utils.human_ids import humanize
 
 
 class Get:
     class Returns200:
         @clean_database
-        def test_results_are_paginated_with_count_in_headers(self, app):
+        @patch('routes.offers.list_offers_for_pro_user.execute')
+        def test_results_are_paginated_with_count_in_headers(self, list_offers_mock, app):
             # Given
             user = create_user()
             offerer = create_offerer()
@@ -20,6 +23,7 @@ class Get:
             offer1 = create_offer_with_thing_product(venue)
             offer2 = create_offer_with_thing_product(venue)
             repository.save(user_offerer, offer1, offer2)
+            list_offers_mock.return_value = PaginatedOffers(offers=[offer1], total=2)
 
             # when
             response = TestClient(app.test_client()) \
@@ -32,7 +36,8 @@ class Get:
             assert response.headers['Total-Data-Count'] == "2"
 
         @clean_database
-        def test_does_not_show_result_to_user_offerer_when_not_validated(self, app):
+        @patch('routes.offers.list_offers_for_pro_user.execute')
+        def test_does_not_show_result_to_user_offerer_when_not_validated(self, list_offers_mock, app):
             # given
             user = create_user()
             offerer = create_offerer()
@@ -40,6 +45,7 @@ class Get:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
             repository.save(user_offerer, offer)
+            list_offers_mock.return_value = PaginatedOffers(offers=[], total=0)
 
             # when
             response = TestClient(app.test_client()).with_auth(email=user.email).get('/offers')
@@ -49,30 +55,31 @@ class Get:
             assert response.json == []
 
         @clean_database
-        @patch('infrastructure.read_models.paginated_offers'
-               '.paginated_offer_sql_repository'
-               '.PaginatedOfferSQLRepository.get_paginated_offers_for_offerer_venue_and_keywords')
-        def test_results_are_filtered_by_given_venue_id(self, paginated_query_mock, app):
+        @patch('routes.offers.list_offers_for_pro_user.execute')
+        def test_results_are_filtered_by_given_venue_id(self, list_offers_mock, app):
             # given
             user = create_user()
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             repository.save(user_offerer, venue)
+
             # when
             response = TestClient(app.test_client()) \
                 .with_auth(email=user.email).get('/offers?venueId=' + humanize(venue.id))
 
             # then
             assert response.status_code == 200
-            paginated_query_mock.assert_called_once_with(
-                keywords=None,
-                offerer_id=None,
-                page=0,
-                pagination_limit='10',
-                user=ANY,
-                venue_id=venue.id
-            )
+            list_offers_mock.assert_called_once()
+            expected_parameter = list_offers_mock.call_args[0][0]
+            assert isinstance(expected_parameter, OffersRequestParameters)
+            assert expected_parameter.user_id == user.id
+            assert expected_parameter.user_is_admin == user.isAdmin
+            assert expected_parameter.offerer_id == None
+            assert expected_parameter.venue_id == venue.id
+            assert expected_parameter.pagination_limit == 10
+            assert expected_parameter.keywords == None
+            assert expected_parameter.page == 0
 
     class Returns404:
         @clean_database

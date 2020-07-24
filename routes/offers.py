@@ -5,12 +5,13 @@ from flask_login import current_user, login_required
 from domain.admin_emails import \
     send_offer_creation_notification_to_administration
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
-from infrastructure.read_models.paginated_offers.paginated_offer_sql_repository import PaginatedOfferSQLRepository
+from infrastructure.container import list_offers_for_pro_user
 from models import Offer, RightsType, VenueSQLEntity
 from models.api_errors import ResourceNotFoundError
 from repository import offer_queries, repository, venue_queries, user_offerer_queries
 from routes.serialization import as_dict
 from routes.serialization.offers_serialize import serialize_offer
+from use_cases.list_offers_for_pro_user import OffersRequestParameters
 from use_cases.update_an_offer import update_an_offer
 from utils.config import PRO_URL
 from utils.human_ids import dehumanize
@@ -30,8 +31,6 @@ from validation.routes.offers import check_has_venue_id, \
 def list_offers() -> (str, int):
     offerer_id = dehumanize(request.args.get('offererId'))
     venue_id = dehumanize(request.args.get('venueId'))
-    pagination_limit = request.args.get('paginate', '10')
-    page = int(request.args.get('page', 0))
 
     if venue_id:
         venue = venue_queries.find_by_id(venue_id)
@@ -48,14 +47,16 @@ def list_offers() -> (str, int):
         )
         check_user_has_rights_on_offerer(user_offerer)
 
-    paginated_offers = PaginatedOfferSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
-        user=current_user,
+    offers_request_parameters = OffersRequestParameters(
+        user_id=current_user.id,
+        user_is_admin=current_user.isAdmin,
         offerer_id=offerer_id,
-        pagination_limit=pagination_limit,
         venue_id=venue_id,
+        pagination_limit=request.args.get('paginate', '10'),
         keywords=request.args.get('keywords'),
-        page=page
+        page=request.args.get('page', '0'),
     )
+    paginated_offers = list_offers_for_pro_user.execute(offers_request_parameters)
 
     response = jsonify(paginated_offers.offers)
     response.headers['Total-Data-Count'] = paginated_offers.total

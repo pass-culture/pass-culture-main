@@ -240,7 +240,8 @@ class FindOffersTest:
 
         # When
         offers = build_find_offers_with_filter_parameters(
-            user=user,
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
         ).all()
 
         # Then
@@ -278,7 +279,8 @@ class FindOffersTest:
 
         # when
         offers = build_find_offers_with_filter_parameters(
-            user,
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
             venue_id=venue1.id,
             keywords_string='Jacq Rencon'
         ).all()
