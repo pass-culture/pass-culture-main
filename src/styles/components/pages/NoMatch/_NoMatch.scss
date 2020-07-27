@@ -1,0 +1,29 @@
+.no-match {
+  background-image: $linear-gradient-to-bottom-right;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
+  color: $white;
+  font-weight: $weight-medium;
+
+  h1 {
+    font-size: rem(40px);
+    padding-top: rem(32px);
+  }
+
+  .subtitle {
+    font-size: rem(24px);
+    font-style: italic;
+    padding-top: rem(22px);
+  }
+
+  .redirection-info{
+    align-self: center;
+    bottom: rem(46px);
+    font-size: rem(16px);
+    padding-top: rem(16px);
+    position: absolute;
+  }
+}

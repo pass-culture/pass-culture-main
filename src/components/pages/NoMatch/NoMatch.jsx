@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
+import { ROOT_PATH } from '../../../utils/config'
 
 class NoMatch extends PureComponent {
   constructor(props) {
@@ -22,38 +22,36 @@ class NoMatch extends PureComponent {
   }
 
   renderRedirect = () => <Redirect to="/" />
-  renderRedirecting = () => (
-    <span>
-      {'Redirecting...'}
-    </span>
-  )
+  renderRedirecting = () => (<span>
+    {'Redirection...'}
+  </span>)
 
-  renderTimer = timing => (
-    <span>
-      {`You will be redirect in ${timing} seconds`}
-    </span>
-  )
+  renderTimer = timing => (<span>
+    {`Vous allez être redirigé dans ${timing} secondes`}
+  </span>)
 
   render() {
     const { timing } = this.state
-    const { location } = this.props
     if (timing < 0) return this.renderRedirect()
     return (
-      <div id="page-redirect">
-        <h3 className="title">
-          {`404 Not found ${location.pathname}`}
-        </h3>
-        <p className="content">
+      <div className="page fullscreen no-match">
+        <img
+          alt=""
+          src={`${ROOT_PATH}/icons/ico-404.svg`}
+        />
+        <h1>
+          {'Oh non !'}
+        </h1>
+        <p className="subtitle">
+          {"Cette page n'existe pas."}
+        </p>
+        <p className="redirection-info">
           {timing > 0 && this.renderTimer(timing)}
           {timing === 0 && this.renderRedirecting()}
         </p>
       </div>
     )
   }
-}
-
-NoMatch.propTypes = {
-  location: PropTypes.shape().isRequired,
 }
 
 export default NoMatch
