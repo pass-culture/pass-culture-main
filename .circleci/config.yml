@@ -80,7 +80,7 @@ jobs:
 
   tests-data-analytics:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.6.11
         environment:
           DATABASE_URL: postgresql://pass_culture:passq@postgres-product:5432/pass_culture
       - image: circleci/postgres:11.6-postgis
@@ -90,12 +90,14 @@ jobs:
           POSTGRES_PASSWORD: passq
           POSTGRES_DB: pass_culture
     steps:
-      - checkout:
+      - checkout
       - run:
           name: Initialize api environment
           command: |
-            python3 -m venv venv;
-            . venv/bin/activate;
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-api.git || git clone https://github.com/betagouv/pass-culture-api.git;
+            cd pass-culture-api;
+            python3 -m venv venv
+            . venv/bin/activate
             pip install -r requirements.txt;
             python -m nltk.downloader punkt stopwords;
             python install_database_extensions.py;
@@ -105,10 +107,8 @@ jobs:
           command: |
             git clone https://github.com/betagouv/pass-culture-data-analytics.git
             cd pass-culture-data-analytics
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt
-            pytest
+            pipenv install -e .
+            pipenv run pytest
       - run:
           name: Notify PC Ops Bot
           when: on_fail
