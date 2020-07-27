@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react'
 import { Link, Route } from 'react-router-dom'
 
 import { formatToFrenchDecimal } from '../../../utils/getDisplayPrice'
-import { fetchLastHomepage } from '../../../vendor/contentful/contentful'
+import { fetchHomepage } from '../../../vendor/contentful/contentful'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
 import Icon from '../../layout/Icon/Icon'
 import BusinessModule from './BusinessModule/BusinessModule'
@@ -14,21 +14,24 @@ import Module from './Module/Module'
 import OfferDetailsContainer from './OfferDetails/OfferDetailsContainer'
 import ExclusivityPane from './domain/ValueObjects/ExclusivityPane'
 import ExclusivityModule from './ExclusivityModule/ExclusivityModule'
+import { parse } from 'query-string'
 
 class Home extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      modules: []
+      modules: [],
     }
   }
 
   componentDidMount() {
-    fetchLastHomepage().then(modules =>
+    const { history } = this.props
+    const queryParams = parse(history.location.search)
+
+    fetchHomepage({ entryId: queryParams['entryId'] }).then(modules =>
       this.setState({
-        modules: modules
-      })
-    )
+        modules: modules,
+      }))
   }
 
   renderModule = (module, row) => {
@@ -44,7 +47,7 @@ class Home extends Component {
         />
       )
     } else {
-      if (module instanceof ExclusivityPane){
+      if (module instanceof ExclusivityPane) {
         return (
           <ExclusivityModule
             key={`${row}-exclusivity-module`}
@@ -117,8 +120,8 @@ Home.propTypes = {
   match: PropTypes.shape().isRequired,
   user: PropTypes.shape({
     publicName: PropTypes.string,
-    wallet_balance: PropTypes.number
-  }).isRequired
+    wallet_balance: PropTypes.number,
+  }).isRequired,
 }
 
 export default Home

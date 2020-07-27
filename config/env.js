@@ -48,6 +48,7 @@ function getClientEnvironment(publicUrl) {
         API_URL: process.env.API_URL,
         CONTENTFUL_ACCESS_TOKEN: process.env.CONTENTFUL_ACCESS_TOKEN,
         CONTENTFUL_ENVIRONMENT: process.env.CONTENTFUL_ENVIRONMENT,
+        CONTENTFUL_PREVIEW_TOKEN: process.env.CONTENTFUL_PREVIEW_TOKEN,
         CONTENTFUL_SPACE_ID: process.env.CONTENTFUL_SPACE_ID,
         ENVIRONMENT_NAME: process.env.ENVIRONMENT_NAME,
         ID_CHECK_URL: process.env.ID_CHECK_URL,

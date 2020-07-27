@@ -4,7 +4,7 @@ import Home from '../Home'
 import { Link } from 'react-router-dom'
 import { MemoryRouter } from 'react-router'
 import Icon from '../../../layout/Icon/Icon'
-import { fetchLastHomepage } from '../../../../vendor/contentful/contentful'
+import { fetchHomepage } from '../../../../vendor/contentful/contentful'
 import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
 import Module from '../Module/Module'
 import Offers from '../domain/ValueObjects/Offers'
@@ -12,9 +12,13 @@ import BusinessPane from '../domain/ValueObjects/BusinessPane'
 import BusinessModule from '../BusinessModule/BusinessModule'
 import ExclusivityPane from '../domain/ValueObjects/ExclusivityPane'
 import ExclusivityModule from '../ExclusivityModule/ExclusivityModule'
+import { parse } from 'query-string'
 
+jest.mock('query-string', () => ({
+  parse: jest.fn(),
+}))
 jest.mock('../../../../vendor/contentful/contentful', () => ({
-  fetchLastHomepage: jest.fn(),
+  fetchHomepage: jest.fn(),
 }))
 jest.mock('../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn().mockResolvedValue({ hits: [] }),
@@ -26,9 +30,13 @@ describe('src | components | Home', () => {
   let props
 
   beforeEach(() => {
-    fetchLastHomepage.mockResolvedValue([])
+    fetchHomepage.mockResolvedValue([])
+    parse.mockReturnValue({})
     props = {
       history: {
+        location: {
+          search: '',
+        },
         push: jest.fn(),
       },
       match: {},
@@ -44,7 +52,7 @@ describe('src | components | Home', () => {
     const wrapper = mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     // then
@@ -62,7 +70,7 @@ describe('src | components | Home', () => {
     const wrapper = mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     // then
@@ -75,7 +83,7 @@ describe('src | components | Home', () => {
     const wrapper = mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     // then
@@ -85,13 +93,13 @@ describe('src | components | Home', () => {
 
   it('should render a module component when module is for offers with cover', async () => {
     // given
-    fetchLastHomepage.mockResolvedValue([new OffersWithCover({})])
+    fetchHomepage.mockResolvedValue([new OffersWithCover({})])
 
     // when
     const wrapper = await mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await wrapper.update()
 
@@ -102,13 +110,13 @@ describe('src | components | Home', () => {
 
   it('should render a module component when module is for offers', async () => {
     // given
-    fetchLastHomepage.mockResolvedValue([new Offers({})])
+    fetchHomepage.mockResolvedValue([new Offers({})])
 
     // when
     const wrapper = await mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await wrapper.update()
 
@@ -119,7 +127,7 @@ describe('src | components | Home', () => {
 
   it('should render a business module component when module is for business information', async () => {
     // given
-    fetchLastHomepage.mockResolvedValue([
+    fetchHomepage.mockResolvedValue([
       new BusinessPane({
         img: 'my-image',
         title: 'my-title',
@@ -131,7 +139,7 @@ describe('src | components | Home', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await wrapper.update()
 
@@ -142,7 +150,7 @@ describe('src | components | Home', () => {
 
   it('should render an exclusivity module component when module is for an exclusive offer', async () => {
     // given
-    fetchLastHomepage.mockResolvedValue([
+    fetchHomepage.mockResolvedValue([
       new ExclusivityPane({
         alt: 'my alt text',
         image: 'https://www.link-to-my-image.com',
@@ -154,12 +162,31 @@ describe('src | components | Home', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await wrapper.update()
 
     // then
     const module = wrapper.find(ExclusivityModule)
     expect(module).toHaveLength(1)
+  })
+
+  it('should fetch homepage using entry id from url when provided', async () => {
+    // given
+    const entryId = 'ABCDE'
+    parse.mockReturnValue({ entryId })
+    props.history.location.search = entryId
+    fetchHomepage.mockResolvedValue([new Offers({})])
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>,
+    )
+    await wrapper.update()
+
+    // then
+    expect(fetchHomepage).toHaveBeenCalledWith({ entryId })
   })
 })
