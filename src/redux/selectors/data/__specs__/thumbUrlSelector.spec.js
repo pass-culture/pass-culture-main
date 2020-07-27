@@ -39,6 +39,7 @@ describe('selectThumbUrlByRouterMatch', () => {
         thumbCount: 1,
         thumbUrl: productThumbUrl,
       },
+      thumbUrl: productThumbUrl,
       venue: {
         latitude: 42,
         longitude: 1.6,

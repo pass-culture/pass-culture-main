@@ -18,8 +18,8 @@ export const selectThumbUrlByRouterMatch = createCachedSelector(
       return booking.thumbUrl
     }
 
-    if (offer && offer.product.thumbUrl) {
-      return offer.product.thumbUrl
+    if (offer && offer.thumbUrl) {
+      return offer.thumbUrl
     }
 
     return DEFAULT_THUMB_URL

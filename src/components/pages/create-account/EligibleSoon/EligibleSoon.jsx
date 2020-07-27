@@ -1,12 +1,11 @@
 import React, { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
-import PropTypes from 'prop-types'
 
 import { Animation } from '../Animation/Animation'
 import ContactSaved from '../ContactSaved/ContactSaved'
 import { handleCheckEmailFormat } from '../utils/checkEmailFormat'
 
-const EligibleSoon = ({ birthDate, postalCode }) => {
+const EligibleSoon = () => {
   const [emailValue, setEmailValue] = useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
 
@@ -62,11 +61,6 @@ const EligibleSoon = ({ birthDate, postalCode }) => {
   ) : (
     <ContactSaved />
   )
-}
-
-EligibleSoon.propTypes = {
-  birthDate: PropTypes.string.isRequired,
-  postalCode: PropTypes.string.isRequired,
 }
 
 export default EligibleSoon
