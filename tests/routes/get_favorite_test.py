@@ -61,7 +61,6 @@ class Get:
             assert 'offer' in response_content
             assert 'venue' in response_content['offer']
             assert humanize(booking.id) in response_content['firstMatchingBooking']["id"]
-            assert 'qrCode' in response_content['firstMatchingBooking']
             assert 'validationToken' not in response_content['offer']['venue']
 
     class Returns401:
