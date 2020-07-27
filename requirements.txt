@@ -41,7 +41,7 @@ nltk==3.4.5
 numpy==1.17.4
 oauth2client==4.1.3
 pandas==0.25.3
-psycopg2>=2.8
+psycopg2~=2.8
 pgcli==2.2.0
 Pillow==6.2.2
 pip==19.3.1
