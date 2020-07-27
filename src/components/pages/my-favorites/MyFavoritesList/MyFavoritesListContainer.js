@@ -1,9 +1,9 @@
 import { connect } from 'react-redux'
 import { requestData } from 'redux-thunk-data'
 
-import MyFavoritesList from './MyFavoritesList'
 import { selectFavorites } from '../../../../redux/selectors/data/favoritesSelectors'
 import { favoriteNormalizer } from '../../../../utils/normalizers'
+import MyFavoritesList from './MyFavoritesList'
 
 export const mapStateToProps = state => ({
   myFavorites: selectFavorites(state),
@@ -27,7 +27,6 @@ export const mapDispatchToProps = dispatch => ({
           apiPath: `/favorites/${offerId}`,
           handleFail: showFailModal,
           method: 'DELETE',
-          normalizer: favoriteNormalizer,
         })
       )
     })

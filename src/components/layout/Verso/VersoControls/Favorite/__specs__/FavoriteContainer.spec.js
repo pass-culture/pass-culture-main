@@ -1,5 +1,4 @@
 import { mapDispatchToProps, mapStateToProps } from '../FavoriteContainer'
-import { favoriteNormalizer } from '../../../../../../utils/normalizers'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
@@ -187,7 +186,6 @@ describe('components | FavoriteContainer', () => {
             },
             handleFail: showFailModal,
             method: 'POST',
-            normalizer: favoriteNormalizer,
           },
           type: 'REQUEST_DATA_POST_/FAVORITES',
         })
@@ -226,7 +224,6 @@ describe('components | FavoriteContainer', () => {
               },
               handleFail: showFailModal,
               method: 'DELETE',
-              normalizer: favoriteNormalizer,
             },
             type: `REQUEST_DATA_DELETE_/FAVORITES/${offerId.toUpperCase()}`,
           })
@@ -247,7 +244,6 @@ describe('components | FavoriteContainer', () => {
           config: {
             apiPath: '/favorites',
             method: 'GET',
-            normalizer: favoriteNormalizer,
           },
           type: 'REQUEST_DATA_GET_/FAVORITES',
         })

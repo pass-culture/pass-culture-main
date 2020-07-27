@@ -1,12 +1,13 @@
-import NoItems from '../../../layout/NoItems/NoItems'
-import Teaser from '../../../layout/Teaser/TeaserContainer'
+import PropTypes from 'prop-types'
 import React, { Fragment, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import PropTypes from 'prop-types'
+
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
+import NoItems from '../../../layout/NoItems/NoItems'
+import TeaserContainer from '../../../layout/Teaser/TeaserContainer'
 
 const MyFavoritesList = ({ myFavorites, loadMyFavorites, persistDeleteFavorites }) => {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [offerIds, setOfferIds] = useState([])
@@ -100,7 +101,7 @@ const MyFavoritesList = ({ myFavorites, loadMyFavorites, persistDeleteFavorites 
               )}
               <ul>
                 {myFavorites.map(myFavorite => (
-                  <Teaser
+                  <TeaserContainer
                     handleToggleTeaser={onToggle}
                     isEditMode={isEditMode}
                     item={myFavorite}

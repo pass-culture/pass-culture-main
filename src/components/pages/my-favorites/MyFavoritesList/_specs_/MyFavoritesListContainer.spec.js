@@ -1,5 +1,5 @@
-import { mapDispatchToProps } from '../../MyFavoritesList/MyFavoritesListContainer'
 import { favoriteNormalizer } from '../../../../../utils/normalizers'
+import { mapDispatchToProps } from '../../MyFavoritesList/MyFavoritesListContainer'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
@@ -9,7 +9,7 @@ jest.mock('redux-thunk-data', () => {
   }
 })
 
-describe('src | components | pages | my-favorites | MyFavorites', () => {
+describe('src | components | MyFavorites', () => {
   describe('loadMyFavorites()', () => {
     it('should get my favorites from API', () => {
       // given
@@ -50,7 +50,6 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
           apiPath: `/favorites/${offerIds[0]}`,
           handleFail: expect.any(Function),
           method: 'DELETE',
-          normalizer: favoriteNormalizer,
         },
         type: 'REQUEST_DATA_DELETE_/FAVORITES/ME',
       })
@@ -59,7 +58,6 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
           apiPath: `/favorites/${offerIds[1]}`,
           handleFail: expect.any(Function),
           method: 'DELETE',
-          normalizer: favoriteNormalizer,
         },
         type: 'REQUEST_DATA_DELETE_/FAVORITES/FA',
       })

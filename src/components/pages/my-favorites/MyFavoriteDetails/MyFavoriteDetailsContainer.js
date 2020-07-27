@@ -1,29 +1,30 @@
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-thunk-data'
 
+import { offerNormalizer } from '../../../../utils/normalizers'
+import withRequiredLogin from '../../../hocs/with-login/withRequiredLogin'
 import DetailsContainer from '../../../layout/Details/DetailsContainer'
-import { favoriteNormalizer } from '../../../../utils/normalizers'
 
 export const mapDispatchToProps = (dispatch, ownProps) => ({
-  requestGetData: handleSuccess => {
-    const { match } = ownProps
-    const { params } = match
-    const { favoriteId } = params
+  getOfferById: () => {
+    const {
+      match: {
+        params: { offerId },
+      },
+    } = ownProps
 
     dispatch(
       requestData({
-        apiPath: `/favorites/${favoriteId}`,
-        handleSuccess,
-        normalizer: favoriteNormalizer,
+        apiPath: `/offers/${offerId}`,
+        normalizer: offerNormalizer,
       })
     )
   },
 })
 
 export default compose(
-  withRouter,
+  withRequiredLogin,
   connect(
     null,
     mapDispatchToProps

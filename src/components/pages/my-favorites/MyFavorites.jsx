@@ -2,13 +2,13 @@ import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import { Route } from 'react-router'
 
-import MyFavoriteDetailsContainer from './MyFavoriteDetails/MyFavoriteDetailsContainer'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
-import MyFavoritesList from './MyFavoritesList/MyFavoritesListContainer'
+import MyFavoriteDetailsContainer from './MyFavoriteDetails/MyFavoriteDetailsContainer'
+import MyFavoritesListContainer from './MyFavoritesList/MyFavoritesListContainer'
 
 const MyFavorites = ({ match }) => (
   <Fragment>
-    <MyFavoritesList />
+    <MyFavoritesListContainer />
 
     <Route
       exact

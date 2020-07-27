@@ -4,18 +4,15 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 
 import getMockStore from '../../../../utils/mockStore'
-import Booking from '../../../layout/Booking/Booking'
+import MyFavoriteDetailsContainer from '../MyFavoriteDetails/MyFavoriteDetailsContainer'
 import MyFavorites from '../MyFavorites'
+import MyFavoritesListContainer from '../MyFavoritesList/MyFavoritesListContainer'
 
 describe('my favorites', () => {
-  let fakeMatomo
   let mockStore
+  let props
 
   beforeEach(() => {
-    fakeMatomo = {
-      push: jest.fn(),
-    }
-    window._paq = fakeMatomo
     mockStore = getMockStore({
       currentUser: (
         state = {
@@ -57,24 +54,17 @@ describe('my favorites', () => {
         }
       ) => state,
     })
-  })
-
-  it('should display the title "Favoris"', () => {
-    // given
-    const props = {
-      deleteFavorites: jest.fn(),
-      loadMyFavorites: jest.fn(),
+    props = {
       match: {
         path: '/favoris',
       },
-      myFavorites: [],
     }
+  })
 
-    jest.spyOn(props, 'loadMyFavorites').mockImplementation((fail, success) => success())
-
+  it('should display my favorites list', () => {
     // when
     const wrapper = mount(
-      <MemoryRouter initialEntries={[props.match.path]}>
+      <MemoryRouter initialEntries={['/favoris']}>
         <Provider store={mockStore}>
           <MyFavorites {...props} />
         </Provider>
@@ -82,84 +72,26 @@ describe('my favorites', () => {
     )
 
     // then
-    const title = wrapper.find('h1').find({ children: 'Favoris' })
-    expect(title).toHaveLength(1)
+    const myFavoritesListContainer = wrapper.find(MyFavoritesListContainer)
+    expect(myFavoritesListContainer).toHaveLength(1)
   })
 
-  describe('render()', () => {
-    describe('when on details page I can initiate booking', () => {
-      it('should open booking component with offerId and mediationId on url', () => {
-        // given
-        const props = {
-          deleteFavorites: jest.fn(),
-          loadMyFavorites: jest.fn(),
-          match: {
-            path: '/favoris',
-          },
-          myFavorites: [
-            {
-              id: 1,
-              offerId: 'AM3A',
-              offer: {
-                id: 'AM3A',
-                name: 'name',
-              },
-              mediationId: 'B4',
-              mediation: {
-                id: 'B4',
-                thumbUrl: 'thumbUrl',
-              },
-            },
-          ],
-        }
+  describe('when clicking on an offer', () => {
+    it('should display my favorites list and an offer', () => {
+      // when
+      const wrapper = mount(
+        <MemoryRouter initialEntries={['/favoris/details/O1/M1']}>
+          <Provider store={mockStore}>
+            <MyFavorites {...props} />
+          </Provider>
+        </MemoryRouter>
+      )
 
-        // when
-        const wrapper = mount(
-          <MemoryRouter initialEntries={[`${props.match.path}/details/AM3A/B4/reservation`]}>
-            <Provider store={mockStore}>
-              <MyFavorites {...props} />
-            </Provider>
-          </MemoryRouter>
-        )
-
-        // then
-        const booking = wrapper.find(Booking)
-        expect(booking.isEmptyRender()).toBe(false)
-      })
-
-      it('should open booking component with no mediationId on url', () => {
-        // given
-        const props = {
-          deleteFavorites: jest.fn(),
-          loadMyFavorites: jest.fn(),
-          match: {
-            path: '/favoris',
-          },
-          myFavorites: [
-            {
-              id: 1,
-              offerId: 'AM3A',
-              offer: {
-                id: 'AM3A',
-                name: 'name',
-              },
-            },
-          ],
-        }
-
-        // when
-        const wrapper = mount(
-          <MemoryRouter initialEntries={[`${props.match.path}/details/AM3A/vide/reservation`]}>
-            <Provider store={mockStore}>
-              <MyFavorites {...props} />
-            </Provider>
-          </MemoryRouter>
-        )
-
-        // then
-        const booking = wrapper.find(Booking)
-        expect(booking.isEmptyRender()).toBe(false)
-      })
+      // then
+      const myFavoritesListContainer = wrapper.find(MyFavoritesListContainer)
+      expect(myFavoritesListContainer).toHaveLength(1)
+      const myFavoriteDetailsContainer = wrapper.find(MyFavoriteDetailsContainer)
+      expect(myFavoriteDetailsContainer).toHaveLength(1)
     })
   })
 })

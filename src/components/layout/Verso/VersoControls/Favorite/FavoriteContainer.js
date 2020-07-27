@@ -1,14 +1,13 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import { requestData } from 'redux-thunk-data'
 import { compose } from 'redux'
+import { requestData } from 'redux-thunk-data'
 
-import Favorite from './Favorite'
-import { favoriteNormalizer } from '../../../../../utils/normalizers'
+import { selectBookingById } from '../../../../../redux/selectors/data/bookingsSelectors'
 import { selectFavoriteByOfferId } from '../../../../../redux/selectors/data/favoritesSelectors'
 import { selectMediationByOfferId } from '../../../../../redux/selectors/data/mediationsSelectors'
-import { selectBookingById } from '../../../../../redux/selectors/data/bookingsSelectors'
 import { selectStockById } from '../../../../../redux/selectors/data/stocksSelectors'
+import Favorite from './Favorite'
 
 const API_PATH_TO_FAVORITES_ENDPOINT = '/favorites'
 
@@ -54,7 +53,6 @@ export const mapDispatchToProps = dispatch => ({
         handleFail: showFailModal,
         handleSuccess,
         method: isFavorite ? 'DELETE' : 'POST',
-        normalizer: favoriteNormalizer,
       })
     )
   },
@@ -62,7 +60,6 @@ export const mapDispatchToProps = dispatch => ({
     dispatch(
       requestData({
         apiPath: API_PATH_TO_FAVORITES_ENDPOINT,
-        normalizer: favoriteNormalizer,
       })
     )
   },

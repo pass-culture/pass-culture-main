@@ -1,5 +1,5 @@
+import { offerNormalizer } from '../../../../../utils/normalizers'
 import { mapDispatchToProps } from '../MyFavoriteDetailsContainer'
-import { favoriteNormalizer } from '../../../../../utils/normalizers'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
@@ -9,32 +9,31 @@ jest.mock('redux-thunk-data', () => {
   }
 })
 
-describe('src | components | pages | my-favorite | MyFavoriteDetails | MyFavoriteDetailsContainer', () => {
-  describe('requestGetData()', () => {
+describe('src | components MyFavoriteDetailsContainer', () => {
+  describe('getOfferById()', () => {
     it('should dispatch my favorite', () => {
       // given
       const dispatch = jest.fn()
       const ownProps = {
         match: {
           params: {
-            favoriteId: 'GA',
+            offerId: 'GA',
           },
         },
       }
       const handleSuccess = jest.fn()
 
       // when
-      mapDispatchToProps(dispatch, ownProps).requestGetData(handleSuccess)
+      mapDispatchToProps(dispatch, ownProps).getOfferById(handleSuccess)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
         config: {
-          apiPath: '/favorites/GA',
-          handleSuccess: expect.any(Function),
+          apiPath: '/offers/GA',
           method: 'GET',
-          normalizer: favoriteNormalizer,
+          normalizer: offerNormalizer,
         },
-        type: 'REQUEST_DATA_GET_/FAVORITES/GA',
+        type: 'REQUEST_DATA_GET_/OFFERS/GA',
       })
     })
   })
