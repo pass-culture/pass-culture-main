@@ -411,8 +411,8 @@ class BuildObjectTest:
                                                 event_name='Event name',
                                                 event_type=EventType.MUSIQUE,
                                                 thumb_count=1,
-                                                date_created=datetime(2020, 1, 1, 10, 0, 0))
-        offer.criteria = [criterion]
+                                                date_created=datetime(2020, 1, 1, 10, 0, 0),
+                                                criteria=[criterion])
         stock1 = create_stock(quantity=10,
                               date_created=datetime(2020, 12, 5, 11, 0, 0),
                               beginning_datetime=in_four_days,
@@ -497,8 +497,8 @@ class BuildObjectTest:
                                                 event_name='Event name',
                                                 event_type=EventType.MUSIQUE,
                                                 thumb_count=1,
-                                                date_created=datetime(2020, 1, 1, 10, 0, 0))
-        offer.criteria = [criterion1, criterion2]
+                                                date_created=datetime(2020, 1, 1, 10, 0, 0),
+                                                criteria=[criterion1, criterion2])
         stock1 = create_stock(quantity=10,
                               date_created=datetime(2020, 12, 5, 11, 0, 0),
                               beginning_datetime=in_four_days,

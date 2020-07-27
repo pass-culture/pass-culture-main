@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Dict, List, Optional
 
 from models import BookingSQLEntity, EventType, Offer, Offerer, Product, StockSQLEntity, ThingType, UserSQLEntity, \
-    VenueSQLEntity, Provider
+    VenueSQLEntity, Provider, Criterion
 from utils.token import random_token
 
 
@@ -55,6 +55,7 @@ def create_booking_for_thing(amount: int = 50,
 
 def create_offer_with_event_product(venue: VenueSQLEntity = None,
                                     booking_email: str = 'booking@example.net',
+                                    criteria: List[Criterion] = None,
                                     date_created: datetime = datetime.utcnow(),
                                     description: Optional[str] = None,
                                     duration_minutes: Optional[int] = 60,
@@ -75,6 +76,8 @@ def create_offer_with_event_product(venue: VenueSQLEntity = None,
         product = create_product_with_event_type(event_name=event_name, event_type=event_type,
                                                  duration_minutes=duration_minutes,
                                                  thumb_count=thumb_count, is_national=is_national)
+    if criteria:
+        offer.criteria = criteria
     offer.product = product
     offer.venue = venue
     offer.name = product.name
