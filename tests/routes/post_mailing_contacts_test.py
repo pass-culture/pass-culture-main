@@ -62,3 +62,4 @@ class Post:
             # Then
             add_contact.assert_called_once_with(data["email"], data["dateOfBirth"], data["departmentCode"])
             assert response.status_code == 400
+            assert response.json['mailjet'] == ['Impossible d\'ajouter le contact.']
