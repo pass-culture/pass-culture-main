@@ -1,0 +1,36 @@
+.not-match {
+  align-items: center;
+  background-color: $primary;
+  background-image: $linear-gradient-to-right;
+  bottom: 0;
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+
+  .title {
+    font-size: rem(32px);
+    font-style: italic;
+    font-weight: 700;
+    padding-top: rem(16px);
+  }
+
+  .subtitle,
+  .redirection-info {
+    font-style: normal;
+    font-weight: 200;
+  }
+
+  .subtitle {
+    font-size: rem(16px);
+    padding-top: rem(16px);
+  }
+
+  .redirection-info {
+    font-size: rem(14px);
+    bottom: 5rem;
+    padding-top: rem(16px);
+    position: absolute;
+  }
+}

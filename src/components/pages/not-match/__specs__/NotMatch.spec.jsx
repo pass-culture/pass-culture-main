@@ -18,11 +18,10 @@ describe('notMatch', () => {
     )
 
     // then
-    const sentence = wrapper.find({ children: '404 Not found /fake-url' })
-    const timer = wrapper.find({
-      children: 'Vous allez être automatiquement redirigé dans 5 secondes.',
-    })
+    const sentence = wrapper.find('.not-match-subtitle')
+    const timer = wrapper.find('.redirection-info')
     expect(sentence).toHaveLength(1)
     expect(timer).toHaveLength(1)
+    expect(timer.text()).toBe('Tu vas être redirigé dans 5 secondes...')
   })
 })

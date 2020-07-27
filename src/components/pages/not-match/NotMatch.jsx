@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
+import Icon from '../../layout/Icon/Icon'
 
 class NotMatch extends PureComponent {
   constructor(props) {
@@ -32,15 +33,17 @@ class NotMatch extends PureComponent {
     if (timing < 0) return this.redirectTo()
 
     return (
-      <div className="page">
-        <h3>
-          {`404 Not found ${window.location.pathname}`}
-        </h3>
-        <p>
-          {timing > 0
-            ? `Vous allez être automatiquement redirigé dans ${timing} secondes.`
-            : 'Redirection...'}
-        </p>
+      <div className="not-match">
+        <Icon svg="404" />
+        <span className="title">
+          {'Oh non !'}
+        </span>
+        <span className="subtitle">
+          {"Cette page n'existe pas"}
+        </span>
+        <span className="redirection-info">
+          {timing > 0 ? `Tu vas être redirigé dans ${timing} secondes...` : 'Redirection...'}
+        </span>
       </div>
     )
   }
