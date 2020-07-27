@@ -10,6 +10,7 @@ $black-background: rgba($black, 0.8);
 
 $primary: #eb0055;
 $secondary: #320096;
+$tertiary: #CC1673;
 $accent: #06f;
 $primary-disabled: #ff99be;
 $green-valid: #15884f;
@@ -30,4 +31,5 @@ $linear-gradient-home: linear-gradient(to bottom, rgba($black, 0), $black-backgr
 :export {
   black: $black;
   primary: $primary;
+  tertiary: $tertiary;
 }

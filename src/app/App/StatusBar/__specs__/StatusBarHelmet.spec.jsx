@@ -5,9 +5,11 @@ import { Helmet } from 'react-helmet'
 import {
   black as defaultColor,
   primary as primaryColor,
+  tertiary as tertiaryColor,
 } from '../../../../styles/variables/index.scss'
 import { isAppInFullscreen } from '../domain/isAppInFullscreen'
 import { shouldStatusBarBeColored } from '../domain/shouldStatusBarBeColored'
+import { shouldApplyTertiaryColor } from '../domain/shouldApplyTertiaryColor'
 import { StatusBarHelmet } from '../StatusBarHelmet'
 
 jest.mock('../domain/isAppInFullscreen', () => {
@@ -18,8 +20,12 @@ jest.mock('../domain/shouldStatusBarBeColored', () => {
   return { shouldStatusBarBeColored: jest.fn() }
 })
 
+jest.mock('../domain/shouldApplyTertiaryColor', () => {
+  return { shouldApplyTertiaryColor: jest.fn() }
+})
+
 jest.mock('../../../../styles/variables/index.scss', () => {
-  return { primary: 'primaryColor', black: 'defaultColor' }
+  return { primary: 'primaryColor', black: 'defaultColor', tertiary: 'tertiaryColor' }
 })
 
 describe('helmet status bar component', () => {
@@ -72,6 +78,7 @@ describe('helmet status bar component', () => {
       // Given
       const coloredStatusBarPath = '/path/with/colored/status/bar'
       shouldStatusBarBeColored.mockReturnValue(true)
+      shouldApplyTertiaryColor.mockReturnValue(false)
 
       // When
       const wrapper = mount(<StatusBarHelmet pathname={coloredStatusBarPath} />)
@@ -81,6 +88,22 @@ describe('helmet status bar component', () => {
 
       expect(helmetChildren[1].props.style).toBe(`background-color:${primaryColor};`)
       expect(helmetChildren[2].props.content).toBe(primaryColor)
+    })
+
+    it('should set tertiary color in status bar if it should be colored given current path', () => {
+      // Given
+      const coloredStatusBarPath = '/path/with/colored/status/bar'
+      shouldStatusBarBeColored.mockReturnValue(true)
+      shouldApplyTertiaryColor.mockReturnValue(true)
+
+      // When
+      const wrapper = mount(<StatusBarHelmet pathname={coloredStatusBarPath} />)
+
+      // Then
+      const helmetChildren = wrapper.find(Helmet).props().children
+
+      expect(helmetChildren[1].props.style).toBe(`background-color:${tertiaryColor};`)
+      expect(helmetChildren[2].props.content).toBe(tertiaryColor)
     })
 
     it('should set default color in status bar if it should not be colored given current path', () => {

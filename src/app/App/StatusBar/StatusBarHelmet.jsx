@@ -5,9 +5,11 @@ import Helmet from 'react-helmet'
 import {
   black as defaultColor,
   primary as primaryColor,
+  tertiary as tertiaryColor,
 } from '../../../styles/variables/index.scss'
 import { isAppInFullscreen } from './domain/isAppInFullscreen'
 import { shouldStatusBarBeColored } from './domain/shouldStatusBarBeColored'
+import { shouldApplyTertiaryColor } from './domain/shouldApplyTertiaryColor'
 
 export const StatusBarHelmet = ({ pathname }) => {
   const appIsInFullscreen = isAppInFullscreen()
@@ -18,10 +20,11 @@ export const StatusBarHelmet = ({ pathname }) => {
       name="apple-mobile-web-app-status-bar-style"
     />
   )
-  const iosColoredStatusBar = <body style={`background-color:${statusBarIsColored ? primaryColor : defaultColor};`} />
+  const color = shouldApplyTertiaryColor(pathname) ? tertiaryColor : primaryColor
+  const iosColoredStatusBar = <body style={`background-color:${statusBarIsColored ? color : defaultColor};`} />
   const androidColoredStatusBar = (
     <meta
-      content={statusBarIsColored ? primaryColor : defaultColor}
+      content={statusBarIsColored ? color : defaultColor}
       name="theme-color"
     />
   )

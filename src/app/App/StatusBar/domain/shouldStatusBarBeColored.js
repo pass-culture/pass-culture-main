@@ -2,7 +2,7 @@ export const shouldStatusBarBeColored = pathname => {
   const pathWithColoredHeader = [
     '/accueil',
     '/accueil/details/(.+)',
-    '/accueil/details/(.+)',
+    '/accueil/details/(.+)/reservation/annulation/confirmation',
     '/recherche/criteres-categorie',
     '/recherche/criteres-localisation',
     '/recherche/criteres-localisation/place',
