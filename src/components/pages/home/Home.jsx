@@ -36,7 +36,6 @@ class Home extends Component {
 
   renderModule = (module, row) => {
     const { history } = this.props
-
     if (module instanceof Offers || module instanceof OffersWithCover) {
       return (
         <Module

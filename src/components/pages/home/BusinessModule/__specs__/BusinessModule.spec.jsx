@@ -3,18 +3,19 @@ import React from 'react'
 import { MemoryRouter } from 'react-router'
 import BusinessModule from '../BusinessModule'
 import Icon from '../../../../layout/Icon/Icon'
+import BusinessPane from '../../domain/ValueObjects/BusinessPane'
 
 describe('src | components | BusinessModule', () => {
   let props
 
   beforeEach(() => {
     props = {
-      module: {
+      module: new BusinessPane({
         firstLine: 'my first line',
         image: 'https://www.link-to-my-image.com',
         secondLine: 'my second line',
-        url: 'https://www.google.fr'
-      }
+        url: 'https://www.google.fr',
+      }),
     }
   })
 
@@ -23,7 +24,7 @@ describe('src | components | BusinessModule', () => {
     const wrapper = mount(
       <MemoryRouter>
         <BusinessModule {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     // then
@@ -38,7 +39,7 @@ describe('src | components | BusinessModule', () => {
     const wrapper = mount(
       <MemoryRouter>
         <BusinessModule {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     // then
@@ -52,7 +53,7 @@ describe('src | components | BusinessModule', () => {
     const wrapper = mount(
       <MemoryRouter>
         <BusinessModule {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     // then
@@ -67,11 +68,26 @@ describe('src | components | BusinessModule', () => {
     const wrapper = mount(
       <MemoryRouter>
         <BusinessModule {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     // then
     const icon = wrapper.find(Icon)
     expect(icon.prop('svg')).toBe('ico-arrow-next')
+  })
+
+  it('should not render component when no image', () => {
+    // given
+    props.module.image = null
+
+    // when
+    const wrapper = mount(
+      <MemoryRouter>
+        <BusinessModule {...props} />
+      </MemoryRouter>,
+    )
+
+    // then
+    expect(wrapper.find('section')).toHaveLength(0)
   })
 })

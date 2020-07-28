@@ -44,4 +44,19 @@ describe('src | components | ExclusivityModule', () => {
     expect(image.prop('alt')).toBe('my alt text')
     expect(image.prop('src')).toBe('https://www.link-to-my-image.com')
   })
+
+  it('should not render an image when not provided', () => {
+    // given
+    props.module.image = null
+
+    // when
+    const wrapper = mount(
+      <MemoryRouter>
+        <ExclusivityModule {...props} />
+      </MemoryRouter>
+    )
+
+    // then
+    expect(wrapper.find('section')).toHaveLength(0)
+  })
 })

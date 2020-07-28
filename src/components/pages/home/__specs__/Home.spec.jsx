@@ -129,7 +129,7 @@ describe('src | components | Home', () => {
     // given
     fetchHomepage.mockResolvedValue([
       new BusinessPane({
-        img: 'my-image',
+        image: 'my-image',
         title: 'my-title',
         url: 'my-url',
       }),

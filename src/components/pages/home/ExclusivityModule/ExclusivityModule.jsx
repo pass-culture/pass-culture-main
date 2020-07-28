@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 const ExclusivityModule = ({ module }) => {
   const { alt, image, offerId } = module
 
-  return (
+  return image && (
     <section className="exclusivity-module-wrapper">
       <Link
         className="emw-image-wrapper"

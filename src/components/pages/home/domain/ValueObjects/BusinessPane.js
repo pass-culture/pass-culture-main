@@ -1,5 +1,5 @@
 export default class BusinessPane {
-  constructor({ firstLine, image, secondLine, url }) {
+  constructor({ firstLine = null, image = null, secondLine = null, url = null }) {
     this.firstLine = firstLine
     this.image = image
     this.secondLine = secondLine

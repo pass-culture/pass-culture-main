@@ -6,7 +6,7 @@ import BusinessPane from '../domain/ValueObjects/BusinessPane'
 const BusinessModule = ({ module }) => {
   const { firstLine, image, secondLine, url } = module
 
-  return (
+  return image && (
     <section className="business-module-wrapper">
       <a
         className="bmw-image-wrapper"
