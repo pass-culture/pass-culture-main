@@ -39,7 +39,6 @@ class Post:
                                       'phoneNumber': '0612345678',
                                       'postalCode': '93100',
                                       'publicName': 'Toto',
-                                      'wallet_balance': 0,
                                       'dateOfBirth': '2001-01-01T00:00:00Z'}
             other_expected_keys = {'id', 'dateCreated'}
             get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])

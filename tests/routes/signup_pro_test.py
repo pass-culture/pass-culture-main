@@ -37,7 +37,6 @@ class Post:
                 'phoneNumber': '0102030405',
                 'postalCode': '92000',
                 'publicName': 'Toto Pro',
-                'wallet_balance': 0,
                 'dateOfBirth': None
             }
             other_expected_keys = {'id', 'dateCreated'}

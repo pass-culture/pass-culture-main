@@ -161,13 +161,8 @@ USER_INCLUDES = [
     '-resetPasswordToken',
     '-resetPasswordTokenValidityLimit',
     '-validationToken',
-    'expenses',
     'hasPhysicalVenues',
     'hasOffers',
-    'wallet_balance',
-    'wallet_is_activated',
-    'wallet_date_created',
-    'needsToSeeTutorials'
 ]
 
 CURRENT_BENEFICIARY_INCLUDES = [

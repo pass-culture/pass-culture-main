@@ -34,8 +34,6 @@ class Patch:
             assert user.phoneNumber == data['phoneNumber']
             assert response.json['departementCode'] == user.departementCode
             assert user.departementCode == data['departementCode']
-            assert response.json['needsToSeeTutorials'] == False
-            assert 'expenses' in response.json
 
 
     class Returns400:
