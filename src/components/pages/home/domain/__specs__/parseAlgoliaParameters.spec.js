@@ -1,6 +1,17 @@
 import { parseAlgoliaParameters } from '../parseAlgoliaParameters'
 
 describe('src | components | parseAlgoliaParameters', () => {
+  it('should return empty algolia parameters when no parameters', () => {
+    // given
+    const parameters = {}
+
+    // when
+    const result = parseAlgoliaParameters(parameters)
+
+    // then
+    expect(result).toStrictEqual({})
+  })
+
   it('should return parsed algolia parameters with categories only', () => {
     // given
     const parameters = {
@@ -14,19 +25,6 @@ describe('src | components | parseAlgoliaParameters', () => {
     expect(result).toStrictEqual({
       offerCategories: ['CINEMA', 'LECON', 'LIVRE'],
     })
-  })
-
-  it('should return empty algolia parameters when categories is empty', () => {
-    // given
-    const parameters = {
-      categories: [],
-    }
-
-    // when
-    const result = parseAlgoliaParameters(parameters)
-
-    // then
-    expect(result).toStrictEqual({})
   })
 
   it('should return parsed algolia parameters with tags only', () => {
@@ -44,19 +42,6 @@ describe('src | components | parseAlgoliaParameters', () => {
     })
   })
 
-  it('should return empty algolia parameters when tags are empty', () => {
-    // given
-    const parameters = {
-      tags: [],
-    }
-
-    // when
-    const result = parseAlgoliaParameters(parameters)
-
-    // then
-    expect(result).toStrictEqual({})
-  })
-
   it('should return parsed algolia parameters with hitsPerPage only', () => {
     // given
     const parameters = {
@@ -72,14 +57,18 @@ describe('src | components | parseAlgoliaParameters', () => {
     })
   })
 
-  it('should return empty algolia parameters when hitsPerPage is missing', () => {
+  it('should return parsed algolia parameters with isDuo only', () => {
     // given
-    const parameters = {}
+    const parameters = {
+      isDuo: true,
+    }
 
     // when
     const result = parseAlgoliaParameters(parameters)
 
     // then
-    expect(result).toStrictEqual({})
+    expect(result).toStrictEqual({
+      offerIsDuo: true,
+    })
   })
 })

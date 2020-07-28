@@ -22,17 +22,16 @@ export const parseAlgoliaParameters = parameters => {
   keys.forEach(key => {
     switch (key) {
       case algoliaParametersFromContentful.CATEGORIES:
-        if (parameters[key].length > 0) {
-          parsedParameters['offerCategories'] = parameters[key]
-        }
+        parsedParameters['offerCategories'] = parameters[key]
         break
-      case algoliaParametersFromContentful.TAGS:
-        if (parameters[key].length > 0) {
-          parsedParameters['tags'] = parameters[key]
-        }
+      case algoliaParametersFromContentful.IS_DUO:
+        parsedParameters['offerIsDuo'] = parameters[key]
         break
       case algoliaParametersFromContentful.HITS_PER_PAGE:
         parsedParameters['hitsPerPage'] = parameters[key]
+        break
+      case algoliaParametersFromContentful.TAGS:
+        parsedParameters['tags'] = parameters[key]
         break
     }
   })
