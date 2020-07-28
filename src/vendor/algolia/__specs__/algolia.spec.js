@@ -1109,4 +1109,37 @@ describe('fetchAlgolia', () => {
       })
     })
   })
+
+  describe('hitsPerPage', () => {
+    it('should fetch with no hitsPerPage parameter when not provided', () => {
+      // given
+      const hitsPerPage = null
+
+      // when
+      fetchAlgolia({
+        hitsPerPage,
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith('', {
+        page: 0,
+      })
+    })
+
+    it('should fetch with hitsPerPage when provided', () => {
+      // given
+      const hitsPerPage = 5
+
+      // when
+      fetchAlgolia({
+        hitsPerPage,
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith('', {
+        hitsPerPage,
+        page: 0,
+      })
+    })
+  })
 })

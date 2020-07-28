@@ -9,6 +9,7 @@ export const fetchAlgolia = ({
                                aroundRadius = DEFAULT_RADIUS_IN_KILOMETERS,
                                date = null,
                                geolocation = null,
+                               hitsPerPage = null,
                                keywords = '',
                                offerCategories = [],
                                offerIsDuo = false,
@@ -27,10 +28,13 @@ export const fetchAlgolia = ({
                                timeRange = [],
                              } = {}) => {
   const searchParameters = {
-    page: page,
+    page,
     ...buildFacetFilters(offerCategories, offerTypes, offerIsDuo, tags),
     ...buildNumericFilters(offerIsFree, priceRange, date, offerIsNew, timeRange),
     ...buildGeolocationParameter(aroundRadius, geolocation, searchAround),
+  }
+  if (hitsPerPage) {
+    searchParameters.hitsPerPage = hitsPerPage
   }
   const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
   const index = client.initIndex(ALGOLIA_INDEX_NAME + sortBy)

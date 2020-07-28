@@ -12,7 +12,7 @@ const algoliaParametersFromContentful = {
   NEWEST_ONLY: 'newestOnly',
   PRICE_MAX: 'priceMax',
   PRICE_MIN: 'priceMin',
-  TAGS: 'tags'
+  TAGS: 'tags',
 }
 
 export const parseAlgoliaParameters = parameters => {
@@ -30,6 +30,9 @@ export const parseAlgoliaParameters = parameters => {
         if (parameters[key].length > 0) {
           parsedParameters['tags'] = parameters[key]
         }
+        break
+      case algoliaParametersFromContentful.HITS_PER_PAGE:
+        parsedParameters['hitsPerPage'] = parameters[key]
         break
     }
   })
