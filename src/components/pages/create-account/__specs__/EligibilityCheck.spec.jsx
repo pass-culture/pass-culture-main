@@ -1,12 +1,11 @@
-import React from 'react'
-import { MemoryRouter } from 'react-router'
 import { mount } from 'enzyme'
+import React from 'react'
 import { act } from 'react-dom/test-utils'
+import { MemoryRouter } from 'react-router'
 
-import EligibilityCheck from '../EligibilityCheck'
 import { checkIfAgeIsEligible } from '../domain/checkIfAgeIsEligible'
 import { checkIfDepartmentIsEligible } from '../domain/checkIfDepartmentIsEligible'
-import IneligibleDepartment from '../IneligibleDepartment/IneligibleDepartment'
+import EligibilityCheck from '../EligibilityCheck'
 
 jest.mock('../domain/checkIfAgeIsEligible', () => {
   const originalModule = jest.requireActual('../domain/checkIfAgeIsEligible')
@@ -24,7 +23,6 @@ jest.mock('../domain/checkIfDepartmentIsEligible', () => {
 })
 
 describe('eligibility check page', () => {
-  let props
   const getFullYear = Date.prototype.getFullYear
 
   beforeEach(() => {
@@ -40,7 +38,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck {...props} />
+          <EligibilityCheck />
         </MemoryRouter>
       )
 
@@ -53,7 +51,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck {...props} />
+          <EligibilityCheck />
         </MemoryRouter>
       )
 
@@ -66,7 +64,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck {...props} />
+          <EligibilityCheck />
         </MemoryRouter>
       )
 
@@ -82,7 +80,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck {...props} />
+          <EligibilityCheck />
         </MemoryRouter>
       )
 
@@ -98,7 +96,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck {...props} />
+          <EligibilityCheck />
         </MemoryRouter>
       )
 
@@ -113,7 +111,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck {...props} />
+          <EligibilityCheck />
         </MemoryRouter>
       )
 
@@ -128,7 +126,7 @@ describe('eligibility check page', () => {
       // given
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck {...props} />
+          <EligibilityCheck />
         </MemoryRouter>
       )
       const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
@@ -148,7 +146,7 @@ describe('eligibility check page', () => {
       // given
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck {...props} />
+          <EligibilityCheck />
         </MemoryRouter>
       )
       const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
@@ -170,7 +168,7 @@ describe('eligibility check page', () => {
       // given
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck {...props} />
+          <EligibilityCheck />
         </MemoryRouter>
       )
 
@@ -207,7 +205,7 @@ describe('eligibility check page', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck {...props} />
+            <EligibilityCheck />
           </MemoryRouter>
         )
 
@@ -241,7 +239,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck {...props} />
+            <EligibilityCheck />
           </MemoryRouter>
         )
 
@@ -274,7 +272,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck {...props} />
+            <EligibilityCheck />
           </MemoryRouter>
         )
 
@@ -298,7 +296,9 @@ describe('eligibility check page', () => {
         wrapper.update()
 
         // then
-        expect(wrapper.find(IneligibleDepartment)).toHaveLength(1)
+        expect(
+          wrapper.find({ children: 'Bientôt disponible dans ton département !' })
+        ).toHaveLength(1)
       })
     })
 
@@ -313,7 +313,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck {...props} />
+            <EligibilityCheck />
           </MemoryRouter>
         )
 
@@ -346,7 +346,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck {...props} />
+            <EligibilityCheck />
           </MemoryRouter>
         )
 
@@ -379,7 +379,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck {...props} />
+            <EligibilityCheck />
           </MemoryRouter>
         )
 
@@ -421,7 +421,7 @@ describe('eligibility check page', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck {...props} />
+            <EligibilityCheck />
           </MemoryRouter>
         )
 
@@ -452,7 +452,7 @@ describe('eligibility check page', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck {...props} />
+            <EligibilityCheck />
           </MemoryRouter>
         )
 
@@ -483,7 +483,7 @@ describe('eligibility check page', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck {...props} />
+            <EligibilityCheck />
           </MemoryRouter>
         )
 
@@ -514,7 +514,7 @@ describe('eligibility check page', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck {...props} />
+            <EligibilityCheck />
           </MemoryRouter>
         )
 

@@ -1,95 +1,100 @@
-import { mount } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import React from 'react'
 import { act } from 'react-dom/test-utils'
 import { MemoryRouter } from 'react-router'
-
+import EligibleSoon from '../../EligibleSoon/EligibleSoon'
 import { handleCheckEmailFormat } from '../../utils/checkEmailFormat'
-import EligibleSoon from '../EligibleSoon'
 
 jest.mock('../../utils/checkEmailFormat', () => {
   return {
     handleCheckEmailFormat: jest.fn(),
   }
 })
+
 jest.mock('../../../../../utils/config', () => ({
   API_URL: 'my-localhost',
 }))
 
 describe('eligible soon page', () => {
-  const props = {
-    birthDate: '02/02/2003',
-    postalCode: '93800',
-  }
-  describe('render', () => {
-    it('should display informations text', () => {
-      // given
-      const wrapper = mount(
-        <MemoryRouter>
-          <EligibleSoon {...props} />
-        </MemoryRouter>
-      )
-
-      // then
-      expect(wrapper.find({ children: 'Plus que quelques mois d’attente !' })).toHaveLength(1)
-      expect(
-        wrapper.find({
-          children:
-            'Pour profiter du pass Culture, tu dois avoir 18 ans. Entre ton adresse email : nous t’avertirons dès que tu seras éligible.',
-        })
-      ).toHaveLength(1)
-    })
-
-    it('should display a go back home link', () => {
-      // given
-      const wrapper = mount(
-        <MemoryRouter>
-          <EligibleSoon {...props} />
-        </MemoryRouter>
-      )
-
-      // then
-      const goBackHomeLink = wrapper.find('a[href="/beta"]')
-      expect(goBackHomeLink).toHaveLength(1)
-    })
-
-    it('should display an email form', () => {
-      // given
-      const wrapper = mount(
-        <MemoryRouter>
-          <EligibleSoon {...props} />
-        </MemoryRouter>
-      )
-
-      // then
-      const emailInput = wrapper.find('input[type="email"]')
-      const submitButton = wrapper.find('button[type="submit"]')
-      expect(emailInput).toHaveLength(1)
-      expect(submitButton).toHaveLength(1)
-      expect(submitButton.prop('disabled')).toBe(true)
-    })
+  let props
+  beforeEach(() => {
+    props = {
+      birthDate: '02/02/2003',
+      body: 'Tu es bientôt éligible.',
+      postalCode: '93800',
+      title: 'Bientôt !',
+      visual: React.createElement('img'),
+    }
   })
 
-  describe('when email value is valid', () => {
-    it('should enable the submit button', () => {
-      // when
-      handleCheckEmailFormat.mockReturnValue(true)
+  it('should inform the user that he is soon to be eligible', () => {
+    // When
+    const wrapper = mount(
+      <MemoryRouter>
+        <EligibleSoon {...props} />
+      </MemoryRouter>
+    )
 
-      const wrapper = mount(
-        <MemoryRouter>
-          <EligibleSoon {...props} />
-        </MemoryRouter>
-      )
-      const submitButton = wrapper.find({ children: 'Rester en contact' })
-      const emailInput = wrapper.find('input[type="email"]')
+    // Then
+    const mainInformation = wrapper.find({ children: 'Bientôt !' }).closest('h1')
+    expect(mainInformation).toHaveLength(1)
+  })
 
-      // when
-      act(() => {
-        emailInput.invoke('onChange')({ target: { value: 'invalid@email' } })
-      })
+  it('should allow the user to enter an email address', () => {
+    // When
+    const wrapper = shallow(<EligibleSoon {...props} />)
 
-      // then
-      expect(submitButton.prop('disabled')).toBe(false)
-    })
+    // Then
+    const emailInput = wrapper.find('form').find('input[type="email"]')
+    expect(emailInput).toHaveLength(1)
+  })
+
+  it('should not allow the user to save his email address when it is invalid', () => {
+    // Given
+    handleCheckEmailFormat.mockReturnValue(false)
+
+    // When
+    const wrapper = shallow(<EligibleSoon {...props} />)
+
+    // Then
+    const submitButton = wrapper
+      .find('form')
+      .find({ children: 'Rester en contact' })
+      .closest('button[type="submit"]')
+    expect(submitButton).toHaveLength(1)
+    expect(submitButton.prop('disabled')).toBe(true)
+  })
+
+  it('should allow the user to save his email address when it is valid', () => {
+    // Given
+    handleCheckEmailFormat.mockReturnValue(true)
+
+    // When
+    const wrapper = shallow(<EligibleSoon {...props} />)
+
+    // Then
+    const submitButton = wrapper
+      .find('form')
+      .find({ children: 'Rester en contact' })
+      .closest('button[type="submit"]')
+    expect(submitButton).toHaveLength(1)
+    expect(submitButton.prop('disabled')).toBe(false)
+  })
+
+  it('should allow the user to go back to home page', () => {
+    // When
+    const wrapper = mount(
+      <MemoryRouter>
+        <EligibleSoon {...props} />
+      </MemoryRouter>
+    )
+
+    // Then
+    const goBackHomeLink = wrapper
+      .find({ children: 'Retourner à l’accueil' })
+      .last()
+      .closest('a[href="/beta"]')
+    expect(goBackHomeLink).toHaveLength(1)
   })
 
   describe('when submitting form', () => {

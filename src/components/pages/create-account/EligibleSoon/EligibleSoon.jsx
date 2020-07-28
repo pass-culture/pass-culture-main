@@ -4,11 +4,10 @@ import { Link } from 'react-router-dom'
 
 import { API_URL } from '../../../../utils/config'
 import Icon from '../../../layout/Icon/Icon'
-import { Animation } from '../Animation/Animation'
 import ContactSaved from '../ContactSaved/ContactSaved'
 import { handleCheckEmailFormat } from '../utils/checkEmailFormat'
 
-const EligibleSoon = ({ birthDate, postalCode }) => {
+const EligibleSoon = ({ birthDate, body, postalCode, title, visual }) => {
   const [emailValue, setEmailValue] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [hasContactBeenSaved, setHasContactBeenSaved] = useState(false)
@@ -59,17 +58,12 @@ const EligibleSoon = ({ birthDate, postalCode }) => {
   ) : (
     <main className="eligible-soon-page">
       <div className="animation-text-container">
-        <Animation
-          name="ineligible-under-eighteen-animation"
-          speed={0.7}
-        />
+        {visual}
         <h1>
-          {'Plus que quelques mois d’attente !'}
+          {title}
         </h1>
         <div className="information-text">
-          {
-            'Pour profiter du pass Culture, tu dois avoir 18 ans. Entre ton adresse email : nous t’avertirons dès que tu seras éligible.'
-          }
+          {body}
         </div>
       </div>
       <div className="buttons-container">
@@ -98,7 +92,10 @@ const EligibleSoon = ({ birthDate, postalCode }) => {
 
 EligibleSoon.propTypes = {
   birthDate: PropTypes.string.isRequired,
+  body: PropTypes.string.isRequired,
   postalCode: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  visual: PropTypes.element.isRequired,
 }
 
 export default EligibleSoon

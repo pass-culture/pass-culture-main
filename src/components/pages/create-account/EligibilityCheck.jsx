@@ -6,8 +6,8 @@ import Icon from '../../layout/Icon/Icon'
 import { checkIfAgeIsEligible, ELIGIBILITY_VALUES } from './domain/checkIfAgeIsEligible'
 import { checkIfDepartmentIsEligible } from './domain/checkIfDepartmentIsEligible'
 import Eligible from './Eligible/Eligible'
-import EligibleSoon from './EligibleSoon/EligibleSoon'
-import IneligibleDepartment from './IneligibleDepartment/IneligibleDepartment'
+import { AgeEligibleSoon } from './EligibleSoon/AgeEligibleSoon'
+import { DepartmentEligibleSoon } from './EligibleSoon/DepartmentEligibleSoon'
 import IneligibleOverEighteen from './IneligibleOverEighteen/IneligibleOverEighteen'
 import IneligibleUnderEighteen from './IneligibleUnderEighteen/IneligibleUnderEighteen'
 import { RecaptchaNotice } from './RecaptchaNotice'
@@ -68,7 +68,7 @@ const EligibilityCheck = () => {
       return checkIfDepartmentIsEligible(postalCodeInputValue) ? (
         <Eligible />
       ) : (
-        <IneligibleDepartment
+        <DepartmentEligibleSoon
           birthDate={dateOfBirthInputValue}
           postalCode={postalCodeInputValue}
         />
@@ -78,7 +78,7 @@ const EligibilityCheck = () => {
     case ELIGIBILITY_VALUES.TOO_OLD:
       return <IneligibleOverEighteen />
     case ELIGIBILITY_VALUES.SOON:
-      return (<EligibleSoon
+      return (<AgeEligibleSoon
         birthDate={dateOfBirthInputValue}
         postalCode={postalCodeInputValue}
               />)
