@@ -27,10 +27,15 @@
     padding-top: rem(16px);
   }
 
-  .redirection-info {
-    font-size: rem(14px);
-    bottom: 5rem;
-    padding-top: rem(16px);
-    position: absolute;
+  .redirection-link {
+    border: 2px solid $white;
+    border-radius: rem(24px);
+    color: $white;
+    cursor: pointer;
+    font-size: rem(16px);
+    font-weight: 700;
+    margin: rem(48px) auto;
+    padding: rem(12px) rem(52px);
+    text-align: center;
   }
 }

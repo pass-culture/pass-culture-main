@@ -3,13 +3,15 @@ import React from 'react'
 
 import { MemoryRouter } from 'react-router'
 import NotMatch from '../NotMatch'
+import { Link } from 'react-router-dom'
+import Icon from '../../../layout/Icon/Icon'
 
 describe('notMatch', () => {
   beforeEach(() => {
     window.history.pushState({}, 'Fake title', '/fake-url')
   })
 
-  it('should displays a sentence that says the user is on the wrong path', () => {
+  it('should displays a message notifying the user they are on a wrong path and a link to redirect', () => {
     // when
     const wrapper = mount(
       <MemoryRouter>
@@ -18,10 +20,29 @@ describe('notMatch', () => {
     )
 
     // then
-    const sentence = wrapper.find('.not-match-subtitle')
-    const timer = wrapper.find('.redirection-info')
-    expect(sentence).toHaveLength(1)
-    expect(timer).toHaveLength(1)
-    expect(timer.text()).toBe('Tu vas être redirigé dans 5 secondes...')
+    const icon = wrapper.find(Icon)
+    const message = wrapper.find('.subtitle')
+    const link = wrapper.find(Link)
+    expect(icon).toHaveLength(1)
+    expect(message).toHaveLength(1)
+    expect(link).toHaveLength(1)
+    expect(link.prop('to')).toBe('/')
+  })
+
+  it('should display a link to redirect to the redirect props url if not default', () => {
+    // when
+    let props = {
+      redirect: '/mon/autre/url',
+    }
+    const wrapper = mount(
+      <MemoryRouter>
+        <NotMatch {...props} />
+      </MemoryRouter>
+    )
+
+    // then
+    const link = wrapper.find(Link)
+    expect(link).toHaveLength(1)
+    expect(link.prop('to')).toBe('/mon/autre/url')
   })
 })
