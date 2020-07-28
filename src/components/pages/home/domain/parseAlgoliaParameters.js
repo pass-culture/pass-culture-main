@@ -30,6 +30,9 @@ export const parseAlgoliaParameters = parameters => {
       case algoliaParametersFromContentful.HITS_PER_PAGE:
         parsedParameters['hitsPerPage'] = parameters[key]
         break
+      case algoliaParametersFromContentful.NEWEST_ONLY:
+        parsedParameters['offerIsNew'] = parameters[key]
+        break
       case algoliaParametersFromContentful.TAGS:
         parsedParameters['tags'] = parameters[key]
         break

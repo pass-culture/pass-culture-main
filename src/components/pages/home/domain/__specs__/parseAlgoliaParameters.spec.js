@@ -71,4 +71,19 @@ describe('src | components | parseAlgoliaParameters', () => {
       offerIsDuo: true,
     })
   })
+
+  it('should return algolia parameters with newestOnly when provided', () => {
+    // given
+    const parameters = {
+      newestOnly: true
+    }
+
+    // when
+    const result = parseAlgoliaParameters(parameters)
+
+    // then
+    expect(result).toStrictEqual({
+      offerIsNew: true
+    })
+  })
 })
