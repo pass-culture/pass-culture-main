@@ -1,4 +1,4 @@
-from models import Favorite
+from models import FavoriteSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
@@ -102,7 +102,7 @@ class Post:
             # Then
             assert response.status_code == 201
 
-            favorite = Favorite.query.one()
+            favorite = FavoriteSQLEntity.query.one()
             assert favorite.offerId == offer.id
             assert favorite.mediationId == mediation.id
             assert favorite.userId == user.id

@@ -1,15 +1,15 @@
 from typing import Dict, List
 
-from models import Favorite, UserSQLEntity, BookingSQLEntity, StockSQLEntity
+from models import FavoriteSQLEntity, UserSQLEntity, BookingSQLEntity, StockSQLEntity
 from routes.serialization.serializer import serialize
 from utils.human_ids import humanize
 
 
-def serialize_favorites(favorites: List[Favorite], current_user: UserSQLEntity) -> List:
+def serialize_favorites(favorites: List[FavoriteSQLEntity], current_user: UserSQLEntity) -> List:
     return [serialize_favorite(favorite, current_user) for favorite in favorites]
 
 
-def serialize_favorite(favorite: Favorite, current_user: UserSQLEntity) -> Dict:
+def serialize_favorite(favorite: FavoriteSQLEntity, current_user: UserSQLEntity) -> Dict:
     offer = favorite.offer
     venue = offer.venue
     humanized_offer_id = humanize(offer.id)

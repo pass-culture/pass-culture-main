@@ -2,7 +2,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.favorites import create_favorite
-from models import Mediation, Offer, Favorite
+from models import Mediation, Offer, FavoriteSQLEntity
 from repository import repository
 from repository.favorite_queries import find_favorite_for_offer_and_user, find_all_favorites_by_user_id
 from routes.serialization import as_dict
@@ -55,5 +55,5 @@ def get_favorites():
 @app.route('/favorites/<favorite_id>', methods=['GET'])
 @login_required
 def get_favorite(favorite_id):
-    favorite = load_or_404(Favorite, favorite_id)
+    favorite = load_or_404(FavoriteSQLEntity, favorite_id)
     return jsonify(serialize_favorite(favorite, current_user)), 200

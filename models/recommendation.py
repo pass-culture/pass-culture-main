@@ -11,7 +11,7 @@ from sqlalchemy import BigInteger, \
 from sqlalchemy.orm import relationship, column_property
 from sqlalchemy.sql import expression, select
 
-from models.favorite import Favorite
+from models.favorite_sql_entity import FavoriteSQLEntity
 from models.db import Model
 from models.pc_object import PcObject
 from utils.human_ids import humanize
@@ -77,9 +77,9 @@ class Recommendation(PcObject, Model):
                     nullable=True)
 
     isFavorite = column_property(
-        exists(select([Favorite.id]).
-               where(and_(userId == Favorite.userId,
-                          (offerId == Favorite.offerId))
+        exists(select([FavoriteSQLEntity.id]).
+               where(and_(userId == FavoriteSQLEntity.userId,
+                          (offerId == FavoriteSQLEntity.offerId))
                      )
                ))
 

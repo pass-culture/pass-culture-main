@@ -1,4 +1,4 @@
-from models import Favorite
+from models import FavoriteSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
@@ -29,7 +29,7 @@ class Delete:
             # Then
             assert response.status_code == 200
             assert 'id' in response.json
-            deleted_favorite = Favorite.query.first()
+            deleted_favorite = FavoriteSQLEntity.query.first()
             assert deleted_favorite is None
 
     class Returns404:
@@ -70,5 +70,5 @@ class Delete:
 
             # Then
             assert response.status_code == 404
-            deleted_favorite = Favorite.query.first()
+            deleted_favorite = FavoriteSQLEntity.query.first()
             assert deleted_favorite == favorite

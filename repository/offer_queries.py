@@ -18,7 +18,7 @@ from models import EventType, \
     StockSQLEntity, \
     ThingType, \
     VenueSQLEntity, \
-    Product, Favorite, BookingSQLEntity, DiscoveryView, DiscoveryViewV3, UserSQLEntity, SeenOffer, UserOfferer
+    Product, FavoriteSQLEntity, BookingSQLEntity, DiscoveryView, DiscoveryViewV3, UserSQLEntity, SeenOffer, UserOfferer
 from models.db import Model
 from models.feature import FeatureToggle
 from repository import feature_queries
@@ -200,7 +200,7 @@ def get_active_offers_ids_query(user, departement_codes=[ALL_DEPARTMENTS_CODE], 
 def _exclude_booked_and_favorite(active_offers_query, user):
     booked_offer_ids = BookingSQLEntity.query.filter_by(userId=user.id).join(StockSQLEntity).with_entities(
         'stock."offerId"').subquery()
-    favorite_offer_ids = Favorite.query.filter_by(userId=user.id).with_entities('"offerId"').subquery()
+    favorite_offer_ids = FavoriteSQLEntity.query.filter_by(userId=user.id).with_entities('"offerId"').subquery()
     not_booked_predicate = ~Offer.id.in_(booked_offer_ids)
     not_favorite_predicate = ~Offer.id.in_(favorite_offer_ids)
 

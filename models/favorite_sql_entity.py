@@ -5,7 +5,9 @@ from models.db import Model
 from models.pc_object import PcObject
 
 
-class Favorite(PcObject, Model):
+class FavoriteSQLEntity(PcObject, Model):
+    __tablename__ = 'favorite'
+
     userId = Column(BigInteger,
                     ForeignKey("user.id"),
                     index=True,

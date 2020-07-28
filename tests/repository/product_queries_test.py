@@ -1,6 +1,6 @@
 import pytest
 
-from models import Favorite, Mediation, Offer, Product, Recommendation, StockSQLEntity
+from models import FavoriteSQLEntity, Mediation, Offer, Product, Recommendation, StockSQLEntity
 from models.offer_type import ThingType
 from repository import repository
 from repository.product_queries import delete_unwanted_existing_product, \
@@ -149,7 +149,7 @@ class DeleteUnwantedExistingProductTest:
         assert StockSQLEntity.query.count() == 0
         assert Mediation.query.count() == 0
         assert Recommendation.query.count() == 0
-        assert Favorite.query.count() == 0
+        assert FavoriteSQLEntity.query.count() == 0
 
 
 class FindActiveBookProductByIsbnTest:

@@ -11,7 +11,7 @@ from domain.payments import PaymentDetails
 from local_providers.price_rule import PriceRule
 from models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
     BankInformation, BeneficiaryImport, BeneficiaryImportSources, BeneficiaryImportStatus, BookingSQLEntity, \
-    Criterion, Deposit, Email, Favorite, ImportStatus, IrisFrance, IrisVenues, \
+    Criterion, Deposit, Email, FavoriteSQLEntity, ImportStatus, IrisFrance, IrisVenues, \
     Mediation, Offer, Offerer, Payment, PaymentMessage, PaymentStatus, \
     Provider, Recommendation, RightsType, StockSQLEntity, ThingType, UserSQLEntity, UserOfferer, \
     VenueSQLEntity, VenueProvider, SeenOffer
@@ -179,8 +179,8 @@ def create_email(content: str,
 def create_favorite(idx: int = None,
                     mediation: Mediation = None,
                     offer: Offer = None,
-                    user: UserSQLEntity = None) -> Favorite:
-    favorite = Favorite()
+                    user: UserSQLEntity = None) -> FavoriteSQLEntity:
+    favorite = FavoriteSQLEntity()
     favorite.id = idx
     favorite.mediation = mediation
     favorite.offer = offer

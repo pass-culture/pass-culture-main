@@ -19,7 +19,7 @@ from models import ApiKey, \
     PaymentMessage, \
     BankInformation, \
     LocalProviderEvent, \
-    Favorite, \
+    FavoriteSQLEntity, \
     BeneficiaryImportStatus, \
     OfferCriterion, \
     Criterion, \
@@ -48,7 +48,7 @@ def clean_all_database(*args, **kwargs):
     PaymentMessage.query.delete()
     BookingSQLEntity.query.delete()
     StockSQLEntity.query.delete()
-    Favorite.query.delete()
+    FavoriteSQLEntity.query.delete()
     Recommendation.query.delete()
     Mediation.query.delete()
     OfferCriterion.query.delete()
