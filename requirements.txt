@@ -3,7 +3,7 @@
 # * jsonschema
 # * PostgreSQL-Audit
 # * psycopg2
-# * psycopg2-binary
+# * psycopg2-binary (installed by building psycopg2 from the sources)
 #
 aiohttp>=2.0,<4.0
 alembic==1.4.2
