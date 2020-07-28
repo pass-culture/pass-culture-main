@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BigInteger, ForeignKey, UniqueConstraint
+from sqlalchemy import BigInteger, Column, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from models.db import Model
@@ -44,7 +44,7 @@ class FavoriteSQLEntity(PcObject, Model):
     )
 
     @property
-    def thumbUrl(self):
+    def thumbUrl(self) -> str:
         if self.mediationId:
             return self.mediation.thumbUrl
         return self.offer.product.thumbUrl

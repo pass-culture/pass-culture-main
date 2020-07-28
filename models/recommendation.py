@@ -1,20 +1,12 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, \
-    Boolean, \
-    Column, \
-    DateTime, \
-    ForeignKey, \
-    String, \
-    and_, \
-    exists
-from sqlalchemy.orm import relationship, column_property
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, String, and_, exists
+from sqlalchemy.orm import column_property, relationship
 from sqlalchemy.sql import expression, select
 
-from models.favorite_sql_entity import FavoriteSQLEntity
 from models.db import Model
+from models.favorite_sql_entity import FavoriteSQLEntity
 from models.pc_object import PcObject
-from utils.human_ids import humanize
 
 
 class Recommendation(PcObject, Model):
@@ -84,7 +76,7 @@ class Recommendation(PcObject, Model):
                ))
 
     @property
-    def thumbUrl(self):
+    def thumbUrl(self) -> str:
         if self.mediationId:
             return self.mediation.thumbUrl
 

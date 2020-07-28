@@ -1,9 +1,10 @@
-from flask import current_app as app, jsonify, request
+from flask import current_app as app
+from flask import jsonify, request
 from flask_login import current_user, login_required
 
 from domain.favorites import create_favorite
 from infrastructure.container import list_favorites_of_beneficiary
-from models import Mediation, Offer, FavoriteSQLEntity
+from models import FavoriteSQLEntity, Mediation, Offer
 from repository import repository
 from repository.favorite_queries import find_favorite_for_offer_and_user
 from routes.serialization import as_dict
@@ -36,8 +37,7 @@ def add_to_favorite():
 def delete_favorite(offer_id):
     dehumanized_offer_id = dehumanize(offer_id)
 
-    favorite = find_favorite_for_offer_and_user(dehumanized_offer_id,
-                                                current_user.id) \
+    favorite = find_favorite_for_offer_and_user(dehumanized_offer_id, current_user.id) \
         .first_or_404()
 
     repository.delete(favorite)

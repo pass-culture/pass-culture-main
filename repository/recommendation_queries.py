@@ -4,13 +4,9 @@ from typing import List
 from sqlalchemy import and_
 from sqlalchemy.sql.expression import literal, select
 
-from models import Offer, \
-    Recommendation, \
-    BookingSQLEntity, \
-    FavoriteSQLEntity
+from models import BookingSQLEntity, FavoriteSQLEntity, Mediation, Offer, Recommendation, UserSQLEntity
 from models.api_errors import ResourceNotFoundError
 from models.db import db
-from models.mediation import Mediation
 from repository import mediation_queries
 from repository.offer_queries import find_searchable_offer
 from utils.human_ids import dehumanize
@@ -19,7 +15,7 @@ from utils.logger import logger
 EIGHT_DAYS_AGO = datetime.utcnow() - timedelta(days=8)
 
 
-def count_read_recommendations_for_user(user, limit=None):
+def count_read_recommendations_for_user(user: UserSQLEntity, limit: int = None) -> int:
     query = Recommendation.query.filter((Recommendation.user == user)
                                         & (Recommendation.dateRead is not None))
     if limit:
@@ -29,7 +25,7 @@ def count_read_recommendations_for_user(user, limit=None):
     return query.count()
 
 
-def update_read_recommendations(read_recommendations: List):
+def update_read_recommendations(read_recommendations: List) -> None:
     if read_recommendations:
         for read_recommendation in read_recommendations:
             recommendation_id = dehumanize(read_recommendation['id'])
@@ -76,7 +72,7 @@ def get_recommendations_for_offers(offer_ids: List[int]) -> List[Recommendation]
         .all()
 
 
-def delete_useless_recommendations(limit: int = 500000):
+def delete_useless_recommendations(limit: int = 500000) -> None:
     favorite_query = (select([FavoriteSQLEntity.offerId])).alias('favorite_query')
     is_unread = Recommendation.dateRead == None
     is_older_than_one_week = Recommendation.dateCreated < EIGHT_DAYS_AGO
@@ -86,7 +82,7 @@ def delete_useless_recommendations(limit: int = 500000):
     connection = db.engine.connect()
 
     query = select([Recommendation.id]). \
-        select_from(Recommendation.__table__ \
+        select_from(Recommendation.__table__
                     .join(BookingSQLEntity, Recommendation.id == BookingSQLEntity.recommendationId, True)) \
         .where(
         and_(is_unread,

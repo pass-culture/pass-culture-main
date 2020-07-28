@@ -1,11 +1,10 @@
 from sqlalchemy.orm import joinedload
 
 from domain.favorite.favorite_repository import FavoriteRepository
-from models import FavoriteSQLEntity, Offer, VenueSQLEntity, StockSQLEntity
+from models import FavoriteSQLEntity, Offer, StockSQLEntity, VenueSQLEntity
 
 
 class FavoriteSQLRepository(FavoriteRepository):
-
     def find_by_beneficiary(self, beneficiary_identifier: int) -> FavoriteSQLEntity:
         return FavoriteSQLEntity.query \
             .filter(FavoriteSQLEntity.userId == beneficiary_identifier) \

@@ -1,6 +1,7 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
-from models import FavoriteSQLEntity, UserSQLEntity, BookingSQLEntity, StockSQLEntity
+from models import (BookingSQLEntity, FavoriteSQLEntity, StockSQLEntity,
+                    UserSQLEntity)
 from routes.serialization.serializer import serialize
 from utils.human_ids import humanize
 
@@ -56,7 +57,7 @@ def serialize_favorite(favorite: FavoriteSQLEntity, current_user: UserSQLEntity)
     return serialized_favorite
 
 
-def _get_user_booking_if_exists(current_user: UserSQLEntity, stocks: [StockSQLEntity]) -> BookingSQLEntity:
+def _get_user_booking_if_exists(current_user: UserSQLEntity, stocks: List[StockSQLEntity]) -> Optional[BookingSQLEntity]:
     user_booking = None
     for stock in stocks:
         user_booking = next((booking for booking in stock.bookings if booking.userId == current_user.id), None)

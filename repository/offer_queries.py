@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 
 from flask_sqlalchemy import BaseQuery
-from sqlalchemy import desc, func, or_, nullsfirst
+from sqlalchemy import desc, func, nullsfirst, or_
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import selectable
@@ -11,21 +11,14 @@ from sqlalchemy.sql.elements import BinaryExpression
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
-from models import EventType, \
-    Mediation, \
-    Offer, \
-    Offerer, \
-    StockSQLEntity, \
-    ThingType, \
-    VenueSQLEntity, \
-    Product, FavoriteSQLEntity, BookingSQLEntity, DiscoveryView, DiscoveryViewV3, UserSQLEntity, SeenOffer, UserOfferer
+from models import BookingSQLEntity, DiscoveryView, DiscoveryViewV3, \
+    EventType, FavoriteSQLEntity, Mediation, Offer, Offerer, SeenOffer, StockSQLEntity, ThingType, UserOfferer, UserSQLEntity, VenueSQLEntity
 from models.db import Model
 from models.feature import FeatureToggle
 from repository import feature_queries
 from repository.booking_queries import get_only_offer_ids_from_bookings
 from repository.favorite_queries import get_only_offer_ids_from_favorites
 from repository.iris_venues_queries import find_venues_located_near_iris
-from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from repository.venue_queries import get_only_venue_ids_for_department_codes
 from use_cases.diversify_recommended_offers import order_offers_by_diversified_types
 from utils.logger import logger
@@ -230,7 +223,7 @@ def _build_occurs_soon_or_is_thing_predicate():
                                        & ((StockSQLEntity.beginningDatetime == None)
                                           | ((StockSQLEntity.beginningDatetime > datetime.utcnow())
                                              & (StockSQLEntity.beginningDatetime < (
-                            datetime.utcnow() + timedelta(days=10)))))) \
+                                                 datetime.utcnow() + timedelta(days=10)))))) \
         .exists()
 
 
@@ -285,9 +278,9 @@ def _offer_has_stocks_compatible_with_days_intervals(days_intervals):
     return StockSQLEntity.query \
         .filter(StockSQLEntity.offerId == Offer.id) \
         .filter(
-        event_beginningdate_in_interval_filter | \
-        stock_has_no_beginning_date_time
-    ).exists()
+            event_beginningdate_in_interval_filter |
+            stock_has_no_beginning_date_time
+        ).exists()
 
 
 def build_find_offers_with_filter_parameters(
@@ -336,7 +329,7 @@ def find_searchable_offer(offer_id):
 def _offer_has_bookable_stocks():
     now = datetime.utcnow()
     stock_can_still_be_booked = (StockSQLEntity.bookingLimitDatetime > now) | (
-            StockSQLEntity.bookingLimitDatetime == None)
+        StockSQLEntity.bookingLimitDatetime == None)
     event_has_not_began_yet = (StockSQLEntity.beginningDatetime != None) & (StockSQLEntity.beginningDatetime > now)
     offer_is_on_a_thing = StockSQLEntity.beginningDatetime == None
     bookings_quantity = _build_bookings_quantity_subquery()
@@ -396,7 +389,7 @@ def _filter_bookable_stocks_for_discovery(stocks_query):
     is_not_soft_deleted_predicate = (StockSQLEntity.isSoftDeleted == False)
     bookings_quantity = _build_bookings_quantity_subquery()
     has_remaining_stock = (StockSQLEntity.quantity == None) | (
-            (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
+        (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
 
     stocks_query = stocks_query.outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
         .filter(is_not_soft_deleted_predicate
