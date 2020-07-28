@@ -75,7 +75,7 @@ describe('src | components | parseAlgoliaParameters', () => {
   it('should return algolia parameters with newestOnly when provided', () => {
     // given
     const parameters = {
-      newestOnly: true
+      newestOnly: true,
     }
 
     // when
@@ -83,7 +83,86 @@ describe('src | components | parseAlgoliaParameters', () => {
 
     // then
     expect(result).toStrictEqual({
-      offerIsNew: true
+      offerIsNew: true,
     })
   })
+
+  it('should return algolia parameters with isDigital when provided', () => {
+    // given
+    const parameters = {
+      isDigital: true,
+    }
+
+    // when
+    const result = parseAlgoliaParameters(parameters)
+
+    // then
+    expect(result).toStrictEqual({
+      offerTypes: {
+        isDigital: true,
+        isEvent: false,
+        isThing: false,
+      },
+    })
+  })
+
+  it('should return algolia parameters with isEvent when provided', () => {
+    // given
+    const parameters = {
+      isEvent: true,
+    }
+
+    // when
+    const result = parseAlgoliaParameters(parameters)
+
+    // then
+    expect(result).toStrictEqual({
+      offerTypes: {
+        isDigital: false,
+        isEvent: true,
+        isThing: false,
+      },
+    })
+  })
+
+  it('should return algolia parameters with isThing when provided', () => {
+    // given
+    const parameters = {
+      isThing: true,
+    }
+
+    // when
+    const result = parseAlgoliaParameters(parameters)
+
+    // then
+    expect(result).toStrictEqual({
+      offerTypes: {
+        isDigital: false,
+        isEvent: false,
+        isThing: true,
+      },
+    })
+  })
+
+  it('should return algolia parameters with all offer types when provided', () => {
+    // given
+    const parameters = {
+      isDigital: true,
+      isEvent: true,
+      isThing: true,
+    }
+
+    // when
+    const result = parseAlgoliaParameters(parameters)
+
+    // then
+    expect(result).toStrictEqual({
+      offerTypes: {
+        isDigital: true,
+        isEvent: true,
+        isThing: true,
+      },
+    })
+  })
+
 })
