@@ -3,14 +3,14 @@ import InputMask from 'react-input-mask'
 
 import BackLink from '../../layout/Header/BackLink/BackLink'
 import Icon from '../../layout/Icon/Icon'
+import { checkIfAgeIsEligible, ELIGIBILITY_VALUES } from './domain/checkIfAgeIsEligible'
 import { checkIfDepartmentIsEligible } from './domain/checkIfDepartmentIsEligible'
-import { checkIfAgeIsEligible } from './domain/checkIfAgeIsEligible'
+import Eligible from './Eligible/Eligible'
 import EligibleSoon from './EligibleSoon/EligibleSoon'
 import IneligibleDepartment from './IneligibleDepartment/IneligibleDepartment'
 import IneligibleOverEighteen from './IneligibleOverEighteen/IneligibleOverEighteen'
 import IneligibleUnderEighteen from './IneligibleUnderEighteen/IneligibleUnderEighteen'
-import Eligible from './Eligible/Eligible'
-import { ELIGIBILITY_VALUES } from './domain/checkIfAgeIsEligible'
+import { RecaptchaNotice } from './RecaptchaNotice'
 import { useReCaptchaScript } from './utils/recaptcha'
 
 const EligibilityCheck = () => {
@@ -75,12 +75,10 @@ const EligibilityCheck = () => {
     case ELIGIBILITY_VALUES.TOO_OLD:
       return <IneligibleOverEighteen />
     case ELIGIBILITY_VALUES.SOON:
-      return (
-        <EligibleSoon
-          birthDate={dateOfBirthInputValue}
-          postalCode={postalCodeInputValue}
-        />
-      )
+      return (<EligibleSoon
+        birthDate={dateOfBirthInputValue}
+        postalCode={postalCodeInputValue}
+              />)
     default:
       return (
         <main className="eligibility-check-page">
@@ -126,12 +124,15 @@ const EligibilityCheck = () => {
                 )}
               </label>
             </div>
-            <input
-              className="eligibility-submit"
-              disabled={isMissingField || hasAnErrorMessage}
-              type="submit"
-              value="Vérifier mon éligibilité"
-            />
+            <div>
+              <RecaptchaNotice />
+              <input
+                className="eligibility-submit"
+                disabled={isMissingField || hasAnErrorMessage}
+                type="submit"
+                value="Vérifier mon éligibilité"
+              />
+            </div>
           </form>
         </main>
       )

@@ -87,11 +87,13 @@
     box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
     color: $white;
     cursor: pointer;
+    display: block;
     font-size: rem(16px);
     font-weight: bold;
+    margin: 0 auto;
     outline: none;
     padding: rem(15px) 0;
-    width: rem(300px);
+    width: 85%;
 
     &:disabled {
       cursor: not-allowed;
@@ -117,6 +119,24 @@
     pre {
       font-family: inherit;
       white-space: pre-wrap;
+    }
+  }
+
+  .recaptcha-notice {
+    color: $grey-dark;
+    font-size: rem(14px);
+    margin: 0 auto;
+    text-align: center;
+    width: 85%;
+
+    &:last-of-type {
+      margin-bottom: rem(24px);
+    }
+
+    a {
+      @include caption();
+
+      color: $primary;
     }
   }
 }

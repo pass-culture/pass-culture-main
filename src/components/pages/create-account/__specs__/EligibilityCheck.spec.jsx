@@ -93,6 +93,21 @@ describe('eligibility check page', () => {
       expect(eligibilityDobInputLabel).toBe('Quelle est ta date de naissance ?')
     })
 
+    it('should display links to google recaptcha privacy and terms', () => {
+      // when
+      const wrapper = mount(
+        <MemoryRouter>
+          <EligibilityCheck {...props} />
+        </MemoryRouter>
+      )
+
+      // then
+      const googlePrivacyLink = wrapper.find('a[href="https://policies.google.com/privacy"]')
+      const googleTermsLink = wrapper.find('a[href="https://policies.google.com/terms"]')
+      expect(googlePrivacyLink).toHaveLength(1)
+      expect(googleTermsLink).toHaveLength(1)
+    })
+
     it('should display a submit button', () => {
       // when
       const wrapper = mount(
