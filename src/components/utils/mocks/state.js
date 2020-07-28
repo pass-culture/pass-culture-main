@@ -905,20 +905,6 @@ const state = {
         dateOfBirth: '2001-01-01T00:00:00Z',
         departementCode: '93',
         email: 'pctest.admin93.0@btmx.fr',
-        expenses: {
-          all: {
-            actual: 0,
-            max: 500,
-          },
-          digital: {
-            actual: 0,
-            max: 200,
-          },
-          physical: {
-            actual: 0,
-            max: 200,
-          },
-        },
         firstName: 'PC Test Admin',
         isAdmin: true,
         lastName: '93 0',
@@ -927,8 +913,6 @@ const state = {
         postalCode: '93100',
         publicName: 'PC Test Admin 93 0',
         thumbCount: 0,
-        wallet_balance: 0,
-        wallet_is_activated: false,
       },
     ],
     userOfferers: [
@@ -1057,20 +1041,6 @@ const state = {
     dateOfBirth: '2001-01-01T00:00:00Z',
     departementCode: '93',
     email: 'pctest.admin93.0@btmx.fr',
-    expenses: {
-      all: {
-        actual: 0,
-        max: 500,
-      },
-      digital: {
-        actual: 0,
-        max: 200,
-      },
-      physical: {
-        actual: 0,
-        max: 200,
-      },
-    },
     firstName: 'PC Test Admin',
     isAdmin: true,
     lastName: '93 0',
@@ -1079,8 +1049,6 @@ const state = {
     postalCode: '93100',
     publicName: 'PC Test Admin 93 0',
     thumbCount: 0,
-    wallet_balance: 0,
-    wallet_is_activated: false,
   },
   _persist: {
     version: -1,
