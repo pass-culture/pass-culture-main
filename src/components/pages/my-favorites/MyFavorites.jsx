@@ -18,7 +18,7 @@ const MyFavorites = ({ match }) => (
       <div className="offer-details">
         <HeaderContainer
           shouldBackFromDetails
-          title="Favoris"
+          title="Offre"
         />
         <MyFavoriteDetailsContainer
           bookingPath={`${match.path}/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId(vide|[A-Z0-9]+)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}

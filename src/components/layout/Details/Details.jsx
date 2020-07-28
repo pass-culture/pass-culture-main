@@ -79,17 +79,14 @@ class Details extends PureComponent {
 Details.defaultProps = {
   bookingPath: '',
   cancelView: false,
-  getOfferById: () => null,
 }
 
 Details.propTypes = {
   bookingPath: PropTypes.string,
   cancelView: PropTypes.bool,
-  getOfferById: PropTypes.func,
+  getOfferById: PropTypes.func.isRequired,
   match: PropTypes.shape({
-    path: PropTypes.string,
     params: PropTypes.shape({
-      details: PropTypes.string,
       offerId: PropTypes.string,
     }),
   }).isRequired,

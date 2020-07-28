@@ -5,7 +5,7 @@ import { Route } from 'react-router'
 import DetailsContainer from '../../layout/Details/DetailsContainer'
 import CloseLink from '../../layout/Header/CloseLink/CloseLink'
 
-const Offer = ({ getOfferById, match }) => (
+const Offer = ({ match }) => (
   <Route
     exact
     path={`${match.path}/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
@@ -16,13 +16,12 @@ const Offer = ({ getOfferById, match }) => (
         closeTitle="Fermer"
         closeTo="/decouverte"
       />
-      <DetailsContainer getOfferById={getOfferById} />
+      <DetailsContainer />
     </main>
   </Route>
 )
 
 Offer.propTypes = {
-  getOfferById: PropTypes.func.isRequired,
   match: PropTypes.shape({
     path: PropTypes.string.isRequired,
   }).isRequired,

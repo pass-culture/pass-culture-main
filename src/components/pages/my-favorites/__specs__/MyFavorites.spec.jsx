@@ -21,30 +21,17 @@ describe('my favorites', () => {
       ) => state,
       data: (
         state = {
-          bookings: [
-            {
-              stockId: 's1',
-            },
-          ],
+          bookings: [],
           favorites: [],
           mediations: [],
-          offers: [
-            {
-              id: 'o1',
-              isEvent: true,
-              product: {
-                thumbUrl: '',
-              },
-            },
-          ],
+          offers: [],
           recommendations: [],
-          stocks: [
+          stocks: [],
+          users: [
             {
-              id: 's1',
-              offerId: 'o1',
+              wallet_balance: '',
             },
           ],
-          users: [],
         }
       ) => state,
       geolocation: (

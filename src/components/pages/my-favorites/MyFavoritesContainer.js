@@ -1,6 +1,4 @@
-import { compose } from 'redux'
-
-import MyFavorites from './MyFavorites'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
+import MyFavorites from './MyFavorites'
 
-export default compose(withRequiredLogin)(MyFavorites)
+export default withRequiredLogin(MyFavorites)

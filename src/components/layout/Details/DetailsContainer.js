@@ -1,8 +1,10 @@
-import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+import { compose } from 'redux'
+import { requestData } from 'redux-thunk-data'
 
 import isCancelView from '../../../utils/isCancelView'
+import { offerNormalizer } from '../../../utils/normalizers'
 import Details from './Details'
 
 export const mapStateToProps = (state, ownProps) => {
@@ -14,7 +16,21 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
+export const mapDispatchToProps = dispatch => ({
+  getOfferById: offerId => {
+    dispatch(
+      requestData({
+        apiPath: `/offers/${offerId}`,
+        normalizer: offerNormalizer,
+      })
+    )
+  },
+})
+
 export default compose(
   withRouter,
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(Details)
