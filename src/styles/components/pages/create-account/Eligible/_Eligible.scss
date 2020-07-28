@@ -46,11 +46,10 @@
     display: flex;
     font-size: rem(16px);
     font-weight: bold;
+    height: rem(50px);
     justify-content: center;
     margin: 0 auto;
-    max-height: rem(50px);
     outline: none;
-    padding: rem(15px) 0;
     width: 80%;
 
     &:disabled {
@@ -65,8 +64,13 @@
   }
 
   @-webkit-keyframes spin {
-    0%  {-webkit-transform: rotate(0deg);}
-    100% {-webkit-transform: rotate(360deg);}
+    0% {
+      -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+      -webkit-transform: rotate(360deg);
+    }
   }
 
   .home-page-link {
@@ -75,4 +79,3 @@
     margin-top: rem(20px);
   }
 }
-
