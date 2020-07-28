@@ -2,9 +2,10 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.favorites import create_favorite
+from infrastructure.container import list_favorites_of_beneficiary
 from models import Mediation, Offer, FavoriteSQLEntity
 from repository import repository
-from repository.favorite_queries import find_favorite_for_offer_and_user, find_all_favorites_by_user_id
+from repository.favorite_queries import find_favorite_for_offer_and_user
 from routes.serialization import as_dict
 from routes.serialization.favorites_serialize import serialize_favorite, serialize_favorites
 from utils.human_ids import dehumanize
@@ -47,7 +48,7 @@ def delete_favorite(offer_id):
 @app.route('/favorites', methods=['GET'])
 @login_required
 def get_favorites():
-    favorites = find_all_favorites_by_user_id(current_user.id)
+    favorites = list_favorites_of_beneficiary.execute(current_user.id)
 
     return jsonify(serialize_favorites(favorites, current_user)), 200
 
