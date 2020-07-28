@@ -37,7 +37,6 @@ describe('selectThumbUrlByRouterMatch', () => {
       product: {
         id: 'AE',
         thumbCount: 1,
-        thumbUrl: productThumbUrl,
       },
       thumbUrl: productThumbUrl,
       venue: {
