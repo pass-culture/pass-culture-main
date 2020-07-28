@@ -10,6 +10,7 @@
 
   h1 {
     font-size: rem(40px);
+    font-weight: 500;
     padding-top: rem(32px);
   }
 
@@ -19,11 +20,23 @@
     padding-top: rem(22px);
   }
 
-  .redirection-info{
-    align-self: center;
-    bottom: rem(46px);
+  .redirection-link {
+    margin-top: rem(48px);
+  }
+
+  .redirection-link a {
+    align-items: center;
+    background-color: transparent;
+    border: 2px solid white;
+    border-radius: 24px;
+    color: $white;
+    cursor: pointer;
     font-size: rem(16px);
-    padding-top: rem(16px);
-    position: absolute;
+    font-weight: bold;
+    justify-content: center;
+    margin: 0 auto;
+    max-height: rem(50px);
+    outline: none;
+    padding: rem(12px) rem(52px);
   }
 }
