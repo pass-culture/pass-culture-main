@@ -25,8 +25,14 @@ const IneligibleDepartment = ({ birthDate, postalCode }) => {
       const birthDateISO = birthDateSplit[2] + '-' + birthDateSplit[1] + '-' + birthDateSplit[0]
       const departmentCode = postalCode.substr(0, 2)
 
+      const userInformations = {
+        email: emailValue,
+        dateOfBirth: birthDateISO,
+        departmentCode: departmentCode,
+      }
+
       return fetch(`${API_URL}/mailing-contacts`, {
-        body: JSON.stringify({ email: emailValue, dateOfBirth: birthDateISO, departmentCode }),
+        body: JSON.stringify(userInformations),
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
@@ -38,6 +44,7 @@ const IneligibleDepartment = ({ birthDate, postalCode }) => {
           setHasContactBeenSaved(false)
           throw new Error("Erreur lors de l'enregistrement de l'adresse e-mail")
         }
+
         setHasContactBeenSaved(true)
       })
     },

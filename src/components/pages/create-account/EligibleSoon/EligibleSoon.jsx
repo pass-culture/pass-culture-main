@@ -1,15 +1,17 @@
+import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
-import PropTypes from 'prop-types'
 
 import { API_URL } from '../../../../utils/config'
+import Icon from '../../../layout/Icon/Icon'
 import { Animation } from '../Animation/Animation'
 import ContactSaved from '../ContactSaved/ContactSaved'
 import { handleCheckEmailFormat } from '../utils/checkEmailFormat'
 
 const EligibleSoon = ({ birthDate, postalCode }) => {
   const [emailValue, setEmailValue] = useState('')
-  const [hasSubmitted, setHasSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [hasContactBeenSaved, setHasContactBeenSaved] = useState(false)
 
   const handleEmailInputChange = useCallback(event => {
     const newEmailValue = event.target.value
@@ -19,6 +21,7 @@ const EligibleSoon = ({ birthDate, postalCode }) => {
   const handleSubmit = useCallback(
     event => {
       event.preventDefault()
+      setIsSubmitting(true)
       const birthDateSplit = birthDate.split('/')
       const birthDateISO = birthDateSplit[2] + '-' + birthDateSplit[1] + '-' + birthDateSplit[0]
       const departmentCode = postalCode.substr(0, 2)
@@ -37,28 +40,32 @@ const EligibleSoon = ({ birthDate, postalCode }) => {
         },
         method: 'POST',
       }).then(response => {
+        setIsSubmitting(false)
         if (response.status !== 201) {
+          setHasContactBeenSaved(false)
           throw new Error("Erreur lors de l'enregistrement de l'adresse e-mail")
         }
 
-        setHasSubmitted(true)
+        setHasContactBeenSaved(true)
       })
     },
-    [emailValue, birthDate, postalCode]
+    [birthDate, emailValue, postalCode]
   )
 
   const isEmailValid = handleCheckEmailFormat(emailValue)
 
-  return !hasSubmitted ? (
+  return hasContactBeenSaved ? (
+    <ContactSaved />
+  ) : (
     <main className="eligible-soon-page">
       <div className="animation-text-container">
         <Animation
           name="ineligible-under-eighteen-animation"
           speed={0.7}
         />
-        <h2>
+        <h1>
           {'Plus que quelques mois d’attente !'}
-        </h2>
+        </h1>
         <div className="information-text">
           {
             'Pour profiter du pass Culture, tu dois avoir 18 ans. Entre ton adresse email : nous t’avertirons dès que tu seras éligible.'
@@ -69,16 +76,16 @@ const EligibleSoon = ({ birthDate, postalCode }) => {
         <form onSubmit={handleSubmit}>
           <input
             onChange={handleEmailInputChange}
-            placeholder="Adresse email"
+            placeholder="Adresse e-mail"
             type="email"
             value={emailValue}
           />
           <button
             className="submit-button"
-            disabled={!isEmailValid}
+            disabled={!isEmailValid || isSubmitting}
             type="submit"
           >
-            {'Rester en contact'}
+            {isSubmitting ? <Icon svg="icon-eligible-spinner" /> : 'Rester en contact'}
           </button>
         </form>
         <Link to="/beta">
@@ -86,8 +93,6 @@ const EligibleSoon = ({ birthDate, postalCode }) => {
         </Link>
       </div>
     </main>
-  ) : (
-    <ContactSaved />
   )
 }
 
