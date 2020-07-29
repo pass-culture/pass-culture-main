@@ -77,7 +77,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
     })
 
     describe('should pluralize offerers menu link', () => {
-      it('should display Votre structure when one offerer', () => {
+      it('should display Structure juridique when one offerer', () => {
         // given
         props.currentUser = {}
         props.offerers = [{ id: 'AE' }]
@@ -87,10 +87,10 @@ describe('src | components | pages | Offerers | Offerers', () => {
         const titles = wrapper.find('Titles').props()
 
         // then
-        expect(titles.title).toStrictEqual('Votre structure juridique')
+        expect(titles.title).toStrictEqual('Structure juridique')
       })
 
-      it('should display Vos structures when many offerers', () => {
+      it('should display Structures juridiques when many offerers', () => {
         // given
         props.currentUser = {}
         props.offerers = [{ id: 'AE' }, { id: 'AF' }]
@@ -100,7 +100,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
         const titles = wrapper.find('Titles').props()
 
         // then
-        expect(titles.title).toStrictEqual('Vos structures juridiques')
+        expect(titles.title).toStrictEqual('Structures juridiques')
       })
     })
 

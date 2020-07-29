@@ -126,9 +126,7 @@ class Header extends PureComponent {
                       <Icon svg="ico-structure-r" />
                     </span>
                     <span>
-                      {offerers.length > 1
-                        ? 'Vos structures juridiques'
-                        : 'Votre structure juridique'}
+                      {offerers.length > 1 ? 'Structures juridiques' : 'Structure juridique'}
                     </span>
                   </NavLink>
                   {false && (

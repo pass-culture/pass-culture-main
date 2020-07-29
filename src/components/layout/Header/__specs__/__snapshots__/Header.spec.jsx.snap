@@ -166,7 +166,7 @@ ShallowWrapper {
                     />
                   </span>
                   <span>
-                    Votre structure juridique
+                    Structure juridique
                   </span>
                 </NavLink>
                 <NavLink
@@ -372,7 +372,7 @@ ShallowWrapper {
                       />
                     </span>
                     <span>
-                      Votre structure juridique
+                      Structure juridique
                     </span>
                   </NavLink>
                   <NavLink
@@ -645,7 +645,7 @@ ShallowWrapper {
                       />
                     </span>
                     <span>
-                      Votre structure juridique
+                      Structure juridique
                     </span>
                   </NavLink>
                   <NavLink
@@ -824,7 +824,7 @@ ShallowWrapper {
                         />
                       </span>
                       <span>
-                        Votre structure juridique
+                        Structure juridique
                       </span>
                     </NavLink>
                     <NavLink
@@ -1142,7 +1142,7 @@ ShallowWrapper {
                           />
                         </span>
                         <span>
-                          Votre structure juridique
+                          Structure juridique
                         </span>
                       </NavLink>
                       <NavLink
@@ -1308,7 +1308,7 @@ ShallowWrapper {
                             />
                           </span>
                           <span>
-                            Votre structure juridique
+                            Structure juridique
                           </span>
                         </NavLink>,
                         false,
@@ -1453,7 +1453,7 @@ ShallowWrapper {
                               />
                             </span>,
                             <span>
-                              Votre structure juridique
+                              Structure juridique
                             </span>,
                           ],
                           "className": "navbar-item",
@@ -1492,10 +1492,10 @@ ShallowWrapper {
                             "key": undefined,
                             "nodeType": "host",
                             "props": Object {
-                              "children": "Votre structure juridique",
+                              "children": "Structure juridique",
                             },
                             "ref": null,
-                            "rendered": "Votre structure juridique",
+                            "rendered": "Structure juridique",
                             "type": "span",
                           },
                         ],
@@ -1858,7 +1858,7 @@ ShallowWrapper {
                       />
                     </span>
                     <span>
-                      Votre structure juridique
+                      Structure juridique
                     </span>
                   </NavLink>
                   <NavLink
@@ -2064,7 +2064,7 @@ ShallowWrapper {
                         />
                       </span>
                       <span>
-                        Votre structure juridique
+                        Structure juridique
                       </span>
                     </NavLink>
                     <NavLink
@@ -2337,7 +2337,7 @@ ShallowWrapper {
                         />
                       </span>
                       <span>
-                        Votre structure juridique
+                        Structure juridique
                       </span>
                     </NavLink>
                     <NavLink
@@ -2516,7 +2516,7 @@ ShallowWrapper {
                           />
                         </span>
                         <span>
-                          Votre structure juridique
+                          Structure juridique
                         </span>
                       </NavLink>
                       <NavLink
@@ -2834,7 +2834,7 @@ ShallowWrapper {
                             />
                           </span>
                           <span>
-                            Votre structure juridique
+                            Structure juridique
                           </span>
                         </NavLink>
                         <NavLink
@@ -3000,7 +3000,7 @@ ShallowWrapper {
                               />
                             </span>
                             <span>
-                              Votre structure juridique
+                              Structure juridique
                             </span>
                           </NavLink>,
                           false,
@@ -3145,7 +3145,7 @@ ShallowWrapper {
                                 />
                               </span>,
                               <span>
-                                Votre structure juridique
+                                Structure juridique
                               </span>,
                             ],
                             "className": "navbar-item",
@@ -3184,10 +3184,10 @@ ShallowWrapper {
                               "key": undefined,
                               "nodeType": "host",
                               "props": Object {
-                                "children": "Votre structure juridique",
+                                "children": "Structure juridique",
                               },
                               "ref": null,
-                              "rendered": "Votre structure juridique",
+                              "rendered": "Structure juridique",
                               "type": "span",
                             },
                           ],

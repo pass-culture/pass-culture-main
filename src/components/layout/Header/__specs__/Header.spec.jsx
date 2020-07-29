@@ -12,7 +12,7 @@ describe('src | components | Layout | Header', () => {
       isSmall: false,
       name: 'fake name',
       offerers: [{}],
-      whiteHeader: false
+      whiteHeader: false,
     }
   })
 
@@ -45,7 +45,7 @@ describe('src | components | Layout | Header', () => {
     })
 
     describe('should pluralize offerers menu link', () => {
-      it('should display Votre structure when one offerer', () => {
+      it('should display Structure juridique when one offerer', () => {
         // when
         const wrapper = shallow(<Header {...props} />)
         const navLinks = wrapper.find('NavLink')
@@ -57,10 +57,10 @@ describe('src | components | Layout | Header', () => {
 
         // then
         expect(navLinks).toHaveLength(7)
-        expect(linkTitle).toStrictEqual('Votre structure juridique')
+        expect(linkTitle).toStrictEqual('Structure juridique')
       })
 
-      it('should display Vos structures when many offerers', () => {
+      it('should display Structures juridiques when many offerers', () => {
         // given
         props.offerers = [{}, {}]
 
@@ -74,7 +74,7 @@ describe('src | components | Layout | Header', () => {
 
         // then
         expect(navLinks).toHaveLength(7)
-        expect(linkTitle).toStrictEqual('Vos structures juridiques')
+        expect(linkTitle).toStrictEqual('Structures juridiques')
       })
     })
 
@@ -89,7 +89,9 @@ describe('src | components | Layout | Header', () => {
           .find('.navbar-end')
           .find('.navbar-item')
           .at(2)
-        expect(helpLink.prop('href')).toBe('https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/')
+        expect(helpLink.prop('href')).toBe(
+          'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
+        )
         expect(helpLink.prop('target')).toBe('_blank')
       })
 

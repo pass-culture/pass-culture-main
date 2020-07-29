@@ -155,8 +155,7 @@ class Offerers extends PureComponent {
     const queryParams = query.parse()
     const { hasMore, isLoading } = this.state
 
-    const sectionTitle =
-      offerers.length > 1 ? 'Vos structures juridiques' : 'Votre structure juridique'
+    const sectionTitle = offerers.length > 1 ? 'Structures juridiques' : 'Structure juridique'
 
     const initialValues = {
       keywords: queryParams[mapApiToBrowser.keywords],

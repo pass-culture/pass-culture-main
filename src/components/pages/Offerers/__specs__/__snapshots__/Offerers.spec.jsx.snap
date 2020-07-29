@@ -95,7 +95,7 @@ ShallowWrapper {
             </NavLink>
           }
           subtitle={null}
-          title="Votre structure juridique"
+          title="Structure juridique"
         />,
         <p
           className="advice"
@@ -190,7 +190,7 @@ ShallowWrapper {
             </span>
           </NavLink>,
           "subtitle": null,
-          "title": "Votre structure juridique",
+          "title": "Structure juridique",
         },
         "ref": null,
         "rendered": null,
@@ -373,7 +373,7 @@ ShallowWrapper {
               </NavLink>
             }
             subtitle={null}
-            title="Votre structure juridique"
+            title="Structure juridique"
           />,
           <p
             className="advice"
@@ -468,7 +468,7 @@ ShallowWrapper {
               </span>
             </NavLink>,
             "subtitle": null,
-            "title": "Votre structure juridique",
+            "title": "Structure juridique",
           },
           "ref": null,
           "rendered": null,
