@@ -18,6 +18,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
         qrCode: 'data:image/png;base64,iVIVhzdjeizfjezfoizejojczez',
         stock: {},
         token: 'G9G9G9',
+        thumbUrl: '/mediations/AE',
       },
       isQrCodeFeatureDisabled: true,
       location: {
@@ -32,7 +33,6 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
       offer: {
         id: 'AE',
         name: 'Un livre pas mal',
-        thumb_url: '/mediations/AE',
         product: {
           name: 'Un livre pas mal',
           type: 'thing',
@@ -152,7 +152,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
 
   it('should render a booking with a default thumb url on thumb when no mediation is provided', () => {
     // given
-    props.offer.thumb_url = ''
+    props.booking.thumbUrl = null
 
     // when
     const wrapper = shallow(<BookingItem {...props} />)

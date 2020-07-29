@@ -10,6 +10,7 @@ ShallowWrapper {
         "isCancelled": false,
         "qrCode": "data:image/png;base64,iVIVhzdjeizfjezfoizejojczez",
         "stock": Object {},
+        "thumbUrl": "/mediations/AE",
         "token": "G9G9G9",
       }
     }
@@ -35,7 +36,6 @@ ShallowWrapper {
           "name": "Un livre pas mal",
           "type": "thing",
         },
-        "thumb_url": "/mediations/AE",
         "venue": Object {
           "departementCode": "93",
         },
