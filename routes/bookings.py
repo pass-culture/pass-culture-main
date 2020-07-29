@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Union, Dict, List
+from typing import Union, Dict
 
 from flask import current_app as app
 from flask import jsonify, request
@@ -9,8 +9,7 @@ from connectors import redis
 from domain.user_activation import create_initial_deposit, is_activation_booking
 from domain.user_emails import send_activation_email
 from infrastructure.container import book_an_offer, cancel_a_booking
-from models import BookingSQLEntity, EventType, RightsType, ApiKey, UserSQLEntity, StockSQLEntity, Offer, VenueSQLEntity
-from models.db import db
+from models import BookingSQLEntity, EventType, RightsType, ApiKey, UserSQLEntity
 from models.feature import FeatureToggle
 from models.offer_type import ProductType
 from repository import booking_queries, feature_queries, repository
@@ -52,115 +51,17 @@ def get_all_bookings():
     return serialize_bookings_recap_paginated(bookings_recap_paginated), 200
 
 
-def _serialize_completed_url(booking_view: object) -> str:
-    url = booking_view.url
-    if url is None:
-        return None
-    if not url.startswith('http'):
-        url = "http://" + url
-    return url.replace('{token}', booking_view.token) \
-        .replace('{offerId}', humanize(booking_view.id)) \
-        .replace('{email}', booking_view.email)
-
-
-def _serialize_stock_is_event_expired(bookings_view):
-    return False if bookings_view.beginningDatetime is None else bookings_view.beginningDatetime <= datetime.utcnow()
-
-
-def serialize_bookings(user_id: int) -> List:
-    offer_types = ['ThingType.ACTIVATION', 'EventType.ACTIVATION']
-    bookings_view = db.session.query(BookingSQLEntity) \
-        .join(UserSQLEntity, UserSQLEntity.id == BookingSQLEntity.userId) \
-        .join(StockSQLEntity, StockSQLEntity.id == BookingSQLEntity.stockId) \
-        .join(Offer) \
-        .join(VenueSQLEntity) \
-        .filter(BookingSQLEntity.userId == user_id) \
-        .filter(Offer.type.notin_(offer_types)) \
-        .distinct(BookingSQLEntity.stockId) \
-        .order_by(BookingSQLEntity.stockId,
-                  BookingSQLEntity.isCancelled,
-                  BookingSQLEntity.dateCreated.desc()
-                  ) \
-        .with_entities(BookingSQLEntity.amount,
-                       BookingSQLEntity.cancellationDate,
-                       BookingSQLEntity.dateCreated,
-                       BookingSQLEntity.dateUsed,
-                       BookingSQLEntity.id,
-                       BookingSQLEntity.isCancelled,
-                       BookingSQLEntity.isUsed,
-                       BookingSQLEntity.quantity,
-                       BookingSQLEntity.recommendationId,
-                       BookingSQLEntity.stockId,
-                       BookingSQLEntity.token,
-                       BookingSQLEntity.userId,
-                       Offer.id.label("offerId"),
-                       Offer.name,
-                       Offer.type,
-                       Offer.url,
-                       UserSQLEntity.email,
-                       StockSQLEntity.beginningDatetime,
-                       VenueSQLEntity.id.label("venueId"),
-                       VenueSQLEntity.departementCode,
-                       ) \
-        .all()
-
-    offers_ids = [bv.offerId for bv in bookings_view]
-
-    stocks = StockSQLEntity.query \
-        .filter(StockSQLEntity.offerId.in_(offers_ids)) \
-        .all()
-
-    results = []
-    for booking_view in bookings_view:
-        serialized_stocks = [as_dict(stock) for stock in stocks if stock.offerId == booking_view.offerId]
-        dictified_booking = {
-            "completedUrl": _serialize_completed_url(booking_view),
-            "isEventExpired": _serialize_stock_is_event_expired(booking_view),
-            "amount": booking_view.amount,
-            "cancellationDate": serialize(booking_view.cancellationDate),
-            "dateCreated": serialize(booking_view.dateCreated),
-            "dateUsed": serialize(booking_view.dateUsed),
-            "id": humanize(booking_view.id),
-            "isCancelled": booking_view.isCancelled,
-            "isUsed": booking_view.isUsed,
-            "quantity": booking_view.quantity,
-            "qrCode": 'FAKE_QR_CODE',
-            "recommendationId": humanize(booking_view.recommendationId),
-            "stock": {
-                "id": humanize(booking_view.stockId),
-                "beginningDatetime": serialize(booking_view.beginningDatetime),
-                "offerId": humanize(booking_view.offerId),
-                "offer": {
-                    "id": humanize(booking_view.offerId),
-                    "isDigital": booking_view.url is not None and booking_view.url != '',
-                    "isEvent": ProductType.is_event(booking_view.type),
-                    "name": booking_view.name,
-                    "thumb_url": '',
-                    "stocks": serialized_stocks,
-                    "venue": {
-                        "id": humanize(booking_view.venueId),
-                        "departementCode": booking_view.departementCode,
-                    },
-                }
-            },
-            "stockId": humanize(booking_view.stockId),
-            "token": booking_view.token,
-            "userId": humanize(booking_view.userId),
-        }
-        results.append(dictified_booking)
-
-    return results
-
-
 @app.route('/bookings', methods=['GET'])
 @login_required
 def get_bookings():
-    print("===================================================")
-    serialized_bookings = serialize_bookings(current_user.id)
-    response = jsonify(serialized_bookings)
+    bookings = booking_queries.find_for_my_bookings_page(current_user.id)
 
-    print("===================================================")
-    return response, 200
+    if feature_queries.is_active(FeatureToggle.QR_CODE):
+        includes = WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES
+    else:
+        includes = WEBAPP_GET_BOOKING_INCLUDES
+
+    return jsonify([as_dict(b, includes=includes) for b in bookings]), 200
 
 
 @app.route('/bookings/<booking_id>', methods=['GET'])

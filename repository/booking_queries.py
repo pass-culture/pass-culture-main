@@ -10,7 +10,7 @@ from sqlalchemy.orm import Query
 from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, ThingBookingRecap, BookBookingRecap
 from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from domain.postal_code.postal_code import PostalCode
-from models import UserOfferer, BookingSQLEntity, StockSQLEntity, Offer
+from models import UserOfferer
 from models import VenueSQLEntity
 from models.api_errors import ResourceNotFoundError
 from models.booking_sql_entity import BookingSQLEntity
@@ -439,17 +439,10 @@ def find_not_used_and_not_cancelled() -> List[BookingSQLEntity]:
 
 
 def find_for_my_bookings_page(user_id: int) -> List[BookingSQLEntity]:
-    offer_types = ['ThingType.ACTIVATION', 'EventType.ACTIVATION']
-    return BookingSQLEntity.query \
-        .join(StockSQLEntity) \
-        .join(Offer) \
-        .filter(~Offer.type.in_(offer_types)) \
+    return _query_keep_on_non_activation_offers() \
         .distinct(BookingSQLEntity.stockId) \
         .filter(BookingSQLEntity.userId == user_id) \
-        .order_by(BookingSQLEntity.stockId,
-                  BookingSQLEntity.isCancelled,
-                  BookingSQLEntity.dateCreated.desc()
-                  ) \
+        .order_by(BookingSQLEntity.stockId, BookingSQLEntity.isCancelled, BookingSQLEntity.dateCreated.desc()) \
         .all()
 
 

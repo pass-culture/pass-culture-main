@@ -173,6 +173,7 @@ USER_INCLUDES = [
 WEBAPP_GET_BOOKING_INCLUDES = [
     "completedUrl",
     'isEventExpired',
+    "isUserCancellable",
     {
         "key": "stock",
         "includes": [
@@ -182,13 +183,16 @@ WEBAPP_GET_BOOKING_INCLUDES = [
             {
                 "key": "offer",
                 "includes": [
-                    'thumb_url',
                     'hasBookingLimitDatetimesPassed',
                     'isBookable',
                     'isDigital',
                     'isEvent',
                     "isFullyBooked",
                     "offerType",
+                    {
+                        "key": "product",
+                        "includes": ["thumbUrl"]
+                    },
                     {
                         "key": "stocks",
                         "includes": [
@@ -209,6 +213,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
         "key": "mediation",
         "includes": ['thumbUrl']
     },
+    "thumbUrl"
 ]
 
 WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = copy.deepcopy(
