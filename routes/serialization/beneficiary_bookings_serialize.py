@@ -11,9 +11,7 @@ def serialize_beneficiary_bookings(beneficiary_bookings: BeneficiaryBookings) ->
     for beneficiary_booking in beneficiary_bookings.bookings:
         serialized_stocks = serialize_stocks_for_beneficiary_bookings(beneficiary_booking.offerId,
                                                                       beneficiary_bookings.stocks)
-        serialized_booking = serialize_benefeciary_booking(beneficiary_booking,
-                                                           serialized_stocks,
-                                                           beneficiary_bookings.stocks)
+        serialized_booking = serialize_benefeciary_booking(beneficiary_booking, serialized_stocks)
         results.append(serialized_booking)
     return results
 
@@ -28,8 +26,6 @@ def serialize_stock_for_beneficiary_booking(stock: Stock) -> Dict:
         "quantity": stock.quantity,
         "price": stock.price,
         "id": humanize(stock.id),
-        "remainingQuantity": stock.remainingQuantity,
-        "isBookable": stock.is_bookable,
     }
 
 
@@ -37,14 +33,7 @@ def serialize_stocks_for_beneficiary_bookings(matched_offer_id: int, stocks: Lis
     return [serialize_stock_for_beneficiary_booking(stock) for stock in stocks if stock.offerId == matched_offer_id]
 
 
-def _serialize_remaining_quantity_for_booked_stock(beneficiary_booking: BeneficiaryBooking, stocks: List[Stock]) -> int:
-    for stock in stocks:
-        if stock.id == beneficiary_booking.stockId:
-            return stock.remainingQuantity
-
-
-def serialize_benefeciary_booking(beneficiary_booking: BeneficiaryBooking, serialized_stocks: List[Dict],
-                                  stocks: List[Stock]) -> Dict:
+def serialize_benefeciary_booking(beneficiary_booking: BeneficiaryBooking, serialized_stocks: List[Dict]) -> Dict:
     # TODO: "qrCode": 'FAKE_QR_CODE',
     dictified_booking = {
         "completedUrl": beneficiary_booking.booking_access_url,
@@ -62,9 +51,7 @@ def serialize_benefeciary_booking(beneficiary_booking: BeneficiaryBooking, seria
             "id": humanize(beneficiary_booking.stockId),
             "beginningDatetime": serialize(beneficiary_booking.beginningDatetime),
             "offerId": humanize(beneficiary_booking.offerId),
-            "price": beneficiary_booking.price,
             "isEventExpired": beneficiary_booking.is_event_expired,
-            "remainingQuantity": _serialize_remaining_quantity_for_booked_stock(beneficiary_booking, stocks),
             "offer": {
                 "description": beneficiary_booking.description,
                 "durationMinutes": beneficiary_booking.durationMinutes,
@@ -77,21 +64,14 @@ def serialize_benefeciary_booking(beneficiary_booking: BeneficiaryBooking, seria
                 "isNational": beneficiary_booking.isNational,
                 "name": beneficiary_booking.name,
                 "offerType": beneficiary_booking.humanized_offer_type,
-                "isFullyBooked": beneficiary_booking.is_fully_booked,
                 "thumb_url": '',
                 "stocks": serialized_stocks,
                 "venue": {
                     "id": humanize(beneficiary_booking.venueId),
                     "departementCode": beneficiary_booking.departementCode,
-                    "name": beneficiary_booking.venueName,
-                    "address": beneficiary_booking.address,
-                    "postalCode": beneficiary_booking.postalCode,
-                    "city": beneficiary_booking.city,
-                    "latitude": beneficiary_booking.latitude,
-                    "longitude": beneficiary_booking.longitude,
                 },
                 "venueId": humanize(beneficiary_booking.venueId),
-            },
+            }
         },
         "stockId": humanize(beneficiary_booking.stockId),
         "token": beneficiary_booking.token,

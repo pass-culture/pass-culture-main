@@ -6,17 +6,6 @@ from models.offer_type import ProductType, ThingType, EventType
 from utils.human_ids import humanize
 
 
-def compute_offer_is_fully_booked(stocks: List[Stock]) -> bool:
-    bookable_stocks = [stock for stock in stocks if stock.is_bookable]
-    has_unlimited_stock = any(map(lambda stock: stock.quantity is None, stocks))
-    if has_unlimited_stock:
-        return False
-
-    total_remaining_quantity = sum(
-        [stock.remainingQuantity for stock in bookable_stocks if stock.remainingQuantity is not None])
-    return total_remaining_quantity <= 0
-
-
 class BeneficiaryBooking:
     def __init__(self,
                  amount: int,
@@ -46,22 +35,7 @@ class BeneficiaryBooking:
                  withdrawalDetails: str,
                  mediaUrls: List[str],
                  isNational: bool,
-                 venueName: str,
-                 address: str,
-                 postalCode: str,
-                 city: str,
-                 latitude: float,
-                 longitude: float,
-                 price: float,
-                 stocks: List[Stock]
                  ):
-        self.price = price
-        self.longitude = longitude
-        self.latitude = latitude
-        self.city = city
-        self.postalCode = postalCode
-        self.address = address
-        self.venueName = venueName
         self.isNational = isNational
         self.mediaUrls = mediaUrls
         self.withdrawalDetails = withdrawalDetails
@@ -89,7 +63,6 @@ class BeneficiaryBooking:
         self.beginningDatetime = beginningDatetime
         self.venueId = venueId
         self.departementCode = departementCode
-        self.offerIsFullyBooked = compute_offer_is_fully_booked(stocks)
 
     @property
     def booking_access_url(self) -> str:
@@ -122,10 +95,6 @@ class BeneficiaryBooking:
         for possible_type in all_types:
             if str(possible_type) == self.type:
                 return possible_type.as_dict()
-
-    @property
-    def is_fully_booked(self):
-        return self.offerIsFullyBooked
 
 
 class BeneficiaryBookings:
