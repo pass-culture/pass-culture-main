@@ -9,33 +9,31 @@
   height: 100%;
   justify-content: center;
 
-  .title {
-    font-size: rem(32px);
-    font-style: italic;
-    font-weight: 700;
-    padding-top: rem(16px);
+  .nm-title {
+    @include hero();
+
+    padding-top: rem(32px);
   }
 
-  .subtitle,
-  .redirection-info {
-    font-style: normal;
-    font-weight: 200;
+  .nm-subtitle {
+    @include title2();
+
+    padding-top: rem(22px);
   }
 
-  .subtitle {
-    font-size: rem(16px);
-    padding-top: rem(16px);
-  }
+  .nm-redirection-link {
+    @include button();
 
-  .redirection-link {
+    align-items: center;
+    background-color: transparent;
     border: 2px solid $white;
     border-radius: rem(24px);
     color: $white;
     cursor: pointer;
-    font-size: rem(16px);
-    font-weight: 700;
-    margin: rem(48px) auto;
+    justify-content: center;
+    margin: rem(48px) auto 0 auto;
+    max-height: rem(50px);
+    outline: none;
     padding: rem(12px) rem(52px);
-    text-align: center;
   }
 }
