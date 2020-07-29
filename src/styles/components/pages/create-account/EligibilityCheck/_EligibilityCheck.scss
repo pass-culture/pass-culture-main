@@ -123,8 +123,9 @@
   }
 
   .recaptcha-notice {
+    @include caption();
+
     color: $grey-dark;
-    font-size: rem(14px);
     margin: 0 auto;
     text-align: center;
     width: 85%;
@@ -134,8 +135,6 @@
     }
 
     a {
-      @include caption();
-
       color: $primary;
     }
   }
@@ -145,6 +144,7 @@
   0% {
     transform: translateX(-5px);
   }
+
   100% {
     transform: translateX(5px);
   }
