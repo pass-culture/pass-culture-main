@@ -16,12 +16,8 @@ class OffersRequestParametersTest:
 
         # Then
         assert offers_request_parameters.keywords is None
-        assert offers_request_parameters.offerer_id is None
         assert offers_request_parameters.page == 0
         assert offers_request_parameters.pagination_limit == 10
-        assert offers_request_parameters.user_id == 12
-        assert offers_request_parameters.user_is_admin is True
-        assert offers_request_parameters.venue_id is None
 
     def should_create_object_with_expected_values(self):
         # When
