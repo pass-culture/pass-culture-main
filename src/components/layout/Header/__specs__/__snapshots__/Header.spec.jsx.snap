@@ -88,7 +88,7 @@ ShallowWrapper {
                 />
               </span>
               <span>
-                Vos offres
+                Offres
               </span>
             </NavLink>
             <a
@@ -294,7 +294,7 @@ ShallowWrapper {
                   />
                 </span>
                 <span>
-                  Vos offres
+                  Offres
                 </span>
               </NavLink>
               <a
@@ -567,7 +567,7 @@ ShallowWrapper {
                   />
                 </span>
                 <span>
-                  Vos offres
+                  Offres
                 </span>
               </NavLink>
               <a
@@ -746,7 +746,7 @@ ShallowWrapper {
                     />
                   </span>
                   <span>
-                    Vos offres
+                    Offres
                   </span>
                 </NavLink>,
                 <a
@@ -969,7 +969,7 @@ ShallowWrapper {
                       />
                     </span>,
                     <span>
-                      Vos offres
+                      Offres
                     </span>,
                   ],
                   "className": "navbar-item",
@@ -1008,10 +1008,10 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": "Vos offres",
+                      "children": "Offres",
                     },
                     "ref": null,
-                    "rendered": "Vos offres",
+                    "rendered": "Offres",
                     "type": "span",
                   },
                 ],
@@ -1780,7 +1780,7 @@ ShallowWrapper {
                   />
                 </span>
                 <span>
-                  Vos offres
+                  Offres
                 </span>
               </NavLink>
               <a
@@ -1986,7 +1986,7 @@ ShallowWrapper {
                     />
                   </span>
                   <span>
-                    Vos offres
+                    Offres
                   </span>
                 </NavLink>
                 <a
@@ -2259,7 +2259,7 @@ ShallowWrapper {
                     />
                   </span>
                   <span>
-                    Vos offres
+                    Offres
                   </span>
                 </NavLink>
                 <a
@@ -2438,7 +2438,7 @@ ShallowWrapper {
                       />
                     </span>
                     <span>
-                      Vos offres
+                      Offres
                     </span>
                   </NavLink>,
                   <a
@@ -2661,7 +2661,7 @@ ShallowWrapper {
                         />
                       </span>,
                       <span>
-                        Vos offres
+                        Offres
                       </span>,
                     ],
                     "className": "navbar-item",
@@ -2700,10 +2700,10 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Vos offres",
+                        "children": "Offres",
                       },
                       "ref": null,
-                      "rendered": "Vos offres",
+                      "rendered": "Offres",
                       "type": "span",
                     },
                   ],

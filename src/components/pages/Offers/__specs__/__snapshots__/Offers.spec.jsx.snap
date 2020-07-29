@@ -139,7 +139,7 @@ ShallowWrapper {
             </NavLink>
           }
           subtitle={null}
-          title="Vos offres"
+          title="Offres"
         />,
         <form
           className="section"
@@ -277,7 +277,7 @@ ShallowWrapper {
             </span>
           </NavLink>,
           "subtitle": null,
-          "title": "Vos offres",
+          "title": "Offres",
         },
         "ref": null,
         "rendered": null,
@@ -755,7 +755,7 @@ ShallowWrapper {
               </NavLink>
             }
             subtitle={null}
-            title="Vos offres"
+            title="Offres"
           />,
           <form
             className="section"
@@ -893,7 +893,7 @@ ShallowWrapper {
               </span>
             </NavLink>,
             "subtitle": null,
-            "title": "Vos offres",
+            "title": "Offres",
           },
           "ref": null,
           "rendered": null,

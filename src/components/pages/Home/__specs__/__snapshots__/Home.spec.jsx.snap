@@ -31,7 +31,7 @@ ShallowWrapper {
           navLink="/offres"
           svg="ico-offres-w"
           text="Créez et mettez en avant vos offres présentes sur le Pass."
-          title="Vos offres"
+          title="Offres"
         />
       </div>,
       "name": "home",
@@ -54,7 +54,7 @@ ShallowWrapper {
             navLink="/offres"
             svg="ico-offres-w"
             text="Créez et mettez en avant vos offres présentes sur le Pass."
-            title="Vos offres"
+            title="Offres"
           />,
         ],
         "className": "home-cards columns",
@@ -83,7 +83,7 @@ ShallowWrapper {
             "navLink": "/offres",
             "svg": "ico-offres-w",
             "text": "Créez et mettez en avant vos offres présentes sur le Pass.",
-            "title": "Vos offres",
+            "title": "Offres",
           },
           "ref": null,
           "rendered": null,
@@ -113,7 +113,7 @@ ShallowWrapper {
             navLink="/offres"
             svg="ico-offres-w"
             text="Créez et mettez en avant vos offres présentes sur le Pass."
-            title="Vos offres"
+            title="Offres"
           />
         </div>,
         "name": "home",
@@ -136,7 +136,7 @@ ShallowWrapper {
               navLink="/offres"
               svg="ico-offres-w"
               text="Créez et mettez en avant vos offres présentes sur le Pass."
-              title="Vos offres"
+              title="Offres"
             />,
           ],
           "className": "home-cards columns",
@@ -165,7 +165,7 @@ ShallowWrapper {
               "navLink": "/offres",
               "svg": "ico-offres-w",
               "text": "Créez et mettez en avant vos offres présentes sur le Pass.",
-              "title": "Vos offres",
+              "title": "Offres",
             },
             "ref": null,
             "rendered": null,

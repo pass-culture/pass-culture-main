@@ -19,7 +19,7 @@ const Home = () => (
         navLink="/offres"
         svg="ico-offres-w"
         text="Créez et mettez en avant vos offres présentes sur le Pass."
-        title="Vos offres"
+        title="Offres"
       />
     </div>
   </Main>

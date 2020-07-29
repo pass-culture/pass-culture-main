@@ -401,7 +401,7 @@ class OfferCreation extends PureComponent {
 
     return (
       <Main
-        backTo={{ path: '/offres', label: 'Vos offres' }}
+        backTo={{ path: '/offres', label: 'Offres' }}
         handleDataRequest={this.onHandleDataRequest}
         id="offer"
         name="offer"

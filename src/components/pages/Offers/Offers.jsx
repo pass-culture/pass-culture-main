@@ -180,7 +180,7 @@ class Offers extends PureComponent {
       >
         <Titles
           action={actionLink}
-          title="Vos offres"
+          title="Offres"
         />
         <form
           className="section"

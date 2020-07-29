@@ -77,7 +77,7 @@ class Header extends PureComponent {
                     <Icon svg="ico-offres-w" />
                   </span>
                   <span>
-                    {'Vos offres'}
+                    {'Offres'}
                   </span>
                 </NavLink>
               )}
