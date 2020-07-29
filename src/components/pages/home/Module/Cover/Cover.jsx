@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Icon from '../../../../layout/Icon/Icon'
+import { PANE_LAYOUT } from '../../domain/layout'
 
-const Cover = ({ img }) => {
+const Cover = ({ img, layout }) => {
   return (
     <li
       className="offer-cover-wrapper"
@@ -11,7 +12,7 @@ const Cover = ({ img }) => {
       <div className="ofw-image-wrapper">
         <img
           alt=""
-          className="ofw-image"
+          className={layout === PANE_LAYOUT['ONE-ITEM-MEDIUM'] ? "ofw-image-one-item" : "ofw-image-two-items"}
           src={img}
         />
         <div className="ofw-swipe-icon-wrapper">
@@ -25,8 +26,13 @@ const Cover = ({ img }) => {
   )
 }
 
+Cover.defaultProps = {
+  layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
+}
+
 Cover.propTypes = {
   img: PropTypes.string.isRequired,
+  layout: PropTypes.string,
 }
 
 export default Cover

@@ -23,14 +23,21 @@
     position: relative;
     width: 97%;
 
-    .ofw-image {
+    .ofw-image-one-item, .ofw-image-two-items {
       box-shadow: 0 rem(2px) rem(4px) 0 $black-shadow;
       background-color: $grey;
       border-radius: rem(8px);
-      height: rem(195px);
       object-fit: cover;
       margin-bottom: rem(5px);
       width: 100%;
+    }
+
+    .ofw-image-one-item {
+      height: rem(195px);
+    }
+
+    .ofw-image-two-items {
+      height: rem(215px);
     }
   }
 }
@@ -62,5 +69,10 @@
 
   .offer-tile-wrapper {
     max-width: 47%;
+  }
+
+  .otw-offer-info {
+    display: flex;
+    flex-direction: column;
   }
 }

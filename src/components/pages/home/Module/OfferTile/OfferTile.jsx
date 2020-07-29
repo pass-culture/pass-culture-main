@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { formatSearchResultDate } from '../../../../../utils/date/date'
 import { formatResultPrice } from '../../../../../utils/price'
 import { DEFAULT_THUMB_URL } from '../../../../../utils/thumb'
+import { PANE_LAYOUT } from '../../domain/layout'
 
 export const noOp = () => false
 
@@ -12,12 +13,13 @@ const preventDefault = event => {
   event.preventDefault()
 }
 
-const OfferTile = ({ historyPush, hit, isSwitching }) => {
+const OfferTile = ({ historyPush, hit, isSwitching, layout }) => {
   const { offer, venue } = hit
   const offerDates = offer.isEvent
-    ? `${formatSearchResultDate(venue.departementCode, offer.dates)} - `
+    ? `${formatSearchResultDate(venue.departementCode, offer.dates)}${layout === PANE_LAYOUT['ONE-ITEM-MEDIUM'] ? ' - ' : ''}`
     : ''
   const formattedPrice = formatResultPrice(offer.priceMin, offer.priceMax, offer.isDuo)
+
 
   function goToOffer() {
     if (!isSwitching) {
@@ -62,10 +64,15 @@ const OfferTile = ({ historyPush, hit, isSwitching }) => {
   )
 }
 
+OfferTile.defaultProps = {
+  layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
+}
+
 OfferTile.propTypes = {
   historyPush: PropTypes.func.isRequired,
   hit: PropTypes.shape().isRequired,
   isSwitching: PropTypes.bool.isRequired,
+  layout: PropTypes.string,
 }
 
 export default OfferTile

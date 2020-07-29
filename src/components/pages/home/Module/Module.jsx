@@ -46,7 +46,7 @@ class Module extends Component {
   renderOneItem = () => {
     const {
       historyPush,
-      module: { cover },
+      module: { cover, display },
       row,
     } = this.props
     const { hits, isSwitching } = this.state
@@ -56,13 +56,17 @@ class Module extends Component {
       tiles.map(tile => {
         const firstTileIsACover = !tile.offer
         return firstTileIsACover ?
-          <Cover img={tile} />
+          <Cover
+            img={tile}
+            layout={display.layout}
+          />
           :
           <OfferTile
             historyPush={historyPush}
             hit={tile}
             isSwitching={isSwitching}
             key={`${row}${tile.offer.id}`}
+            layout={display.layout}
           />
       })
     )
@@ -81,7 +85,10 @@ class Module extends Component {
         const firstTileIsACover = !tile[0].offer
         const offersArePaired = tile.length === 2
         return firstTileIsACover ?
-          <Cover img={tile} />
+          <Cover
+            img={tile}
+            layout={display.layout}
+          />
           :
           <div className="ofw-two-tiles-wrapper">
             <OfferTile
