@@ -5,7 +5,7 @@ from tests.model_creators.generic_creators import create_booking, \
     create_stock, create_user, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 
-from models import FavoriteSQLEntity, Mediation, Offer, Product, Recommendation, StockSQLEntity
+from models import FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Product, Recommendation, StockSQLEntity
 from models.offer_type import ThingType
 from repository import repository
 from repository.product_queries import delete_unwanted_existing_product, find_active_book_product_by_isbn
@@ -71,7 +71,7 @@ class DeleteUnwantedExistingProductTest:
 
         # Then
         assert Product.query.count() == 0
-        assert Offer.query.count() == 0
+        assert OfferSQLEntity.query.count() == 0
         assert StockSQLEntity.query.count() == 0
 
     @clean_database
@@ -92,7 +92,7 @@ class DeleteUnwantedExistingProductTest:
             delete_unwanted_existing_product('1111111111111')
 
         # Then
-        offer = Offer.query.one()
+        offer = OfferSQLEntity.query.one()
         assert offer.isActive is False
         assert Product.query.one() == product
         assert not product.isGcuCompatible
@@ -117,10 +117,10 @@ class DeleteUnwantedExistingProductTest:
 
         # Then
         assert Product.query.count() == 0
-        assert Offer.query.count() == 0
+        assert OfferSQLEntity.query.count() == 0
         assert StockSQLEntity.query.count() == 0
         assert Recommendation.query.count() == 0
-        assert Mediation.query.count() == 0
+        assert MediationSQLEntity.query.count() == 0
 
     @clean_database
     def test_should_delete_product_when_related_offer_is_on_user_favorite_list(self, app):
@@ -143,9 +143,9 @@ class DeleteUnwantedExistingProductTest:
 
         # Then
         assert Product.query.count() == 0
-        assert Offer.query.count() == 0
+        assert OfferSQLEntity.query.count() == 0
         assert StockSQLEntity.query.count() == 0
-        assert Mediation.query.count() == 0
+        assert MediationSQLEntity.query.count() == 0
         assert Recommendation.query.count() == 0
         assert FavoriteSQLEntity.query.count() == 0
 

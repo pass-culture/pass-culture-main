@@ -4,11 +4,11 @@ from connectors import redis
 from models.feature import FeatureToggle
 from repository import repository, feature_queries
 from domain.offers import is_from_allocine
-from models import Offer
+from models import OfferSQLEntity
 from validation.routes.offers import check_edition_for_allocine_offer_is_valid, check_offer_is_editable
 
 
-def update_an_offer(offer: Offer, modifications: dict) -> Offer:
+def update_an_offer(offer: OfferSQLEntity, modifications: dict) -> OfferSQLEntity:
     request_is_only_updating_isActive_status = _is_request_only_updating_isActive_status(modifications)
 
     if request_is_only_updating_isActive_status:
@@ -24,7 +24,7 @@ def update_an_offer(offer: Offer, modifications: dict) -> Offer:
         return offer
 
 
-def _update_offer(offer: Offer, modifications) -> Offer:
+def _update_offer(offer: OfferSQLEntity, modifications) -> OfferSQLEntity:
     offer.populate_from_dict(modifications)
     offer.update_with_product_data(modifications)
 
@@ -35,7 +35,7 @@ def _update_offer(offer: Offer, modifications) -> Offer:
     return offer
 
 
-def _update_offer_for_allocine_offers(offer: Offer, modifications) -> Offer:
+def _update_offer_for_allocine_offers(offer: OfferSQLEntity, modifications) -> OfferSQLEntity:
     modifications = _exclude_modifications_where_offer_value_wont_change(offer, modifications)
 
     check_edition_for_allocine_offer_is_valid(modifications)
@@ -56,7 +56,7 @@ def _update_offer_for_allocine_offers(offer: Offer, modifications) -> Offer:
     return offer
 
 
-def _update_offer_when_updating_isActive_field(offer: Offer, modifications) -> Offer:
+def _update_offer_when_updating_isActive_field(offer: OfferSQLEntity, modifications) -> OfferSQLEntity:
     offer.populate_from_dict(modifications)
     offer.update_with_product_data(modifications)
 
@@ -71,7 +71,7 @@ def _is_request_only_updating_isActive_status(payload) -> bool:
     return 'isActive' in payload and len(payload) == 1
 
 
-def _exclude_modifications_where_offer_value_wont_change(offer: Offer, modifications):
+def _exclude_modifications_where_offer_value_wont_change(offer: OfferSQLEntity, modifications):
     modifications_to_keep = dict()
 
     for (field, new_value) in modifications.items():

@@ -2,7 +2,7 @@ from datetime import datetime
 from unittest.mock import patch
 
 from local_providers import TiteLiveThings
-from models import Product, BookFormat, LocalProviderEvent, Offer
+from models import Product, BookFormat, LocalProviderEvent, OfferSQLEntity
 from models.local_provider_event import LocalProviderEventType
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
@@ -944,6 +944,6 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        offer = Offer.query.one()
+        offer = OfferSQLEntity.query.one()
         assert offer.isActive is False
         assert Product.query.count() == 1

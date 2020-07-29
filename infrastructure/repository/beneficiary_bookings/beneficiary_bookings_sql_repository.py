@@ -4,7 +4,7 @@ from domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 from domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
 from infrastructure.repository.beneficiary_bookings import stock_domain_converter, active_mediation_domain_converter
-from models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, Offer, VenueSQLEntity, Mediation, Product
+from models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, OfferSQLEntity, VenueSQLEntity, MediationSQLEntity, Product
 
 
 class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
@@ -65,19 +65,19 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
 
 
 def _get_mediations_information(offers_ids: List[int]) -> List[object]:
-    return Mediation.query \
-        .join(Offer, Offer.id == Mediation.offerId) \
-        .filter(Mediation.offerId.in_(offers_ids)) \
-        .filter(Mediation.isActive == True) \
-        .with_entities(Mediation.id,
-                       Mediation.dateCreated,
-                       Mediation.offerId) \
+    return MediationSQLEntity.query \
+        .join(OfferSQLEntity, OfferSQLEntity.id == MediationSQLEntity.offerId) \
+        .filter(MediationSQLEntity.offerId.in_(offers_ids)) \
+        .filter(MediationSQLEntity.isActive == True) \
+        .with_entities(MediationSQLEntity.id,
+                       MediationSQLEntity.dateCreated,
+                       MediationSQLEntity.offerId) \
         .all()
 
 
 def _get_stocks_information(offers_ids: List[int]) -> List[object]:
     return StockSQLEntity.query \
-        .join(Offer, Offer.id == StockSQLEntity.offerId) \
+        .join(OfferSQLEntity, OfferSQLEntity.id == StockSQLEntity.offerId) \
         .filter(StockSQLEntity.offerId.in_(offers_ids)) \
         .with_entities(StockSQLEntity.dateCreated,
                        StockSQLEntity.beginningDatetime,
@@ -88,7 +88,7 @@ def _get_stocks_information(offers_ids: List[int]) -> List[object]:
                        StockSQLEntity.price,
                        StockSQLEntity.id,
                        StockSQLEntity.isSoftDeleted,
-                       Offer.isActive) \
+                       OfferSQLEntity.isActive) \
         .all()
 
 
@@ -97,11 +97,11 @@ def _get_bookings_information(beneficiary_id: int) -> List[object]:
     return BookingSQLEntity.query \
         .join(UserSQLEntity, UserSQLEntity.id == BookingSQLEntity.userId) \
         .join(StockSQLEntity, StockSQLEntity.id == BookingSQLEntity.stockId) \
-        .join(Offer) \
-        .join(Product, Offer.productId == Product.id) \
+        .join(OfferSQLEntity) \
+        .join(Product, OfferSQLEntity.productId == Product.id) \
         .join(VenueSQLEntity) \
         .filter(BookingSQLEntity.userId == beneficiary_id) \
-        .filter(Offer.type.notin_(offer_activation_types)) \
+        .filter(OfferSQLEntity.type.notin_(offer_activation_types)) \
         .distinct(BookingSQLEntity.stockId) \
         .order_by(BookingSQLEntity.stockId,
                   BookingSQLEntity.isCancelled,
@@ -119,17 +119,17 @@ def _get_bookings_information(beneficiary_id: int) -> List[object]:
                        BookingSQLEntity.stockId,
                        BookingSQLEntity.token,
                        BookingSQLEntity.userId,
-                       Offer.id.label("offerId"),
-                       Offer.name,
-                       Offer.type,
-                       Offer.url,
-                       Offer.withdrawalDetails,
-                       Offer.isDuo,
-                       Offer.extraData,
-                       Offer.durationMinutes,
-                       Offer.description,
-                       Offer.mediaUrls,
-                       Offer.isNational,
+                       OfferSQLEntity.id.label("offerId"),
+                       OfferSQLEntity.name,
+                       OfferSQLEntity.type,
+                       OfferSQLEntity.url,
+                       OfferSQLEntity.withdrawalDetails,
+                       OfferSQLEntity.isDuo,
+                       OfferSQLEntity.extraData,
+                       OfferSQLEntity.durationMinutes,
+                       OfferSQLEntity.description,
+                       OfferSQLEntity.mediaUrls,
+                       OfferSQLEntity.isNational,
                        Product.id.label("productId"),
                        Product.thumbCount,
                        UserSQLEntity.email,

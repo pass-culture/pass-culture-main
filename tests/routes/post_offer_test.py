@@ -1,4 +1,4 @@
-from models import EventType, Offer, ThingType, Product, Offerer
+from models import EventType, OfferSQLEntity, ThingType, Product, Offerer
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
@@ -184,7 +184,7 @@ class Post:
             assert response.json['isThing'] is False
 
             offer_id = dehumanize(response.json['id'])
-            offer = Offer.query.filter_by(id=offer_id).first()
+            offer = OfferSQLEntity.query.filter_by(id=offer_id).first()
             assert offer.bookingEmail == 'offer@email.com'
             assert offer.venueId == venue.id
             event_id = dehumanize(response.json['product']['id'])
@@ -217,7 +217,7 @@ class Post:
 
             # Then
             offer_id = dehumanize(response.json['id'])
-            offer = Offer.query.filter_by(id=offer_id).first()
+            offer = OfferSQLEntity.query.filter_by(id=offer_id).first()
             assert response.status_code == 201
             assert offer.bookingEmail == None
 
@@ -248,10 +248,10 @@ class Post:
             # Then
             assert response.status_code == 201
             offer_id = dehumanize(response.json['id'])
-            offer = Offer.query.filter_by(id=offer_id).first()
+            offer = OfferSQLEntity.query.filter_by(id=offer_id).first()
             assert offer.bookingEmail == 'offer@email.com'
             offer_id = dehumanize(response.json['id'])
-            offer = Offer.query.filter_by(id=offer_id).first()
+            offer = OfferSQLEntity.query.filter_by(id=offer_id).first()
             assert offer.bookingEmail == 'offer@email.com'
             assert offer.venueId == venue.id
             thing_id = dehumanize(response.json['product']['id'])

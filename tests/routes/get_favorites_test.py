@@ -31,12 +31,11 @@ class Get:
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
-            offer1 = create_offer_with_thing_product(venue, thumb_count=0)
-            mediation1 = create_mediation(offer1, is_active=True)
+            offer1 = create_offer_with_thing_product(venue=venue, thumb_count=0)
+            mediation1 = create_mediation(offer=offer1, is_active=True, idx=123)
             favorite1 = create_favorite(mediation=mediation1, offer=offer1, user=user)
-            offer2 = create_offer_with_thing_product(venue, thumb_count=0)
-            mediation2 = create_mediation(offer2, is_active=True)
-            favorite2 = create_favorite(mediation=mediation2, offer=offer2, user=user)
+            offer2 = create_offer_with_thing_product(venue=venue, thumb_count=0)
+            favorite2 = create_favorite(offer=offer2, user=user)
             repository.save(user, favorite1, favorite2)
 
             # When
@@ -47,8 +46,11 @@ class Get:
             assert response.status_code == 200
             assert len(response.json) == 2
             first_favorite = response.json[0]
+            second_favorite = response.json[1]
             assert 'offer' in first_favorite
             assert 'venue' in first_favorite['offer']
+            assert first_favorite['mediationId'] == 'PM'
+            assert second_favorite['mediationId'] is None
             assert 'validationToken' not in first_favorite['offer']['venue']
 
     class Returns401:

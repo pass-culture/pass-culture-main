@@ -1,4 +1,4 @@
-from models import Mediation, Offer, StockSQLEntity, UserSQLEntity, Product
+from models import MediationSQLEntity, OfferSQLEntity, StockSQLEntity, UserSQLEntity, Product
 from models.recommendation import Recommendation
 from repository.user_queries import keep_only_webapp_users
 from sandboxes.scripts.utils.bookings import find_offer_compatible_with_bookings, \
@@ -12,7 +12,7 @@ from sandboxes.scripts.utils.helpers import get_mediation_helper, \
 def get_existing_webapp_user_with_at_least_one_recommendation():
    query = Recommendation.query.join(UserSQLEntity)
    query = keep_only_webapp_users(query)
-   query = query.reset_joinpoint().join(Offer)
+   query = query.reset_joinpoint().join(OfferSQLEntity)
 
    recommendation = query.first()
    return {
@@ -42,8 +42,8 @@ def get_existing_webapp_hbs_user():
 
 
 def get_existing_event_offer_with_active_mediation_already_booked_but_cancellable_and_user_hnmm_93():
-    offer_with_stock_id_tuples = Offer.query \
-        .filter(Offer.mediations.any(Mediation.isActive)) \
+    offer_with_stock_id_tuples = OfferSQLEntity.query \
+        .filter(OfferSQLEntity.mediations.any(MediationSQLEntity.isActive)) \
         .join(StockSQLEntity) \
         .filter(StockSQLEntity.beginningDatetime != None) \
         .add_columns(StockSQLEntity.id) \
@@ -62,10 +62,10 @@ def get_existing_event_offer_with_active_mediation_already_booked_but_cancellabl
 
 
 def get_existing_digital_offer_with_active_mediation_already_booked_and_user_hnmm_93():
-    offer_with_stock_id_tuples = Offer.query.outerjoin(Product) \
-        .filter(Offer.mediations.any(Mediation.isActive)) \
+    offer_with_stock_id_tuples = OfferSQLEntity.query.outerjoin(Product) \
+        .filter(OfferSQLEntity.mediations.any(MediationSQLEntity.isActive)) \
         .filter(Product.url != None) \
-        .join(StockSQLEntity, (Offer.id == StockSQLEntity.offerId)) \
+        .join(StockSQLEntity, (OfferSQLEntity.id == StockSQLEntity.offerId)) \
         .add_columns(StockSQLEntity.id) \
         .all()
     user = get_existing_webapp_hnmm_user()

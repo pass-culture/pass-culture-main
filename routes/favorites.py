@@ -4,7 +4,8 @@ from flask_login import current_user, login_required
 
 from domain.favorites import create_favorite
 from infrastructure.container import list_favorites_of_beneficiary
-from models import FavoriteSQLEntity, Mediation, Offer
+from infrastructure.repository.favorite import favorite_domain_converter
+from models import FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity
 from repository import repository
 from repository.favorite_queries import find_favorite_for_offer_and_user
 from routes.serialization import as_dict
@@ -22,12 +23,13 @@ def add_to_favorite():
     mediation_id = request.json.get('mediationId')
     check_offer_id_is_present_in_request(offer_id)
 
-    offer = load_or_404(Offer, offer_id)
+    offer = load_or_404(OfferSQLEntity, offer_id)
     if mediation_id is not None:
-        mediation = load_or_404(Mediation, mediation_id)
+        mediation = load_or_404(MediationSQLEntity, mediation_id)
 
-    favorite = create_favorite(mediation, offer, current_user)
-    repository.save(favorite)
+    favorite_sql_entity = create_favorite(mediation, offer, current_user)
+    repository.save(favorite_sql_entity)
+    favorite = favorite_domain_converter.to_domain(favorite_sql_entity)
 
     return jsonify(serialize_favorite(favorite, current_user)), 201
 
@@ -56,5 +58,6 @@ def get_favorites():
 @app.route('/favorites/<favorite_id>', methods=['GET'])
 @login_required
 def get_favorite(favorite_id):
-    favorite = load_or_404(FavoriteSQLEntity, favorite_id)
+    favorite_sql_entity = load_or_404(FavoriteSQLEntity, favorite_id)
+    favorite = favorite_domain_converter.to_domain(favorite_sql_entity)
     return jsonify(serialize_favorite(favorite, current_user)), 200

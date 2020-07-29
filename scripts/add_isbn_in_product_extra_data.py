@@ -2,7 +2,7 @@ from typing import List, Dict
 
 from sqlalchemy.engine import Connection
 
-from models import Product, Offer
+from models import Product, OfferSQLEntity
 from models.db import db
 from repository.providable_queries import _dict_to_object
 from scripts.performance_toolkit import bulk_update_pc_objects
@@ -80,11 +80,11 @@ def _add_isbn_in_offer_extra_data(connection: Connection) -> int:
         offers_to_update = []
 
         for offer in offers:
-            offer_to_update = _dict_to_object(offer, Offer)
+            offer_to_update = _dict_to_object(offer, OfferSQLEntity)
             offer_to_update.extraData['isbn'] = _extract_isbn_from_offer_id_at_providers(offer_to_update.idAtProviders)
             offers_to_update.append(offer_to_update)
 
-        bulk_update_pc_objects(offers_to_update, Offer)
+        bulk_update_pc_objects(offers_to_update, OfferSQLEntity)
         nb_offers_updated += len(offers_to_update)
 
         offer_index += CHUNK_SIZE

@@ -12,7 +12,7 @@ from local_providers.price_rule import PriceRule
 from models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
     BankInformation, BeneficiaryImport, BeneficiaryImportSources, BeneficiaryImportStatus, BookingSQLEntity, \
     Criterion, Deposit, Email, FavoriteSQLEntity, ImportStatus, IrisFrance, IrisVenues, \
-    Mediation, Offer, Offerer, Payment, PaymentMessage, PaymentStatus, \
+    MediationSQLEntity, OfferSQLEntity, Offerer, Payment, PaymentMessage, PaymentStatus, \
     Provider, Recommendation, RightsType, StockSQLEntity, ThingType, UserSQLEntity, UserOfferer, \
     VenueSQLEntity, VenueProvider, SeenOffer
 from models.allocine_venue_provider import AllocineVenueProvider
@@ -177,8 +177,8 @@ def create_email(content: str,
 
 
 def create_favorite(idx: int = None,
-                    mediation: Mediation = None,
-                    offer: Offer = None,
+                    mediation: MediationSQLEntity = None,
+                    offer: OfferSQLEntity = None,
                     user: UserSQLEntity = None) -> FavoriteSQLEntity:
     favorite = FavoriteSQLEntity()
     favorite.id = idx
@@ -189,7 +189,7 @@ def create_favorite(idx: int = None,
     return favorite
 
 
-def create_mediation(offer: Offer = None,
+def create_mediation(offer: OfferSQLEntity = None,
                      author: UserSQLEntity = None,
                      credit: str = None,
                      date_created: datetime = datetime.utcnow(),
@@ -199,8 +199,8 @@ def create_mediation(offer: Offer = None,
                      is_active: bool = True,
                      last_provider_id: int = None,
                      thumb_count: int = 0,
-                     ) -> Mediation:
-    mediation = Mediation()
+                     ) -> MediationSQLEntity:
+    mediation = MediationSQLEntity()
     mediation.author = author
     mediation.credit = credit
     mediation.dateCreated = date_created
@@ -366,7 +366,7 @@ def create_provider(api_key: str = None,
     return provider
 
 
-def create_recommendation(offer: Offer = None,
+def create_recommendation(offer: OfferSQLEntity = None,
                           user: UserSQLEntity = None,
                           date_created: datetime = datetime.utcnow(),
                           date_read: datetime = None,
@@ -374,7 +374,7 @@ def create_recommendation(offer: Offer = None,
                           idx: int = None,
                           is_clicked: bool = False,
                           is_first: bool = False,
-                          mediation: Mediation = None,
+                          mediation: MediationSQLEntity = None,
                           search: str = None,
                           share_medium: str = None) -> Recommendation:
     recommendation = Recommendation()
@@ -393,7 +393,7 @@ def create_recommendation(offer: Offer = None,
     return recommendation
 
 
-def create_seen_offer(offer: Offer, user: UserSQLEntity, date_seen: Optional[datetime] = None) -> SeenOffer:
+def create_seen_offer(offer: OfferSQLEntity, user: UserSQLEntity, date_seen: Optional[datetime] = None) -> SeenOffer:
     if not date_seen:
         date_seen = datetime.utcnow()
     seen_offer = SeenOffer()
@@ -407,7 +407,7 @@ def create_stock(quantity: int = None, booking_limit_datetime: datetime = None, 
                  date_created: datetime = datetime.utcnow(), date_modified: datetime = datetime.utcnow(),
                  date_modified_at_last_provider: datetime = None, has_been_migrated: bool = None, idx: int = None,
                  id_at_providers: str = None, is_soft_deleted: bool = False, last_provider_id: int = None,
-                 offer: Offer = None, price: float = 10) -> StockSQLEntity:
+                 offer: OfferSQLEntity = None, price: float = 10) -> StockSQLEntity:
     stock = StockSQLEntity()
     stock.quantity = quantity
     stock.beginningDatetime = beginning_datetime

@@ -15,7 +15,7 @@ from models import VenueSQLEntity
 from models.api_errors import ResourceNotFoundError
 from models.booking_sql_entity import BookingSQLEntity
 from models.db import db
-from models.offer import Offer
+from models.offer_sql_entity import OfferSQLEntity
 from models.offer_type import EventType, ThingType
 from models.offerer import Offerer
 from models.payment import Payment
@@ -34,8 +34,8 @@ def _query_keep_on_non_activation_offers() -> Query:
 
     return BookingSQLEntity.query \
         .join(StockSQLEntity) \
-        .join(Offer) \
-        .filter(~Offer.type.in_(offer_types))
+        .join(OfferSQLEntity) \
+        .filter(~OfferSQLEntity.type.in_(offer_types))
 
 
 def count() -> int:
@@ -88,7 +88,7 @@ def find_all_bookings_info(offerer_id: int,
     query = _filter_bookings_by_offerer_id(offerer_id)
 
     if offer_id:
-        query = query.filter(Offer.id == offer_id)
+        query = query.filter(OfferSQLEntity.id == offer_id)
         offer = offer_queries.get_offer_by_id(offer_id)
         if offer and offer.isEvent and date_from:
             query = query.filter(StockSQLEntity.beginningDatetime == date_from)
@@ -124,7 +124,7 @@ def _select_only_needed_fields_for_bookings_info(query: Query) -> Query:
                                BookingSQLEntity.isCancelled.label('isCancelled'),
                                BookingSQLEntity.isUsed.label('isUsed'),
                                VenueSQLEntity.name.label('venue_name'),
-                               Offer.name.label('offer_name'),
+                               OfferSQLEntity.name.label('offer_name'),
                                UserSQLEntity.lastName.label('user_lastname'),
                                UserSQLEntity.firstName.label('user_firstname'),
                                UserSQLEntity.email.label('user_email'))
@@ -132,20 +132,20 @@ def _select_only_needed_fields_for_bookings_info(query: Query) -> Query:
 
 def find_from_recommendation(recommendation: Recommendation, user: UserSQLEntity) -> List[BookingSQLEntity]:
     return _query_keep_on_non_activation_offers() \
-        .filter(Offer.id == recommendation.offerId) \
+        .filter(OfferSQLEntity.id == recommendation.offerId) \
         .distinct(BookingSQLEntity.stockId) \
         .filter(BookingSQLEntity.userId == user.id) \
         .order_by(BookingSQLEntity.stockId, BookingSQLEntity.isCancelled, BookingSQLEntity.dateCreated.desc()) \
         .all()
 
 
-def is_offer_already_booked_by_user(user_id: int, offer: Offer) -> bool:
+def is_offer_already_booked_by_user(user_id: int, offer: OfferSQLEntity) -> bool:
     return BookingSQLEntity.query \
                .filter_by(userId=user_id) \
                .filter_by(isCancelled=False) \
                .join(StockSQLEntity) \
-               .join(Offer) \
-               .filter(Offer.id == offer.id) \
+               .join(OfferSQLEntity) \
+               .filter(OfferSQLEntity.id == offer.id) \
                .count() > 0
 
 
@@ -159,7 +159,7 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> BookingSQLEn
     if offer_id:
         query_offer = BookingSQLEntity.query \
             .join(StockSQLEntity) \
-            .join(Offer) \
+            .join(OfferSQLEntity) \
             .filter_by(id=offer_id)
         query = query.intersect_all(query_offer)
 
@@ -211,7 +211,7 @@ def _build_bookings_recap_query(user_id: int) -> Query:
         .reset_joinpoint() \
         .join(UserSQLEntity) \
         .join(StockSQLEntity) \
-        .join(Offer) \
+        .join(OfferSQLEntity) \
         .join(VenueSQLEntity) \
         .join(Offerer) \
         .join(UserOfferer) \
@@ -226,9 +226,9 @@ def _build_bookings_recap_query(user_id: int) -> Query:
             BookingSQLEntity.amount.label("bookingAmount"),
             BookingSQLEntity.dateUsed.label("dateUsed"),
             BookingSQLEntity.cancellationDate.label("cancellationDate"),
-            Offer.name.label("offerName"),
-            Offer.id.label("offerId"),
-            Offer.extraData.label("offerExtraData"),
+        OfferSQLEntity.name.label("offerName"),
+        OfferSQLEntity.id.label("offerId"),
+        OfferSQLEntity.extraData.label("offerExtraData"),
             Payment.currentStatus.label("paymentStatus"),
             Payment.lastProcessedDate.label("paymentDate"),
             UserSQLEntity.firstName.label("beneficiaryFirstname"),
@@ -396,13 +396,13 @@ def find_date_used(booking: BookingSQLEntity) -> datetime:
 
 
 def find_user_activation_booking(user: UserSQLEntity) -> BookingSQLEntity:
-    is_activation_offer = (Offer.type == str(ThingType.ACTIVATION)) | (
-            Offer.type == str(EventType.ACTIVATION))
+    is_activation_offer = (OfferSQLEntity.type == str(ThingType.ACTIVATION)) | (
+            OfferSQLEntity.type == str(EventType.ACTIVATION))
 
     return BookingSQLEntity.query \
         .join(UserSQLEntity) \
         .join(StockSQLEntity, BookingSQLEntity.stockId == StockSQLEntity.id) \
-        .join(Offer) \
+        .join(OfferSQLEntity) \
         .filter(is_activation_offer) \
         .filter(UserSQLEntity.id == user.id) \
         .first()
@@ -415,7 +415,7 @@ def find_existing_tokens() -> Set[str]:
 def _filter_bookings_by_offerer_id(offerer_id: int) -> Query:
     return BookingSQLEntity.query \
         .join(StockSQLEntity) \
-        .join(Offer) \
+        .join(OfferSQLEntity) \
         .join(VenueSQLEntity) \
         .join(UserSQLEntity) \
         .filter(VenueSQLEntity.managingOffererId == offerer_id) \
@@ -450,11 +450,11 @@ def find_for_my_bookings_page(user_id: int) -> List[BookingSQLEntity]:
 
 
 def get_only_offer_ids_from_bookings(user: UserSQLEntity) -> List[int]:
-    offers_booked = Offer.query \
+    offers_booked = OfferSQLEntity.query \
         .join(StockSQLEntity) \
         .join(BookingSQLEntity) \
         .filter_by(userId=user.id) \
-        .with_entities(Offer.id) \
+        .with_entities(OfferSQLEntity.id) \
         .all()
     return [offer.id for offer in offers_booked]
 

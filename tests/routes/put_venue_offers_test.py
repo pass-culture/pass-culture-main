@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from models import Offer
+from models import OfferSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
@@ -115,7 +115,7 @@ class Put:
             assert response.json[0]['isActive'] == True
             assert response.json[1]['isActive'] == True
 
-            offers = Offer.query.all()
+            offers = OfferSQLEntity.query.all()
             assert offers[0].isActive == True
             assert offers[1].isActive == True
 
@@ -198,7 +198,7 @@ class Put:
             assert response.json[0]['isActive'] == False
             assert response.json[1]['isActive'] == False
 
-            offers = Offer.query.all()
+            offers = OfferSQLEntity.query.all()
             assert not offers[0].isActive
             assert not offers[1].isActive
 

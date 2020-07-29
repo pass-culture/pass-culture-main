@@ -5,7 +5,7 @@ from connectors import redis
 from connectors.thumb_storage import read_thumb, create_thumb
 from domain.mediations import create_new_mediation
 from models.feature import FeatureToggle
-from models.mediation import Mediation
+from models.mediation_sql_entity import MediationSQLEntity
 from models.user_offerer import RightsType
 from repository import repository, feature_queries
 from routes.serialization import as_dict
@@ -37,7 +37,7 @@ def create_mediation():
 @app.route('/mediations/<mediation_id>', methods=['GET'])
 @login_required
 def get_mediation(mediation_id):
-    mediation = load_or_404(Mediation, mediation_id)
+    mediation = load_or_404(MediationSQLEntity, mediation_id)
     return jsonify(as_dict(mediation))
 
 
@@ -45,9 +45,9 @@ def get_mediation(mediation_id):
 @login_required
 @expect_json_data
 def update_mediation(mediation_id):
-    mediation = load_or_404(Mediation, mediation_id)
+    mediation = load_or_404(MediationSQLEntity, mediation_id)
     ensure_current_user_has_rights(RightsType.editor, mediation.offer.venue.managingOffererId)
-    mediation = Mediation.query.filter_by(id=dehumanize(mediation_id)).first()
+    mediation = MediationSQLEntity.query.filter_by(id=dehumanize(mediation_id)).first()
     data = request.json
     mediation.populate_from_dict(data)
     repository.save(mediation)

@@ -144,7 +144,7 @@ class BookingSQLRepositoryTest:
             self.booking_sql_repository = BookingSQLRepository()
 
         @clean_database
-        def should_return_booking_matching_identifier(self, app) -> None:
+        def should_return_booking_matching_identifier(self, app):
             # given
             user = create_user()
             offerer = create_offerer()
@@ -164,7 +164,7 @@ class BookingSQLRepositoryTest:
             assert found_booking.identifier == booking_sql_entity.id
 
         @clean_database
-        def should_raise_exception_when_no_booking_is_found(self, app) -> None:
+        def should_raise_exception_when_no_booking_is_found(self, app):
             # given
             user = create_user()
             offerer = create_offerer()
@@ -185,7 +185,7 @@ class BookingSQLRepositoryTest:
             assert error.value.errors['bookingId'] == ['bookingId ne correspond à aucune réservation']
 
         @clean_database
-        def should_raise_exception_when_booking_does_not_belong_to_beneficiary(self, app) -> None:
+        def should_raise_exception_when_booking_does_not_belong_to_beneficiary(self, app):
             # given
             user = create_user()
             user2 = create_user(email='notowner@example.com')

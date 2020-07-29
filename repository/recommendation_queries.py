@@ -4,7 +4,7 @@ from typing import List
 from sqlalchemy import and_
 from sqlalchemy.sql.expression import literal, select
 
-from models import BookingSQLEntity, FavoriteSQLEntity, Mediation, Offer, Recommendation, UserSQLEntity
+from models import BookingSQLEntity, FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Recommendation, UserSQLEntity
 from models.api_errors import ResourceNotFoundError
 from models.db import db
 from repository import mediation_queries
@@ -34,7 +34,7 @@ def update_read_recommendations(read_recommendations: List) -> None:
         db.session.commit()
 
 
-def _has_no_mediation_or_mediation_does_not_match_offer(mediation: Mediation, offer_id: str) -> bool:
+def _has_no_mediation_or_mediation_does_not_match_offer(mediation: MediationSQLEntity, offer_id: str) -> bool:
     return mediation is None or (offer_id and (mediation.offerId != offer_id))
 
 
@@ -44,7 +44,7 @@ def find_recommendation_already_created_on_discovery(offer_id: str, mediation_id
     query = Recommendation.query.filter((Recommendation.userId == user_id)
                                         & (Recommendation.search == None))
     if offer_id:
-        query = query.join(Offer)
+        query = query.join(OfferSQLEntity)
     mediation = mediation_queries.find_by_id(mediation_id)
     offer = find_searchable_offer(offer_id)
 
@@ -61,7 +61,7 @@ def find_recommendation_already_created_on_discovery(offer_id: str, mediation_id
             logger.debug(lambda: 'Offer not found for offer_id=%s' % (offer_id,))
             raise ResourceNotFoundError()
 
-        query = query.filter(Offer.id == offer_id)
+        query = query.filter(OfferSQLEntity.id == offer_id)
 
     return query.first()
 

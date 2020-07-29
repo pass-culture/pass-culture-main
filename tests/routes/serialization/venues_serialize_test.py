@@ -4,7 +4,7 @@ from utils.human_ids import humanize
 
 
 class SerializeVenuesWithOffererNameTest:
-    def test_should_return_json_with_expected_information(self) -> None:
+    def test_should_return_json_with_expected_information(self):
         # Given
         venue_1 = VenueWithOffererName(identifier=1, name='Librairie Kléber', offerer_name='Gilbert Joseph',
                                        is_virtual=True)

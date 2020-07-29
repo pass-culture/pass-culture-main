@@ -9,11 +9,11 @@ from tests.model_creators.generic_creators import create_offerer, create_venue, 
 
 
 class GetByProIdentifierTest:
-    def setup_method(self) -> None:
+    def setup_method(self):
         self.venue_sql_repository = VenueWithOffererNameSQLRepository()
 
     @clean_database
-    def test_returns_all_venues_of_pro_user(self, app: object) -> None:
+    def test_returns_all_venues_of_pro_user(self, app: object):
         # given
         pro_user = create_user()
         offerer = create_offerer()
@@ -36,7 +36,7 @@ class GetByProIdentifierTest:
         assert set(found_venues_id) == {expected_venue_1.identifier, expected_venue_2.identifier}
 
     @clean_database
-    def test_returns_empty_list_when_no_venues_exist(self, app: object) -> None:
+    def test_returns_empty_list_when_no_venues_exist(self, app: object):
         # given
         pro_user = create_user()
         offerer = create_offerer()
@@ -50,7 +50,7 @@ class GetByProIdentifierTest:
         assert found_venues == []
 
     @clean_database
-    def test_returns_all_venues_of_pro_user_ordered_by_name(self, app: object) -> None:
+    def test_returns_all_venues_of_pro_user_ordered_by_name(self, app: object):
         # given
         pro_user = create_user()
         offerer = create_offerer()
@@ -72,7 +72,7 @@ class GetByProIdentifierTest:
         assert found_venues[1].name == expected_venue_1.name
 
     @clean_database
-    def test_does_not_return_venues_of_non_validated_offerer(self, app: object) -> None:
+    def test_does_not_return_venues_of_non_validated_offerer(self, app: object):
         # given
         pro_user = create_user()
         offerer_validated = create_offerer(siren='123456789')
@@ -94,7 +94,7 @@ class GetByProIdentifierTest:
         assert found_venues[0].name == expected_venue.name
 
     @clean_database
-    def test_does_not_return_venues_of_non_validated_user_offerer(self, app: object) -> None:
+    def test_does_not_return_venues_of_non_validated_user_offerer(self, app: object):
         # given
         pro_user = create_user(email='john.doe@example.com')
         offerer = create_offerer(siren='123456789')
@@ -110,7 +110,7 @@ class GetByProIdentifierTest:
         assert len(found_venues) == 0
 
     @clean_database
-    def test_returns_all_venues_of_pro_user_with_public_name_when_provided(self, app: object) -> None:
+    def test_returns_all_venues_of_pro_user_with_public_name_when_provided(self, app: object):
         # given
         pro_user = create_user()
         offerer = create_offerer()

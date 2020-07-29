@@ -6,7 +6,7 @@ from sqlalchemy.orm import aliased
 
 from models import UserSQLEntity, Offerer, PaymentStatus
 from models.booking_sql_entity import BookingSQLEntity
-from models.offer import Offer
+from models.offer_sql_entity import OfferSQLEntity
 from models.payment import Payment
 from models.stock_sql_entity import StockSQLEntity
 from models import VenueSQLEntity
@@ -22,7 +22,7 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
         .join(UserSQLEntity) \
         .reset_joinpoint() \
         .join(StockSQLEntity) \
-        .join(Offer) \
+        .join(OfferSQLEntity) \
         .join(VenueSQLEntity) \
         .filter(VenueSQLEntity.managingOffererId == offerer_id) \
         .join(Offerer) \
@@ -33,7 +33,7 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
                        UserSQLEntity.firstName.label('user_firstName'),
                        BookingSQLEntity.token.label('booking_token'),
                        BookingSQLEntity.dateUsed.label('booking_dateUsed'),
-                       Offer.name.label('offer_name'),
+                       OfferSQLEntity.name.label('offer_name'),
                        Offerer.address.label('offerer_address'),
                        VenueSQLEntity.name.label('venue_name'),
                        VenueSQLEntity.siret.label('venue_siret'),

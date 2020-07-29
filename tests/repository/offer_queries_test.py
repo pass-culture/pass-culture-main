@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from freezegun import freeze_time
 from sqlalchemy import func
 
-from models import Offer, StockSQLEntity, Product
+from models import OfferSQLEntity, StockSQLEntity, Product
 from models.offer_type import EventType, ThingType
 from repository import repository
 from repository.offer_queries import department_or_national_offers, \
@@ -322,7 +322,7 @@ class QueryOfferWithRemainingStocksTest:
         repository.save(offer)
 
         # When
-        offers_count = Offer.query \
+        offers_count = OfferSQLEntity.query \
             .join(StockSQLEntity) \
             .count()
 
@@ -344,7 +344,7 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = Offer.query \
+        offers_count = OfferSQLEntity.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
@@ -369,7 +369,7 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = Offer.query \
+        offers_count = OfferSQLEntity.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
@@ -393,7 +393,7 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = Offer.query \
+        offers_count = OfferSQLEntity.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
@@ -418,7 +418,7 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = Offer.query \
+        offers_count = OfferSQLEntity.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
@@ -443,7 +443,7 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = Offer.query \
+        offers_count = OfferSQLEntity.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
@@ -474,8 +474,8 @@ class BaseScoreTest:
         repository.save(offer1, offer2)
 
         # When
-        offers = Offer.query \
-            .order_by(Offer.baseScore.desc()) \
+        offers = OfferSQLEntity.query \
+            .order_by(OfferSQLEntity.baseScore.desc()) \
             .all()
 
         # Then

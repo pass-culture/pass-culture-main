@@ -1,5 +1,5 @@
 from models.booking_sql_entity import BookingSQLEntity
-from models.offer import Offer
+from models.offer_sql_entity import OfferSQLEntity
 from models.offerer import Offerer
 from models.payment import Payment
 from models.stock_sql_entity import StockSQLEntity
@@ -18,7 +18,7 @@ from sandboxes.scripts.utils.helpers import get_booking_helper, \
 def get_existing_pro_validated_user_with_validated_offerer_with_reimbursement():
     query = Payment.query.join(BookingSQLEntity) \
         .join(StockSQLEntity) \
-        .join(Offer) \
+        .join(OfferSQLEntity) \
         .join(VenueSQLEntity) \
         .join(Offerer) \
         .join(UserOfferer) \

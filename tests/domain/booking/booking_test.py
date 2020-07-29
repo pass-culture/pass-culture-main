@@ -8,7 +8,7 @@ from tests.domain_creators.generic_creators import create_domain_stock, create_d
 
 
 class TotalAmountTest:
-    def test_should_return_total_amount(self) -> None:
+    def test_should_return_total_amount(self):
         # Given
         beneficiary = create_domain_beneficiary()
         stock = create_domain_stock(
@@ -31,7 +31,7 @@ class TotalAmountTest:
 
 
 class CancelTest:
-    def should_raise_error_when_booking_is_used(self) -> None:
+    def should_raise_error_when_booking_is_used(self):
         # Given
         beneficiary = create_domain_beneficiary()
         stock = create_domain_stock(
@@ -55,7 +55,7 @@ class CancelTest:
         assert error.value.errors['booking'] == ['Impossible d\'annuler une réservation consommée']
         assert booking.isCancelled is False
 
-    def should_raise_error_when_booking_linked_on_stock_event_with_beginning_date_in_less_than_72_hours(self) -> None:
+    def should_raise_error_when_booking_linked_on_stock_event_with_beginning_date_in_less_than_72_hours(self):
         # Given
         tomorrow = datetime.now() + timedelta(days=1)
         beneficiary = create_domain_beneficiary()
@@ -80,7 +80,7 @@ class CancelTest:
                    'booking'] == ["Impossible d'annuler une réservation moins de 72h avant le début de l'évènement"]
         assert booking.isCancelled is False
 
-    def should_change_booking_status_to_cancelled_when_its_not_used_or_far_from_event_date(self) -> None:
+    def should_change_booking_status_to_cancelled_when_its_not_used_or_far_from_event_date(self):
         # Given
         beneficiary = create_domain_beneficiary()
         stock = create_domain_stock(

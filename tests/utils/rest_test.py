@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy import func
 
-from models import Offer, VenueSQLEntity, ApiErrors
+from models import OfferSQLEntity, VenueSQLEntity, ApiErrors
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
@@ -41,7 +41,7 @@ class TestCheckOrderByTest:
     def test_check_order_by_raises_no_exception_when_given_sqlalchemy_column(self, app):
         # When
         try:
-            check_order_by(Offer.id)
+            check_order_by(OfferSQLEntity.id)
         except ApiErrors:
             # Then
             assert pytest.fail("Should not fail with valid params")
@@ -49,7 +49,7 @@ class TestCheckOrderByTest:
     def test_check_order_by_raises_no_exception_when_given_sqlalchemy_column_list(self, app):
         # When
         try:
-            check_order_by([Offer.id, Offer.venueId])
+            check_order_by([OfferSQLEntity.id, OfferSQLEntity.venueId])
         except ApiErrors:
             # Then
             assert pytest.fail("Should not fail with valid params")
@@ -57,7 +57,7 @@ class TestCheckOrderByTest:
     def test_check_order_by_raises_no_exception_when_given_sqlalchemy_desc_expression(self, app):
         # When
         try:
-            check_order_by(Offer.id.desc())
+            check_order_by(OfferSQLEntity.id.desc())
         except ApiErrors:
             # Then
             assert pytest.fail("Should not fail with valid params")
@@ -73,7 +73,7 @@ class TestCheckOrderByTest:
     def test_check_order_by_raises_no_exception_when_given_mixed_list(self, app):
         # When
         try:
-            check_order_by([Offer.id, Offer.venueId.desc(), func.random(), 'id'])
+            check_order_by([OfferSQLEntity.id, OfferSQLEntity.venueId.desc(), func.random(), 'id'])
         except ApiErrors:
             # Then
             assert pytest.fail("Should not fail with valid params")
@@ -138,7 +138,7 @@ class TestCheckOrderByTest:
     def test_check_order_by_raises_an_exception_when_given_list_containing_invalid_part(self, app):
         # When
         with pytest.raises(ApiErrors) as e:
-            check_order_by([Offer.id, func.random(), 'select * from toto'])
+            check_order_by([OfferSQLEntity.id, func.random(), 'select * from toto'])
 
         # Then
         assert 'order_by' in e.value.errors

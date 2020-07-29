@@ -6,7 +6,7 @@ from sqlalchemy import Sequence
 from domain.libraires import get_libraires_stock_information, read_last_modified_date
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
-from models import VenueProvider, Offer, StockSQLEntity
+from models import VenueProvider, OfferSQLEntity, StockSQLEntity
 from models.db import Model, db
 from repository import product_queries
 from repository.booking_queries import count_not_cancelled_bookings_quantity_by_stock_id
@@ -40,7 +40,7 @@ class LibrairesStocks(LocalProvider):
         if not self.product:
             return []
 
-        providable_info_offer = self.create_providable_info(Offer, f"{self.libraires_stock['ref']}@{self.siret}",
+        providable_info_offer = self.create_providable_info(OfferSQLEntity, f"{self.libraires_stock['ref']}@{self.siret}",
                                                             datetime.utcnow())
         providable_info_stock = self.create_providable_info(StockSQLEntity,
                                                             f"{self.libraires_stock['ref']}@{self.siret}",
@@ -49,12 +49,12 @@ class LibrairesStocks(LocalProvider):
         return [providable_info_offer, providable_info_stock]
 
     def fill_object_attributes(self, pc_object: Model):
-        if isinstance(pc_object, Offer):
+        if isinstance(pc_object, OfferSQLEntity):
             self.fill_offer_attributes(pc_object)
         if isinstance(pc_object, StockSQLEntity):
             self.fill_stock_attributes(pc_object)
 
-    def fill_offer_attributes(self, offer: Offer):
+    def fill_offer_attributes(self, offer: OfferSQLEntity):
         offer.bookingEmail = self.venue.bookingEmail
         offer.description = self.product.description
         offer.extraData = self.product.extraData

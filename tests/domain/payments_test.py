@@ -11,7 +11,7 @@ from domain.payments import create_payment_for_booking, filter_out_already_paid_
     filter_out_bookings_without_cost, keep_only_pending_payments, keep_only_not_processable_payments, apply_banishment, \
     UnmatchedPayments
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
-from models import Offer, VenueSQLEntity, BookingSQLEntity, Offerer
+from models import OfferSQLEntity, VenueSQLEntity, BookingSQLEntity, Offerer
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
@@ -27,7 +27,7 @@ def test_create_payment_for_booking_with_common_information(app):
     user = create_user()
     stock = create_stock(quantity=5, price=10)
     booking = create_booking(user=user, quantity=1, stock=stock)
-    booking.stock.offer = Offer()
+    booking.stock.offer = OfferSQLEntity()
     booking.stock.offer.venue = VenueSQLEntity()
     offerer = create_offerer()
     offerer_bank_information = create_bank_information(bic='QSDFGH8Z555', iban='CF13QSDFGH456789', offerer=offerer)
@@ -58,7 +58,7 @@ def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_in
     offerer_bank_information = create_bank_information(bic='Lajr93', iban='B135TGGEG532TG', offerer=offerer)
     venue_bank_information = create_bank_information(bic='LokiJU76', iban='KD98765RFGHZ788', venue=venue)
 
-    booking.stock.offer = Offer()
+    booking.stock.offer = OfferSQLEntity()
     booking.stock.offer.venue = venue
     booking.stock.offer.venue.managingOfferer = offerer
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
@@ -82,7 +82,7 @@ def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_in
     venue_bank_information = create_bank_information(bic=None, iban=None, venue=venue)
 
     booking = create_booking(user=user, quantity=1, stock=stock)
-    booking.stock.offer = Offer()
+    booking.stock.offer = OfferSQLEntity()
     booking.stock.offer.venue = venue
     booking.stock.offer.venue.managingOfferer = offerer
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
@@ -100,7 +100,7 @@ def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer(
     user = create_user()
     stock = create_stock(quantity=5, price=10)
     booking = create_booking(user=user, quantity=1, stock=stock)
-    booking.stock.offer = Offer()
+    booking.stock.offer = OfferSQLEntity()
     offerer = create_offerer(name='Test Offerer', siren='123456789')
     venue = create_venue(offerer, name='Test Venue')
 
@@ -124,7 +124,7 @@ def test_create_payment_for_booking_with_not_processable_status_when_no_bank_inf
     user = create_user()
     stock = create_stock(quantity=5, price=10)
     booking = create_booking(user=user, quantity=1, stock=stock)
-    booking.stock.offer = Offer()
+    booking.stock.offer = OfferSQLEntity()
     booking.stock.offer.venue = VenueSQLEntity()
     booking.stock.offer.venue.managingOfferer = create_offerer(name='Test Offerer')
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
@@ -144,7 +144,7 @@ def test_create_payment_for_booking_with_pending_status(app):
     user = create_user()
     stock = create_stock(quantity=5, price=10)
     booking = create_booking(user=user, quantity=1, stock=stock)
-    booking.stock.offer = Offer()
+    booking.stock.offer = OfferSQLEntity()
     booking.stock.offer.venue = VenueSQLEntity()
     offerer = create_offerer()
     booking.stock.offer.venue.managingOfferer = offerer

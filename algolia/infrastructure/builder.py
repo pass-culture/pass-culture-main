@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict
 
-from models import Offer
+from models import OfferSQLEntity
 from utils.date import get_time_in_seconds_from_datetime
 from utils.human_ids import humanize
 
@@ -9,7 +9,7 @@ DEFAULT_LONGITUDE_FOR_NUMERIC_OFFER = 2.409289
 DEFAULT_LATITUDE_FOR_NUMERIC_OFFER = 47.158459
 
 
-def build_object(offer: Offer) -> Dict:
+def build_object(offer: OfferSQLEntity) -> Dict:
     venue = offer.venue
     offerer = venue.managingOfferer
     humanize_offer_id = humanize(offer.id)

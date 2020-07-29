@@ -1,6 +1,6 @@
 from models import BankInformation, StockSQLEntity, ThingType
 
-from models.offer import Offer
+from models.offer_sql_entity import OfferSQLEntity
 from models.offer_type import EventType
 from models.offerer import Offerer
 
@@ -18,9 +18,9 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(BankInformation)
-    query = query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id).join(Offer).filter(
-        (Offer.type.in_([str(event_type) for event_type in EventType])) & \
-        (~Offer.stocks.any())
+    query = query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id).join(OfferSQLEntity).filter(
+        (OfferSQLEntity.type.in_([str(event_type) for event_type in EventType])) & \
+        (~OfferSQLEntity.stocks.any())
     )
     user = query.first()
 
@@ -45,7 +45,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(BankInformation)
     query = query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id) \
-        .join(Offer) \
+        .join(OfferSQLEntity) \
         .join(StockSQLEntity) \
         .filter((StockSQLEntity.beginningDatetime != None))
     user = query.first()
@@ -74,8 +74,8 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(BankInformation)
     query = query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id) \
-        .join(Offer) \
-        .join(Offer.stocks)
+        .join(OfferSQLEntity) \
+        .join(OfferSQLEntity.stocks)
     user = query.first()
 
     for uo in user.UserOfferers:
@@ -99,8 +99,8 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.filter(Offerer.bankInformation == None)
     query = query.join(VenueSQLEntity).filter(VenueSQLEntity.offers.any(
-        (Offer.type.in_([str(thing_type) for thing_type in ThingType])) & \
-        (~Offer.stocks.any())
+        (OfferSQLEntity.type.in_([str(thing_type) for thing_type in ThingType])) & \
+        (~OfferSQLEntity.stocks.any())
     ))
     user = query.first()
 
@@ -123,7 +123,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.filter(Offerer.bankInformation == None)
-    query = query.join(VenueSQLEntity).join(Offer).filter(Offer.type.in_([str(thing_type) for thing_type in ThingType]))
+    query = query.join(VenueSQLEntity).join(OfferSQLEntity).filter(OfferSQLEntity.type.in_([str(thing_type) for thing_type in ThingType]))
     query = query.filter(VenueSQLEntity.isVirtual == False)
     user = query.first()
 

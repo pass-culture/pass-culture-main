@@ -9,7 +9,7 @@ from alembic import op
 from postgresql_audit.base import VersioningManager
 
 # revision identifiers, used by Alembic.
-from models import Mediation
+from models import MediationSQLEntity
 
 revision = '09857d7d7492'
 down_revision = '253b0a83eead'
@@ -23,7 +23,7 @@ def upgrade():
         op.execute(f'DROP TRIGGER IF EXISTS audit_trigger_row ON "{table_name}";')
 
     versioning_manager = VersioningManager(schema_name='public')
-    versioning_manager.create_audit_table(Mediation.__table__, op.get_bind())
+    versioning_manager.create_audit_table(MediationSQLEntity.__table__, op.get_bind())
 
     for table_name in versioned_tables_to_migrate:
         op.execute(f'''

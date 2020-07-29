@@ -22,7 +22,7 @@ class FavoriteSQLEntity(PcObject, Model):
                      index=True,
                      nullable=False)
 
-    offer = relationship('Offer',
+    offer = relationship('OfferSQLEntity',
                          foreign_keys=[offerId],
                          backref='favorites')
 
@@ -31,7 +31,7 @@ class FavoriteSQLEntity(PcObject, Model):
                          index=True,
                          nullable=True)
 
-    mediation = relationship('Mediation',
+    mediation = relationship('MediationSQLEntity',
                              foreign_keys=[mediationId],
                              backref='favorites')
 

@@ -1,7 +1,7 @@
-from models import FavoriteSQLEntity, Mediation, Offer, UserSQLEntity
+from models import FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, UserSQLEntity
 
 
-def create_favorite(mediation: Mediation, offer: Offer, user: UserSQLEntity) -> FavoriteSQLEntity:
+def create_favorite(mediation: MediationSQLEntity, offer: OfferSQLEntity, user: UserSQLEntity) -> FavoriteSQLEntity:
     favorite = FavoriteSQLEntity()
     favorite.mediation = mediation
     favorite.offer = offer

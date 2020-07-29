@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy.orm.exc import MultipleResultsFound
 
-from models import Offer, Offerer, UserOfferer, VenueSQLEntity
+from models import OfferSQLEntity, Offerer, UserOfferer, VenueSQLEntity
 from repository import repository
 from repository.user_offerer_queries import find_one_or_none_by_user_id, \
     find_user_offerer_email, \
@@ -104,7 +104,7 @@ def test_filter_query_where_user_is_user_offerer_and_is_validated(app):
 
     # When
     offers = filter_query_where_user_is_user_offerer_and_is_validated(
-        Offer.query.join(VenueSQLEntity).join(Offerer),
+        OfferSQLEntity.query.join(VenueSQLEntity).join(Offerer),
         user
     ).all()
 

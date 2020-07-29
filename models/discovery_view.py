@@ -23,5 +23,5 @@ class DiscoveryView(Model):
 
     isNational = Column(Boolean)
 
-    offer = relationship('Offer',
+    offer = relationship('OfferSQLEntity',
                          foreign_keys=[id])

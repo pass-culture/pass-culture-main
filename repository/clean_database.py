@@ -3,11 +3,11 @@ from models import ApiKey, \
     BeneficiaryImport, \
     BookingSQLEntity, \
     Deposit, \
-    Mediation, \
+    MediationSQLEntity, \
     Payment, \
     PaymentStatus, \
     Product, \
-    Offer, \
+    OfferSQLEntity, \
     Offerer, \
     Recommendation, \
     StockSQLEntity, \
@@ -50,11 +50,11 @@ def clean_all_database(*args, **kwargs):
     StockSQLEntity.query.delete()
     FavoriteSQLEntity.query.delete()
     Recommendation.query.delete()
-    Mediation.query.delete()
+    MediationSQLEntity.query.delete()
     OfferCriterion.query.delete()
     Criterion.query.delete()
     SeenOffer.query.delete()
-    Offer.query.delete()
+    OfferSQLEntity.query.delete()
     Product.query.delete()
     BankInformation.query.delete()
     IrisVenues.query.delete()

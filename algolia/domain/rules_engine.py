@@ -1,8 +1,8 @@
 from algolia.domain.eligibility import EligibilityRules
-from models import Offer
+from models import OfferSQLEntity
 
 
-def is_eligible_for_reindexing(offer: Offer, offer_details: dict) -> bool:
+def is_eligible_for_reindexing(offer: OfferSQLEntity, offer_details: dict) -> bool:
     eligibility_rules = [rule.value for rule in EligibilityRules]
 
     for rule in eligibility_rules:

@@ -7,7 +7,7 @@ from domain.stock.stock_validator import check_stock_is_bookable, check_expenses
 from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
 from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
-from models import BookingSQLEntity, StockSQLEntity, Offer, UserSQLEntity, ApiErrors
+from models import BookingSQLEntity, StockSQLEntity, OfferSQLEntity, UserSQLEntity, ApiErrors
 from utils.logger import logger
 
 
@@ -17,8 +17,8 @@ def create_bookings_for_astropolis(offer_one_id: int, offer_two_id: int, offer_t
     beneficiaries_who_have_booked_offer_one = UserSQLEntity.query \
         .join(BookingSQLEntity) \
         .join(StockSQLEntity) \
-        .join(Offer) \
-        .filter(Offer.id == offer_one_id) \
+        .join(OfferSQLEntity) \
+        .filter(OfferSQLEntity.id == offer_one_id) \
         .filter(BookingSQLEntity.isCancelled == False) \
         .filter(StockSQLEntity.price == 0) \
         .with_entities(UserSQLEntity.id) \
@@ -77,7 +77,7 @@ def _find_beneficiaries_for_offer(offer_id: int) -> List[int]:
     return UserSQLEntity.query \
         .join(BookingSQLEntity) \
         .join(StockSQLEntity) \
-        .join(Offer) \
-        .filter(Offer.id == offer_id) \
+        .join(OfferSQLEntity) \
+        .filter(OfferSQLEntity.id == offer_id) \
         .with_entities(UserSQLEntity.id) \
         .all()

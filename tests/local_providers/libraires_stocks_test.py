@@ -1,7 +1,7 @@
 from unittest.mock import patch, call
 
 from local_providers.libraires_stocks import LibrairesStocks
-from models import Offer, StockSQLEntity
+from models import OfferSQLEntity, StockSQLEntity
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_stock, \
@@ -44,7 +44,7 @@ class LibrairesStocksTest:
             offer_providable_info = libraires_providable_infos[0]
             stock_providable_info = libraires_providable_infos[1]
 
-            assert offer_providable_info.type == Offer
+            assert offer_providable_info.type == OfferSQLEntity
             assert offer_providable_info.id_at_providers == '9780199536986@12345678912345'
             assert stock_providable_info.type == StockSQLEntity
             assert stock_providable_info.id_at_providers == '9780199536986@12345678912345'
@@ -77,7 +77,7 @@ class LibrairesStocksTest:
             libraires_stocks.updateObjects()
 
             # Then
-            offer = Offer.query.first()
+            offer = OfferSQLEntity.query.first()
             stock = StockSQLEntity.query.first()
 
             assert offer.type == product.type
@@ -121,7 +121,7 @@ class LibrairesStocksTest:
             # Then
             stock = StockSQLEntity.query.one()
             assert stock.quantity == 10
-            assert Offer.query.count() == 1
+            assert OfferSQLEntity.query.count() == 1
 
         @clean_database
         @patch('local_providers.libraires_stocks.get_libraires_stock_information')
@@ -158,7 +158,7 @@ class LibrairesStocksTest:
 
             # Then
             assert StockSQLEntity.query.count() == 2
-            assert Offer.query.filter_by(lastProviderId=libraires_stocks_provider.id).count() == 2
+            assert OfferSQLEntity.query.filter_by(lastProviderId=libraires_stocks_provider.id).count() == 2
             assert libraires_stocks.last_processed_isbn == '1550199555555'
 
         @clean_database
@@ -246,7 +246,7 @@ class LibrairesStocksTest:
             libraires_stocks.updateObjects()
 
             # Then
-            offers = Offer.query.all()
+            offers = OfferSQLEntity.query.all()
             stocks = StockSQLEntity.query.all()
             assert len(stocks) == 2
             assert len(offers) == 2

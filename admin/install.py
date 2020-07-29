@@ -1,10 +1,10 @@
 from admin.custom_views import OffererAdminView, UserAdminView, FeatureAdminView, VenueAdminView, BeneficiaryImportView, \
     OfferAdminView, CriteriaAdminView
-from models import Offerer, UserSQLEntity, Feature, VenueSQLEntity, BeneficiaryImport, Offer, Criterion
+from models import Offerer, UserSQLEntity, Feature, VenueSQLEntity, BeneficiaryImport, OfferSQLEntity, Criterion
 
 
 def install_admin_views(admin, session):
-    admin.add_view(OfferAdminView(Offer, session, name='Offres', category='Pro'))
+    admin.add_view(OfferAdminView(OfferSQLEntity, session, name='Offres', category='Pro'))
     admin.add_view(CriteriaAdminView(Criterion, session, name='Tags des offres', category='Pro'))
     admin.add_view(OffererAdminView(Offerer, session, name='Structures', category='Pro'))
     admin.add_view(VenueAdminView(VenueSQLEntity, session, name='Lieux', category='Pro'))

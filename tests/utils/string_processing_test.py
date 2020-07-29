@@ -1,8 +1,9 @@
+from models import Deposit, MediationSQLEntity
 from utils.string_processing import get_matched_string_index, \
     format_decimal, \
     get_price_value, \
     remove_single_letters_for_search, \
-    tokenize_for_search, pluralize
+    tokenize_for_search, pluralize, get_model_plural_name
 
 
 def test_get_matched_string_index():
@@ -59,3 +60,24 @@ class PluralizeTest:
 
         # Then
         assert message == 'stocks'
+
+class GetModelPluralNameTest:
+    def test_should_return_model_plural(self):
+        # Given
+        model = Deposit()
+
+        # When
+        model_plural_name = get_model_plural_name(model)
+
+        # Then
+        assert model_plural_name == 'deposits'
+
+    def test_should_return_model_plural_when_suffixed_by_sql_entity(self):
+        # Given
+        model = MediationSQLEntity()
+
+        # When
+        model_plural_name = get_model_plural_name(model)
+
+        # Then
+        assert model_plural_name == 'mediations'

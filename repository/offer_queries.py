@@ -12,7 +12,7 @@ from domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
 from models import BookingSQLEntity, DiscoveryView, DiscoveryViewV3, \
-    EventType, FavoriteSQLEntity, Mediation, Offer, Offerer, SeenOffer, StockSQLEntity, ThingType, UserOfferer, UserSQLEntity, VenueSQLEntity
+    EventType, FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Offerer, SeenOffer, StockSQLEntity, ThingType, UserOfferer, UserSQLEntity, VenueSQLEntity
 from models.db import Model
 from models.feature import FeatureToggle
 from repository import feature_queries
@@ -28,10 +28,10 @@ ALL_DEPARTMENTS_CODE = '00'
 
 def department_or_national_offers(query, departement_codes):
     if ALL_DEPARTMENTS_CODE in departement_codes:
-        return query.filter((VenueSQLEntity.departementCode != None) | (Offer.isNational == True))
+        return query.filter((VenueSQLEntity.departementCode != None) | (OfferSQLEntity.isNational == True))
 
     query = query.filter(
-        VenueSQLEntity.departementCode.in_(departement_codes) | (Offer.isNational == True)
+        VenueSQLEntity.departementCode.in_(departement_codes) | (OfferSQLEntity.isNational == True)
     )
 
     logger.debug(lambda: '(reco) departement .count ' + str(query.count()))
@@ -39,7 +39,7 @@ def department_or_national_offers(query, departement_codes):
 
 
 def _bookable_offers(offers_query: Query) -> Query:
-    stocks_query = StockSQLEntity.query.filter(StockSQLEntity.offerId == Offer.id)
+    stocks_query = StockSQLEntity.query.filter(StockSQLEntity.offerId == OfferSQLEntity.id)
     stocks_query = _filter_bookable_stocks_for_discovery(stocks_query)
     offers_query = offers_query.filter(stocks_query.exists())
     return offers_query
@@ -57,13 +57,13 @@ def _with_active_and_validated_offerer(query):
 
 
 def _not_activation_offers(query):
-    query = query.filter(Offer.type != str(EventType.ACTIVATION))
-    return query.filter(Offer.type != str(ThingType.ACTIVATION))
+    query = query.filter(OfferSQLEntity.type != str(EventType.ACTIVATION))
+    return query.filter(OfferSQLEntity.type != str(ThingType.ACTIVATION))
 
 
 def order_by_with_criteria():
     order_offers = _order_by_occurs_soon_or_is_thing_then_randomize()[:]
-    order_by_criteria = desc(Offer.baseScore)
+    order_by_criteria = desc(OfferSQLEntity.baseScore)
     order_offers.insert(-1, order_by_criteria)
     return order_offers
 
@@ -73,13 +73,13 @@ def _order_by_occurs_soon_or_is_thing_then_randomize():
 
 
 def order_by_with_criteria_and_is_digital(end_of_quarantine_date: datetime) -> List[Query]:
-    event_happens_after_quarantine_predicate = StockSQLEntity.query.filter(StockSQLEntity.offerId == Offer.id) \
+    event_happens_after_quarantine_predicate = StockSQLEntity.query.filter(StockSQLEntity.offerId == OfferSQLEntity.id) \
         .filter(StockSQLEntity.beginningDatetime > end_of_quarantine_date) \
         .exists()
     return [
-        desc(Offer.url != None),
+        desc(OfferSQLEntity.url != None),
         desc(event_happens_after_quarantine_predicate),
-        desc(Offer.baseScore),
+        desc(OfferSQLEntity.baseScore),
         func.random()
     ]
 
@@ -163,10 +163,10 @@ def _get_paginated_active_offers(limit, page, query):
 
 
 def get_active_offers_ids_query(user, departement_codes=[ALL_DEPARTMENTS_CODE], offer_id=None):
-    active_offers_query = Offer.query.distinct(Offer.id)
+    active_offers_query = OfferSQLEntity.query.distinct(OfferSQLEntity.id)
 
     if offer_id is not None:
-        active_offers_query = active_offers_query.filter(Offer.id == offer_id)
+        active_offers_query = active_offers_query.filter(OfferSQLEntity.id == offer_id)
     logger.debug(lambda: '(reco) all offers count {}'.format(active_offers_query.count()))
     active_offers_query = active_offers_query.filter_by(isActive=True)
     logger.debug(lambda: '(reco) active offers count {}'.format(active_offers_query.count()))
@@ -186,7 +186,7 @@ def get_active_offers_ids_query(user, departement_codes=[ALL_DEPARTMENTS_CODE], 
     logger.debug(lambda: '(reco) not_currently_recommended and not_activation {}'.format(active_offers_query.count()))
     if user:
         active_offers_query = _exclude_booked_and_favorite(active_offers_query, user)
-    active_offer_ids = active_offers_query.with_entities(Offer.id).subquery()
+    active_offer_ids = active_offers_query.with_entities(OfferSQLEntity.id).subquery()
     return active_offer_ids
 
 
@@ -194,8 +194,8 @@ def _exclude_booked_and_favorite(active_offers_query, user):
     booked_offer_ids = BookingSQLEntity.query.filter_by(userId=user.id).join(StockSQLEntity).with_entities(
         'stock."offerId"').subquery()
     favorite_offer_ids = FavoriteSQLEntity.query.filter_by(userId=user.id).with_entities('"offerId"').subquery()
-    not_booked_predicate = ~Offer.id.in_(booked_offer_ids)
-    not_favorite_predicate = ~Offer.id.in_(favorite_offer_ids)
+    not_booked_predicate = ~OfferSQLEntity.id.in_(booked_offer_ids)
+    not_favorite_predicate = ~OfferSQLEntity.id.in_(favorite_offer_ids)
 
     active_offers_query = active_offers_query.filter(not_booked_predicate & not_favorite_predicate)
 
@@ -204,7 +204,7 @@ def _exclude_booked_and_favorite(active_offers_query, user):
 
 def _round_robin_by_type_onlineness_and_criteria(order_by: List):
     return func.row_number() \
-        .over(partition_by=[Offer.type, Offer.url == None],
+        .over(partition_by=[OfferSQLEntity.type, OfferSQLEntity.url == None],
               order_by=order_by())
 
 
@@ -214,12 +214,12 @@ def _with_image(offer_query):
 
 
 def _with_validated_venue(offer_query):
-    return offer_query.join(VenueSQLEntity, Offer.venueId == VenueSQLEntity.id) \
+    return offer_query.join(VenueSQLEntity, OfferSQLEntity.venueId == VenueSQLEntity.id) \
         .filter(VenueSQLEntity.validationToken == None)
 
 
 def _build_occurs_soon_or_is_thing_predicate():
-    return StockSQLEntity.query.filter((StockSQLEntity.offerId == Offer.id)
+    return StockSQLEntity.query.filter((StockSQLEntity.offerId == OfferSQLEntity.id)
                                        & ((StockSQLEntity.beginningDatetime == None)
                                           | ((StockSQLEntity.beginningDatetime > datetime.utcnow())
                                              & (StockSQLEntity.beginningDatetime < (
@@ -228,8 +228,8 @@ def _build_occurs_soon_or_is_thing_predicate():
 
 
 def _build_has_active_mediation_predicate():
-    return Mediation.query.filter((Mediation.offerId == Offer.id)
-                                  & Mediation.isActive) \
+    return MediationSQLEntity.query.filter((MediationSQLEntity.offerId == OfferSQLEntity.id)
+                                           & MediationSQLEntity.isActive) \
         .exists()
 
 
@@ -239,11 +239,11 @@ def _date_interval_to_filter(date_interval):
 
 
 def filter_offers_with_keywords_string_on_offer_only(query: BaseQuery, keywords_string: str) -> Query:
-    return _build_query_using_keywords_on_model(keywords_string, query, Offer)
+    return _build_query_using_keywords_on_model(keywords_string, query, OfferSQLEntity)
 
 
 def filter_offers_with_keywords_string(query: Query, keywords_string: str) -> Query:
-    query_on_offer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, Offer)
+    query_on_offer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, OfferSQLEntity)
     query_on_offer_using_keywords = _order_by_offer_name_containing_keyword_string(keywords_string,
                                                                                    query_on_offer_using_keywords)
     return query_on_offer_using_keywords
@@ -258,16 +258,16 @@ def _build_query_using_keywords_on_model(keywords_string: str, query: Query, mod
 
 
 def _order_by_offer_name_containing_keyword_string(keywords_string: str, query: Query) -> Query:
-    offer_alias = aliased(Offer)
+    offer_alias = aliased(OfferSQLEntity)
     return query.order_by(
         desc(
-            Offer.query
-                .filter(Offer.id == offer_alias.id)
-                .filter(Offer.name.op('@@')(func.plainto_tsquery(keywords_string)))
+            OfferSQLEntity.query
+                .filter(OfferSQLEntity.id == offer_alias.id)
+                .filter(OfferSQLEntity.name.op('@@')(func.plainto_tsquery(keywords_string)))
                 .order_by(offer_alias.name)
                 .exists()
         ),
-        desc(Offer.id)
+        desc(OfferSQLEntity.id)
     )
 
 
@@ -276,7 +276,7 @@ def _offer_has_stocks_compatible_with_days_intervals(days_intervals):
         _date_interval_to_filter, days_intervals))
     stock_has_no_beginning_date_time = StockSQLEntity.beginningDatetime == None
     return StockSQLEntity.query \
-        .filter(StockSQLEntity.offerId == Offer.id) \
+        .filter(StockSQLEntity.offerId == OfferSQLEntity.id) \
         .filter(
             event_beginningdate_in_interval_filter |
             stock_has_no_beginning_date_time
@@ -290,10 +290,10 @@ def build_find_offers_with_filter_parameters(
         venue_id: int = None,
         keywords_string: str = None
 ) -> Query:
-    query = Offer.query
+    query = OfferSQLEntity.query
 
     if venue_id is not None:
-        query = query.filter(Offer.venueId == venue_id)
+        query = query.filter(OfferSQLEntity.venueId == venue_id)
 
     if offerer_id is not None:
         query = query \
@@ -314,13 +314,13 @@ def build_find_offers_with_filter_parameters(
             keywords_string
         )
     else:
-        query = query.order_by(Offer.id.desc())
+        query = query.order_by(OfferSQLEntity.id.desc())
 
     return query
 
 
 def find_searchable_offer(offer_id):
-    return Offer.query.filter_by(id=offer_id) \
+    return OfferSQLEntity.query.filter_by(id=offer_id) \
         .join(VenueSQLEntity) \
         .filter(VenueSQLEntity.validationToken == None) \
         .first()
@@ -335,7 +335,7 @@ def _offer_has_bookable_stocks():
     bookings_quantity = _build_bookings_quantity_subquery()
 
     return StockSQLEntity.query \
-        .filter(StockSQLEntity.offerId == Offer.id) \
+        .filter(StockSQLEntity.offerId == OfferSQLEntity.id) \
         .filter(StockSQLEntity.isSoftDeleted == False) \
         .filter(stock_can_still_be_booked) \
         .filter(event_has_not_began_yet | offer_is_on_a_thing) \
@@ -358,22 +358,22 @@ def _build_bookings_quantity_subquery():
 
 def _filter_recommendable_offers_for_search(offer_query):
     offer_query = offer_query.reset_joinpoint() \
-        .filter(Offer.isActive == True) \
+        .filter(OfferSQLEntity.isActive == True) \
         .filter(_has_active_and_validated_offerer()) \
         .filter(VenueSQLEntity.validationToken == None) \
         .filter(_offer_has_bookable_stocks())
     return offer_query
 
 
-def find_activation_offers(departement_code: str) -> List[Offer]:
+def find_activation_offers(departement_code: str) -> List[OfferSQLEntity]:
     departement_codes = ILE_DE_FRANCE_DEPT_CODES if departement_code == '93' else [departement_code]
     match_department_or_is_national = or_(VenueSQLEntity.departementCode.in_(departement_codes),
-                                          Offer.isNational == True)
+                                          OfferSQLEntity.isNational == True)
 
-    query = Offer.query \
+    query = OfferSQLEntity.query \
         .join(VenueSQLEntity) \
-        .join(StockSQLEntity, StockSQLEntity.offerId == Offer.id) \
-        .filter(Offer.type == str(EventType.ACTIVATION)) \
+        .join(StockSQLEntity, StockSQLEntity.offerId == OfferSQLEntity.id) \
+        .filter(OfferSQLEntity.type == str(EventType.ACTIVATION)) \
         .filter(match_department_or_is_national)
 
     query = _filter_bookable_stocks_for_discovery(query)
@@ -402,15 +402,15 @@ def _filter_bookable_stocks_for_discovery(stocks_query):
 
 
 def count_offers_for_things_only_by_venue_id(venue_id):
-    offer_count = Offer.query \
+    offer_count = OfferSQLEntity.query \
         .filter_by(venueId=venue_id) \
-        .filter(Offer.thing is not None) \
+        .filter(OfferSQLEntity.thing is not None) \
         .count()
     return offer_count
 
 
 def find_offer_for_venue_id_and_specific_thing(venue_id, thing):
-    offer = Offer.query \
+    offer = OfferSQLEntity.query \
         .filter_by(venueId=venue_id) \
         .filter_by(thing=thing) \
         .one_or_none()
@@ -418,43 +418,43 @@ def find_offer_for_venue_id_and_specific_thing(venue_id, thing):
 
 
 def get_offer_by_id(offer_id: int):
-    return Offer.query.get(offer_id)
+    return OfferSQLEntity.query.get(offer_id)
 
 
-def get_offers_by_venue_id(venue_id: int) -> List[Offer]:
-    return Offer.query \
+def get_offers_by_venue_id(venue_id: int) -> List[OfferSQLEntity]:
+    return OfferSQLEntity.query \
         .filter_by(venueId=venue_id) \
         .all()
 
 
-def get_offers_by_product_id(product_id: int) -> List[Offer]:
-    return Offer.query \
+def get_offers_by_product_id(product_id: int) -> List[OfferSQLEntity]:
+    return OfferSQLEntity.query \
         .filter_by(productId=product_id) \
         .all()
 
 
-def get_offers_by_ids(offer_ids: List[int]) -> List[Offer]:
-    return Offer.query \
-        .filter(Offer.id.in_(offer_ids)) \
+def get_offers_by_ids(offer_ids: List[int]) -> List[OfferSQLEntity]:
+    return OfferSQLEntity.query \
+        .filter(OfferSQLEntity.id.in_(offer_ids)) \
         .options(joinedload('stocks')) \
         .all()
 
 
 def get_paginated_active_offer_ids(limit: int, page: int) -> List[tuple]:
-    return Offer.query \
-        .with_entities(Offer.id) \
-        .filter(Offer.isActive == True) \
-        .order_by(Offer.id) \
+    return OfferSQLEntity.query \
+        .with_entities(OfferSQLEntity.id) \
+        .filter(OfferSQLEntity.isActive == True) \
+        .order_by(OfferSQLEntity.id) \
         .offset(page * limit) \
         .limit(limit) \
         .all()
 
 
 def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int) -> List[tuple]:
-    return Offer.query \
-        .with_entities(Offer.id) \
-        .filter(Offer.venueId == venue_id) \
-        .order_by(Offer.id) \
+    return OfferSQLEntity.query \
+        .with_entities(OfferSQLEntity.id) \
+        .filter(OfferSQLEntity.venueId == venue_id) \
+        .order_by(OfferSQLEntity.id) \
         .offset(page * limit) \
         .limit(limit) \
         .all()
@@ -464,11 +464,11 @@ def get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id: s
                                                              limit: int,
                                                              page: int,
                                                              venue_id: int) -> List[tuple]:
-    return Offer.query \
-        .with_entities(Offer.id) \
-        .filter(Offer.lastProviderId == last_provider_id) \
-        .filter(Offer.venueId == venue_id) \
-        .order_by(Offer.id) \
+    return OfferSQLEntity.query \
+        .with_entities(OfferSQLEntity.id) \
+        .filter(OfferSQLEntity.lastProviderId == last_provider_id) \
+        .filter(OfferSQLEntity.venueId == venue_id) \
+        .order_by(OfferSQLEntity.id) \
         .offset(page * limit) \
         .limit(limit) \
         .all()
@@ -480,15 +480,15 @@ def get_paginated_expired_offer_ids(limit: int, page: int) -> List[tuple]:
     start_limit = two_days_before_now <= func.max(StockSQLEntity.bookingLimitDatetime)
     end_limit = func.max(StockSQLEntity.bookingLimitDatetime) <= one_day_before_now
 
-    return Offer.query \
+    return OfferSQLEntity.query \
         .join(StockSQLEntity) \
-        .with_entities(Offer.id) \
-        .filter(Offer.isActive == True) \
+        .with_entities(OfferSQLEntity.id) \
+        .filter(OfferSQLEntity.isActive == True) \
         .filter(StockSQLEntity.bookingLimitDatetime is not None) \
         .having(start_limit) \
         .having(end_limit) \
-        .group_by(Offer.id) \
-        .order_by(Offer.id) \
+        .group_by(OfferSQLEntity.id) \
+        .order_by(OfferSQLEntity.id) \
         .offset(page * limit) \
         .limit(limit) \
         .all()

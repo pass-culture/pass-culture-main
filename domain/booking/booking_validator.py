@@ -1,9 +1,9 @@
 from domain.booking.booking_exceptions import OfferIsAlreadyBooked, QuantityIsInvalid
-from models import Offer
+from models import OfferSQLEntity
 from repository import booking_queries
 
 
-def check_offer_already_booked(offer: Offer, user_id: int):
+def check_offer_already_booked(offer: OfferSQLEntity, user_id: int):
     is_offer_already_booked_by_user = booking_queries.is_offer_already_booked_by_user(user_id, offer)
     if is_offer_already_booked_by_user:
         offer_is_already_booked = OfferIsAlreadyBooked()

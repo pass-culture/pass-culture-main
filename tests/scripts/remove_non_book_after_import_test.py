@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from models import Product, Offer
+from models import Product, OfferSQLEntity
 from repository import repository
 from scripts.remove_non_book_after_import import delete_product_from_isbn_file, read_isbn_from_file
 from tests.conftest import clean_database
@@ -61,7 +61,7 @@ def test_should_not_delete_product_with_bookings_and_deactivate_associated_offer
     delete_product_from_isbn_file('mon_fichier_isbns.txt')
 
     # Then
-    offer = Offer.query.one()
+    offer = OfferSQLEntity.query.one()
     assert offer.isActive is False
     assert Product.query.count() == 1
 

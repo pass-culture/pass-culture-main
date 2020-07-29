@@ -11,13 +11,13 @@ def install_scripts():
     from models.providable_mixin import ProvidableMixin
     from models.booking_sql_entity import BookingSQLEntity
 
-    from models.mediation import Mediation
+    from models.mediation_sql_entity import MediationSQLEntity
     from models.stock_sql_entity import StockSQLEntity
     from models.offerer import Offerer
     from models.venue_provider import VenueProvider
     from models.local_provider_event import LocalProviderEvent
     from local_providers.local_provider import LocalProvider
-    from models.offer import Offer
+    from models.offer_sql_entity import OfferSQLEntity
     from models.provider import Provider
     from models.recommendation import Recommendation
 

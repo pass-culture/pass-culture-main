@@ -1,7 +1,7 @@
 import random
 from typing import List, Optional
 
-from models import DiscoveryView, Mediation, Offer, Recommendation, UserSQLEntity
+from models import DiscoveryView, MediationSQLEntity, OfferSQLEntity, Recommendation, UserSQLEntity
 from models.db import db
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository import mediation_queries, repository
@@ -72,7 +72,7 @@ def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
     return _create_recommendation(user, offer, mediation=mediation)
 
 
-def _create_recommendation(user: UserSQLEntity, offer: Offer, mediation: Mediation = None) -> Recommendation:
+def _create_recommendation(user: UserSQLEntity, offer: OfferSQLEntity, mediation: MediationSQLEntity = None) -> Recommendation:
     recommendation = Recommendation()
     recommendation.user = user
 
@@ -91,7 +91,7 @@ def _create_recommendation(user: UserSQLEntity, offer: Offer, mediation: Mediati
 # TODO: when using discovery view use this function instead of _create_recommendation
 # in create_recommendations_for_discovery
 def _create_recommendation_from_offers(user: UserSQLEntity, reco_view: DiscoveryView,
-                                       mediation: Mediation = None) -> Recommendation:
+                                       mediation: MediationSQLEntity = None) -> Recommendation:
     recommendation = Recommendation()
     recommendation.user = user
 

@@ -9,7 +9,7 @@ from tests.domain_creators.generic_creators import create_domain_thing_booking_r
 class BookingRecapTest:
     class StatusPropertyTest:
         class WhenBookingHasNoPaymentsTest:
-            def test_should_return_booked_status_when_booking_is_not_cancelled_nor_used(self) -> None:
+            def test_should_return_booked_status_when_booking_is_not_cancelled_nor_used(self):
                 # Given
                 booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=False,
@@ -22,7 +22,7 @@ class BookingRecapTest:
                 # Then
                 assert booking_recap_status == BookingRecapStatus.booked
 
-            def test_should_return_validated_status_when_booking_is_used_and_not_cancelled(self) -> None:
+            def test_should_return_validated_status_when_booking_is_used_and_not_cancelled(self):
                 # Given
                 booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=True,
@@ -35,7 +35,7 @@ class BookingRecapTest:
                 # Then
                 assert booking_recap_status == BookingRecapStatus.validated
 
-            def test_should_return_cancelled_status_when_booking_is_cancelled_but_not_used(self) -> None:
+            def test_should_return_cancelled_status_when_booking_is_cancelled_but_not_used(self):
                 # Given
                 booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=False,
@@ -48,7 +48,7 @@ class BookingRecapTest:
                 # Then
                 assert booking_recap_status == BookingRecapStatus.cancelled
 
-            def test_should_return_cancelled_status_when_booking_is_cancelled_and_used(self) -> None:
+            def test_should_return_cancelled_status_when_booking_is_cancelled_and_used(self):
                 # Given
                 booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=True,
@@ -62,7 +62,7 @@ class BookingRecapTest:
                 assert booking_recap_status == BookingRecapStatus.cancelled
 
         class WhenBookingIsReimbursedTest:
-            def test_should_return_reimbursed_status_when_booking_is_not_cancelled_nor_used(self) -> None:
+            def test_should_return_reimbursed_status_when_booking_is_not_cancelled_nor_used(self):
                 # Given
                 booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=False,
@@ -75,7 +75,7 @@ class BookingRecapTest:
                 # Then
                 assert booking_recap_status == BookingRecapStatus.reimbursed
 
-            def test_should_return_reimbursed_status_when_booking_is_used_and_not_cancelled(self) -> None:
+            def test_should_return_reimbursed_status_when_booking_is_used_and_not_cancelled(self):
                 # Given
                 booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=True,
@@ -88,7 +88,7 @@ class BookingRecapTest:
                 # Then
                 assert booking_recap_status == BookingRecapStatus.reimbursed
 
-            def test_should_return_reimbursed_status_when_booking_is_used_and_cancelled(self) -> None:
+            def test_should_return_reimbursed_status_when_booking_is_used_and_cancelled(self):
                 # Given
                 booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=True,
@@ -102,7 +102,7 @@ class BookingRecapTest:
                 assert booking_recap_status == BookingRecapStatus.reimbursed
 
     class TokenTest:
-        def test_should_not_return_token_when_offer_is_thing_and_booking_is_not_used_nor_cancelled(self) -> None:
+        def test_should_not_return_token_when_offer_is_thing_and_booking_is_not_used_nor_cancelled(self):
             # Given
             booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=False,
                                                               booking_is_cancelled=False)
@@ -113,7 +113,7 @@ class BookingRecapTest:
             # Then
             assert booking_recap_token is None
 
-        def test_should_return_token_when_offer_is_thing_and_booking_is_used_and_not_cancelled(self) -> None:
+        def test_should_return_token_when_offer_is_thing_and_booking_is_used_and_not_cancelled(self):
             # Given
             booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
                                                               booking_is_cancelled=False)
@@ -124,7 +124,7 @@ class BookingRecapTest:
             # Then
             assert booking_recap_token == 'ABCDE'
 
-        def test_should_return_token_when_offer_is_thing_and_booking_is_not_used_and_is_cancelled(self) -> None:
+        def test_should_return_token_when_offer_is_thing_and_booking_is_not_used_and_is_cancelled(self):
             # Given
             booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=False,
                                                               booking_is_cancelled=True)
@@ -135,7 +135,7 @@ class BookingRecapTest:
             # Then
             assert booking_recap_token == 'ABCDE'
 
-        def test_should_return_token_when_offer_is_thing_and_booking_is_used_and_cancelled(self) -> None:
+        def test_should_return_token_when_offer_is_thing_and_booking_is_used_and_cancelled(self):
             # Given
             booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
                                                               booking_is_cancelled=True)
@@ -146,7 +146,7 @@ class BookingRecapTest:
             # Then
             assert booking_recap_token == 'ABCDE'
 
-        def test_should_return_token_when_offer_is_event_and_booking_is_not_used_nor_cancelled(self) -> None:
+        def test_should_return_token_when_offer_is_event_and_booking_is_not_used_nor_cancelled(self):
             # Given
             booking_recap = create_domain_event_booking_recap(booking_token='ABCDE', booking_is_used=False,
                                                               booking_is_cancelled=False)
@@ -158,7 +158,7 @@ class BookingRecapTest:
             assert booking_recap_token == 'ABCDE'
 
     class BuildHistoryTest:
-        def test_should_return_booking_recap_history(self) -> None:
+        def test_should_return_booking_recap_history(self):
             # Given
             booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
                                                               booking_is_cancelled=False, booking_amount=12,
@@ -171,7 +171,7 @@ class BookingRecapTest:
             assert isinstance(booking_recap_history, BookingRecapHistory)
             assert booking_recap_history.booking_date == datetime(2020, 1, 4)
 
-        def test_should_return_booking_recap_history_with_cancellation(self) -> None:
+        def test_should_return_booking_recap_history_with_cancellation(self):
             # Given
             booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
                                                               booking_is_cancelled=True, booking_amount=12,
@@ -186,7 +186,7 @@ class BookingRecapTest:
             assert booking_recap_history.booking_date == datetime(2020, 1, 4)
             assert booking_recap_history.cancellation_date == datetime(2020, 1, 5)
 
-        def test_should_return_booking_recap_history_with_validation(self) -> None:
+        def test_should_return_booking_recap_history_with_validation(self):
             # Given
             booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
                                                               booking_is_cancelled=False, booking_amount=12,
@@ -201,7 +201,7 @@ class BookingRecapTest:
             assert booking_recap_history.booking_date == datetime(2020, 1, 4)
             assert booking_recap_history.date_used == datetime(2020, 1, 5)
 
-        def test_should_return_booking_recap_history_with_payment(self) -> None:
+        def test_should_return_booking_recap_history_with_payment(self):
             # Given
             booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
                                                               booking_is_cancelled=False, booking_amount=12,
@@ -219,7 +219,7 @@ class BookingRecapTest:
             assert booking_recap_history.payment_date == datetime(2020, 1, 6)
             assert booking_recap_history.date_used == datetime(2020, 1, 5)
 
-        def test_should_return_booking_recap_history_with_payment_even_if_cancelled(self) -> None:
+        def test_should_return_booking_recap_history_with_payment_even_if_cancelled(self):
             # Given
             booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
                                                               booking_is_cancelled=True, booking_amount=12,

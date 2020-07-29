@@ -1,9 +1,9 @@
 from typing import Dict, List
 
-from models import ApiErrors, Offer, StockSQLEntity
+from models import ApiErrors, OfferSQLEntity, StockSQLEntity
 
 
-def check_stocks_are_editable_for_offer(offer: Offer):
+def check_stocks_are_editable_for_offer(offer: OfferSQLEntity):
     if offer.isFromProvider:
         api_errors = ApiErrors()
         api_errors.add_error('global', 'Les offres importées ne sont pas modifiables')
@@ -31,7 +31,7 @@ def check_request_has_offer_id(request_data: dict):
         raise ApiErrors({'offerId': ['Ce paramètre est obligatoire']})
 
 
-def check_dates_are_allowed_on_new_stock(request_data: dict, offer: Offer):
+def check_dates_are_allowed_on_new_stock(request_data: dict, offer: OfferSQLEntity):
     if offer.isThing:
         _forbid_dates_on_stock_for_thing_offer(request_data)
     else:
@@ -42,7 +42,7 @@ def check_dates_are_allowed_on_new_stock(request_data: dict, offer: Offer):
             raise ApiErrors({'bookingLimitDatetime': ['Ce paramètre est obligatoire']})
 
 
-def check_dates_are_allowed_on_existing_stock(request_data: dict, offer: Offer):
+def check_dates_are_allowed_on_existing_stock(request_data: dict, offer: OfferSQLEntity):
     if offer.isThing:
         _forbid_dates_on_stock_for_thing_offer(request_data)
     else:

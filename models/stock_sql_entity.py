@@ -52,7 +52,7 @@ class StockSQLEntity(PcObject,
                      index=True,
                      nullable=False)
 
-    offer = relationship('Offer',
+    offer = relationship('OfferSQLEntity',
                          foreign_keys=[offerId],
                          backref='stocks')
 

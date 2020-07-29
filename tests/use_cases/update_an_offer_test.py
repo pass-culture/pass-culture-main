@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from models import Offer, ApiErrors
+from models import OfferSQLEntity, ApiErrors
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
@@ -30,7 +30,7 @@ class UseCaseTest:
                 update_an_offer(offer, modifications)
 
                 # Then
-                offer = Offer.query.one()
+                offer = OfferSQLEntity.query.one()
                 assert offer.fieldsUpdated == ['isDuo']
 
             @clean_database
@@ -51,7 +51,7 @@ class UseCaseTest:
                 update_an_offer(offer, modifications)
 
                 # Then
-                offer = Offer.query.one()
+                offer = OfferSQLEntity.query.one()
                 assert set(offer.fieldsUpdated) == set(['isDuo', 'isActive'])
 
             class WhenUpdatingForbiddenFields:

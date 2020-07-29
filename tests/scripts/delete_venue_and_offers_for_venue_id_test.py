@@ -1,6 +1,6 @@
 import pytest
 
-from models import VenueSQLEntity, Offer
+from models import VenueSQLEntity, OfferSQLEntity
 from repository import repository
 from scripts.delete_venue_and_offers_for_venue_id import delete_venue_and_offers_for_venue_id
 from tests.conftest import clean_database
@@ -44,7 +44,7 @@ class DeleteVenueAndOffersForVenueIdTest:
         delete_venue_and_offers_for_venue_id(humanize(venue1.id))
 
         # Then
-        offers = Offer.query.all()
+        offers = OfferSQLEntity.query.all()
         assert all([o.venue == venue2 for o in offers])
         assert VenueSQLEntity.query.get(venue1.id) is None
 

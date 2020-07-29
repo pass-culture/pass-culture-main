@@ -6,7 +6,7 @@ from sqlalchemy import Sequence
 from domain.titelive import get_stocks_information
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
-from models import Offer, VenueProvider
+from models import OfferSQLEntity, VenueProvider
 from models.db import db
 from models.stock_sql_entity import StockSQLEntity
 from repository import product_queries
@@ -44,14 +44,14 @@ class TiteLiveStocks(LocalProvider):
 
         providable_info_stock = self.create_providable_info(StockSQLEntity, f"{self.titelive_stock['ref']}@{self.venue.siret}",
                                                             datetime.utcnow())
-        providable_info_offer = self.create_providable_info(Offer, f"{self.titelive_stock['ref']}@{self.venue.siret}",
+        providable_info_offer = self.create_providable_info(OfferSQLEntity, f"{self.titelive_stock['ref']}@{self.venue.siret}",
                                                             datetime.utcnow())
         return [providable_info_offer, providable_info_stock]
 
-    def fill_object_attributes(self, stock_or_offer: Union[StockSQLEntity, Offer]):
+    def fill_object_attributes(self, stock_or_offer: Union[StockSQLEntity, OfferSQLEntity]):
         if isinstance(stock_or_offer, StockSQLEntity):
             self.fill_stock_attributes(stock_or_offer, self.titelive_stock)
-        elif isinstance(stock_or_offer, Offer):
+        elif isinstance(stock_or_offer, OfferSQLEntity):
             self.fill_offer_attributes(stock_or_offer, self.titelive_stock)
 
     def fill_stock_attributes(self, stock: StockSQLEntity, stock_information: dict):
@@ -62,7 +62,7 @@ class TiteLiveStocks(LocalProvider):
         stock.offerId = self.offer_id
         stock.dateModified = datetime.now()
 
-    def fill_offer_attributes(self, offer: Offer, stock_information: dict):
+    def fill_offer_attributes(self, offer: OfferSQLEntity, stock_information: dict):
         offer.name = self.product.name
         offer.description = self.product.description
         offer.type = self.product.type

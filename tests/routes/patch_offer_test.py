@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from models import Offer, Product, Provider
+from models import OfferSQLEntity, Product, Provider
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from routes.serialization import serialize
@@ -38,7 +38,7 @@ class Patch:
 
             # Then
             assert response.status_code == 200
-            assert Offer.query.get(offer.id).bookingEmail == 'offer@example.com'
+            assert OfferSQLEntity.query.get(offer.id).bookingEmail == 'offer@example.com'
 
         @patch('use_cases.update_an_offer.redis.add_offer_id')
         @clean_database
@@ -89,7 +89,7 @@ class Patch:
 
             # Then
             assert response.status_code == 200
-            assert Offer.query.get(offer_id).name == 'New Name'
+            assert OfferSQLEntity.query.get(offer_id).name == 'New Name'
             assert Product.query.get(product_id).name == 'New Name'
 
         @clean_database
@@ -117,7 +117,7 @@ class Patch:
 
             # Then
             assert response.status_code == 200
-            assert Offer.query.get(offer_id).name == 'New Name'
+            assert OfferSQLEntity.query.get(offer_id).name == 'New Name'
             assert Product.query.get(product_id).name == 'Old Name'
 
         @clean_database
@@ -142,7 +142,7 @@ class Patch:
 
             # Then
             assert response.status_code == 200
-            assert Offer.query.one().name == 'New Name'
+            assert OfferSQLEntity.query.one().name == 'New Name'
             assert Product.query.one().name == 'Old Name'
 
         @clean_database
@@ -168,7 +168,7 @@ class Patch:
 
             # Then
             assert response.status_code == 200
-            assert not Offer.query.get(offer_id).isActive
+            assert not OfferSQLEntity.query.get(offer_id).isActive
 
         @clean_database
         def when_activate_offer_from_provider(self, app):
@@ -196,7 +196,7 @@ class Patch:
 
             # Then
             assert response.status_code == 200
-            assert Offer.query.get(offer_id).isActive
+            assert OfferSQLEntity.query.get(offer_id).isActive
 
         @clean_database
         def when_patch_an_offer_that_is_imported_from_titelive(self, app):

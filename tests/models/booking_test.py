@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from models import BookingSQLEntity, Offer, StockSQLEntity, UserSQLEntity, Product, ApiErrors
+from models import BookingSQLEntity, OfferSQLEntity, StockSQLEntity, UserSQLEntity, Product, ApiErrors
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
@@ -20,7 +20,7 @@ def test_booking_completed_url_gets_normalized():
     # Given
     product = Product()
 
-    offer = Offer()
+    offer = OfferSQLEntity()
     offer.id = 1
     offer.product = product
     offer.url = 'http://javascript:alert("plop")?token={token}&email={email}'
@@ -371,7 +371,7 @@ class BookingIsCancellableTest:
         # Given
         booking = BookingSQLEntity()
         booking.stock = StockSQLEntity()
-        booking.stock.offer = Offer()
+        booking.stock.offer = OfferSQLEntity()
         booking.stock.offer.product = create_product_with_thing_type()
 
         # When

@@ -33,7 +33,8 @@ schedules = [
 
 
 def get_model_plural_name(obj):
-    return inflect_engine.plural(obj.__class__.__name__.lower())
+    print(obj.__tablename__)
+    return inflect_engine.plural(obj.__tablename__.lower())
 
 
 def dashify(name):

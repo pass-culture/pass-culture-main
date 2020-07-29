@@ -12,7 +12,7 @@ from models.db import Model
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.needs_validation_mixin import NeedsValidationMixin
-from models.offer import Offer
+from models.offer_sql_entity import OfferSQLEntity
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.versioned_mixin import VersionedMixin
@@ -137,7 +137,7 @@ class VenueSQLEntity(PcObject,
 
     @property
     def nOffers(self):
-        return Offer.query.filter(Offer.venueId == self.id).count()
+        return OfferSQLEntity.query.filter(OfferSQLEntity.venueId == self.id).count()
 
 
 @listens_for(VenueSQLEntity, 'before_insert')

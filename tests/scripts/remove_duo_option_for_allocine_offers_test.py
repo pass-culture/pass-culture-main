@@ -1,4 +1,4 @@
-from models import Offer
+from models import OfferSQLEntity
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from scripts.remove_duo_option_for_allocine_offers import remove_duo_option_for_allocine_offers
@@ -30,7 +30,7 @@ class RemoveDuoOptionForAllocineOffersTest:
         remove_duo_option_for_allocine_offers()
 
         # Then
-        offers = Offer.query.all()
+        offers = OfferSQLEntity.query.all()
 
         assert offers[0].id == 999 and offers[0].isDuo
         assert not offers[1].isDuo

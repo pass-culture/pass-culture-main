@@ -10,7 +10,7 @@ from algolia.infrastructure.api import add_objects, delete_objects
 from algolia.infrastructure.builder import build_object
 from connectors.redis import add_to_indexed_offers, check_offer_exists, delete_indexed_offers, get_offer_details, \
     add_offer_ids_in_error
-from models import Offer
+from models import OfferSQLEntity
 from repository import offer_queries
 from utils.human_ids import humanize
 from utils.logger import logger
@@ -64,7 +64,7 @@ def delete_expired_offers(client: Redis, offer_ids: List[int]) -> None:
         _process_deleting(client=client, offer_ids_to_delete=offer_ids_to_delete)
 
 
-def _build_offer_details_to_be_indexed(offer: Offer) -> dict:
+def _build_offer_details_to_be_indexed(offer: OfferSQLEntity) -> dict:
     stocks = offer.activeStocks
     event_dates = []
     prices = list(map(lambda stock: float(stock.price), stocks))

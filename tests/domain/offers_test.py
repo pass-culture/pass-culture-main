@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from domain.offers import is_from_allocine, update_is_active_status
-from models import Offer
+from models import OfferSQLEntity
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import (create_booking,
                                                    create_deposit,
@@ -69,7 +69,7 @@ class UpdateIsActiveStatusTest:
 class IsFromAllocineTest:
     def test_should_return_true_when_offer_is_from_allocine_provider(self):
         # Given
-        offer = Offer()
+        offer = OfferSQLEntity()
         offer.lastProviderId = 1
         offer.lastProvider = create_provider(local_class='AllocineStocks')
 
@@ -81,7 +81,7 @@ class IsFromAllocineTest:
 
     def test_should_return_false_when_offer_is_from_open_agenda(self):
         # Given
-        offer = Offer()
+        offer = OfferSQLEntity()
         offer.lastProviderId = 2
         offer.lastProvider = create_provider(local_class='OpenAgenda')
 
@@ -93,7 +93,7 @@ class IsFromAllocineTest:
 
     def test_should_return_false_when_offer_is_not_imported(self):
         # Given
-        offer = Offer()
+        offer = OfferSQLEntity()
         offer.lastProvider = None
 
         # When

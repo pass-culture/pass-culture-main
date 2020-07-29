@@ -8,11 +8,11 @@ from tests.model_creators.generic_creators import create_offerer, create_venue
 
 
 class VenueWithBasicInformationSQLRepositoryTest:
-    def setup_method(self) -> None:
+    def setup_method(self):
         self.venue_sql_repository = VenueWithBasicInformationSQLRepository()
 
     @clean_database
-    def test_returns_a_venue_when_venue_with_siret_is_found(self, app: object) -> None:
+    def test_returns_a_venue_when_venue_with_siret_is_found(self, app: object):
         # given
         siret = "12345678912345"
         offerer = create_offerer()
@@ -31,7 +31,7 @@ class VenueWithBasicInformationSQLRepositoryTest:
         assert found_venue.identifier == expected_venue.identifier
 
     @clean_database
-    def test_should_return_none_when_no_venue_with_siret_was_found(self, app: object) -> None:
+    def test_should_return_none_when_no_venue_with_siret_was_found(self, app: object):
         # given
         siret = "12345678912345"
         offerer = create_offerer()
@@ -45,7 +45,7 @@ class VenueWithBasicInformationSQLRepositoryTest:
         assert found_venue is None
 
     @clean_database
-    def test_returns_a_venue_when_venue_with_name_is_found(self, app: object) -> None:
+    def test_returns_a_venue_when_venue_with_name_is_found(self, app: object):
         # given
         name = 'VENUE NAME'
         offerer = create_offerer()
@@ -67,7 +67,7 @@ class VenueWithBasicInformationSQLRepositoryTest:
         assert found_venue.siret is None
 
     @clean_database
-    def test_should_return_none_when_venue_with_name_was_found_but_in_another_offerer(self, app: object) -> None:
+    def test_should_return_none_when_venue_with_name_was_found_but_in_another_offerer(self, app: object):
         # given
         name = 'Venue name'
         offerer = create_offerer()
@@ -82,7 +82,7 @@ class VenueWithBasicInformationSQLRepositoryTest:
         assert found_venue == []
 
     @clean_database
-    def test_should_return_none_when_no_venue_with_name_was_found(self, app: object) -> None:
+    def test_should_return_none_when_no_venue_with_name_was_found(self, app: object):
         # given
         name = 'Venue name'
         offerer = create_offerer()

@@ -10,7 +10,7 @@ from utils.human_ids import humanize
 
 
 class SerializeBookingRecapTest:
-    def test_should_return_json_with_all_parameters_for_thing_stock(self, app: fixture) -> None:
+    def test_should_return_json_with_all_parameters_for_thing_stock(self, app: fixture):
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         thing_booking_recap = create_domain_thing_booking_recap(
@@ -120,7 +120,7 @@ class SerializeBookingRecapTest:
         assert result['pages'] == 1
         assert result['total'] == 2
 
-    def test_should_return_json_with_event_date_additional_parameter_for_event_stock(self, app: fixture) -> None:
+    def test_should_return_json_with_event_date_additional_parameter_for_event_stock(self, app: fixture):
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         day_after_booking_date = booking_date + timedelta(days=1)
@@ -183,7 +183,7 @@ class SerializeBookingRecapTest:
         assert results['pages'] == 1
         assert results['total'] == 2
 
-    def test_should_return_json_with_offer_isbn_additional_parameter_for_thing_stock(self, app: fixture) -> None:
+    def test_should_return_json_with_offer_isbn_additional_parameter_for_thing_stock(self, app: fixture):
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         thing_booking_recap = create_domain_thing_booking_recap(offer_identifier=1, offer_name="Martine a la playa",
@@ -246,7 +246,7 @@ class SerializeBookingRecapTest:
 
 
 class SerializeBookingRecapHistoryTest:
-    def test_should_return_booking_recap_history_with_cancellation_date_when_cancelled(self, app: fixture) -> None:
+    def test_should_return_booking_recap_history_with_cancellation_date_when_cancelled(self, app: fixture):
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
@@ -286,7 +286,7 @@ class SerializeBookingRecapHistoryTest:
         assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history
 
     def test_should_return_booking_recap_history_with_reimbursed_and_used_dated_when_reimbursed(self,
-                                                                                                app: fixture) -> None:
+                                                                                                app: fixture):
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
@@ -331,7 +331,7 @@ class SerializeBookingRecapHistoryTest:
         ]
         assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history
 
-    def test_should_return_booking_recap_history_with_date_used_when_used(self, app: fixture) -> None:
+    def test_should_return_booking_recap_history_with_date_used_when_used(self, app: fixture):
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
@@ -370,7 +370,7 @@ class SerializeBookingRecapHistoryTest:
         ]
         assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history
 
-    def test_should_return_booking_recap_history_with_only_booking_date_when_just_booked(self, app: fixture) -> None:
+    def test_should_return_booking_recap_history_with_only_booking_date_when_just_booked(self, app: fixture):
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [

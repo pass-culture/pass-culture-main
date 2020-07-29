@@ -12,7 +12,7 @@ from models.criterion import Criterion
 from models.db import db, Model
 from models.deactivable_mixin import DeactivableMixin
 from models.extra_data_mixin import ExtraDataMixin
-from models.mediation import Mediation
+from models.mediation_sql_entity import MediationSQLEntity
 from models.offer_criterion import OfferCriterion
 from models.offer_type import ThingType, EventType, ProductType, Category
 from models.pc_object import PcObject
@@ -23,13 +23,14 @@ from utils.date import DateTimes
 from utils.string_processing import pluralize
 
 
-class Offer(PcObject,
-            Model,
-            ExtraDataMixin,
-            DeactivableMixin,
-            ProvidableMixin,
-            VersionedMixin):
-    # We redefine this so we can reference it in the baseScore column_property
+class OfferSQLEntity(PcObject,
+                     Model,
+                     ExtraDataMixin,
+                     DeactivableMixin,
+                     ProvidableMixin,
+                     VersionedMixin):
+    __tablename__ = 'offer'
+
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -112,7 +113,7 @@ class Offer(PcObject,
             self.product.populate_from_dict(product_dict)
 
     @property
-    def activeMediation(self) -> Optional[Mediation]:
+    def activeMediation(self) -> Optional[MediationSQLEntity]:
         sorted_by_date_desc = sorted(self.mediations, key=lambda m: m.dateCreated, reverse=True)
         only_active = list(filter(lambda m: m.isActive, sorted_by_date_desc))
         return only_active[0] if only_active else None
@@ -249,9 +250,9 @@ class Offer(PcObject,
         return matching_type_thing.value['proLabel']
 
 
-ts_indexes = [('idx_offer_fts_name', Offer.name),
-              ('idx_offer_fts_author', Offer.extraData['author'].cast(TEXT)),
-              ('idx_offer_fts_byArtist', Offer.extraData['byArtist'].cast(TEXT)),
-              ('idx_offer_fts_description', Offer.description)]
+ts_indexes = [('idx_offer_fts_name', OfferSQLEntity.name),
+              ('idx_offer_fts_author', OfferSQLEntity.extraData['author'].cast(TEXT)),
+              ('idx_offer_fts_byArtist', OfferSQLEntity.extraData['byArtist'].cast(TEXT)),
+              ('idx_offer_fts_description', OfferSQLEntity.description)]
 
-(Offer.__ts_vectors__, Offer.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
+(OfferSQLEntity.__ts_vectors__, OfferSQLEntity.__table_args__) = create_ts_vector_and_table_args(ts_indexes)

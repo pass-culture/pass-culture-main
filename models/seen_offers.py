@@ -9,7 +9,7 @@ class SeenOffer(PcObject, Model):
     dateSeen = Column(DateTime, nullable=False)
     offerId = Column(BigInteger, ForeignKey('offer.id'), nullable=False, index=True)
     userId = Column(BigInteger, ForeignKey('user.id'), nullable=False, index=True)
-    offer = relationship('Offer',
+    offer = relationship('OfferSQLEntity',
                          foreign_keys=[offerId],
                          backref='SeenOffer')
     user = relationship('UserSQLEntity',

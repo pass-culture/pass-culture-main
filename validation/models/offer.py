@@ -1,8 +1,8 @@
-from models import ApiErrors, Offer
+from models import ApiErrors, OfferSQLEntity
 from repository import venue_queries
 
 
-def validate(offer: Offer, api_errors: ApiErrors) -> ApiErrors:
+def validate(offer: OfferSQLEntity, api_errors: ApiErrors) -> ApiErrors:
     venue = offer.venue if offer.venue else venue_queries.find_by_id(offer.venueId)
 
     if offer.isDigital:

@@ -1,5 +1,5 @@
 from models.booking_sql_entity import BookingSQLEntity
-from models.offer import Offer
+from models.offer_sql_entity import OfferSQLEntity
 from models.recommendation import Recommendation
 from models.user_sql_entity import UserSQLEntity
 from repository.user_queries import keep_only_webapp_users
@@ -28,7 +28,7 @@ def get_existing_webapp_user_with_no_date_read():
 def get_existing_webapp_user_with_at_least_one_recommendation():
     query = Recommendation.query.join(UserSQLEntity)
     query = keep_only_webapp_users(query)
-    query = query.reset_joinpoint().join(Offer)
+    query = query.reset_joinpoint().join(OfferSQLEntity)
 
     recommendation = query.first()
     return {

@@ -6,7 +6,7 @@ from domain.admin_emails import \
     send_offer_creation_notification_to_administration
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
 from infrastructure.container import list_offers_for_pro_user
-from models import Offer, RightsType, VenueSQLEntity
+from models import OfferSQLEntity, RightsType, VenueSQLEntity
 from models.api_errors import ResourceNotFoundError
 from repository import offer_queries, repository, venue_queries, user_offerer_queries
 from routes.serialization import as_dict
@@ -69,7 +69,7 @@ def list_offers() -> (str, int):
 @app.route('/offers/<offer_id>', methods=['GET'])
 @login_required
 def get_offer(offer_id: int) -> (str, int):
-    offer = load_or_404(Offer, offer_id)
+    offer = load_or_404(OfferSQLEntity, offer_id)
     return jsonify(serialize_offer(offer, current_user)), 200
 
 

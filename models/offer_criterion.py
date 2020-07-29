@@ -11,7 +11,7 @@ class OfferCriterion(PcObject, Model):
                      index=True,
                      nullable=False)
 
-    offer = relationship('Offer',
+    offer = relationship('OfferSQLEntity',
                          foreign_keys=[offerId],
                          backref='offerCriteria')
 

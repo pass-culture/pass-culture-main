@@ -12,7 +12,7 @@ from domain.booking.booking_validator import check_offer_already_booked, check_q
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS, SUBVENTION_TOTAL
 from domain.stock.stock import Stock
 from domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits, check_can_book_free_offer
-from models import ApiErrors, BookingSQLEntity, StockSQLEntity, Offer, ThingType, UserSQLEntity, EventType
+from models import ApiErrors, BookingSQLEntity, StockSQLEntity, OfferSQLEntity, ThingType, UserSQLEntity, EventType
 from models.api_errors import ResourceGoneError, ForbiddenError
 from repository import repository
 from tests.conftest import clean_database
@@ -175,7 +175,7 @@ class CheckBookingIsCancellableTest:
         booking = BookingSQLEntity()
         booking.isUsed = False
         booking.stock = StockSQLEntity()
-        booking.stock.offer = Offer()
+        booking.stock.offer = OfferSQLEntity()
         booking.stock.offer.product = create_product_with_thing_type()
 
         # When

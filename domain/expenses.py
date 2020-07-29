@@ -2,7 +2,7 @@ from decimal import Decimal
 from typing import Dict, List
 
 from models.booking_sql_entity import BookingSQLEntity
-from models.offer import Offer
+from models.offer_sql_entity import OfferSQLEntity
 from models.offer_type import ThingType
 
 PHYSICAL_EXPENSES_CAPPED_TYPES = [
@@ -66,14 +66,14 @@ def _get_bookings_of_physical_things(bookings: List[BookingSQLEntity]) -> List[B
     return match
 
 
-def is_eligible_to_digital_offers_capping(offer: Offer) -> bool:
+def is_eligible_to_digital_offers_capping(offer: OfferSQLEntity) -> bool:
     if offer.isDigital and offer.type in map(str, DIGITAL_EXPENSES_CAPPED_TYPES):
         return True
 
     return False
 
 
-def is_eligible_to_physical_offers_capping(offer: Offer) -> bool:
+def is_eligible_to_physical_offers_capping(offer: OfferSQLEntity) -> bool:
     if not offer.isDigital and offer.type in map(str, PHYSICAL_EXPENSES_CAPPED_TYPES):
         return True
 

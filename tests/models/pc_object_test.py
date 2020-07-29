@@ -6,7 +6,7 @@ import pytest
 from sqlalchemy import BigInteger, Column, DateTime, Integer, Float
 from sqlalchemy.dialects.postgresql import UUID
 
-from models import PcObject, Offer, UserSQLEntity
+from models import PcObject, OfferSQLEntity, UserSQLEntity
 from models import ThingType
 from models.api_errors import DecimalCastError, DateTimeCastError, UuidCastError
 from models.db import Model
@@ -38,7 +38,7 @@ now = datetime.utcnow()
 class SerializeTest:
     def test_on_datetime_list_returns_string_with_date_in_ISO_8601_list(self):
         # Given
-        offer = Offer()
+        offer = OfferSQLEntity()
         offer.stocks = [create_stock(beginning_datetime=now, offer=offer)]
 
         # When

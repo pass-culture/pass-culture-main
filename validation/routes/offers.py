@@ -1,5 +1,5 @@
 from domain.allocine import get_editable_fields_for_allocine_offers
-from models import Offer, UserOfferer
+from models import OfferSQLEntity, UserOfferer
 from models.api_errors import ResourceNotFoundError, ApiErrors
 from models.offer_type import ProductType
 
@@ -73,7 +73,7 @@ def check_offer_id_is_present_in_request(offer_id: str):
         raise errors
 
 
-def check_offer_is_editable(offer: Offer):
+def check_offer_is_editable(offer: OfferSQLEntity):
     if not offer.isEditable:
         error = ApiErrors()
         error.status_code = 400

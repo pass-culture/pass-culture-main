@@ -4,7 +4,7 @@ from flask import render_template
 from sqlalchemy import text
 
 from domain.payments import keep_only_not_processable_payments
-from models import BankInformation, BookingSQLEntity, Offer, Offerer, Payment, \
+from models import BankInformation, BookingSQLEntity, OfferSQLEntity, Offerer, Payment, \
     PaymentMessage, PaymentStatus, StockSQLEntity, VenueSQLEntity
 from models.db import db
 from models.payment_status import TransactionStatus
@@ -74,7 +74,7 @@ def find_not_processable_with_bank_information() -> List[Payment]:
         .filter(Payment.id.in_(not_processable_payment_ids)) \
         .join(BookingSQLEntity) \
         .join(StockSQLEntity) \
-        .join(Offer) \
+        .join(OfferSQLEntity) \
         .join(VenueSQLEntity) \
         .join(Offerer) \
         .join(BankInformation, predicate_matches_venue_or_offerer) \

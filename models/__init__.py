@@ -19,9 +19,9 @@ from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.iris_venues import IrisVenues
 from models.local_provider_event import LocalProviderEvent
-from models.mediation import Mediation
+from models.mediation_sql_entity import MediationSQLEntity
 from models.needs_validation_mixin import NeedsValidationMixin
-from models.offer import Offer
+from models.offer_sql_entity import OfferSQLEntity
 from models.offer_criterion import OfferCriterion
 from models.offer_type import EventType, ThingType
 from models.offerer import Offerer
@@ -74,14 +74,14 @@ __all__ = (
     'NeedsValidationMixin',
     'ProvidableMixin',
     'BookingSQLEntity',
-    'Mediation',
+    'MediationSQLEntity',
     'StockSQLEntity',
     'Offerer',
     'VenueProvider',
     'AllocineVenueProviderPriceRule',
     'LocalProviderEvent',
     'OfferCriterion',
-    'Offer',
+    'OfferSQLEntity',
     'Payment',
     'PaymentStatus',
     'PaymentMessage',
@@ -120,8 +120,8 @@ models = (
     Deposit,
     Email,
     Product,
-    Offer,
-    Mediation,
+    OfferSQLEntity,
+    MediationSQLEntity,
     Recommendation,
     FavoriteSQLEntity,
     Feature,

@@ -1,7 +1,7 @@
 import collections
 from typing import List, Dict, Tuple
 
-from models import DiscoveryViewV3, Offer
+from models import DiscoveryViewV3, OfferSQLEntity
 
 
 def order_offers_by_diversified_types(offers: List[DiscoveryViewV3]) -> List[DiscoveryViewV3]:
@@ -35,5 +35,5 @@ def _get_number_of_offers_by_type(type_and_offers: Tuple) -> int:
     return len(type_and_offers[1])
 
 
-def _compute_offer_type_and_oneliness(offer: Offer) -> str:
+def _compute_offer_type_and_oneliness(offer: OfferSQLEntity) -> str:
     return str(offer.type) + '_DIGITAL' if offer.url else str(offer.type) + '_PHYSICAL'

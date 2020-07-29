@@ -3,13 +3,13 @@ from typing import List, Callable
 
 from sqlalchemy import func
 
-from models import Offer, StockSQLEntity
+from models import OfferSQLEntity, StockSQLEntity
 from models.db import db
 from repository import repository
 
 
 def get_offers_with_max_stock_date_between_today_and_end_of_quarantine(first_day_after_quarantine: datetime,
-                                                                       today: datetime) -> List[Offer]:
+                                                                       today: datetime) -> List[OfferSQLEntity]:
     quarantine_offers_query = build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(
         first_day_after_quarantine, today)
     return quarantine_offers_query.all()
@@ -21,14 +21,14 @@ def build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(f
         func.max(StockSQLEntity.beginningDatetime).label('beginningDatetime')
     ) \
         .group_by(StockSQLEntity.offerId).subquery()
-    quarantine_offers_query = Offer.query.join(stock_with_latest_date_by_offer,
-                                               Offer.id == stock_with_latest_date_by_offer.c.offerId).filter(
+    quarantine_offers_query = OfferSQLEntity.query.join(stock_with_latest_date_by_offer,
+                                                        OfferSQLEntity.id == stock_with_latest_date_by_offer.c.offerId).filter(
         stock_with_latest_date_by_offer.c.beginningDatetime < first_day_after_quarantine).filter(
         stock_with_latest_date_by_offer.c.beginningDatetime > today)
     return quarantine_offers_query
 
 
-def deactivate_offers(offers: List[Offer]):
+def deactivate_offers(offers: List[OfferSQLEntity]):
     for offer in offers:
         offer.isActive = False
     repository.save(*offers)

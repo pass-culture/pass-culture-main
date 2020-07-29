@@ -1,27 +1,29 @@
 from typing import Dict, List, Optional
 
-from models import (BookingSQLEntity, FavoriteSQLEntity, StockSQLEntity,
+from domain.favorite.favorite import Favorite
+from models import (BookingSQLEntity, StockSQLEntity,
                     UserSQLEntity)
 from routes.serialization.serializer import serialize
 from utils.human_ids import humanize
 
 
-def serialize_favorites(favorites: List[FavoriteSQLEntity], current_user: UserSQLEntity) -> List:
+def serialize_favorites(favorites: List[Favorite], current_user: UserSQLEntity) -> List:
     return [serialize_favorite(favorite, current_user) for favorite in favorites]
 
 
-def serialize_favorite(favorite: FavoriteSQLEntity, current_user: UserSQLEntity) -> Dict:
+def serialize_favorite(favorite: Favorite, current_user: UserSQLEntity) -> Dict:
     offer = favorite.offer
     venue = offer.venue
     humanized_offer_id = humanize(offer.id)
     humanized_venue_id = humanize(venue.id)
+    mediation_id = humanize(favorite.mediation.id) if favorite.mediation else None
 
     stocks = [{'beginningDatetime': stock.beginningDatetime, 'id': humanize(stock.id), 'offerId': humanized_offer_id} for stock in offer.stocks]
 
     serialized_favorite = {
-        'id': humanize(favorite.id),
+        'id': humanize(favorite.identifier),
         'offerId': humanized_offer_id,
-        'mediationId': humanize(favorite.mediationId),
+        'mediationId': mediation_id,
         'offer': {
             'dateRange': serialize(offer.dateRange),
             'hasBookingLimitDatetimesPassed': offer.hasBookingLimitDatetimesPassed,
@@ -41,7 +43,7 @@ def serialize_favorite(favorite: FavoriteSQLEntity, current_user: UserSQLEntity)
             },
             'venueId': humanized_venue_id,
         },
-        'thumbUrl': favorite.thumbUrl
+        'thumbUrl': favorite.thumb_url
     }
 
     user_booking = _get_user_booking_if_exists(current_user, offer.stocks)

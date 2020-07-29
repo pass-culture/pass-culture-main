@@ -28,7 +28,7 @@ class Recommendation(PcObject, Model):
                          index=True,
                          nullable=True)  # NULL for recommendation created directly from a thing or an event
 
-    mediation = relationship('Mediation',
+    mediation = relationship('MediationSQLEntity',
                              foreign_keys=[mediationId],
                              backref='recommendations')
 
@@ -37,7 +37,7 @@ class Recommendation(PcObject, Model):
                      index=True,
                      nullable=True)
 
-    offer = relationship('Offer',
+    offer = relationship('OfferSQLEntity',
                          foreign_keys=[offerId],
                          backref='recommendations')
 

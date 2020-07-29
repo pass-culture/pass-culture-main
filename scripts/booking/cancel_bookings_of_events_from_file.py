@@ -1,7 +1,7 @@
 import csv
 from typing import List, Iterable
 
-from models import BookingSQLEntity, StockSQLEntity, Offer, ApiErrors
+from models import BookingSQLEntity, StockSQLEntity, OfferSQLEntity, ApiErrors
 from repository import repository
 from utils.logger import logger
 
@@ -74,6 +74,6 @@ def _get_bookings_from_offer(offer_id: int) -> List[BookingSQLEntity]:
     return BookingSQLEntity.query \
         .filter(BookingSQLEntity.token.notin_(BOOKINGS_TOKEN_NOT_TO_UPDATE)) \
         .join(StockSQLEntity, StockSQLEntity.id == BookingSQLEntity.stockId) \
-        .join(Offer, Offer.id == StockSQLEntity.offerId) \
-        .filter(Offer.id == offer_id) \
+        .join(OfferSQLEntity, OfferSQLEntity.id == StockSQLEntity.offerId) \
+        .filter(OfferSQLEntity.id == offer_id) \
         .all()

@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from models import Mediation
+from models import MediationSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
@@ -30,7 +30,7 @@ class Patch:
             response = auth_request.patch('/mediations/%s' % humanize(mediation.id), json=data)
 
             # then
-            mediation = Mediation.query.get(mediation_id)
+            mediation = MediationSQLEntity.query.get(mediation_id)
             assert response.status_code == 200
             assert response.json['id'] == humanize(mediation.id)
             assert response.json['isActive'] == mediation.isActive

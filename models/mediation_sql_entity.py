@@ -2,26 +2,25 @@ from datetime import datetime
 
 from sqlalchemy import Column, \
     BigInteger, \
-    CheckConstraint, \
     DateTime, \
     ForeignKey, \
-    Integer, \
-    Text, \
     String
 from sqlalchemy.orm import relationship
 
-from models.deactivable_mixin import DeactivableMixin
 from models.db import Model
+from models.deactivable_mixin import DeactivableMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 
 
-class Mediation(PcObject,
-                Model,
-                HasThumbMixin,
-                ProvidableMixin,
-                DeactivableMixin):
+class MediationSQLEntity(PcObject,
+                         Model,
+                         HasThumbMixin,
+                         ProvidableMixin,
+                         DeactivableMixin):
+    __tablename__ = 'mediation'
+
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -45,6 +44,6 @@ class Mediation(PcObject,
                      index=True,
                      nullable=False)
 
-    offer = relationship('Offer',
+    offer = relationship('OfferSQLEntity',
                          foreign_keys=[offerId],
                          backref='mediations')

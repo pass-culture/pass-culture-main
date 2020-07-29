@@ -1,13 +1,15 @@
 from datetime import datetime
 from typing import List, Optional
 
+from domain.favorite.favorite import Favorite
+
 from domain.beneficiary.beneficiary import Beneficiary
 from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
 from domain.booking.booking import Booking
 from domain.booking_recap.booking_recap import ThingBookingRecap, EventBookingRecap, BookBookingRecap
 from domain.stock.stock import Stock
-from models import Offer
+from models import OfferSQLEntity, MediationSQLEntity
 
 
 def create_domain_beneficiary(identifier: int = None,
@@ -172,7 +174,7 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
 
 def create_domain_stock(identifier: int,
                         quantity: Optional[int],
-                        offer: Offer,
+                        offer: OfferSQLEntity,
                         price: float = 1,
                         beginning_datetime: Optional[datetime] = None,
                         booking_limit_datetime: Optional[datetime] = None,
@@ -211,4 +213,13 @@ def create_domain_booking(beneficiary: Beneficiary,
         identifier=identifier,
         token=token,
         date_booked=date_booked
+    )
+
+def create_domain_favorite(identifier: int,
+                           offer: OfferSQLEntity,
+                           mediation: MediationSQLEntity = None,):
+    return Favorite(
+        identifier=identifier,
+        offer=offer,
+        mediation=mediation
     )

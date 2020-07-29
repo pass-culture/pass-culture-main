@@ -19,7 +19,7 @@ class GetAllBookingsTest:
     @clean_database
     def test_should_call_the_usecase_with_user_id_and_page(self,
                                                            get_all_bookings_by_pro_user: mocker,
-                                                           app: fixture) -> None:
+                                                           app: fixture):
         # Given
         user = create_user(is_admin=True, can_book_free_offers=False)
         repository.save(user)
@@ -37,7 +37,7 @@ class GetAllBookingsTest:
     @clean_database
     def test_should_call_the_usecase_with_1_when_no_page_provided(self,
                                                                   get_all_bookings_by_pro_user: mocker,
-                                                                  app: fixture) -> None:
+                                                                  app: fixture):
         # Given
         user = create_user(is_admin=True, can_book_free_offers=False)
         repository.save(user)
@@ -54,7 +54,7 @@ class GetAllBookingsTest:
 class GetTest:
     class Returns200Test:
         @clean_database
-        def when_user_is_linked_to_a_valid_offerer(self, app: fixture) -> None:
+        def when_user_is_linked_to_a_valid_offerer(self, app: fixture):
             # Given
             beneficiary = create_user(email='beneficiary@example.com', first_name="Hermione", last_name="Granger")
             user = create_user()
@@ -126,7 +126,7 @@ class GetTest:
 
     class Returns400Test:
         @clean_database
-        def when_page_number_is_not_a_number(self, app: fixture) -> None:
+        def when_page_number_is_not_a_number(self, app: fixture):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
             repository.save(user)
@@ -145,7 +145,7 @@ class GetTest:
 
     class Returns401Test:
         @clean_database
-        def when_user_is_admin(self, app: fixture) -> None:
+        def when_user_is_admin(self, app: fixture):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
             repository.save(user)

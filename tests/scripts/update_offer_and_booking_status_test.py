@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from models import Offer, BookingSQLEntity
+from models import OfferSQLEntity, BookingSQLEntity
 from repository import repository
 from scripts.update_offer_and_booking_status import _read_booking_tokens_from_file, \
     update_offer_and_booking_status
@@ -34,7 +34,7 @@ class UpdateOfferAndBookingStatusTest:
         update_offer_and_booking_status('fake/path')
 
         # Then
-        offer = Offer.query.one()
+        offer = OfferSQLEntity.query.one()
         assert not offer.isActive
 
     @patch('scripts.update_offer_and_booking_status._read_booking_tokens_from_file')

@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy.sql import selectable
 
-from models import VenueSQLEntity, Offer, StockSQLEntity, Offerer, UserOfferer, UserSQLEntity
+from models import VenueSQLEntity, OfferSQLEntity, StockSQLEntity, Offerer, UserOfferer, UserSQLEntity
 from models.activity import load_activity
 from models.db import db
 from repository.offerer_queries import _filter_by_sirens
@@ -16,8 +16,8 @@ def find_by_id(venue_id: int) -> VenueSQLEntity:
 
 def find_by_offer_id(offer_id):
     return VenueSQLEntity.query \
-        .join(Offer) \
-        .filter(Offer.id == offer_id) \
+        .join(OfferSQLEntity) \
+        .filter(OfferSQLEntity.id == offer_id) \
         .first()
 
 
@@ -202,12 +202,12 @@ def _filter_by_is_validated(query, is_validated):
 
 def _filter_by_offer_status(query, offer_status):
     if offer_status == 'ALL':
-        query = query.join(Offer)
+        query = query.join(OfferSQLEntity)
     elif offer_status == "WITHOUT":
         query = query.filter(~VenueSQLEntity.offers.any())
 
     elif offer_status == "VALID" or offer_status == "EXPIRED":
-        query = query.join(Offer)
+        query = query.join(OfferSQLEntity)
         is_not_soft_deleted_thing = StockSQLEntity.isSoftDeleted == False
         can_still_be_booked_thing = (
             (StockSQLEntity.bookingLimitDatetime == None) | (StockSQLEntity.bookingLimitDatetime >= datetime.utcnow()))

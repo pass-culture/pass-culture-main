@@ -2,14 +2,14 @@ from datetime import datetime
 from typing import Optional, List
 
 from models import BookingSQLEntity
-from models.offer import Offer
+from models.offer_sql_entity import OfferSQLEntity
 
 
 class Stock(object):
     def __init__(self,
                  identifier: int,
                  quantity: Optional[int],
-                 offer: Offer,
+                 offer: OfferSQLEntity,
                  price: float,
                  beginning_datetime: Optional[datetime] = None,
                  booking_limit_datetime: Optional[datetime] = None,

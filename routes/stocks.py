@@ -8,7 +8,7 @@ from domain.user_emails import send_batch_cancellation_emails_to_users, \
     send_offerer_bookings_recap_email_after_offerer_cancellation, send_batch_stock_postponement_emails_to_users
 from models import Product
 from models.feature import FeatureToggle
-from models.mediation import Mediation
+from models.mediation_sql_entity import MediationSQLEntity
 from models.stock_sql_entity import StockSQLEntity
 from models.user_offerer import RightsType
 from models import VenueSQLEntity
@@ -55,7 +55,7 @@ def get_stock(stock_id, mediation_id):
     query = find_stocks_with_possible_filters(filters, current_user).filter_by(id=dehumanize(stock_id))
 
     if mediation_id is not None:
-        mediation = load_or_404(Mediation, mediation_id)
+        mediation = load_or_404(MediationSQLEntity, mediation_id)
 
     if stock_id == '0':
         stock = {'id': '0',

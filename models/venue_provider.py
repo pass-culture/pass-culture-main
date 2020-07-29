@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship, column_property
 
 from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
-from models.offer import Offer
+from models.offer_sql_entity import OfferSQLEntity
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
@@ -65,7 +65,7 @@ class VenueProvider(PcObject,
 
     @property
     def nOffers(self):
-        return Offer.query \
-            .filter(Offer.venueId == self.venueId) \
-            .filter(Offer.lastProviderId == self.providerId) \
+        return OfferSQLEntity.query \
+            .filter(OfferSQLEntity.venueId == self.venueId) \
+            .filter(OfferSQLEntity.lastProviderId == self.providerId) \
             .count()

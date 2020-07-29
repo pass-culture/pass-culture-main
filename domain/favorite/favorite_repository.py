@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
+from typing import List
 
-from models import FavoriteSQLEntity
+from domain.favorite.favorite import Favorite
 
 
 class FavoriteRepository(ABC):
     @abstractmethod
-    def find_by_beneficiary(self, beneficiary_identifier: int) -> FavoriteSQLEntity:
+    def find_by_beneficiary(self, beneficiary_identifier: int) -> List[Favorite]:
         pass
