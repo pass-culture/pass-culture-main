@@ -1,7 +1,7 @@
 import { parseAlgoliaParameters } from '../parseAlgoliaParameters'
 
 describe('src | components | parseAlgoliaParameters', () => {
-  it('should return empty algolia parameters when no parameters', () => {
+  it('should return default parameters when no parameters are provided', () => {
     // given
     const parameters = {}
 
@@ -9,10 +9,17 @@ describe('src | components | parseAlgoliaParameters', () => {
     const result = parseAlgoliaParameters(parameters)
 
     // then
-    expect(result).toStrictEqual({})
+    expect(result).toStrictEqual({
+      hitsPerPage: null,
+      offerCategories: [],
+      offerIsDuo: false,
+      offerIsNew: false,
+      offerTypes: { isDigital: false, isEvent: false, isThing: false },
+      tags: [],
+    })
   })
 
-  it('should return parsed algolia parameters with categories only', () => {
+  it('should return parsed algolia parameters with categories when provided', () => {
     // given
     const parameters = {
       categories: ['CINEMA', 'LECON', 'LIVRE'],
@@ -23,11 +30,16 @@ describe('src | components | parseAlgoliaParameters', () => {
 
     // then
     expect(result).toStrictEqual({
+      hitsPerPage: null,
       offerCategories: ['CINEMA', 'LECON', 'LIVRE'],
+      offerIsDuo: false,
+      offerIsNew: false,
+      offerTypes: { isDigital: false, isEvent: false, isThing: false },
+      tags: [],
     })
   })
 
-  it('should return parsed algolia parameters with tags only', () => {
+  it('should return parsed algolia parameters with tags when provided', () => {
     // given
     const parameters = {
       tags: ['offre du 14 juillet spéciale pass culture', 'offre de la pentecôte'],
@@ -38,11 +50,16 @@ describe('src | components | parseAlgoliaParameters', () => {
 
     // then
     expect(result).toStrictEqual({
+      hitsPerPage: null,
+      offerCategories: [],
+      offerIsDuo: false,
+      offerIsNew: false,
+      offerTypes: { isDigital: false, isEvent: false, isThing: false },
       tags: ['offre du 14 juillet spéciale pass culture', 'offre de la pentecôte'],
     })
   })
 
-  it('should return parsed algolia parameters with hitsPerPage only', () => {
+  it('should return parsed algolia parameters with hitsPerPage when provided', () => {
     // given
     const parameters = {
       hitsPerPage: 5,
@@ -54,10 +71,15 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       hitsPerPage: 5,
+      offerCategories: [],
+      offerIsDuo: false,
+      offerIsNew: false,
+      offerTypes: { isDigital: false, isEvent: false, isThing: false },
+      tags: [],
     })
   })
 
-  it('should return parsed algolia parameters with isDuo only', () => {
+  it('should return parsed algolia parameters with isDuo when provided', () => {
     // given
     const parameters = {
       isDuo: true,
@@ -68,7 +90,12 @@ describe('src | components | parseAlgoliaParameters', () => {
 
     // then
     expect(result).toStrictEqual({
+      hitsPerPage: null,
+      offerCategories: [],
       offerIsDuo: true,
+      offerIsNew: false,
+      offerTypes: { isDigital: false, isEvent: false, isThing: false },
+      tags: [],
     })
   })
 
@@ -83,7 +110,12 @@ describe('src | components | parseAlgoliaParameters', () => {
 
     // then
     expect(result).toStrictEqual({
+      hitsPerPage: null,
+      offerCategories: [],
+      offerIsDuo: false,
       offerIsNew: true,
+      offerTypes: { isDigital: false, isEvent: false, isThing: false },
+      tags: [],
     })
   })
 
@@ -98,11 +130,12 @@ describe('src | components | parseAlgoliaParameters', () => {
 
     // then
     expect(result).toStrictEqual({
-      offerTypes: {
-        isDigital: true,
-        isEvent: false,
-        isThing: false,
-      },
+      hitsPerPage: null,
+      offerCategories: [],
+      offerIsDuo: false,
+      offerIsNew: false,
+      offerTypes: { isDigital: true, isEvent: false, isThing: false },
+      tags: [],
     })
   })
 
@@ -117,11 +150,12 @@ describe('src | components | parseAlgoliaParameters', () => {
 
     // then
     expect(result).toStrictEqual({
-      offerTypes: {
-        isDigital: false,
-        isEvent: true,
-        isThing: false,
-      },
+      hitsPerPage: null,
+      offerCategories: [],
+      offerIsDuo: false,
+      offerIsNew: false,
+      offerTypes: { isDigital: false, isEvent: true, isThing: false },
+      tags: [],
     })
   })
 
@@ -136,11 +170,12 @@ describe('src | components | parseAlgoliaParameters', () => {
 
     // then
     expect(result).toStrictEqual({
-      offerTypes: {
-        isDigital: false,
-        isEvent: false,
-        isThing: true,
-      },
+      hitsPerPage: null,
+      offerCategories: [],
+      offerIsDuo: false,
+      offerIsNew: false,
+      offerTypes: { isDigital: false, isEvent: false, isThing: true },
+      tags: [],
     })
   })
 
@@ -157,12 +192,12 @@ describe('src | components | parseAlgoliaParameters', () => {
 
     // then
     expect(result).toStrictEqual({
-      offerTypes: {
-        isDigital: true,
-        isEvent: true,
-        isThing: true,
-      },
+      hitsPerPage: null,
+      offerCategories: [],
+      offerIsDuo: false,
+      offerIsNew: false,
+      offerTypes: { isDigital: true, isEvent: true, isThing: true },
+      tags: [],
     })
   })
-
 })

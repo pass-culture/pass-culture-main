@@ -15,47 +15,15 @@ const algoliaParametersFromContentful = {
   TAGS: 'tags',
 }
 
-export const parseAlgoliaParameters = parameters => {
-  const parsedParameters = {}
-  const offerTypes ={
-    isDigital: false,
-    isEvent: false,
-    isThing: false,
-  }
-  const keys = Object.keys(parameters)
-
-  keys.forEach(key => {
-    const value = parameters[key]
-    switch (key) {
-      case algoliaParametersFromContentful.CATEGORIES:
-        parsedParameters['offerCategories'] = value
-        break
-      case algoliaParametersFromContentful.IS_DUO:
-        parsedParameters['offerIsDuo'] = value
-        break
-      case algoliaParametersFromContentful.HITS_PER_PAGE:
-        parsedParameters['hitsPerPage'] = value
-        break
-      case algoliaParametersFromContentful.NEWEST_ONLY:
-        parsedParameters['offerIsNew'] = value
-        break
-      case algoliaParametersFromContentful.TAGS:
-        parsedParameters['tags'] = value
-        break
-      case algoliaParametersFromContentful.IS_DIGITAL:
-        offerTypes['isDigital'] = value
-        break
-      case algoliaParametersFromContentful.IS_EVENT:
-        offerTypes['isEvent'] = value
-        break
-      case algoliaParametersFromContentful.IS_THING:
-        offerTypes['isThing'] = value
-        break
-    }
-  })
-  const offerTypesProvided = keys.includes(algoliaParametersFromContentful.IS_DIGITAL) || keys.includes(algoliaParametersFromContentful.IS_EVENT) || keys.includes(algoliaParametersFromContentful.IS_THING)
-  if(offerTypesProvided){
-    parsedParameters['offerTypes'] = offerTypes
-  }
-  return parsedParameters
-}
+export const parseAlgoliaParameters = parameters => ({
+  hitsPerPage: parameters[algoliaParametersFromContentful.HITS_PER_PAGE] || null,
+  offerCategories: parameters[algoliaParametersFromContentful.CATEGORIES] || [],
+  offerIsDuo: parameters[algoliaParametersFromContentful.IS_DUO] || false,
+  offerIsNew: parameters[algoliaParametersFromContentful.NEWEST_ONLY] || false,
+  offerTypes: {
+    isDigital: parameters[algoliaParametersFromContentful.IS_DIGITAL] || false,
+    isEvent: parameters[algoliaParametersFromContentful.IS_EVENT] || false,
+    isThing: parameters[algoliaParametersFromContentful.IS_THING] || false,
+  },
+  tags: parameters[algoliaParametersFromContentful.TAGS] || [],
+})
