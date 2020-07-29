@@ -45,7 +45,7 @@ class OffererCreation extends PureComponent {
   render() {
     return (
       <Main
-        backTo={{ label: 'Vos structures juridiques', path: '/structures' }}
+        backTo={{ label: 'Structures juridiques', path: '/structures' }}
         name="offerer"
       >
         <Titles title="Structure" />

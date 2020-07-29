@@ -25,7 +25,7 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "backTo": Object {
-        "label": "Vos structures juridiques",
+        "label": "Structures juridiques",
         "path": "/structures",
       },
       "children": Array [
@@ -86,7 +86,7 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "backTo": Object {
-          "label": "Vos structures juridiques",
+          "label": "Structures juridiques",
           "path": "/structures",
         },
         "children": Array [

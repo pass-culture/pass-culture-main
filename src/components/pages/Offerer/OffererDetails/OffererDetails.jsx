@@ -17,7 +17,7 @@ class OffererDetails extends PureComponent {
     const { offerer, venues } = this.props
     return (
       <Main
-        backTo={{ label: 'Vos structures juridiques', path: '/structures' }}
+        backTo={{ label: 'Structures juridiques', path: '/structures' }}
         name="offerer"
       >
         <Titles
