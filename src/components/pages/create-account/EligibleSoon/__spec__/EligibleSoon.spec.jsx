@@ -3,11 +3,11 @@ import React from 'react'
 import { act } from 'react-dom/test-utils'
 import { MemoryRouter } from 'react-router'
 import EligibleSoon from '../../EligibleSoon/EligibleSoon'
-import { handleCheckEmailFormat } from '../../utils/checkEmailFormat'
+import { checkIfEmailIsValid } from '../../domain/checkIfEmailIsValid'
 
-jest.mock('../../utils/checkEmailFormat', () => {
+jest.mock('../../domain/checkIfEmailIsValid', () => {
   return {
-    handleCheckEmailFormat: jest.fn(),
+    checkIfEmailIsValid: jest.fn(),
   }
 })
 
@@ -51,7 +51,7 @@ describe('eligible soon page', () => {
 
   it('should not allow the user to save his email address when it is invalid', () => {
     // Given
-    handleCheckEmailFormat.mockReturnValue(false)
+    checkIfEmailIsValid.mockReturnValue(false)
 
     // When
     const wrapper = shallow(<EligibleSoon {...props} />)
@@ -67,7 +67,7 @@ describe('eligible soon page', () => {
 
   it('should allow the user to save his email address when it is valid', () => {
     // Given
-    handleCheckEmailFormat.mockReturnValue(true)
+    checkIfEmailIsValid.mockReturnValue(true)
 
     // When
     const wrapper = shallow(<EligibleSoon {...props} />)

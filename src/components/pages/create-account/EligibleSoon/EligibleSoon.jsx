@@ -5,7 +5,9 @@ import { Link } from 'react-router-dom'
 import { API_URL } from '../../../../utils/config'
 import Icon from '../../../layout/Icon/Icon'
 import ContactSaved from '../ContactSaved/ContactSaved'
-import { handleCheckEmailFormat } from '../utils/checkEmailFormat'
+import { checkIfEmailIsValid } from '../domain/checkIfEmailIsValid'
+
+const HYPHEN = '-'
 
 const EligibleSoon = ({ birthDate, body, postalCode, title, visual }) => {
   const [emailValue, setEmailValue] = useState('')
@@ -22,7 +24,8 @@ const EligibleSoon = ({ birthDate, body, postalCode, title, visual }) => {
       event.preventDefault()
       setIsSubmitting(true)
       const birthDateSplit = birthDate.split('/')
-      const birthDateISO = birthDateSplit[2] + '-' + birthDateSplit[1] + '-' + birthDateSplit[0]
+      const birthDateISO =
+        birthDateSplit[2] + HYPHEN + birthDateSplit[1] + HYPHEN + birthDateSplit[0]
       const departmentCode = postalCode.substr(0, 2)
 
       const userInformations = {
@@ -51,7 +54,7 @@ const EligibleSoon = ({ birthDate, body, postalCode, title, visual }) => {
     [birthDate, emailValue, postalCode]
   )
 
-  const isEmailValid = handleCheckEmailFormat(emailValue)
+  const isEmailValid = checkIfEmailIsValid(emailValue)
 
   return hasContactBeenSaved ? (
     <ContactSaved />
