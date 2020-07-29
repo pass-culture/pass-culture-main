@@ -10,15 +10,15 @@
   justify-content: center;
 
   .nm-title {
-    @include hero();
+    @include title1();
 
-    padding-top: rem(32px);
+    margin-top: rem(16px);
   }
 
   .nm-subtitle {
-    @include title2();
+    @include body();
 
-    padding-top: rem(22px);
+    margin-top: rem(16px);
   }
 
   .nm-redirection-link {
