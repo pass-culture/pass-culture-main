@@ -10,14 +10,14 @@ from utils.human_ids import humanize
 class BeneficiaryBooking:
     def __init__(self,
                  amount: int,
-                 cancellationDate: Optional[datetime],
+                 cancellationDate: datetime,
                  dateCreated: datetime,
-                 dateUsed: Optional[datetime],
+                 dateUsed: datetime,
                  id: int,
                  isCancelled: bool,
                  isUsed: bool,
                  quantity: int,
-                 recommendationId: Optional[int],
+                 recommendationId: int,
                  stockId: int,
                  token: str,
                  userId: int,
@@ -33,7 +33,7 @@ class BeneficiaryBooking:
                  durationMinutes: int,
                  extraData: Dict,
                  isDuo: bool,
-                 withdrawalDetails: Optional[str],
+                 withdrawalDetails: str,
                  mediaUrls: List[str],
                  isNational: bool,
                  venueName: str,
@@ -42,7 +42,8 @@ class BeneficiaryBooking:
                  city: str,
                  latitude: float,
                  longitude: float,
-                 price: float
+                 price: float,
+                 stocks: List[Stock]
                  ):
         self.price = price
         self.longitude = longitude
@@ -80,7 +81,7 @@ class BeneficiaryBooking:
         self.departementCode = departementCode
 
     @property
-    def booking_access_url(self) -> Optional[str]:
+    def booking_access_url(self) -> str:
         url = self.url
         if url is None:
             return None
@@ -112,7 +113,7 @@ class BeneficiaryBooking:
                 return possible_type.as_dict()
 
     @property
-    def qr_code(self) -> Optional[str]:
+    def qr_code(self):
         if not self.is_event_expired and not self.isCancelled:
             return generate_qr_code(booking_token=self.token,
                                     offer_extra_data=self.extraData)

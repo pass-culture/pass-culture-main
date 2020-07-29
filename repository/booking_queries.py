@@ -441,14 +441,6 @@ def find_not_used_and_not_cancelled() -> List[BookingSQLEntity]:
         .all()
 
 
-def find_for_my_bookings_page(user_id: int) -> List[BookingSQLEntity]:
-    return _query_keep_on_non_activation_offers() \
-        .distinct(BookingSQLEntity.stockId) \
-        .filter(BookingSQLEntity.userId == user_id) \
-        .order_by(BookingSQLEntity.stockId, BookingSQLEntity.isCancelled, BookingSQLEntity.dateCreated.desc()) \
-        .all()
-
-
 def get_only_offer_ids_from_bookings(user: UserSQLEntity) -> List[int]:
     offers_booked = Offer.query \
         .join(StockSQLEntity) \
