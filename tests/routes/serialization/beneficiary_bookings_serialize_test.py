@@ -5,14 +5,14 @@ from freezegun import freeze_time
 
 from domain.beneficiary_bookings.beneficiary_bookings import BeneficiaryBooking
 from domain.beneficiary_bookings.stock import Stock
-from routes.serialization.beneficiary_bookings_serialize import _serialize_stock_for_beneficiary_booking, \
-    _serialize_beneficiary_booking, _serialize_stocks_for_beneficiary_bookings
+from routes.serialization.beneficiary_bookings_serialize import serialize_stock_for_beneficiary_booking, \
+    serialize_beneficiary_booking, serialize_stocks_for_beneficiary_bookings
 from utils.human_ids import humanize
 
 
 class BeneficiaryBookingsSerializeTest:
     class SerializeStocksForBeneficiaryBookingsTest:
-        @patch('routes.serialization.beneficiary_bookings_serialize._serialize_stock_for_beneficiary_booking')
+        @patch('routes.serialization.beneficiary_bookings_serialize.serialize_stock_for_beneficiary_booking')
         def should_call_serialize_stock_for_beneficiary(self, mock_serialize_stock_for_beneficiary):
             # Given
             matched_offer_id = 54
@@ -36,7 +36,7 @@ class BeneficiaryBookingsSerializeTest:
             ]
 
             # When
-            _serialize_stocks_for_beneficiary_bookings(matched_offer_id, stocks)
+            serialize_stocks_for_beneficiary_bookings(matched_offer_id, stocks)
 
             # Then
             mock_serialize_stock_for_beneficiary.assert_called_once_with(matching_stock)
@@ -58,7 +58,7 @@ class BeneficiaryBookingsSerializeTest:
             )
 
             # When
-            serialized_stock = _serialize_stock_for_beneficiary_booking(stock)
+            serialized_stock = serialize_stock_for_beneficiary_booking(stock)
 
             # Then
             assert serialized_stock == {
@@ -123,7 +123,7 @@ class BeneficiaryBookingsSerializeTest:
             )
 
             # When
-            serialized_beneficiary_booking = _serialize_beneficiary_booking(
+            serialized_beneficiary_booking = serialize_beneficiary_booking(
                 beneficiary_booking,
                 serialized_stocks,
                 with_qr_code=False)
@@ -260,7 +260,7 @@ class BeneficiaryBookingsSerializeTest:
             )
 
             # When
-            serialized_beneficiary_booking = _serialize_beneficiary_booking(
+            serialized_beneficiary_booking = serialize_beneficiary_booking(
                 beneficiary_booking,
                 serialized_stocks,
                 with_qr_code=True)
