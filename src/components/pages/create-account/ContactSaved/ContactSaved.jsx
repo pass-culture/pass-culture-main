@@ -1,16 +1,17 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Redirect } from 'react-router'
 import { Animation } from '../Animation/Animation'
 
 const ContactSaved = () => {
-  const [shouldRedirect, setShouldRedirect] = useState(false)
-  const timeBeforeRedirectionToHomepage = 5000
+  const [countDown, setcountDown] = useState(5)
 
-  setTimeout(() => {
-    setShouldRedirect(true)
-  }, timeBeforeRedirectionToHomepage)
+  useEffect(() => {
+    const decreaseCountByOneEverySecond = setInterval(() => setcountDown(count => count - 1), 1000)
 
-  return shouldRedirect ? (
+    return () => clearInterval(decreaseCountByOneEverySecond)
+  }, [])
+
+  return countDown < 1 ? (
     <Redirect to="/beta" />
   ) : (
     <main className="contact-saved-page">
@@ -24,7 +25,7 @@ const ContactSaved = () => {
         </h2>
       </div>
       <div className="redirect-information">
-        {'Tu vas être redirigé dans 5 secondes...'}
+        {`Tu vas être redirigé dans ${countDown} secondes...`}
       </div>
     </main>
   )
