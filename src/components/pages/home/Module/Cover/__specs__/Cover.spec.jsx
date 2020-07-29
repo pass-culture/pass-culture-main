@@ -10,7 +10,7 @@ describe('src | components | Cover', () => {
   beforeEach(() => {
     props = {
       img: 'https://www.link-to-my-image.com',
-      diplay: ''
+      layout: 'one-item-medium'
     }
   })
 
