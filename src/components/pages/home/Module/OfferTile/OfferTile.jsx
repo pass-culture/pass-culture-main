@@ -21,10 +21,11 @@ const OfferTile = ({ historyPush, hit, isSwitching, layout }) => {
   const formattedPrice = formatResultPrice(offer.priceMin, offer.priceMax, offer.isDuo)
 
 
-  function goToOffer() {
+  function goToOffer(event) {
     if (!isSwitching) {
       historyPush(`/accueil/details/${offer.id}`)
     }
+    event.preventDefault()
   }
 
   return (
