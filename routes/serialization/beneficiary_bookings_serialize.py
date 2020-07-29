@@ -6,15 +6,14 @@ from routes.serialization import serialize
 from utils.human_ids import humanize
 
 
-def serialize_beneficiary_bookings(beneficiary_bookings: BeneficiaryBookings, with_qr_code: bool = False) -> List:
+def serialize_beneficiary_bookings(beneficiary_bookings: BeneficiaryBookings) -> List:
     results = []
     for beneficiary_booking in beneficiary_bookings.bookings:
         serialized_stocks = serialize_stocks_for_beneficiary_bookings(beneficiary_booking.offerId,
                                                                       beneficiary_bookings.stocks)
         serialized_booking = serialize_benefeciary_booking(beneficiary_booking,
                                                            serialized_stocks,
-                                                           beneficiary_bookings.stocks,
-                                                           with_qr_code=with_qr_code)
+                                                           beneficiary_bookings.stocks)
         results.append(serialized_booking)
     return results
 
@@ -45,7 +44,8 @@ def _serialize_remaining_quantity_for_booked_stock(beneficiary_booking: Benefici
 
 
 def serialize_benefeciary_booking(beneficiary_booking: BeneficiaryBooking, serialized_stocks: List[Dict],
-                                  stocks: List[Stock], with_qr_code: bool = False) -> Dict:
+                                  stocks: List[Stock]) -> Dict:
+    # TODO: "qrCode": 'FAKE_QR_CODE',
     dictified_booking = {
         "completedUrl": beneficiary_booking.booking_access_url,
         "isEventExpired": beneficiary_booking.is_event_expired,
@@ -97,7 +97,4 @@ def serialize_benefeciary_booking(beneficiary_booking: BeneficiaryBooking, seria
         "token": beneficiary_booking.token,
         "userId": humanize(beneficiary_booking.userId),
     }
-    if with_qr_code:
-        dictified_booking["qrCode"] = "FAKE_QR_CODE"
-        # dictified_booking["qrCode"] = beneficiary_booking.qr_code
     return dictified_booking

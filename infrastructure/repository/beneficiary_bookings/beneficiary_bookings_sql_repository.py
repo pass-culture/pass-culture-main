@@ -68,6 +68,8 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
             .join(Offer, Offer.id == StockSQLEntity.offerId) \
             .filter(StockSQLEntity.offerId.in_(offers_ids)) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
+            .filter((StockSQLEntity.quantity == None) | (
+                (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .with_entities(StockSQLEntity.dateCreated,
                            StockSQLEntity.beginningDatetime,
                            StockSQLEntity.bookingLimitDatetime,

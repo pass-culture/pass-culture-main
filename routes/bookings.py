@@ -54,14 +54,9 @@ def get_all_bookings():
 @app.route('/bookings', methods=['GET'])
 @login_required
 def get_bookings():
-    print("=================================================")
     beneficiary_bookings = get_bookings_for_beneficiary.execute(current_user.id)
-    if feature_queries.is_active(FeatureToggle.QR_CODE):
-        serialized_bookings = serialize_beneficiary_bookings(beneficiary_bookings, with_qr_code=True)
-    else:
-        serialized_bookings = serialize_beneficiary_bookings(beneficiary_bookings)
+    serialized_bookings = serialize_beneficiary_bookings(beneficiary_bookings)
     response = jsonify(serialized_bookings)
-    print("=================================================")
     return response, 200
 
 

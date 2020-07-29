@@ -26,7 +26,7 @@ class BookingsTest:
             booking = create_booking(user=user, stock=stock, token=1)
 
             # when
-            generate_qr_code(booking_token=booking.token, offer_extra_data=booking.stock.offer.extraData)
+            generate_qr_code(booking)
 
             # then
             build_qr_code.assert_called_once_with(
@@ -51,7 +51,7 @@ class BookingsTest:
             booking = create_booking(user=user, stock=stock, token='ABCDE')
 
             # when
-            generate_qr_code(booking_token=booking.token, offer_extra_data=booking.stock.offer.extraData)
+            generate_qr_code(booking)
 
             # then
             build_qr_code_booking_info.assert_called_once_with(
@@ -75,7 +75,7 @@ class BookingsTest:
             booking = create_booking(user=user, stock=stock, token='ABCDE')
 
             # when
-            generate_qr_code(booking_token=booking.token, offer_extra_data=booking.stock.offer.extraData)
+            generate_qr_code(booking)
 
             # then
             build_qr_code_booking_info.assert_called_once_with(
@@ -98,7 +98,7 @@ class BookingsTest:
             booking = create_booking(user=user, stock=stock, token='ABCDE')
 
             # when
-            generate_qr_code(booking_token=booking.token, offer_extra_data=booking.stock.offer.extraData)
+            generate_qr_code(booking)
 
             # then
             build_qr_code_image_parameters.assert_called_once_with(
@@ -117,7 +117,7 @@ class BookingsTest:
             booking = create_booking(user=user, quantity=1, stock=stock, token='ABCDE')
 
             # when
-            qr_code = generate_qr_code(booking_token=booking.token, offer_extra_data=booking.stock.offer.extraData)
+            qr_code = generate_qr_code(booking)
 
             # then
             assert type(qr_code) is str

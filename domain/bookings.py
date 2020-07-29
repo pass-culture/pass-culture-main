@@ -1,7 +1,7 @@
 import base64
 import io
 from datetime import timedelta
-from typing import Iterator, Dict
+from typing import Iterator
 
 import qrcode
 import qrcode.image.svg
@@ -37,7 +37,7 @@ def filter_bookings_to_compute_remaining_stock(stock: StockSQLEntity) -> Iterato
                   stock.bookings)
 
 
-def generate_qr_code(booking_token: str, offer_extra_data: Dict) -> str:
+def generate_qr_code(booking: BookingSQLEntity) -> str:
     qr = qrcode.QRCode(
         version=QR_CODE_VERSION,
         error_correction=qrcode.constants.ERROR_CORRECT_Q,
@@ -45,6 +45,7 @@ def generate_qr_code(booking_token: str, offer_extra_data: Dict) -> str:
         border=QR_CODE_BOX_BORDER,
     )
 
+    offer_extra_data = booking.stock.offer.extraData
     product_isbn = ''
     if offer_extra_data and 'isbn' in offer_extra_data:
         product_isbn = offer_extra_data['isbn']
@@ -54,7 +55,7 @@ def generate_qr_code(booking_token: str, offer_extra_data: Dict) -> str:
     if product_isbn != '':
         data += f'EAN13:{product_isbn};'
 
-    data += f'TOKEN:{booking_token}'
+    data += f'TOKEN:{booking.token}'
 
     qr.add_data(data)
     image = qr.make_image(fill_color='black', back_color='white')

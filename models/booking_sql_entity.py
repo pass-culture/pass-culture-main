@@ -146,12 +146,8 @@ class BookingSQLEntity(PcObject, Model, VersionedMixin):
         from domain.bookings import generate_qr_code
         offer = self.stock.offer
         if offer.isEvent:
-            return generate_qr_code(booking_token=self.token,
-                                    offer_extra_data=self.stock.offer.extraData) \
-                if self.isEventExpired is False and self.isCancelled is False else None
-        return generate_qr_code(booking_token=self.token,
-                                offer_extra_data=self.stock.offer.extraData) \
-            if self.isUsed is False and self.isCancelled is False else None
+            return generate_qr_code(self) if self.isEventExpired is False and self.isCancelled is False else None
+        return generate_qr_code(self) if self.isUsed is False and self.isCancelled is False else None
 
 
 class ActivationUser:
