@@ -13,6 +13,7 @@ def serialize_beneficiary_bookings(beneficiary_bookings: BeneficiaryBookings, wi
                                                                       beneficiary_bookings.stocks)
         serialized_booking = serialize_benefeciary_booking(beneficiary_booking,
                                                            serialized_stocks,
+                                                           beneficiary_bookings.stocks,
                                                            with_qr_code=with_qr_code)
         results.append(serialized_booking)
     return results
@@ -28,6 +29,8 @@ def serialize_stock_for_beneficiary_booking(stock: Stock) -> Dict:
         "quantity": stock.quantity,
         "price": stock.price,
         "id": humanize(stock.id),
+        "remainingQuantity": stock.remainingQuantity,
+        "isBookable": stock.is_bookable,
     }
 
 
@@ -35,8 +38,14 @@ def serialize_stocks_for_beneficiary_bookings(matched_offer_id: int, stocks: Lis
     return [serialize_stock_for_beneficiary_booking(stock) for stock in stocks if stock.offerId == matched_offer_id]
 
 
+def _serialize_remaining_quantity_for_booked_stock(beneficiary_booking: BeneficiaryBooking, stocks: List[Stock]) -> int:
+    for stock in stocks:
+        if stock.id == beneficiary_booking.stockId:
+            return stock.remainingQuantity
+
+
 def serialize_benefeciary_booking(beneficiary_booking: BeneficiaryBooking, serialized_stocks: List[Dict],
-                                  with_qr_code: bool = False) -> Dict:
+                                  stocks: List[Stock], with_qr_code: bool = False) -> Dict:
     dictified_booking = {
         "completedUrl": beneficiary_booking.booking_access_url,
         "isEventExpired": beneficiary_booking.is_event_expired,
@@ -55,6 +64,7 @@ def serialize_benefeciary_booking(beneficiary_booking: BeneficiaryBooking, seria
             "offerId": humanize(beneficiary_booking.offerId),
             "price": beneficiary_booking.price,
             "isEventExpired": beneficiary_booking.is_event_expired,
+            "remainingQuantity": _serialize_remaining_quantity_for_booked_stock(beneficiary_booking, stocks),
             "offer": {
                 "description": beneficiary_booking.description,
                 "durationMinutes": beneficiary_booking.durationMinutes,
@@ -67,6 +77,7 @@ def serialize_benefeciary_booking(beneficiary_booking: BeneficiaryBooking, seria
                 "isNational": beneficiary_booking.isNational,
                 "name": beneficiary_booking.name,
                 "offerType": beneficiary_booking.humanized_offer_type,
+                "isFullyBooked": beneficiary_booking.is_fully_booked,
                 "thumb_url": '',
                 "stocks": serialized_stocks,
                 "venue": {
