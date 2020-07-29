@@ -67,27 +67,25 @@ const _process = homepage => {
 
       if (hasAtLeastOneField(fields)) {
         if (matchesContentType(module, CONTENT_TYPES.ALGOLIA)) {
-          if (CONTENT_FIELDS.ALGOLIA in fields) {
-            const algoliaParameters = fields[CONTENT_FIELDS.ALGOLIA].fields
-            const displayParameters = fields[CONTENT_FIELDS.DISPLAY].fields
+          const algoliaParameters = CONTENT_FIELDS.ALGOLIA in fields ? fields[CONTENT_FIELDS.ALGOLIA].fields : {}
+          const displayParameters = CONTENT_FIELDS.DISPLAY in fields ? fields[CONTENT_FIELDS.DISPLAY].fields : {}
 
-            if (hasAtLeastOneField(algoliaParameters)) {
-              if (CONTENT_FIELDS.COVER in fields) {
-                const cover = fields[CONTENT_FIELDS.COVER]
+          if (hasAtLeastOneField(algoliaParameters)) {
+            if (CONTENT_FIELDS.COVER in fields) {
+              const cover = fields[CONTENT_FIELDS.COVER]
 
-                if (hasAtLeastOneField(cover)) {
-                  return new OffersWithCover({
-                    algolia: algoliaParameters,
-                    cover: buildImageUrl(cover.fields),
-                    display: displayParameters,
-                  })
-                }
-              } else {
-                return new Offers({
+              if (hasAtLeastOneField(cover)) {
+                return new OffersWithCover({
                   algolia: algoliaParameters,
+                  cover: buildImageUrl(cover.fields),
                   display: displayParameters,
                 })
               }
+            } else {
+              return new Offers({
+                algolia: algoliaParameters,
+                display: displayParameters,
+              })
             }
           }
         } else {

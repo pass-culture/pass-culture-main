@@ -434,6 +434,47 @@ describe('src | vendor | contentful', () => {
     expect(modules).toStrictEqual([])
   })
 
+  it('should return an Offers module when "algoliaParameters" are provided but "displayParameters" are empty', async () => {
+    // given
+    const module = {
+      fields: {
+        modules: [
+          {
+            fields: {
+              algoliaParameters: {
+                fields: {
+                  isDuo: true,
+                },
+              },
+              displayParameters: {
+                fields: {},
+              },
+            },
+            sys: {
+              contentType: {
+                sys: { id: CONTENT_TYPES.ALGOLIA },
+              },
+            },
+          },
+        ],
+      },
+    }
+    createClient.mockReturnValue({
+      getEntries: jest.fn().mockResolvedValue({
+        items: [module],
+      }),
+    })
+
+    // when
+    const modules = await fetchHomepage()
+
+    // then
+    expect(modules).toStrictEqual([new Offers({
+      algolia: { isDuo: true },
+      display: {},
+    })])
+  })
+
   it('should return an empty array when fields of module "cover" are empty', async () => {
     // given
     const module = {
