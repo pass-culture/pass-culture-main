@@ -38,6 +38,7 @@ class Get:
             assert 'qrCode' not in first_booking
             assert 'completedUrl' in first_booking
             assert 'isEventExpired' in first_booking
+            assert 'isUserCancellable' in first_booking
             assert 'mediation' in first_booking
             assert 'thumbUrl' in first_booking
             assert 'offer' in first_booking['stock']
@@ -84,6 +85,7 @@ class Get:
             assert 'qrCode' in first_booking
             assert 'completedUrl' in first_booking
             assert 'isEventExpired' in first_booking
+            assert 'isUserCancellable' in first_booking
             assert 'mediation' in first_booking
             assert 'thumbUrl' in first_booking
             assert 'offer' in first_booking['stock']
