@@ -22,7 +22,7 @@ ShallowWrapper {
         <Titles
           action={null}
           subtitle={null}
-          title="Suivi des remboursements"
+          title="Remboursements"
         />,
         <p
           className="advice"
@@ -68,7 +68,7 @@ ShallowWrapper {
         "props": Object {
           "action": null,
           "subtitle": null,
-          "title": "Suivi des remboursements",
+          "title": "Remboursements",
         },
         "ref": null,
         "rendered": null,
@@ -187,7 +187,7 @@ ShallowWrapper {
           <Titles
             action={null}
             subtitle={null}
-            title="Suivi des remboursements"
+            title="Remboursements"
           />,
           <p
             className="advice"
@@ -233,7 +233,7 @@ ShallowWrapper {
           "props": Object {
             "action": null,
             "subtitle": null,
-            "title": "Suivi des remboursements",
+            "title": "Remboursements",
           },
           "ref": null,
           "rendered": null,

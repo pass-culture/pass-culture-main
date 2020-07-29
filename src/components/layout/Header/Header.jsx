@@ -163,7 +163,7 @@ class Header extends PureComponent {
                       <Icon svg="ico-compta" />
                     </span>
                     <span>
-                      {'Suivi des remboursements'}
+                      {'Remboursements'}
                     </span>
                   </NavLink>
                   {false && (

@@ -8,7 +8,7 @@ import CsvTableButtonContainer from '../../layout/CsvTableButton/CsvTableButtonC
 
 const Reimbursements = () => (
   <Main name="reimbursements">
-    <Titles title="Suivi des remboursements" />
+    <Titles title="Remboursements" />
     <p className="advice">
       {'Téléchargez le récapitulatif des remboursements de vos offres.'}
     </p>
