@@ -1,8 +1,6 @@
 from datetime import datetime
 from typing import List, Optional, Dict
 
-from domain.beneficiary_bookings.stock import Stock
-from models.offer_type import ProductType, ThingType, EventType
 from utils.human_ids import humanize
 
 
@@ -28,21 +26,7 @@ class BeneficiaryBooking:
                  beginningDatetime: datetime,
                  venueId: int,
                  departementCode: str,
-                 description: str,
-                 durationMinutes: int,
-                 extraData: Dict,
-                 isDuo: bool,
-                 withdrawalDetails: str,
-                 mediaUrls: List[str],
-                 isNational: bool,
                  ):
-        self.isNational = isNational
-        self.mediaUrls = mediaUrls
-        self.withdrawalDetails = withdrawalDetails
-        self.isDuo = isDuo
-        self.extraData = extraData
-        self.durationMinutes = durationMinutes
-        self.description = description
         self.amount = amount
         self.cancellationDate = cancellationDate
         self.dateCreated = dateCreated
@@ -65,7 +49,7 @@ class BeneficiaryBooking:
         self.departementCode = departementCode
 
     @property
-    def booking_access_url(self) -> str:
+    def beneficiary_offer_access_url(self):
         url = self.url
         if url is None:
             return None
@@ -76,28 +60,13 @@ class BeneficiaryBooking:
             .replace('{email}', self.email)
 
     @property
-    def is_event_expired(self) -> bool:
+    def is_event_expired(self):
         if not self.beginningDatetime:
             return False
         return self.beginningDatetime <= datetime.utcnow()
 
-    @property
-    def is_booked_offer_digital(self) -> bool:
-        return self.url is not None and self.url != ''
-
-    @property
-    def is_booked_offer_event(self) -> bool:
-        return ProductType.is_event(self.type)
-
-    @property
-    def humanized_offer_type(self) -> str:
-        all_types = list(ThingType) + list(EventType)
-        for possible_type in all_types:
-            if str(possible_type) == self.type:
-                return possible_type.as_dict()
-
 
 class BeneficiaryBookings:
-    def __init__(self, bookings: List[BeneficiaryBooking], stocks: List[Stock]):
+    def __init__(self, bookings: List[BeneficiaryBooking], stocks: List[Dict]):
         self.bookings = bookings
         self.stocks = stocks
