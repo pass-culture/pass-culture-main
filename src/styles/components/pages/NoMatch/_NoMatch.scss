@@ -1,40 +1,35 @@
 .no-match {
   background-image: $linear-gradient-to-bottom-right;
-  width: 100%;
+  color: $white;
   display: flex;
   flex-direction: column;
-  text-align: center;
   justify-content: center;
-  color: $white;
-  font-weight: $weight-medium;
+  text-align: center;
+  width: 100%;
 
-  h1 {
-    font-size: rem(40px);
-    font-weight: 500;
+  .nm-title {
+    @include hero();
+
     padding-top: rem(32px);
   }
 
-  .subtitle {
-    font-size: rem(24px);
-    font-style: italic;
+  .nm-subtitle {
+    @include title2();
+
     padding-top: rem(22px);
   }
 
-  .redirection-link {
-    margin-top: rem(48px);
-  }
+  .nm-redirection-link {
+    @include button();
 
-  .redirection-link a {
     align-items: center;
     background-color: transparent;
-    border: 2px solid white;
-    border-radius: 24px;
+    border: 2px solid $white;
+    border-radius: rem(24px);
     color: $white;
     cursor: pointer;
-    font-size: rem(16px);
-    font-weight: bold;
     justify-content: center;
-    margin: 0 auto;
+    margin: rem(48px) auto 0 auto;
     max-height: rem(50px);
     outline: none;
     padding: rem(12px) rem(52px);
