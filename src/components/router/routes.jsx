@@ -2,6 +2,7 @@ import { IcoNavBookings } from '../layout/NavBar/Icons/IcoNavBookings'
 import { IcoNavDebug } from '../layout/NavBar/Icons/IcoNavDebug'
 import { IcoNavDiscovery } from '../layout/NavBar/Icons/IcoNavDiscovery'
 import { IcoNavFavorites } from '../layout/NavBar/Icons/IcoNavFavorites'
+import { IcoNavIdCheck } from '../layout/NavBar/Icons/IcoNavIdCheck'
 import { IcoNavProfile } from '../layout/NavBar/Icons/IcoNavProfile'
 import { IcoNavSearch } from '../layout/NavBar/Icons/IcoNavSearch'
 import ActivationContainer from '../pages/activation/ActivationContainer'
@@ -20,7 +21,7 @@ import TypeFormContainer from '../pages/typeform/TypeformContainer'
 import EligibilityCheck from '../pages/create-account/EligibilityCheck'
 import Debug from '../pages/debug/DebugPage'
 
-import { IS_DEBUG_PAGE_ACTIVE } from '../../utils/config'
+import { IS_DEBUG_PAGE_ACTIVE, IS_ID_CHECK_PAGE_ACTIVE } from '../../utils/config'
 import HomeContainer from '../pages/home/HomeContainer'
 import { IcoNavHome } from '../layout/NavBar/Icons/IcoNavHome'
 
@@ -142,6 +143,17 @@ if (IS_DEBUG_PAGE_ACTIVE) {
     to: '/errors',
     path: '/errors',
     title: "DEV | Gestion d'erreur",
+  })
+}
+
+if (IS_ID_CHECK_PAGE_ACTIVE) {
+  routes.push({
+    component: EligibilityCheck,
+    exact: true,
+    icon: IcoNavIdCheck,
+    to: '/verification-eligibilite',
+    path: '/verification-eligibilite',
+    title: 'ID Check',
   })
 }
 

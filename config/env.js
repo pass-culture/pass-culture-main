@@ -64,6 +64,7 @@ function getClientEnvironment(publicUrl) {
         URL_FOR_MAINTENANCE: process.env.URL_FOR_MAINTENANCE,
         ANDROID_APPLICATION_ID: process.env.ANDROID_APPLICATION_ID,
         IS_DEBUG_PAGE_ACTIVE: process.env.IS_DEBUG_PAGE_ACTIVE === 'true',
+        IS_ID_CHECK_PAGE_ACTIVE: process.env.IS_ID_CHECK_PAGE_ACTIVE === 'true',
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin
