@@ -184,7 +184,7 @@ ShallowWrapper {
                     />
                   </span>
                   <span>
-                    Suivi des réservations
+                    Réservations
                   </span>
                 </NavLink>
                 <NavLink
@@ -390,7 +390,7 @@ ShallowWrapper {
                       />
                     </span>
                     <span>
-                      Suivi des réservations
+                      Réservations
                     </span>
                   </NavLink>
                   <NavLink
@@ -663,7 +663,7 @@ ShallowWrapper {
                       />
                     </span>
                     <span>
-                      Suivi des réservations
+                      Réservations
                     </span>
                   </NavLink>
                   <NavLink
@@ -842,7 +842,7 @@ ShallowWrapper {
                         />
                       </span>
                       <span>
-                        Suivi des réservations
+                        Réservations
                       </span>
                     </NavLink>
                     <NavLink
@@ -1160,7 +1160,7 @@ ShallowWrapper {
                           />
                         </span>
                         <span>
-                          Suivi des réservations
+                          Réservations
                         </span>
                       </NavLink>
                       <NavLink
@@ -1327,7 +1327,7 @@ ShallowWrapper {
                             />
                           </span>
                           <span>
-                            Suivi des réservations
+                            Réservations
                           </span>
                         </NavLink>,
                         <NavLink
@@ -1519,7 +1519,7 @@ ShallowWrapper {
                               />
                             </span>,
                             <span>
-                              Suivi des réservations
+                              Réservations
                             </span>,
                           ],
                           "className": "navbar-item",
@@ -1558,10 +1558,10 @@ ShallowWrapper {
                             "key": undefined,
                             "nodeType": "host",
                             "props": Object {
-                              "children": "Suivi des réservations",
+                              "children": "Réservations",
                             },
                             "ref": null,
-                            "rendered": "Suivi des réservations",
+                            "rendered": "Réservations",
                             "type": "span",
                           },
                         ],
@@ -1876,7 +1876,7 @@ ShallowWrapper {
                       />
                     </span>
                     <span>
-                      Suivi des réservations
+                      Réservations
                     </span>
                   </NavLink>
                   <NavLink
@@ -2082,7 +2082,7 @@ ShallowWrapper {
                         />
                       </span>
                       <span>
-                        Suivi des réservations
+                        Réservations
                       </span>
                     </NavLink>
                     <NavLink
@@ -2355,7 +2355,7 @@ ShallowWrapper {
                         />
                       </span>
                       <span>
-                        Suivi des réservations
+                        Réservations
                       </span>
                     </NavLink>
                     <NavLink
@@ -2534,7 +2534,7 @@ ShallowWrapper {
                           />
                         </span>
                         <span>
-                          Suivi des réservations
+                          Réservations
                         </span>
                       </NavLink>
                       <NavLink
@@ -2852,7 +2852,7 @@ ShallowWrapper {
                             />
                           </span>
                           <span>
-                            Suivi des réservations
+                            Réservations
                           </span>
                         </NavLink>
                         <NavLink
@@ -3019,7 +3019,7 @@ ShallowWrapper {
                               />
                             </span>
                             <span>
-                              Suivi des réservations
+                              Réservations
                             </span>
                           </NavLink>,
                           <NavLink
@@ -3211,7 +3211,7 @@ ShallowWrapper {
                                 />
                               </span>,
                               <span>
-                                Suivi des réservations
+                                Réservations
                               </span>,
                             ],
                             "className": "navbar-item",
@@ -3250,10 +3250,10 @@ ShallowWrapper {
                               "key": undefined,
                               "nodeType": "host",
                               "props": Object {
-                                "children": "Suivi des réservations",
+                                "children": "Réservations",
                               },
                               "ref": null,
-                              "rendered": "Suivi des réservations",
+                              "rendered": "Réservations",
                               "type": "span",
                             },
                           ],

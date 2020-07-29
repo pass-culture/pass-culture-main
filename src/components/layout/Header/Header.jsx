@@ -152,7 +152,7 @@ class Header extends PureComponent {
                       <Icon svg="ico-bookings" />
                     </span>
                     <span>
-                      {'Suivi des réservations'}
+                      {'Réservations'}
                     </span>
                   </NavLink>
                   <NavLink
