@@ -9,121 +9,119 @@ from models.db import db
 
 class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
     def get_beneficiary_bookings(self, beneficiary_id: int) -> BeneficiaryBookings:
-        booking_sql_entity_views = _get_bookings_information(beneficiary_id)
+        bookings_view = self._get_bookings_information(beneficiary_id)
 
-        offers_ids = [booking.offerId for booking in booking_sql_entity_views]
-        stock_sql_entity_views = _get_stocks_information(offers_ids)
+        offers_ids = [bv.offerId for bv in bookings_view]
+        stocks_sql_entity_views = self._get_stocks_information(offers_ids)
 
-        stocks = [to_domain(stock) for stock in stock_sql_entity_views]
+        stocks = [to_domain(stock_sql_entity) for stock_sql_entity in stocks_sql_entity_views]
 
         beneficiary_bookings = []
-        for booking in booking_sql_entity_views:
+        for booking_view in bookings_view:
             beneficiary_bookings.append(
                 BeneficiaryBooking(
-                    amount=booking.amount,
-                    cancellationDate=booking.cancellationDate,
-                    dateCreated=booking.dateCreated,
-                    dateUsed=booking.dateUsed,
-                    id=booking.id,
-                    isCancelled=booking.isCancelled,
-                    isUsed=booking.isUsed,
-                    quantity=booking.quantity,
-                    recommendationId=booking.recommendationId,
-                    stockId=booking.stockId,
-                    token=booking.token,
-                    userId=booking.userId,
-                    offerId=booking.offerId,
-                    name=booking.name,
-                    type=booking.type,
-                    url=booking.url,
-                    email=booking.email,
-                    beginningDatetime=booking.beginningDatetime,
-                    venueId=booking.venueId,
-                    departementCode=booking.departementCode,
-                    withdrawalDetails=booking.withdrawalDetails,
-                    isDuo=booking.isDuo,
-                    extraData=booking.extraData,
-                    durationMinutes=booking.durationMinutes,
-                    description=booking.description,
-                    isNational=booking.isNational,
-                    mediaUrls=booking.mediaUrls,
-                    venueName=booking.venueName,
-                    address=booking.address,
-                    postalCode=booking.postalCode,
-                    city=booking.city,
-                    latitude=booking.latitude,
-                    longitude=booking.longitude,
-                    price=booking.price,
+                    amount=booking_view.amount,
+                    cancellationDate=booking_view.cancellationDate,
+                    dateCreated=booking_view.dateCreated,
+                    dateUsed=booking_view.dateUsed,
+                    id=booking_view.id,
+                    isCancelled=booking_view.isCancelled,
+                    isUsed=booking_view.isUsed,
+                    quantity=booking_view.quantity,
+                    recommendationId=booking_view.recommendationId,
+                    stockId=booking_view.stockId,
+                    token=booking_view.token,
+                    userId=booking_view.userId,
+                    offerId=booking_view.offerId,
+                    name=booking_view.name,
+                    type=booking_view.type,
+                    url=booking_view.url,
+                    email=booking_view.email,
+                    beginningDatetime=booking_view.beginningDatetime,
+                    venueId=booking_view.venueId,
+                    departementCode=booking_view.departementCode,
+                    withdrawalDetails=booking_view.withdrawalDetails,
+                    isDuo=booking_view.isDuo,
+                    extraData=booking_view.extraData,
+                    durationMinutes=booking_view.durationMinutes,
+                    description=booking_view.description,
+                    isNational=booking_view.isNational,
+                    mediaUrls=booking_view.mediaUrls,
+                    venueName=booking_view.venueName,
+                    address=booking_view.address,
+                    postalCode=booking_view.postalCode,
+                    city=booking_view.city,
+                    latitude=booking_view.latitude,
+                    longitude=booking_view.longitude,
+                    price=booking_view.price,
                 )
             )
         return BeneficiaryBookings(bookings=beneficiary_bookings, stocks=stocks)
 
+    def _get_stocks_information(self, offers_ids: List[int]) -> List[object]:
+        stocks_sql_entity = StockSQLEntity.query \
+            .join(Offer, Offer.id == StockSQLEntity.offerId) \
+            .filter(StockSQLEntity.offerId.in_(offers_ids)) \
+            .with_entities(StockSQLEntity.dateCreated,
+                           StockSQLEntity.beginningDatetime,
+                           StockSQLEntity.bookingLimitDatetime,
+                           StockSQLEntity.offerId,
+                           StockSQLEntity.dateModified,
+                           StockSQLEntity.quantity,
+                           StockSQLEntity.price,
+                           StockSQLEntity.id,
+                           StockSQLEntity.isSoftDeleted,
+                           Offer.isActive) \
+            .all()
+        return stocks_sql_entity
 
-def _get_stocks_information(offers_ids: List[int]) -> List[object]:
-    stocks_sql_entity = StockSQLEntity.query \
-        .join(Offer, Offer.id == StockSQLEntity.offerId) \
-        .filter(StockSQLEntity.offerId.in_(offers_ids)) \
-        .with_entities(StockSQLEntity.dateCreated,
-                       StockSQLEntity.beginningDatetime,
-                       StockSQLEntity.bookingLimitDatetime,
-                       StockSQLEntity.dateModified,
-                       StockSQLEntity.offerId,
-                       StockSQLEntity.quantity,
-                       StockSQLEntity.price,
-                       StockSQLEntity.id,
-                       StockSQLEntity.isSoftDeleted,
-                       Offer.isActive) \
-        .all()
-    return stocks_sql_entity
-
-
-def _get_bookings_information(beneficiary_id: int) -> List[object]:
-    offer_activation_types = ['ThingType.ACTIVATION', 'EventType.ACTIVATION']
-    return db.session.query(BookingSQLEntity) \
-        .join(UserSQLEntity, UserSQLEntity.id == BookingSQLEntity.userId) \
-        .join(StockSQLEntity, StockSQLEntity.id == BookingSQLEntity.stockId) \
-        .join(Offer) \
-        .join(VenueSQLEntity) \
-        .filter(BookingSQLEntity.userId == beneficiary_id) \
-        .filter(Offer.type.notin_(offer_activation_types)) \
-        .distinct(BookingSQLEntity.stockId) \
-        .order_by(BookingSQLEntity.stockId,
-                  BookingSQLEntity.isCancelled,
-                  BookingSQLEntity.dateCreated.desc()
-                  ) \
-        .with_entities(BookingSQLEntity.amount,
-                       BookingSQLEntity.cancellationDate,
-                       BookingSQLEntity.dateCreated,
-                       BookingSQLEntity.dateUsed,
-                       BookingSQLEntity.id,
-                       BookingSQLEntity.isCancelled,
-                       BookingSQLEntity.isUsed,
-                       BookingSQLEntity.quantity,
-                       BookingSQLEntity.recommendationId,
-                       BookingSQLEntity.stockId,
-                       BookingSQLEntity.token,
-                       BookingSQLEntity.userId,
-                       Offer.id.label("offerId"),
-                       Offer.name,
-                       Offer.type,
-                       Offer.url,
-                       Offer.withdrawalDetails,
-                       Offer.isDuo,
-                       Offer.extraData,
-                       Offer.durationMinutes,
-                       Offer.description,
-                       Offer.mediaUrls,
-                       Offer.isNational,
-                       UserSQLEntity.email,
-                       StockSQLEntity.beginningDatetime,
-                       StockSQLEntity.price,
-                       VenueSQLEntity.id.label("venueId"),
-                       VenueSQLEntity.departementCode,
-                       VenueSQLEntity.name.label("venueName"),
-                       VenueSQLEntity.address,
-                       VenueSQLEntity.postalCode,
-                       VenueSQLEntity.city,
-                       VenueSQLEntity.latitude,
-                       VenueSQLEntity.longitude,
-                       ) \
-        .all()
+    def _get_bookings_information(self, beneficiary_id: int) -> List[object]:
+        offer_activation_types = ['ThingType.ACTIVATION', 'EventType.ACTIVATION']
+        return db.session.query(BookingSQLEntity) \
+            .join(UserSQLEntity, UserSQLEntity.id == BookingSQLEntity.userId) \
+            .join(StockSQLEntity, StockSQLEntity.id == BookingSQLEntity.stockId) \
+            .join(Offer) \
+            .join(VenueSQLEntity) \
+            .filter(BookingSQLEntity.userId == beneficiary_id) \
+            .filter(Offer.type.notin_(offer_activation_types)) \
+            .distinct(BookingSQLEntity.stockId) \
+            .order_by(BookingSQLEntity.stockId,
+                      BookingSQLEntity.isCancelled,
+                      BookingSQLEntity.dateCreated.desc()
+                      ) \
+            .with_entities(BookingSQLEntity.amount,
+                           BookingSQLEntity.cancellationDate,
+                           BookingSQLEntity.dateCreated,
+                           BookingSQLEntity.dateUsed,
+                           BookingSQLEntity.id,
+                           BookingSQLEntity.isCancelled,
+                           BookingSQLEntity.isUsed,
+                           BookingSQLEntity.quantity,
+                           BookingSQLEntity.recommendationId,
+                           BookingSQLEntity.stockId,
+                           BookingSQLEntity.token,
+                           BookingSQLEntity.userId,
+                           Offer.id.label("offerId"),
+                           Offer.name,
+                           Offer.type,
+                           Offer.url,
+                           Offer.withdrawalDetails,
+                           Offer.isDuo,
+                           Offer.extraData,
+                           Offer.durationMinutes,
+                           Offer.description,
+                           Offer.mediaUrls,
+                           Offer.isNational,
+                           UserSQLEntity.email,
+                           StockSQLEntity.beginningDatetime,
+                           StockSQLEntity.price,
+                           VenueSQLEntity.id.label("venueId"),
+                           VenueSQLEntity.departementCode,
+                           VenueSQLEntity.name.label("venueName"),
+                           VenueSQLEntity.address,
+                           VenueSQLEntity.postalCode,
+                           VenueSQLEntity.city,
+                           VenueSQLEntity.latitude,
+                           VenueSQLEntity.longitude,
+                           ) \
+            .all()

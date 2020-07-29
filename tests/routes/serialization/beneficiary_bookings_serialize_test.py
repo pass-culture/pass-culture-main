@@ -6,7 +6,7 @@ from freezegun import freeze_time
 from domain.beneficiary_bookings.beneficiary_bookings import BeneficiaryBooking
 from domain.beneficiary_bookings.stock import Stock
 from routes.serialization.beneficiary_bookings_serialize import serialize_stock_for_beneficiary_booking, \
-    serialize_beneficiary_booking, serialize_stocks_for_beneficiary_bookings
+    serialize_benefeciary_booking, serialize_stocks_for_beneficiary_bookings
 from utils.human_ids import humanize
 
 
@@ -72,7 +72,7 @@ class BeneficiaryBookingsSerializeTest:
                 'quantity': 34
             }
 
-    class SerializeBeneficiaryBookingTest:
+    class SerializeBenefeciaryBookingTest:
         def should_return_expected_json_without_qr_code(self):
             # Given
             serialized_stocks = [{
@@ -123,7 +123,7 @@ class BeneficiaryBookingsSerializeTest:
             )
 
             # When
-            serialized_beneficiary_booking = serialize_beneficiary_booking(
+            serialized_beneficiary_booking = serialize_benefeciary_booking(
                 beneficiary_booking,
                 serialized_stocks,
                 with_qr_code=False)
@@ -260,7 +260,7 @@ class BeneficiaryBookingsSerializeTest:
             )
 
             # When
-            serialized_beneficiary_booking = serialize_beneficiary_booking(
+            serialized_beneficiary_booking = serialize_benefeciary_booking(
                 beneficiary_booking,
                 serialized_stocks,
                 with_qr_code=True)

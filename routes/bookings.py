@@ -59,7 +59,8 @@ def get_bookings():
         serialized_bookings = serialize_beneficiary_bookings(beneficiary_bookings, with_qr_code=True)
     else:
         serialized_bookings = serialize_beneficiary_bookings(beneficiary_bookings)
-    return jsonify(serialized_bookings), 200
+    response = jsonify(serialized_bookings)
+    return response, 200
 
 
 @app.route('/bookings/<booking_id>', methods=['GET'])

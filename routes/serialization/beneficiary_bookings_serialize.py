@@ -11,7 +11,7 @@ def serialize_beneficiary_bookings(beneficiary_bookings: BeneficiaryBookings, wi
     for beneficiary_booking in beneficiary_bookings.bookings:
         serialized_stocks = serialize_stocks_for_beneficiary_bookings(beneficiary_booking.offerId,
                                                                       beneficiary_bookings.stocks)
-        serialized_booking = serialize_beneficiary_booking(beneficiary_booking,
+        serialized_booking = serialize_benefeciary_booking(beneficiary_booking,
                                                            serialized_stocks,
                                                            with_qr_code=with_qr_code)
         results.append(serialized_booking)
@@ -35,7 +35,7 @@ def serialize_stocks_for_beneficiary_bookings(matched_offer_id: int, stocks: Lis
     return [serialize_stock_for_beneficiary_booking(stock) for stock in stocks if stock.offerId == matched_offer_id]
 
 
-def serialize_beneficiary_booking(beneficiary_booking: BeneficiaryBooking, serialized_stocks: List[Dict],
+def serialize_benefeciary_booking(beneficiary_booking: BeneficiaryBooking, serialized_stocks: List[Dict],
                                   with_qr_code: bool = False) -> Dict:
     dictified_booking = {
         "completedUrl": beneficiary_booking.booking_access_url,

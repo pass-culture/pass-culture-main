@@ -26,7 +26,7 @@ class BeneficiaryBooking:
                  type: str,
                  url: Optional[str],
                  email: str,
-                 beginningDatetime: Optional[datetime],
+                 beginningDatetime: datetime,
                  venueId: int,
                  departementCode: str,
                  description: str,

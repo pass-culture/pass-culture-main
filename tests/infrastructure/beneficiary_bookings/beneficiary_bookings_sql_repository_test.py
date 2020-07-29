@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from domain.beneficiary_bookings.beneficiary_bookings import BeneficiaryBookings
 from infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import \
-    BeneficiaryBookingsSQLRepository, _get_stocks_information
+    BeneficiaryBookingsSQLRepository
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_stock, \
@@ -55,16 +55,16 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert expected_booking.departementCode == venue.departementCode
 
     @clean_database
-    def should_return_bookings_by_beneficiary_id(self, app):
+    def should_return_bookings_by_user_id(self, app):
         # Given
         user1 = create_user()
-        create_deposit(user1)
+        deposit1 = create_deposit(user1)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        user2 = create_user(email='fa@example.com')
-        create_deposit(user2)
+        user2 = create_user(email='fa@example.net')
+        deposit2 = create_deposit(user2)
         booking1 = create_booking(user=user1, stock=stock)
         booking2 = create_booking(user=user2, stock=stock)
         repository.save(booking1, booking2)
@@ -160,51 +160,3 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert result.bookings[0].id == booking1.id
         assert result.bookings[1].id == booking3.id
         assert result.bookings[2].id == booking2.id
-
-
-class GetStocksInformationTest:
-    @clean_database
-    def should_return_get_stocks_information(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, url='http://url.com')
-        stock1 = create_stock(offer=offer, price=0,
-                              date_created=datetime(2020, 1, 4),
-                              beginning_datetime=datetime(2020, 3, 5),
-                              booking_limit_datetime=datetime(2020, 1, 6),
-                              date_modified=datetime(2020, 1, 7))
-        stock2 = create_stock(offer=offer, price=12,
-                              date_created=datetime(2020, 2, 4),
-                              beginning_datetime=datetime(2020, 4, 5),
-                              booking_limit_datetime=datetime(2020, 2, 6),
-                              date_modified=datetime(2020, 2, 7))
-
-        repository.save(stock1, stock2)
-
-        # When
-        results = _get_stocks_information(offers_ids=[offer.id])
-
-        # Then
-        assert set(results) == {
-            (datetime(2020, 1, 4, 0, 0),
-             datetime(2020, 3, 5, 0, 0),
-             datetime(2020, 1, 6, 0, 0),
-             datetime(2020, 1, 7, 0, 0),
-             offer.id,
-             None,
-             0.00,
-             stock1.id,
-             False,
-             True),
-            (datetime(2020, 2, 4, 0, 0),
-             datetime(2020, 4, 5, 0, 0),
-             datetime(2020, 2, 6, 0, 0),
-             datetime(2020, 2, 7, 0, 0),
-             offer.id,
-             None,
-             12.00,
-             stock2.id,
-             False,
-             True)
-        }
