@@ -434,42 +434,6 @@ describe('src | vendor | contentful', () => {
     expect(modules).toStrictEqual([])
   })
 
-  it('should return an empty array when fields of module "displayParameters" are empty', async () => {
-    // given
-    const module = {
-      fields: {
-        modules: [
-          {
-            fields: {
-              algoliaParameters: {
-                fields: {
-                  isDuo: true,
-                },
-              },
-              displayParameters: {},
-            },
-            sys: {
-              contentType: {
-                sys: { id: CONTENT_TYPES.ALGOLIA },
-              },
-            },
-          },
-        ],
-      },
-    }
-    createClient.mockReturnValue({
-      getEntries: jest.fn().mockResolvedValue({
-        items: [module],
-      }),
-    })
-
-    // when
-    const modules = await fetchHomepage()
-
-    // then
-    expect(modules).toStrictEqual([])
-  })
-
   it('should return an empty array when fields of module "cover" are empty', async () => {
     // given
     const module = {
@@ -511,7 +475,7 @@ describe('src | vendor | contentful', () => {
     expect(modules).toStrictEqual([])
   })
 
-  it('should return an empty array when image of module "cover" is missing', async () => {
+  it('should return an OffersWithCover when fields in "cover" are missing', async () => {
     // given
     const module = {
       fields: {
@@ -551,7 +515,15 @@ describe('src | vendor | contentful', () => {
     const modules = await fetchHomepage()
 
     // then
-    expect(modules).toStrictEqual([])
+    expect(modules).toStrictEqual([new OffersWithCover({
+      algolia: {
+        isDuo: true,
+      },
+      cover: null,
+      display: {
+        layout: 'one-item-medium',
+      },
+    })])
   })
 
   it('should return an OffersWithCover when file image of module "cover" is missing', async () => {

@@ -118,7 +118,7 @@ class Module extends Component {
           </h1>
           <ul>
             <SwipeableViews
-              className={display.layout}
+              className={display.layout || PANE_LAYOUT['ONE-ITEM-MEDIUM']}
               disableLazyLoading
               enableMouseEvents
               hysteresis={this.swipeRatio}

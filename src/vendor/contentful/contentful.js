@@ -64,16 +64,17 @@ const _process = homepage => {
 
   return modules.map(module => {
       const { fields } = module
+
       if (hasAtLeastOneField(fields)) {
         if (matchesContentType(module, CONTENT_TYPES.ALGOLIA)) {
-          const mandatoryFieldsAreProvided = CONTENT_FIELDS.ALGOLIA in fields && CONTENT_FIELDS.DISPLAY in fields
-          if (mandatoryFieldsAreProvided) {
+          if (CONTENT_FIELDS.ALGOLIA in fields) {
             const algoliaParameters = fields[CONTENT_FIELDS.ALGOLIA].fields
             const displayParameters = fields[CONTENT_FIELDS.DISPLAY].fields
 
-            if (hasAtLeastOneField(algoliaParameters) && hasAtLeastOneField(displayParameters)) {
+            if (hasAtLeastOneField(algoliaParameters)) {
               if (CONTENT_FIELDS.COVER in fields) {
                 const cover = fields[CONTENT_FIELDS.COVER]
+
                 if (hasAtLeastOneField(cover)) {
                   return new OffersWithCover({
                     algolia: algoliaParameters,
@@ -111,8 +112,10 @@ const _process = homepage => {
 
 const buildImageUrl = fields => {
   const image = fields[CONTENT_FIELDS.IMAGE]
-  if (hasAtLeastOneField(image.fields)) {
+
+  if (image && hasAtLeastOneField(image.fields)) {
     const file = image.fields[CONTENT_FIELDS.FILE]
+
     if (CONTENT_FIELDS.URL in file) {
       return `https:${fields[CONTENT_FIELDS.IMAGE].fields[CONTENT_FIELDS.FILE].url}`
     }
