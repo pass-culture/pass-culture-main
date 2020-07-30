@@ -3,7 +3,7 @@ import { ICONS_URL } from '../../../../utils/config'
 
 export const IcoNavIdCheck = () => (
   <img
-    alt=""
+    alt="ID Check"
     src={`${ICONS_URL}/ico-data-protection.svg`}
     style={{ opacity: '0.71' }}
   />
