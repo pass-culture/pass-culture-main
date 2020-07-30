@@ -65,3 +65,4 @@ describe('offer', () => {
       expect(offerDetails.prop('getOfferById')).toBe(props.getOfferById)
     })
   })
+})

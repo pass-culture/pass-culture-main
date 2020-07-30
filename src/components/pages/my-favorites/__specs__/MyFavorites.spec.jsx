@@ -17,6 +17,11 @@ describe('my favorites', () => {
     }
     window._paq = fakeMatomo
     mockStore = getMockStore({
+      currentUser: (
+        state = {
+          wallet_balance: 0,
+        }
+      ) => state,
       data: (
         state = {
           bookings: [
@@ -42,11 +47,7 @@ describe('my favorites', () => {
               offerId: 'o1',
             },
           ],
-          users: [
-            {
-              wallet_balance: 0,
-            },
-          ],
+          users: [],
         }
       ) => state,
       geolocation: (

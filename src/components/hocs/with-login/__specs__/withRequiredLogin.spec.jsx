@@ -77,6 +77,7 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin - uni
           const user = {
             email: 'michel.marx@example.com',
             needsToFillCulturalSurvey: true,
+            needsToSeeTutorials: true,
           }
           const history = {
             push: jest.fn(),
