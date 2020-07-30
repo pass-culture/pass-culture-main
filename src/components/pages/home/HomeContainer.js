@@ -3,8 +3,10 @@ import Home from './Home'
 import { selectCurrentUser } from '../../../redux/selectors/data/usersSelectors'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { selectUserGeolocation } from '../../../redux/selectors/geolocationSelectors'
 
 const mapStateToProps = state => ({
+  geolocation: selectUserGeolocation(state),
   user: selectCurrentUser(state)
 })
 

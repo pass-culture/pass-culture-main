@@ -33,6 +33,10 @@ describe('src | components | Home', () => {
     fetchHomepage.mockResolvedValue([])
     parse.mockReturnValue({})
     props = {
+      geolocation: {
+        latitude: 5,
+        longitude: 10,
+      },
       history: {
         location: {
           search: '',
@@ -93,7 +97,12 @@ describe('src | components | Home', () => {
 
   it('should render a module component when module is for offers with cover', async () => {
     // given
-    fetchHomepage.mockResolvedValue([new OffersWithCover({})])
+    const offersWithCover = new OffersWithCover({
+      algolia: { isDuo: true },
+      cover: 'my-cover',
+      display: { layout: 'two-items' },
+    })
+    fetchHomepage.mockResolvedValue([offersWithCover])
 
     // when
     const wrapper = await mount(
@@ -106,11 +115,21 @@ describe('src | components | Home', () => {
     // then
     const moduleWithCover = wrapper.find(Module)
     expect(moduleWithCover).toHaveLength(1)
+    expect(moduleWithCover.props()).toStrictEqual({
+      geolocation: { latitude: 5, longitude: 10 },
+      historyPush: expect.any(Function),
+      module: offersWithCover,
+      row: 0,
+    })
   })
 
   it('should render a module component when module is for offers', async () => {
     // given
-    fetchHomepage.mockResolvedValue([new Offers({})])
+    const offers = new OffersWithCover({
+      algolia: { isDuo: true },
+      display: { layout: 'two-items' },
+    })
+    fetchHomepage.mockResolvedValue([offers])
 
     // when
     const wrapper = await mount(
@@ -123,6 +142,12 @@ describe('src | components | Home', () => {
     // then
     const module = wrapper.find(Module)
     expect(module).toHaveLength(1)
+    expect(module.props()).toStrictEqual({
+      geolocation: { latitude: 5, longitude: 10 },
+      historyPush: expect.any(Function),
+      module: offers,
+      row: 0,
+    })
   })
 
   it('should render a business module component when module is for business information', async () => {

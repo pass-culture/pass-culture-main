@@ -35,10 +35,11 @@ class Home extends Component {
   }
 
   renderModule = (module, row) => {
-    const { history } = this.props
+    const { geolocation, history } = this.props
     if (module instanceof Offers || module instanceof OffersWithCover) {
       return (
         <Module
+          geolocation={geolocation}
           historyPush={history.push}
           key={`${row}-module`}
           module={module}
@@ -115,6 +116,7 @@ class Home extends Component {
 }
 
 Home.propTypes = {
+  geolocation: PropTypes.shape().isRequired,
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
   user: PropTypes.shape({
