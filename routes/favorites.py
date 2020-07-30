@@ -53,11 +53,3 @@ def get_favorites():
     favorites = list_favorites_of_beneficiary.execute(current_user.id)
 
     return jsonify(serialize_favorites(favorites, current_user)), 200
-
-
-@app.route('/favorites/<favorite_id>', methods=['GET'])
-@login_required
-def get_favorite(favorite_id):
-    favorite_sql_entity = load_or_404(FavoriteSQLEntity, favorite_id)
-    favorite = favorite_domain_converter.to_domain(favorite_sql_entity)
-    return jsonify(serialize_favorite(favorite, current_user)), 200
