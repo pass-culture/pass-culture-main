@@ -11,7 +11,7 @@ const ContactSaved = () => {
     return () => clearInterval(decreaseCountByOneEverySecond)
   }, [])
 
-  return countDown < 1 ? (
+  return countDown === 0 ? (
     <Redirect to="/beta" />
   ) : (
     <main className="contact-saved-page">

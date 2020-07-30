@@ -10,7 +10,7 @@ describe('contact saved page', () => {
     jest.useFakeTimers()
   })
 
-  it('should display an information text', () => {
+  it('should inform user of coming redirection', () => {
     // when
     const wrapper = mount(
       <MemoryRouter>
@@ -52,11 +52,7 @@ describe('contact saved page', () => {
     // then
     const redirectionLink = wrapper.find('Redirect').prop(`to`)
     expect(redirectionLink).toBe('/beta')
-
-    // when
     wrapper.unmount()
-
-    // then
     expect(clearInterval).toHaveBeenCalledTimes(1)
   })
 })
