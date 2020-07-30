@@ -28,11 +28,18 @@ def _serialize_stock_for_beneficiary_booking(stock: Stock) -> Dict:
         "quantity": stock.quantity,
         "price": stock.price,
         "id": humanize(stock.id),
+        "isBookable": stock.is_available_for_booking,
+        "remainingQuantity": 'unlimited',
     }
 
 
 def _serialize_stocks_for_beneficiary_bookings(matched_offer_id: int, stocks: List[Stock]) -> List[Dict]:
     return [_serialize_stock_for_beneficiary_booking(stock) for stock in stocks if stock.offerId == matched_offer_id]
+
+
+def _serialize_offer_is_bookable(serialized_stocks: List[Dict]) -> bool:
+    are_stocks_bookable = [stock["isBookable"] for stock in serialized_stocks]
+    return sum(are_stocks_bookable) == len(are_stocks_bookable)
 
 
 def _serialize_beneficiary_booking(beneficiary_booking: BeneficiaryBooking, serialized_stocks: List[Dict],
@@ -69,6 +76,7 @@ def _serialize_beneficiary_booking(beneficiary_booking: BeneficiaryBooking, seri
                 "offerType": beneficiary_booking.humanized_offer_type,
                 "thumb_url": '',
                 "stocks": serialized_stocks,
+                "isBookable": _serialize_offer_is_bookable(serialized_stocks),
                 "venue": {
                     "id": humanize(beneficiary_booking.venueId),
                     "departementCode": beneficiary_booking.departementCode,
