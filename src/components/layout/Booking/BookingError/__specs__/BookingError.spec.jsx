@@ -1,20 +1,9 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import BookingError from '../BookingError'
 
 describe('src | components | layout | Booking | BookingError', () => {
-  it('should match snapshot', () => {
-    // given
-    const errors = {}
-
-    // when
-    const wrapper = shallow(<BookingError errors={errors} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('render', () => {
     it('when errors is an array, does not output any messages', () => {
       // given

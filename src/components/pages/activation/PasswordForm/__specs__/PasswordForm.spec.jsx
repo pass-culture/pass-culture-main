@@ -1,10 +1,10 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 import { Form } from 'react-final-form'
 import { Redirect } from 'react-router'
 
-import PasswordForm from '../PasswordForm'
 import FormFooter from '../../../../forms/FormFooter'
+import PasswordForm from '../PasswordForm'
 
 describe('src | components | pages | activation | password | Password', () => {
   let props
@@ -33,14 +33,6 @@ describe('src | components | pages | activation | password | Password', () => {
       newPasswordConfirm: 'Azertyuiopl18!',
       token: 'AZERTY123',
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<PasswordForm {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should mount component with isLoading as false', () => {

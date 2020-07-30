@@ -16,9 +16,7 @@ const MyBookingsLists = ({
       {'Réservations'}
     </h1>
 
-    {isEmpty && (
-      <NoItems sentence="Dès que tu auras réservé une offre, tu la retrouveras ici." />
-    )}
+    {isEmpty && <NoItems sentence="Dès que tu auras réservé une offre, tu la retrouveras ici." />}
 
     {!isEmpty && bookingsOfTheWeek.length > 0 && (
       <section className="mb-section">
@@ -32,10 +30,7 @@ const MyBookingsLists = ({
     {!isEmpty && (
       <section className="mb-section">
         <div className="mb-info-picto">
-          <Icon
-            alt="erreur"
-            svg="ico-info-white"
-          />
+          <Icon svg="ico-info-white" />
         </div>
         <p className="mb-infos">
           {

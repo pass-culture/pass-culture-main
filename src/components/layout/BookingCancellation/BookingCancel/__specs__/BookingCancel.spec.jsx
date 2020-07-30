@@ -1,5 +1,5 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import BookingCancel from '../BookingCancel'
 
@@ -16,14 +16,6 @@ describe('src | components | layout | BookingCancellation | BookingCancel', () =
       },
       isEvent: true,
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<BookingCancel {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should render BookingCancel component using informations from props', () => {

@@ -1,13 +1,15 @@
-import Ribbon from '../Ribbon'
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
-describe('src | components | layout | Ribbon', () => {
-  it('should match snapshot', () => {
+import Ribbon from '../Ribbon'
+
+describe('src | components | Ribbon', () => {
+  it('should display a label', () => {
     // when
     const wrapper = shallow(<Ribbon />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const label = wrapper.find({ children: 'Annulé' })
+    expect(label).toHaveLength(1)
   })
 })

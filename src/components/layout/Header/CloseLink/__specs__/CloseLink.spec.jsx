@@ -1,8 +1,9 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import CloseLink from '../CloseLink'
 import { Link } from 'react-router-dom'
+
 import Icon from '../../../Icon/Icon'
+import CloseLink from '../CloseLink'
 
 describe('src | components | layout | Header | CloseLink', () => {
   let props
@@ -13,14 +14,6 @@ describe('src | components | layout | Header | CloseLink', () => {
       closeTitle: 'fake close title',
       closeTo: '/fake-url',
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<CloseLink {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

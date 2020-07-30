@@ -1,5 +1,5 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import BookingForm from '../BookingForm'
 
@@ -16,14 +16,6 @@ describe('src | components | layout | Booking | BookingForm', () => {
       onFormSubmit: jest.fn(),
       onSetCanSubmitForm: jest.fn(),
     }
-  })
-
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<BookingForm {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

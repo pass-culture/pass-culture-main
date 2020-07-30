@@ -1,5 +1,5 @@
+import { mount } from 'enzyme'
 import React from 'react'
-import { mount, shallow } from 'enzyme'
 
 import Booking from '../Booking'
 
@@ -52,14 +52,6 @@ describe('src | components | layout | Booking | Booking', () => {
       },
       trackBookingSuccess,
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Booking {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('when no cancel view', () => {

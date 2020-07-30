@@ -1,22 +1,31 @@
-import { shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
+import { MemoryRouter } from 'react-router'
 
 import BackLink from '../BackLink'
 
-describe('src | components | layout | Header | BackLink', () => {
-  let props
-
-  beforeEach(() => {
-    props = {
+describe('src | components | BackLink', () => {
+  it('should display a link and an image', () => {
+    // Given
+    const props = {
+      actionOnClick: jest.fn(),
+      backTitle: 'Fake title',
       backTo: '/fake-url',
     }
-  })
 
-  it('should match the snapshot', () => {
     // when
-    const wrapper = shallow(<BackLink {...props} />)
+    const wrapper = mount(
+      <MemoryRouter>
+        <BackLink {...props} />
+      </MemoryRouter>
+    )
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const link = wrapper.find('a')
+    const image = wrapper.find('img')
+    expect(link.prop('href')).toBe('/fake-url')
+    expect(link.prop('onClick')).toStrictEqual(expect.any(Function))
+    expect(image.prop('alt')).toBe('Fake title')
+    expect(image.prop('src')).toBe('http://localhost/icons/ico-back.svg')
   })
 })

@@ -1,34 +1,22 @@
-import configureStore from 'redux-mock-store'
-import { Provider } from 'react-redux'
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+import { Transition } from 'react-transition-group'
 
-import SharePopinContainer from '../SharePopinContainer'
+import SharePopin from '../SharePopin'
 
-const middlewares = []
-const mockStore = configureStore(middlewares)
-
-const dispatchMock = jest.fn()
-
-describe('src | components | share | SharePopinContainer', () => {
-  it('should match the snapshot', () => {
+describe('src | components | SharePopin', () => {
+  it('should display a transition', () => {
     // given
-    const initialState = {}
-    const store = mockStore(initialState)
     const props = {
-      dispatch: dispatchMock,
-      options: true,
+      dispatch: jest.fn(),
       visible: true,
     }
 
     // when
-    const wrapper = shallow(
-      <Provider store={store}>
-        <SharePopinContainer {...props} />
-      </Provider>
-    )
+    const wrapper = shallow(<SharePopin {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const transition = wrapper.find(Transition)
+    expect(transition).toHaveLength(1)
   })
 })

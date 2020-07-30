@@ -1,5 +1,5 @@
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
 
 const Wallet = ({ value }) => (
   <div className="verso-wallet">
@@ -7,8 +7,7 @@ const Wallet = ({ value }) => (
       {'Mon pass'}
     </div>
     <div className="verso-wallet-amount">
-      {value}
-      {'€'}
+      {`${value} €`}
     </div>
   </div>
 )

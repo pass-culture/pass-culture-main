@@ -3,10 +3,11 @@ import moment from 'moment'
 import React from 'react'
 import { Field } from 'react-final-form'
 
-import BookingFormContent from '../BookingFormContent'
+import CheckBoxField from '../../../../../forms/inputs/CheckBoxField'
 import SelectField from '../../../../../forms/inputs/SelectField'
+import BookingFormContent from '../BookingFormContent'
 
-describe('src | components | layout | Booking | BookingForm | BookingFormContent', () => {
+describe('src | components | BookingFormContent', () => {
   let props
   let handleSubmit
 
@@ -30,15 +31,18 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
     }
   })
 
-  it('should match snapshot when booking a thing', () => {
+  it('should display sentences when booking a thing', () => {
     // when
     const wrapper = shallow(<BookingFormContent {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const sentence1 = wrapper.find({ children: 'Vous êtes sur le point de réserver' })
+    const sentence2 = wrapper.find({ children: 'cette offre pour 0 €.' })
+    expect(sentence1).toHaveLength(1)
+    expect(sentence2).toHaveLength(1)
   })
 
-  it('should match snapshot when booking an event', () => {
+  it('should display a field when booking an event', () => {
     // given
     props.isEvent = true
     props.values = {
@@ -55,10 +59,11 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
     const wrapper = shallow(<BookingFormContent {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const field = wrapper.find(Field)
+    expect(field).toHaveLength(1)
   })
 
-  it('should match snapshot when booking a duo event', () => {
+  it('should display a field and checkbox when booking a duo event', () => {
     // given
     props.isStockDuo = true
     props.isEvent = true
@@ -76,7 +81,10 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
     const wrapper = shallow(<BookingFormContent {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const field = wrapper.find(Field)
+    const checkBoxField = wrapper.find(CheckBoxField)
+    expect(field).toHaveLength(1)
+    expect(checkBoxField).toHaveLength(1)
   })
 
   describe('render', () => {

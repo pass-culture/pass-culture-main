@@ -1,29 +1,10 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import ShareButton from '../ShareButton'
 import NavigatorShareAPI from '../NavigatorShareAPI'
+import ShareButton from '../ShareButton'
 
 describe('components | ShareButton', () => {
-  it('should match the snapshot', () => {
-    // given
-    const props = {
-      closePopin: () => {},
-      offerName: 'Fake offer name',
-      openPopin: () => {},
-      text: 'Fake text',
-      trackShareOfferByLink: () => {},
-      trackShareOfferByMail: () => {},
-      url: 'http://www.fake-url.com',
-    }
-
-    // when
-    const wrapper = shallow(<ShareButton {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('onCloseHandler', () => {
     describe('when close the modal', () => {
       it('should call closePopin with good action parameters', () => {

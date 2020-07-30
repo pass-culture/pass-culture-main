@@ -1,21 +1,12 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import Price from '../Price'
 
-describe('src | components | pages | Price', () => {
-  it('should match the snapshot without props', () => {
-    // given
-    const props = {}
+describe('src | components | Price', () => {
+  const NO_BREAK_SPACE = '\u00A0'
 
-    // when
-    const wrapper = shallow(<Price {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
-  it('should match the snapshot with a price number', () => {
+  it('should display a price', () => {
     // given
     const props = { value: 5 }
 
@@ -23,10 +14,11 @@ describe('src | components | pages | Price', () => {
     const wrapper = shallow(<Price {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const price = wrapper.find({ children: `5${NO_BREAK_SPACE}€` })
+    expect(price).toHaveLength(1)
   })
 
-  it('should match the snapshot with an array of prices number', () => {
+  it('should display a range of prices', () => {
     // given
     const props = { value: [5, 10] }
 
@@ -34,10 +26,11 @@ describe('src | components | pages | Price', () => {
     const wrapper = shallow(<Price {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const price = wrapper.find({ children: `5 → 10${NO_BREAK_SPACE}€` })
+    expect(price).toHaveLength(1)
   })
 
-  it('should match the snapshot with decimal prices', () => {
+  it('should display a range of decimal prices', () => {
     // given
     const props = { value: [5.99, 10] }
 
@@ -45,10 +38,11 @@ describe('src | components | pages | Price', () => {
     const wrapper = shallow(<Price {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const price = wrapper.find({ children: `5,99 → 10${NO_BREAK_SPACE}€` })
+    expect(price).toHaveLength(1)
   })
 
-  it('should match the snapshot free prop defined and a zero price', () => {
+  it('should display zero euro', () => {
     // given
     const props = { value: 0 }
 
@@ -56,6 +50,7 @@ describe('src | components | pages | Price', () => {
     const wrapper = shallow(<Price {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const price = wrapper.find({ children: `0${NO_BREAK_SPACE}€` })
+    expect(price).toHaveLength(1)
   })
 })

@@ -1,5 +1,5 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import HiddenField from '../HiddenField'
 
@@ -13,20 +13,12 @@ describe('src | components | forms | inputs | HiddenField', () => {
     }
   })
 
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<HiddenField {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   it('should render a Field with the right props', () => {
     // when
     const wrapper = shallow(<HiddenField {...props} />)
 
     // then
-    expect(wrapper.prop('name')).toStrictEqual('input-name')
-    expect(wrapper.prop('validate')).toStrictEqual(props.validator)
+    expect(wrapper.prop('name')).toBe('input-name')
+    expect(wrapper.prop('validate')).toBe(props.validator)
   })
 })

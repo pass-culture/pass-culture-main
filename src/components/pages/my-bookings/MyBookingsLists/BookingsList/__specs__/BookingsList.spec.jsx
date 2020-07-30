@@ -1,11 +1,12 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
+import BookingItemContainer from '../BookingItem/BookingItemContainer'
 import BookingsList from '../BookingsList'
 
-describe('src | components | pages | my-bookings | MyBookingsList | BookingsList | BookingsList', () => {
+describe('src | components | BookingsList', () => {
   describe('when I have two bookings', () => {
-    it('should render a list of two bookings', () => {
+    it('should display a list of two bookings', () => {
       // given
       const props = {
         bookings: [
@@ -22,7 +23,8 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingsList
       const wrapper = shallow(<BookingsList {...props} />)
 
       // then
-      expect(wrapper).toMatchSnapshot()
+      const bookings = wrapper.find(BookingItemContainer)
+      expect(bookings).toHaveLength(2)
     })
   })
 })

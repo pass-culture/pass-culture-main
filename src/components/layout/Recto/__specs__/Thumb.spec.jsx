@@ -1,22 +1,9 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import Thumb from '../Thumb'
 
 describe('src | components | pages | Thumb', () => {
-  it('should match the snapshot', () => {
-    // given
-    const props = {
-      title: 'fake title',
-    }
-
-    // when
-    const wrapper = shallow(<Thumb {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('render', () => {
     describe('without Mediation', () => {
       // given

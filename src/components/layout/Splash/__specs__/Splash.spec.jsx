@@ -1,8 +1,10 @@
-import Splash from '../Splash'
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+import { Transition } from 'react-transition-group'
 
-describe('src | components | layout | Splash', () => {
+import Splash from '../Splash'
+
+describe('src | components | Splash', () => {
   let props
 
   beforeEach(() => {
@@ -13,11 +15,12 @@ describe('src | components | layout | Splash', () => {
     }
   })
 
-  it('should match snapshot', () => {
+  it('should display a transition', () => {
     // when
     const wrapper = shallow(<Splash {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const transition = wrapper.find(Transition)
+    expect(transition).toHaveLength(1)
   })
 })

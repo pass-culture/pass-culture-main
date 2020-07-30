@@ -1,10 +1,11 @@
-import { shallow, mount } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
 
+import BookingsList from '../BookingsList/BookingsList'
 import MyBookingsLists from '../MyBookingsLists'
 
-describe('src | components | pages | my-bookings | MyBookingsLists', () => {
+describe('src | components | MyBookingsLists', () => {
   let props
 
   beforeEach(() => {
@@ -69,25 +70,17 @@ describe('src | components | pages | my-bookings | MyBookingsLists', () => {
       const wrapper = shallow(<MyBookingsLists {...props} />)
 
       // then
-      expect(wrapper).toMatchSnapshot()
-    })
-  })
-
-  describe('when I have one booking at least', () => {
-    it('should render information about "contremarque"', () => {
-      // given
-      props.isEmpty = false
-      props.bookingsOfTheWeek = [
-        {
-          id: 'b1',
-        },
-      ]
-
-      // when
-      const wrapper = shallow(<MyBookingsLists {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
+      const title = wrapper.find({ children: 'Réservations' })
+      const thisWeekSentence = wrapper.find({ children: 'Cette semaine' })
+      const bookingsList = wrapper.find(BookingsList)
+      const sentence = wrapper.find({
+        children:
+          'Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.',
+      })
+      expect(title).toHaveLength(1)
+      expect(thisWeekSentence).toHaveLength(1)
+      expect(bookingsList).toHaveLength(1)
+      expect(sentence).toHaveLength(1)
     })
   })
 
@@ -105,7 +98,17 @@ describe('src | components | pages | my-bookings | MyBookingsLists', () => {
       const wrapper = shallow(<MyBookingsLists {...props} />)
 
       // then
-      expect(wrapper).toMatchSnapshot()
+      const title = wrapper.find({ children: 'Réservations' })
+      const sentence = wrapper.find({
+        children:
+          'Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.',
+      })
+      const toComeSentence = wrapper.find({ children: 'À venir' })
+      const bookingsList = wrapper.find(BookingsList)
+      expect(title).toHaveLength(1)
+      expect(sentence).toHaveLength(1)
+      expect(toComeSentence).toHaveLength(1)
+      expect(bookingsList).toHaveLength(1)
     })
   })
 
@@ -126,7 +129,17 @@ describe('src | components | pages | my-bookings | MyBookingsLists', () => {
       const wrapper = shallow(<MyBookingsLists {...props} />)
 
       // then
-      expect(wrapper).toMatchSnapshot()
+      const title = wrapper.find({ children: 'Réservations' })
+      const sentence = wrapper.find({
+        children:
+          'Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.',
+      })
+      const finishedSentence = wrapper.find({ children: 'Terminées' })
+      const bookingsList = wrapper.find(BookingsList)
+      expect(title).toHaveLength(1)
+      expect(sentence).toHaveLength(1)
+      expect(finishedSentence).toHaveLength(1)
+      expect(bookingsList).toHaveLength(1)
     })
   })
 })

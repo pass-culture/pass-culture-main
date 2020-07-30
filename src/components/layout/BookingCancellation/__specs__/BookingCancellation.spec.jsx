@@ -1,5 +1,5 @@
+import { mount } from 'enzyme'
 import React from 'react'
-import { shallow, mount } from 'enzyme'
 
 import BookingCancellation from '../BookingCancellation'
 
@@ -25,14 +25,6 @@ describe('src | components | layout | BookingCancellation | BookingCancellation'
         },
       },
     }
-  })
-
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<BookingCancellation {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should redirect to details page', () => {

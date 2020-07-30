@@ -2,8 +2,8 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import Teaser from '../Teaser'
 import Icon from '../../Icon/Icon'
+import Teaser from '../Teaser'
 
 describe('src | components | layout | Teaser | Teaser', () => {
   let props
@@ -27,14 +27,6 @@ describe('src | components | layout | Teaser | Teaser', () => {
       thumbUrl: null,
       trackConsultOffer: jest.fn(),
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Teaser {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('when in a list mode', () => {

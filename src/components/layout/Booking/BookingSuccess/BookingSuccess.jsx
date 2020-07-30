@@ -23,7 +23,7 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
           {!isEvent && (
             <Fragment>
               <span className="is-block">
-                {'Votre pouvez accéder à cette offre'}
+                {'Votre pouvez accéder à cette offre '}
               </span>
               <span className="is-block">
                 {'à tout moment.'}

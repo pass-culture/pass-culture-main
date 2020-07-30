@@ -1,13 +1,17 @@
-import Spinner from '../Spinner'
+import { mount } from 'enzyme'
 import React from 'react'
-import { shallow } from 'enzyme'
 
-describe('src | components | layout | Spinner', () => {
-  it('should match snapshot', () => {
+import Spinner from '../Spinner'
+
+describe('src | components | Spinner', () => {
+  it('should display an image and label', () => {
     // when
-    const wrapper = shallow(<Spinner />)
+    const wrapper = mount(<Spinner />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const image = wrapper.find('img')
+    const label = wrapper.find({ children: 'Chargement' })
+    expect(image.prop('src')).toBe('http://localhost/icons/ico-loader-pink.svg')
+    expect(label).toHaveLength(1)
   })
 })

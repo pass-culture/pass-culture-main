@@ -1,10 +1,10 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import Favorite from '../Favorite'
 import Icon from '../../../../../layout/Icon/Icon'
+import Favorite from '../Favorite'
 
-describe('src | components | layout | Verso | VersoControls | Favorite | Favorite', () => {
+describe('src | components | Favorite', () => {
   let props
 
   beforeEach(() => {
@@ -14,29 +14,6 @@ describe('src | components | layout | Verso | VersoControls | Favorite | Favorit
       loadFavorites: jest.fn(),
       offerId: 'AE',
     }
-  })
-
-  describe('when the user can add to favorite', () => {
-    it('should match the snapshot', () => {
-      // when
-      const wrapper = shallow(<Favorite {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
-  })
-
-  describe('when the user can delete to favorite', () => {
-    it('should match the snapshot', () => {
-      // given
-      props.isFavorite = false
-
-      // when
-      const wrapper = shallow(<Favorite {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
   })
 
   describe('when the user click for adding to favorite', () => {

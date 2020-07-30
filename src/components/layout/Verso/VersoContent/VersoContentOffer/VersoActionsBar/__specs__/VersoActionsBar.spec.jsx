@@ -1,16 +1,9 @@
-import VersoActionsBar from '../VersoActionsBar'
 import { shallow } from 'enzyme'
 import React from 'react'
 
+import VersoActionsBar from '../VersoActionsBar'
+
 describe('src | components | layout | Verso | VersoContentOffer | VersoActionsBar', () => {
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<VersoActionsBar />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   it('should render a link with the right props', () => {
     // when
     const wrapper = shallow(<VersoActionsBar />)

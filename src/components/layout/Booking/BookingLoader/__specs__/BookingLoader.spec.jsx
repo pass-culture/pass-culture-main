@@ -1,22 +1,15 @@
+import { mount } from 'enzyme'
 import React from 'react'
-import { shallow } from 'enzyme'
 
 import BookingLoader from '../BookingLoader'
 
-describe('src | components | layout | Booking | BookingLoader', () => {
-  let props
-
-  beforeEach(() => {
-    props = {
-      errors: {},
-    }
-  })
-
-  it('should match snapshot', () => {
+describe('src | components | BookingLoader', () => {
+  it('should display a sentence', () => {
     // when
-    const wrapper = shallow(<BookingLoader {...props} />)
+    const wrapper = mount(<BookingLoader />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const sentence = wrapper.find({ children: 'Réservation en cours...' })
+    expect(sentence).toHaveLength(1)
   })
 })

@@ -1,5 +1,5 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import DatePickerCustomField from '../DatePickerCustomField'
 
@@ -10,14 +10,6 @@ describe('src | components | forms | inputs | DatePickerField | DatePickerCustom
     props = {
       value: 'fake value',
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<DatePickerCustomField {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

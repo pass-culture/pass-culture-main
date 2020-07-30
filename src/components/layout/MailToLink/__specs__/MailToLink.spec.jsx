@@ -1,5 +1,5 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import MailToLink from '../MailToLink'
 
@@ -12,21 +12,6 @@ const children = (
 )
 
 describe('src | components | share | MailToLink', () => {
-  it('should match the snapshot', () => {
-    // given
-    const props = {
-      children,
-      email: 'email@fake.com',
-      header: {},
-    }
-
-    // when
-    const wrapper = shallow(<MailToLink {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('onClickShare', () => {
     describe('when obfuscate is false', () => {
       it('should render Link', () => {

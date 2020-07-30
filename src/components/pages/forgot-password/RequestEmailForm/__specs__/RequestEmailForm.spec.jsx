@@ -1,16 +1,29 @@
-import React from 'react'
 import { shallow } from 'enzyme'
-import { RequestEmailForm } from '../RequestEmailForm'
+import React from 'react'
 
-describe('src | components | pages | forgot-password | RequestEmailForm', () => {
-  it('should match the snapshot', () => {
+import { RequestEmailForm } from '../RequestEmailForm'
+import InputField from '../../../../forms/inputs/InputField'
+import FormFooter from '../../../../forms/FormFooter'
+
+describe('src | components | RequestEmailForm', () => {
+  it('should display a sentence, an input text field and form footer', () => {
     // given
-    const props = { canSubmit: true, isLoading: false }
+    const props = {
+      canSubmit: true,
+      isLoading: false,
+    }
 
     // when
     const wrapper = shallow(<RequestEmailForm {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const sentence = wrapper.find({
+      children: 'Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.',
+    })
+    const input = wrapper.find(InputField)
+    const formFooter = wrapper.find(FormFooter)
+    expect(sentence).toHaveLength(1)
+    expect(input).toHaveLength(1)
+    expect(formFooter).toHaveLength(1)
   })
 })

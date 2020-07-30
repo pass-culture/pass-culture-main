@@ -1,5 +1,6 @@
 import { shallow } from 'enzyme'
 import React from 'react'
+
 import Icon from '../Icon'
 
 jest.mock('../../../../utils/config', () => ({
@@ -13,14 +14,6 @@ describe('src | components | layout | Icon', () => {
     props = {
       svg: 'fake-svg',
     }
-  })
-
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<Icon {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should render img tag with given alt value', () => {

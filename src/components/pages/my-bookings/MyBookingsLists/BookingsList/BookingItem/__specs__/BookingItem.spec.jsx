@@ -2,10 +2,10 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import BookingItem from '../BookingItem'
+import { DEFAULT_THUMB_URL } from '../../../../../../../utils/thumb'
 import Icon from '../../../../../../layout/Icon/Icon'
 import Ribbon from '../../../../../../layout/Ribbon/Ribbon'
-import { DEFAULT_THUMB_URL } from '../../../../../../../utils/thumb'
+import BookingItem from '../BookingItem'
 
 describe('src | components | pages | my-bookings | MyBookingsList | BookingList | BookingItem', () => {
   let props
@@ -44,14 +44,6 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
       stock: { id: 'future stock 1', beginningDatetime: '2030-08-21T20:00:00Z' },
       trackConsultOffer: jest.fn(),
     }
-  })
-
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<BookingItem {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should render a booking including token when qr code feature is inactive', () => {

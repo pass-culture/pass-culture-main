@@ -1,5 +1,5 @@
+import { mount } from 'enzyme'
 import React from 'react'
-import { mount, shallow } from 'enzyme'
 
 import SharePopin from '../SharePopin'
 
@@ -18,14 +18,6 @@ describe('src | components | share | SharePopin', () => {
       },
       visible: true,
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<SharePopin {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('functions', () => {

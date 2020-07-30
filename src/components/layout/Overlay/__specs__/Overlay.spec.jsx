@@ -1,22 +1,22 @@
 import { shallow } from 'enzyme'
 import React from 'react'
+import { Transition } from 'react-transition-group'
 
 import Overlay from '../Overlay'
 
-describe('src | components | layout | Overlay | Overlay', () => {
-  let props
-
-  beforeEach(() => {
-    props = {
+describe('src | components | Overlay', () => {
+  it('should display a transition', () => {
+    // Given
+    const props = {
       isVisible: false,
     }
-  })
 
-  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<Overlay {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const transition = wrapper.find(Transition)
+    expect(transition.prop('in')).toBe(false)
+    expect(transition.prop('timeout')).toBe(500)
   })
 })

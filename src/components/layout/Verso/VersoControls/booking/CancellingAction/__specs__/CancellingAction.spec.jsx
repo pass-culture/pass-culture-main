@@ -1,13 +1,13 @@
 import { mount, shallow } from 'enzyme'
 import { createMemoryHistory } from 'history'
+import moment from 'moment/moment'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { Route, Router } from 'react-router'
 
+import getMockStore from '../../../../../../../utils/mockStore'
 import CancellingAction from '../CancellingAction'
 import CancellingActionContainer from '../CancellingActionContainer'
-import getMockStore from '../../../../../../../utils/mockStore'
-import moment from 'moment/moment'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
@@ -42,16 +42,6 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
       openCancelPopin: jest.fn(),
       price: 20,
     }
-  })
-
-  describe('when the offer is booked', () => {
-    it('should render a button to cancelling the booking', () => {
-      // when
-      const wrapper = shallow(<CancellingAction {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
   })
 
   describe('when event offer date is past', () => {

@@ -1,21 +1,24 @@
+import { mount } from 'enzyme'
 import React from 'react'
-import { shallow } from 'enzyme'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 import CopyToClipboardButton from '../CopyToClipboardButton'
 
-const onClickMock = jest.fn()
-
-describe('src | components | share | CopyToClipboardButton', () => {
-  it('should match the snapshot', () => {
+describe('src | components | CopyToClipboardButton', () => {
+  it('should display a button', () => {
     // given
     const props = {
-      onClick: onClickMock,
-      value: 'Fake Value',
+      onClick: jest.fn(),
+      value: 'Fake value',
     }
     // when
-    const wrapper = shallow(<CopyToClipboardButton {...props} />)
+    const wrapper = mount(<CopyToClipboardButton {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const copyToClipboard = wrapper.find(CopyToClipboard)
+    const button = wrapper.find('button').find({ children: 'Copier le lien' })
+    expect(copyToClipboard.prop('onCopy')).toStrictEqual(expect.any(Function))
+    expect(copyToClipboard.prop('text')).toBe('Fake value')
+    expect(button).toHaveLength(1)
   })
 })

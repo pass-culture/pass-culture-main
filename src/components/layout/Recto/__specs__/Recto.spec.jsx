@@ -1,19 +1,25 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import Recto from '../Recto'
+import Thumb from '../Thumb'
 
-describe('src | components | recto | Recto', () => {
-  it('should match the snapshot with required props only', () => {
+describe('src | components | Recto', () => {
+  it('should display a thumb', () => {
     // given
     const props = {
       areDetailsVisible: true,
+      thumbUrl: '/fake-url',
+      withMediation: true,
     }
 
     // when
     const wrapper = shallow(<Recto {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const thumb = wrapper.find(Thumb)
+    expect(thumb.prop('src')).toBe('/fake-url')
+    expect(thumb.prop('translated')).toBe(true)
+    expect(thumb.prop('withMediation')).toBe(true)
   })
 })

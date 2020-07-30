@@ -1,28 +1,27 @@
+import { mount } from 'enzyme'
 import React from 'react'
-import { shallow } from 'enzyme'
 
 import BookingHeader from '../BookingHeader'
 
-describe('src | components | layout | Booking | BookingHeader', () => {
-  let props
-
-  beforeEach(() => {
-    props = {
-      recommendation: {
-        offer: {
-          name: 'Titre de la recommendation',
-          product: { name: 'Titre de la recommendation' },
-          venue: { name: 'Titre de la venue ' },
+describe('src | components | BookingHeader', () => {
+  it('should display a title and subtitle', () => {
+    // Given
+    const props = {
+      offer: {
+        name: 'Fake offer name',
+        venue: {
+          name: 'Fake venue name',
         },
       },
     }
-  })
 
-  it('should match snapshot', () => {
     // when
-    const wrapper = shallow(<BookingHeader {...props} />)
+    const wrapper = mount(<BookingHeader {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const title = wrapper.find({ children: 'Fake offer name' })
+    const subtitle = wrapper.find({ children: 'Fake venue name' })
+    expect(title).toHaveLength(1)
+    expect(subtitle).toHaveLength(1)
   })
 })
