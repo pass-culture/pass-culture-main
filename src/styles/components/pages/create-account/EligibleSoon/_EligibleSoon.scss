@@ -88,12 +88,11 @@
     }
   }
 
-  h2 {
-    font-size: rem(24px);
-    font-style: italic;
-    font-weight: 500;
+  h1 {
+    @include title2();
+
     padding-top: rem(10px);
-    width: 60%;
+    width: 70%;
   }
 
   a {
@@ -128,7 +127,7 @@
       padding: rem(12px) rem(20px);
     }
 
-    h2 {
+    h1 {
       font-size: rem(20px);
     }
   }

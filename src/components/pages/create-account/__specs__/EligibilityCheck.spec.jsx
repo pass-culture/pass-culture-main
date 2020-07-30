@@ -337,7 +337,7 @@ describe('eligibility check page', () => {
         wrapper.update()
 
         // then
-        expect(wrapper.find({ children: 'Plus que quelques mois d’attente !' })).toHaveLength(1)
+        expect(wrapper.find({ children: 'C’est pour bientôt !' })).toHaveLength(1)
       })
 
       it('should display ineligible over eighteen view when user is not eligible anymore', () => {
