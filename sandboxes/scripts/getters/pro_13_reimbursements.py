@@ -11,7 +11,7 @@ from sandboxes.scripts.utils.helpers import get_booking_helper, \
     get_offerer_helper, \
     get_payment_helper, \
     get_stock_helper, \
-    get_user_helper, \
+    get_pro_helper, \
     get_venue_helper
 
 
@@ -46,6 +46,6 @@ def get_existing_pro_validated_user_with_validated_offerer_with_reimbursement():
         "offerer": get_offerer_helper(offerer),
         "payment": get_payment_helper(payment),
         "stock": get_stock_helper(stock),
-        "user": get_user_helper(user),
+        "user": get_pro_helper(user),
         "venue": get_venue_helper(venue)
     }

@@ -24,7 +24,7 @@ class BookingSQLRepositoryTest:
 
         @clean_database
         @patch('infrastructure.repository.booking.booking_sql_repository.get_expenses')
-        def test_returns_a_list_of_not_cancelled_bookings(self, get_expenses_mock, app):
+        def test_compute_expenses_without_cancelled_bookings(self, get_expenses_mock, app):
             # given
             user = create_user()
             offerer = create_offerer()

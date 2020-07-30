@@ -1,5 +1,20 @@
 import copy
 
+BENEFICIARY_INCLUDES = [
+    '-culturalSurveyId',
+    '-culturalSurveyFilledDate',
+    '-hasSeenTutorials',
+    '-password',
+    '-resetPasswordToken',
+    '-resetPasswordTokenValidityLimit',
+    '-validationToken',
+    'expenses',
+    'wallet_balance',
+    'wallet_is_activated',
+    'wallet_date_created',
+    'needsToSeeTutorials'
+]
+
 OFFERER_INCLUDES = [
     {
         "key": "managedVenues",
@@ -165,21 +180,6 @@ USER_INCLUDES = [
     'hasOffers',
 ]
 
-CURRENT_BENEFICIARY_INCLUDES = [
-    '-culturalSurveyId',
-    '-culturalSurveyFilledDate',
-    '-hasSeenTutorials',
-    '-password',
-    '-resetPasswordToken',
-    '-resetPasswordTokenValidityLimit',
-    '-validationToken',
-    'expenses',
-    'wallet_balance',
-    'wallet_is_activated',
-    'wallet_date_created',
-    'needsToSeeTutorials'
-]
-
 WEBAPP_GET_BOOKING_INCLUDES = [
     "completedUrl",
     'isEventExpired',
@@ -280,7 +280,7 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
     "thumbUrl",
     {
         "key": "user",
-        "includes": USER_INCLUDES
+        "includes": BENEFICIARY_INCLUDES
     }
 ]
 

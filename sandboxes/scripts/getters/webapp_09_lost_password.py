@@ -1,6 +1,6 @@
 from models.user_sql_entity import UserSQLEntity
 from repository.user_queries import keep_only_webapp_users
-from sandboxes.scripts.utils.helpers import get_user_helper
+from sandboxes.scripts.utils.helpers import get_beneficiary_helper
 
 def get_webapp_user_with_not_validated_password():
     query = keep_only_webapp_users(UserSQLEntity.query)
@@ -8,5 +8,5 @@ def get_webapp_user_with_not_validated_password():
     user = query.first()
 
     return {
-        "user": get_user_helper(user)
+        "user": get_beneficiary_helper(user)
     }

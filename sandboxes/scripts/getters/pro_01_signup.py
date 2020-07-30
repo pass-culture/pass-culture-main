@@ -1,6 +1,6 @@
 from models.user_sql_entity import UserSQLEntity
 from models.user_offerer import UserOfferer
-from sandboxes.scripts.utils.helpers import get_user_helper, get_offerer_helper
+from sandboxes.scripts.utils.helpers import get_pro_helper, get_offerer_helper
 
 def get_existing_pro_user_with_offerer():
     query = UserSQLEntity.query.join(UserOfferer)
@@ -12,7 +12,7 @@ def get_existing_pro_user_with_offerer():
 
     return {
         "offerer": get_offerer_helper(offerer),
-        "user": get_user_helper(user)
+        "user": get_pro_helper(user)
     }
 
 
@@ -25,5 +25,5 @@ def get_existing_pro_not_validated_user_with_real_offerer():
     for user in users:
         if len(user.UserOfferers) == 1:
             return {
-                'user': get_user_helper(user)
+                'user': get_pro_helper(user)
             }

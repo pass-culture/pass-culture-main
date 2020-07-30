@@ -1,6 +1,6 @@
 from models.user_sql_entity import UserSQLEntity
 from repository.user_queries import keep_only_webapp_users
-from sandboxes.scripts.utils.helpers import get_user_helper
+from sandboxes.scripts.utils.helpers import get_beneficiary_helper
 
 def get_existing_webapp_not_validated_user():
     query = keep_only_webapp_users(UserSQLEntity.query)
@@ -8,7 +8,7 @@ def get_existing_webapp_not_validated_user():
     user = query.first()
 
     return {
-        "user": get_user_helper(user)
+        "user": get_beneficiary_helper(user)
     }
 
 def get_existing_webapp_validated_user():
@@ -17,5 +17,5 @@ def get_existing_webapp_validated_user():
     user = query.first()
 
     return {
-        "user": get_user_helper(user)
+        "user": get_beneficiary_helper(user)
     }

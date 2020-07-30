@@ -3,9 +3,12 @@ from flask import jsonify, request, current_app as app
 from flask_login import current_user, login_required
 from repository.user_queries import find_user_by_email
 from routes.serialization import as_dict
-from utils.includes import CURRENT_BENEFICIARY_INCLUDES
+from utils.includes import BENEFICIARY_INCLUDES
+from use_cases.update_user_informations import update_user_informations, AlterableUserInformations
+from utils.rest import expect_json_data, login_or_api_key_required
 from validation.routes.beneficiaries import check_application_update_payload, \
     check_verify_licence_token_payload, parse_application_id
+from validation.routes.users import check_allowed_changes_for_user
 from workers.beneficiary_job import beneficiary_job
 
 
@@ -13,7 +16,31 @@ from workers.beneficiary_job import beneficiary_job
 @login_required
 def get_beneficiary_profile():
     user = current_user._get_current_object()
-    return jsonify(as_dict(user, includes=CURRENT_BENEFICIARY_INCLUDES)), 200
+    return jsonify(as_dict(user, includes=BENEFICIARY_INCLUDES)), 200
+
+@app.route('/beneficiaries/current', methods=['PATCH'])
+@login_or_api_key_required
+@expect_json_data
+def patch_beneficiary():
+    data = request.json.keys()
+    check_allowed_changes_for_user(data)
+
+    user_informations = AlterableUserInformations(
+        id= current_user.id,
+        cultural_survey_id=request.json.get('culturalSurveyId'),
+        cultural_survey_filled_date=request.json.get('culturalSurveyFilledDate'),
+        department_code=request.json.get('departementCode'),
+        email=request.json.get('email'),
+        needs_to_fill_cultural_survey=request.json.get('needsToFillCulturalSurvey'),
+        phone_number=request.json.get('phoneNumber'),
+        postal_code=request.json.get('postalCode'),
+        public_name=request.json.get('publicName'),
+        has_seen_tutorials=request.json.get('hasSeenTutorials')
+    )
+    user = update_user_informations(user_informations)
+
+    formattedUser = as_dict(user, includes=BENEFICIARY_INCLUDES)
+    return jsonify(formattedUser), 200
 
 @app.route('/beneficiaries/licence_verify', methods=['POST'])
 def verify_id_check_licence_token():

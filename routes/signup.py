@@ -12,7 +12,7 @@ from repository import repository
 from routes.serialization import as_dict
 from utils.config import IS_INTEGRATION
 from utils.feature import feature_required
-from utils.includes import USER_INCLUDES
+from utils.includes import BENEFICIARY_INCLUDES, USER_INCLUDES
 from utils.logger import logger
 from utils.mailing import \
     subscribe_newsletter, MailServiceException, send_raw_email
@@ -52,7 +52,7 @@ def signup_webapp():
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 
-    return jsonify(as_dict(new_user, includes=USER_INCLUDES)), 201
+    return jsonify(as_dict(new_user, includes=BENEFICIARY_INCLUDES)), 201
 
 
 @app.route("/users/signup/pro", methods=["POST"])

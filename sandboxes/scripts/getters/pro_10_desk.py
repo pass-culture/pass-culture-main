@@ -7,7 +7,7 @@ from repository.user_queries import filter_users_with_at_least_one_validated_off
 from sandboxes.scripts.utils.helpers import get_booking_helper, \
                                             get_offer_helper, \
                                             get_offerer_helper, \
-                                            get_user_helper, \
+                                            get_pro_helper, \
                                             get_venue_helper
 
 def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_offerer_with_thing_offer_with_stock_with_not_used_booking():
@@ -34,6 +34,6 @@ def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_o
                                             "booking": get_booking_helper(booking),
                                             "offer": get_offer_helper(offer),
                                             "offerer": get_offerer_helper(uo.offerer),
-                                            "user": get_user_helper(user),
+                                            "user": get_pro_helper(user),
                                             "venue": get_venue_helper(venue)
                                         }

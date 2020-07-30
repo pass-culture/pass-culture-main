@@ -1,7 +1,7 @@
 from models.offerer import Offerer
 from models.user_sql_entity import UserSQLEntity
 from models.user_offerer import UserOfferer
-from sandboxes.scripts.utils.helpers import get_offerer_helper, get_user_helper
+from sandboxes.scripts.utils.helpers import get_offerer_helper, get_pro_helper
 
 
 def get_existing_pro_validated_user_with_first_offerer():
@@ -15,7 +15,7 @@ def get_existing_pro_validated_user_with_first_offerer():
 
     return {
         "offerer": get_offerer_helper(offerer),
-        "user": get_user_helper(user)
+        "user": get_pro_helper(user)
     }
 
 def get_existing_pro_validated_user_with_offerer_with_no_iban():
@@ -32,5 +32,5 @@ def get_existing_pro_validated_user_with_offerer_with_no_iban():
 
     return {
         "offerer": get_offerer_helper(offerer),
-        "user": get_user_helper(user)
+        "user": get_pro_helper(user)
     }

@@ -3,7 +3,7 @@ from models.offer import Offer
 from models.recommendation import Recommendation
 from models.user_sql_entity import UserSQLEntity
 from repository.user_queries import keep_only_webapp_users
-from sandboxes.scripts.utils.helpers import get_user_helper, get_recommendation_helper
+from sandboxes.scripts.utils.helpers import get_beneficiary_helper, get_recommendation_helper
 
 
 def get_existing_webapp_user_with_no_date_read():
@@ -21,7 +21,7 @@ def get_existing_webapp_user_with_no_date_read():
     user = query.first()
 
     return {
-        "user": get_user_helper(user),
+        "user": get_beneficiary_helper(user),
     }
 
 
@@ -32,7 +32,7 @@ def get_existing_webapp_user_with_at_least_one_recommendation():
 
     recommendation = query.first()
     return {
-        "user": get_user_helper(recommendation.user),
+        "user": get_beneficiary_helper(recommendation.user),
         "recommendation": get_recommendation_helper(recommendation)
     }
 
@@ -43,5 +43,5 @@ def get_existing_webapp_user_with_bookings():
     user = query.first()
 
     return {
-        "user": get_user_helper(user)
+        "user": get_beneficiary_helper(user)
     }

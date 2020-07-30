@@ -18,7 +18,6 @@ class Post:
 
             # then
             assert response.status_code == 200
-            assert response.json['email'] == 'user@example.com'
 
         @clean_database
         def when_account_is_known_with_mixed_case_email(self, app):
