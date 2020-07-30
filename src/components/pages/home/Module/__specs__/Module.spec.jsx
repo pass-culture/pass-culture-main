@@ -17,10 +17,11 @@ describe('src | components | Module', () => {
   let display
   let offerOne
   let offerTwo
+  let geolocation
 
   beforeEach(() => {
     algolia = {
-      aroundRadius: 10000,
+      aroundRadius: null,
       beginningDatetime: '2020-07-10T00:00+02:00',
       categories: ['CINEMA', 'LECON', 'LIVRE'],
       endingDatetime: '2020-07-15T00:00+02:00',
@@ -28,7 +29,7 @@ describe('src | components | Module', () => {
       isDigital: false,
       isDuo: true,
       isEvent: true,
-      isGeolocated: true,
+      isGeolocated: false,
       isThing: true,
       newestOnly: true,
       priceMax: 10,
@@ -41,6 +42,10 @@ describe('src | components | Module', () => {
       layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
       minOffers: 5,
       title: 'Les offres près de chez toi!',
+    }
+    geolocation = {
+      latitude: 1,
+      longitude: 2
     }
     offerOne = {
       objectID: 'NE',
@@ -72,6 +77,7 @@ describe('src | components | Module', () => {
         name: 'Librairie Kléber',
       },
     }
+    fetchAlgolia.mockReset()
   })
 
   it('should render two OfferTile when two offers', async () => {
@@ -88,6 +94,7 @@ describe('src | components | Module', () => {
     )
 
     const props = {
+      geolocation,
       historyPush: jest.fn(),
       module: new Offers({
         algolia,
@@ -128,6 +135,7 @@ describe('src | components | Module', () => {
     )
 
     const props = {
+      geolocation,
       historyPush: jest.fn(),
       module: new Offers({
         algolia,
@@ -162,6 +170,7 @@ describe('src | components | Module', () => {
     )
 
     const props = {
+      geolocation,
       historyPush: jest.fn(),
       module: new Offers({
         algolia,
@@ -199,6 +208,7 @@ describe('src | components | Module', () => {
 
     const cover = 'https://www.link-to-my-image.com'
     const props = {
+      geolocation,
       historyPush: jest.fn(),
       module: new OffersWithCover({
         algolia,
@@ -222,5 +232,35 @@ describe('src | components | Module', () => {
     const icon = wrapper.find(Icon)
     expect(icon).toHaveLength(1)
     expect(icon.prop('svg')).toBe('ico-swipe-tile')
+  })
+
+  it('should not fetch algolia when parameters are null', async () => {
+    algolia.isGeolocated = true
+    geolocation = {
+      latitude: null,
+      longitude: null
+    }
+    const cover = 'https://www.link-to-my-image.com'
+    const props = {
+      geolocation,
+      historyPush: jest.fn(),
+      module: new OffersWithCover({
+        algolia,
+        cover,
+        display,
+      }),
+      row: 1,
+    }
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Module {...props} />
+      </MemoryRouter>
+    )
+    await wrapper.update()
+
+    // then
+    expect(fetchAlgolia).not.toHaveBeenCalled()
   })
 })

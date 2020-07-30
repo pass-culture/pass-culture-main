@@ -23,16 +23,19 @@ class Module extends Component {
 
   componentDidMount() {
     const {
+      geolocation,
       module: { algolia },
     } = this.props
-    const parsedParameters = parseAlgoliaParameters(algolia)
+    const parsedParameters = parseAlgoliaParameters({ geolocation, parameters: algolia })
 
-    fetchAlgolia(parsedParameters).then(data => {
-      const { hits } = data
-      this.setState({
-        hits: hits,
+    if (parsedParameters) {
+      fetchAlgolia(parsedParameters).then(data => {
+        const { hits } = data
+        this.setState({
+          hits: hits,
+        })
       })
-    })
+    }
   }
 
   onSwitching = () => {
@@ -145,7 +148,15 @@ class Module extends Component {
   }
 }
 
+Module.defaultProps = {
+  geolocation: {
+    latitude: null,
+    longitude: null
+  }
+}
+
 Module.propTypes = {
+  geolocation: PropTypes.shape(),
   historyPush: PropTypes.func.isRequired,
   module: PropTypes.instanceOf(Offers, OffersWithCover).isRequired,
   row: PropTypes.number.isRequired,

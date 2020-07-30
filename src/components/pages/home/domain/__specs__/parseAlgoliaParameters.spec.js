@@ -6,16 +6,19 @@ describe('src | components | parseAlgoliaParameters', () => {
     const parameters = {}
 
     // when
-    const result = parseAlgoliaParameters(parameters)
+    const result = parseAlgoliaParameters({ parameters })
 
     // then
     expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [],
+      searchAround: false,
       tags: [],
     })
   })
@@ -27,16 +30,19 @@ describe('src | components | parseAlgoliaParameters', () => {
     }
 
     // when
-    const result = parseAlgoliaParameters(parameters)
+    const result = parseAlgoliaParameters({ parameters })
 
     // then
     expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
       hitsPerPage: null,
       offerCategories: ['CINEMA', 'LECON', 'LIVRE'],
       offerIsDuo: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [],
+      searchAround: false,
       tags: [],
     })
   })
@@ -48,16 +54,19 @@ describe('src | components | parseAlgoliaParameters', () => {
     }
 
     // when
-    const result = parseAlgoliaParameters(parameters)
+    const result = parseAlgoliaParameters({ parameters })
 
     // then
     expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [],
+      searchAround: false,
       tags: ['offre du 14 juillet spéciale pass culture', 'offre de la pentecôte'],
     })
   })
@@ -69,16 +78,19 @@ describe('src | components | parseAlgoliaParameters', () => {
     }
 
     // when
-    const result = parseAlgoliaParameters(parameters)
+    const result = parseAlgoliaParameters({ parameters })
 
     // then
     expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
       hitsPerPage: 5,
       offerCategories: [],
       offerIsDuo: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [],
+      searchAround: false,
       tags: [],
     })
   })
@@ -90,16 +102,19 @@ describe('src | components | parseAlgoliaParameters', () => {
     }
 
     // when
-    const result = parseAlgoliaParameters(parameters)
+    const result = parseAlgoliaParameters({ parameters })
 
     // then
     expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: true,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [],
+      searchAround: false,
       tags: [],
     })
   })
@@ -111,16 +126,19 @@ describe('src | components | parseAlgoliaParameters', () => {
     }
 
     // when
-    const result = parseAlgoliaParameters(parameters)
+    const result = parseAlgoliaParameters({ parameters })
 
     // then
     expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
       offerIsNew: true,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [],
+      searchAround: false,
       tags: [],
     })
   })
@@ -132,16 +150,19 @@ describe('src | components | parseAlgoliaParameters', () => {
     }
 
     // when
-    const result = parseAlgoliaParameters(parameters)
+    const result = parseAlgoliaParameters({ parameters })
 
     // then
     expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
       offerIsNew: false,
       offerTypes: { isDigital: true, isEvent: false, isThing: false },
       priceRange: [],
+      searchAround: false,
       tags: [],
     })
   })
@@ -153,16 +174,19 @@ describe('src | components | parseAlgoliaParameters', () => {
     }
 
     // when
-    const result = parseAlgoliaParameters(parameters)
+    const result = parseAlgoliaParameters({ parameters })
 
     // then
     expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: true, isThing: false },
       priceRange: [],
+      searchAround: false,
       tags: [],
     })
   })
@@ -174,16 +198,19 @@ describe('src | components | parseAlgoliaParameters', () => {
     }
 
     // when
-    const result = parseAlgoliaParameters(parameters)
+    const result = parseAlgoliaParameters({ parameters })
 
     // then
     expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: true },
       priceRange: [],
+      searchAround: false,
       tags: [],
     })
   })
@@ -197,16 +224,19 @@ describe('src | components | parseAlgoliaParameters', () => {
     }
 
     // when
-    const result = parseAlgoliaParameters(parameters)
+    const result = parseAlgoliaParameters({ parameters })
 
     // then
     expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
       offerIsNew: false,
       offerTypes: { isDigital: true, isEvent: true, isThing: true },
       priceRange: [],
+      searchAround: false,
       tags: [],
     })
   })
@@ -218,16 +248,19 @@ describe('src | components | parseAlgoliaParameters', () => {
     }
 
     // when
-    const result = parseAlgoliaParameters(parameters)
+    const result = parseAlgoliaParameters({ parameters })
 
     // then
     expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [50, 500],
+      searchAround: false,
       tags: [],
     })
   })
@@ -239,16 +272,19 @@ describe('src | components | parseAlgoliaParameters', () => {
     }
 
     // when
-    const result = parseAlgoliaParameters(parameters)
+    const result = parseAlgoliaParameters({ parameters })
 
     // then
     expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [0, 300],
+      searchAround: false,
       tags: [],
     })
   })
@@ -261,17 +297,104 @@ describe('src | components | parseAlgoliaParameters', () => {
     }
 
     // when
-    const result = parseAlgoliaParameters(parameters)
+    const result = parseAlgoliaParameters({ parameters })
 
     // then
     expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [50, 300],
+      searchAround: false,
       tags: [],
+    })
+  })
+
+  describe('geolocation', () => {
+    const geolocation = {
+      latitude: 1,
+      longitude: 2,
+    }
+
+    it('should return algolia parameters with geolocation with no distance limit when isGeolocated is provided', () => {
+      // given
+      const parameters = {
+        isGeolocated: true,
+      }
+
+      // when
+      const result = parseAlgoliaParameters({ geolocation, parameters })
+
+      // then
+      expect(result).toStrictEqual({
+        aroundRadius: null,
+        geolocation: geolocation,
+        hitsPerPage: null,
+        offerCategories: [],
+        offerIsDuo: false,
+        offerIsNew: false,
+        offerTypes: { isDigital: false, isEvent: false, isThing: false },
+        priceRange: [],
+        searchAround: true,
+        tags: [],
+      })
+    })
+
+    it('should return algolia parameters with geolocation with distance limit when isGeolocated is provided and radius as well', () => {
+      // given
+      const parameters = {
+        aroundRadius: 10,
+        isGeolocated: true,
+      }
+
+      // when
+      const result = parseAlgoliaParameters({ geolocation, parameters })
+
+      // then
+      expect(result).toStrictEqual({
+        aroundRadius: 10,
+        geolocation: geolocation,
+        hitsPerPage: null,
+        offerCategories: [],
+        offerIsDuo: false,
+        offerIsNew: false,
+        offerTypes: { isDigital: false, isEvent: false, isThing: false },
+        priceRange: [],
+        searchAround: true,
+        tags: [],
+      })
+    })
+
+    it('should return null when isGeolocated is true & around radius is provided but geolocation is null', () => {
+      // given
+      const parameters = {
+        aroundRadius: 10,
+        isGeolocated: true,
+      }
+
+      // when
+      const result = parseAlgoliaParameters({ geolocation: { latitude: null, longitude: null }, parameters })
+
+      // then
+      expect(result).toBeNull()
+    })
+
+    it('should return null when isGeolocated is false & around radius is provided', () => {
+      // given
+      const parameters = {
+        aroundRadius: 10,
+        isGeolocated: false,
+      }
+
+      // when
+      const result = parseAlgoliaParameters({ geolocation: { latitude: null, longitude: null }, parameters })
+
+      // then
+      expect(result).toBeNull()
     })
   })
 })
