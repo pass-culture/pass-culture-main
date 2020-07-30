@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import * as typeformEmbed from '@typeform/embed'
 import uuid from 'uuid/v1'
+import moment from 'moment'
 
 import { TYPEFORM_URL_CULTURAL_PRACTICES_POLL } from '../../../utils/config'
 
@@ -13,8 +14,8 @@ const buildTypeformURLWithHiddenFields = userId => {
 }
 
 class Typeform extends PureComponent {
-  constructor(props) {
-    super(props)
+  constructor() {
+    super()
     this.typeFormContainer = React.createRef()
     this.uniqId = uuid()
     this.typeformUrl = buildTypeformURLWithHiddenFields(this.uniqId)
@@ -33,13 +34,22 @@ class Typeform extends PureComponent {
     })
   }
 
-  onSubmitTypeForm = () => {
-    const { flagUserHasFilledTypeform } = this.props
-    flagUserHasFilledTypeform(this.uniqId, this.handleRequestSuccess)
+  flagUserHasFilledTypeform = () => {
+    const { updateCurrentUser } = this.props
+    const todayInUtc = moment()
+      .utc()
+      .format()
+
+    return updateCurrentUser({
+      culturalSurveyId: this.uniqId,
+      culturalSurveyFilledDate: todayInUtc,
+      needsToFillCulturalSurvey: false,
+    })
   }
 
-  handleRequestSuccess = () => {
+  onSubmitTypeForm = async () => {
     const { history } = this.props
+    await this.flagUserHasFilledTypeform()
     history.push('/bienvenue')
   }
 
@@ -54,8 +64,8 @@ class Typeform extends PureComponent {
 }
 
 Typeform.propTypes = {
-  flagUserHasFilledTypeform: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
+  updateCurrentUser: PropTypes.func.isRequired,
 }
 
 export default Typeform

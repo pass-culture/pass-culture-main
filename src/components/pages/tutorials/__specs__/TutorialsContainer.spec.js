@@ -1,35 +1,21 @@
-import { mapDispatchToProps } from '../TutorialsContainer'
-
-jest.mock('redux-thunk-data', () => {
-  const { requestData } = jest.requireActual('fetch-normalize-data')
-  return {
-    requestData,
-  }
-})
+import { mergeProps } from '../TutorialsContainer'
 
 describe('src | components | pages | tutorials | TutorialsContainer', () => {
   describe('mapDispatchToProps', () => {
-    let dispatch
+    let updateCurrentUser
 
     beforeEach(() => {
-      dispatch = jest.fn()
+      updateCurrentUser = jest.fn()
     })
 
     describe('saveUserHasSeenTutorials', () => {
       it('should dispatch an action with the right parameters', () => {
         // when
-        mapDispatchToProps(dispatch).saveUserHasSeenTutorials()
+        mergeProps(undefined, { updateCurrentUser }, { history }).saveUserHasSeenTutorials()
 
         // then
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/users/current',
-            body: {
-              hasSeenTutorials: true,
-            },
-            method: 'PATCH',
-          },
-          type: 'REQUEST_DATA_PATCH_/USERS/CURRENT',
+        expect(updateCurrentUser).toHaveBeenCalledWith({
+          hasSeenTutorials: true,
         })
       })
     })

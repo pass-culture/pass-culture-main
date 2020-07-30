@@ -7,23 +7,48 @@ import Typeform from '../Typeform'
 const history = createBrowserHistory()
 history.push('/typeform')
 
+jest.mock('uuid/v1', () => {
+  return () => 1
+})
+
 describe('src | components | pages | typeform | Typeform', () => {
   describe('when user has filled the cultural survey', () => {
-    it('should redirect to /bienvenue when request to API is successful', () => {
+    it('should update current user with correct parameters', async () => {
+      // given
+      const props = {
+        history: {
+          push: () => null,
+        },
+        updateCurrentUser: jest.fn(),
+      }
+      jest.spyOn(global.Date, 'now').mockImplementation(() => 1575201600)
+
+      const wrapper = mount(<Typeform {...props} />)
+
+      // when
+      await wrapper.instance().onSubmitTypeForm()
+
+      // then
+      expect(props.updateCurrentUser).toHaveBeenCalledWith({
+        culturalSurveyId: 1,
+        culturalSurveyFilledDate: '1970-01-19T05:33:21Z',
+        needsToFillCulturalSurvey: false,
+      })
+    })
+
+    it('should redirect to /bienvenue when request to API is successful', async () => {
       // given
       const props = {
         history: {
           push: jest.fn(),
         },
-        flagUserHasFilledTypeform: (id, handleSuccess) => {
-          handleSuccess()
-        },
+        updateCurrentUser: () => null,
       }
 
       const wrapper = mount(<Typeform {...props} />)
 
       // when
-      wrapper.instance().onSubmitTypeForm()
+      await wrapper.instance().onSubmitTypeForm()
 
       // then
       expect(props.history.push).toHaveBeenCalledWith('/bienvenue')
@@ -37,7 +62,7 @@ describe('src | components | pages | typeform | Typeform', () => {
         history: {
           push: jest.fn(),
         },
-        flagUserHasFilledTypeform: jest.fn(),
+        updateCurrentUser: jest.fn(),
       }
 
       // when

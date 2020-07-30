@@ -1,7 +1,9 @@
 import { API_URL } from '../../../utils/config'
 
+const CURRENT_USER_PATH = `${API_URL}/beneficiaries/current`
+
 export async function getCurrentUser() {
-  const response = await fetch(`${API_URL}/beneficiaries/current`, {
+  const response = await fetch(CURRENT_USER_PATH, {
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
@@ -14,7 +16,7 @@ export async function getCurrentUser() {
 }
 
 export async function patchCurrentUser(payload) {
-  const response = await fetch(`${API_URL}/users/current`, {
+  const response = await fetch(CURRENT_USER_PATH, {
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',

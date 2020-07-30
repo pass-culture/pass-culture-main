@@ -21,7 +21,6 @@ const dataReducer = createDataReducer({
   showTypes: [],
   stocks: [],
   types: [],
-  users: [],
 })
 
 const persistDataReducer = persistReducer(dataPersistConfig, dataReducer)

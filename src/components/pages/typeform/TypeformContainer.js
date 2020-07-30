@@ -1,39 +1,16 @@
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { requestData } from 'redux-thunk-data'
+import { withRouter } from 'react-router-dom'
 
 import Typeform from './Typeform'
-import { withRouter } from 'react-router-dom'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
-import moment from 'moment'
-
-export const mapDispatchToProps = dispatch => ({
-  flagUserHasFilledTypeform: (id, handleRequestSuccess) => {
-    const todayInUtc = moment()
-      .utc()
-      .format()
-
-    dispatch(
-      requestData({
-        apiPath: '/users/current',
-        body: {
-          culturalSurveyId: id,
-          culturalSurveyFilledDate: todayInUtc,
-          needsToFillCulturalSurvey: false,
-        },
-        isMergingDatum: true,
-        method: 'PATCH',
-        handleSuccess: handleRequestSuccess,
-      })
-    )
-  },
-})
+import { updateCurrentUser } from '../../../redux/actions/currentUser'
 
 export default compose(
   withRequiredLogin,
   withRouter,
   connect(
     null,
-    mapDispatchToProps
+    { updateCurrentUser }
   )
 )(Typeform)

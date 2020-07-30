@@ -6,14 +6,12 @@ import SecondTutorial from '../SecondTutorial/SecondTutorial'
 import ThirdTutorial from '../ThirdTutorial/ThirdTutorial'
 
 describe('components | Tutorials', () => {
-  let redirectToDiscovery
   let props
   let saveUserHasSeenTutorials
 
   beforeEach(function() {
-    redirectToDiscovery = jest.fn()
     saveUserHasSeenTutorials = jest.fn()
-    props = { redirectToDiscovery, saveUserHasSeenTutorials }
+    props = { saveUserHasSeenTutorials }
   })
 
   describe('when display for the first time', () => {
@@ -217,7 +215,7 @@ describe('components | Tutorials', () => {
       }
 
       // then
-      expect(saveUserHasSeenTutorials).toHaveBeenCalledWith(redirectToDiscovery)
+      expect(saveUserHasSeenTutorials).toHaveBeenCalledWith()
     })
   })
 })
