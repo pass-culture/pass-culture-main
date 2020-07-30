@@ -116,7 +116,10 @@ class Home extends Component {
 }
 
 Home.propTypes = {
-  geolocation: PropTypes.shape().isRequired,
+  geolocation: PropTypes.shape({
+    latitude: PropTypes.number,
+    longitude: PropTypes.number
+  }).isRequired,
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
   user: PropTypes.shape({

@@ -24,24 +24,26 @@ export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
   const notGeolocatedButRadiusIsProvided = !isGeolocated && aroundRadius
   const geolocatedButGeolocationIsInvalid = isGeolocated && !geolocation.latitude && !geolocation.longitude
 
-  return notGeolocatedButRadiusIsProvided || geolocatedButGeolocationIsInvalid ?
-    null :
-    ({
-      aroundRadius: aroundRadius || null,
-      geolocation: isGeolocated ? geolocation : null,
-      hitsPerPage: parameters[algoliaParametersFromContentful.HITS_PER_PAGE] || null,
-      offerCategories: parameters[algoliaParametersFromContentful.CATEGORIES] || [],
-      offerIsDuo: parameters[algoliaParametersFromContentful.IS_DUO] || false,
-      offerIsNew: parameters[algoliaParametersFromContentful.NEWEST_ONLY] || false,
-      offerTypes: {
-        isDigital: parameters[algoliaParametersFromContentful.IS_DIGITAL] || false,
-        isEvent: parameters[algoliaParametersFromContentful.IS_EVENT] || false,
-        isThing: parameters[algoliaParametersFromContentful.IS_THING] || false,
-      },
-      priceRange: !priceMin && !priceMax ? [] : buildPriceRange({ priceMin, priceMax }),
-      searchAround: parameters[algoliaParametersFromContentful.IS_GEOLOCATED] || false,
-      tags: parameters[algoliaParametersFromContentful.TAGS] || [],
-    })
+  if (notGeolocatedButRadiusIsProvided || geolocatedButGeolocationIsInvalid) {
+    return null
+  }
+
+  return {
+    aroundRadius: aroundRadius || null,
+    geolocation: isGeolocated ? geolocation : null,
+    hitsPerPage: parameters[algoliaParametersFromContentful.HITS_PER_PAGE] || null,
+    offerCategories: parameters[algoliaParametersFromContentful.CATEGORIES] || [],
+    offerIsDuo: parameters[algoliaParametersFromContentful.IS_DUO] || false,
+    offerIsNew: parameters[algoliaParametersFromContentful.NEWEST_ONLY] || false,
+    offerTypes: {
+      isDigital: parameters[algoliaParametersFromContentful.IS_DIGITAL] || false,
+      isEvent: parameters[algoliaParametersFromContentful.IS_EVENT] || false,
+      isThing: parameters[algoliaParametersFromContentful.IS_THING] || false,
+    },
+    priceRange: !priceMin && !priceMax ? [] : buildPriceRange({ priceMin, priceMax }),
+    searchAround: parameters[algoliaParametersFromContentful.IS_GEOLOCATED] || false,
+    tags: parameters[algoliaParametersFromContentful.TAGS] || [],
+  }
 }
 
 const buildPriceRange = ({ priceMin = 0, priceMax = 500 }) => {
