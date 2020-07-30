@@ -41,7 +41,7 @@ def post_storage_file(collectionName, id, index):
     if model_name not in GENERIC_STORAGE_MODEL_NAMES:
         return jsonify({'text': 'upload is not authorized for this model'}), 400
 
-    model = getattr(models, model_name)
+    model = getattr(models, model_name + 'SQLEntity')
     entity = model.query.filter_by(id=dehumanize(id)).first_or_404()
 
     if model_name == 'Mediation':
