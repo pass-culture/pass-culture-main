@@ -16,8 +16,7 @@ from tests.conftest import clean_database
 from tests.model_creators.activity_creators import create_booking_activity, \
     save_all_activities
 from tests.model_creators.generic_creators import create_booking, \
-    create_deposit, create_offerer, create_payment, create_recommendation, \
-    create_stock, create_user, create_venue, create_user_offerer
+    create_deposit, create_offerer, create_payment, create_stock, create_user, create_venue, create_user_offerer
 from tests.model_creators.specific_creators import \
     create_offer_with_event_product, create_offer_with_thing_product, \
     create_stock_from_offer, create_stock_with_event_offer, \
@@ -1046,127 +1045,6 @@ class FindAllNotUsedAndNotCancelledTest:
 
         # Then
         assert bookings == [booking1]
-
-
-class GetValidBookingsByUserId:
-    @clean_database
-    def test_should_return_bookings_by_user_id(self, app: fixture) -> None:
-        # Given
-        user1 = create_user(email='me@example.net')
-        deposit1 = create_deposit(user1)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer)
-        user2 = create_user(email='fa@example.net')
-        deposit2 = create_deposit(user2)
-        booking1 = create_booking(user=user1, stock=stock)
-        booking2 = create_booking(user=user2, stock=stock)
-        repository.save(booking1, booking2)
-
-        # When
-        bookings = booking_queries.find_for_my_bookings_page(user1.id)
-
-        # Then
-        assert bookings == [booking1]
-
-    @clean_database
-    def test_should_return_bookings_by_type_other_than_ACTIVATION(self, app: fixture) -> None:
-        # Given
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer1 = create_offer_with_event_product(
-            venue, event_type='ThingType.ACTIVATION')
-        offer2 = create_offer_with_event_product(
-            venue, event_type='EventType.ACTIVATION')
-        offer3 = create_offer_with_event_product(
-            venue, event_type='ThingType.ANY')
-        stock1 = create_stock(offer=offer1)
-        stock2 = create_stock(offer=offer2)
-        stock3 = create_stock(offer=offer3)
-        booking1 = create_booking(user=user, stock=stock1)
-        booking2 = create_booking(user=user, stock=stock2)
-        booking3 = create_booking(user=user, stock=stock3)
-        repository.save(booking1, booking2, booking3)
-
-        # When
-        bookings = booking_queries.find_for_my_bookings_page(user.id)
-
-        # Then
-        assert bookings == [booking3]
-
-    @clean_database
-    def test_should_return_bookings_when_there_is_one_cancelled_booking(self, app: fixture) -> None:
-        # Given
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer)
-        offer2 = create_offer_with_event_product(venue)
-        stock2 = create_stock(offer=offer2)
-        booking1 = create_booking(user=user, is_cancelled=True, stock=stock)
-        booking2 = create_booking(user=user, is_cancelled=False, stock=stock)
-        booking3 = create_booking(user=user, is_cancelled=False, stock=stock2)
-        repository.save(booking1, booking2, booking3)
-
-        # When
-        bookings = booking_queries.find_for_my_bookings_page(user.id)
-
-        # Then
-        assert booking1 not in bookings
-
-    @clean_database
-    def test_should_return_most_recent_booking_when_two_cancelled_on_same_stock(self, app: fixture) -> None:
-        # Given
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer)
-        booking1 = create_booking(user=user, date_created=TWO_DAYS_AGO, is_cancelled=True, stock=stock)
-        booking2 = create_booking(user=user, date_created=THREE_DAYS_AGO, is_cancelled=True, stock=stock)
-        repository.save(booking1, booking2)
-
-        # When
-        bookings = booking_queries.find_for_my_bookings_page(user.id)
-
-        # Then
-        assert bookings == [booking1]
-
-    @clean_database
-    def test_should_return_bookings_ordered_by_beginning_date_time_ascendant(self, app: fixture) -> None:
-        # Given
-        two_days = NOW + timedelta(days=2, hours=10)
-        two_days_bis = NOW + timedelta(days=2, hours=20)
-        three_days = NOW + timedelta(days=3)
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer1 = create_offer_with_event_product(venue)
-        stock1 = create_stock(booking_limit_datetime=NOW, beginning_datetime=three_days, offer=offer1)
-        offer2 = create_offer_with_event_product(venue)
-        stock2 = create_stock(booking_limit_datetime=NOW, beginning_datetime=two_days, offer=offer2)
-        offer3 = create_offer_with_event_product(venue)
-        stock3 = create_stock(booking_limit_datetime=NOW, beginning_datetime=two_days_bis, offer=offer3)
-        booking1 = create_booking(user=user, stock=stock1,
-                                  recommendation=create_recommendation(user=user, offer=offer1))
-        booking2 = create_booking(user=user, stock=stock2,
-                                  recommendation=create_recommendation(user=user, offer=offer2))
-        booking3 = create_booking(user=user, stock=stock3,
-                                  recommendation=create_recommendation(user=user, offer=offer3))
-        repository.save(booking1, booking2, booking3)
-
-        # When
-        bookings = booking_queries.find_for_my_bookings_page(user.id)
-
-        # Then
-        assert bookings == [booking1, booking3, booking2]
 
 
 class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:
