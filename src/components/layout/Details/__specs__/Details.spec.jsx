@@ -17,8 +17,8 @@ describe('src | components | Details', () => {
     }
   })
 
-  describe('when I have no details', () => {
-    it('should render VersoContainer and not RectoContainer', () => {
+  describe('when I am not on the details of offer', () => {
+    it('should display verso and not recto', () => {
       // when
       const wrapper = shallow(<Details {...props} />)
 
@@ -30,14 +30,13 @@ describe('src | components | Details', () => {
     })
   })
 
-  describe('when I have details', () => {
-    it('should render VersoContainer and RectoContainer', () => {
+  describe('when I am on the details of offer', () => {
+    it('should display verso and recto', () => {
       // given
       props.match.params.details = 'details'
 
       // when
       const wrapper = shallow(<Details {...props} />)
-      wrapper.setState({ isDetailsView: true })
 
       // then
       const versoContainer = wrapper.find(VersoContainer)
@@ -48,11 +47,7 @@ describe('src | components | Details', () => {
 
     it('should fetch offers', () => {
       // given
-      props.match = {
-        params: {
-          offerId: 'AE',
-        },
-      }
+      props.match.params.offerId = 'AE'
 
       // when
       shallow(<Details {...props} />)

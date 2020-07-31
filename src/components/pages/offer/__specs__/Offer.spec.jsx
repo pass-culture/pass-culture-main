@@ -58,25 +58,11 @@ describe('offer', () => {
         </Provider>
       )
 
-<<<<<<< HEAD
       // then
       const closeLink = wrapper.find(CloseLink)
       const offerDetails = wrapper.find(DetailsContainer)
       expect(closeLink).toHaveLength(1)
-      expect(offerDetails.prop('getOfferById')).toBe(props.getOfferById)
+      expect(offerDetails).toHaveLength(1)
     })
-||||||| merged common ancestors
-    // then
-    const closeLink = wrapper.find(CloseLink)
-    const offerDetails = wrapper.find(DetailsContainer)
-    expect(closeLink).toHaveLength(1)
-    expect(offerDetails.prop('getOfferById')).toBe(props.getOfferById)
-=======
-    // then
-    const closeLink = wrapper.find(CloseLink)
-    const offerDetails = wrapper.find(DetailsContainer)
-    expect(closeLink).toHaveLength(1)
-    expect(offerDetails).toHaveLength(1)
->>>>>>> pC-3985 refacto of offer details
   })
 })

@@ -87,6 +87,7 @@ Details.propTypes = {
   getOfferById: PropTypes.func.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
+      details: PropTypes.string,
       offerId: PropTypes.string,
     }),
   }).isRequired,
