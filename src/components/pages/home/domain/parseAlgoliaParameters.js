@@ -1,4 +1,4 @@
-const algoliaParametersFromContentful = {
+export const CONTENTFUL_PARAMETERS = {
   AROUND_RADIUS: 'aroundRadius',
   BEGINNING_DATETIME: 'beginningDatetime',
   CATEGORIES: 'categories',
@@ -17,10 +17,10 @@ const algoliaParametersFromContentful = {
 }
 
 export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
-  const aroundRadius = parameters[algoliaParametersFromContentful.AROUND_RADIUS]
-  const isGeolocated = parameters[algoliaParametersFromContentful.IS_GEOLOCATED]
-  const priceMin = parameters[algoliaParametersFromContentful.PRICE_MIN]
-  const priceMax = parameters[algoliaParametersFromContentful.PRICE_MAX]
+  const aroundRadius = parameters[CONTENTFUL_PARAMETERS.AROUND_RADIUS]
+  const isGeolocated = parameters[CONTENTFUL_PARAMETERS.IS_GEOLOCATED]
+  const priceMin = parameters[CONTENTFUL_PARAMETERS.PRICE_MIN]
+  const priceMax = parameters[CONTENTFUL_PARAMETERS.PRICE_MAX]
 
   const notGeolocatedButRadiusIsProvided = !isGeolocated && aroundRadius
   const geolocatedButGeolocationIsInvalid = isGeolocated && !geolocation.latitude && !geolocation.longitude
@@ -32,19 +32,19 @@ export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
   return {
     aroundRadius: aroundRadius || null,
     geolocation: isGeolocated ? geolocation : null,
-    hitsPerPage: parameters[algoliaParametersFromContentful.HITS_PER_PAGE] || null,
-    offerCategories: parameters[algoliaParametersFromContentful.CATEGORIES] || [],
-    offerIsDuo: parameters[algoliaParametersFromContentful.IS_DUO] || false,
-    offerIsFree: parameters[algoliaParametersFromContentful.IS_FREE] || false,
-    offerIsNew: parameters[algoliaParametersFromContentful.NEWEST_ONLY] || false,
+    hitsPerPage: parameters[CONTENTFUL_PARAMETERS.HITS_PER_PAGE] || null,
+    offerCategories: parameters[CONTENTFUL_PARAMETERS.CATEGORIES] || [],
+    offerIsDuo: parameters[CONTENTFUL_PARAMETERS.IS_DUO] || false,
+    offerIsFree: parameters[CONTENTFUL_PARAMETERS.IS_FREE] || false,
+    offerIsNew: parameters[CONTENTFUL_PARAMETERS.NEWEST_ONLY] || false,
     offerTypes: {
-      isDigital: parameters[algoliaParametersFromContentful.IS_DIGITAL] || false,
-      isEvent: parameters[algoliaParametersFromContentful.IS_EVENT] || false,
-      isThing: parameters[algoliaParametersFromContentful.IS_THING] || false,
+      isDigital: parameters[CONTENTFUL_PARAMETERS.IS_DIGITAL] || false,
+      isEvent: parameters[CONTENTFUL_PARAMETERS.IS_EVENT] || false,
+      isThing: parameters[CONTENTFUL_PARAMETERS.IS_THING] || false,
     },
     priceRange: !priceMin && !priceMax ? [] : buildPriceRange({ priceMin, priceMax }),
-    searchAround: parameters[algoliaParametersFromContentful.IS_GEOLOCATED] || false,
-    tags: parameters[algoliaParametersFromContentful.TAGS] || [],
+    searchAround: parameters[CONTENTFUL_PARAMETERS.IS_GEOLOCATED] || false,
+    tags: parameters[CONTENTFUL_PARAMETERS.TAGS] || [],
   }
 }
 

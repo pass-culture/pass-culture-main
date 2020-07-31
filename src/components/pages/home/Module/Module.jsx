@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import SwipeableViews from 'react-swipeable-views'
 
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
-import { parseAlgoliaParameters } from '../domain/parseAlgoliaParameters'
+import { CONTENTFUL_PARAMETERS, parseAlgoliaParameters } from '../domain/parseAlgoliaParameters'
 import Offers from '../domain/ValueObjects/Offers'
 import Cover from './Cover/Cover'
 import { buildArrayOf } from './domain/buildTiles'
@@ -94,7 +94,7 @@ class Module extends Component {
 
   buildTiles = () => {
     const {
-      module: { cover },
+      module: { algolia, cover },
     } = this.props
     const { hits, nbHits } = this.state
     const seeMoreOffers = hits.length < nbHits
@@ -104,7 +104,12 @@ class Module extends Component {
       tiles.unshift(cover)
     }
 
-    if (seeMoreOffers) {
+    const seeMoreTileCanBeDisplayed = !(
+      algolia[CONTENTFUL_PARAMETERS.TAGS] ||
+      algolia[CONTENTFUL_PARAMETERS.BEGINNING_DATETIME] ||
+      algolia[CONTENTFUL_PARAMETERS.ENDING_DATETIME]
+    )
+    if (seeMoreOffers && seeMoreTileCanBeDisplayed) {
       tiles.push(seeMoreOffers)
     }
     return tiles

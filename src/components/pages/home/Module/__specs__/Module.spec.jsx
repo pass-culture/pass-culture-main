@@ -22,12 +22,13 @@ describe('src | components | Module', () => {
   beforeEach(() => {
     algolia = {
       aroundRadius: null,
-      beginningDatetime: '2020-07-10T00:00+02:00',
+      beginningDatetime: null,
       categories: ['CINEMA', 'LECON', 'LIVRE'],
-      endingDatetime: '2020-07-15T00:00+02:00',
+      endingDatetime: null,
       hitsPerPage: 3,
       isDigital: false,
       isDuo: true,
+      isFree: false,
       isEvent: true,
       isGeolocated: false,
       isThing: true,
@@ -261,7 +262,6 @@ describe('src | components | Module', () => {
     expect(fetchAlgolia).not.toHaveBeenCalled()
   })
 
-<<<<<<< HEAD
   it('should not render OfferTile when two offers are retrieved but min offers is superior', async () => {
     // given
     fetchAlgolia.mockReturnValue(
@@ -272,23 +272,9 @@ describe('src | components | Module', () => {
           nbPages: 0,
           page: 0,
         })
-      })
-    )
-    display.minOffers = 3
-=======
-  it('should render a see more tile when displayed offers hits are inferior to total of hits', async () => {
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [offerOne],
-          nbHits: 5,
-          nbPages: 0,
-          page: 0,
-        })
       }),
     )
-
->>>>>>> (PC-3898): added 'see more' tile
+    display.minOffers = 3
     const props = {
       geolocation,
       historyPush: jest.fn(),
@@ -303,18 +289,43 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-<<<<<<< HEAD
-      </MemoryRouter>
+      </MemoryRouter>,
     )
-
-    await wrapper.update()
 
     // then
     const offers = wrapper.find(Module).find(OfferTile)
     expect(offers).toHaveLength(0)
-=======
+  })
+
+  it('should render a see more tile when displayed offers hits are inferior to total of hits', async () => {
+    // given
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [offerOne],
+          nbHits: 5,
+          nbPages: 0,
+          page: 0,
+        })
+      }),
+    )
+    const props = {
+      geolocation,
+      historyPush: jest.fn(),
+      module: new Offers({
+        algolia,
+        display,
+      }),
+      row: 1,
+    }
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Module {...props} />
       </MemoryRouter>,
     )
+
     await wrapper.update()
 
     // then
@@ -328,6 +339,7 @@ describe('src | components | Module', () => {
         hitsPerPage: 3,
         offerCategories: ["CINEMA", "LECON", "LIVRE"],
         offerIsDuo: true,
+        offerIsFree: false,
         offerIsNew: true,
         offerTypes: { isDigital: false, isEvent: true, isThing: true },
         priceRange: [1, 10],
@@ -370,6 +382,113 @@ describe('src | components | Module', () => {
     // then
     const seeMore = wrapper.find(SeeMore)
     expect(seeMore).toHaveLength(0)
->>>>>>> (PC-3898): added 'see more' tile
+  })
+
+  it('should not render a see more tile when algolia parameters contains tags', async () => {
+    algolia.tags = ["Offres de l'été"]
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [offerOne],
+          nbHits: 5,
+          nbPages: 0,
+          page: 0,
+        })
+      }),
+    )
+
+    const props = {
+      geolocation,
+      historyPush: jest.fn(),
+      module: new Offers({
+        algolia,
+        display,
+      }),
+      row: 1,
+    }
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Module {...props} />
+      </MemoryRouter>,
+    )
+    await wrapper.update()
+
+    // then
+    const seeMore = wrapper.find(SeeMore)
+    expect(seeMore).toHaveLength(0)
+  })
+
+  it('should not render a see more tile when algolia parameters contains beginningDatetime', async () => {
+    algolia.beginningDatetime = "2020-01-01T20:00:00"
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [offerOne],
+          nbHits: 5,
+          nbPages: 0,
+          page: 0,
+        })
+      }),
+    )
+
+    const props = {
+      geolocation,
+      historyPush: jest.fn(),
+      module: new Offers({
+        algolia,
+        display,
+      }),
+      row: 1,
+    }
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Module {...props} />
+      </MemoryRouter>,
+    )
+    await wrapper.update()
+
+    // then
+    const seeMore = wrapper.find(SeeMore)
+    expect(seeMore).toHaveLength(0)
+  })
+
+  it('should not render a see more tile when algolia parameters contains endingDatetime', async () => {
+    algolia.endingDatetime = "2020-01-01T20:00:00"
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [offerOne],
+          nbHits: 5,
+          nbPages: 0,
+          page: 0,
+        })
+      }),
+    )
+
+    const props = {
+      geolocation,
+      historyPush: jest.fn(),
+      module: new Offers({
+        algolia,
+        display,
+      }),
+      row: 1,
+    }
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Module {...props} />
+      </MemoryRouter>,
+    )
+    await wrapper.update()
+
+    // then
+    const seeMore = wrapper.find(SeeMore)
+    expect(seeMore).toHaveLength(0)
   })
 })
