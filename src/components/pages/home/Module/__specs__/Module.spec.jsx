@@ -7,7 +7,7 @@ import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import { MemoryRouter } from 'react-router'
 import OfferTile from '../OfferTile/OfferTile'
 import OffersWithCover from '../../domain/ValueObjects/OffersWithCover'
-import Icon from '../../../../layout/Icon/Icon'
+import SeeMore from '../SeeMore/SeeMore'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -25,7 +25,7 @@ describe('src | components | Module', () => {
       beginningDatetime: '2020-07-10T00:00+02:00',
       categories: ['CINEMA', 'LECON', 'LIVRE'],
       endingDatetime: '2020-07-15T00:00+02:00',
-      hitsPerPage: 5,
+      hitsPerPage: 3,
       isDigital: false,
       isDuo: true,
       isEvent: true,
@@ -45,7 +45,7 @@ describe('src | components | Module', () => {
     }
     geolocation = {
       latitude: 1,
-      longitude: 2
+      longitude: 2,
     }
     offerOne = {
       objectID: 'NE',
@@ -90,7 +90,7 @@ describe('src | components | Module', () => {
           nbPages: 0,
           page: 0,
         })
-      })
+      }),
     )
 
     const props = {
@@ -107,7 +107,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     await wrapper.update()
@@ -131,7 +131,7 @@ describe('src | components | Module', () => {
           nbPages: 0,
           page: 0,
         })
-      })
+      }),
     )
 
     const props = {
@@ -148,7 +148,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await wrapper.update()
 
@@ -166,7 +166,7 @@ describe('src | components | Module', () => {
           nbPages: 0,
           page: 0,
         })
-      })
+      }),
     )
 
     const props = {
@@ -183,7 +183,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await wrapper.update()
 
@@ -203,7 +203,7 @@ describe('src | components | Module', () => {
           nbPages: 0,
           page: 0,
         })
-      })
+      }),
     )
 
     const cover = 'https://www.link-to-my-image.com'
@@ -222,23 +222,20 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await wrapper.update()
 
     // then
     const imageCover = wrapper.find(Module).find(`img[src="${cover}"]`)
     expect(imageCover).toHaveLength(1)
-    const icon = wrapper.find(Icon)
-    expect(icon).toHaveLength(1)
-    expect(icon.prop('svg')).toBe('ico-swipe-tile')
   })
 
   it('should not fetch algolia when parameters are null', async () => {
     algolia.isGeolocated = true
     geolocation = {
       latitude: null,
-      longitude: null
+      longitude: null,
     }
     const cover = 'https://www.link-to-my-image.com'
     const props = {
@@ -256,7 +253,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await wrapper.update()
 
@@ -264,6 +261,7 @@ describe('src | components | Module', () => {
     expect(fetchAlgolia).not.toHaveBeenCalled()
   })
 
+<<<<<<< HEAD
   it('should not render OfferTile when two offers are retrieved but min offers is superior', async () => {
     // given
     fetchAlgolia.mockReturnValue(
@@ -277,6 +275,20 @@ describe('src | components | Module', () => {
       })
     )
     display.minOffers = 3
+=======
+  it('should render a see more tile when displayed offers hits are inferior to total of hits', async () => {
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [offerOne],
+          nbHits: 5,
+          nbPages: 0,
+          page: 0,
+        })
+      }),
+    )
+
+>>>>>>> (PC-3898): added 'see more' tile
     const props = {
       geolocation,
       historyPush: jest.fn(),
@@ -291,6 +303,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
+<<<<<<< HEAD
       </MemoryRouter>
     )
 
@@ -299,5 +312,64 @@ describe('src | components | Module', () => {
     // then
     const offers = wrapper.find(Module).find(OfferTile)
     expect(offers).toHaveLength(0)
+=======
+      </MemoryRouter>,
+    )
+    await wrapper.update()
+
+    // then
+    const seeMore = wrapper.find(SeeMore)
+    expect(seeMore).toHaveLength(1)
+    expect(seeMore.props()).toStrictEqual({
+      layout: "one-item-medium",
+      parameters: {
+        aroundRadius: null,
+        geolocation: null,
+        hitsPerPage: 3,
+        offerCategories: ["CINEMA", "LECON", "LIVRE"],
+        offerIsDuo: true,
+        offerIsNew: true,
+        offerTypes: { isDigital: false, isEvent: true, isThing: true },
+        priceRange: [1, 10],
+        searchAround: false,
+        tags: [],
+      },
+    })
+  })
+
+  it('should not render a see more tile when displayed offers hits are equal to total of hits', async () => {
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [offerOne],
+          nbHits: 1,
+          nbPages: 0,
+          page: 0,
+        })
+      }),
+    )
+
+    const props = {
+      geolocation,
+      historyPush: jest.fn(),
+      module: new Offers({
+        algolia,
+        display,
+      }),
+      row: 1,
+    }
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Module {...props} />
+      </MemoryRouter>,
+    )
+    await wrapper.update()
+
+    // then
+    const seeMore = wrapper.find(SeeMore)
+    expect(seeMore).toHaveLength(0)
+>>>>>>> (PC-3898): added 'see more' tile
   })
 })

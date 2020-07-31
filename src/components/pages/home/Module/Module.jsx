@@ -10,6 +10,7 @@ import { buildArrayOf } from './domain/buildTiles'
 import OfferTile from './OfferTile/OfferTile'
 import { PANE_LAYOUT } from '../domain/layout'
 import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
+import SeeMore from './SeeMore/SeeMore'
 
 class Module extends Component {
   constructor(props) {
@@ -18,6 +19,7 @@ class Module extends Component {
       hits: [],
       isSwitching: false,
       nbHits: 0,
+      parsedParameters: null,
     }
     this.swipeRatio = 0.2
   }
@@ -35,6 +37,7 @@ class Module extends Component {
         this.setState({
           hits: hits,
           nbHits: nbHits,
+          parsedParameters: parsedParameters,
         })
       })
     }
@@ -51,31 +54,60 @@ class Module extends Component {
   renderOneItem = () => {
     const {
       historyPush,
-      module: { cover, display },
+      module: { display },
       row,
     } = this.props
-    const { hits, isSwitching } = this.state
-    const tiles = cover ? [cover, ...hits] : [...hits]
+    const { isSwitching, parsedParameters } = this.state
+    const tiles = this.buildTiles()
 
     return (
       tiles.map(tile => {
-        const firstTileIsACover = !tile.offer
-        return firstTileIsACover ?
-          <Cover
-            img={tile}
-            key={`${row}-cover`}
-            layout={display.layout}
-          />
-          :
-          <OfferTile
-            historyPush={historyPush}
-            hit={tile}
-            isSwitching={isSwitching}
-            key={`${row}${tile.offer.id}`}
-            layout={display.layout}
-          />
+        const tileIsACoverItem = typeof tile === "string"
+        const tileIsASeeMoreItem = typeof tile === "boolean"
+
+        if (tileIsACoverItem) {
+          return (
+            <Cover
+              img={tile}
+              key={`${row}-cover`}
+              layout={display.layout}
+            />
+          )
+        } else {
+          return tileIsASeeMoreItem ?
+            <SeeMore
+              key={`${row}-see-more`}
+              layout={display.layout}
+              parameters={parsedParameters}
+            /> :
+            <OfferTile
+              historyPush={historyPush}
+              hit={tile}
+              isSwitching={isSwitching}
+              key={`${row}${tile.offer.id}`}
+              layout={display.layout}
+            />
+        }
       })
     )
+  }
+
+  buildTiles = () => {
+    const {
+      module: { cover },
+    } = this.props
+    const { hits, nbHits } = this.state
+    const seeMoreOffers = hits.length < nbHits
+    const tiles = [...hits]
+
+    if (cover) {
+      tiles.unshift(cover)
+    }
+
+    if (seeMoreOffers) {
+      tiles.push(seeMoreOffers)
+    }
+    return tiles
   }
 
   renderTwoItems = () => {
@@ -86,6 +118,7 @@ class Module extends Component {
     } = this.props
     const { hits, isSwitching } = this.state
     const tiles = buildArrayOf({ cover, hits })
+
     return (
       tiles.map(tile => {
         const firstTileIsACover = !tile[0].offer
@@ -157,8 +190,8 @@ class Module extends Component {
 Module.defaultProps = {
   geolocation: {
     latitude: null,
-    longitude: null
-  }
+    longitude: null,
+  },
 }
 
 Module.propTypes = {

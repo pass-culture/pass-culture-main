@@ -1,0 +1,29 @@
+.see-more-wrapper {
+  margin-left: 2%;
+
+  .smw-image-one-item-medium {
+    align-items: center;
+    display:flex;
+    justify-content: center;
+
+    background-image: url('/home-group.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    box-shadow: 0 rem(2px) rem(4px) 0 $black-shadow;
+    background-color: $grey;
+    border-radius: rem(8px);
+    height: rem(160px);
+    width: 99%;
+
+    .smw-content-wrapper {
+      display: flex;
+      flex-direction: column;
+      margin-top: rem(-15px);
+
+      span {
+        @include button();
+        color: $white;
+      }
+    }
+  }
+}
