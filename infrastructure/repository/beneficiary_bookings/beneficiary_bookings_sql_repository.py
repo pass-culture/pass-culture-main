@@ -1,13 +1,10 @@
 from typing import List
 
-from sqlalchemy import func
-
 from domain.beneficiary_bookings.beneficiary_bookings import BeneficiaryBookings, BeneficiaryBooking
 from domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
 from infrastructure.repository.beneficiary_bookings.stock_domain_converter import to_domain
 from models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, Offer, VenueSQLEntity
 from models.db import db
-from repository.offer_queries import _build_bookings_quantity_subquery
 
 
 class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
@@ -63,11 +60,9 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
         return BeneficiaryBookings(bookings=beneficiary_bookings, stocks=stocks)
 
     def _get_stocks_information(self, offers_ids: List[int]) -> List[object]:
-        bookings_quantity = _build_bookings_quantity_subquery()
         stocks_sql_entity = StockSQLEntity.query \
             .join(Offer, Offer.id == StockSQLEntity.offerId) \
             .filter(StockSQLEntity.offerId.in_(offers_ids)) \
-            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .with_entities(StockSQLEntity.dateCreated,
                            StockSQLEntity.beginningDatetime,
                            StockSQLEntity.bookingLimitDatetime,
@@ -77,9 +72,7 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
                            StockSQLEntity.price,
                            StockSQLEntity.id,
                            StockSQLEntity.isSoftDeleted,
-                           Offer.isActive,
-                           (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)).label(
-                               'remainingQuantity')) \
+                           Offer.isActive) \
             .all()
         return stocks_sql_entity
 
@@ -113,11 +106,6 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
                            Offer.name,
                            Offer.type,
                            Offer.url,
-                           UserSQLEntity.email,
-                           StockSQLEntity.beginningDatetime,
-                           StockSQLEntity.price,
-                           VenueSQLEntity.id.label("venueId"),
-                           VenueSQLEntity.departementCode,
                            Offer.withdrawalDetails,
                            Offer.isDuo,
                            Offer.extraData,
@@ -125,6 +113,11 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
                            Offer.description,
                            Offer.mediaUrls,
                            Offer.isNational,
+                           UserSQLEntity.email,
+                           StockSQLEntity.beginningDatetime,
+                           StockSQLEntity.price,
+                           VenueSQLEntity.id.label("venueId"),
+                           VenueSQLEntity.departementCode,
                            VenueSQLEntity.name.label("venueName"),
                            VenueSQLEntity.address,
                            VenueSQLEntity.postalCode,

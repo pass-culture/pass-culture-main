@@ -11,7 +11,6 @@ def to_domain(stock_sql_entity_view: object) -> Stock:
         quantity=stock_sql_entity_view.quantity,
         dateCreated=stock_sql_entity_view.dateCreated,
         dateModified=stock_sql_entity_view.dateModified,
-        remainingQuantity=stock_sql_entity_view.remainingQuantity,
         isSoftDeleted=stock_sql_entity_view.isSoftDeleted,
         isOfferActive=stock_sql_entity_view.isActive,
     )
