@@ -33,6 +33,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
       offer: {
         id: 'AE',
         name: 'Un livre pas mal',
+        thumbUrl: '/mediations/AE',
         product: {
           name: 'Un livre pas mal',
           type: 'thing',
@@ -144,7 +145,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
 
   it('should render a booking with a default thumb url on thumb when no mediation is provided', () => {
     // given
-    props.booking.thumbUrl = null
+    props.offer.thumbUrl = ''
 
     // when
     const wrapper = shallow(<BookingItem {...props} />)

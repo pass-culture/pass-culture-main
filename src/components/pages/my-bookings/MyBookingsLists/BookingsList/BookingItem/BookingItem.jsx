@@ -23,10 +23,10 @@ const BookingItem = ({
   shouldDisplayToken,
   trackConsultOffer,
 }) => {
-  const { id: bookingId, qrCode, quantity, token, thumbUrl } = booking
+  const { id: bookingId, qrCode, quantity, token } = booking
   const { beginningDatetime } = stock
   const { label, type } = ribbon || {}
-  const { name: offerName, venue } = offer
+  const { name: offerName, venue, thumbUrl } = offer
   const { departementCode } = venue
   const isDuo = quantity === 2
   const detailsUrl = getDetailsUrl(bookingId, location)
@@ -142,6 +142,7 @@ BookingItem.propTypes = {
     venue: PropTypes.shape({
       departementCode: PropTypes.string,
     }).isRequired,
+    thumbUrl: PropTypes.string,
   }).isRequired,
   ribbon: PropTypes.shape({
     label: PropTypes.string,
