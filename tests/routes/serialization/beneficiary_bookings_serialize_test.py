@@ -67,7 +67,7 @@ class BeneficiaryBookingsSerializeTest:
                 'dateCreated': '2019-01-05T00:00:00Z',
                 'dateModified': '2019-01-07T00:00:00Z',
                 'id': humanize(stock.id),
-                'offerId': humanize(stock.offerId),
+                'offerId': humanize(stock.offer_id),
                 'price': 10.99,
                 'quantity': 34,
                 'isBookable': False,
@@ -358,7 +358,7 @@ class BeneficiaryBookingsSerializeTest:
             }
 
     class SerializeOfferIsBookableTest:
-        def should_return_false_when_at_least_one_stock_is_not_bookable(self):
+        def test_offer_should_not_be_bookable_when_at_least_one_stock_is_not_bookable(self):
             # Given
             serialized_stocks = [{
                 'beginningDatetime': '2019-01-07T00:00:00Z',
@@ -369,7 +369,7 @@ class BeneficiaryBookingsSerializeTest:
                 'offerId': 'EF',
                 'price': 10.99,
                 'quantity': 4,
-                'isBookable': True,
+                'isBookable': False,
                 'remainingQuantity': 'unlimited',
             }, {
                 'beginningDatetime': '2019-01-07T00:00:00Z',
@@ -390,7 +390,7 @@ class BeneficiaryBookingsSerializeTest:
             # Then
             assert is_offer_bookable is False
 
-        def should_return_true_when_all_stock_are_bookable(self):
+        def test_offer_should_be_bookable_when_at_least_one_stock_is_bookable(self):
             # Given
             serialized_stocks = [{
                 'beginningDatetime': '2019-01-07T00:00:00Z',
@@ -401,7 +401,7 @@ class BeneficiaryBookingsSerializeTest:
                 'offerId': 'EF',
                 'price': 10.99,
                 'quantity': 4,
-                'isBookable': True,
+                'isBookable': False,
                 'remainingQuantity': 'unlimited',
             }, {
                 'beginningDatetime': '2019-01-07T00:00:00Z',

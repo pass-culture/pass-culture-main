@@ -20,11 +20,11 @@ def serialize_beneficiary_bookings(beneficiary_bookings: BeneficiaryBookings, wi
 
 def _serialize_stock_for_beneficiary_booking(stock: Stock) -> Dict:
     return {
-        "dateCreated": serialize(stock.dateCreated),
-        "beginningDatetime": serialize(stock.beginningDatetime),
-        "bookingLimitDatetime": serialize(stock.bookingLimitDatetime),
-        "dateModified": serialize(stock.dateModified),
-        "offerId": humanize(stock.offerId),
+        "dateCreated": serialize(stock.date_created),
+        "beginningDatetime": serialize(stock.beginning_datetime),
+        "bookingLimitDatetime": serialize(stock.booking_limit_datetime),
+        "dateModified": serialize(stock.date_modified),
+        "offerId": humanize(stock.offer_id),
         "quantity": stock.quantity,
         "price": stock.price,
         "id": humanize(stock.id),
@@ -34,12 +34,12 @@ def _serialize_stock_for_beneficiary_booking(stock: Stock) -> Dict:
 
 
 def _serialize_stocks_for_beneficiary_bookings(matched_offer_id: int, stocks: List[Stock]) -> List[Dict]:
-    return [_serialize_stock_for_beneficiary_booking(stock) for stock in stocks if stock.offerId == matched_offer_id]
+    return [_serialize_stock_for_beneficiary_booking(stock) for stock in stocks if stock.offer_id == matched_offer_id]
 
 
 def _serialize_offer_is_bookable(serialized_stocks: List[Dict]) -> bool:
     are_stocks_bookable = [stock["isBookable"] for stock in serialized_stocks]
-    return sum(are_stocks_bookable) == len(are_stocks_bookable)
+    return True in are_stocks_bookable
 
 
 def _serialize_beneficiary_booking(beneficiary_booking: BeneficiaryBooking, serialized_stocks: List[Dict],
