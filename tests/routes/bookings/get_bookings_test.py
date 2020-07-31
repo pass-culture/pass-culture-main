@@ -11,7 +11,8 @@ class Get:
     class Returns200:
         @patch('routes.bookings.feature_queries.is_active', return_value=False)
         @clean_database
-        def when_user_has_bookings_and_qr_code_feature_is_off_does_not_return_qr_code(self, qr_code_is_active, app):
+        def when_user_has_bookings_and_qr_code_feature_is_inactive_does_not_return_qr_code(self, qr_code_is_active,
+                                                                                           app):
             # Given
             user1 = create_user(email='user1+plus@example.com')
             user2 = create_user(email='user2+plus@example.com')
@@ -44,14 +45,14 @@ class Get:
             assert 'isDigital' in first_booking['stock']['offer']
             assert 'isEvent' in first_booking['stock']['offer']
             assert 'offerType' in first_booking['stock']['offer']
-            assert 'thumb_url' in first_booking['stock']['offer']
+            assert 'thumbUrl' in first_booking['stock']['offer']
             assert 'stocks' in first_booking['stock']['offer']
             assert 'venue' in first_booking['stock']['offer']
             assert 'validationToken' not in first_booking['stock']['offer']['venue']
 
         @patch('routes.bookings.feature_queries.is_active', return_value=True)
         @clean_database
-        def when_user_has_bookings_and_qr_code_feature_is_on(self, qr_code_is_active, app):
+        def when_user_has_bookings_and_qr_code_feature_is_active(self, qr_code_is_active, app):
             # Given
             user1 = create_user(email='user1+plus@example.com')
             user2 = create_user(email='user2+plus@example.com')
@@ -84,7 +85,7 @@ class Get:
             assert 'isDigital' in first_booking['stock']['offer']
             assert 'isEvent' in first_booking['stock']['offer']
             assert 'offerType' in first_booking['stock']['offer']
-            assert 'thumb_url' in first_booking['stock']['offer']
+            assert 'thumbUrl' in first_booking['stock']['offer']
             assert 'stocks' in first_booking['stock']['offer']
             assert 'venue' in first_booking['stock']['offer']
             assert 'validationToken' not in first_booking['stock']['offer']['venue']

@@ -8,6 +8,7 @@ from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_stock, \
     create_booking, create_deposit, create_recommendation
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from utils.human_ids import humanize
 
 
 class BeneficiaryBookingsSQLRepositoryTest:
@@ -17,7 +18,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, url='http://url.com')
+        offer = create_offer_with_thing_product(venue, url='http://url.com', thumb_count=1)
         stock = create_stock(offer=offer, price=0)
         booking = create_booking(user=user, stock=stock, token='ABCDEF',
                                  date_created=datetime(2020, 4, 22, 0, 0),
@@ -53,6 +54,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert expected_booking.beginningDatetime == stock.beginningDatetime
         assert expected_booking.venueId == venue.id
         assert expected_booking.departementCode == venue.departementCode
+        assert expected_booking.thumb_url == f'http://localhost/storage/thumbs/products/{humanize(offer.productId)}'
 
     @clean_database
     def should_return_bookings_by_beneficiary_id(self, app):

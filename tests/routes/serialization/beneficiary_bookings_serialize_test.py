@@ -1,5 +1,5 @@
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from freezegun import freeze_time
 
@@ -28,6 +28,8 @@ class BeneficiaryBookingsSerializeTest:
                 )
             ]
 
+            offer_mock = MagicMock()
+            offer_mock.thumb_url = 'http://thumb.url'
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -63,6 +65,7 @@ class BeneficiaryBookingsSerializeTest:
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
+                offer=offer_mock
             )
             beneficiary_bookings = BeneficiaryBookings(
                 bookings=[beneficiary_booking],
@@ -134,7 +137,7 @@ class BeneficiaryBookingsSerializeTest:
                             'isBookable': True,
                             'remainingQuantity': 'unlimited',
                         }],
-                        'thumb_url': '',
+                        'thumbUrl': 'http://thumb.url',
                         'venue': {
                             'address': '5 rue du cinéma',
                             'city': 'Lure',
@@ -177,6 +180,8 @@ class BeneficiaryBookingsSerializeTest:
                 )
             ]
 
+            offer_mock = MagicMock()
+            offer_mock.thumb_url = 'http://thumb.url'
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -212,6 +217,7 @@ class BeneficiaryBookingsSerializeTest:
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
+                offer=offer_mock,
             )
             beneficiary_bookings = BeneficiaryBookings(
                 bookings=[beneficiary_booking],
@@ -284,7 +290,7 @@ class BeneficiaryBookingsSerializeTest:
                             'isBookable': True,
                             'remainingQuantity': 'unlimited',
                         }],
-                        'thumb_url': '',
+                        'thumbUrl': 'http://thumb.url',
                         'venue': {
                             'address': '5 rue du cinéma',
                             'city': 'Lure',
@@ -336,6 +342,8 @@ class BeneficiaryBookingsSerializeTest:
                 )
             ]
 
+            offer_mock = MagicMock()
+            offer_mock.thumb_url = 'http://thumb.url'
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -371,6 +379,7 @@ class BeneficiaryBookingsSerializeTest:
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
+                offer=offer_mock
             )
             beneficiary_bookings = BeneficiaryBookings(
                 bookings=[beneficiary_booking],
@@ -415,6 +424,8 @@ class BeneficiaryBookingsSerializeTest:
                 )
             ]
 
+            offer_mock = MagicMock()
+            offer_mock.thumb_url = 'http://thumb.url'
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -450,6 +461,7 @@ class BeneficiaryBookingsSerializeTest:
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
+                offer=offer_mock,
             )
             beneficiary_bookings = BeneficiaryBookings(
                 bookings=[beneficiary_booking],

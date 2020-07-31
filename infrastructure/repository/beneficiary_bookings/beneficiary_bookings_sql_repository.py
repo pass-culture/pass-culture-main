@@ -1,10 +1,11 @@
 from typing import List
 
+from sqlalchemy.orm import joinedload
+
 from domain.beneficiary_bookings.beneficiary_bookings import BeneficiaryBookings, BeneficiaryBooking
 from domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
 from infrastructure.repository.beneficiary_bookings.stock_domain_converter import to_domain
 from models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, Offer, VenueSQLEntity
-from models.db import db
 
 
 class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
@@ -18,6 +19,7 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
 
         beneficiary_bookings = []
         for booking in booking_sql_entity_views:
+            booking_sql_entity = booking[0]
             beneficiary_bookings.append(
                 BeneficiaryBooking(
                     amount=booking.amount,
@@ -54,6 +56,7 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
                     latitude=booking.latitude,
                     longitude=booking.longitude,
                     price=booking.price,
+                    offer=booking_sql_entity.stock.offer,
                 )
             )
         return BeneficiaryBookings(bookings=beneficiary_bookings, stocks=stocks)
@@ -79,7 +82,7 @@ def _get_stocks_information(offers_ids: List[int]) -> List[object]:
 
 def _get_bookings_information(beneficiary_id: int) -> List[object]:
     offer_activation_types = ['ThingType.ACTIVATION', 'EventType.ACTIVATION']
-    return db.session.query(BookingSQLEntity) \
+    return BookingSQLEntity.query \
         .join(UserSQLEntity, UserSQLEntity.id == BookingSQLEntity.userId) \
         .join(StockSQLEntity, StockSQLEntity.id == BookingSQLEntity.stockId) \
         .join(Offer) \
@@ -91,7 +94,18 @@ def _get_bookings_information(beneficiary_id: int) -> List[object]:
                   BookingSQLEntity.isCancelled,
                   BookingSQLEntity.dateCreated.desc()
                   ) \
-        .with_entities(BookingSQLEntity.amount,
+        .options(
+        joinedload(BookingSQLEntity.stock)
+            .joinedload(StockSQLEntity.offer)
+            .joinedload(Offer.product)
+    ) \
+        .options(
+        joinedload(BookingSQLEntity.stock)
+            .joinedload(StockSQLEntity.offer)
+            .joinedload(Offer.mediations)
+    ) \
+        .with_entities(BookingSQLEntity,
+                       BookingSQLEntity.amount,
                        BookingSQLEntity.cancellationDate,
                        BookingSQLEntity.dateCreated,
                        BookingSQLEntity.dateUsed,

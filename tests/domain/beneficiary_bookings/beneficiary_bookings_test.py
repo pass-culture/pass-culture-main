@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from unittest.mock import MagicMock
 
 from domain.beneficiary_bookings.beneficiary_bookings import BeneficiaryBooking
 
@@ -7,6 +8,8 @@ class BeneficiaryBookingTest:
     class BookingAccessUrlTest:
         def should_return_booking_completed_url(self):
             # Given
+            offer_mock = MagicMock()
+            offer_mock.thumb_url = 'http://thumb.url'
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -42,6 +45,7 @@ class BeneficiaryBookingTest:
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
+                offer=offer_mock,
             )
 
             # When
@@ -53,6 +57,8 @@ class BeneficiaryBookingTest:
     class IsEventExpiredTest:
         def test_is_not_expired_when_stock_is_not_an_event(self):
             # Given
+            offer_mock = MagicMock()
+            offer_mock.thumb_url = 'http://thumb.url'
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -88,6 +94,7 @@ class BeneficiaryBookingTest:
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
+                offer=offer_mock
             )
 
             # When
@@ -98,6 +105,8 @@ class BeneficiaryBookingTest:
 
         def test_is_not_expired_when_stock_is_an_event_in_the_future(self):
             # Given
+            offer_mock = MagicMock()
+            offer_mock.thumb_url = 'http://thumb.url'
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -133,6 +142,7 @@ class BeneficiaryBookingTest:
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
+                offer=offer_mock,
             )
 
             # When
@@ -143,6 +153,8 @@ class BeneficiaryBookingTest:
 
         def test_is_expired_when_stock_is_an_event_in_the_past(self):
             # Given
+            offer_mock = MagicMock()
+            offer_mock.thumb_url = 'http://thumb.url'
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -178,6 +190,7 @@ class BeneficiaryBookingTest:
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
+                offer=offer_mock,
             )
 
             # When

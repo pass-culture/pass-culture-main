@@ -3,6 +3,7 @@ from typing import List, Optional, Dict
 
 from domain.beneficiary_bookings.stock import Stock
 from domain.bookings import generate_qr_code
+from models import Offer
 from models.offer_type import ProductType, ThingType, EventType
 from utils.human_ids import humanize
 
@@ -42,7 +43,8 @@ class BeneficiaryBooking:
                  city: str,
                  latitude: float,
                  longitude: float,
-                 price: float
+                 price: float,
+                 offer: Offer,
                  ):
         self.price = price
         self.longitude = longitude
@@ -78,6 +80,7 @@ class BeneficiaryBooking:
         self.beginningDatetime = beginningDatetime
         self.venueId = venueId
         self.departementCode = departementCode
+        self.thumb_url = offer.thumb_url
 
     @property
     def booking_access_url(self) -> Optional[str]:
