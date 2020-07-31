@@ -2,13 +2,13 @@ import pytest
 from unittest.mock import patch, MagicMock
 from tests.conftest import TestClient
 from models import ApiErrors
-from domain.beneficiary_contact.beneficiary_contact_exceptions import AddNewBeneficiaryContactException
+from workers.mailing_contacts_job import mailing_contacts_job
 
 class Post:
     class Returns201:
         @patch('routes.mailing_contacts.validate_save_mailing_contact_request')
-        @patch('routes.mailing_contacts.add_contact_in_eligibility_list.execute')
-        def when_contact_has_successfully_been_saved(self, add_contact, validate_request, app):
+        @patch('routes.mailing_contacts.mailing_contacts_job.delay')
+        def when_contact_has_successfully_been_saved(self, mocked_add_contact_job, validate_request, app):
             # Given
             data = {
                 "email": "jeune@example.com",
@@ -20,7 +20,7 @@ class Post:
             response = TestClient(app.test_client()).post('/mailing-contacts', json=data)
 
             # Then
-            add_contact.assert_called_once_with(data["email"], data["dateOfBirth"], data["departmentCode"])
+            mocked_add_contact_job.assert_called_once_with(data["email"], data["dateOfBirth"], data["departmentCode"])
             validate_request.assert_called_once_with(data)
             assert response.status_code == 201
 
@@ -41,25 +41,3 @@ class Post:
             # Then
             validate_request.assert_called_once_with(data)
             assert response.status_code == 400
-
-
-        @patch('routes.mailing_contacts.validate_save_mailing_contact_request')
-        @patch('routes.mailing_contacts.add_contact_in_eligibility_list.execute')
-        def when_add_contact_fails(self, add_contact, validate_request, app):
-            # Given
-            data = {
-                "email": "beneficiary@example.com",
-                "dateOfBirth": "02/02/2003",
-                "departmentCode": "98"
-            }
-
-            validate_request = MagicMock()
-            add_contact.side_effect = AddNewBeneficiaryContactException('mailjet', 'Impossible d\'ajouter le contact.')
-
-            # When
-            response = TestClient(app.test_client()).post('/mailing-contacts', json=data)
-
-            # Then
-            add_contact.assert_called_once_with(data["email"], data["dateOfBirth"], data["departmentCode"])
-            assert response.status_code == 400
-            assert response.json['mailjet'] == ['Impossible d\'ajouter le contact.']

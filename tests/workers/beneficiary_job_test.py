@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from workers.beneficiary_job import beneficiary_job
 
+
 @patch('workers.beneficiary_job.create_beneficiary_from_application.execute')
 def test_calls_use_case(mocked_create_beneficiary_use_case):
     # Given

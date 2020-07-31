@@ -1,7 +1,7 @@
 from flask import current_app as app, request
 from utils.rest import expect_json_data
 from validation.routes.mailing_contacts import validate_save_mailing_contact_request
-from infrastructure.container import add_contact_in_eligibility_list
+from workers.mailing_contacts_job import mailing_contacts_job
 
 
 @app.route('/mailing-contacts', methods=['POST'])
@@ -12,5 +12,5 @@ def save_mailing_contact():
     contact_email = json["email"]
     contact_date_of_birth = json["dateOfBirth"]
     contact_department_code = json["departmentCode"]
-    add_contact_in_eligibility_list.execute(contact_email, contact_date_of_birth, contact_department_code)
+    mailing_contacts_job.delay(contact_email, contact_date_of_birth, contact_department_code)
     return '', 201
