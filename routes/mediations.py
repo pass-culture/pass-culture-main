@@ -3,7 +3,6 @@ from flask_login import current_user, login_required
 
 from connectors import redis
 from connectors.thumb_storage import read_thumb, create_thumb
-from domain.mediations import create_new_mediation
 from models.feature import FeatureToggle
 from models.mediation_sql_entity import MediationSQLEntity
 from models.user_offerer import RightsType
@@ -23,7 +22,11 @@ def create_mediation():
     offer_id = dehumanize(request.form['offerId'])
     credit = request.form.get('credit')
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
-    mediation = create_new_mediation(offer_id, offerer_id, current_user, credit)
+    mediation = MediationSQLEntity()
+    mediation.author = current_user
+    mediation.offerId = offer_id
+    mediation.credit = credit
+    mediation.offererId = offerer_id
     thumb = read_thumb(files=request.files, form=request.form)
     check_thumb_quality(thumb)
     repository.save(mediation)

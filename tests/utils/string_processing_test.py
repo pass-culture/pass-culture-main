@@ -61,6 +61,7 @@ class PluralizeTest:
         # Then
         assert message == 'stocks'
 
+
 class GetModelPluralNameTest:
     def test_should_return_model_plural(self):
         # Given

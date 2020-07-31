@@ -22,7 +22,7 @@ class ThumbUrlTest:
         assert thumb_url == 'http://localhost/storage/thumbs/mediations/PM'
 
     @patch.dict('os.environ', {'OBJECT_STORAGE_URL': 'http://localhost/storage'})
-    def should_return_product_thumb_url_for_a_non_mediation_favorite(self):
+    def should_return_offer_thumb_url_for_a_non_mediation_favorite(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)

@@ -4,8 +4,9 @@ from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_favorite, \
     create_mediation, \
-    API_URL
+    API_URL, create_stock, create_booking
 from tests.model_creators.specific_creators import create_offer_with_thing_product
+from utils.human_ids import humanize
 
 
 @pytest.mark.standalone
@@ -18,7 +19,8 @@ class Get:
             repository.save(user)
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email) \
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
                 .get(API_URL + '/favorites')
 
             # Then
@@ -39,7 +41,8 @@ class Get:
             repository.save(user, favorite1, favorite2)
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email) \
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
                 .get(API_URL + '/favorites')
 
             # Then
@@ -52,6 +55,33 @@ class Get:
             assert first_favorite['mediationId'] == 'PM'
             assert second_favorite['mediationId'] is None
             assert 'validationToken' not in first_favorite['offer']['venue']
+
+        @clean_database
+        def when_user_is_logged_in_and_a_favorite_booked_offer_exist(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
+            offer = create_offer_with_thing_product(venue, thumb_count=0)
+            mediation = create_mediation(offer, is_active=True)
+            favorite = create_favorite(mediation=mediation, offer=offer, user=user)
+            stock = create_stock(offer=offer, price=0)
+            booking = create_booking(user=user, stock=stock)
+            repository.save(booking, favorite)
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
+                .get(API_URL + '/favorites')
+
+            # Then
+            assert response.status_code == 200
+            assert len(response.json) == 1
+            favorite = response.json[0]
+            assert 'offer' in favorite
+            assert 'venue' in favorite['offer']
+            assert humanize(booking.id) in favorite['firstMatchingBooking']["id"]
+            assert 'validationToken' not in favorite['offer']['venue']
 
     class Returns401:
         @clean_database

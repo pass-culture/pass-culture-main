@@ -4,8 +4,6 @@ from typing import List
 import PIL
 from PIL.Image import Image
 
-from models import MediationSQLEntity, UserSQLEntity
-
 MAX_THUMB_WIDTH = 750
 CONVERSION_QUALITY = 90
 DO_NOT_CROP = [0, 0, 1]
@@ -18,15 +16,6 @@ def standardize_image(image: bytes, crop_params: List) -> bytes:
     resized_image = _resize_image(cropped_image)
     standard_image = _convert_to_jpeg(resized_image)
     return standard_image
-
-
-def create_new_mediation(offer_id: int, offerer_id: int, user: UserSQLEntity, credit: str) -> MediationSQLEntity:
-    new_mediation = MediationSQLEntity()
-    new_mediation.author = user
-    new_mediation.offerId = offer_id
-    new_mediation.credit = credit
-    new_mediation.offererId = offerer_id
-    return new_mediation
 
 
 def _crop_image(crop_origin_x: int, crop_origin_y: int, crop_size: int, image: Image) -> Image:

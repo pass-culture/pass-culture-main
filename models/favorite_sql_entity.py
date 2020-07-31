@@ -42,9 +42,3 @@ class FavoriteSQLEntity(PcObject, Model):
             name='unique_favorite',
         ),
     )
-
-    @property
-    def thumbUrl(self) -> str:
-        if self.mediationId:
-            return self.mediation.thumbUrl
-        return self.offer.product.thumbUrl

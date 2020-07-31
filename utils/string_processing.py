@@ -33,7 +33,6 @@ schedules = [
 
 
 def get_model_plural_name(obj):
-    print(obj.__tablename__)
     return inflect_engine.plural(obj.__tablename__.lower())
 
 

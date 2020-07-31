@@ -13,22 +13,22 @@ class FavoriteSQLRepository(FavoriteRepository):
         favorite_sql_entities = FavoriteSQLEntity.query \
             .filter(FavoriteSQLEntity.userId == beneficiary_identifier) \
             .options(
-                joinedload(FavoriteSQLEntity.offer).
-                joinedload(OfferSQLEntity.venue).
-                joinedload(VenueSQLEntity.managingOfferer)
+                joinedload(FavoriteSQLEntity.offer)
+                .joinedload(OfferSQLEntity.venue)
+                .joinedload(VenueSQLEntity.managingOfferer)
             ) \
             .options(
-                joinedload(FavoriteSQLEntity.offer).
-                joinedload(OfferSQLEntity.stocks).
-                joinedload(StockSQLEntity.bookings)
+                joinedload(FavoriteSQLEntity.offer)
+                .joinedload(OfferSQLEntity.stocks)
+                .joinedload(StockSQLEntity.bookings)
             ) \
             .options(
-                joinedload(FavoriteSQLEntity.offer).
-                joinedload(OfferSQLEntity.product)
+                joinedload(FavoriteSQLEntity.offer)
+                .joinedload(OfferSQLEntity.product)
             ) \
             .options(
-                joinedload(FavoriteSQLEntity.offer).
-                joinedload(OfferSQLEntity.mediations)
+                joinedload(FavoriteSQLEntity.offer)
+                .joinedload(OfferSQLEntity.mediations)
             ) \
             .all()
 

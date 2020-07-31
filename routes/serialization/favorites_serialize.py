@@ -1,8 +1,7 @@
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from domain.favorite.favorite import Favorite
-from models import (BookingSQLEntity, StockSQLEntity,
-                    UserSQLEntity)
+from models import UserSQLEntity
 from routes.serialization.serializer import serialize
 from utils.human_ids import humanize
 
@@ -16,14 +15,13 @@ def serialize_favorite(favorite: Favorite, current_user: UserSQLEntity) -> Dict:
     venue = offer.venue
     humanized_offer_id = humanize(offer.id)
     humanized_venue_id = humanize(venue.id)
-    mediation_id = humanize(favorite.mediation.id) if favorite.mediation else None
 
     stocks = [{'beginningDatetime': stock.beginningDatetime, 'id': humanize(stock.id), 'offerId': humanized_offer_id} for stock in offer.stocks]
 
     serialized_favorite = {
         'id': humanize(favorite.identifier),
         'offerId': humanized_offer_id,
-        'mediationId': mediation_id,
+        'mediationId': (humanize(favorite.mediation.id) if favorite.mediation else None),
         'offer': {
             'dateRange': serialize(offer.dateRange),
             'hasBookingLimitDatetimesPassed': offer.hasBookingLimitDatetimesPassed,
@@ -32,9 +30,6 @@ def serialize_favorite(favorite: Favorite, current_user: UserSQLEntity) -> Dict:
             'isFullyBooked': offer.isFullyBooked,
             'name': offer.name,
             'offerType': offer.offerType,
-            'product': {
-                'thumbUrl': offer.product.thumbUrl
-            },
             'stocks': stocks,
             'venue': {
                 'id': humanized_venue_id,
@@ -46,7 +41,7 @@ def serialize_favorite(favorite: Favorite, current_user: UserSQLEntity) -> Dict:
         'thumbUrl': favorite.thumb_url
     }
 
-    user_booking = _get_user_booking_if_exists(current_user, offer.stocks)
+    user_booking = offer.get_beneficiary_booking_if_exists(current_user.id)
 
     if user_booking:
         serialized_favorite['firstMatchingBooking'] = {
@@ -57,10 +52,3 @@ def serialize_favorite(favorite: Favorite, current_user: UserSQLEntity) -> Dict:
         }
 
     return serialized_favorite
-
-
-def _get_user_booking_if_exists(current_user: UserSQLEntity, stocks: List[StockSQLEntity]) -> Optional[BookingSQLEntity]:
-    user_booking = None
-    for stock in stocks:
-        user_booking = next((booking for booking in stock.bookings if booking.userId == current_user.id), None)
-    return user_booking

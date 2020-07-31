@@ -215,9 +215,10 @@ def create_domain_booking(beneficiary: Beneficiary,
         date_booked=date_booked
     )
 
+
 def create_domain_favorite(identifier: int,
                            offer: OfferSQLEntity,
-                           mediation: MediationSQLEntity = None,):
+                           mediation: MediationSQLEntity = None):
     return Favorite(
         identifier=identifier,
         offer=offer,
