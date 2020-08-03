@@ -16,14 +16,6 @@ describe('src | components | Layout | Header', () => {
     }
   })
 
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Header {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('render', () => {
     it('should render a header element with the right css classes when is not small', () => {
       // when

@@ -43,14 +43,6 @@ describe('src | components | pages | Offers | Offers', () => {
     }
   })
 
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Offers {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('render', () => {
     describe('when arriving on index page', () => {
       it('should list all offers', () => {

@@ -7,14 +7,6 @@ import DownloadButtonContainer from '../../../layout/DownloadButton/DownloadButt
 import Reimbursements from '../Reimbursements'
 
 describe('src | components | pages | Reimbursements', () => {
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Reimbursements />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('render', () => {
     it('should a Main component with the right props', () => {
       // when

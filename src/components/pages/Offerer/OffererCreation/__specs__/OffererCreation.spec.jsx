@@ -4,7 +4,7 @@ import { shallow } from 'enzyme'
 import { Form } from 'react-final-form'
 import OffererCreationForm from '../OffererCreationForm/OffererCreationForm'
 
-describe('src | components | pages | Offerer | OffererCreation | OffererCreation', () => {
+describe('src | components | OffererCreation', () => {
   let props
 
   beforeEach(() => {
@@ -15,14 +15,6 @@ describe('src | components | pages | Offerer | OffererCreation | OffererCreation
       trackCreateOfferer: jest.fn(),
       redirectToOfferersList: jest.fn(),
     }
-  })
-
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<OffererCreation {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('event tracking', () => {

@@ -7,7 +7,7 @@ import PendingOffererItem from '../OffererItem/PendingOffererItem'
 import { NavLink } from 'react-router-dom'
 import Titles from '../../../layout/Titles/Titles'
 
-describe('src | components | pages | Offerers | Offerers', () => {
+describe('src | components | Offerers', () => {
   let props
 
   beforeEach(() => {
@@ -26,14 +26,6 @@ describe('src | components | pages | Offerers | Offerers', () => {
       resetLoadedOfferers: jest.fn(),
       showNotification: jest.fn(),
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Offerers {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {
