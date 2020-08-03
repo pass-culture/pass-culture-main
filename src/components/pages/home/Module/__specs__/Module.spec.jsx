@@ -40,7 +40,7 @@ describe('src | components | Module', () => {
       activeOn: '2020-07-01T00:00+02:00',
       activeUntil: '2020-07-30T00:00+02:00',
       layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
-      minOffers: 5,
+      minOffers: 1,
       title: 'Les offres près de chez toi!',
     }
     geolocation = {
@@ -86,7 +86,7 @@ describe('src | components | Module', () => {
       new Promise(resolve => {
         resolve({
           hits: [offerOne, offerTwo],
-          nbHits: 0,
+          nbHits: 2,
           nbPages: 0,
           page: 0,
         })
@@ -127,7 +127,7 @@ describe('src | components | Module', () => {
       new Promise(resolve => {
         resolve({
           hits: [offerOne],
-          nbHits: 0,
+          nbHits: 1,
           nbPages: 0,
           page: 0,
         })
@@ -199,7 +199,7 @@ describe('src | components | Module', () => {
       new Promise(resolve => {
         resolve({
           hits: [offerOne],
-          nbHits: 0,
+          nbHits: 1,
           nbPages: 0,
           page: 0,
         })
@@ -262,5 +262,42 @@ describe('src | components | Module', () => {
 
     // then
     expect(fetchAlgolia).not.toHaveBeenCalled()
+  })
+
+  it('should not render OfferTile when two offers are retrieved but min offers is superior', async () => {
+    // given
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [offerOne, offerTwo],
+          nbHits: 2,
+          nbPages: 0,
+          page: 0,
+        })
+      })
+    )
+    display.minOffers = 3
+    const props = {
+      geolocation,
+      historyPush: jest.fn(),
+      module: new Offers({
+        algolia,
+        display,
+      }),
+      row: 1,
+    }
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Module {...props} />
+      </MemoryRouter>
+    )
+
+    await wrapper.update()
+
+    // then
+    const offers = wrapper.find(Module).find(OfferTile)
+    expect(offers).toHaveLength(0)
   })
 })

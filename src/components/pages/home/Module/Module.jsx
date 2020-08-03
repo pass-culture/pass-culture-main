@@ -17,6 +17,7 @@ class Module extends Component {
     this.state = {
       hits: [],
       isSwitching: false,
+      nbHits: 0,
     }
     this.swipeRatio = 0.2
   }
@@ -30,9 +31,10 @@ class Module extends Component {
 
     if (parsedParameters) {
       fetchAlgolia(parsedParameters).then(data => {
-        const { hits } = data
+        const { hits, nbHits } = data
         this.setState({
           hits: hits,
+          nbHits: nbHits,
         })
       })
     }
@@ -61,6 +63,7 @@ class Module extends Component {
         return firstTileIsACover ?
           <Cover
             img={tile}
+            key={`${row}-cover`}
             layout={display.layout}
           />
           :
@@ -90,6 +93,7 @@ class Module extends Component {
         return firstTileIsACover ?
           <Cover
             img={tile}
+            key={`${row}-cover`}
             layout={display.layout}
           />
           :
@@ -115,20 +119,22 @@ class Module extends Component {
 
   render() {
     const {
-      module: { display },
+      module: { display: { layout, minOffers = 0, title} },
     } = this.props
-    const { hits } = this.state
+    const { hits, nbHits } = this.state
     const atLeastOneHit = hits.length > 0
+    const minOffersHasBeenReached = nbHits >= minOffers
+    const shouldModuleBeDisplayed = atLeastOneHit && minOffersHasBeenReached
 
     return (
-      atLeastOneHit && (
+      shouldModuleBeDisplayed && (
         <section className="module-wrapper">
           <h1>
-            {display.title}
+            {title}
           </h1>
           <ul>
             <SwipeableViews
-              className={display.layout || PANE_LAYOUT['ONE-ITEM-MEDIUM']}
+              className={layout || PANE_LAYOUT['ONE-ITEM-MEDIUM']}
               disableLazyLoading
               enableMouseEvents
               hysteresis={this.swipeRatio}
@@ -137,7 +143,7 @@ class Module extends Component {
               resistance
               slideClassName="module-slides"
             >
-              {display.layout === PANE_LAYOUT['TWO-ITEMS'] ?
+              {layout === PANE_LAYOUT['TWO-ITEMS'] ?
                 this.renderTwoItems() :
                 this.renderOneItem()}
             </SwipeableViews>
