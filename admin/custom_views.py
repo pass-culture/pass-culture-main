@@ -15,9 +15,16 @@ class OfferAdminView(BaseAdminView):
     can_edit = True
     can_delete = False
     column_list = ['id', 'name', 'type', 'baseScore', 'criteria']
-    column_labels = dict(name='Nom', type='Type', baseScore='Score', criteria='Tag')
-    column_searchable_list = ['name']
-    column_filters = ['type']
+    column_searchable_list = ['name', 'criteria.name']
+    column_sortable_list = ['name', 'type', 'baseScore', 'criteria']
+    column_labels = {
+        'name': 'Nom',
+        'type': 'Type',
+        'baseScore': 'Score',
+        'criteria': 'Tag',
+        'criteria.name': 'Tag'
+    }
+    column_filters = ['type', 'criteria.name']
     form_columns = ['criteria']
 
     def on_model_change(self, form: Form, offer: Offer, is_created=False):
