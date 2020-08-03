@@ -7,7 +7,6 @@ import Ribbon from '../../../../../layout/Ribbon/Ribbon'
 import { getTimezone } from '../../../../../../utils/timezone'
 import { humanizeDate } from '../../../../../../utils/date/date'
 import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
-import DuoOfferContainer from '../../../../../layout/DuoOffer/DuoOfferContainer'
 
 const getDetailsUrl = (bookingId, location) =>
   `/reservations/details/${bookingId}${location.search}`
@@ -27,7 +26,7 @@ const BookingItem = ({
   const { id: bookingId, qrCode, quantity, token, thumbUrl } = booking
   const { beginningDatetime } = stock
   const { label, type } = ribbon || {}
-  const { id: offerId, name: offerName, venue } = offer
+  const { name: offerName, venue } = offer
   const { departementCode } = venue
   const isDuo = quantity === 2
   const detailsUrl = getDetailsUrl(bookingId, location)
@@ -58,7 +57,13 @@ const BookingItem = ({
               {offerName}
             </div>
             <div className="teaser-sub-title">
-              {isDuo && <DuoOfferContainer offerId={offerId} />}
+              {isDuo && (
+                <div className="duo">
+                  <span className="duo-logo">
+                    {'duo'}
+                  </span>
+                </div>
+              )}
               {humanizedDate || 'Permanent'}
             </div>
           </div>
