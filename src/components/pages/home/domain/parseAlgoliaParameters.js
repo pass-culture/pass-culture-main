@@ -7,6 +7,7 @@ const algoliaParametersFromContentful = {
   IS_DIGITAL: 'isDigital',
   IS_DUO: 'isDuo',
   IS_EVENT: 'isEvent',
+  IS_FREE: 'isFree',
   IS_GEOLOCATED: 'isGeolocated',
   IS_THING: 'isThing',
   NEWEST_ONLY: 'newestOnly',
@@ -34,6 +35,7 @@ export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
     hitsPerPage: parameters[algoliaParametersFromContentful.HITS_PER_PAGE] || null,
     offerCategories: parameters[algoliaParametersFromContentful.CATEGORIES] || [],
     offerIsDuo: parameters[algoliaParametersFromContentful.IS_DUO] || false,
+    offerIsFree: parameters[algoliaParametersFromContentful.IS_FREE] || false,
     offerIsNew: parameters[algoliaParametersFromContentful.NEWEST_ONLY] || false,
     offerTypes: {
       isDigital: parameters[algoliaParametersFromContentful.IS_DIGITAL] || false,

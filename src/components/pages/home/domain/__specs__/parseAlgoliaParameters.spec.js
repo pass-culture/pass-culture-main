@@ -15,6 +15,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
+      offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [],
@@ -39,6 +40,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       hitsPerPage: null,
       offerCategories: ['CINEMA', 'LECON', 'LIVRE'],
       offerIsDuo: false,
+      offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [],
@@ -63,6 +65,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
+      offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [],
@@ -87,6 +90,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       hitsPerPage: 5,
       offerCategories: [],
       offerIsDuo: false,
+      offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [],
@@ -111,6 +115,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: true,
+      offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [],
@@ -135,6 +140,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
+      offerIsFree: false,
       offerIsNew: true,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [],
@@ -159,6 +165,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
+      offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: true, isEvent: false, isThing: false },
       priceRange: [],
@@ -183,6 +190,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
+      offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: true, isThing: false },
       priceRange: [],
@@ -207,6 +215,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
+      offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: true },
       priceRange: [],
@@ -233,6 +242,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
+      offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: true, isEvent: true, isThing: true },
       priceRange: [],
@@ -257,6 +267,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
+      offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [50, 500],
@@ -281,6 +292,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
+      offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [0, 300],
@@ -306,9 +318,35 @@ describe('src | components | parseAlgoliaParameters', () => {
       hitsPerPage: null,
       offerCategories: [],
       offerIsDuo: false,
+      offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
       priceRange: [50, 300],
+      searchAround: false,
+      tags: [],
+    })
+  })
+
+  it('should return algolia parameters with isFree when provided', () => {
+    // given
+    const parameters = {
+      isFree: true,
+    }
+
+    // when
+    const result = parseAlgoliaParameters({ parameters })
+
+    // then
+    expect(result).toStrictEqual({
+      aroundRadius: null,
+      geolocation: null,
+      hitsPerPage: null,
+      offerCategories: [],
+      offerIsDuo: false,
+      offerIsFree: true,
+      offerIsNew: false,
+      offerTypes: { isDigital: false, isEvent: false, isThing: false },
+      priceRange: [],
       searchAround: false,
       tags: [],
     })
@@ -336,6 +374,7 @@ describe('src | components | parseAlgoliaParameters', () => {
         hitsPerPage: null,
         offerCategories: [],
         offerIsDuo: false,
+        offerIsFree: false,
         offerIsNew: false,
         offerTypes: { isDigital: false, isEvent: false, isThing: false },
         priceRange: [],
@@ -361,6 +400,7 @@ describe('src | components | parseAlgoliaParameters', () => {
         hitsPerPage: null,
         offerCategories: [],
         offerIsDuo: false,
+        offerIsFree: false,
         offerIsNew: false,
         offerTypes: { isDigital: false, isEvent: false, isThing: false },
         priceRange: [],
