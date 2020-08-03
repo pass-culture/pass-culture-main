@@ -130,18 +130,6 @@ class CheckEditionForAllocineOfferIsValidTest:
 
 
 class CheckUserHasRightsOnOffererTest:
-    def test_should_not_raise_errors_when_user_is_admin(self):
-        # Given
-        user = create_user(is_admin=True)
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user=user, offerer=offerer)
-
-        # When
-        check_user_has_rights_on_offerer(user_offerer=user_offerer)
-
-        # Then
-        assert True
-
     def test_should_raise_errors_when_user_offerer_is_not_validated(self):
         # Given
         user = create_user(is_admin=False)

@@ -13,6 +13,21 @@ from utils.human_ids import humanize
 class Get:
     class Returns200:
         @clean_database
+        def when_user_is_admin_and_request_specific_venue(self, app):
+            # Given
+            user = create_user(is_admin=True, can_book_free_offers=False)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            repository.save(user, venue)
+
+            # when
+            response = TestClient(app.test_client()) \
+                .with_auth(email=user.email).get(f'/offers?venueId={humanize(venue.id)}')
+
+            # then
+            assert response.status_code == 200
+
+        @clean_database
         @patch('routes.offers.list_offers_for_pro_user.execute')
         def test_results_are_paginated_with_count_in_headers(self, list_offers_mock, app):
             # Given

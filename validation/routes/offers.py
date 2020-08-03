@@ -15,9 +15,6 @@ def check_user_has_rights_on_offerer(user_offerer: UserOfferer):
     if user_offerer is None:
         raise errors
 
-    if user_offerer.user.isAdmin:
-        return True
-
     if user_offerer.validationToken:
         raise errors
 

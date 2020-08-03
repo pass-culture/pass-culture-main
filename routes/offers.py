@@ -32,20 +32,21 @@ def list_offers() -> (str, int):
     offerer_id = dehumanize(request.args.get('offererId'))
     venue_id = dehumanize(request.args.get('venueId'))
 
-    if venue_id:
-        venue = venue_queries.find_by_id(venue_id)
-        check_venue_exists_when_requested(venue, venue_id)
-        user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
-            user_id=current_user.id,
-            offerer_id=venue.managingOffererId
-        )
-        check_user_has_rights_on_offerer(user_offerer)
-    if offerer_id:
-        user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
-            user_id=current_user.id,
-            offerer_id=offerer_id
-        )
-        check_user_has_rights_on_offerer(user_offerer)
+    if not current_user.isAdmin:
+        if venue_id:
+            venue = venue_queries.find_by_id(venue_id)
+            check_venue_exists_when_requested(venue, venue_id)
+            user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
+                user_id=current_user.id,
+                offerer_id=venue.managingOffererId
+            )
+            check_user_has_rights_on_offerer(user_offerer)
+        if offerer_id:
+            user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
+                user_id=current_user.id,
+                offerer_id=offerer_id
+            )
+            check_user_has_rights_on_offerer(user_offerer)
 
     offers_request_parameters = OffersRequestParameters(
         user_id=current_user.id,
