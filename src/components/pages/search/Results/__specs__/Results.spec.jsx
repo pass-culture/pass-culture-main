@@ -834,6 +834,96 @@ describe('components | Results', () => {
         expect(sortCriterionLabel).toBe('Prix')
       })
     })
+
+    describe('when coming from home page', () => {
+      it('should fetch data using filters from homepage', async () => {
+        // given
+        props.parametersFromHome = {
+          aroundRadius: 1,
+          geolocation: { latitude: 1, longitude: 1},
+          hitsPerPage: 2,
+          offerCategories: ["SPECTACLE"],
+          offerIsDuo: false,
+          offerIsNew: false,
+          offerTypes: { isDigital: false, isEvent: true, isThing: false },
+          priceRange: [1, 200],
+          searchAround: false,
+        }
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              nbPages: 0,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'mots-cles': '',
+          tri: '',
+        })
+
+        // when
+        await shallow(<Results {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 1,
+          geolocation: { latitude: 40.1, longitude: 41.1 },
+          keywords: '',
+          offerCategories: ["SPECTACLE"],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerIsNew: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: true,
+            isThing: false,
+          },
+          page: 0,
+          priceRange: [1, 200],
+          searchAround: false,
+          sortBy: '',
+        })
+      })
+
+      it('should display number of active filters according to parameters from homepage', async () => {
+        // given
+        props.parametersFromHome = {
+          aroundRadius: 100,
+          geolocation: { latitude: 1, longitude: 1},
+          hitsPerPage: 2,
+          offerCategories: ["SPECTACLE"],
+          offerIsDuo: false,
+          offerIsNew: false,
+          offerTypes: { isDigital: false, isEvent: false, isThing: false },
+          priceRange: [1, 200],
+          searchAround: false,
+        }
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              nbPages: 0,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'mots-cles': '',
+          tri: '',
+        })
+
+        // when
+        const wrapper = await shallow(<Results {...props} />)
+
+        // then
+        const numberOfActiveFilters = wrapper.find('[data-test="sr-filter-button-counter"]')
+        expect(numberOfActiveFilters.text()).toBe('2')
+      })
+    })
   })
 
   describe('when render', () => {

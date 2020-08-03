@@ -18,7 +18,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
-      priceRange: [],
+      priceRange: [0, 500],
       searchAround: false,
       tags: [],
     })
@@ -43,7 +43,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
-      priceRange: [],
+      priceRange: [0, 500],
       searchAround: false,
       tags: [],
     })
@@ -68,7 +68,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
-      priceRange: [],
+      priceRange: [0, 500],
       searchAround: false,
       tags: ['offre du 14 juillet spéciale pass culture', 'offre de la pentecôte'],
     })
@@ -93,7 +93,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
-      priceRange: [],
+      priceRange: [0, 500],
       searchAround: false,
       tags: [],
     })
@@ -118,7 +118,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
-      priceRange: [],
+      priceRange: [0, 500],
       searchAround: false,
       tags: [],
     })
@@ -143,7 +143,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       offerIsFree: false,
       offerIsNew: true,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
-      priceRange: [],
+      priceRange: [0, 500],
       searchAround: false,
       tags: [],
     })
@@ -168,7 +168,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: true, isEvent: false, isThing: false },
-      priceRange: [],
+      priceRange: [0, 500],
       searchAround: false,
       tags: [],
     })
@@ -193,7 +193,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: true, isThing: false },
-      priceRange: [],
+      priceRange: [0, 500],
       searchAround: false,
       tags: [],
     })
@@ -218,7 +218,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: true },
-      priceRange: [],
+      priceRange: [0, 500],
       searchAround: false,
       tags: [],
     })
@@ -245,7 +245,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       offerIsFree: false,
       offerIsNew: false,
       offerTypes: { isDigital: true, isEvent: true, isThing: true },
-      priceRange: [],
+      priceRange: [0, 500],
       searchAround: false,
       tags: [],
     })
@@ -377,7 +377,7 @@ describe('src | components | parseAlgoliaParameters', () => {
         offerIsFree: false,
         offerIsNew: false,
         offerTypes: { isDigital: false, isEvent: false, isThing: false },
-        priceRange: [],
+        priceRange: [0, 500],
         searchAround: true,
         tags: [],
       })
@@ -403,7 +403,7 @@ describe('src | components | parseAlgoliaParameters', () => {
         offerIsFree: false,
         offerIsNew: false,
         offerTypes: { isDigital: false, isEvent: false, isThing: false },
-        priceRange: [],
+        priceRange: [0, 500],
         searchAround: true,
         tags: [],
       })

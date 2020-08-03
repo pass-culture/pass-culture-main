@@ -2,6 +2,20 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Icon from '../../../../layout/Icon/Icon'
 import { PANE_LAYOUT } from '../../domain/layout'
+import { Link } from 'react-router-dom'
+
+const buildSearchParameters = parameters => {
+  const { geolocation, offerCategories, searchAround } = parameters
+
+  let search = `?autour-de=${searchAround ? 'oui' : 'non'}`
+  if (offerCategories.length > 0) {
+    search = search.concat(`&categories=${offerCategories.join(';')}`)
+  }
+  if (geolocation && geolocation.latitude && geolocation.longitude) {
+    search = search.concat(`&latitude=${geolocation.latitude}&longitude=${geolocation.longitude}`)
+  }
+  return search
+}
 
 const SeeMore = ({ layout, parameters }) => {
   return (
@@ -9,17 +23,24 @@ const SeeMore = ({ layout, parameters }) => {
       className="see-more-wrapper"
       key='see-more'
     >
-      <div className="smw-image-one-item-medium">
-        <div className="smw-content-wrapper">
-          <Icon
-            className="smw-icon-wrapper"
-            svg="ico-offres-home"
-          />
-          <span>
-            {'En voir plus'}
-          </span>
+      <Link to={{
+        pathname: '/recherche/resultats',
+        parametersFromHome: parameters,
+        search: buildSearchParameters(parameters),
+      }}
+      >
+        <div className={`smw-image-${layout}`}>
+          <div className="smw-content-wrapper">
+            <Icon
+              className="smw-icon-wrapper"
+              svg="ico-offres-home-white"
+            />
+            <span>
+              {'En voir plus'}
+            </span>
+          </div>
         </div>
-      </div>
+      </Link>
     </li>
   )
 }

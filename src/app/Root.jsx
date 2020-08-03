@@ -9,7 +9,7 @@ import FeaturedRouteContainer from '../components/router/FeaturedRouteContainer'
 import routes from '../components/router/routes'
 import Tracking from '../components/tracking/Tracking'
 import { configureStore } from '../utils/store'
-import AppContainer from './/App/AppContainer'
+import AppContainer from './App/AppContainer'
 
 const { store, persistor } = configureStore()
 

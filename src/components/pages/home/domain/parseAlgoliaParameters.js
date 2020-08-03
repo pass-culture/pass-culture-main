@@ -42,7 +42,7 @@ export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
       isEvent: parameters[CONTENTFUL_PARAMETERS.IS_EVENT] || false,
       isThing: parameters[CONTENTFUL_PARAMETERS.IS_THING] || false,
     },
-    priceRange: !priceMin && !priceMax ? [] : buildPriceRange({ priceMin, priceMax }),
+    priceRange: buildPriceRange({ priceMin, priceMax }),
     searchAround: parameters[CONTENTFUL_PARAMETERS.IS_GEOLOCATED] || false,
     tags: parameters[CONTENTFUL_PARAMETERS.TAGS] || [],
   }

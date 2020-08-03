@@ -118,9 +118,10 @@ class Search extends PureComponent {
   }
 
   render() {
-    const { history, match, redirectToSearchMainPage } = this.props
+    const { history, location, match, redirectToSearchMainPage } = this.props
     const { categoryCriterion, geolocationCriterion, sortCriterion } = this.state
     const { place, userGeolocation } = geolocationCriterion
+    const { parametersFromHome } = location
 
     return (
       <Switch>
@@ -145,6 +146,7 @@ class Search extends PureComponent {
             }}
             history={history}
             match={match}
+            parametersFromHome={parametersFromHome}
             parse={parse}
             place={place}
             redirectToSearchMainPage={redirectToSearchMainPage}
@@ -207,6 +209,7 @@ Search.propTypes = {
     longitude: PropTypes.number,
   }),
   history: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
   redirectToSearchMainPage: PropTypes.func.isRequired,
 }

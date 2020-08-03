@@ -26,6 +26,9 @@ describe('components | Search', () => {
         longitude: 45,
       },
       history: createBrowserHistory(),
+      location: {
+        parametersFromHome: {},
+      },
       match: {
         params: {},
         path: '/recherche',
@@ -49,7 +52,7 @@ describe('components | Search', () => {
 
       // Then
       expect(document.querySelector().content).toMatch(
-        'height=123px, width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no'
+        'height=123px, width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no',
       )
     })
 
@@ -65,7 +68,7 @@ describe('components | Search', () => {
       // Then
       expect(window.onresize).toBeNull()
       expect(document.querySelector().content).toBe(
-        'width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no'
+        'width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no',
       )
     })
 
@@ -75,7 +78,7 @@ describe('components | Search', () => {
       const wrapper = mount(
         <Router history={props.history}>
           <Search {...props} />
-        </Router>
+        </Router>,
       )
 
       // when
@@ -91,7 +94,7 @@ describe('components | Search', () => {
       const wrapper = mount(
         <Router history={props.history}>
           <Search {...props} />
-        </Router>
+        </Router>,
       )
 
       // when
@@ -107,7 +110,7 @@ describe('components | Search', () => {
       const wrapper = mount(
         <Router history={props.history}>
           <Search {...props} />
-        </Router>
+        </Router>,
       )
 
       // when
@@ -184,7 +187,7 @@ describe('components | Search', () => {
         expect(searchResultsComponent.prop('match')).toStrictEqual(props.match)
         expect(searchResultsComponent.prop('parse')).toStrictEqual(parse)
         expect(searchResultsComponent.prop('redirectToSearchMainPage')).toStrictEqual(
-          props.redirectToSearchMainPage
+          props.redirectToSearchMainPage,
         )
         expect(searchResultsComponent.prop('search')).toStrictEqual(props.history.location.search)
         expect(searchResultsComponent.prop('userGeolocation')).toStrictEqual(props.geolocation)
@@ -209,6 +212,35 @@ describe('components | Search', () => {
           sortBy: '',
         })
       })
+
+      it('should render search results page when path is /recherche/resultats and query params are given through location', () => {
+        // given
+        props.history.location.pathname = 'recherche/resultats'
+        props.location = { parametersFromHome: { isDuo: true } }
+        const wrapper = shallow(<Search {...props} />)
+
+        // when
+        const routes = wrapper.find(Route)
+
+        // then
+        const resultatsRoute = routes.at(1)
+        expect(resultatsRoute.prop('path')).toBe('/recherche/resultats')
+        const searchResultsComponent = resultatsRoute.find(Results)
+        expect(searchResultsComponent.prop('criteria')).toStrictEqual({
+          categories: [],
+          searchAround: { everywhere: true, place: false, user: false },
+          sortBy: '',
+        })
+        expect(searchResultsComponent.prop('history')).toStrictEqual(props.history)
+        expect(searchResultsComponent.prop('match')).toStrictEqual(props.match)
+        expect(searchResultsComponent.prop('parametersFromHome')).toStrictEqual({ isDuo: true })
+        expect(searchResultsComponent.prop('parse')).toStrictEqual(parse)
+        expect(searchResultsComponent.prop('redirectToSearchMainPage')).toStrictEqual(
+          props.redirectToSearchMainPage,
+        )
+        expect(searchResultsComponent.prop('search')).toStrictEqual(props.history.location.search)
+        expect(searchResultsComponent.prop('userGeolocation')).toStrictEqual(props.geolocation)
+      })
     })
 
     describe('geolocation criteria page', () => {
@@ -231,7 +263,7 @@ describe('components | Search', () => {
         expect(searchCriteriaLocation.prop('history')).toStrictEqual(props.history)
         expect(searchCriteriaLocation.prop('match')).toStrictEqual(props.match)
         expect(searchCriteriaLocation.prop('onCriterionSelection')).toStrictEqual(
-          expect.any(Function)
+          expect.any(Function),
         )
         expect(searchCriteriaLocation.prop('onPlaceSelection')).toStrictEqual(expect.any(Function))
         expect(searchCriteriaLocation.prop('place')).toBeNull()
@@ -244,7 +276,7 @@ describe('components | Search', () => {
         const wrapper = mount(
           <Router history={props.history}>
             <Search {...props} />
-          </Router>
+          </Router>,
         )
         const everywhereButton = wrapper.find({ children: 'Partout' })
 

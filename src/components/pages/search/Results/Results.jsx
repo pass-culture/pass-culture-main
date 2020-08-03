@@ -26,6 +26,7 @@ class Results extends PureComponent {
     super(props)
     const {
       criteria: { categories, searchAround, sortBy },
+      parametersFromHome,
       place,
     } = props
     const searchAroundFromUrlOrProps = this.getSearchAroundFromUrlOrProps(searchAround)
@@ -60,7 +61,8 @@ class Results extends PureComponent {
       isLoading: false,
       numberOfActiveFilters: this.getNumberOfActiveFilters(
         categoriesFromUrlOrProps,
-        searchAroundFromUrlOrProps
+        parametersFromHome,
+        searchAroundFromUrlOrProps,
       ),
       place: placeFromUrlOrProps,
       resultsCount: 0,
@@ -74,17 +76,39 @@ class Results extends PureComponent {
   }
 
   componentDidMount() {
-    const { history, parse } = this.props
+    const { history, parametersFromHome, parse } = this.props
     const { currentPage } = this.state
     const queryParams = parse(history.location.search)
     const keywords = queryParams['mots-cles'] || ''
-    this.fetchOffers({ keywords, page: currentPage })
+
+    if (parametersFromHome) {
+      this.updateFiltersWhenComingFromHome(parametersFromHome, keywords, currentPage)
+    } else {
+      this.fetchOffers({ keywords, page: currentPage })
+    }
 
     if (queryParams) {
       const categories = queryParams['categories']
       const keyWords = queryParams['mots-cles']
       trackSearchKeyWords(keyWords, categories)
     }
+  }
+
+  updateFiltersWhenComingFromHome = (parametersFromHome, keywords, currentPage) => {
+    const { filters } = this.state
+    this.setState({
+      filters: {
+        ...filters,
+        ...parametersFromHome,
+        searchAround: {
+          everywhere: !parametersFromHome.searchAround,
+          place: false,
+          user: parametersFromHome.searchAround,
+        },
+      },
+    }, () => {
+      this.fetchOffers({ keywords, page: currentPage })
+    })
   }
 
   getCategoriesFromUrlOrProps = categoriesFromProps => {
@@ -156,10 +180,45 @@ class Results extends PureComponent {
     }
   }
 
-  getNumberOfActiveFilters = (categories, searchAround) => {
+  getNumberFromBoolean = boolean => (boolean === true ? 1 : 0)
+
+  getPriceRangeCounter = priceRange => {
+    const [lowestPrice, highestPrice] = priceRange
+    const [defaultLowestPrice, defaultHighestPrice] = PRICE_FILTER.DEFAULT_RANGE
+    return lowestPrice !== defaultLowestPrice || highestPrice !== defaultHighestPrice ? 1 : 0
+  }
+
+  getNumberOfSelectedFilters = filter => {
+    let counter = 0
+
+    Object.keys(filter).forEach(key => {
+      if (filter[key] === true) {
+        counter++
+      }
+    })
+    return counter
+  }
+
+  getNumberOfActiveFilters = (categories, parametersFromHome, searchAround) => {
     const numberOfActiveCategories = categories.length
-    const geolocationFilterCounter =
-      searchAround.user === true || searchAround.place === true ? 1 : 0
+    const geolocationFilterCounter = searchAround.user === true || searchAround.place === true ? 1 : 0
+
+    if (parametersFromHome) {
+      const {
+        offerCategories,
+        offerIsDuo,
+        offerIsNew,
+        offerTypes,
+        priceRange,
+      } = parametersFromHome
+
+      return geolocationFilterCounter
+        + offerCategories.length
+        + this.getNumberFromBoolean(offerIsDuo)
+        + this.getNumberFromBoolean(offerIsNew)
+        + this.getNumberOfSelectedFilters(offerTypes)
+        + this.getPriceRangeCounter(priceRange)
+    }
     return geolocationFilterCounter + numberOfActiveCategories
   }
 
@@ -210,7 +269,7 @@ class Results extends PureComponent {
         () => {
           const { currentPage } = this.state
           this.fetchOffers({ keywords: trimmedKeywordsToSearch, page: currentPage })
-        }
+        },
       )
     }
     this.inputRef.current.blur()
@@ -259,7 +318,6 @@ class Results extends PureComponent {
       searchAround,
       sortBy,
     } = filters
-
     this.setState({
       isLoading: true,
     })
@@ -277,11 +335,9 @@ class Results extends PureComponent {
       searchAround: searchAround.everywhere !== true,
       sortBy,
     }
-
     if (offerIsFilteredByDate) {
       options.date = date
     }
-
     fetchAlgolia(options)
       .then(offers => {
         const { results } = this.state
@@ -364,7 +420,7 @@ class Results extends PureComponent {
         results: [],
         sortCriterionLabel: this.getSortCriterionLabelFromIndex(sortBy),
       }),
-      () => this.fetchOffers({ keywords: searchedKeywords })
+      () => this.fetchOffers({ keywords: searchedKeywords }),
     )
     const queryParams = search.replace(/(tri=)(\w*)/, 'tri=' + sortBy)
 
@@ -391,13 +447,13 @@ class Results extends PureComponent {
       () => {
         if (isGeolocationEnabled(userGeolocation)) {
           history.push(
-            `/recherche/resultats?mots-cles=&autour-de=oui&tri=&categories=&latitude=${userGeolocation.latitude}&longitude=${userGeolocation.longitude}`
+            `/recherche/resultats?mots-cles=&autour-de=oui&tri=&categories=&latitude=${userGeolocation.latitude}&longitude=${userGeolocation.longitude}`,
           )
           this.fetchOffers()
         } else {
           window.alert('Active ta géolocalisation pour voir les offres autour de toi !')
         }
-      }
+      },
     )
   }
 
@@ -547,6 +603,7 @@ Results.defaultProps = {
     isSearchAroundMe: false,
     sortBy: '',
   },
+  parametersFromHome: null,
   place: {
     geolocation: { longitude: null, latitude: null },
     name: null,
@@ -566,6 +623,7 @@ Results.propTypes = {
   }),
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
+  parametersFromHome: PropTypes.shape(),
   parse: PropTypes.func.isRequired,
   place: PropTypes.shape({
     geolocation: PropTypes.shape({
