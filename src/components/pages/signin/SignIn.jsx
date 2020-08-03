@@ -22,7 +22,7 @@ class SignIn extends PureComponent {
     formResolver(formErrors)
   }
 
-  handleSuccess = (formResolver) => () => {
+  handleSuccess = formResolver => () => {
     const { history } = this.props
     formResolver()
     history.push('/decouverte')
@@ -31,11 +31,7 @@ class SignIn extends PureComponent {
   handleSubmit = formValues => {
     const { signIn } = this.props
 
-    return signIn(
-      formValues,
-      this.handleFail,
-      this.handleSuccess
-    )
+    return signIn(formValues, this.handleFail, this.handleSuccess)
   }
 
   renderForm = props => {
@@ -55,7 +51,7 @@ class SignIn extends PureComponent {
               {'Connexion'}
             </h1>
             <h2 className="lf-subtitle">
-              {'Identifiez-vous\n'}
+              {'Identifie-toi\n'}
               {'pour accéder aux offres'}
             </h2>
           </div>

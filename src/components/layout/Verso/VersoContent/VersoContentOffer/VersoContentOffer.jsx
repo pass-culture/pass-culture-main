@@ -74,12 +74,10 @@ class VersoContentOffer extends PureComponent {
         {stageDirector && <div>
           {`Metteur en scène : ${stageDirector}`}
         </div>}
-        {offer.id && (
-          <DuoOfferContainer
-            label="Vous pouvez réserver deux places."
-            offerId={offer.id}
-          />
-        )}
+        {offer.id && <DuoOfferContainer
+          label="Tu peux réserver deux places."
+          offerId={offer.id}
+                     />}
       </div>
     )
   }

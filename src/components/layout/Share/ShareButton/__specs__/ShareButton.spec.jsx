@@ -124,7 +124,7 @@ describe('components | ShareButton', () => {
         // then
         expect(openPopinMock).toHaveBeenCalledWith({
           buttons: expect.any(Array),
-          text: 'Comment souhaitez-vous partager cette offre ?',
+          text: 'Comment souhaites-tu partager cette offre ?',
           title: 'Fake offer name',
         })
       })

@@ -18,7 +18,7 @@ describe('src | components | RequestEmailForm', () => {
 
     // then
     const sentence = wrapper.find({
-      children: 'Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.',
+      children: 'Renseigne ton adresse e-mail pour réinitialiser ton mot de passe.',
     })
     const input = wrapper.find(InputField)
     const formFooter = wrapper.find(FormFooter)

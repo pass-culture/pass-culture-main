@@ -184,7 +184,7 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
           ],
           handleClose: expect.any(Function),
           title: 'Offer title',
-          text: 'Souhaitez-vous réellement annuler cette réservation ?',
+          text: 'Souhaites-tu réellement annuler cette réservation ?',
         },
         type: 'TOGGLE_SHARE_POPIN',
       })

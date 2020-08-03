@@ -16,7 +16,7 @@ export const mapStateToProps = (state, ownProps) => {
   const { id: mediationId } = mediation || {}
   const offer = selectOfferByRouterMatch(state, match)
   const { id: offerId, name: offerName } = offer || {}
-  const text = offerName && `Retrouvez ${offerName} sur le pass Culture`
+  const text = offerName && `Retrouve ${offerName} sur le pass Culture`
   const user = selectCurrentUser(state)
   const url = getShareURL(user, offerId, mediationId)
 

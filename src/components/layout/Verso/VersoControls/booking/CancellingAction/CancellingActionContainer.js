@@ -105,7 +105,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
           }),
         ],
         handleClose: () => history.push(`${pathname.split('/reservation/')[0]}${search}`),
-        text: 'Souhaitez-vous réellement annuler cette réservation ?',
+        text: 'Souhaites-tu réellement annuler cette réservation ?',
         title: offerName,
       }
       dispatch(openSharePopin(options))

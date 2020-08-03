@@ -25,7 +25,7 @@ describe('activation', () => {
     )
 
     // then
-    const title = wrapper.find({ children: 'Pour commencer, choisissez votre mot de passe.' })
+    const title = wrapper.find({ children: 'Pour commencer, choisis ton mot de passe.' })
     expect(title).toHaveLength(1)
   })
 
@@ -64,7 +64,7 @@ describe('activation', () => {
     )
 
     // then
-    const title = wrapper.find({ children: 'Le lien sur lequel vous avez cliqué est invalide.' })
+    const title = wrapper.find({ children: 'Le lien sur lequel tu as cliqué est invalide.' })
     expect(title).toHaveLength(1)
   })
 })

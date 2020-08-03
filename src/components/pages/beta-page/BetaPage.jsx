@@ -13,10 +13,10 @@ const BetaPage = ({ trackSignup }) => (
     <main className="bp-main">
       <div className="bp-title">
         {'Bienvenue dans\n'}
-        {'votre pass Culture'}
+        {'ton pass Culture'}
       </div>
       <div className="bp-content">
-        {'Vous avez 18 ans et vivez dans un\n'}
+        {'Tu as 18 ans et tu vis dans un\n'}
         <a
           href="https://pass.culture.fr/#jeune"
           rel="noopener noreferrer"
@@ -26,8 +26,8 @@ const BetaPage = ({ trackSignup }) => (
         </a>
       </div>
       <div className="bp-content">
-        {'Bénéficiez de 500 € afin de\n'}
-        {'renforcer vos pratiques\n'}
+        {'Bénéficie de 500 € afin de\n'}
+        {'renforcer tes pratiques\n'}
         {"culturelles et d'en découvrir\n"}
         {'de nouvelles !'}
       </div>

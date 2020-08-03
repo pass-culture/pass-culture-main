@@ -34,7 +34,7 @@ const MyBookingsLists = ({
         </div>
         <p className="mb-infos">
           {
-            'Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.'
+            'Le code de réservation à 6 caractères est ta preuve d’achat. Ne communique ce code qu’au moment du retrait de ta commande.'
           }
         </p>
       </section>

@@ -28,12 +28,12 @@ describe('src | components | BookingSuccess', () => {
       const title = wrapper.find('h3')
       const sentence1 = wrapper.find('p').at(0)
       const sentence3 = wrapper.find('p').at(2)
-      expect(title.text()).toBe('<Icon />Votre réservation est validée.')
+      expect(title.text()).toBe('<Icon />Ta réservation est validée.')
       expect(sentence1.text()).toBe(
-        `12,5${NO_BREAK_SPACE}€ ont été déduits de votre pass.Présentez le code suivant sur place :`
+        `12,5${NO_BREAK_SPACE}€ ont été déduits de ton pass.Présente le code suivant sur place :`
       )
       expect(sentence3.text()).toBe(
-        'Retrouvez ce code et les détails de l’offre dansla rubrique Réservations de votre compte'
+        'Retrouve ce code et les détails de l’offre dansla rubrique Réservations de ton compte'
       )
     })
 
@@ -47,7 +47,7 @@ describe('src | components | BookingSuccess', () => {
 
       // then
       const title = wrapper.find('h3')
-      expect(title.text()).toBe('<Icon />Votre réservation duo est validée.')
+      expect(title.text()).toBe('<Icon />Ta réservation duo est validée.')
     })
   })
 
@@ -66,14 +66,14 @@ describe('src | components | BookingSuccess', () => {
       const sentence1 = wrapper.find('p').at(0)
       const sentence2 = wrapper.find('p a')
       const sentence3 = wrapper.find('p').at(2)
-      expect(title.text()).toBe('<Icon />Votre pouvez accéder à cette offre à tout moment.')
-      expect(sentence1.text()).toBe(`12,5${NO_BREAK_SPACE}€ ont été déduits de votre pass.`)
+      expect(title.text()).toBe('<Icon />Tu peux accéder à cette offre à tout moment.')
+      expect(sentence1.text()).toBe(`12,5${NO_BREAK_SPACE}€ ont été déduits de ton pass.`)
       expect(sentence2.text()).toBe('Accéder à l’offre numérique')
       expect(sentence2.prop('href')).toBe('http://fake-url.com')
       expect(sentence2.prop('rel')).toBe('noopener noreferrer')
       expect(sentence2.prop('target')).toBe('_blank')
       expect(sentence3.text()).toBe(
-        'Retrouvez l’adresse Internet et les détails del’offre dans la rubrique Réservations de votre compte'
+        'Retrouve l’adresse Internet et les détails del’offre dans la rubrique Réservations de ton compte'
       )
     })
   })

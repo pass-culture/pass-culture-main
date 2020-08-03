@@ -13,14 +13,14 @@ describe('components | BetaPage', () => {
     const wrapper = shallow(<BetaPage />)
 
     // then
-    const line1 = wrapper.findWhere(node => node.text() === 'Bienvenue dans\nvotre pass Culture')
+    const line1 = wrapper.findWhere(node => node.text() === 'Bienvenue dans\nton pass Culture')
     const line2 = wrapper.findWhere(
-      node => node.text() === 'Vous avez 18 ans et vivez dans un\ndépartement éligible ?'
+      node => node.text() === 'Tu as 18 ans et tu vis dans un\ndépartement éligible ?'
     )
     const line3 = wrapper.findWhere(
       node =>
         node.text() ===
-        "Bénéficiez de 500 € afin de\nrenforcer vos pratiques\nculturelles et d'en découvrir\nde nouvelles !"
+        "Bénéficie de 500 € afin de\nrenforcer tes pratiques\nculturelles et d'en découvrir\nde nouvelles !"
     )
     expect(line1).toHaveLength(1)
     expect(line2).toHaveLength(1)

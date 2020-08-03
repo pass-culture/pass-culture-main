@@ -79,7 +79,7 @@ class ShareButton extends PureComponent {
           this.getCopyToClipboardButton(url, this.onCopyHandler),
           this.getMailToLinkButton(email, headers, trackShareOfferByMail),
         ],
-        text: 'Comment souhaitez-vous partager cette offre ?',
+        text: 'Comment souhaites-tu partager cette offre ?',
         title: offerName,
       }
 

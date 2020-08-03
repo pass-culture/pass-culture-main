@@ -32,7 +32,7 @@ test('je clique sur "mot de passe oublié", je remplis le formulaire avec une ad
     .expect(location.pathname)
     .eql('/mot-de-passe-perdu')
     .expect(pageH2Title.innerText)
-    .eql('Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.')
+    .eql('Renseigne ton adresse e-mail pour réinitialiser ton mot de passe.')
 
   // when
   await t.typeText(inputUserEmail, email).click(sendTokenButton)

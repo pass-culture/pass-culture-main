@@ -75,7 +75,7 @@ describe('src | components | MyBookingsLists', () => {
       const bookingsList = wrapper.find(BookingsList)
       const sentence = wrapper.find({
         children:
-          'Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.',
+          'Le code de réservation à 6 caractères est ta preuve d’achat. Ne communique ce code qu’au moment du retrait de ta commande.',
       })
       expect(title).toHaveLength(1)
       expect(thisWeekSentence).toHaveLength(1)
@@ -101,7 +101,7 @@ describe('src | components | MyBookingsLists', () => {
       const title = wrapper.find({ children: 'Réservations' })
       const sentence = wrapper.find({
         children:
-          'Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.',
+          'Le code de réservation à 6 caractères est ta preuve d’achat. Ne communique ce code qu’au moment du retrait de ta commande.',
       })
       const toComeSentence = wrapper.find({ children: 'À venir' })
       const bookingsList = wrapper.find(BookingsList)
@@ -132,7 +132,7 @@ describe('src | components | MyBookingsLists', () => {
       const title = wrapper.find({ children: 'Réservations' })
       const sentence = wrapper.find({
         children:
-          'Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.',
+          'Le code de réservation à 6 caractères est ta preuve d’achat. Ne communique ce code qu’au moment du retrait de ta commande.',
       })
       const finishedSentence = wrapper.find({ children: 'Terminées' })
       const bookingsList = wrapper.find(BookingsList)

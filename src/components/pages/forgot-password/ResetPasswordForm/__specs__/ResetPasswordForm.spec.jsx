@@ -15,8 +15,8 @@ describe('src | components | ResetPasswordForm', () => {
     const wrapper = shallow(<ResetPasswordForm {...props} />)
 
     // then
-    const sentence1 = wrapper.find({ children: 'Saisissez ci-dessous' })
-    const sentence2 = wrapper.find({ children: 'votre nouveau mot de passe.' })
+    const sentence1 = wrapper.find({ children: 'Saisis ci-dessous' })
+    const sentence2 = wrapper.find({ children: 'ton nouveau mot de passe.' })
     const sentence3 = wrapper.find({
       children:
         'Il doit contenir au minimum 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.',

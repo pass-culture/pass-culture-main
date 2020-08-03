@@ -12,7 +12,7 @@ export const RequestEmailForm = ({ canSubmit, isLoading, formErrors }) => (
     <div>
       <div className="logout-form-header">
         <div className="logout-form-title">
-          {'Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.'}
+          {'Renseigne ton adresse e-mail pour réinitialiser ton mot de passe.'}
         </div>
       </div>
       <div>

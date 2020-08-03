@@ -80,7 +80,7 @@ describe('src | components | share | ShareButtonContainer', () => {
         const result = mapStateToProps(state, ownProps)
 
         // then
-        expect(result.text).toBe('Retrouvez Marx et Compagnie sur le pass Culture')
+        expect(result.text).toBe('Retrouve Marx et Compagnie sur le pass Culture')
       })
     })
 

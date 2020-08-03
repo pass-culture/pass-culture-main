@@ -38,7 +38,7 @@ class BookingFormContent extends PureComponent {
     const { values } = this.props
     const { value } = input
     const calendarDates = getCalendarProvider(values)
-    const calendarLabel = calendarDates.length === 1 ? '' : 'Choisissez une date :'
+    const calendarLabel = calendarDates.length === 1 ? '' : 'Choisis une date :'
     const dateFormat = 'DD MMMM YYYY'
 
     return (
@@ -84,7 +84,7 @@ class BookingFormContent extends PureComponent {
     const bookableTimes = parseHoursByStockId(values)
     const hasOneBookableTime = bookableTimes.length === 1
     const hasBookableTimes = bookableTimes.length > 0
-    const hourLabel = hasOneBookableTime ? '' : 'Choisissez une heure :'
+    const hourLabel = hasOneBookableTime ? '' : 'Choisis une heure :'
     const displayPriceWarning = !isEvent || (bookableTimes && hasBookableTimes)
     const computedPrice = isDuo ? price * 2 : price
     const formattedComputedPrice = formatDecimals(computedPrice)
@@ -127,7 +127,7 @@ class BookingFormContent extends PureComponent {
         {displayPriceWarning && (
           <p className="text-center fs22">
             <span className="is-block">
-              {'Vous êtes sur le point de réserver'}
+              {'Tu es sur le point de réserver'}
             </span>
             <span className="is-block">
               {`cette offre pour ${formattedComputedPrice} €.`}

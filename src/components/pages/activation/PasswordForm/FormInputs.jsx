@@ -18,7 +18,7 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
     <div>
       <div className="logout-form-header">
         <div className="logout-form-title">
-          {'Pour commencer, choisissez votre mot de passe.'}
+          {'Pour commencer, choisis ton mot de passe.'}
         </div>
         <div className="logout-form-mandatory-label">
           {'* Champs obligatoires'}
@@ -44,7 +44,7 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
       <PasswordField
         disabled={isLoading}
         id="activation-newPasswordConfirm"
-        label="Confirmez le mot de passe"
+        label="Confirmer le mot de passe"
         name="newPasswordConfirm"
         required={isRequired}
         theme="primary"

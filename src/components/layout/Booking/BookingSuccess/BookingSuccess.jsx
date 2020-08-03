@@ -15,7 +15,7 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
           <Icon svg="ico-validation-green" />
         </span>
         <span className="is-block mb36">
-          {isEvent && 'Votre réservation '}
+          {isEvent && 'Ta réservation '}
           {isEvent && isDuo && <i>
             {'duo '}
           </i>}
@@ -23,7 +23,7 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
           {!isEvent && (
             <Fragment>
               <span className="is-block">
-                {'Votre pouvez accéder à cette offre '}
+                {'Tu peux accéder à cette offre '}
               </span>
               <span className="is-block">
                 {'à tout moment.'}
@@ -35,10 +35,10 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
       <p>
         <span className="is-block">
           {getDisplayPrice(price * quantity)}
-          {' ont été déduits de votre pass.'}
+          {' ont été déduits de ton pass.'}
         </span>
         {!offerUrl && <span className="is-block">
-          {'Présentez le code suivant sur place :'}
+          {'Présente le code suivant sur place :'}
         </span>}
       </p>
       <p className="my28">
@@ -70,7 +70,7 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
         {!offerUrl && (
           <Fragment>
             <span className="is-block">
-              {'Retrouvez ce code et les détails de l’offre dans'}
+              {'Retrouve ce code et les détails de l’offre dans'}
             </span>
             <span className="is-block">
               {'la rubrique '}
@@ -79,14 +79,14 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
                   {'Réservations'}
                 </b>
               </Link>
-              {' de votre compte'}
+              {' de ton compte'}
             </span>
           </Fragment>
         )}
         {offerUrl && (
           <Fragment>
             <span className="is-block">
-              {'Retrouvez l’adresse Internet et les détails de'}
+              {'Retrouve l’adresse Internet et les détails de'}
             </span>
             <span className="is-block">
               {'l’offre dans la rubrique '}
@@ -97,7 +97,7 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
               </Link>
             </span>
             <span className="is-block">
-              {' de votre compte'}
+              {' de ton compte'}
             </span>
           </Fragment>
         )}

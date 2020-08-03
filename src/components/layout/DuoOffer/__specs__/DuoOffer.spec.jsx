@@ -4,11 +4,11 @@ import React from 'react'
 import DuoOffer from '../DuoOffer'
 
 describe('src | components | DuoOffer', () => {
-  it('when this offer is a not an "offre duo" should render nothing', () => {
+  it('when this offer is an "offre duo" should render nothing', () => {
     // given
     const props = {
       isDuoOffer: true,
-      label: 'Vous pouvez réserver deux places.',
+      label: 'Tu peux réserver deux places.',
       offerId: 'AFZR',
     }
 
@@ -22,11 +22,11 @@ describe('src | components | DuoOffer', () => {
     expect(sentence2).toHaveLength(1)
   })
 
-  it('when this offer is an "offre duo" should render picto and label', () => {
+  it('when this offer is not an "offre duo" should render picto and label', () => {
     // given
     const props = {
       isDuoOffer: false,
-      label: 'Vous pouvez réserver deux places.',
+      label: 'Tu peux réserver deux places.',
       offerId: 'ABCD',
     }
 

@@ -84,7 +84,7 @@ const BookingItem = ({
           <div className="mb-corner top left" />
           <div className="mb-corner top right" />
           <div className="mb-token-title">
-            {'Votre contremarque'}
+            {'Ta contremarque'}
           </div>
           {isQrCodeFeatureDisabled && (
             <div className="mb-token-contremarque-container">

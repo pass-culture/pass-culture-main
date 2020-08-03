@@ -1,4 +1,4 @@
-import { shallow } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import React from 'react'
 
 import BookingCancel from '../BookingCancel'
@@ -20,14 +20,16 @@ describe('src | components | layout | BookingCancellation | BookingCancel', () =
 
   it('should render BookingCancel component using informations from props', () => {
     // when
-    const wrapper = shallow(<BookingCancel {...props} />)
+    const wrapper = mount(<BookingCancel {...props} />)
 
     // then
     const mainWrapper = wrapper.find('.text-center')
+    const cancellationTitle = mainWrapper.find('div span').at(1)
+    expect(cancellationTitle.text()).toBe('Ta réservation est annulée.')
     const spans = mainWrapper.find('p span')
     expect(spans).toHaveLength(2)
-    expect(spans.at(0).text()).toBe(`12${NO_BREAK_SPACE}€ vont être recrédités sur votre pass.`)
-    expect(spans.at(1).text()).toBe('Vous allez recevoir un e-mail de confirmation.')
+    expect(spans.at(0).text()).toBe(`12${NO_BREAK_SPACE}€ vont être recrédités sur ton pass.`)
+    expect(spans.at(1).text()).toBe('Tu vas recevoir un e-mail de confirmation.')
   })
 
   describe('when offer is an event', () => {

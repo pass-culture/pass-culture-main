@@ -4,11 +4,11 @@ import React from 'react'
 import PersonalInformationsField from '../PersonalInformationsField'
 
 describe('my informations field', () => {
-  const ERROR_MESSAGE = 'Vous devez renseigner au moins 3 caractères'
+  const ERROR_MESSAGE = 'Tu dois renseigner au moins 3 caractères'
 
   it('should display error messages when there are validation errors', () => {
     // Given
-    const secondErrorMessage = 'Vous ne devez pas renseigner plus de 10 caractères'
+    const secondErrorMessage = 'Tu ne dois pas renseigner plus de 10 caractères'
     const errors = [ERROR_MESSAGE, secondErrorMessage]
 
     // When

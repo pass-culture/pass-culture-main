@@ -36,7 +36,7 @@ describe('src | components | BookingFormContent', () => {
     const wrapper = shallow(<BookingFormContent {...props} />)
 
     // then
-    const sentence1 = wrapper.find({ children: 'Vous êtes sur le point de réserver' })
+    const sentence1 = wrapper.find({ children: 'Tu es sur le point de réserver' })
     const sentence2 = wrapper.find({ children: 'cette offre pour 0 €.' })
     expect(sentence1).toHaveLength(1)
     expect(sentence2).toHaveLength(1)
@@ -169,7 +169,7 @@ describe('src | components | BookingFormContent', () => {
           className: 'text-center',
           disabled: false,
           id: 'booking-form-time-picker-field',
-          label: 'Choisissez une heure :',
+          label: 'Choisis une heure :',
           name: 'time',
           placeholder: 'Heure et prix',
           options: [
@@ -205,7 +205,7 @@ describe('src | components | BookingFormContent', () => {
         const spans = wrapper.find('span')
         expect(spans).toHaveLength(2)
         expect(spans.at(0).prop('className')).toBe('is-block')
-        expect(spans.at(0).text()).toBe('Vous êtes sur le point de réserver')
+        expect(spans.at(0).text()).toBe('Tu es sur le point de réserver')
         expect(spans.at(1).prop('className')).toBe('is-block')
         expect(spans.at(1).text()).toBe('cette offre pour 12 €.')
       })
