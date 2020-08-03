@@ -203,6 +203,30 @@ describe('fetchAlgolia', () => {
         page: 0,
       })
     })
+
+    it('should fetch offers with geolocation coordinates, when latitude, longitude, search is around me, and radius is null', () => {
+      // given
+      const keywords = 'searched keywords'
+      const geolocation = {
+        latitude: 42,
+        longitude: 43,
+      }
+
+      // when
+      fetchAlgolia({
+        aroundRadius: null,
+        geolocation: geolocation,
+        keywords: keywords,
+        searchAround: true,
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        aroundLatLng: '42, 43',
+        aroundRadius: 'all',
+        page: 0,
+      })
+    })
   })
 
   describe('categories', () => {

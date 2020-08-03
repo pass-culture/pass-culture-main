@@ -215,10 +215,11 @@ const buildGeolocationParameter = (aroundRadius, geolocation, searchAround) => {
     const { longitude, latitude } = geolocation
     if (latitude && longitude) {
       const aroundRadiusInMeters = computeRadiusInMeters(aroundRadius, searchAround)
+      const radiusIsPositive = aroundRadiusInMeters > 0
 
       return {
         aroundLatLng: `${latitude}, ${longitude}`,
-        aroundRadius: searchAround ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS,
+        aroundRadius: searchAround && radiusIsPositive ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS,
       }
     }
   }
