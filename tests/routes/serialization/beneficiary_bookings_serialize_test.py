@@ -1,5 +1,5 @@
 from datetime import datetime
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from freezegun import freeze_time
 
@@ -11,7 +11,8 @@ from routes.serialization.beneficiary_bookings_serialize import serialize_benefi
 class BeneficiaryBookingsSerializeTest:
     class SerializeBeneficiaryBookingsTest:
         @freeze_time('2019-1-1')
-        def should_return_expected_json_without_qr_code(self):
+        @patch('domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
+        def should_return_expected_json_without_qr_code(self, mock_get_storage):
             # Given
             stocks = [
                 Stock(
@@ -28,8 +29,6 @@ class BeneficiaryBookingsSerializeTest:
                 )
             ]
 
-            offer_mock = MagicMock()
-            offer_mock.thumb_url = 'http://thumb.url'
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -65,7 +64,9 @@ class BeneficiaryBookingsSerializeTest:
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
-                offer=offer_mock
+                productId=12,
+                thumbCount=1,
+                active_mediations=[]
             )
             beneficiary_bookings = BeneficiaryBookings(
                 bookings=[beneficiary_booking],
@@ -137,7 +138,7 @@ class BeneficiaryBookingsSerializeTest:
                             'isBookable': True,
                             'remainingQuantity': 'unlimited',
                         }],
-                        'thumbUrl': 'http://thumb.url',
+                        'thumbUrl': 'http://example.com/thumbs/products/BQ',
                         'venue': {
                             'address': '5 rue du cinéma',
                             'city': 'Lure',
@@ -160,11 +161,10 @@ class BeneficiaryBookingsSerializeTest:
             }]
 
         @freeze_time('2019-1-1')
-        @patch('domain.beneficiary_bookings.beneficiary_bookings.generate_qr_code')
-        def should_return_expected_json_with_qr_code(self, mock_generate_qr_code):
+        @patch('domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
+        @patch('domain.beneficiary_bookings.beneficiary_bookings.generate_qr_code', return_value='fake_qr_code')
+        def should_return_expected_json_with_qr_code(self, mock_generate_qr_code, mock_get_storage):
             # Given
-            mock_generate_qr_code.return_value = 'fake_qr_code'
-
             stocks = [
                 Stock(
                     id=1,
@@ -180,8 +180,6 @@ class BeneficiaryBookingsSerializeTest:
                 )
             ]
 
-            offer_mock = MagicMock()
-            offer_mock.thumb_url = 'http://thumb.url'
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -217,7 +215,9 @@ class BeneficiaryBookingsSerializeTest:
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
-                offer=offer_mock,
+                productId=12,
+                thumbCount=1,
+                active_mediations=[]
             )
             beneficiary_bookings = BeneficiaryBookings(
                 bookings=[beneficiary_booking],
@@ -290,7 +290,7 @@ class BeneficiaryBookingsSerializeTest:
                             'isBookable': True,
                             'remainingQuantity': 'unlimited',
                         }],
-                        'thumbUrl': 'http://thumb.url',
+                        'thumbUrl': 'http://example.com/thumbs/products/BQ',
                         'venue': {
                             'address': '5 rue du cinéma',
                             'city': 'Lure',
@@ -313,7 +313,8 @@ class BeneficiaryBookingsSerializeTest:
             }]
 
         @freeze_time('2019-1-1')
-        def test_offer_should_not_be_bookable_when_all_stock_are_not_bookable(self):
+        @patch('domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
+        def test_offer_should_not_be_bookable_when_all_stock_are_not_bookable(self, mock_get_storage):
             # Given
             stocks = [
                 Stock(
@@ -342,8 +343,6 @@ class BeneficiaryBookingsSerializeTest:
                 )
             ]
 
-            offer_mock = MagicMock()
-            offer_mock.thumb_url = 'http://thumb.url'
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -379,7 +378,9 @@ class BeneficiaryBookingsSerializeTest:
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
-                offer=offer_mock
+                productId=12,
+                thumbCount=1,
+                active_mediations=[]
             )
             beneficiary_bookings = BeneficiaryBookings(
                 bookings=[beneficiary_booking],
@@ -395,7 +396,8 @@ class BeneficiaryBookingsSerializeTest:
             assert serialized_beneficiary_booking[0]['stock']['offer']['isBookable'] is False
 
         @freeze_time('2019-1-1')
-        def test_offer_should_be_bookable_when_at_least_one_stock_is_bookable(self):
+        @patch('domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
+        def test_offer_should_be_bookable_when_at_least_one_stock_is_bookable(self, mock_get_storage):
             # Given
             stocks = [
                 Stock(
@@ -424,8 +426,6 @@ class BeneficiaryBookingsSerializeTest:
                 )
             ]
 
-            offer_mock = MagicMock()
-            offer_mock.thumb_url = 'http://thumb.url'
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -461,7 +461,9 @@ class BeneficiaryBookingsSerializeTest:
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
-                offer=offer_mock,
+                productId=12,
+                thumbCount=1,
+                active_mediations=[]
             )
             beneficiary_bookings = BeneficiaryBookings(
                 bookings=[beneficiary_booking],

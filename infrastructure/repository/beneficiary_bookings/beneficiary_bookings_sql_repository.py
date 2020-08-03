@@ -1,11 +1,9 @@
 from typing import List
 
-from sqlalchemy.orm import joinedload
-
 from domain.beneficiary_bookings.beneficiary_bookings import BeneficiaryBookings, BeneficiaryBooking
 from domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
-from infrastructure.repository.beneficiary_bookings.stock_domain_converter import to_domain
-from models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, Offer, VenueSQLEntity
+from infrastructure.repository.beneficiary_bookings import stock_domain_converter, active_mediation_domain_converter
+from models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, Offer, VenueSQLEntity, Mediation, Product
 
 
 class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
@@ -14,12 +12,13 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
 
         offers_ids = [booking.offerId for booking in booking_sql_entity_views]
         stock_sql_entity_views = _get_stocks_information(offers_ids)
-
-        stocks = [to_domain(stock) for stock in stock_sql_entity_views]
+        mediations_sql_entity_views = _get_mediations_information(offers_ids)
+        mediations = [active_mediation_domain_converter.to_domain(mediation) for mediation in
+                      mediations_sql_entity_views]
+        stocks = [stock_domain_converter.to_domain(stock) for stock in stock_sql_entity_views]
 
         beneficiary_bookings = []
         for booking in booking_sql_entity_views:
-            booking_sql_entity = booking[0]
             beneficiary_bookings.append(
                 BeneficiaryBooking(
                     amount=booking.amount,
@@ -56,14 +55,27 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
                     latitude=booking.latitude,
                     longitude=booking.longitude,
                     price=booking.price,
-                    offer=booking_sql_entity.stock.offer,
+                    productId=booking.productId,
+                    thumbCount=booking.thumbCount,
+                    active_mediations=[mediation for mediation in mediations if mediation.offer_id == booking.offerId],
                 )
             )
         return BeneficiaryBookings(bookings=beneficiary_bookings, stocks=stocks)
 
 
+def _get_mediations_information(offers_ids: List[int]) -> List[object]:
+    return Mediation.query \
+        .join(Offer, Offer.id == Mediation.offerId) \
+        .filter(Mediation.offerId.in_(offers_ids)) \
+        .filter(Mediation.isActive == True) \
+        .with_entities(Mediation.id,
+                       Mediation.dateCreated,
+                       Mediation.offerId) \
+        .all()
+
+
 def _get_stocks_information(offers_ids: List[int]) -> List[object]:
-    stocks_sql_entity = StockSQLEntity.query \
+    return StockSQLEntity.query \
         .join(Offer, Offer.id == StockSQLEntity.offerId) \
         .filter(StockSQLEntity.offerId.in_(offers_ids)) \
         .with_entities(StockSQLEntity.dateCreated,
@@ -77,7 +89,6 @@ def _get_stocks_information(offers_ids: List[int]) -> List[object]:
                        StockSQLEntity.isSoftDeleted,
                        Offer.isActive) \
         .all()
-    return stocks_sql_entity
 
 
 def _get_bookings_information(beneficiary_id: int) -> List[object]:
@@ -86,6 +97,7 @@ def _get_bookings_information(beneficiary_id: int) -> List[object]:
         .join(UserSQLEntity, UserSQLEntity.id == BookingSQLEntity.userId) \
         .join(StockSQLEntity, StockSQLEntity.id == BookingSQLEntity.stockId) \
         .join(Offer) \
+        .join(Product, Offer.productId == Product.id) \
         .join(VenueSQLEntity) \
         .filter(BookingSQLEntity.userId == beneficiary_id) \
         .filter(Offer.type.notin_(offer_activation_types)) \
@@ -94,18 +106,7 @@ def _get_bookings_information(beneficiary_id: int) -> List[object]:
                   BookingSQLEntity.isCancelled,
                   BookingSQLEntity.dateCreated.desc()
                   ) \
-        .options(
-        joinedload(BookingSQLEntity.stock)
-            .joinedload(StockSQLEntity.offer)
-            .joinedload(Offer.product)
-    ) \
-        .options(
-        joinedload(BookingSQLEntity.stock)
-            .joinedload(StockSQLEntity.offer)
-            .joinedload(Offer.mediations)
-    ) \
-        .with_entities(BookingSQLEntity,
-                       BookingSQLEntity.amount,
+        .with_entities(BookingSQLEntity.amount,
                        BookingSQLEntity.cancellationDate,
                        BookingSQLEntity.dateCreated,
                        BookingSQLEntity.dateUsed,
@@ -128,6 +129,8 @@ def _get_bookings_information(beneficiary_id: int) -> List[object]:
                        Offer.description,
                        Offer.mediaUrls,
                        Offer.isNational,
+                       Product.id.label("productId"),
+                       Product.thumbCount,
                        UserSQLEntity.email,
                        StockSQLEntity.beginningDatetime,
                        StockSQLEntity.price,

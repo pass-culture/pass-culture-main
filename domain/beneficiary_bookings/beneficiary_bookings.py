@@ -1,9 +1,10 @@
 from datetime import datetime
 from typing import List, Optional, Dict
 
+from domain.beneficiary_bookings.active_mediation import ActiveMediation
 from domain.beneficiary_bookings.stock import Stock
+from domain.beneficiary_bookings.thumb_url import MediationThumbUrl, ProductThumbUrl
 from domain.bookings import generate_qr_code
-from models import Offer
 from models.offer_type import ProductType, ThingType, EventType
 from utils.human_ids import humanize
 
@@ -44,7 +45,9 @@ class BeneficiaryBooking:
                  latitude: float,
                  longitude: float,
                  price: float,
-                 offer: Offer,
+                 productId: int,
+                 thumbCount: int,
+                 active_mediations: List[ActiveMediation],
                  ):
         self.price = price
         self.longitude = longitude
@@ -80,7 +83,20 @@ class BeneficiaryBooking:
         self.beginningDatetime = beginningDatetime
         self.venueId = venueId
         self.departementCode = departementCode
-        self.thumb_url = offer.thumb_url
+        self.thumb_url = self._compute_thumb_url(active_mediations=active_mediations,
+                                                 product_id=productId,
+                                                 product_thumb_count=thumbCount)
+
+    @staticmethod
+    def _compute_thumb_url(active_mediations: List[ActiveMediation],
+                           product_id: int, product_thumb_count: int) -> Optional[str]:
+        if len(active_mediations) > 0:
+            newest_mediation_id = sorted(active_mediations, key=lambda mediation: mediation.date_created,
+                                         reverse=True)[0].identifier
+            return MediationThumbUrl(identifier=newest_mediation_id).url()
+        if product_thumb_count > 0:
+            return ProductThumbUrl(identifier=product_id).url()
+        return None
 
     @property
     def booking_access_url(self) -> Optional[str]:
