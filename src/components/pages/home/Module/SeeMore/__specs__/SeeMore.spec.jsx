@@ -11,6 +11,8 @@ describe('src | components | SeeMore', () => {
 
   beforeEach(() => {
     props = {
+      isSwitching: false,
+      historyPush: jest.fn(),
       layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
       parameters: {
         aroundRadius: null,
@@ -86,20 +88,32 @@ describe('src | components | SeeMore', () => {
       searchAround: false,
       tags: [],
     }
-
-    // When
     const wrapper = mount(
       <MemoryRouter>
         <SeeMore {...props} />
       </MemoryRouter>,
     )
 
-    // Then
+    // When
     const link = wrapper.find(Link)
-    expect(link.prop('to')).toStrictEqual({
+    link.simulate('click', { preventDefault: jest.fn() })
+
+    // Then
+    expect(props.historyPush).toHaveBeenCalledWith({
+      parametersFromHome: {
+        aroundRadius: null,
+        geolocation: { "latitude": null, "longitude": null },
+        hitsPerPage: 2,
+        offerCategories: ["SPECTACLE", "CINEMA"],
+        offerIsDuo: false,
+        offerIsNew: false,
+        offerTypes: { isDigital: false, isEvent: true, isThing: false },
+        priceRange: [],
+        searchAround: false,
+        tags: [],
+      },
       pathname: "/recherche/resultats",
-      parametersFromHome: props.parameters,
-      search: "?autour-de=non&categories=SPECTACLE;CINEMA"
+      search: "?autour-de=non&categories=SPECTACLE;CINEMA",
     })
   })
 
@@ -117,20 +131,32 @@ describe('src | components | SeeMore', () => {
       searchAround: true,
       tags: [],
     }
-
-    // When
     const wrapper = mount(
       <MemoryRouter>
         <SeeMore {...props} />
       </MemoryRouter>,
     )
 
-    // Then
+    // When
     const link = wrapper.find(Link)
-    expect(link.prop('to')).toStrictEqual({
+    link.simulate('click', { preventDefault: jest.fn() })
+
+    // Then
+    expect(props.historyPush).toHaveBeenCalledWith({
+      parametersFromHome: {
+        aroundRadius: null,
+        geolocation: { latitude: 1, longitude: 2 },
+        hitsPerPage: 2,
+        offerCategories: [],
+        offerIsDuo: false,
+        offerIsNew: false,
+        offerTypes: { isDigital: false, isEvent: true, isThing: false },
+        priceRange: [],
+        searchAround: true,
+        tags: [],
+      },
       pathname: "/recherche/resultats",
-      parametersFromHome: props.parameters,
-      search: "?autour-de=oui&latitude=1&longitude=2"
+      search: "?autour-de=oui&latitude=1&longitude=2",
     })
   })
 })

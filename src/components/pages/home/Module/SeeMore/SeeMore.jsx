@@ -17,17 +17,33 @@ const buildSearchParameters = parameters => {
   return search
 }
 
-const SeeMore = ({ layout, parameters }) => {
+const noOp = () => false
+
+const preventDefault = event => {
+  event.preventDefault()
+}
+
+const SeeMore = ({ historyPush, isSwitching, layout, parameters }) => {
+  function goToSearchPage(event) {
+    if (!isSwitching) {
+      historyPush({
+        pathname: '/recherche/resultats',
+        parametersFromHome: parameters,
+        search: buildSearchParameters(parameters),
+      })
+    }
+    event.preventDefault()
+  }
+
   return (
     <li
       className="see-more-wrapper"
       key='see-more'
     >
-      <Link to={{
-        pathname: '/recherche/resultats',
-        parametersFromHome: parameters,
-        search: buildSearchParameters(parameters),
-      }}
+      <Link
+        onClick={goToSearchPage}
+        onMouseDown={preventDefault}
+        to={noOp}
       >
         <div className={`smw-image-${layout}`}>
           <div className="smw-content-wrapper">
@@ -50,6 +66,8 @@ SeeMore.defaultProps = {
 }
 
 SeeMore.propTypes = {
+  historyPush: PropTypes.func.isRequired,
+  isSwitching: PropTypes.bool.isRequired,
   layout: PropTypes.string,
   parameters: PropTypes.shape().isRequired,
 }

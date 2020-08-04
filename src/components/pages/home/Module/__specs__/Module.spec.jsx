@@ -18,6 +18,7 @@ describe('src | components | Module', () => {
   let offerOne
   let offerTwo
   let geolocation
+  let props
 
   beforeEach(() => {
     algolia = {
@@ -78,31 +79,32 @@ describe('src | components | Module', () => {
         name: 'Librairie Kléber',
       },
     }
+    props = {
+      geolocation,
+      historyPush: jest.fn(),
+      module: null,
+      row: 1,
+    }
     fetchAlgolia.mockReset()
   })
 
-  it('should render two OfferTile when two offers', async () => {
-    // given
+  function mockAlgolia({ hits, nbHits }) {
     fetchAlgolia.mockReturnValue(
       new Promise(resolve => {
         resolve({
-          hits: [offerOne, offerTwo],
-          nbHits: 2,
+          hits: hits,
+          nbHits: nbHits,
           nbPages: 0,
           page: 0,
         })
       }),
     )
+  }
 
-    const props = {
-      geolocation,
-      historyPush: jest.fn(),
-      module: new Offers({
-        algolia,
-        display,
-      }),
-      row: 1,
-    }
+  it('should render two OfferTile when two offers', async () => {
+    // given
+    mockAlgolia({ hits: [offerOne, offerTwo], nbHits: 2 })
+    props.module = new Offers({ algolia, display })
 
     // when
     const wrapper = await mount(
@@ -122,28 +124,10 @@ describe('src | components | Module', () => {
     expect(secondOffer.prop('hit')).toStrictEqual(offerTwo)
   })
 
-  it('should render a pane with pane title', async () => {
+  it('should render a pane with a title', async () => {
     // given
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [offerOne],
-          nbHits: 1,
-          nbPages: 0,
-          page: 0,
-        })
-      }),
-    )
-
-    const props = {
-      geolocation,
-      historyPush: jest.fn(),
-      module: new Offers({
-        algolia,
-        display,
-      }),
-      row: 1,
-    }
+    mockAlgolia({ hits: [offerOne], nbHits: 1 })
+    props.module = new Offers({ algolia, display })
 
     // when
     const wrapper = await mount(
@@ -159,26 +143,8 @@ describe('src | components | Module', () => {
   })
 
   it('should not render OfferTile nor pane title when no hits', async () => {
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [],
-          nbHits: 0,
-          nbPages: 0,
-          page: 0,
-        })
-      }),
-    )
-
-    const props = {
-      geolocation,
-      historyPush: jest.fn(),
-      module: new Offers({
-        algolia,
-        display,
-      }),
-      row: 1,
-    }
+    mockAlgolia({ hits: [], nbHits: 0 })
+    props.module = new Offers({ algolia, display })
 
     // when
     const wrapper = await mount(
@@ -196,28 +162,9 @@ describe('src | components | Module', () => {
   })
 
   it('should render a cover when provided', async () => {
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [offerOne],
-          nbHits: 1,
-          nbPages: 0,
-          page: 0,
-        })
-      }),
-    )
-
+    mockAlgolia({ hits: [offerOne], nbHits: 1 })
     const cover = 'https://www.link-to-my-image.com'
-    const props = {
-      geolocation,
-      historyPush: jest.fn(),
-      module: new OffersWithCover({
-        algolia,
-        cover,
-        display,
-      }),
-      row: 1,
-    }
+    props.module = new OffersWithCover({ algolia, cover, display })
 
     // when
     const wrapper = await mount(
@@ -232,23 +179,11 @@ describe('src | components | Module', () => {
     expect(imageCover).toHaveLength(1)
   })
 
-  it('should not fetch algolia when parameters are null', async () => {
+  it('should not fetch algolia when geolocation parameters are null', async () => {
     algolia.isGeolocated = true
-    geolocation = {
-      latitude: null,
-      longitude: null,
-    }
     const cover = 'https://www.link-to-my-image.com'
-    const props = {
-      geolocation,
-      historyPush: jest.fn(),
-      module: new OffersWithCover({
-        algolia,
-        cover,
-        display,
-      }),
-      row: 1,
-    }
+    props.geolocation = { latitude: null, longitude: null }
+    props.module = new OffersWithCover({ algolia, cover, display })
 
     // when
     const wrapper = await mount(
@@ -264,26 +199,9 @@ describe('src | components | Module', () => {
 
   it('should not render OfferTile when two offers are retrieved but min offers is superior', async () => {
     // given
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [offerOne, offerTwo],
-          nbHits: 2,
-          nbPages: 0,
-          page: 0,
-        })
-      }),
-    )
+    mockAlgolia({ hits: [offerOne, offerTwo], nbHits: 2 })
     display.minOffers = 3
-    const props = {
-      geolocation,
-      historyPush: jest.fn(),
-      module: new Offers({
-        algolia,
-        display,
-      }),
-      row: 1,
-    }
+    props.module = new Offers({ algolia, display })
 
     // when
     const wrapper = await mount(
@@ -299,25 +217,8 @@ describe('src | components | Module', () => {
 
   it('should render a see more tile when displayed offers hits are inferior to total of hits', async () => {
     // given
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [offerOne],
-          nbHits: 5,
-          nbPages: 0,
-          page: 0,
-        })
-      }),
-    )
-    const props = {
-      geolocation,
-      historyPush: jest.fn(),
-      module: new Offers({
-        algolia,
-        display,
-      }),
-      row: 1,
-    }
+    mockAlgolia({ hits: [offerOne], nbHits: 5 })
+    props.module = new Offers({ algolia, display })
 
     // when
     const wrapper = await mount(
@@ -332,6 +233,8 @@ describe('src | components | Module', () => {
     const seeMore = wrapper.find(SeeMore)
     expect(seeMore).toHaveLength(1)
     expect(seeMore.props()).toStrictEqual({
+      historyPush: props.historyPush,
+      isSwitching: false,
       layout: "one-item-medium",
       parameters: {
         aroundRadius: null,
@@ -339,7 +242,7 @@ describe('src | components | Module', () => {
         endingDatetime:null,
         geolocation: {
           latitude: 1,
-          longitude: 2
+          longitude: 2,
         },
         hitsPerPage: 3,
         offerCategories: ["CINEMA", "LECON", "LIVRE"],
@@ -355,26 +258,8 @@ describe('src | components | Module', () => {
   })
 
   it('should not render a see more tile when displayed offers hits are equal to total of hits', async () => {
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [offerOne],
-          nbHits: 1,
-          nbPages: 0,
-          page: 0,
-        })
-      }),
-    )
-
-    const props = {
-      geolocation,
-      historyPush: jest.fn(),
-      module: new Offers({
-        algolia,
-        display,
-      }),
-      row: 1,
-    }
+    mockAlgolia({ hits: [offerOne], nbHits: 1 })
+    props.module = new Offers({ algolia, display })
 
     // when
     const wrapper = await mount(
@@ -391,26 +276,8 @@ describe('src | components | Module', () => {
 
   it('should not render a see more tile when algolia parameters contains tags', async () => {
     algolia.tags = ["Offres de l'été"]
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [offerOne],
-          nbHits: 5,
-          nbPages: 0,
-          page: 0,
-        })
-      }),
-    )
-
-    const props = {
-      geolocation,
-      historyPush: jest.fn(),
-      module: new Offers({
-        algolia,
-        display,
-      }),
-      row: 1,
-    }
+    mockAlgolia({ hits: [offerOne], nbHits: 5 })
+    props.module = new Offers({ algolia, display })
 
     // when
     const wrapper = await mount(
@@ -427,26 +294,8 @@ describe('src | components | Module', () => {
 
   it('should not render a see more tile when algolia parameters contains beginningDatetime', async () => {
     algolia.beginningDatetime = "2020-01-01T20:00:00"
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [offerOne],
-          nbHits: 5,
-          nbPages: 0,
-          page: 0,
-        })
-      }),
-    )
-
-    const props = {
-      geolocation,
-      historyPush: jest.fn(),
-      module: new Offers({
-        algolia,
-        display,
-      }),
-      row: 1,
-    }
+    mockAlgolia({ hits: [offerOne], nbHits: 5 })
+    props.module = new Offers({ algolia, display })
 
     // when
     const wrapper = await mount(
@@ -463,26 +312,8 @@ describe('src | components | Module', () => {
 
   it('should not render a see more tile when algolia parameters contains endingDatetime', async () => {
     algolia.endingDatetime = "2020-01-01T20:00:00"
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [offerOne],
-          nbHits: 5,
-          nbPages: 0,
-          page: 0,
-        })
-      }),
-    )
-
-    const props = {
-      geolocation,
-      historyPush: jest.fn(),
-      module: new Offers({
-        algolia,
-        display,
-      }),
-      row: 1,
-    }
+    mockAlgolia({ hits: [offerOne], nbHits: 5 })
+    props.module = new Offers({ algolia, display })
 
     // when
     const wrapper = await mount(
@@ -495,5 +326,31 @@ describe('src | components | Module', () => {
     // then
     const seeMore = wrapper.find(SeeMore)
     expect(seeMore).toHaveLength(0)
+  })
+
+  describe('when layout is two tiles', () => {
+    it('should render a cover, two offer tiles, a see more tile', async () => {
+      // given
+      mockAlgolia({ hits: [offerOne, offerTwo], nbHits: 3 })
+      const cover = 'https://www.link-to-my-image.com'
+      display.layout = PANE_LAYOUT['TWO-ITEMS']
+      props.module = new OffersWithCover({ algolia, cover, display })
+
+      // when
+      const wrapper = await mount(
+        <MemoryRouter>
+          <Module {...props} />
+        </MemoryRouter>,
+      )
+      await wrapper.update()
+
+      // then
+      const seeMore = wrapper.find(SeeMore)
+      expect(seeMore).toHaveLength(1)
+      const imageCover = wrapper.find(Module).find(`img[src="${cover}"]`)
+      expect(imageCover).toHaveLength(1)
+      const offerTiles = wrapper.find(OfferTile)
+      expect(offerTiles).toHaveLength(2)
+    })
   })
 })

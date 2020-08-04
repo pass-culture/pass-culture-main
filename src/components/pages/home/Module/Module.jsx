@@ -76,6 +76,8 @@ class Module extends Component {
         } else {
           return tileIsASeeMoreItem ?
             <SeeMore
+              historyPush={historyPush}
+              isSwitching={isSwitching}
               key={`${row}-see-more`}
               layout={display.layout}
               parameters={parsedParameters}
@@ -118,7 +120,7 @@ class Module extends Component {
   renderTwoItems = () => {
     const {
       historyPush,
-      module: { algolia, cover, display },
+      module: { algolia, cover, display : { layout } },
       row,
     } = this.props
     const { hits, isSwitching, nbHits, parsedParameters } = this.state
@@ -135,15 +137,17 @@ class Module extends Component {
             <Cover
               img={arrayOfTiles[0]}
               key={`${row}-cover`}
-              layout={display.layout}
+              layout={layout}
             />
           )
         } else {
           if (firstTileIsASeeMoreItem) {
             return (
               <SeeMore
+                historyPush={historyPush}
+                isSwitching={isSwitching}
                 key={`${row}-see-more`}
-                layout={display.layout}
+                layout={layout}
                 parameters={parsedParameters}
               />
             )
@@ -157,12 +161,14 @@ class Module extends Component {
                     hit={arrayOfTiles[0]}
                     isSwitching={isSwitching}
                     key={`${row}${arrayOfTiles[0].offer.id}`}
-                    layout={display.layout}
+                    layout={layout}
                   />
                   {secondTileIsASeeMoreItem ?
                     <SeeMore
+                      historyPush={historyPush}
+                      isSwitching={isSwitching}
                       key={`${row}-see-more`}
-                      layout={display.layout}
+                      layout={layout}
                       parameters={parsedParameters}
                     /> :
                     <OfferTile
@@ -170,7 +176,7 @@ class Module extends Component {
                       hit={arrayOfTiles[1]}
                       isSwitching={isSwitching}
                       key={`${row}${arrayOfTiles[1].offer.id}`}
-                      layout={display.layout}
+                      layout={layout}
                     />}
                 </div>
               )
