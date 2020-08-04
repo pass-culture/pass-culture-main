@@ -118,11 +118,11 @@ class Module extends Component {
   renderTwoItems = () => {
     const {
       historyPush,
-      module: { cover, display },
+      module: { algolia, cover, display },
       row,
     } = this.props
-    const { hits, isSwitching } = this.state
-    const tiles = buildArrayOf({ cover, hits })
+    const { hits, isSwitching, nbHits } = this.state
+    const tiles = buildArrayOf({ algolia, cover, hits, nbHits })
 
     return (
       tiles.map(tile => {

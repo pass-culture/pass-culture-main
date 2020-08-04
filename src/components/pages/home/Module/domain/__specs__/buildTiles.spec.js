@@ -113,4 +113,72 @@ describe('buildTwoBlocsTile', () => {
     // Then
     expect(result).toStrictEqual([[cover], [hit1, hit2], [hit3]])
   })
+
+  describe('when see more tile is available', () => {
+    it('should return an array containing an array with one hit and a true value', () => {
+      // Given
+      const hit1 = {
+        offer: {
+          name: 'Avengers - Age of Ultron',
+        },
+      }
+      const nbHits = 2
+      const hits = [hit1]
+
+      // When
+      const result = buildArrayOf({ hits, nbHits })
+
+      // Then
+      expect(result).toStrictEqual([[hit1, true]])
+    })
+
+    it('should return an array containing an array with two hits and another array with a true value', () => {
+      // Given
+      const hit1 = {
+        offer: {
+          name: 'Avengers - Age of Ultron',
+        },
+      }
+      const hit2 = {
+        offer: {
+          name: 'Matrix',
+        },
+      }
+      const nbHits = 3
+      const hits = [hit1, hit2]
+
+      // When
+      const result = buildArrayOf({ hits, nbHits })
+
+      // Then
+      expect(result).toStrictEqual([[hit1, hit2], [true]])
+    })
+
+    it('should return an array containing an array with two hits and another array with one hit and a true value', () => {
+      // Given
+      const hit1 = {
+        offer: {
+          name: 'Avengers - Age of Ultron',
+        },
+      }
+      const hit2 = {
+        offer: {
+          name: 'Matrix',
+        },
+      }
+      const hit3 = {
+        offer: {
+          name: 'John Wick',
+        },
+      }
+      const nbHits = 4
+      const hits = [hit1, hit2, hit3]
+
+      // When
+      const result = buildArrayOf({ hits, nbHits })
+
+      // Then
+      expect(result).toStrictEqual([[hit1, hit2], [hit3, true]])
+    })
+  })
 })
