@@ -335,7 +335,10 @@ describe('src | components | Module', () => {
       layout: "one-item-medium",
       parameters: {
         aroundRadius: null,
-        geolocation: null,
+        geolocation: {
+          latitude: 1,
+          longitude: 2
+        },
         hitsPerPage: 3,
         offerCategories: ["CINEMA", "LECON", "LIVRE"],
         offerIsDuo: true,

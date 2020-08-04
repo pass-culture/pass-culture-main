@@ -31,7 +31,7 @@ export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
 
   return {
     aroundRadius: aroundRadius || null,
-    geolocation: isGeolocated ? geolocation : null,
+    geolocation: geolocation || null,
     hitsPerPage: parameters[CONTENTFUL_PARAMETERS.HITS_PER_PAGE] || null,
     offerCategories: parameters[CONTENTFUL_PARAMETERS.CATEGORIES] || [],
     offerIsDuo: parameters[CONTENTFUL_PARAMETERS.IS_DUO] || false,

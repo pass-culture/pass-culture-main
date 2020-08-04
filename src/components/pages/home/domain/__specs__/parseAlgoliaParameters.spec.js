@@ -346,7 +346,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       offerIsFree: true,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: false, isThing: false },
-      priceRange: [],
+      priceRange: [0, 500],
       searchAround: false,
       tags: [],
     })
