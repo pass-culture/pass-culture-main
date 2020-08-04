@@ -33,7 +33,7 @@ const SeeMore = ({ layout, parameters }) => {
           <div className="smw-content-wrapper">
             <Icon
               className="smw-icon-wrapper"
-              svg="ico-offres-home-white"
+              svg={`${layout === PANE_LAYOUT['ONE-ITEM-MEDIUM'] ? 'ico-offres-home-white' : 'ico-offres-home-purple'}`}
             />
             <span>
               {'En voir plus'}

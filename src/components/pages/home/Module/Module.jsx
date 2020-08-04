@@ -58,7 +58,7 @@ class Module extends Component {
       row,
     } = this.props
     const { isSwitching, parsedParameters } = this.state
-    const tiles = this.buildTiles()
+    const tiles = this.buildTilesWhenOneItem()
 
     return (
       tiles.map(tile => {
@@ -92,7 +92,7 @@ class Module extends Component {
     )
   }
 
-  buildTiles = () => {
+  buildTilesWhenOneItem = () => {
     const {
       module: { algolia, cover },
     } = this.props
@@ -121,43 +121,68 @@ class Module extends Component {
       module: { algolia, cover, display },
       row,
     } = this.props
-    const { hits, isSwitching, nbHits } = this.state
+    const { hits, isSwitching, nbHits, parsedParameters } = this.state
     const tiles = buildArrayOf({ algolia, cover, hits, nbHits })
 
     return (
-      tiles.map(tile => {
-        const firstTileIsACover = !tile[0].offer
-        const offersArePaired = tile.length === 2
-        return firstTileIsACover ?
-          <Cover
-            img={tile}
-            key={`${row}-cover`}
-            layout={display.layout}
-          />
-          :
-          <div className="ofw-two-tiles-wrapper">
-            <OfferTile
-              historyPush={historyPush}
-              hit={tile[0]}
-              isSwitching={isSwitching}
-              key={`${row}${tile[0].offer.id}`}
+      tiles.map(arrayOfTiles => {
+        const firstTileIsACoverItem = typeof arrayOfTiles[0] === "string"
+        const firstTileIsASeeMoreItem = typeof arrayOfTiles[0] === "boolean"
+        const offersArePaired = arrayOfTiles.length === 2
+
+        if (firstTileIsACoverItem) {
+          return (
+            <Cover
+              img={arrayOfTiles[0]}
+              key={`${row}-cover`}
               layout={display.layout}
             />
-            {offersArePaired && (
-              <OfferTile
-                historyPush={historyPush}
-                hit={tile[1]}
-                isSwitching={isSwitching}
-                key={`${row}${tile[1].offer.id}`}
+          )
+        } else {
+          if (firstTileIsASeeMoreItem) {
+            return (
+              <SeeMore
+                key={`${row}-see-more`}
                 layout={display.layout}
-              />)}
-          </div>
+                parameters={parsedParameters}
+              />
+            )
+          } else {
+            if (offersArePaired) {
+              const secondTileIsASeeMoreItem = typeof arrayOfTiles[1] === "boolean"
+              return (
+                <div className="ofw-two-tiles-wrapper">
+                  <OfferTile
+                    historyPush={historyPush}
+                    hit={arrayOfTiles[0]}
+                    isSwitching={isSwitching}
+                    key={`${row}${arrayOfTiles[0].offer.id}`}
+                    layout={display.layout}
+                  />
+                  {secondTileIsASeeMoreItem ?
+                    <SeeMore
+                      key={`${row}-see-more`}
+                      layout={display.layout}
+                      parameters={parsedParameters}
+                    /> :
+                    <OfferTile
+                      historyPush={historyPush}
+                      hit={arrayOfTiles[1]}
+                      isSwitching={isSwitching}
+                      key={`${row}${arrayOfTiles[1].offer.id}`}
+                      layout={display.layout}
+                    />}
+                </div>
+              )
+            }
+          }
+        }
       }))
   }
 
   render() {
     const {
-      module: { display: { layout, minOffers = 0, title} },
+      module: { display: { layout, minOffers = 0, title } },
     } = this.props
     const { hits, nbHits } = this.state
     const atLeastOneHit = hits.length > 0

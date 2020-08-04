@@ -4,13 +4,14 @@ import { MemoryRouter } from 'react-router'
 import Icon from '../../../../../layout/Icon/Icon'
 import SeeMore from '../SeeMore'
 import { Link } from 'react-router-dom'
+import { PANE_LAYOUT } from '../../../domain/layout'
 
 describe('src | components | SeeMore', () => {
   let props
 
   beforeEach(() => {
     props = {
-      layout: 'one-item-medium',
+      layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
       parameters: {
         aroundRadius: null,
         geolocation: { latitude: 1, longitude: 2 },
@@ -26,7 +27,10 @@ describe('src | components | SeeMore', () => {
     }
   })
 
-  it('should render an icon for the see more component', () => {
+  it('should render a white icon for the see more component when layout is one item', () => {
+    // Given
+    props.layout = PANE_LAYOUT['ONE-ITEM-MEDIUM']
+
     // When
     const wrapper = mount(
       <MemoryRouter>
@@ -37,6 +41,22 @@ describe('src | components | SeeMore', () => {
     // Then
     const icon = wrapper.find(Icon)
     expect(icon.prop('svg')).toBe('ico-offres-home-white')
+  })
+
+  it('should render a purple icon for the see more component when layout is two items', () => {
+    // Given
+    props.layout = PANE_LAYOUT['TWO-ITEMS']
+
+    // When
+    const wrapper = mount(
+      <MemoryRouter>
+        <SeeMore {...props} />
+      </MemoryRouter>,
+    )
+
+    // Then
+    const icon = wrapper.find(Icon)
+    expect(icon.prop('svg')).toBe('ico-offres-home-purple')
   })
 
   it('should a "En voir plus" label', () => {

@@ -3,7 +3,7 @@
 
   .smw-image-one-item-medium {
     align-items: center;
-    display:flex;
+    display: flex;
     justify-content: center;
 
     background-image: url('/home-group.png');
@@ -23,6 +23,28 @@
       span {
         @include button();
         color: $white;
+      }
+    }
+  }
+
+  .smw-image-two-items {
+    align-items: center;
+    background-color: $white;
+    border-radius: rem(8px);
+    border: 1px solid $grey-medium;
+    display: flex;
+    justify-content: center;
+    height: rem(160px);
+    width: 47.5%;
+
+    .smw-content-wrapper {
+      display: flex;
+      flex-direction: column;
+      margin-top: rem(-15px);
+
+      span {
+        @include button();
+        color: $secondary;
       }
     }
   }

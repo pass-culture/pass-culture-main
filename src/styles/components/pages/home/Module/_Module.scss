@@ -75,4 +75,13 @@
     display: flex;
     flex-direction: column;
   }
+
+  .see-more-wrapper {
+    margin-left: 4%;
+    width: 100%;
+
+    .smw-image-two-items {
+      width: 100%;
+    }
+  }
 }
