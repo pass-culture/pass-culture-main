@@ -15,14 +15,14 @@ class Get:
         @clean_database
         def when_user_is_admin_and_request_specific_venue(self, app):
             # Given
-            user = create_user(is_admin=True, can_book_free_offers=False)
+            admin = create_user(is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            repository.save(user, venue)
+            repository.save(admin, venue)
 
             # when
             response = TestClient(app.test_client()) \
-                .with_auth(email=user.email).get(f'/offers?venueId={humanize(venue.id)}')
+                .with_auth(email=admin.email).get(f'/offers?venueId={humanize(venue.id)}')
 
             # then
             assert response.status_code == 200
