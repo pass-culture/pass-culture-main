@@ -348,7 +348,7 @@ class QueryOfferWithRemainingStocksTest:
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
-                    (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+                (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -373,7 +373,7 @@ class QueryOfferWithRemainingStocksTest:
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
-                    (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+                (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -397,7 +397,7 @@ class QueryOfferWithRemainingStocksTest:
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
-                    (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+                (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -422,7 +422,7 @@ class QueryOfferWithRemainingStocksTest:
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
-                    (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+                (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -447,7 +447,7 @@ class QueryOfferWithRemainingStocksTest:
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
-                    (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+                (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -975,3 +975,21 @@ class GetPaginatedExpiredOfferIdsTest:
         assert len(results) == 1
         assert offer1 in results
         assert offer2 not in results
+
+    @clean_database
+    def should_not_get_offer_with_valid_stocks(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_event_product(is_active=True, venue=venue)
+        expired_stock = create_stock_from_offer(offer=offer,
+                                                booking_limit_datetime=datetime(2019, 12, 31))
+        valid_stock = create_stock_from_offer(offer=offer,
+                                              booking_limit_datetime=datetime(2020, 1, 30))
+        repository.save(expired_stock, valid_stock)
+
+        # When
+        results = get_paginated_expired_offer_ids(limit=2, page=0)
+
+        # Then
+        assert results == []

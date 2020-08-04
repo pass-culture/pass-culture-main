@@ -484,15 +484,17 @@ def get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id: s
 def get_paginated_expired_offer_ids(limit: int, page: int) -> List[tuple]:
     one_day_before_now = datetime.utcnow() - timedelta(days=1)
     two_days_before_now = datetime.utcnow() - timedelta(days=2)
-    start_limit = two_days_before_now <= StockSQLEntity.bookingLimitDatetime
-    end_limit = StockSQLEntity.bookingLimitDatetime <= one_day_before_now
+    start_limit = two_days_before_now <= func.max(StockSQLEntity.bookingLimitDatetime)
+    end_limit = func.max(StockSQLEntity.bookingLimitDatetime) <= one_day_before_now
 
     return Offer.query \
         .join(StockSQLEntity) \
         .with_entities(Offer.id) \
         .filter(Offer.isActive == True) \
         .filter(StockSQLEntity.bookingLimitDatetime is not None) \
-        .filter(start_limit, end_limit) \
+        .having(start_limit) \
+        .having(end_limit) \
+        .group_by(Offer.id) \
         .order_by(Offer.id) \
         .offset(page * limit) \
         .limit(limit) \
