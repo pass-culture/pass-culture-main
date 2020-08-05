@@ -31,6 +31,7 @@ export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
 
   const beginningDatetime = parameters[CONTENTFUL_PARAMETERS.BEGINNING_DATETIME] ? new Date(parameters[CONTENTFUL_PARAMETERS.BEGINNING_DATETIME]) : null
   const endingDatetime = parameters[CONTENTFUL_PARAMETERS.ENDING_DATETIME] ? new Date(parameters[CONTENTFUL_PARAMETERS.ENDING_DATETIME]) : null
+
   return {
     aroundRadius: aroundRadius || null,
     beginningDatetime: beginningDatetime,

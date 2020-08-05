@@ -470,13 +470,13 @@ describe('src | components | parseAlgoliaParameters', () => {
     })
   })
 
-  describe('beginnigDatetime & endingDatetime', () => {
+  describe('beginningDatetime & endingDatetime', () => {
     it('should return algolia parameters with a beginning date when provided', () => {
       // given
       const beginningDatetime = new Date(2020, 9, 1,22,0,0)
-      const beginningDatetimeInString = "2020-10-01T22:00:00"
+      const beginningDatetimeAsString = "2020-10-01T22:00:00"
       const parameters = {
-        beginningDatetime: beginningDatetimeInString,
+        beginningDatetime: beginningDatetimeAsString,
       }
 
       // when
@@ -503,9 +503,9 @@ describe('src | components | parseAlgoliaParameters', () => {
     it('should return algolia parameters with an ending date when provided', () => {
       // given
       const endingDatetime = new Date(2020, 9, 1,22,0,0)
-      const endingDatetimeInString = "2020-10-01T22:00:00"
+      const endingDatetimeAsString = "2020-10-01T22:00:00"
       const parameters = {
-        endingDatetime: endingDatetimeInString,
+        endingDatetime: endingDatetimeAsString,
       }
 
       // when
@@ -529,15 +529,15 @@ describe('src | components | parseAlgoliaParameters', () => {
       })
     })
 
-    it('should return algolia parameters with a begginnig and an ending date when provided', () => {
+    it('should return algolia parameters with a begginnig date and an ending date when provided', () => {
       // given
       const beginningDatetime = new Date(2020, 9, 1,0,0,0)
       const endingDatetime = new Date(2020, 9, 2,0,0,0)
-      const beginningDatetimeInString = "2020-10-01T00:00:00"
-      const endingDatetimeInString = "2020-10-02T00:00:00"
+      const beginningDatetimeAsString = "2020-10-01T00:00:00"
+      const endingDatetimeAsString = "2020-10-02T00:00:00"
       const parameters = {
-        beginningDatetime: beginningDatetimeInString,
-        endingDatetime: endingDatetimeInString,
+        beginningDatetime: beginningDatetimeAsString,
+        endingDatetime: endingDatetimeAsString,
       }
 
       // when

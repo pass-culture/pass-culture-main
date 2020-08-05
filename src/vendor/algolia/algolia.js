@@ -31,8 +31,8 @@ export const fetchAlgolia = ({
                              } = {}) => {
   const searchParameters = {
     page,
-    ...buildFacetFilters(offerCategories, offerTypes, offerIsDuo, tags),
-    ...buildNumericFilters(offerIsFree, priceRange, date, offerIsNew, timeRange, beginningDatetime, endingDatetime),
+    ...buildFacetFilters({ offerCategories, offerTypes, offerIsDuo, tags }),
+    ...buildNumericFilters({ beginningDatetime, date, endingDatetime, offerIsFree, offerIsNew, priceRange, timeRange }),
     ...buildGeolocationParameter(aroundRadius, geolocation, searchAround),
   }
   if (hitsPerPage) {
@@ -44,7 +44,7 @@ export const fetchAlgolia = ({
   return index.search(keywords, searchParameters)
 }
 
-const buildFacetFilters = (offerCategories, offerTypes, offerIsDuo, tags) => {
+const buildFacetFilters = ({ offerCategories, offerTypes, offerIsDuo, tags }) => {
   if (offerCategories.length === 0 && offerTypes == null && offerIsDuo === false) {
     return
   }
@@ -75,7 +75,7 @@ const buildFacetFilters = (offerCategories, offerTypes, offerIsDuo, tags) => {
   return atLeastOneFacetFilter ? { facetFilters } : {}
 }
 
-const buildNumericFilters = (offerIsFree, priceRange, date, offerIsNew, timeRange, beginningDatetime, endingDatetime) => {
+const buildNumericFilters = ({ beginningDatetime, date, endingDatetime, offerIsFree, offerIsNew, priceRange, timeRange }) => {
   const priceRangePredicate = buildOfferPriceRangePredicate(offerIsFree, priceRange)
   const datePredicate = buildDatePredicate(date, timeRange)
   const homepageDatePredicate = buildHomepageDatePredicate(beginningDatetime, endingDatetime)
@@ -134,15 +134,25 @@ const buildDatePredicate = (date, timeRange) => {
 }
 
 const buildHomepageDatePredicate = (beginningDatetime, endingDatetime) => {
+  const noDatePredicate = !beginningDatetime && !endingDatetime
+  const fromDatePredicate = beginningDatetime && !endingDatetime
+  const untilDatePredicate = !beginningDatetime && endingDatetime
   const beginningTimestamp = beginningDatetime ? TIMESTAMP.getFromDate(beginningDatetime) : null
   const endingTimestamp = endingDatetime ? TIMESTAMP.getFromDate(endingDatetime) : null
-  const actualTimestamp = beginningDatetime && !endingDatetime ? beginningTimestamp : endingTimestamp
-  const operator = beginningDatetime && !endingDatetime ? '>=' : '<='
-  if (beginningDatetime && endingDatetime) {
-    return getDatePredicate(beginningTimestamp, endingTimestamp)
+
+  if (noDatePredicate) {
+    return null
   }
-  if (beginningDatetime && !endingDatetime || !beginningDatetime && endingDatetime)
-    return `${FACETS.OFFER_DATE} ${operator} ${actualTimestamp}`
+
+  if (fromDatePredicate) {
+    return `${FACETS.OFFER_DATE} >= ${beginningTimestamp}`
+  }
+
+  if (untilDatePredicate) {
+    return `${FACETS.OFFER_DATE} <= ${endingTimestamp}`
+  }
+
+  return getDatePredicate(beginningTimestamp, endingTimestamp)
 }
 
 const getDatePredicate = (lowerDate, higherDate) =>
