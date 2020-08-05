@@ -1,12 +1,13 @@
 from typing import List, Dict
 
-from domain.beneficiary_bookings.beneficiary_bookings import BeneficiaryBookings, BeneficiaryBooking
+from domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
+from domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from domain.beneficiary_bookings.stock import Stock
 from routes.serialization import serialize
 from utils.human_ids import humanize
 
 
-def serialize_beneficiary_bookings(beneficiary_bookings: BeneficiaryBookings, with_qr_code: bool = False) -> List:
+def serialize_beneficiary_bookings(beneficiary_bookings: BeneficiaryBookingsWithStocks, with_qr_code: bool = False) -> List:
     results = []
     for beneficiary_booking in beneficiary_bookings.bookings:
         serialized_stocks = _serialize_stocks_for_beneficiary_bookings(beneficiary_booking.offerId,

@@ -1,13 +1,14 @@
 from typing import List
 
-from domain.beneficiary_bookings.beneficiary_bookings import BeneficiaryBookings, BeneficiaryBooking
+from domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
+from domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
 from infrastructure.repository.beneficiary_bookings import stock_domain_converter, active_mediation_domain_converter
 from models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, Offer, VenueSQLEntity, Mediation, Product
 
 
 class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
-    def get_beneficiary_bookings(self, beneficiary_id: int) -> BeneficiaryBookings:
+    def get_beneficiary_bookings(self, beneficiary_id: int) -> BeneficiaryBookingsWithStocks:
         booking_sql_entity_views = _get_bookings_information(beneficiary_id)
 
         offers_ids = [booking.offerId for booking in booking_sql_entity_views]
@@ -60,7 +61,7 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
                     active_mediations=[mediation for mediation in mediations if mediation.offer_id == booking.offerId],
                 )
             )
-        return BeneficiaryBookings(bookings=beneficiary_bookings, stocks=stocks)
+        return BeneficiaryBookingsWithStocks(bookings=beneficiary_bookings, stocks=stocks)
 
 
 def _get_mediations_information(offers_ids: List[int]) -> List[object]:

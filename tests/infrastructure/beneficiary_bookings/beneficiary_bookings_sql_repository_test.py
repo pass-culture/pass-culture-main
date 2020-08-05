@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from domain.beneficiary_bookings.beneficiary_bookings import BeneficiaryBookings
+from domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import \
     BeneficiaryBookingsSQLRepository, _get_stocks_information
 from repository import repository
@@ -31,7 +31,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=user.id)
 
         # Then
-        assert isinstance(result, BeneficiaryBookings)
+        assert isinstance(result, BeneficiaryBookingsWithStocks)
         assert len(result.bookings) == 1
         expected_booking = result.bookings[0]
         assert expected_booking.amount == 0.0

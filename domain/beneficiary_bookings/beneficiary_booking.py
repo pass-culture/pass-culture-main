@@ -2,8 +2,7 @@ from datetime import datetime
 from typing import List, Optional, Dict
 
 from domain.beneficiary_bookings.active_mediation import ActiveMediation
-from domain.beneficiary_bookings.stock import Stock
-from domain.beneficiary_bookings.thumb_url import MediationThumbUrl, ProductThumbUrl
+from domain.beneficiary_bookings.thumb_url import ThumbUrl
 from domain.bookings import generate_qr_code
 from models.offer_type import ProductType, ThingType, EventType
 from utils.human_ids import humanize
@@ -93,9 +92,9 @@ class BeneficiaryBooking:
         if len(active_mediations) > 0:
             newest_mediation_id = sorted(active_mediations, key=lambda mediation: mediation.date_created,
                                          reverse=True)[0].identifier
-            return MediationThumbUrl(identifier=newest_mediation_id).url()
+            return ThumbUrl.for_mediation(identifier=newest_mediation_id).url()
         if product_thumb_count > 0:
-            return ProductThumbUrl(identifier=product_id).url()
+            return ThumbUrl.for_product(identifier=product_id).url()
         return None
 
     @property
@@ -139,9 +138,3 @@ class BeneficiaryBooking:
             return generate_qr_code(booking_token=self.token,
                                     offer_extra_data=self.extraData)
         return None
-
-
-class BeneficiaryBookings:
-    def __init__(self, bookings: List[BeneficiaryBooking], stocks: List[Stock]):
-        self.bookings = bookings
-        self.stocks = stocks

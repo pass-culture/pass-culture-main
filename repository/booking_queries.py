@@ -10,7 +10,7 @@ from sqlalchemy.orm import Query
 from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, ThingBookingRecap, BookBookingRecap
 from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from domain.postal_code.postal_code import PostalCode
-from models import UserOfferer, BookingSQLEntity, StockSQLEntity, Offer
+from models import UserOfferer
 from models import VenueSQLEntity
 from models.api_errors import ResourceNotFoundError
 from models.booking_sql_entity import BookingSQLEntity
@@ -218,31 +218,31 @@ def _build_bookings_recap_query(user_id: int) -> Query:
         .filter(UserOfferer.userId == user_id) \
         .filter(UserOfferer.validationToken == None) \
         .with_entities(
-        BookingSQLEntity.token.label("bookingToken"),
-        BookingSQLEntity.dateCreated.label("bookingDate"),
-        BookingSQLEntity.isCancelled.label("isCancelled"),
-        BookingSQLEntity.isUsed.label("isUsed"),
-        BookingSQLEntity.quantity.label("quantity"),
-        BookingSQLEntity.amount.label("bookingAmount"),
-        BookingSQLEntity.dateUsed.label("dateUsed"),
-        BookingSQLEntity.cancellationDate.label("cancellationDate"),
-        Offer.name.label("offerName"),
-        Offer.id.label("offerId"),
-        Offer.extraData.label("offerExtraData"),
-        Payment.currentStatus.label("paymentStatus"),
-        Payment.lastProcessedDate.label("paymentDate"),
-        UserSQLEntity.firstName.label("beneficiaryFirstname"),
-        UserSQLEntity.lastName.label("beneficiaryLastname"),
-        UserSQLEntity.email.label("beneficiaryEmail"),
-        StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
-        VenueSQLEntity.departementCode.label('venueDepartementCode'),
-        Offerer.name.label('offererName'),
-        Offerer.postalCode.label('offererPostalCode'),
-        VenueSQLEntity.id.label('venueId'),
-        VenueSQLEntity.name.label('venueName'),
-        VenueSQLEntity.publicName.label('venuePublicName'),
-        VenueSQLEntity.isVirtual.label('venueIsVirtual'),
-    )
+            BookingSQLEntity.token.label("bookingToken"),
+            BookingSQLEntity.dateCreated.label("bookingDate"),
+            BookingSQLEntity.isCancelled.label("isCancelled"),
+            BookingSQLEntity.isUsed.label("isUsed"),
+            BookingSQLEntity.quantity.label("quantity"),
+            BookingSQLEntity.amount.label("bookingAmount"),
+            BookingSQLEntity.dateUsed.label("dateUsed"),
+            BookingSQLEntity.cancellationDate.label("cancellationDate"),
+            Offer.name.label("offerName"),
+            Offer.id.label("offerId"),
+            Offer.extraData.label("offerExtraData"),
+            Payment.currentStatus.label("paymentStatus"),
+            Payment.lastProcessedDate.label("paymentDate"),
+            UserSQLEntity.firstName.label("beneficiaryFirstname"),
+            UserSQLEntity.lastName.label("beneficiaryLastname"),
+            UserSQLEntity.email.label("beneficiaryEmail"),
+            StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
+            VenueSQLEntity.departementCode.label('venueDepartementCode'),
+            Offerer.name.label('offererName'),
+            Offerer.postalCode.label('offererPostalCode'),
+            VenueSQLEntity.id.label('venueId'),
+            VenueSQLEntity.name.label('venueName'),
+            VenueSQLEntity.publicName.label('venuePublicName'),
+            VenueSQLEntity.isVirtual.label('venueIsVirtual'),
+        )
 
 
 def _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings: List[object],

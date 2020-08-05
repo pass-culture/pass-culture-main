@@ -3,7 +3,8 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 
-from domain.beneficiary_bookings.beneficiary_bookings import BeneficiaryBooking, BeneficiaryBookings
+from domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
+from domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from domain.beneficiary_bookings.stock import Stock
 from routes.serialization.beneficiary_bookings_serialize import serialize_beneficiary_bookings
 
@@ -68,7 +69,7 @@ class BeneficiaryBookingsSerializeTest:
                 thumbCount=1,
                 active_mediations=[]
             )
-            beneficiary_bookings = BeneficiaryBookings(
+            beneficiary_bookings = BeneficiaryBookingsWithStocks(
                 bookings=[beneficiary_booking],
                 stocks=stocks
             )
@@ -162,7 +163,7 @@ class BeneficiaryBookingsSerializeTest:
 
         @freeze_time('2019-1-1')
         @patch('domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
-        @patch('domain.beneficiary_bookings.beneficiary_bookings.generate_qr_code', return_value='fake_qr_code')
+        @patch('domain.beneficiary_bookings.beneficiary_booking.generate_qr_code', return_value='fake_qr_code')
         def should_return_expected_json_with_qr_code(self, mock_generate_qr_code, mock_get_storage):
             # Given
             stocks = [
@@ -219,7 +220,7 @@ class BeneficiaryBookingsSerializeTest:
                 thumbCount=1,
                 active_mediations=[]
             )
-            beneficiary_bookings = BeneficiaryBookings(
+            beneficiary_bookings = BeneficiaryBookingsWithStocks(
                 bookings=[beneficiary_booking],
                 stocks=stocks
             )
@@ -382,7 +383,7 @@ class BeneficiaryBookingsSerializeTest:
                 thumbCount=1,
                 active_mediations=[]
             )
-            beneficiary_bookings = BeneficiaryBookings(
+            beneficiary_bookings = BeneficiaryBookingsWithStocks(
                 bookings=[beneficiary_booking],
                 stocks=stocks
             )
@@ -465,7 +466,7 @@ class BeneficiaryBookingsSerializeTest:
                 thumbCount=1,
                 active_mediations=[]
             )
-            beneficiary_bookings = BeneficiaryBookings(
+            beneficiary_bookings = BeneficiaryBookingsWithStocks(
                 bookings=[beneficiary_booking],
                 stocks=stocks
             )

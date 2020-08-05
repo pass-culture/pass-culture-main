@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 from domain.beneficiary_bookings.active_mediation import ActiveMediation
-from domain.beneficiary_bookings.beneficiary_bookings import BeneficiaryBooking
+from domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 
 
 class BeneficiaryBookingTest:

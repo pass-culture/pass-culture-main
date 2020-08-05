@@ -3,21 +3,6 @@ from datetime import datetime, timedelta
 from domain.beneficiary_bookings.stock import Stock
 
 
-def create_domain_beneficiary_booking_stock(self):
-    return Stock(
-        id=1,
-        quantity=None,
-        offerId=1,
-        price=12.99,
-        dateCreated=datetime(2019, 1, 5),
-        dateModified=datetime(2019, 1, 7),
-        beginningDatetime=datetime.utcnow() - timedelta(days=1),
-        bookingLimitDatetime=datetime.utcnow() - timedelta(days=2),
-        isSoftDeleted=False,
-        isOfferActive=True,
-    )
-
-
 class StockTest:
     class HasBookingLimitDatetimesPassedTest:
         def should_returns_true_when_stock_has_booking_limit_datetime_is_passed(self):
