@@ -1,11 +1,10 @@
 import { CONTENTFUL_PARAMETERS } from '../../domain/parseAlgoliaParameters'
 
-export const buildArrayOf = ({ algolia = {}, cover, hits, nbHits }) => {
+export const buildPairedTiles = ({ algolia = {}, cover, hits, nbHits }) => {
   let arrayOfPairedOffers = []
   if (cover) {
     arrayOfPairedOffers.push([cover])
   }
-
   const seeMoreOffers = hits.length < nbHits
   const seeMoreTileCanBeDisplayed = !(
     algolia[CONTENTFUL_PARAMETERS.TAGS] ||
@@ -37,7 +36,24 @@ export const buildArrayOf = ({ algolia = {}, cover, hits, nbHits }) => {
       }
     }
   }
-
-
   return arrayOfPairedOffers
+}
+
+export const buildTiles = ({ algolia = {}, cover, hits, nbHits }) => {
+  const seeMoreOffers = hits.length < nbHits
+  const tiles = [...hits]
+
+  if (cover) {
+    tiles.unshift(cover)
+  }
+
+  const seeMoreTileCanBeDisplayed = !(
+    algolia[CONTENTFUL_PARAMETERS.TAGS] ||
+    algolia[CONTENTFUL_PARAMETERS.BEGINNING_DATETIME] ||
+    algolia[CONTENTFUL_PARAMETERS.ENDING_DATETIME]
+  )
+  if (seeMoreOffers && seeMoreTileCanBeDisplayed) {
+    tiles.push(seeMoreOffers)
+  }
+  return tiles
 }

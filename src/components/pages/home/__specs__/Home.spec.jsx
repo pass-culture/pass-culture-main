@@ -14,6 +14,10 @@ import ExclusivityPane from '../domain/ValueObjects/ExclusivityPane'
 import ExclusivityModule from '../ExclusivityModule/ExclusivityModule'
 import { parse } from 'query-string'
 
+jest.mock('../Module/domain/buildTiles', () => ({
+  buildPairedTiles: jest.fn().mockReturnValue([]),
+  buildTiles: jest.fn().mockReturnValue([]),
+}))
 jest.mock('query-string', () => ({
   parse: jest.fn(),
 }))
@@ -21,7 +25,7 @@ jest.mock('../../../../vendor/contentful/contentful', () => ({
   fetchHomepage: jest.fn(),
 }))
 jest.mock('../../../../vendor/algolia/algolia', () => ({
-  fetchAlgolia: jest.fn().mockResolvedValue({ hits: [] }),
+  fetchAlgolia: jest.fn().mockResolvedValue({ hits: [], nbHits: 5 }),
 }))
 jest.mock('../domain/parseAlgoliaParameters', () => ({
   parseAlgoliaParameters: jest.fn().mockReturnValue({}),
@@ -49,6 +53,10 @@ describe('src | components | Home', () => {
         wallet_balance: 200.1,
       },
     }
+  })
+
+  afterEach(() => {
+    fetchHomepage.mockReset()
   })
 
   it('should render a Link component with the profil icon', () => {
@@ -100,7 +108,7 @@ describe('src | components | Home', () => {
     const offersWithCover = new OffersWithCover({
       algolia: { isDuo: true },
       cover: 'my-cover',
-      display: { layout: 'two-items' },
+      display: { layout: 'one-item-medium' },
     })
     fetchHomepage.mockResolvedValue([offersWithCover])
 
@@ -127,7 +135,7 @@ describe('src | components | Home', () => {
     // given
     const offers = new OffersWithCover({
       algolia: { isDuo: true },
-      display: { layout: 'two-items' },
+      display: { layout: 'one-item-medium' },
     })
     fetchHomepage.mockResolvedValue([offers])
 
