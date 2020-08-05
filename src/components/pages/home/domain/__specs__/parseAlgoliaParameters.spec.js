@@ -11,6 +11,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
@@ -36,6 +38,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: ['CINEMA', 'LECON', 'LIVRE'],
@@ -61,6 +65,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
@@ -86,6 +92,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: 5,
       offerCategories: [],
@@ -111,6 +119,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
@@ -136,6 +146,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
@@ -161,6 +173,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
@@ -186,6 +200,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
@@ -211,6 +227,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
@@ -238,6 +256,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
@@ -263,6 +283,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
@@ -288,6 +310,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
@@ -314,6 +338,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
@@ -370,6 +396,8 @@ describe('src | components | parseAlgoliaParameters', () => {
       // then
       expect(result).toStrictEqual({
         aroundRadius: null,
+        beginningDatetime: null,
+        endingDatetime: null,
         geolocation: geolocation,
         hitsPerPage: null,
         offerCategories: [],
@@ -396,6 +424,8 @@ describe('src | components | parseAlgoliaParameters', () => {
       // then
       expect(result).toStrictEqual({
         aroundRadius: 10,
+        beginningDatetime: null,
+        endingDatetime: null,
         geolocation: geolocation,
         hitsPerPage: null,
         offerCategories: [],
@@ -435,6 +465,95 @@ describe('src | components | parseAlgoliaParameters', () => {
 
       // then
       expect(result).toBeNull()
+    })
+  })
+
+  describe('beginnigDatetime & endingDatetime', () => {
+    it('should return algolia parameters with a beginning date when provided', () => {
+      // given
+      const beginningDatetime = new Date(2020, 9, 1,22,0,0)
+      const beginningDatetimeInString = "2020-10-01T22:00:00"
+      const parameters = {
+        beginningDatetime: beginningDatetimeInString,
+      }
+
+      // when
+      const result = parseAlgoliaParameters({ parameters })
+
+      // then
+      expect(result).toStrictEqual({
+        aroundRadius: null,
+        beginningDatetime: beginningDatetime,
+        endingDatetime: null,
+        geolocation: null,
+        hitsPerPage: null,
+        offerCategories: [],
+        offerIsDuo: false,
+        offerIsNew: false,
+        offerTypes: { isDigital: false, isEvent: false, isThing: false },
+        priceRange: [],
+        searchAround: false,
+        tags: [],
+      })
+    })
+
+    it('should return algolia parameters with an ending date when provided', () => {
+      // given
+      const endingDatetime = new Date(2020, 9, 1,22,0,0)
+      const endingDatetimeInString = "2020-10-01T22:00:00"
+      const parameters = {
+        endingDatetime: endingDatetimeInString,
+      }
+
+      // when
+      const result = parseAlgoliaParameters({ parameters })
+
+      // then
+      expect(result).toStrictEqual({
+        aroundRadius: null,
+        beginningDatetime: null,
+        endingDatetime: endingDatetime,
+        geolocation: null,
+        hitsPerPage: null,
+        offerCategories: [],
+        offerIsDuo: false,
+        offerIsNew: false,
+        offerTypes: { isDigital: false, isEvent: false, isThing: false },
+        priceRange: [],
+        searchAround: false,
+        tags: [],
+      })
+    })
+
+    it('should return algolia parameters with a begginnig and an ending date when provided', () => {
+      // given
+      const beginningDatetime = new Date(2020, 9, 1,0,0,0)
+      const endingDatetime = new Date(2020, 9, 2,0,0,0)
+      const beginningDatetimeInString = "2020-10-01T00:00:00"
+      const endingDatetimeInString = "2020-10-02T00:00:00"
+      const parameters = {
+        beginningDatetime: beginningDatetimeInString,
+        endingDatetime: endingDatetimeInString,
+      }
+
+      // when
+      const result = parseAlgoliaParameters({ parameters })
+
+      // then
+      expect(result).toStrictEqual({
+        aroundRadius: null,
+        beginningDatetime: beginningDatetime,
+        endingDatetime: endingDatetime,
+        geolocation: null,
+        hitsPerPage: null,
+        offerCategories: [],
+        offerIsDuo: false,
+        offerIsNew: false,
+        offerTypes: { isDigital: false, isEvent: false, isThing: false },
+        priceRange: [],
+        searchAround: false,
+        tags: [],
+      })
     })
   })
 })

@@ -7,7 +7,9 @@ import { DEFAULT_RADIUS_IN_KILOMETERS, FILTERS, RADIUS_IN_METERS_FOR_NO_OFFERS }
 
 export const fetchAlgolia = ({
                                aroundRadius = DEFAULT_RADIUS_IN_KILOMETERS,
+                               beginningDatetime = null,
                                date = null,
+                               endingDatetime = null,
                                geolocation = null,
                                hitsPerPage = null,
                                keywords = '',
@@ -30,7 +32,7 @@ export const fetchAlgolia = ({
   const searchParameters = {
     page,
     ...buildFacetFilters(offerCategories, offerTypes, offerIsDuo, tags),
-    ...buildNumericFilters(offerIsFree, priceRange, date, offerIsNew, timeRange),
+    ...buildNumericFilters(offerIsFree, priceRange, date, offerIsNew, timeRange, beginningDatetime, endingDatetime),
     ...buildGeolocationParameter(aroundRadius, geolocation, searchAround),
   }
   if (hitsPerPage) {
@@ -73,9 +75,10 @@ const buildFacetFilters = (offerCategories, offerTypes, offerIsDuo, tags) => {
   return atLeastOneFacetFilter ? { facetFilters } : {}
 }
 
-const buildNumericFilters = (offerIsFree, priceRange, date, offerIsNew, timeRange) => {
+const buildNumericFilters = (offerIsFree, priceRange, date, offerIsNew, timeRange, beginningDatetime, endingDatetime) => {
   const priceRangePredicate = buildOfferPriceRangePredicate(offerIsFree, priceRange)
   const datePredicate = buildDatePredicate(date, timeRange)
+  const homepageDatePredicate = buildHomepageDatePredicate(beginningDatetime, endingDatetime)
   const newestOffersPredicate = buildNewestOffersPredicate(offerIsNew)
   const numericFilters = []
 
@@ -89,6 +92,10 @@ const buildNumericFilters = (offerIsFree, priceRange, date, offerIsNew, timeRang
 
   if (newestOffersPredicate) {
     numericFilters.push(newestOffersPredicate)
+  }
+
+  if (homepageDatePredicate) {
+    numericFilters.push(homepageDatePredicate)
   }
 
   return numericFilters.length > 0 ? { numericFilters } : {}
@@ -124,6 +131,18 @@ const buildDatePredicate = (date, timeRange) => {
   } else if (timeRange.length > 0) {
     return buildTimeOnlyPredicate(timeRange)
   }
+}
+
+const buildHomepageDatePredicate = (beginningDatetime, endingDatetime) => {
+  const beginningTimestamp = beginningDatetime ? TIMESTAMP.getFromDate(beginningDatetime) : null
+  const endingTimestamp = endingDatetime ? TIMESTAMP.getFromDate(endingDatetime) : null
+  const actualTimestamp = beginningDatetime && !endingDatetime ? beginningTimestamp : endingTimestamp
+  const operator = beginningDatetime && !endingDatetime ? '>=' : '<='
+  if (beginningDatetime && endingDatetime) {
+    return getDatePredicate(beginningTimestamp, endingTimestamp)
+  }
+  if (beginningDatetime && !endingDatetime || !beginningDatetime && endingDatetime)
+    return `${FACETS.OFFER_DATE} ${operator} ${actualTimestamp}`
 }
 
 const getDatePredicate = (lowerDate, higherDate) =>

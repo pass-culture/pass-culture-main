@@ -29,8 +29,12 @@ export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
     return null
   }
 
+  const beginningDatetime = parameters[CONTENTFUL_PARAMETERS.BEGINNING_DATETIME] ? new Date(parameters[CONTENTFUL_PARAMETERS.BEGINNING_DATETIME]) : null
+  const endingDatetime = parameters[CONTENTFUL_PARAMETERS.ENDING_DATETIME] ? new Date(parameters[CONTENTFUL_PARAMETERS.ENDING_DATETIME]) : null
   return {
     aroundRadius: aroundRadius || null,
+    beginningDatetime: beginningDatetime,
+    endingDatetime: endingDatetime,
     geolocation: geolocation || null,
     hitsPerPage: parameters[CONTENTFUL_PARAMETERS.HITS_PER_PAGE] || null,
     offerCategories: parameters[CONTENTFUL_PARAMETERS.CATEGORIES] || [],

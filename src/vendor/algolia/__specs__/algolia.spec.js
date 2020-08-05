@@ -1166,4 +1166,66 @@ describe('fetchAlgolia', () => {
       })
     })
   })
+
+  describe('beginningDatetime & endingDatetime', () => {
+    it('should fetch from the beginning datetime', () => {
+      // Given
+      const beginningDatetime = new Date(2020, 8, 1)
+      const keywords = ''
+      TIMESTAMP.getFromDate.mockReturnValueOnce(1596240000)
+
+      // When
+      fetchAlgolia({
+        keywords,
+        beginningDatetime,
+      })
+
+      // Then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        numericFilters: [`offer.dates >= 1596240000`],
+        page: 0,
+      })
+    })
+
+    it('should fetch until the ending datetime', () => {
+      // Given
+      const endingDatetime = new Date(2020, 8, 1)
+      const keywords = ''
+      TIMESTAMP.getFromDate.mockReturnValueOnce(1596240000)
+
+      // When
+      fetchAlgolia({
+        keywords,
+        endingDatetime,
+      })
+
+      // Then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        numericFilters: [`offer.dates <= 1596240000`],
+        page: 0,
+      })
+    })
+
+    it('should fetch from the beginning datetime to the ending datetime', () => {
+      // Given
+      const beginningDatetime = new Date(2020, 8, 1)
+      const endingDatetime = new Date(2020, 8, 2)
+
+      const keywords = ''
+      TIMESTAMP.getFromDate.mockReturnValueOnce(1596240000).mockReturnValueOnce(1596326400)
+
+      // When
+      fetchAlgolia({
+        keywords,
+        beginningDatetime,
+        endingDatetime,
+      })
+
+      // Then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        numericFilters: [`offer.dates: 1596240000 TO 1596326400`],
+        page: 0,
+      })
+    })
+  })
 })
