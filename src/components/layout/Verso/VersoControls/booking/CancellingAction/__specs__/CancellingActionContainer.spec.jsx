@@ -1,7 +1,6 @@
-import React from 'react'
+import moment from 'moment'
 
 import { getCancellingUrl, mapDispatchToProps, mapStateToProps } from '../CancellingActionContainer'
-import moment from 'moment'
 
 describe('src | components | layout | Verso | VersoControls | booking | CancellingAction | CancellingActionContainer', () => {
   describe('getCancellingUrl', () => {
@@ -162,32 +161,13 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
       mapDispatchToProps(dispatch, ownProps).openCancelPopin(bookingId, offerName, offerId)
 
       // then
-      expect(dispatch.mock.calls[0][0]).toStrictEqual({
-        options: {
-          buttons: [
-            <button
-              className="popin-button"
-              key="Oui"
-              onClick={expect.any(Function)}
-              type="button"
-            >
-              {'Oui'}
-            </button>,
-            <button
-              className="popin-button"
-              key="Non"
-              onClick={expect.any(Function)}
-              type="button"
-            >
-              {'Non'}
-            </button>,
-          ],
-          handleClose: expect.any(Function),
-          title: 'Offer title',
-          text: 'Souhaites-tu réellement annuler cette réservation ?',
-        },
-        type: 'TOGGLE_SHARE_POPIN',
-      })
+      expect(dispatch.mock.calls[0][0].options.buttons).toStrictEqual(expect.any(Array))
+      expect(dispatch.mock.calls[0][0].options.handleClose).toStrictEqual(expect.any(Function))
+      expect(dispatch.mock.calls[0][0].options.title).toBe('Offer title')
+      expect(dispatch.mock.calls[0][0].options.text).toBe(
+        'Souhaites-tu réellement annuler cette réservation ?'
+      )
+      expect(dispatch.mock.calls[0][0].type).toBe('TOGGLE_SHARE_POPIN')
     })
   })
 })

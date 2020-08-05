@@ -1,3 +1,4 @@
+import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
@@ -58,13 +59,15 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     const { errors } = payload
     const { booking: bookingError } = errors || {}
     const message = bookingError || ['Une erreur inconnue s’est produite']
+    const propsOk = {
+      action: handleClosePopin,
+      label: 'Non',
+    }
+    const okButton = <PopinButton {...propsOk} />
 
     const options = {
       buttons: [
-        PopinButton({
-          action: handleClosePopin,
-          label: 'OK',
-        }),
+        okButton,
       ],
       text: message.join('\n'),
       title: 'Annulation impossible',
@@ -93,16 +96,18 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
   return {
     openCancelPopin: (bookingId, offerName, offerId) => {
+      const yesButton = (<PopinButton
+        action={() => cancelBooking(bookingId, offerId)}
+        label="Oui"
+                         />)
+      const noButton = (<PopinButton
+        action={handleClosePopin}
+        label="Non"
+                        />)
       const options = {
         buttons: [
-          PopinButton({
-            action: () => cancelBooking(bookingId, offerId),
-            label: 'Oui',
-          }),
-          PopinButton({
-            action: handleClosePopin,
-            label: 'Non',
-          }),
+          yesButton,
+          noButton,
         ],
         handleClose: () => history.push(`${pathname.split('/reservation/')[0]}${search}`),
         text: 'Souhaites-tu réellement annuler cette réservation ?',

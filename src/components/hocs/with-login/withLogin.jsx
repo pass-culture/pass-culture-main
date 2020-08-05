@@ -24,7 +24,7 @@ export default ({
 
         if (!isRequired || isLoggedIn) setLoading(false)
       })
-    }, [dispatchFetchCurrentUser, history, location])
+    }, [])
 
     return loading ? <LoadingPage /> : <WrappedComponent {...props} />
   }

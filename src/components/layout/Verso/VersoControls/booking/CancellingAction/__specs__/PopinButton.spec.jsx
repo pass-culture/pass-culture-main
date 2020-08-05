@@ -22,9 +22,6 @@ describe('src | PopinButton', () => {
   describe('when cliking on button', () => {
     it('should disable it', () => {
       // Given
-      jest.spyOn(document, 'querySelector').mockReturnValue({
-        disabled: false,
-      })
       const props = {
         action: jest.fn(),
         label: 'Fake label',
@@ -35,8 +32,8 @@ describe('src | PopinButton', () => {
       wrapper.find('button').invoke('onClick')(props.action)
 
       // Then
+      expect(wrapper.find('button').prop('disabled')).toBe(true)
       expect(props.action).toHaveBeenCalledTimes(1)
-      expect(document.querySelector('.popin-button').disabled).toBe(true)
     })
   })
 })
