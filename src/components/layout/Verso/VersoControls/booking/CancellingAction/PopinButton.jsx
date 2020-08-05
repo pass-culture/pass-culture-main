@@ -1,11 +1,16 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
+const onClick = action => () => {
+  document.querySelector('.popin-button').disabled = true
+  action()
+}
+
 const PopinButton = ({ action, label }) => (
   <button
     className="popin-button"
     key={label}
-    onClick={action}
+    onClick={onClick(action)}
     type="button"
   >
     {label}
