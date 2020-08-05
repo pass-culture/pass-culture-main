@@ -207,6 +207,7 @@ class Results extends PureComponent {
       const {
         offerCategories,
         offerIsDuo,
+        offerIsFree,
         offerIsNew,
         offerTypes,
         priceRange,
@@ -215,6 +216,7 @@ class Results extends PureComponent {
       return geolocationFilterCounter
         + offerCategories.length
         + this.getNumberFromBoolean(offerIsDuo)
+        + this.getNumberFromBoolean(offerIsFree)
         + this.getNumberFromBoolean(offerIsNew)
         + this.getNumberOfSelectedFilters(offerTypes)
         + this.getPriceRangeCounter(priceRange)
