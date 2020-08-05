@@ -335,6 +335,8 @@ describe('src | components | Module', () => {
       layout: "one-item-medium",
       parameters: {
         aroundRadius: null,
+        beginningDatetime:null,
+        endingDatetime:null,
         geolocation: {
           latitude: 1,
           longitude: 2

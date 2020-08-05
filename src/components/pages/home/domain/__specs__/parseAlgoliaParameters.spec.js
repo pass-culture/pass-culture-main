@@ -365,6 +365,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
+      beginningDatetime:null,
+      endingDatetime:null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
@@ -489,9 +491,10 @@ describe('src | components | parseAlgoliaParameters', () => {
         hitsPerPage: null,
         offerCategories: [],
         offerIsDuo: false,
+        offerIsFree: false,
         offerIsNew: false,
         offerTypes: { isDigital: false, isEvent: false, isThing: false },
-        priceRange: [],
+        priceRange: [0,500],
         searchAround: false,
         tags: [],
       })
@@ -517,9 +520,10 @@ describe('src | components | parseAlgoliaParameters', () => {
         hitsPerPage: null,
         offerCategories: [],
         offerIsDuo: false,
+        offerIsFree: false,
         offerIsNew: false,
         offerTypes: { isDigital: false, isEvent: false, isThing: false },
-        priceRange: [],
+        priceRange: [0,500],
         searchAround: false,
         tags: [],
       })
@@ -548,9 +552,10 @@ describe('src | components | parseAlgoliaParameters', () => {
         hitsPerPage: null,
         offerCategories: [],
         offerIsDuo: false,
+        offerIsFree: false,
         offerIsNew: false,
         offerTypes: { isDigital: false, isEvent: false, isThing: false },
-        priceRange: [],
+        priceRange: [0,500],
         searchAround: false,
         tags: [],
       })
