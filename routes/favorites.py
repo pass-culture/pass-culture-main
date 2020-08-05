@@ -34,7 +34,7 @@ def add_to_favorite():
 
     favorite = favorite_domain_converter.to_domain(favorite_sql_entity)
 
-    return jsonify(serialize_favorite(favorite, current_user)), 201
+    return jsonify(serialize_favorite(favorite)), 201
 
 
 @app.route('/favorites/<offer_id>', methods=['DELETE'])
@@ -55,4 +55,4 @@ def delete_favorite(offer_id):
 def get_favorites():
     favorites = list_favorites_of_beneficiary.execute(current_user.id)
 
-    return jsonify(serialize_favorites(favorites, current_user)), 200
+    return jsonify(serialize_favorites(favorites)), 200

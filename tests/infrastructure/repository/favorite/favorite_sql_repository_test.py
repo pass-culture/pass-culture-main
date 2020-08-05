@@ -5,8 +5,8 @@ from infrastructure.repository.favorite.favorite_sql_repository import FavoriteS
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_user, \
-    create_venue, create_mediation, create_favorite
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+    create_venue, create_mediation, create_favorite, create_booking
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
 
 
 class FindByBeneficiaryTest:
@@ -51,3 +51,47 @@ class FindByBeneficiaryTest:
 
         # then
         assert len(favorites) == 0
+
+    @clean_database
+    def test_should_return_booking_when_favorite_offer_is_booked(self, app):
+        # given
+        beneficiary = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+        stock = create_stock_from_offer(idx=123, offer=offer, price = 0)
+        booking = create_booking(idx=321, stock=stock, venue=venue, user=beneficiary)
+        mediation = create_mediation(offer=offer)
+        favorite = create_favorite(mediation=mediation, offer=offer, user=beneficiary)
+        repository.save(favorite, booking)
+
+        # when
+        favorites = self.favorite_sql_repository.find_by_beneficiary(beneficiary.id)
+
+        # then
+        assert len(favorites) == 1
+        favorite = favorites[0]
+        assert favorite.is_booked is True
+        assert favorite.booking_identifier == booking.id
+        assert favorite.booked_stock_identifier == stock.id
+
+    @clean_database
+    def test_should_not_return_booking_when_favorite_offer_booking_is_cancelled(self, app):
+        # given
+        beneficiary = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+        stock = create_stock_from_offer(idx=123, offer=offer, price = 0)
+        booking = create_booking(idx=321, stock=stock, venue=venue, user=beneficiary, is_cancelled=True)
+        mediation = create_mediation(offer=offer)
+        favorite = create_favorite(mediation=mediation, offer=offer, user=beneficiary)
+        repository.save(favorite, booking)
+
+        # when
+        favorites = self.favorite_sql_repository.find_by_beneficiary(beneficiary.id)
+
+        # then
+        assert len(favorites) == 1
+        favorite = favorites[0]
+        assert favorite.is_booked is False

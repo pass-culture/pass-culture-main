@@ -46,20 +46,20 @@ def create_domain_beneficiary_pre_subcription(date_of_birth: datetime = datetime
                                               source: str = 'jouve',
                                               source_id: str = None) -> BeneficiaryPreSubscription:
     return BeneficiaryPreSubscription(
-        address=address,
-        activity=activity,
-        application_id=application_id,
-        city=city,
-        date_of_birth=date_of_birth,
-        postal_code=postal_code,
-        email=email,
-        first_name=first_name,
-        civility=civility,
-        last_name=last_name,
-        phone_number=phone_number,
-        source=source,
-        source_id=source_id
-    )
+            address=address,
+            activity=activity,
+            application_id=application_id,
+            city=city,
+            date_of_birth=date_of_birth,
+            postal_code=postal_code,
+            email=email,
+            first_name=first_name,
+            civility=civility,
+            last_name=last_name,
+            phone_number=phone_number,
+            source=source,
+            source_id=source_id
+            )
 
 
 def create_domain_thing_booking_recap(offer_identifier: int = 1,
@@ -84,10 +84,31 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
                                       venue_is_virtual=False) -> ThingBookingRecap:
     if offer_isbn:
         return BookBookingRecap(
+                offer_identifier=offer_identifier,
+                offer_name=offer_name,
+                offerer_name=offerer_name,
+                offer_isbn=offer_isbn,
+                beneficiary_lastname=beneficiary_lastname,
+                beneficiary_firstname=beneficiary_firstname,
+                beneficiary_email=beneficiary_email,
+                booking_amount=booking_amount,
+                booking_token=booking_token,
+                booking_date=booking_date,
+                booking_is_duo=booking_is_duo,
+                booking_is_used=booking_is_used,
+                booking_is_cancelled=booking_is_cancelled,
+                booking_is_reimbursed=booking_is_reimbursed,
+                payment_date=payment_date,
+                cancellation_date=cancellation_date,
+                date_used=date_used,
+                venue_identifier=venue_identifier,
+                venue_name=venue_name,
+                venue_is_virtual=venue_is_virtual,
+                )
+    return ThingBookingRecap(
             offer_identifier=offer_identifier,
             offer_name=offer_name,
             offerer_name=offerer_name,
-            offer_isbn=offer_isbn,
             beneficiary_lastname=beneficiary_lastname,
             beneficiary_firstname=beneficiary_firstname,
             beneficiary_email=beneficiary_email,
@@ -103,29 +124,8 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
             date_used=date_used,
             venue_identifier=venue_identifier,
             venue_name=venue_name,
-            venue_is_virtual=venue_is_virtual,
-        )
-    return ThingBookingRecap(
-        offer_identifier=offer_identifier,
-        offer_name=offer_name,
-        offerer_name=offerer_name,
-        beneficiary_lastname=beneficiary_lastname,
-        beneficiary_firstname=beneficiary_firstname,
-        beneficiary_email=beneficiary_email,
-        booking_amount=booking_amount,
-        booking_token=booking_token,
-        booking_date=booking_date,
-        booking_is_duo=booking_is_duo,
-        booking_is_used=booking_is_used,
-        booking_is_cancelled=booking_is_cancelled,
-        booking_is_reimbursed=booking_is_reimbursed,
-        payment_date=payment_date,
-        cancellation_date=cancellation_date,
-        date_used=date_used,
-        venue_identifier=venue_identifier,
-        venue_name=venue_name,
-        venue_is_virtual=venue_is_virtual
-    )
+            venue_is_virtual=venue_is_virtual
+            )
 
 
 def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
@@ -149,27 +149,27 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
                                       venue_name="Librairie Kléber",
                                       venue_is_virtual=False) -> EventBookingRecap:
     return EventBookingRecap(
-        offer_identifier=offer_identifier,
-        offer_name=offer_name,
-        offerer_name=offerer_name,
-        beneficiary_lastname=beneficiary_lastname,
-        beneficiary_firstname=beneficiary_firstname,
-        beneficiary_email=beneficiary_email,
-        booking_amount=booking_amount,
-        booking_token=booking_token,
-        booking_date=booking_date,
-        booking_is_duo=booking_is_duo,
-        booking_is_used=booking_is_used,
-        booking_is_cancelled=booking_is_cancelled,
-        booking_is_reimbursed=booking_is_reimbursed,
-        event_beginning_datetime=event_beginning_datetime,
-        venue_identifier=venue_identifier,
-        cancellation_date=cancellation_date,
-        payment_date=payment_date,
-        date_used=date_used,
-        venue_name=venue_name,
-        venue_is_virtual=venue_is_virtual,
-    )
+            offer_identifier=offer_identifier,
+            offer_name=offer_name,
+            offerer_name=offerer_name,
+            beneficiary_lastname=beneficiary_lastname,
+            beneficiary_firstname=beneficiary_firstname,
+            beneficiary_email=beneficiary_email,
+            booking_amount=booking_amount,
+            booking_token=booking_token,
+            booking_date=booking_date,
+            booking_is_duo=booking_is_duo,
+            booking_is_used=booking_is_used,
+            booking_is_cancelled=booking_is_cancelled,
+            booking_is_reimbursed=booking_is_reimbursed,
+            event_beginning_datetime=event_beginning_datetime,
+            venue_identifier=venue_identifier,
+            cancellation_date=cancellation_date,
+            payment_date=payment_date,
+            date_used=date_used,
+            venue_name=venue_name,
+            venue_is_virtual=venue_is_virtual,
+            )
 
 
 def create_domain_stock(identifier: int,
@@ -181,15 +181,15 @@ def create_domain_stock(identifier: int,
                         is_soft_deleted: bool = False,
                         bookings: List[Booking] = []) -> Stock:
     return Stock(
-        identifier=identifier,
-        quantity=quantity,
-        offer=offer,
-        price=price,
-        beginning_datetime=beginning_datetime,
-        booking_limit_datetime=booking_limit_datetime,
-        is_soft_deleted=is_soft_deleted,
-        bookings=bookings,
-    )
+            identifier=identifier,
+            quantity=quantity,
+            offer=offer,
+            price=price,
+            beginning_datetime=beginning_datetime,
+            booking_limit_datetime=booking_limit_datetime,
+            is_soft_deleted=is_soft_deleted,
+            bookings=bookings,
+            )
 
 
 def create_domain_booking(beneficiary: Beneficiary,
@@ -203,24 +203,26 @@ def create_domain_booking(beneficiary: Beneficiary,
                           token: str = None,
                           date_booked: datetime = datetime.utcnow()) -> Booking:
     return Booking(
-        beneficiary=beneficiary,
-        stock=stock,
-        amount=amount,
-        quantity=quantity,
-        recommendation_id=recommendation_id,
-        is_cancelled=is_cancelled,
-        is_used=is_used,
-        identifier=identifier,
-        token=token,
-        date_booked=date_booked
-    )
+            beneficiary=beneficiary,
+            stock=stock,
+            amount=amount,
+            quantity=quantity,
+            recommendation_id=recommendation_id,
+            is_cancelled=is_cancelled,
+            is_used=is_used,
+            identifier=identifier,
+            token=token,
+            date_booked=date_booked
+            )
 
 
 def create_domain_favorite(identifier: int,
                            offer: OfferSQLEntity,
-                           mediation: MediationSQLEntity = None):
+                           mediation: MediationSQLEntity = None,
+                           booking: dict = None):
     return Favorite(
-        identifier=identifier,
-        offer=offer,
-        mediation=mediation
-    )
+            identifier=identifier,
+            offer=offer,
+            mediation=mediation,
+            booking=booking
+            )

@@ -270,9 +270,10 @@ def create_stock_from_event_occurrence(event_occurrence: Dict, price: int = 10, 
 
 
 def create_stock_from_offer(offer: OfferSQLEntity, price: float = 9.90, quantity: Optional[int] = 10, soft_deleted: bool = False,
-                            booking_limit_datetime: datetime = None, beginning_datetime: datetime = None,
+                            booking_limit_datetime: datetime = None, beginning_datetime: datetime = None, idx: int = None,
                             date_modified: datetime = datetime.utcnow()) -> StockSQLEntity:
     stock = StockSQLEntity()
+    stock.id = idx
     stock.offer = offer
     stock.price = price
     stock.quantity = quantity
@@ -291,7 +292,7 @@ def create_stock_with_event_offer(offerer: Offerer, venue: VenueSQLEntity, price
                                   beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=72),
                                   thumb_count: int = 0,
                                   booking_limit_datetime: datetime = datetime.utcnow() + timedelta(
-                                      hours=71)) -> StockSQLEntity:
+                                          hours=71)) -> StockSQLEntity:
     stock = StockSQLEntity()
     stock.offerer = offerer
     stock.price = price

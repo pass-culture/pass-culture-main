@@ -90,43 +90,6 @@ OFFER_INCLUDES = [
     }
 ]
 
-FAVORITE_INCLUDES = [
-    "-userId",
-    {
-        "key": "mediation",
-        "includes": ["thumbUrl"]
-    },
-    {
-        "key": "offer",
-        "includes": [
-            "dateRange",
-            "favorites",
-            "isEvent",
-            "isBookable",
-            'hasBookingLimitDatetimesPassed',
-            "isThing",
-            "isFullyBooked",
-            "offerType",
-            {
-                "key": "product",
-                "includes": ["thumbUrl"]
-            },
-            {
-                "key": "stocks",
-                "includes": [
-                    'isBookable',
-                    'remainingQuantity'
-                ]
-            },
-            {
-                "key": "venue",
-                "includes": ['-validationToken']
-            }
-        ]
-    },
-    "thumbUrl"
-]
-
 RECOMMENDATION_INCLUDES = [
     {
         "key": "mediation",

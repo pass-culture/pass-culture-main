@@ -80,7 +80,7 @@ class Get:
             favorite = response.json[0]
             assert 'offer' in favorite
             assert 'venue' in favorite['offer']
-            assert humanize(booking.id) in favorite['firstMatchingBooking']["id"]
+            assert humanize(booking.id) in favorite['booking']["id"]
             assert 'validationToken' not in favorite['offer']['venue']
 
     class Returns401:

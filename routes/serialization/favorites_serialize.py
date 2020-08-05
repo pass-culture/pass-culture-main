@@ -3,14 +3,15 @@ from typing import Dict, List
 from domain.favorite.favorite import Favorite
 from models import UserSQLEntity
 from routes.serialization.serializer import serialize
+from utils.date import DateTimes
 from utils.human_ids import humanize
 
 
-def serialize_favorites(favorites: List[Favorite], current_user: UserSQLEntity) -> List:
-    return [serialize_favorite(favorite, current_user) for favorite in favorites]
+def serialize_favorites(favorites: List[Favorite]) -> List:
+    return [serialize_favorite(favorite) for favorite in favorites]
 
 
-def serialize_favorite(favorite: Favorite, current_user: UserSQLEntity) -> Dict:
+def serialize_favorite(favorite: Favorite) -> Dict:
     offer = favorite.offer
     venue = offer.venue
     humanized_offer_id = humanize(offer.id)
@@ -27,7 +28,6 @@ def serialize_favorite(favorite: Favorite, current_user: UserSQLEntity) -> Dict:
             'hasBookingLimitDatetimesPassed': offer.hasBookingLimitDatetimesPassed,
             'id': humanized_offer_id,
             'isActive': offer.isActive,
-            'isFullyBooked': offer.isFullyBooked,
             'name': offer.name,
             'offerType': offer.offerType,
             'stocks': stocks,
@@ -35,20 +35,16 @@ def serialize_favorite(favorite: Favorite, current_user: UserSQLEntity) -> Dict:
                 'id': humanized_venue_id,
                 'latitude': venue.latitude,
                 'longitude': venue.longitude
-            },
+                },
             'venueId': humanized_venue_id,
-        },
+            },
         'thumbUrl': favorite.thumb_url
-    }
-
-    user_booking = offer.get_beneficiary_booking_if_exists(current_user.id)
-
-    if user_booking:
-        serialized_favorite['firstMatchingBooking'] = {
-            'id': humanize(user_booking.id),
-            'isCancelled': user_booking.isCancelled,
-            'isUsed': user_booking.isUsed,
-            'stockId': humanize(user_booking.stockId)
         }
+
+    if favorite.is_booked:
+        serialized_favorite['booking'] = {
+            'id': humanize(favorite.booking_identifier),
+            'stockId': humanize(favorite.booked_stock_identifier)
+            }
 
     return serialized_favorite
