@@ -59,7 +59,7 @@ def create_domain_beneficiary_pre_subcription(date_of_birth: datetime = datetime
             phone_number=phone_number,
             source=source,
             source_id=source_id
-            )
+    )
 
 
 def create_domain_thing_booking_recap(offer_identifier: int = 1,
@@ -104,7 +104,7 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
                 venue_identifier=venue_identifier,
                 venue_name=venue_name,
                 venue_is_virtual=venue_is_virtual,
-                )
+        )
     return ThingBookingRecap(
             offer_identifier=offer_identifier,
             offer_name=offer_name,
@@ -125,7 +125,7 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
             venue_identifier=venue_identifier,
             venue_name=venue_name,
             venue_is_virtual=venue_is_virtual
-            )
+    )
 
 
 def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
@@ -169,7 +169,7 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
             date_used=date_used,
             venue_name=venue_name,
             venue_is_virtual=venue_is_virtual,
-            )
+    )
 
 
 def create_domain_stock(identifier: int,
@@ -189,7 +189,7 @@ def create_domain_stock(identifier: int,
             booking_limit_datetime=booking_limit_datetime,
             is_soft_deleted=is_soft_deleted,
             bookings=bookings,
-            )
+    )
 
 
 def create_domain_booking(beneficiary: Beneficiary,
@@ -213,7 +213,7 @@ def create_domain_booking(beneficiary: Beneficiary,
             identifier=identifier,
             token=token,
             date_booked=date_booked
-            )
+    )
 
 
 def create_domain_favorite(identifier: int,
@@ -225,4 +225,4 @@ def create_domain_favorite(identifier: int,
             offer=offer,
             mediation=mediation,
             booking=booking
-            )
+    )

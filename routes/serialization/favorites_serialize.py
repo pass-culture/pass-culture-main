@@ -35,16 +35,16 @@ def serialize_favorite(favorite: Favorite) -> Dict:
                 'id': humanized_venue_id,
                 'latitude': venue.latitude,
                 'longitude': venue.longitude
-                },
-            'venueId': humanized_venue_id,
             },
+            'venueId': humanized_venue_id,
+        },
         'thumbUrl': favorite.thumb_url
-        }
+    }
 
     if favorite.is_booked:
         serialized_favorite['booking'] = {
             'id': humanize(favorite.booking_identifier),
             'stockId': humanize(favorite.booked_stock_identifier)
-            }
+        }
 
     return serialized_favorite

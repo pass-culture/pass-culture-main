@@ -1,8 +1,10 @@
+from typing import Dict
+
 from models import OfferSQLEntity, MediationSQLEntity
 
 
 class Favorite(object):
-    def __init__(self, identifier: int, mediation: MediationSQLEntity, offer: OfferSQLEntity, booking: dict):
+    def __init__(self, identifier: int, mediation: MediationSQLEntity, offer: OfferSQLEntity, booking: Dict):
         self.identifier = identifier
         self.mediation = mediation
         self.offer = offer
@@ -10,7 +12,7 @@ class Favorite(object):
         self.booked_stock_identifier = booking['stock_id'] if booking else None
 
     @property
-    def is_booked(self):
+    def is_booked(self) -> bool:
         return True if self.booking_identifier else False
 
     @property
