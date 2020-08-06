@@ -5,16 +5,6 @@ from tests.model_creators.generic_creators import create_user, create_offerer, c
 
 
 class Get:
-    class Returns401:
-        @clean_database
-        def when_user_is_not_logged_in(self, app):
-            # when
-            response = TestClient(app.test_client()).get(
-                '/offerers', headers={'origin': 'http://localhost:3000'})
-
-            # then
-            assert response.status_code == 401
-
     class Returns200:
         @clean_database
         def when_logged_in_and_return_an_offerer_with_one_managed_venue(self, app):

@@ -42,7 +42,9 @@ search_models = [
 @login_or_api_key_required
 def list_stocks():
     filters = request.args.copy()
-    return handle_rest_get_list(StockSQLEntity, query=find_stocks_with_possible_filters(filters, current_user), paginate=50)
+    return handle_rest_get_list(StockSQLEntity,
+                                query=find_stocks_with_possible_filters(filters, current_user),
+                                paginate=50)
 
 
 @app.route('/stocks/<stock_id>',

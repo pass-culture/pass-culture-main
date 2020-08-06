@@ -4,22 +4,21 @@ from flask_login import current_user, login_required
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro, \
     send_pro_user_waiting_for_validation_by_admin_email
-from models import Offerer, RightsType, VenueSQLEntity, UserSQLEntity, UserOfferer
+from infrastructure.container import list_offerers_for_pro_user
+from models import Offerer, RightsType, UserSQLEntity, UserOfferer, ApiErrors
 from models.venue_sql_entity import create_digital_venue
 from repository import repository
-from repository.offerer_queries import filter_offerers_with_keywords_string, \
-    find_by_siren, query_filter_offerer_by_user, query_filter_offerer_is_validated, \
-    query_filter_offerer_is_not_validated
+from repository.offerer_queries import find_by_siren
 from routes.serialization import as_dict
+from use_cases.list_offerers_for_pro_user import OfferersRequestParameters
 from utils.human_ids import dehumanize
 from utils.includes import OFFERER_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
-    handle_rest_get_list, \
     load_or_404, \
     login_or_api_key_required
-from validation.routes.offerers import check_valid_edition, parse_boolean_param_validated
+from validation.routes.offerers import check_valid_edition
 
 
 def get_dict_offerer(offerer):
@@ -31,40 +30,36 @@ def get_dict_offerer(offerer):
 @app.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
-    is_filtered_by_offerer_status = (request.args.get('validated') is not None)
-    only_validated_offerers = parse_boolean_param_validated(request)
+    keywords = request.args.get('keywords')
+    only_validated_offerers = request.args.get('validated')
 
-    query = Offerer.query
-
-    if not current_user.isAdmin:
-        query = query_filter_offerer_by_user(query)
+    is_filtered_by_offerer_status = only_validated_offerers is not None
 
     if is_filtered_by_offerer_status:
-        if only_validated_offerers:
-            query = query_filter_offerer_is_validated(query)
-        else:
-            query = query_filter_offerer_is_not_validated(query)
+        if only_validated_offerers.lower() not in ('true', 'false'):
+            errors = ApiErrors()
+            errors.add_error('validated', 'Le paramètre \'validated\' doit être \'true\' ou \'false\'')
+            raise errors
 
-    keywords = request.args.get('keywords')
-    if keywords is not None:
-        query = filter_offerers_with_keywords_string(query.join(VenueSQLEntity), keywords)
-        should_distinct_offerers = True
-    else:
-        should_distinct_offerers = False
+        only_validated_offerers = only_validated_offerers.lower() == 'true'
 
-    offerers = query.all()
+    offerers_request_parameters = OfferersRequestParameters(
+        user_id=current_user.id,
+        user_is_admin=current_user.isAdmin,
+        is_filtered_by_offerer_status=is_filtered_by_offerer_status,
+        only_validated_offerers=only_validated_offerers,
+        keywords=keywords,
+    )
 
-    for offerer in offerers:
-        offerer.append_user_has_access_attribute(current_user)
+    paginated_offerers = list_offerers_for_pro_user.execute(
+        offerers_request_parameters=offerers_request_parameters
+    )
 
-    return handle_rest_get_list(Offerer,
-                                should_distinct=should_distinct_offerers,
-                                query=query,
-                                order_by=Offerer.name,
-                                includes=OFFERER_INCLUDES,
-                                paginate=10,
-                                page=request.args.get('page'),
-                                with_total_data_count=True)
+    response = jsonify(paginated_offerers.offerers)
+    response.headers['Total-Data-Count'] = paginated_offerers.total
+    response.headers['Access-Control-Expose-Headers'] = 'Total-Data-Count'
+
+    return response, 200
 
 
 @app.route('/offerers/<id>', methods=['GET'])
