@@ -1,5 +1,5 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import StocksManager from '../StocksManager'
 
@@ -51,14 +51,6 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
   })
 
   describe('when managing an event', () => {
-    it('should match the snapshot when managing an event', () => {
-      // when
-      const wrapper = shallow(<StocksManager {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
-
     it('should contain the event cancellation legal text', () => {
       // when
       const wrapper = shallow(<StocksManager {...props} />)
@@ -84,17 +76,6 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
   })
 
   describe('when managing a thing', () => {
-    it('should match the snapshot when managing a thing', () => {
-      // given
-      props.isEvent = false
-
-      // when
-      const wrapper = shallow(<StocksManager {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
-
     it('should not contain the event cancellation legal text', () => {
       // given
       props.isEvent = false

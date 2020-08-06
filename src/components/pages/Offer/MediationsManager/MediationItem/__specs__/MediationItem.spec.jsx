@@ -1,8 +1,8 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import { Field, Form } from 'pass-culture-shared'
+import React from 'react'
 
 import MediationItem from '../MediationItem'
-import { Field, Form } from 'pass-culture-shared'
 
 describe('src | MediationItem', () => {
   let props
@@ -15,14 +15,6 @@ describe('src | MediationItem', () => {
         thumbUrl: 'http://example.com/image.jpg',
       },
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<MediationItem {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

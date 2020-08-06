@@ -1,7 +1,8 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import CreateControl from '../CreateControl'
 import { NavLink } from 'react-router-dom'
+
+import CreateControl from '../CreateControl'
 
 describe('src | components | pages | Venue | controls | CreateControl ', () => {
   let props
@@ -11,14 +12,6 @@ describe('src | components | pages | Venue | controls | CreateControl ', () => {
       venueId: '1',
       offererId: 'RG',
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<CreateControl {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

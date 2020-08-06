@@ -1,41 +1,11 @@
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
 
 import TextField from '../TextField'
 
+
 describe('src | components | layout | form | TextField', () => {
-  it('should match the snapshot', () => {
-    // given
-    const initialValues = {
-      text: 'Ca parle de canapés.',
-      title: 'J’irai droit au Conforama',
-    }
-
-    // when
-    const wrapper = shallow(
-      <Form
-        initialValues={initialValues}
-        onSubmit={() => ({})}
-        render={({ handleSubmit }) => (
-          <form>
-            <TextField name="title" />
-            <TextField name="text" />
-            <button
-              onClick={handleSubmit}
-              type="submit"
-            >
-              {'Submit'}
-            </button>
-          </form>
-        )}
-      />
-    )
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   it('should submit a form with a title text field', () => {
     return new Promise(done => {
       // given

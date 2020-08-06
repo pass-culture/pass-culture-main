@@ -1,9 +1,9 @@
-import React from 'react'
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
+import React from 'react'
+import { NavLink, Router } from 'react-router-dom'
 
 import VenueItem from '../VenueItem'
-import { Router, NavLink } from 'react-router-dom'
 
 describe('src | components | pages | OffererCreation | VenueItem', () => {
   let props
@@ -19,14 +19,6 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
       },
     }
     history = createBrowserHistory()
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<VenueItem {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

@@ -1,5 +1,5 @@
-import React from 'react'
 import { mount, shallow } from 'enzyme'
+import React from 'react'
 
 import Insert from '../Insert'
 
@@ -18,14 +18,6 @@ describe('src | components | layout | Insert', () => {
         {'La contremarque ne peut être validée qu’après ce délai.'}`,
       icon: 'example-icon-name'
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Insert {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

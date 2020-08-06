@@ -19,16 +19,8 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin', () 
     fetch.resetMocks()
   })
 
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<RequiredLoginTest />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('functions', () => {
-    it('should redirect to signin when not authenticated', done => {
+    it('should redirect to signin when not authenticated', () => {return new Promise(done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
@@ -56,6 +48,6 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin', () 
       )
 
       setTimeout(() => done('Should have been redirected to /connexion'))
-    })
+    })})
   })
 })

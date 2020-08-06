@@ -1,10 +1,11 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import LocationFields from '../LocationFields'
+
 import HiddenField from '../../../../../layout/form/fields/HiddenField'
 import NumberField from '../../../../../layout/form/fields/NumberField'
 import TextField from '../../../../../layout/form/fields/TextField'
 import AddressField from '../AddressField'
+import LocationFields from '../LocationFields'
 
 describe('src | components | pages | Venue | fields | LocationFields', () => {
   let props
@@ -18,14 +19,6 @@ describe('src | components | pages | Venue | fields | LocationFields', () => {
       formLongitude: 1,
       readOnly: true,
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<LocationFields {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

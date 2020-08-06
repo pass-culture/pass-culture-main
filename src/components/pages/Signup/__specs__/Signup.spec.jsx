@@ -1,10 +1,12 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
+import { Route } from 'react-router-dom/umd/react-router-dom'
+import Logo from '../../../layout/Logo'
 import Signup from '../Signup'
 
 describe('src | components | pages | Signup', () => {
-  it('should match the snapshot', () => {
+  it('should render logo and and two routes', () => {
     // given
     const props = {
       location: {},
@@ -14,6 +16,9 @@ describe('src | components | pages | Signup', () => {
     const wrapper = shallow(<Signup {...props} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const logo = wrapper.find(Logo)
+    const routes = wrapper.find(Route)
+    expect(logo).toHaveLength(1)
+    expect(routes.at(1).prop('path')).toBe('/inscription/confirmation')
   })
 })

@@ -1,7 +1,7 @@
-import React from 'react'
-import { NavLink, Router } from 'react-router-dom'
 import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
+import React from 'react'
+import { NavLink, Router } from 'react-router-dom'
 
 import OffererItem from '../OffererItem'
 
@@ -44,14 +44,6 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
       physicalVenues: [{}],
     }
     history = createBrowserHistory()
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<OffererItem {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

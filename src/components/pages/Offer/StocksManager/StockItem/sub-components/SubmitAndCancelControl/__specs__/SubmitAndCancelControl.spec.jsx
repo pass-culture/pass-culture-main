@@ -5,7 +5,7 @@ import { Field, Form } from 'react-final-form'
 import SubmitAndCancelControl from '../SubmitAndCancelControl'
 
 describe('src | components | pages | Offer | StocksManagerContainer | StockItem | SubmitAndCancelControl ', () => {
-  it('should match the snapshot', () => {
+  it('should display two buttons', () => {
     // given
     const initialProps = {
       form: {},
@@ -18,7 +18,10 @@ describe('src | components | pages | Offer | StocksManagerContainer | StockItem 
     const wrapper = shallow(<SubmitAndCancelControl {...initialProps} />)
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const submit = wrapper.find('button').find({ children: 'Valider' })
+    const cancel = wrapper.find('button').find({ children: 'Annuler' })
+    expect(submit).toHaveLength(1)
+    expect(cancel).toHaveLength(1)
   })
 
   describe('mount', () => {

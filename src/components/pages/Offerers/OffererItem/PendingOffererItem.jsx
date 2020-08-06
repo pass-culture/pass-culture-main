@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { formatSirenOrSiret } from '../../../../utils/siren'
 
 const PendingOffererItem = ({ offerer }) => (
@@ -8,9 +9,7 @@ const PendingOffererItem = ({ offerer }) => (
         <span className="name">
           {offerer.name}
         </span>
-        {' (SIREN: '}
-        {formatSirenOrSiret(offerer.siren)}
-        {')'}
+        {` (SIREN: ${formatSirenOrSiret(offerer.siren)})`}
       </p>
       <p
         className="is-italic mb12"

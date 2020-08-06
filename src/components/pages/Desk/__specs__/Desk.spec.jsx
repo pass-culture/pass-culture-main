@@ -1,6 +1,7 @@
+import { shallow } from 'enzyme'
 import React from 'react'
 import Desk from '../Desk'
-import { shallow } from 'enzyme'
+
 import DeskState from '../DeskState/DeskState'
 
 describe('src | components | pages | Desk | Desk ', () => {
@@ -22,14 +23,6 @@ describe('src | components | pages | Desk | Desk ', () => {
       trackValidateBookingSuccess,
       validateBooking,
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Desk {...props} />, options)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should render Desk component with default state', () => {

@@ -1,41 +1,11 @@
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
 
 import NumberField from '../NumberField'
 
+
 describe('src | components | layout | form | NumberField', () => {
-  it('should match the snapshot', () => {
-    // given
-    const initialValues = {
-      bar: 3,
-      foo: 5.6,
-    }
-
-    // when
-    const wrapper = shallow(
-      <Form
-        initialValues={initialValues}
-        onSubmit={() => ({})}
-        render={({ handleSubmit }) => (
-          <form>
-            <NumberField name="foo" />
-            <NumberField name="bar" />
-            <button
-              onClick={handleSubmit}
-              type="submit"
-            >
-              {'Submit'}
-            </button>
-          </form>
-        )}
-      />
-    )
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   it('should submit a form with number field when number is a decimal with a dot', () => {
     return new Promise(done => {
       // given

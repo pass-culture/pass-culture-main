@@ -1,8 +1,7 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import Icon from '../../../layout/Icon'
-
 import Notification from '../Notification'
 
 describe('src | components | layout | Notification', () => {
@@ -15,14 +14,6 @@ describe('src | components | layout | Notification', () => {
       dispatch,
       notification: {},
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Notification {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

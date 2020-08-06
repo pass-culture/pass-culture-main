@@ -1,6 +1,7 @@
-import React from 'react'
 import { shallow } from 'enzyme'
 import { Icon } from 'pass-culture-shared'
+import React from 'react'
+
 import VenueProviderItem from '../VenueProviderItem'
 
 describe('src | components | pages | Venue | VenueProvidersManager | VenueProviderItem', () => {
@@ -21,14 +22,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
         venueIdAtOfferProvider: 'fake id',
       },
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<VenueProviderItem {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

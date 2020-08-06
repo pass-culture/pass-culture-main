@@ -1,8 +1,8 @@
-import React from 'react'
 import { mount, shallow } from 'enzyme'
+import React from 'react'
+import { Form } from 'react-final-form'
 
 import LibrairesProviderForm from '../LibrairesProviderForm'
-import { Form } from 'react-final-form'
 
 describe('src | components | pages | Venue | VenueProvidersManager | form | LibrairesProviderForm', () => {
   let cancelProviderSelection
@@ -29,14 +29,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Libr
       venueIdAtOfferProviderIsRequired: false,
       venueSiret: '12345678912345',
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<LibrairesProviderForm {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should initialize LibrairesProviderForm component with default state', () => {

@@ -1,9 +1,9 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
-import CsvTable from '../CsvTable'
 import Header from '../../Header/Header'
 import Spinner from '../../Spinner'
+import CsvTable from '../CsvTable'
 
 jest.spyOn(global, 'print').mockImplementation(() => {})
 describe('src | components | layout | CsvTable', () => {
@@ -22,14 +22,6 @@ describe('src | components | layout | CsvTable', () => {
       headers: ['column1', 'column2'],
     }
     props.downloadFileOrNotifyAnError.mockReturnValue(Promise.resolve().then(() => dataFromCsv))
-  })
-
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<CsvTable {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

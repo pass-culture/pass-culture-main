@@ -1,42 +1,12 @@
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
 
 import HiddenField from '../HiddenField'
 import TextField from '../TextField'
 
+
 describe('src | components | layout | form | HiddenField', () => {
-  it('should match the snapchot', () => {
-    // given
-    const initialValues = {
-      subtitle: 'Mais jamais sans mon cadis.',
-      title: 'J’irai droit au Conforama',
-    }
-
-    // when
-    const wrapper = shallow(
-      <Form
-        initialValues={initialValues}
-        onSubmit={() => ({})}
-        render={({ handleSubmit }) => (
-          <form>
-            <TextField name="title" />
-            <HiddenField name="subtitle" />
-            <button
-              onClick={handleSubmit}
-              type="submit"
-            >
-              {'Submit'}
-            </button>
-          </form>
-        )}
-      />
-    )
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   it('should submit a form with a title text field', () => {
     return new Promise(done => {
       // given

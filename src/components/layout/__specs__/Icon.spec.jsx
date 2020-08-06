@@ -1,5 +1,5 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import Icon from '../Icon'
 
@@ -10,14 +10,6 @@ describe('src | components | layout | Icon ', () => {
     props = {
       svg: 'picto-svg',
     }
-  })
-
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<Icon {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

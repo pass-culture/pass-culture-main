@@ -1,11 +1,11 @@
-import React from 'react'
 import { mount, shallow } from 'enzyme'
-
+import React from 'react'
 import { Form } from 'react-final-form'
+
+import CheckboxField from '../../../../../../layout/form/fields/CheckboxField'
 import NumberField from '../../../../../../layout/form/fields/NumberField'
 import Icon from '../../../../../../layout/Icon'
 import AllocineProviderForm from '../../AllocineProviderForm/AllocineProviderForm'
-import CheckboxField from '../../../../../../layout/form/fields/CheckboxField'
 
 describe('components | AllocineProviderForm', () => {
   let createVenueProvider
@@ -27,14 +27,6 @@ describe('components | AllocineProviderForm', () => {
       providerId: 'AA',
       venueId: 'BB',
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<AllocineProviderForm {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should initialize AllocineProviderForm component with default state', () => {

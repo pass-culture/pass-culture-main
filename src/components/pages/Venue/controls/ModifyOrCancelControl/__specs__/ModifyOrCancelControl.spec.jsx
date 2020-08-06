@@ -1,4 +1,4 @@
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React, { Fragment } from 'react'
 import { Field, Form } from 'react-final-form'
 
@@ -9,25 +9,6 @@ const history = {
 }
 
 describe('src | components | pages | Venue | controls | ModifyOrCancelControl ', () => {
-  it('should match the snapshot', () => {
-    // given
-    const props = {
-      form: {},
-      handleSubmit: jest.fn(),
-      history,
-      isCreatedEntity: true,
-      offererId: 'AE',
-      readOnly: false,
-      venueId: 'AE',
-    }
-
-    // when
-    const wrapper = shallow(<ModifyOrCancelControl {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('mount', () => {
     it('should redirect to offerer page and reset form when click on cancel creation form', () => {
       return new Promise(done => {

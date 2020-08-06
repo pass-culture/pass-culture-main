@@ -1,7 +1,8 @@
-import ReturnOrSubmitControl from '../ReturnOrSubmitControl'
 import { shallow } from 'enzyme'
-import { NavLink } from 'react-router-dom'
 import React from 'react'
+import { NavLink } from 'react-router-dom'
+
+import ReturnOrSubmitControl from '../ReturnOrSubmitControl'
 
 describe('src | components | pages | Venue | controls | ReturnOrSubmitControl ', () => {
   let props
@@ -14,14 +15,6 @@ describe('src | components | pages | Venue | controls | ReturnOrSubmitControl ',
       offererId: 'ABC',
       readOnly: true,
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<ReturnOrSubmitControl {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

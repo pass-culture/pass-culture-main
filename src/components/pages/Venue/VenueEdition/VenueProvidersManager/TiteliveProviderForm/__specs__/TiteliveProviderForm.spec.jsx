@@ -1,8 +1,8 @@
-import React from 'react'
 import { mount, shallow } from 'enzyme'
+import React from 'react'
+import { Form } from 'react-final-form'
 
 import TiteliveProviderForm from '../TiteliveProviderForm'
-import { Form } from 'react-final-form'
 
 describe('src | components | pages | Venue | VenueProvidersManager | form | TiteliveProviderForm', () => {
   let cancelProviderSelection
@@ -29,14 +29,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Tite
       venueIdAtOfferProviderIsRequired: false,
       venueSiret: '12345678901234',
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<TiteliveProviderForm {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should initialize TiteliveProviderForm component with default state', () => {

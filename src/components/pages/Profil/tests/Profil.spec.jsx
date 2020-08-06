@@ -1,9 +1,10 @@
-import React from 'react'
 import { shallow } from 'enzyme'
-import Profil from '../Profil'
+import React from 'react'
 import { Form } from 'react-final-form'
+
 import TextField from '../../../layout/form/fields/TextField'
 import Titles from '../../../layout/Titles/Titles'
+import Profil from '../Profil'
 
 describe('src | components | pages | Profil', () => {
   let dispatch
@@ -18,14 +19,6 @@ describe('src | components | pages | Profil', () => {
       },
       dispatch,
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Profil {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should render a Titles component with right properties', () => {

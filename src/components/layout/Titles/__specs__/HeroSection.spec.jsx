@@ -1,23 +1,9 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import Titles from '../Titles'
 
 describe('src | components | layout | Titles', () => {
-  it('should match the snapshot', () => {
-    // given
-    const props = {
-      subtitle: 'Fake subtitle',
-      title: 'Fake title',
-    }
-
-    // when
-    const wrapper = shallow(<Titles {...props}> </Titles>)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('render', () => {
     describe('subtitle', () => {
       it('should display subtitle when given', () => {

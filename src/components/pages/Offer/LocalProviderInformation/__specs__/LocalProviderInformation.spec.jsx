@@ -1,7 +1,8 @@
-import React from 'react'
 import { shallow } from 'enzyme'
-import LocalProviderInformation from '../LocalProviderInformation'
+import React from 'react'
+
 import Thumb from '../../../../layout/Thumb'
+import LocalProviderInformation from '../LocalProviderInformation'
 
 describe('src | LocalProviderInformationContainer', () => {
   let props
@@ -17,14 +18,6 @@ describe('src | LocalProviderInformationContainer', () => {
       thumbUrl: 'http://localhost/storage/thumbs/products/AERTR',
       venueId: 'EARZ',
     }
-  })
-
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<LocalProviderInformation {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

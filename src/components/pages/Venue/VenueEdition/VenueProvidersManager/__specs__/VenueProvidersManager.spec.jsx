@@ -1,11 +1,11 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import VenueProvidersManager from '../VenueProvidersManager'
-import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 import AllocineProviderFormContainer from '../AllocineProviderForm/AllocineProviderFormContainer'
-import TiteliveProviderFormContainer from '../TiteliveProviderForm/TiteliveProviderFormContainer'
 import LibrairesProviderForm from '../LibrairesProviderForm/LibrairesProviderFormContainer'
+import TiteliveProviderFormContainer from '../TiteliveProviderForm/TiteliveProviderFormContainer'
+import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
+import VenueProvidersManager from '../VenueProvidersManager'
 
 describe('src | components | pages | Venue | VenueProvidersManager', () => {
   let props
@@ -33,14 +33,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       venueProviders: [],
       venueSiret: '12345678901234',
     }
-  })
-
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<VenueProvidersManager {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should initialize VenueProvidersManager component with default state', () => {

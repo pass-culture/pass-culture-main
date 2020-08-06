@@ -1,6 +1,7 @@
-import CsvTableButton from '../CsvTableButton'
 import { shallow } from 'enzyme'
 import React from 'react'
+
+import CsvTableButton from '../CsvTableButton'
 
 describe('src | components | layout | CsvTableButton', () => {
   let props
@@ -16,14 +17,6 @@ describe('src | components | layout | CsvTableButton', () => {
         pathname: '/fake-url',
       },
     }
-  })
-
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<CsvTableButton {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

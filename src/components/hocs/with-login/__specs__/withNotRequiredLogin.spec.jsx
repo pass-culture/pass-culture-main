@@ -1,4 +1,4 @@
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -20,16 +20,8 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
     fetch.resetMocks()
   })
 
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<NotRequiredLogin />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('functions', () => {
-    it('should redirect to offerers when already authenticated and not hasOffers', done => {
+    it('should redirect to offerers when already authenticated and not hasOffers', () => {return new Promise(done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
@@ -61,9 +53,9 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
           </Router>
         </Provider>
       )
-    })
+    })})
 
-    it('should redirect to offers when already authenticated and hasOffers', done => {
+    it('should redirect to offers when already authenticated and hasOffers', () => {return new Promise(done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
@@ -95,6 +87,6 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
           </Router>
         </Provider>
       )
-    })
+    })})
   })
 })

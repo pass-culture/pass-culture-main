@@ -1,8 +1,9 @@
-import SignupValidation from '../SignupValidation'
 import { mount, shallow } from 'enzyme'
+import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Redirect, Router } from 'react-router-dom'
-import { createBrowserHistory } from 'history'
+
+import SignupValidation from '../SignupValidation'
 
 describe('src | components | pages | Signup | validation', () => {
   let history
@@ -20,14 +21,6 @@ describe('src | components | pages | Signup | validation', () => {
         },
       },
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<SignupValidation {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should render a Redirect component', () => {

@@ -1,9 +1,9 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import { Icon } from 'pass-culture-shared'
+import React from 'react'
+import { NavLink } from 'react-router-dom'
 
 import MediationsManager from '../MediationsManager'
-import { NavLink } from 'react-router-dom'
-import { Icon } from 'pass-culture-shared'
 
 describe('src | MediationsManager', () => {
   let props
@@ -15,14 +15,6 @@ describe('src | MediationsManager', () => {
       mediations: [],
       offer: {},
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<MediationsManager {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render()', () => {

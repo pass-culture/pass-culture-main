@@ -1,8 +1,8 @@
-import AddressField, { AddressFieldRender } from '../AddressField'
-import React from 'react'
 import { shallow } from 'enzyme'
-import LocationViewer from '../LocationViewer'
+
 import FieldErrors from '../../../../../layout/form/FieldErrors'
+import { AddressFieldRender } from '../AddressField'
+import LocationViewer from '../LocationViewer'
 
 describe('src | components | pages | Venue | fields | AddressField', () => {
   let props
@@ -12,14 +12,6 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
       name: 'fake name',
       form: {},
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<AddressField {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('addressFieldRender', () => {
@@ -43,14 +35,6 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
       }
       input = {}
       meta = {}
-    })
-
-    it('should match the snapshot', () => {
-      // when
-      const wrapper = shallow(<AddressFieldRender {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
     })
 
     it('should display a div with the right props', () => {

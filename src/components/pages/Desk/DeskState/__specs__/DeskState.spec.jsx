@@ -1,8 +1,9 @@
-import React from 'react'
 import { shallow } from 'enzyme'
-import DeskState from '../DeskState'
 import { Icon } from 'pass-culture-shared'
+import React from 'react'
+
 import { formatLocalTimeDateString } from '../../../../../utils/timezone'
+import DeskState from '../DeskState'
 
 jest.mock('../../../../../utils/timezone', () => ({
   formatLocalTimeDateString: jest.fn(),
@@ -20,14 +21,6 @@ describe('src | components | pages | Desk | DeskState ', () => {
       message: 'fake message',
       level: 'fake level',
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<DeskState {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

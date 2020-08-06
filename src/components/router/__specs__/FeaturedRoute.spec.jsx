@@ -2,28 +2,12 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Route } from 'react-router-dom'
 
-import FeaturedRoute from '../FeaturedRoute'
 import NotMatch from '../../pages/NoMatch/NoMatch'
+import FeaturedRoute from '../FeaturedRoute'
 
 const Foo = () => <div />
 
 describe('src | components | router | FeaturedRoute', () => {
-  it('should match the snapshot', () => {
-    // given
-    const props = {
-      areFeaturesLoaded: true,
-      component: Foo,
-      isRouteDisabled: false,
-      requestGetFeatures: jest.fn(),
-    }
-
-    // when
-    const wrapper = shallow(<FeaturedRoute {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('when features are not yet loaded', () => {
     it('should render null', () => {
       // given

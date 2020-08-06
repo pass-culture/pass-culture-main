@@ -4,31 +4,35 @@ import React from 'react'
 import DeleteDialog from '../DeleteDialog'
 
 describe('src | components | pages | Offer | StockItem | DeleteDialog', () => {
-  describe('snapshot', () => {
-    it('should match the snapshot when isEvent = true', () => {
-      // given
-      const initialProps = {
-        isEvent: true,
-      }
+  it('should display sentence and buttons when isEvent = true', () => {
+    // given
+    const initialProps = {
+      isEvent: true,
+    }
 
-      // when
-      const wrapper = shallow(<DeleteDialog {...initialProps} />)
+    // when
+    const wrapper = shallow(<DeleteDialog {...initialProps} />)
 
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    const td = wrapper.find('td')
+    expect(td.at(0).text()).toBe('En confirmant l’annulation de cette date, vous supprimerez aussi toutes les réservations associées. Êtes-vous sûr de vouloir continuer ?')
+    expect(td.at(1).find('button').find({ children: 'Oui' })).toHaveLength(1)
+    expect(td.at(2).find('button').find({ children: 'Non' })).toHaveLength(1)
+  })
 
-    it('should match the snapshot when isEvent = false', () => {
-      // given
-      const initialProps = {
-        isEvent: false,
-      }
+  it('should display sentence and buttons when isEvent = false', () => {
+    // given
+    const initialProps = {
+      isEvent: false,
+    }
 
-      // when
-      const wrapper = shallow(<DeleteDialog {...initialProps} />)
+    // when
+    const wrapper = shallow(<DeleteDialog {...initialProps} />)
 
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    const td = wrapper.find('td')
+    expect(td.at(0).text()).toBe('En confirmant l’annulation de ce stock, vous supprimerez aussi toutes les réservations associées. Êtes-vous sûr de vouloir continuer ?')
+    expect(td.at(1).find('button').find({ children: 'Oui' })).toHaveLength(1)
+    expect(td.at(2).find('button').find({ children: 'Non' })).toHaveLength(1)
   })
 })

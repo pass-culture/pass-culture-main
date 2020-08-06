@@ -1,5 +1,5 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import OfferPreviewLink from '../OfferPreviewLink'
 
@@ -12,14 +12,6 @@ describe('src | components | layout | OfferPreviewLink', () => {
       offerWebappUrl: 'fake url',
       onClick: jest.fn(),
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<OfferPreviewLink {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

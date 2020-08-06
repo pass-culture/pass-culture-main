@@ -1,7 +1,8 @@
-import React from 'react'
 import { shallow } from 'enzyme'
-import Signin from '../Signin'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
+
+import Signin from '../Signin'
 
 describe('src | components | pages | Signin | Signin ', () => {
   let dispatch
@@ -23,14 +24,6 @@ describe('src | components | pages | Signin | Signin ', () => {
       history: {},
       isAccountCreationAvailable: true,
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Signin {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

@@ -1,23 +1,9 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
 import DownloadButton from '../DownloadButton'
 
 describe('src | components | Layout | DownloadButton', () => {
-  it('should match the snapshot', () => {
-    // given
-    const props = {
-      children: 'Fake title',
-      downloadFileOrNotifyAnError: () => jest.fn(),
-    }
-
-    // when
-    const wrapper = shallow(<DownloadButton {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('render', () => {
     it('should set loading and disabled during onClick', () => {
       return new Promise(done => {

@@ -1,5 +1,6 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+
 import Venues from '../Venues'
 
 describe('src | components | pages | OffererCreation | Venues', () => {
@@ -11,14 +12,6 @@ describe('src | components | pages | OffererCreation | Venues', () => {
       venues: [],
       isVenueCreationAvailable: true,
     }
-  })
-
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<Venues {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {
