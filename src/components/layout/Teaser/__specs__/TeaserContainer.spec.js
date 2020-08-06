@@ -9,7 +9,7 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
   beforeEach(() => {
     ownProps = {
       handleToggleTeaser: jest.fn(),
-      item: {
+      favorite: {
         offerId: 'o1',
         thumbUrl: 'fake/thumb/url',
       },
@@ -23,7 +23,6 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
         bookings: [
           {
             id: 'b1',
-            isCancelled: false,
             stockId: 's1',
           },
         ],
@@ -32,7 +31,6 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
             dateRange: ['2000-07-21T20:00:00Z', '2030-08-21T20:00:00Z'],
             id: 'o1',
             isActive: true,
-            isFullyBooked: false,
             hasBookingLimitDatetimesPassed: false,
             name: 'Fake offer name',
             offerType: {

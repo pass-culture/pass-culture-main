@@ -102,9 +102,9 @@ const MyFavoritesList = ({ myFavorites, loadMyFavorites, persistDeleteFavorites 
               <ul>
                 {myFavorites.map(myFavorite => (
                   <TeaserContainer
+                    favorite={myFavorite}
                     handleToggleTeaser={onToggle}
                     isEditMode={isEditMode}
-                    item={myFavorite}
                     key={myFavorite.id}
                   />
                 ))}

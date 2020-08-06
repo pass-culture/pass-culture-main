@@ -4,7 +4,6 @@ export const isReserved = statuses =>
 export const reservationStatuses = (
   isActive,
   hasBookingLimitDatetimesPassed,
-  isFullyBooked,
   hasBookings,
   humanizeRelativeDate,
   isBooked = false
@@ -25,15 +24,6 @@ export const reservationStatuses = (
       {
         label: 'Annulé',
         class: 'cancelled',
-      },
-    ]
-  }
-
-  if (isFullyBooked) {
-    return [
-      {
-        label: 'Épuisé',
-        class: 'fully-booked',
       },
     ]
   }
