@@ -43,10 +43,17 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
 
     const queryParams = query.parse()
     let searchKeyWords = queryParams['mots-cles'] || []
+    let pageParams = queryParams['page'] || '0'
 
     if (typeof searchKeyWords === 'string') searchKeyWords = [searchKeyWords]
 
-    const apiPath = createApiPath(searchKeyWords)
+    let apiPath = createApiPath(searchKeyWords)
+
+    if (apiPath.includes('?')) {
+      apiPath = `${apiPath}&page=${pageParams}`
+    } else {
+      apiPath = `${apiPath}?page=${pageParams}`
+    }
 
     dispatch(
       requestData({
