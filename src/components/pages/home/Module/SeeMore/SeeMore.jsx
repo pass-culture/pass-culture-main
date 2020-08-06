@@ -23,9 +23,10 @@ const preventDefault = event => {
   event.preventDefault()
 }
 
-const SeeMore = ({ historyPush, isSwitching, layout, parameters }) => {
+const SeeMore = ({ historyPush, isSwitching, layout, moduleName, parameters, trackSeeMoreHasBeenClicked }) => {
   function goToSearchPage(event) {
     if (!isSwitching) {
+      trackSeeMoreHasBeenClicked(moduleName)
       historyPush({
         pathname: '/recherche/resultats',
         parametersFromHome: parameters,
@@ -63,13 +64,16 @@ const SeeMore = ({ historyPush, isSwitching, layout, parameters }) => {
 
 SeeMore.defaultProps = {
   layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
+  moduleName: '',
 }
 
 SeeMore.propTypes = {
   historyPush: PropTypes.func.isRequired,
   isSwitching: PropTypes.bool.isRequired,
   layout: PropTypes.string,
+  moduleName: PropTypes.string,
   parameters: PropTypes.shape().isRequired,
+  trackSeeMoreHasBeenClicked: PropTypes.func.isRequired,
 }
 
 export default SeeMore

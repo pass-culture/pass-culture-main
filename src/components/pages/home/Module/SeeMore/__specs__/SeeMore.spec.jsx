@@ -14,6 +14,7 @@ describe('src | components | SeeMore', () => {
       isSwitching: false,
       historyPush: jest.fn(),
       layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
+      moduleName: "Un super module près de chez toi",
       parameters: {
         aroundRadius: null,
         geolocation: { latitude: 1, longitude: 2 },
@@ -26,6 +27,7 @@ describe('src | components | SeeMore', () => {
         searchAround: true,
         tags: [],
       },
+      trackSeeMoreHasBeenClicked: jest.fn()
     }
   })
 
@@ -158,5 +160,33 @@ describe('src | components | SeeMore', () => {
       pathname: "/recherche/resultats",
       search: "?autour-de=oui&latitude=1&longitude=2",
     })
+  })
+
+  it('should trigger tracking when clicking on link', () => {
+    // Given
+    props.parameters = {
+      aroundRadius: null,
+      geolocation: { latitude: 1, longitude: 2 },
+      hitsPerPage: 2,
+      offerCategories: [],
+      offerIsDuo: false,
+      offerIsNew: false,
+      offerTypes: { isDigital: false, isEvent: true, isThing: false },
+      priceRange: [],
+      searchAround: true,
+      tags: [],
+    }
+    const wrapper = mount(
+      <MemoryRouter>
+        <SeeMore {...props} />
+      </MemoryRouter>,
+    )
+
+    // When
+    const link = wrapper.find(Link)
+    link.simulate('click', { preventDefault: jest.fn() })
+
+    // Then
+    expect(props.trackSeeMoreHasBeenClicked).toHaveBeenCalledWith(props.moduleName)
   })
 })

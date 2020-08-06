@@ -8,6 +8,8 @@ import { MemoryRouter } from 'react-router'
 import OfferTile from '../OfferTile/OfferTile'
 import OffersWithCover from '../../domain/ValueObjects/OffersWithCover'
 import SeeMore from '../SeeMore/SeeMore'
+import getMockStore from '../../../../../utils/mockStore'
+import { Provider } from 'react-redux'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -19,6 +21,7 @@ describe('src | components | Module', () => {
   let offerTwo
   let geolocation
   let props
+  let mockStore
 
   beforeEach(() => {
     algolia = {
@@ -85,6 +88,13 @@ describe('src | components | Module', () => {
       module: null,
       row: 1,
     }
+    mockStore = getMockStore({
+      data: (
+        state = {
+          readRecommendations: [],
+        },
+      ) => state,
+    })
     fetchAlgolia.mockReset()
   })
 
@@ -222,9 +232,11 @@ describe('src | components | Module', () => {
 
     // when
     const wrapper = await mount(
-      <MemoryRouter>
-        <Module {...props} />
-      </MemoryRouter>,
+      <Provider store={mockStore}>
+        <MemoryRouter>
+          <Module {...props} />
+        </MemoryRouter>
+      </Provider>,
     )
 
     await wrapper.update()
@@ -233,13 +245,15 @@ describe('src | components | Module', () => {
     const seeMore = wrapper.find(SeeMore)
     expect(seeMore).toHaveLength(1)
     expect(seeMore.props()).toStrictEqual({
+      dispatch: expect.any(Function),
       historyPush: props.historyPush,
       isSwitching: false,
       layout: "one-item-medium",
+      moduleName: "Les offres près de chez toi!",
       parameters: {
         aroundRadius: null,
-        beginningDatetime:null,
-        endingDatetime:null,
+        beginningDatetime: null,
+        endingDatetime: null,
         geolocation: {
           latitude: 1,
           longitude: 2,
@@ -254,6 +268,8 @@ describe('src | components | Module', () => {
         searchAround: false,
         tags: [],
       },
+      trackSeeMoreHasBeenClicked: expect.any(Function),
+      tracking: expect.any(Object),
     })
   })
 
@@ -338,9 +354,11 @@ describe('src | components | Module', () => {
 
       // when
       const wrapper = await mount(
-        <MemoryRouter>
-          <Module {...props} />
-        </MemoryRouter>,
+        <Provider store={mockStore}>
+          <MemoryRouter>
+            <Module {...props} />
+          </MemoryRouter>
+        </Provider>,
       )
       await wrapper.update()
 
