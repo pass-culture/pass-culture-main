@@ -6,7 +6,6 @@ import { MemoryRouter } from 'react-router'
 import getMockStore from '../../../../utils/mockStore'
 import CloseLink from '../../../layout/Header/CloseLink/CloseLink'
 import Offer from '../Offer'
-import DetailsContainer from '../../../layout/Details/DetailsContainer'
 
 describe('offer', () => {
   let props
@@ -15,7 +14,6 @@ describe('offer', () => {
   beforeEach(() => {
     props = {
       isHomepageDisabled: true,
-      getOfferById: jest.fn().mockReturnValue({ id: 'ME' }),
       match: {
         path: '/offre/details/ME/FA',
       },
@@ -62,10 +60,8 @@ describe('offer', () => {
 
     // then
     const closeIcon = wrapper.find(CloseLink)
-    const offerDetails = wrapper.find(DetailsContainer)
     expect(closeIcon).toHaveLength(1)
     expect(closeIcon.prop('closeTo')).toBe('/decouverte')
-    expect(offerDetails.prop('getOfferById')).toBe(props.getOfferById)
   })
 
   it('should render a close icon to homepage url when homepage feature is enabled', () => {
