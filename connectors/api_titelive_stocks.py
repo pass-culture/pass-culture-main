@@ -8,9 +8,9 @@ class ApiTiteLiveException(Exception):
     pass
 
 
-def get_titelive_stocks(siret: str, last_processed_isbn: str = '') -> Dict:
+def get_titelive_stocks(siret: str, last_processed_isbn: str = '', modified_since: str = None) -> Dict:
     url = _build_url(siret)
-    params = _build_params(last_processed_isbn)
+    params = _build_params(last_processed_isbn, modified_since)
 
     api_response = requests.get(url, params=params)
 
@@ -30,9 +30,11 @@ def is_siret_registered(siret: str) -> bool:
 def _build_url(siret: str) -> str:
     return f'{TITELIVE_STOCKS_API_URL}/{siret}'
 
-def _build_params(last_processed_isbn: str = '') -> Dict:
+def _build_params(last_processed_isbn: str = '', modified_since:str = None) -> Dict:
     params = {}
     if last_processed_isbn:
         params['after'] = last_processed_isbn
+    if modified_since:
+        params['modifiedSince'] = modified_since
 
     return params

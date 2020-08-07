@@ -25,6 +25,7 @@ class TiteLiveStocks(LocalProvider):
 
         self.last_seen_isbn = ''
         self.data = iter([])
+        self.last_sync_date = venue_provider.lastSyncDate
         self.product = None
         self.offer_id = None
 
@@ -33,7 +34,8 @@ class TiteLiveStocks(LocalProvider):
             self.titelive_stock = next(self.data)
         except StopIteration:
             self.data = get_stocks_information(self.venue_provider.venueIdAtOfferProvider,
-                                               self.last_seen_isbn)
+                                               self.last_seen_isbn,
+                                               self.last_sync_date)
             self.titelive_stock = next(self.data)
 
         self.last_seen_isbn = str(self.titelive_stock['ref'])
@@ -48,13 +50,13 @@ class TiteLiveStocks(LocalProvider):
                                                             datetime.utcnow())
         return [providable_info_offer, providable_info_stock]
 
-    def fill_object_attributes(self, stock_or_offer: Union[StockSQLEntity, OfferSQLEntity]):
+    def fill_object_attributes(self, stock_or_offer: Union[StockSQLEntity, OfferSQLEntity]) -> None:
         if isinstance(stock_or_offer, StockSQLEntity):
             self.fill_stock_attributes(stock_or_offer, self.titelive_stock)
         elif isinstance(stock_or_offer, OfferSQLEntity):
-            self.fill_offer_attributes(stock_or_offer, self.titelive_stock)
+            self.fill_offer_attributes(stock_or_offer)
 
-    def fill_stock_attributes(self, stock: StockSQLEntity, stock_information: dict):
+    def fill_stock_attributes(self, stock: StockSQLEntity, stock_information: dict) -> None:
         bookings_quantity = count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
         stock.price = int(stock_information['price']) / PRICE_DIVIDER_TO_EURO
         stock.quantity = int(stock_information['available']) + bookings_quantity
@@ -62,7 +64,7 @@ class TiteLiveStocks(LocalProvider):
         stock.offerId = self.offer_id
         stock.dateModified = datetime.now()
 
-    def fill_offer_attributes(self, offer: OfferSQLEntity, stock_information: dict):
+    def fill_offer_attributes(self, offer: OfferSQLEntity) -> None:
         offer.name = self.product.name
         offer.description = self.product.description
         offer.type = self.product.type
@@ -78,6 +80,6 @@ class TiteLiveStocks(LocalProvider):
 
         self.offer_id = offer.id
 
-    def get_next_offer_id_from_sequence(self):
+    def get_next_offer_id_from_sequence(self) -> int:
         sequence = Sequence('offer_id_seq')
         return db.session.execute(sequence)

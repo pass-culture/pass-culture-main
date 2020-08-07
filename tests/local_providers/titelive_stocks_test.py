@@ -283,9 +283,45 @@ def test_titelive_stock_provider_iterates_over_pagination(stub_get_stocks_inform
     # Then
     assert OfferSQLEntity.query.count() == 2
     assert StockSQLEntity.query.count() == 2
-    assert stub_get_stocks_information.call_args_list == [call('77567146400110', ''),
-                                                          call('77567146400110', '0002730757438'),
-                                                          call('77567146400110', '0002736409898')]
+    assert stub_get_stocks_information.call_args_list == [call('77567146400110', '', None),
+                                                          call('77567146400110', '0002730757438', None),
+                                                          call('77567146400110', '0002736409898', None)]
+
+
+@clean_database
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
+@patch('local_providers.titelive_stocks.get_stocks_information')
+def should_call_api_with_venue_siret_and_last_sync_date(stub_get_stocks_information, stub_feature_queries, app):
+    # Given
+    stub_get_stocks_information.side_effect = [
+        iter([{
+            "ref": "0002730757438",
+            "available": 0,
+            "price": 4500,
+            "validUntil": "2019-10-31T15:10:27Z"
+        }])
+    ]
+
+    offerer = create_offerer()
+    venue = create_venue(offerer, siret='77567146400110')
+
+    titelive_stocks_provider = get_provider_by_local_class('TiteLiveStocks')
+    titelive_stocks_provider.isActive = True
+    last_sync_date = datetime.strptime('27/08/2020 09:15:32', '%d/%m/%Y %H:%M:%S')
+    venue_provider = create_venue_provider(venue,
+                                           titelive_stocks_provider, is_active=True,
+                                           venue_id_at_offer_provider='77567146400110', last_sync_date=last_sync_date)
+    product1 = create_product_with_thing_type(id_at_providers='0002730757438')
+    repository.save(product1, venue_provider)
+
+    titelive_stocks = TiteLiveStocks(venue_provider)
+
+    # When
+    titelive_stocks.updateObjects()
+
+    # Then
+    assert stub_get_stocks_information.call_args_list == [call('77567146400110', '', last_sync_date),
+                                                          call('77567146400110', '0002730757438', last_sync_date)]
 
 
 @clean_database
