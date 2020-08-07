@@ -39,7 +39,7 @@ describe('container | SignInContainer', () => {
           handleSuccess: true,
           method: 'POST',
         },
-        type: 'REQUEST_DATA_POST_/USERS/SIGNIN',
+        type: 'REQUEST_DATA_POST_/BENEFICIARIES/SIGNIN',
       })
       expect(result).toBeInstanceOf(Promise)
     })
