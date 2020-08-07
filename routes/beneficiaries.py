@@ -1,14 +1,16 @@
 from domain.beneficiary.beneficiary_licence import is_licence_token_valid
 from flask import jsonify, request, current_app as app
-from flask_login import current_user, login_required
+from flask_login import current_user, login_required, login_user
 from repository.user_queries import find_user_by_email
 from routes.serialization import as_dict
 from utils.includes import BENEFICIARY_INCLUDES
 from use_cases.update_user_informations import update_user_informations, AlterableUserInformations
+from utils.credentials import get_user_with_credentials
+from utils.login_manager import stamp_session
 from utils.rest import expect_json_data, login_or_api_key_required
 from validation.routes.beneficiaries import check_application_update_payload, \
     check_verify_licence_token_payload, parse_application_id
-from validation.routes.users import check_allowed_changes_for_user
+from validation.routes.users import check_allowed_changes_for_user, check_valid_signin
 from workers.beneficiary_job import beneficiary_job
 
 
@@ -41,6 +43,17 @@ def patch_beneficiary():
 
     formattedUser = as_dict(user, includes=BENEFICIARY_INCLUDES)
     return jsonify(formattedUser), 200
+
+@app.route("/beneficiaries/signin", methods=["POST"])
+def signin_beneficiary():
+    json = request.get_json()
+    identifier = json.get("identifier")
+    password = json.get("password")
+    check_valid_signin(identifier, password)
+    user = get_user_with_credentials(identifier, password)
+    login_user(user, remember=True)
+    stamp_session(user)
+    return jsonify(), 200
 
 @app.route('/beneficiaries/licence_verify', methods=['POST'])
 def verify_id_check_licence_token():

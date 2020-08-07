@@ -14,18 +14,10 @@ class Post:
             data = {'identifier': user.email, 'password': user.clearTextPassword}
 
             # when
-            response = TestClient(app.test_client()).post('/users/signin', json=data)
+            response = TestClient(app.test_client()).post('/beneficiaries/signin', json=data)
 
             # then
             assert response.status_code == 200
-            json = response.json
-            assert json['email'] == 'user@example.com'
-            assert 'password' not in json
-            assert 'clearTextPassword' not in json
-            assert 'resetPasswordToken' not in json
-            assert 'resetPasswordTokenValidityLimit' not in json
-            assert 'hasPhysicalVenues' in json
-            assert 'hasOffers' in json
 
         @clean_database
         def when_account_is_known_with_mixed_case_email(self, app):
@@ -35,7 +27,7 @@ class Post:
             data = {'identifier': 'uSeR@EXAmplE.cOm', 'password': user.clearTextPassword}
 
             # when
-            response = TestClient(app.test_client()).post('/users/signin', json=data)
+            response = TestClient(app.test_client()).post('/beneficiaries/signin', json=data)
 
             # then
             assert response.status_code == 200
@@ -48,7 +40,7 @@ class Post:
             data = {'identifier': '  user@example.com  ', 'password': user.clearTextPassword}
 
             # when
-            response = TestClient(app.test_client()).post('/users/signin', json=data)
+            response = TestClient(app.test_client()).post('/beneficiaries/signin', json=data)
 
             # then
             assert response.status_code == 200
@@ -61,7 +53,7 @@ class Post:
             data = {'identifier': user.email, 'password': user.clearTextPassword}
 
             # when
-            response = TestClient(app.test_client()).post('/users/signin', json=data,
+            response = TestClient(app.test_client()).post('/beneficiaries/signin', json=data,
                                                           headers={'origin': 'http://localhost:3000'})
 
             # then
@@ -79,7 +71,7 @@ class Post:
             data = {'identifier': None, 'password': user.clearTextPassword}
 
             # When
-            response = TestClient(app.test_client()).post('/users/signin', json=data)
+            response = TestClient(app.test_client()).post('/beneficiaries/signin', json=data)
 
             # Then
             assert response.status_code == 401
@@ -93,7 +85,7 @@ class Post:
             data = {'identifier': 'random.email@test.com', 'password': user.clearTextPassword}
 
             # When
-            response = TestClient(app.test_client()).post('/users/signin', json=data)
+            response = TestClient(app.test_client()).post('/beneficiaries/signin', json=data)
 
             # Then
             assert response.status_code == 401
@@ -107,7 +99,7 @@ class Post:
             data = {'identifier': user.email, 'password': None}
 
             # When
-            response = TestClient(app.test_client()).post('/users/signin', json=data)
+            response = TestClient(app.test_client()).post('/beneficiaries/signin', json=data)
 
             # Then
             assert response.status_code == 401
@@ -121,7 +113,7 @@ class Post:
             data = {'identifier': user.email, 'password': 'wr0ng_p455w0rd'}
 
             # When
-            response = TestClient(app.test_client()).post('/users/signin', json=data)
+            response = TestClient(app.test_client()).post('/beneficiaries/signin', json=data)
 
             # Then
             assert response.status_code == 401
@@ -136,7 +128,7 @@ class Post:
             data = {'identifier': user.email, 'password': user.clearTextPassword}
 
             # When
-            response = TestClient(app.test_client()).post('/users/signin', json=data)
+            response = TestClient(app.test_client()).post('/beneficiaries/signin', json=data)
 
             # Then
             assert response.status_code == 401

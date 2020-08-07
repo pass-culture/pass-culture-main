@@ -63,7 +63,7 @@ def signin():
     user = get_user_with_credentials(identifier, password)
     login_user(user, remember=True)
     stamp_session(user)
-    return jsonify(), 200
+    return jsonify(as_dict(user, includes=USER_INCLUDES)), 200
 
 
 @app.route("/users/signout", methods=["GET"])
