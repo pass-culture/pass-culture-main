@@ -20,7 +20,7 @@ fixture("Suite à l'activation de mon compte,")
     )
   })
 
-test("je me connecte et j'accède à la page découverte", async t => {
+test("je me connecte et j'accède à la page d'accueil", async t => {
   // given
   const { user } = t.ctx.sandbox
   const { email, password } = user
@@ -38,5 +38,5 @@ test("je me connecte et j'accède à la page découverte", async t => {
 
   // then
   await t.expect(identifierErrors.count).eql(0)
-  await t.expect(getPageUrl()).contains('/decouverte')
+  await t.expect(getPageUrl()).contains('/accueil')
 })

@@ -8,7 +8,6 @@ import getUserWalletValue from './helpers/getUserWalletValue'
 
 const offerDetailsURL = `${ROOT_PATH}offre/details`
 const bookingsDetailsURL = `${ROOT_PATH}reservations/details`
-const openProfilePage = Selector('nav ul li a[href="/profil"]')
 const sendBookingButton = Selector('#booking-validation-button')
 const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
 const bookOfferButton = Selector('button').withText('J’y vais !')
@@ -65,7 +64,7 @@ test("parcours complet de réservation d'une offre thing", async t => {
 
   await t.useRole(userRole).navigateTo(offerPage)
 
-  await t.click(openProfilePage).wait(500)
+  await t.navigateTo(`${ROOT_PATH}profil`)
   previousWalletValue = await getUserWalletValue()
   await t
     .expect(previousWalletValue)
@@ -94,8 +93,8 @@ test("parcours complet de réservation d'une offre thing", async t => {
     .click(bookingSuccessButton)
     .expect(checkReversedIcon.exists)
     .ok()
-    .click(openProfilePage)
 
+  await t.navigateTo(`${ROOT_PATH}profil`)
   const currentWalletValue = await getUserWalletValue()
   await t
     .expect(currentWalletValue)
@@ -128,7 +127,7 @@ test("parcours complet de réservation d'une offre event à date unique", async 
   await t.useRole(userRole).navigateTo(offerPage)
 
   // when
-  await t.click(openProfilePage).wait(500)
+  await t.navigateTo(`${ROOT_PATH}profil`)
   previousWalletValue = await getUserWalletValue()
 
   await t
@@ -150,8 +149,8 @@ test("parcours complet de réservation d'une offre event à date unique", async 
     .click(bookingSuccessButton)
     .expect(checkReversedIcon.exists)
     .ok()
-    .click(openProfilePage)
 
+  await t.navigateTo(`${ROOT_PATH}profil`)
   const currentWalletValue = await getUserWalletValue()
   await t
     .expect(currentWalletValue)

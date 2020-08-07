@@ -157,8 +157,16 @@ if (IS_ID_CHECK_PAGE_ACTIVE) {
   })
 }
 
+console.log(IS_HOME_PAGE_ACTIVE)
 if (IS_HOME_PAGE_ACTIVE) {
+  const profilPage = routes.find(route => route.path === '/profil')
+  const profilPageOutOfNavbar = {
+    component: profilPage.component,
+    path: profilPage.path,
+    title: profilPage.title
+  }
   routes = routes.filter(route => route.path !== '/profil')
+  routes.push(profilPageOutOfNavbar)
 }
 
 export default routes

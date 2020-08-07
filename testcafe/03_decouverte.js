@@ -36,6 +36,7 @@ test('je peux parcourir les offres de gauche à droite et de droite à gauche', 
 })
 
 test('je peux afficher le verso des cartes en cliquant sur le bouton "haut"', async t => {
+  await t.navigateTo(`${ROOT_PATH}decouverte`)
   await t.click(showVerso)
   await t.expect(versoDiv.hasClass('flipped')).ok()
   await t.click(closeVersoLink)
@@ -43,9 +44,9 @@ test('je peux afficher le verso des cartes en cliquant sur le bouton "haut"', as
 })
 
 test('je peux afficher/cacher le verso des cartes en glissant vers le haut/bas', async t => {
+  await t.navigateTo(`${ROOT_PATH}decouverte`)
   await t.drag(currentCard, 0, -100)
   await t.expect(versoDiv.hasClass('flipped')).ok()
-
   await t.drag(currentCard, 0, 100)
   await t.expect(versoDiv.hasClass('flipped')).notOk()
 })

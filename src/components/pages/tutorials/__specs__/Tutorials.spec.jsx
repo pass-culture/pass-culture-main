@@ -7,11 +7,13 @@ import ThirdTutorial from '../ThirdTutorial/ThirdTutorial'
 
 describe('components | Tutorials', () => {
   let props
+  let isHomepageDisabled
   let saveUserHasSeenTutorials
 
-  beforeEach(function() {
+  beforeEach(() => {
+    isHomepageDisabled = true
     saveUserHasSeenTutorials = jest.fn()
-    props = { saveUserHasSeenTutorials }
+    props = { isHomepageDisabled, saveUserHasSeenTutorials }
   })
 
   describe('when display for the first time', () => {
@@ -215,7 +217,7 @@ describe('components | Tutorials', () => {
       }
 
       // then
-      expect(saveUserHasSeenTutorials).toHaveBeenCalledWith()
+      expect(saveUserHasSeenTutorials).toHaveBeenCalledWith(props.isHomepageDisabled)
     })
   })
 })

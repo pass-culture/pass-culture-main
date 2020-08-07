@@ -86,21 +86,21 @@ test('je peux naviguer entre les différents tutoriels à l’aide du drag and d
     .ok()
 })
 
-test("quand j'ai fini de voir le 3ème tutoriel, je suis rediriger vers une autre page", async t => {
+test("quand j'ai fini de voir le 3ème tutoriel, je suis redirigé vers une autre page", async t => {
   const nextArrow = Selector('img').withAttribute('alt', 'Suivant')
   await t.click(nextArrow)
   await t.click(nextArrow)
   await t.click(nextArrow)
 
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).contains('/decouverte')
+  await t.expect(location.pathname).contains('/accueil')
 })
 
 test("quand je n'ai pas fini de voir le 3ème tutoriel, je ne peux pas naviguer sur une autre page", async t => {
   const nextArrow = Selector('img').withAttribute('alt', 'Suivant')
   await t.click(nextArrow)
 
-  await t.navigateTo(`${ROOT_PATH}decouverte`)
+  await t.navigateTo(`${ROOT_PATH}accueil`)
 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/bienvenue')

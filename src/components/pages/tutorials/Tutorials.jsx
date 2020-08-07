@@ -9,7 +9,7 @@ import SliderPoints from './SliderPoints/SliderPoints'
 import DraggableTutorial from './DraggableTutorial/DraggableTutorial'
 import EnteringSides from './animationsEnteringSides/EnteringSides'
 
-const Tutorials = ({ saveUserHasSeenTutorials }) => {
+const Tutorials = ({ isHomepageDisabled, saveUserHasSeenTutorials }) => {
   const tutorials = [FirstTutorial, SecondTutorial, ThirdTutorial]
   const lastTutorialStep = tutorials.length - 1
 
@@ -18,7 +18,7 @@ const Tutorials = ({ saveUserHasSeenTutorials }) => {
 
   function handleGoNext() {
     if (step === lastTutorialStep) {
-      saveUserHasSeenTutorials()
+      saveUserHasSeenTutorials(isHomepageDisabled)
     } else {
       setPreviousStep(step)
       setStep(step + 1)
@@ -88,6 +88,7 @@ const Tutorials = ({ saveUserHasSeenTutorials }) => {
 }
 
 Tutorials.propTypes = {
+  isHomepageDisabled: PropTypes.bool.isRequired,
   saveUserHasSeenTutorials: PropTypes.func.isRequired,
 }
 

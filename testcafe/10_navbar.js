@@ -10,7 +10,7 @@ const navBar = Selector('nav ul li a')
 fixture('En navigant sur la navbar').beforeEach(async t => {
   const { user } = await fetchSandbox(
     'webapp_10_menu',
-    'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
+    'get_existing_webapp_validated_user_with_has_filled_cultural_survey',
   )
   await t.useRole(createUserRole(user)).navigateTo(`${ROOT_PATH}profil`)
 })
@@ -53,14 +53,4 @@ test('je peux naviguer vers les favoris', async t => {
     .click(navBarFavoritesLink)
     .expect(getPageUrl())
     .eql(`${ROOT_PATH}favoris`)
-})
-
-test('je peux naviguer vers mon profil', async t => {
-  const navBarProfileLink = navBar.nth(5)
-  await t
-    .expect(navBarProfileLink.exists)
-    .ok()
-    .click(navBarProfileLink)
-    .expect(getPageUrl())
-    .eql(`${ROOT_PATH}profil`)
 })

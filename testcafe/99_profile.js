@@ -6,7 +6,7 @@ import { fetchSandbox } from './helpers/sandboxes'
 import { createUserRole } from './helpers/roles'
 
 const profilePath = `${ROOT_PATH}profil`
-const discoveryPath = `${ROOT_PATH}decouverte`
+const homePath = `${ROOT_PATH}accueil`
 const emptyField = 'ctrl+a delete'
 const submitInput = Selector('input[type="submit"]')
 
@@ -141,5 +141,5 @@ test('je clique sur le lien pour accéder au formulaire de changement de mot de 
     .typeText(userPasswordInput, userNewPassword)
     .click(signInButton)
     .expect(getPageUrl())
-    .contains(discoveryPath)
+    .contains(homePath)
 })
