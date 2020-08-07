@@ -21,11 +21,11 @@ import TypeFormContainer from '../pages/typeform/TypeformContainer'
 import EligibilityCheck from '../pages/create-account/EligibilityCheck'
 import Debug from '../pages/debug/DebugPage'
 
-import { IS_DEBUG_PAGE_ACTIVE, IS_ID_CHECK_PAGE_ACTIVE } from '../../utils/config'
+import { IS_DEBUG_PAGE_ACTIVE, IS_HOME_PAGE_ACTIVE, IS_ID_CHECK_PAGE_ACTIVE } from '../../utils/config'
 import HomeContainer from '../pages/home/HomeContainer'
 import { IcoNavHome } from '../layout/NavBar/Icons/IcoNavHome'
 
-const routes = [
+let routes = [
   {
     component: BetaPageContainer,
     exact: true,
@@ -155,6 +155,10 @@ if (IS_ID_CHECK_PAGE_ACTIVE) {
     path: '/verification-eligibilite',
     title: 'ID Check',
   })
+}
+
+if (IS_HOME_PAGE_ACTIVE) {
+  routes = routes.filter(route => route.path !== '/profil')
 }
 
 export default routes

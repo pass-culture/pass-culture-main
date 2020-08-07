@@ -3,6 +3,16 @@ import { compose } from 'redux'
 import { requestData } from 'redux-thunk-data'
 
 import SignIn from './SignIn'
+import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
+import { FEATURES } from '../../router/selectors/features'
+
+export const mapStateToProps = state => {
+  const homepageIsDisabled = selectIsFeatureDisabled(state, FEATURES.HOMEPAGE)
+
+  return {
+    homepageIsDisabled,
+  }
+}
 
 export const mapDispatchToProps = dispatch => ({
   signIn: (values, fail, success) => {
@@ -14,7 +24,7 @@ export const mapDispatchToProps = dispatch => ({
           handleFail: fail(resolve),
           handleSuccess: success(resolve),
           method: 'POST',
-        })
+        }),
       )
     })
   },
@@ -22,7 +32,7 @@ export const mapDispatchToProps = dispatch => ({
 
 export default compose(
   connect(
-    null,
-    mapDispatchToProps
-  )
+    mapStateToProps,
+    mapDispatchToProps,
+  ),
 )(SignIn)

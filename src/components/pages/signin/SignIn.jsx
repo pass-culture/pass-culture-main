@@ -23,9 +23,10 @@ class SignIn extends PureComponent {
   }
 
   handleSuccess = formResolver => () => {
-    const { history } = this.props
+    const { history, homepageIsDisabled } = this.props
     formResolver()
-    history.push('/decouverte')
+    const nextPath = homepageIsDisabled ? '/decouverte' : '/accueil'
+    history.push(nextPath)
   }
 
   handleSubmit = formValues => {
@@ -103,8 +104,13 @@ class SignIn extends PureComponent {
   }
 }
 
+SignIn.defaultProps = {
+  homepageIsDisabled: true
+}
+
 SignIn.propTypes = {
   history: PropTypes.shape().isRequired,
+  homepageIsDisabled: PropTypes.bool,
   signIn: PropTypes.func.isRequired,
 }
 
