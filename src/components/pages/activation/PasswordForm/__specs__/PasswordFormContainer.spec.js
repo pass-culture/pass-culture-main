@@ -87,7 +87,7 @@ describe('components | PasswordFormContainer', () => {
           newPassword: 'fake password',
         }
         const config = {
-          apiPath: '/users/signin',
+          apiPath: '/beneficiaries/signin',
           body: { identifier: values.email, password: values.newPassword },
           handleFail: failFunction,
           handleSuccess: successFunction,

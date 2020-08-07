@@ -9,7 +9,7 @@ export const mapDispatchToProps = dispatch => ({
     return new Promise(resolve => {
       dispatch(
         requestData({
-          apiPath: '/users/signin',
+          apiPath: '/beneficiaries/signin',
           body: { ...values },
           handleFail: fail(resolve),
           handleSuccess: success(resolve),

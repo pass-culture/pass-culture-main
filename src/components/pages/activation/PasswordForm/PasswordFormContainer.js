@@ -18,7 +18,7 @@ export const mapDispatchToProps = dispatch => ({
   loginUserAfterPasswordSaveSuccess: (values, fail, success) => {
     const { email: identifier, newPassword: password } = values
     const config = {
-      apiPath: '/users/signin',
+      apiPath: '/beneficiaries/signin',
       body: { identifier, password },
       handleFail: fail,
       handleSuccess: success,

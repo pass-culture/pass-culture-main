@@ -18,7 +18,7 @@ describe('container | SignInContainer', () => {
       // given
       const values = {
         identifier: 'pc-beneficiary@example.com',
-        password: 'abcdef123'
+        password: 'abcdef123',
       }
       const functions = mapDispatchToProps(dispatch)
       const { signIn } = functions
@@ -33,13 +33,13 @@ describe('container | SignInContainer', () => {
       // then
       expect(dispatch).toHaveBeenCalledWith({
         config: {
-          apiPath: '/users/signin',
+          apiPath: '/beneficiaries/signin',
           body: { identifier: 'pc-beneficiary@example.com', password: 'abcdef123' },
           handleFail: true,
           handleSuccess: true,
-          method: 'POST'
+          method: 'POST',
         },
-        type: 'REQUEST_DATA_POST_/USERS/SIGNIN'
+        type: 'REQUEST_DATA_POST_/USERS/SIGNIN',
       })
       expect(result).toBeInstanceOf(Promise)
     })
