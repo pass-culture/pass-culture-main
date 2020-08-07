@@ -6,6 +6,7 @@ import { MemoryRouter } from 'react-router'
 import getMockStore from '../../../../utils/mockStore'
 import CloseLink from '../../../layout/Header/CloseLink/CloseLink'
 import Offer from '../Offer'
+import DetailsContainer from '../../../layout/Details/DetailsContainer'
 
 describe('offer', () => {
   let props
@@ -13,7 +14,7 @@ describe('offer', () => {
 
   beforeEach(() => {
     props = {
-      homepageIsDisabled: true,
+      isHomepageDisabled: true,
       getOfferById: jest.fn().mockReturnValue({ id: 'ME' }),
       match: {
         path: '/offre/details/ME/FA',
@@ -21,8 +22,8 @@ describe('offer', () => {
     }
   })
 
-  it('should render a close link to homepage url when homepage feature is enabled', () => {
-    props.homepageIsDisabled = false
+  it('should display a close icon to /decouverte, details and footer for a given offer', () => {
+    // given
     mockStore = getMockStore({
       currentUser: (
         state = {
@@ -60,7 +61,53 @@ describe('offer', () => {
     )
 
     // then
-    const closeLink = wrapper.find(CloseLink)
-    expect(closeLink.prop('closeTo')).toBe('/accueil')
+    const closeIcon = wrapper.find(CloseLink)
+    const offerDetails = wrapper.find(DetailsContainer)
+    expect(closeIcon).toHaveLength(1)
+    expect(closeIcon.prop('closeTo')).toBe('/decouverte')
+    expect(offerDetails.prop('getOfferById')).toBe(props.getOfferById)
+  })
+
+  it('should render a close icon to homepage url when homepage feature is enabled', () => {
+    props.isHomepageDisabled = false
+    mockStore = getMockStore({
+      currentUser: (
+        state = {
+          id: 'Rt4R45ETEs',
+          wallet_balance: 0,
+        },
+      ) => state,
+      data: (
+        state = {
+          bookings: [],
+          favorites: [],
+          features: [],
+          mediations: [],
+          offers: [],
+          stocks: [],
+          recommendations: [],
+          users: [],
+        },
+      ) => state,
+      geolocation: (
+        state = {
+          latitude: 1,
+          longitude: 2,
+        },
+      ) => state,
+    })
+
+    // when
+    const wrapper = mount(
+      <Provider store={mockStore}>
+        <MemoryRouter initialEntries={['/offre/details/ME/FA']}>
+          <Offer {...props} />
+        </MemoryRouter>
+      </Provider>,
+    )
+
+    // then
+    const closeIcon = wrapper.find(CloseLink)
+    expect(closeIcon.prop('closeTo')).toBe('/accueil')
   })
 })

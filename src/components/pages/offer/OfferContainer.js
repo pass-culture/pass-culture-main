@@ -6,10 +6,10 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 
 export const mapStateToProps = state => {
-  const homepageIsDisabled = selectIsFeatureDisabled(state, FEATURES.HOMEPAGE)
+  const isHomepageDisabled = selectIsFeatureDisabled(state, FEATURES.HOMEPAGE)
 
   return {
-    homepageIsDisabled,
+    isHomepageDisabled
   }
 }
 

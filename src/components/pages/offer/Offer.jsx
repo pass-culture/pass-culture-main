@@ -5,7 +5,7 @@ import { Route } from 'react-router'
 import DetailsContainer from '../../layout/Details/DetailsContainer'
 import CloseLink from '../../layout/Header/CloseLink/CloseLink'
 
-const Offer = ({ homepageIsDisabled, match }) => (
+const Offer = ({ isHomepageDisabled, match }) => (
   <Route
     exact
     path={`${match.path}/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
@@ -14,7 +14,7 @@ const Offer = ({ homepageIsDisabled, match }) => (
     <main className="offer-page">
       <CloseLink
         closeTitle="Fermer"
-        closeTo={`${homepageIsDisabled ? '/decouverte' : '/accueil'}`}
+        closeTo={`${isHomepageDisabled ? '/decouverte' : '/accueil'}`}
       />
       <DetailsContainer />
     </main>
@@ -22,11 +22,11 @@ const Offer = ({ homepageIsDisabled, match }) => (
 )
 
 Offer.defaultProps = {
-  homepageIsDisabled: true
+  isHomepageDisabled: true
 }
 
 Offer.propTypes = {
-  homepageIsDisabled: PropTypes.bool,
+  isHomepageDisabled: PropTypes.bool,
   match: PropTypes.shape({
     path: PropTypes.string.isRequired,
   }).isRequired,
