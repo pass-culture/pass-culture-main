@@ -2,8 +2,8 @@ from typing import Optional
 
 from domain.pro_offerers.paginated_offerers import PaginatedOfferers
 from domain.pro_offerers.paginated_offerers_repository import PaginatedOfferersRepository
-from models import Offerer, VenueSQLEntity, UserSQLEntity
-from repository.offerer_queries import filter_offerers_with_keywords_string, query_filter_offerer_by_user
+from models import Offerer, VenueSQLEntity, UserOfferer
+from repository.offerer_queries import filter_offerers_with_keywords_string
 
 
 class PaginatedOfferersSQLRepository(PaginatedOfferersRepository):
@@ -12,16 +12,15 @@ class PaginatedOfferersSQLRepository(PaginatedOfferersRepository):
                                  user_is_admin: bool,
                                  page: Optional[int],
                                  pagination_limit: int,
-                                 only_validated_offerers: bool,
+                                 only_validated_offerers: Optional[bool],
                                  is_filtered_by_offerer_status: bool,
                                  keywords: Optional[str] = None) -> PaginatedOfferers:
-        # TODO: to remove
-        current_user = UserSQLEntity.query.get(user_id)
-
         query = Offerer.query
 
         if not user_is_admin:
-            query = query_filter_offerer_by_user(query)
+            query = query \
+                .join(UserOfferer, UserOfferer.offererId == Offerer.id) \
+                .filter(UserOfferer.userId == user_id)
 
         if is_filtered_by_offerer_status:
             if only_validated_offerers:
@@ -30,19 +29,16 @@ class PaginatedOfferersSQLRepository(PaginatedOfferersRepository):
                 query = query.filter(Offerer.validationToken != None)
 
         if keywords is not None:
-            query = query.join(VenueSQLEntity)
+            query = query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id)
             query = filter_offerers_with_keywords_string(query, keywords)
-            total_data_count = query.distinct().count()
-        else:
-            total_data_count = query.count()
+
         query = query.order_by(Offerer.name)
-        offerers = query.all()
+        query = query.paginate(page, per_page=int(pagination_limit), error_out=False)
+        offerers = query.items
 
         for offerer in offerers:
-            offerer.append_user_has_access_attribute(current_user)
+                offerer.append_user_has_access_attribute(user_id=user_id, is_admin=user_is_admin)
 
-        query = query.paginate(page, per_page=int(pagination_limit), error_out=False)
-        results = query.items
-        total = total_data_count
+        total = query.total
 
-        return PaginatedOfferers(results, total)
+        return PaginatedOfferers(offerers, total)

@@ -21,8 +21,8 @@ from utils.rest import ensure_current_user_has_rights, \
 from validation.routes.offerers import check_valid_edition
 
 
-def get_dict_offerer(offerer):
-    offerer.append_user_has_access_attribute(current_user)
+def get_dict_offerer(offerer: Offerer):
+    offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
 
     return as_dict(offerer, includes=OFFERER_INCLUDES)
 
@@ -49,6 +49,8 @@ def list_offerers():
         is_filtered_by_offerer_status=is_filtered_by_offerer_status,
         only_validated_offerers=only_validated_offerers,
         keywords=keywords,
+        pagination_limit=request.args.get('paginate', '10'),
+        page=request.args.get('page', '0'),
     )
 
     paginated_offerers = list_offerers_for_pro_user.execute(

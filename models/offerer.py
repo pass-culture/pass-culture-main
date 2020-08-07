@@ -76,14 +76,13 @@ class Offerer(PcObject,
             n_offers += venue.nOffers
         return n_offers
 
-    def append_user_has_access_attribute(self, current_user):
-
-        if current_user.isAdmin:
+    def append_user_has_access_attribute(self, user_id: int, is_admin: bool) -> None:
+        if is_admin:
             self.userHasAccess = True
             return
 
         authorizations = [user_offer.isValidated for user_offer in self.UserOfferers if
-                          user_offer.userId == current_user.id]
+                          user_offer.userId == user_id]
 
         if len(authorizations):
             user_has_access_as_editor = authorizations[0]
@@ -96,6 +95,5 @@ class Offerer(PcObject,
 ts_indexes = [('idx_offerer_fts_name', Offerer.name),
               ('idx_offerer_fts_address', Offerer.address),
               ('idx_offerer_fts_siret', Offerer.siren)]
-
 
 (Offerer.__ts_vectors__, Offerer.__table_args__) = create_ts_vector_and_table_args(ts_indexes)

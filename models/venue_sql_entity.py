@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from sqlalchemy import TEXT, BigInteger, Boolean, CheckConstraint, Column, \
     DateTime, ForeignKey, Integer, Numeric, String
 from sqlalchemy.event import listens_for
@@ -137,7 +138,7 @@ class VenueSQLEntity(PcObject,
 
     @property
     def nOffers(self):
-        return OfferSQLEntity.query.filter(OfferSQLEntity.venueId == self.id).count()
+        return OfferSQLEntity.query.filter(OfferSQLEntity.venueId == self.id).with_entities(OfferSQLEntity.id).count()
 
 
 @listens_for(VenueSQLEntity, 'before_insert')

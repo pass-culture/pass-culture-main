@@ -161,7 +161,7 @@ class AppendUserHasAccessAttributeTest:
         offerer = create_offerer()
 
         # When
-        offerer.append_user_has_access_attribute(current_user)
+        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
 
         # Then
         assert hasattr(offerer, 'userHasAccess')
@@ -172,7 +172,7 @@ class AppendUserHasAccessAttributeTest:
         offerer = create_offerer()
 
         # When
-        offerer.append_user_has_access_attribute(current_user)
+        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
 
         # Then
         assert offerer.userHasAccess is False
@@ -187,7 +187,7 @@ class AppendUserHasAccessAttributeTest:
         repository.save(user_offerer)
 
         # When
-        offerer.append_user_has_access_attribute(current_user)
+        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
 
         # Then
         assert offerer.userHasAccess is True
@@ -202,7 +202,7 @@ class AppendUserHasAccessAttributeTest:
         repository.save(user_offerer)
 
         # When
-        offerer.append_user_has_access_attribute(current_user)
+        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
 
         # Then
         assert offerer.userHasAccess is False
@@ -219,7 +219,7 @@ class AppendUserHasAccessAttributeTest:
         repository.save(user_offerer)
 
         # When
-        offerer.append_user_has_access_attribute(current_user)
+        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
 
         # Then
         assert offerer.userHasAccess is False
@@ -236,7 +236,7 @@ class AppendUserHasAccessAttributeTest:
         repository.save(user_offerer)
 
         # When
-        offerer.append_user_has_access_attribute(current_user)
+        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
 
         # Then
         assert offerer.userHasAccess is True
