@@ -583,7 +583,7 @@ def create_venue_label(label: str, idx: Optional[int] = None) -> VenueLabelSQLEn
     return venue_label
 
 
-def create_allocine_venue_provider(venue: Provider, allocine_provider: VenueSQLEntity, is_duo: bool = False,
+def create_allocine_venue_provider(venue: VenueSQLEntity, allocine_provider: Provider, is_duo: bool = False,
                                    quantity: Optional[int] = None,
                                    venue_id_at_offer_provider: str = None) -> AllocineVenueProvider:
     allocine_venue_provider = AllocineVenueProvider()
