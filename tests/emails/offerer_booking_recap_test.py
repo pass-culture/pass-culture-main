@@ -25,7 +25,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
         event_offer = create_offer_with_event_product(venue, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc)
-        stock_sql_entity = create_stock(idx=1, offer=event_offer, beginning_datetime=beginning_datetime, price=0)
+        stock_sql_entity = create_stock(beginning_datetime=beginning_datetime, idx=1, offer=event_offer, price=0)
         booking_sql_entity = create_booking(idx=1, user=user_sql_entity, stock=stock_sql_entity, venue=venue,
                                             token='ABC123')
         repository.save(booking_sql_entity)
@@ -151,7 +151,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
         event_offer = create_offer_with_event_product(venue, is_duo=True, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock_sql_entity = create_stock(idx=1, offer=event_offer, beginning_datetime=beginning_datetime, price=5.86)
+        stock_sql_entity = create_stock(beginning_datetime=beginning_datetime, idx=1, offer=event_offer, price=5.86)
         booking_sql_entity = create_booking(idx=1, user=user_sql_entity, stock=stock_sql_entity, venue=venue,
                                             token='ABC123')
         repository.save(deposit, booking_sql_entity)
@@ -214,7 +214,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         thing_offer.extraData = None
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock_sql_entity = create_stock(idx=1, offer=thing_offer, beginning_datetime=beginning_datetime, price=0)
+        stock_sql_entity = create_stock(beginning_datetime=beginning_datetime, idx=1, offer=thing_offer, price=0)
         booking_sql_entity = create_booking(idx=1, user=user_sql_entity, stock=stock_sql_entity, venue=venue,
                                             token='ABC123')
         repository.save(booking_sql_entity)
@@ -275,7 +275,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None, idx=1)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock_sql_entity = create_stock(idx=1, offer=thing_offer, beginning_datetime=beginning_datetime, price=0)
+        stock_sql_entity = create_stock(beginning_datetime=beginning_datetime, idx=1, offer=thing_offer, price=0)
         booking_sql_entity = create_booking(idx=1, user=user_sql_entity, stock=stock_sql_entity, venue=venue,
                                             token='ABC123')
 
@@ -372,7 +372,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock_sql_entity = create_stock(idx=1, offer=thing_offer, beginning_datetime=beginning_datetime, price=0)
+        stock_sql_entity = create_stock(beginning_datetime=beginning_datetime, idx=1, offer=thing_offer, price=0)
         booking_sql_entity = create_booking(idx=1, user=user_sql_entity, stock=stock_sql_entity, venue=venue,
                                             token='ABC123')
 
@@ -409,7 +409,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         venue = create_venue(offerer, idx=1, postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock_sql_entity = create_stock(idx=1, offer=thing_offer, beginning_datetime=beginning_datetime, price=0)
+        stock_sql_entity = create_stock(beginning_datetime=beginning_datetime, idx=1, offer=thing_offer, price=0)
         booking_sql_entity_1 = create_booking(idx=1, user=user_sql_entity_1, stock=stock_sql_entity, venue=venue,
                                               token='ACVSDC')
         booking_sql_entity_2 = create_booking(idx=2, user=user_sql_entity_2, stock=stock_sql_entity, venue=venue,
@@ -456,7 +456,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=3)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock_sql_entity = create_stock(idx=1, offer=thing_offer, beginning_datetime=beginning_datetime, price=0)
+        stock_sql_entity = create_stock(beginning_datetime=beginning_datetime, idx=1, offer=thing_offer, price=0)
         booking_sql_entity = create_booking(idx=1, user=user_sql_entity, stock=stock_sql_entity, venue=venue,
                                             token='ACVSDC')
         repository.save(booking_sql_entity)

@@ -36,32 +36,16 @@ class BuildObjectTest:
                                                 event_type=EventType.MUSIQUE,
                                                 thumb_count=1,
                                                 date_created=datetime(2020, 1, 1, 10, 0, 0))
-        stock1 = create_stock(quantity=10,
-                              date_created=datetime(2020, 12, 5, 11, 0, 0),
-                              beginning_datetime=in_four_days,
-                              offer=offer,
-                              price=10)
-        stock2 = create_stock(quantity=10,
-                              date_created=datetime(2020, 12, 11, 8, 0, 0),
-                              beginning_datetime=in_four_days,
-                              offer=offer,
-                              price=20)
-        stock3 = create_stock(quantity=10,
-                              date_created=datetime(2020, 12, 1, 11, 0, 0),
-                              beginning_datetime=in_four_days,
-                              offer=offer,
-                              price=0)
-        stock4 = create_stock(quantity=10,
-                              date_created=datetime(2020, 12, 4, 7, 0, 0),
-                              beginning_datetime=in_four_days,
-                              is_soft_deleted=True,
-                              offer=offer,
-                              price=0)
-        stock5 = create_stock(quantity=10,
-                              date_created=datetime(2020, 12, 7, 14, 0, 0),
-                              beginning_datetime=three_days_ago,
-                              offer=offer,
-                              price=0)
+        stock1 = create_stock(beginning_datetime=in_four_days, date_created=datetime(2020, 12, 5, 11, 0, 0),
+                              offer=offer, price=10, quantity=10)
+        stock2 = create_stock(beginning_datetime=in_four_days, date_created=datetime(2020, 12, 11, 8, 0, 0),
+                              offer=offer, price=20, quantity=10)
+        stock3 = create_stock(beginning_datetime=in_four_days, date_created=datetime(2020, 12, 1, 11, 0, 0),
+                              offer=offer, price=0, quantity=10)
+        stock4 = create_stock(beginning_datetime=in_four_days, date_created=datetime(2020, 12, 4, 7, 0, 0),
+                              is_soft_deleted=True, offer=offer, price=0, quantity=10)
+        stock5 = create_stock(beginning_datetime=three_days_ago, date_created=datetime(2020, 12, 7, 14, 0, 0),
+                              offer=offer, price=0, quantity=10)
         repository.save(stock1, stock2, stock3, stock4, stock5)
         humanized_product_id = humanize(offer.product.id)
 
@@ -360,9 +344,9 @@ class BuildObjectTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(venue=venue)
-        stock1 = create_stock(offer=offer, beginning_datetime=in_three_days_at_eighteen_thirty)
-        stock2 = create_stock(offer=offer, beginning_datetime=in_five_days_at_twenty_one_thirty)
-        stock3 = create_stock(offer=offer, beginning_datetime=in_four_days_at_eighteen_thirty)
+        stock1 = create_stock(beginning_datetime=in_three_days_at_eighteen_thirty, offer=offer)
+        stock2 = create_stock(beginning_datetime=in_five_days_at_twenty_one_thirty, offer=offer)
+        stock3 = create_stock(beginning_datetime=in_four_days_at_eighteen_thirty, offer=offer)
         repository.save(stock1, stock2, stock3)
 
         # When
@@ -413,11 +397,8 @@ class BuildObjectTest:
                                                 thumb_count=1,
                                                 date_created=datetime(2020, 1, 1, 10, 0, 0),
                                                 criteria=[criterion])
-        stock1 = create_stock(quantity=10,
-                              date_created=datetime(2020, 12, 5, 11, 0, 0),
-                              beginning_datetime=in_four_days,
-                              offer=offer,
-                              price=10)
+        stock1 = create_stock(beginning_datetime=in_four_days, date_created=datetime(2020, 12, 5, 11, 0, 0),
+                              offer=offer, price=10, quantity=10)
         repository.save(stock1)
         humanized_product_id = humanize(offer.product.id)
 
@@ -499,11 +480,8 @@ class BuildObjectTest:
                                                 thumb_count=1,
                                                 date_created=datetime(2020, 1, 1, 10, 0, 0),
                                                 criteria=[criterion1, criterion2])
-        stock1 = create_stock(quantity=10,
-                              date_created=datetime(2020, 12, 5, 11, 0, 0),
-                              beginning_datetime=in_four_days,
-                              offer=offer,
-                              price=10)
+        stock1 = create_stock(beginning_datetime=in_four_days, date_created=datetime(2020, 12, 5, 11, 0, 0),
+                              offer=offer, price=10, quantity=10)
         repository.save(stock1)
         humanized_product_id = humanize(offer.product.id)
 

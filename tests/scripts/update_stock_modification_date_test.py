@@ -18,7 +18,7 @@ class UpdateStockModificationDateTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(quantity=10, date_modified=datetime(2019, 10, 13), offer=offer)
+        stock = create_stock(date_modified=datetime(2019, 10, 13), offer=offer, quantity=10)
         repository.save(stock)
 
         activity = create_stock_activity(
@@ -44,7 +44,7 @@ class UpdateStockModificationDateTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(quantity=10, date_modified=datetime(2019, 10, 13), offer=offer)
+        stock = create_stock(date_modified=datetime(2019, 10, 13), offer=offer, quantity=10)
         repository.save(stock)
 
         first_activity = create_stock_activity(
@@ -77,8 +77,8 @@ class UpdateStockModificationDateTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        first_stock = create_stock(quantity=10, date_modified=datetime(2019, 10, 13), offer=offer)
-        second_stock = create_stock(quantity=10, date_modified=datetime(2018, 10, 13), offer=offer)
+        first_stock = create_stock(date_modified=datetime(2019, 10, 13), offer=offer, quantity=10)
+        second_stock = create_stock(date_modified=datetime(2018, 10, 13), offer=offer, quantity=10)
         repository.save(first_stock, second_stock)
 
         activity_for_first_stock = create_stock_activity(

@@ -80,7 +80,7 @@ def test_titelive_stock_provider_update_1_stock_and_1_offer(stub_get_stocks_info
                                            venue_id_at_offer_provider='77567146400110')
     product = create_product_with_thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
-    stock = create_stock(quantity=2, id_at_providers='0002730757438@77567146400110', offer=offer)
+    stock = create_stock(id_at_providers='0002730757438@77567146400110', offer=offer, quantity=2)
     repository.save(product, venue_provider, stock)
 
     titelive_stocks = TiteLiveStocks(venue_provider)
@@ -119,8 +119,8 @@ def test_titelive_stock_provider_always_update_the_stock_modification_date(stub_
     product = create_product_with_thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
     yesterday = date.today() - timedelta(days=1)
-    stock = create_stock(quantity=2, date_modified=yesterday, id_at_providers='0002730757438@77567146400110',
-                         offer=offer)
+    stock = create_stock(date_modified=yesterday, id_at_providers='0002730757438@77567146400110', offer=offer,
+                         quantity=2)
     repository.save(product, venue_provider, stock)
 
     titelive_stocks = TiteLiveStocks(venue_provider)
@@ -421,7 +421,7 @@ def test_titelive_stock_provider_available_stock_is_sum_of_updated_available_and
     offer = create_offer_with_thing_product(venue, product=product,
                                             id_at_providers='9780199536986@12345678912345')
 
-    stock = create_stock(quantity=20, id_at_providers='9780199536986@12345678912345', offer=offer, price=0)
+    stock = create_stock(id_at_providers='9780199536986@12345678912345', offer=offer, price=0, quantity=20)
 
     booking = create_booking(
         user=create_user(),

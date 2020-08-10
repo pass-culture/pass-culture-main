@@ -65,7 +65,7 @@ class BookingSQLRepositoryTest:
             venue_online = create_venue(offerer, siret=None, is_virtual=True)
             offer = create_offer_with_thing_product(
                 venue_online, thing_type=ThingType.LIVRE_EDITION, is_digital=True)
-            stock_sql_entity = create_stock(offer=offer, quantity=200, price=0, idx=23)
+            stock_sql_entity = create_stock(idx=23, offer=offer, price=0, quantity=200)
 
             user = create_domain_beneficiary(identifier=4)
             stock = Stock(
@@ -95,7 +95,7 @@ class BookingSQLRepositoryTest:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(
                 venue, thing_type=ThingType.LIVRE_EDITION)
-            stock_sql_entity = create_stock(offer=offer, price=20, idx=23)
+            stock_sql_entity = create_stock(idx=23, offer=offer, price=20)
 
             user = create_domain_beneficiary(identifier=4)
             stock = Stock(

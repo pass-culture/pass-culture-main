@@ -62,7 +62,7 @@ class AvailabilityMessageTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue=venue)
-            stock = create_stock(quantity=12, offer=offer, price=0)
+            stock = create_stock(offer=offer, price=0, quantity=12)
             booking = create_booking(user, stock=stock, quantity=5)
 
             repository.save(booking)
@@ -80,8 +80,8 @@ class AvailabilityMessageTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue=venue)
-            stock1 = create_stock(quantity=12, offer=offer, price=0)
-            stock2 = create_stock(quantity=6, offer=offer)
+            stock1 = create_stock(offer=offer, price=0, quantity=12)
+            stock2 = create_stock(offer=offer, quantity=6)
             booking = create_booking(user, stock=stock1, quantity=5)
 
             repository.save(booking, stock2)
@@ -100,9 +100,9 @@ class AvailabilityMessageTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue=venue)
-            stock1 = create_stock(quantity=5, offer=offer, price=0)
-            stock2 = create_stock(quantity=6, offer=offer, price=0)
-            stock3 = create_stock(quantity=23, offer=offer, price=0)
+            stock1 = create_stock(offer=offer, price=0, quantity=5)
+            stock2 = create_stock(offer=offer, price=0, quantity=6)
+            stock3 = create_stock(offer=offer, price=0, quantity=23)
             booking1 = create_booking(user, stock=stock1, quantity=5)
 
             repository.save(booking1, stock2, stock3)
@@ -120,8 +120,8 @@ class AvailabilityMessageTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue=venue)
-            stock1 = create_stock(quantity=5, offer=offer, price=0)
-            stock2 = create_stock(quantity=None, offer=offer, price=0)
+            stock1 = create_stock(offer=offer, price=0, quantity=5)
+            stock2 = create_stock(offer=offer, price=0, quantity=None)
             booking1 = create_booking(user, stock=stock1, quantity=5)
 
             repository.save(booking1, stock2)
@@ -139,9 +139,9 @@ class AvailabilityMessageTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue=venue)
-            stock1 = create_stock(quantity=5, offer=offer, price=0)
-            stock2 = create_stock(quantity=6, offer=offer, price=0)
-            stock3 = create_stock(quantity=23, offer=offer, price=0)
+            stock1 = create_stock(offer=offer, price=0, quantity=5)
+            stock2 = create_stock(offer=offer, price=0, quantity=6)
+            stock3 = create_stock(offer=offer, price=0, quantity=23)
             booking1 = create_booking(user, stock=stock1, quantity=5)
             booking2 = create_booking(user, stock=stock2, quantity=6)
 
@@ -160,7 +160,7 @@ class AvailabilityMessageTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue=venue)
-            stock = create_stock(quantity=5, offer=offer, price=0)
+            stock = create_stock(offer=offer, price=0, quantity=5)
             booking = create_booking(user, stock=stock, quantity=5)
 
             repository.save(booking)
@@ -178,7 +178,7 @@ class AvailabilityMessageTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            stock = create_stock(quantity=5, offer=offer, price=0)
+            stock = create_stock(offer=offer, price=0, quantity=5)
             booking = create_booking(user, stock=stock, quantity=5)
             repository.save(booking)
 
@@ -195,8 +195,8 @@ class AvailabilityMessageTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue=venue)
-            stock1 = create_stock(quantity=None, offer=offer)
-            stock2 = create_stock(quantity=13, offer=offer)
+            stock1 = create_stock(offer=offer, quantity=None)
+            stock2 = create_stock(offer=offer, quantity=13)
 
             repository.save(stock1, stock2)
 
@@ -214,8 +214,8 @@ class AvailabilityMessageTest:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue=venue)
-            stock1 = create_stock(quantity=12, booking_limit_datetime=yesterday, offer=offer)
-            stock2 = create_stock(quantity=13, booking_limit_datetime=yesterday, offer=offer)
+            stock1 = create_stock(booking_limit_datetime=yesterday, offer=offer, quantity=12)
+            stock2 = create_stock(booking_limit_datetime=yesterday, offer=offer, quantity=13)
 
             repository.save(stock1, stock2)
 
@@ -281,7 +281,7 @@ class DateRangeTest:
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
-            create_stock(offer, beginning_datetime=two_days_ago)
+            create_stock(beginning_datetime=two_days_ago, offer=offer)
         ]
 
         # then
@@ -291,10 +291,10 @@ class DateRangeTest:
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
-            create_stock(offer, beginning_datetime=four_days_ago),
-            create_stock(offer, beginning_datetime=four_days_ago),
-            create_stock(offer, beginning_datetime=two_days_ago),
-            create_stock(offer, beginning_datetime=two_days_ago)
+            create_stock(beginning_datetime=four_days_ago, offer=offer),
+            create_stock(beginning_datetime=four_days_ago, offer=offer),
+            create_stock(beginning_datetime=two_days_ago, offer=offer),
+            create_stock(beginning_datetime=two_days_ago, offer=offer)
         ]
 
         # then
@@ -305,9 +305,9 @@ class DateRangeTest:
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
-            create_stock(offer, beginning_datetime=four_days_ago, is_soft_deleted=True),
-            create_stock(offer, beginning_datetime=two_days_ago),
-            create_stock(offer, beginning_datetime=two_days_ago)
+            create_stock(beginning_datetime=four_days_ago, is_soft_deleted=True, offer=offer),
+            create_stock(beginning_datetime=two_days_ago, offer=offer),
+            create_stock(beginning_datetime=two_days_ago, offer=offer)
         ]
 
         # then
@@ -326,7 +326,7 @@ class DateRangeTest:
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
-            create_stock(offer, beginning_datetime=two_days_ago, is_soft_deleted=True),
+            create_stock(beginning_datetime=two_days_ago, is_soft_deleted=True, offer=offer),
         ]
 
         # then
@@ -600,8 +600,8 @@ class IsFullyBookedTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue=venue)
         user = create_user()
-        stock1 = create_stock(quantity=2, date_modified=datetime(2019, 1, 1))
-        stock2 = create_stock(quantity=1, date_modified=datetime(2019, 1, 1))
+        stock1 = create_stock(date_modified=datetime(2019, 1, 1), quantity=2)
+        stock2 = create_stock(date_modified=datetime(2019, 1, 1), quantity=1)
         create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=stock1)
         create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=stock1)
         create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=stock2)
@@ -633,8 +633,8 @@ class IsFullyBookedTest:
         offer = create_offer_with_event_product(venue=venue)
         user = create_user()
 
-        expired_stock = create_stock(quantity=2, booking_limit_datetime=datetime.utcnow() - timedelta(weeks=3))
-        booked_stock = create_stock(quantity=1, date_modified=datetime(2019, 1, 1))
+        expired_stock = create_stock(booking_limit_datetime=datetime.utcnow() - timedelta(weeks=3), quantity=2)
+        booked_stock = create_stock(date_modified=datetime(2019, 1, 1), quantity=1)
 
         create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=booked_stock)
         offer.stocks = [expired_stock, booked_stock]

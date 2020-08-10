@@ -27,7 +27,7 @@ def test_date_modified_should_be_updated_if_quantity_changed(app):
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock(quantity=1, date_modified=datetime(2018, 2, 12), offer=offer)
+    stock = create_stock(date_modified=datetime(2018, 2, 12), offer=offer, quantity=1)
     repository.save(stock)
 
     # when
@@ -46,7 +46,7 @@ def test_date_modified_should_not_be_updated_if_price_changed(app):
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock(quantity=1, date_modified=datetime(2018, 2, 12), offer=offer, price=1)
+    stock = create_stock(date_modified=datetime(2018, 2, 12), offer=offer, price=1, quantity=1)
     repository.save(stock)
 
     # when
@@ -313,7 +313,7 @@ class IsBookableTest:
         offer = create_offer_with_event_product(venue)
 
         # When
-        stock = create_stock(quantity=10, offer=offer, price=0)
+        stock = create_stock(offer=offer, price=0, quantity=10)
         booking = create_booking(user, stock=stock, quantity=10)
         repository.save(booking)
 
@@ -327,7 +327,7 @@ class IsBookableTest:
         offer = create_offer_with_event_product(venue)
 
         # When
-        stock = create_stock(quantity=None, offer=offer, price=0)
+        stock = create_stock(offer=offer, price=0, quantity=None)
 
         # Then
         assert stock.isBookable

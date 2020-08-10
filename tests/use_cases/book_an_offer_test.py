@@ -43,7 +43,7 @@ class BookAnOfferTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(price=50, quantity=1, offer=offer)
+        stock = create_stock(offer=offer, price=50, quantity=1)
         create_deposit(user, amount=50)
         repository.save(user, stock)
 
@@ -82,7 +82,7 @@ class BookAnOfferTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(price=50, quantity=1, offer=offer)
+        stock = create_stock(offer=offer, price=50, quantity=1)
         create_deposit(user, amount=50)
         repository.save(user, stock)
 
@@ -156,7 +156,7 @@ class BookAnOfferTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(price=50, quantity=1, offer=offer)
+        stock = create_stock(offer=offer, price=50, quantity=1)
         create_deposit(user)
         repository.save(user, stock)
 
@@ -332,7 +332,7 @@ class BookAnOfferTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(price=600, offer=offer)
+        stock = create_stock(offer=offer, price=600)
         repository.save(user, stock)
         expected_stock = Stock(
             identifier=stock.id,

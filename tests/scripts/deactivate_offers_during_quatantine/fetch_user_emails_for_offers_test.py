@@ -39,13 +39,13 @@ class FetchUserEmailsForOffersTest:
         user_offerer = create_user_offerer(user=pro, offerer=offerer)
         venue = create_venue(offerer, siret='1234567899876')
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=tomorrow)
+        stock = create_stock(beginning_datetime=tomorrow, offer=offer)
 
         offerer1 = create_offerer(siren='987654321')
         user_offerer1 = create_user_offerer(user=pro1, offerer=offerer1)
         venue1 = create_venue(offerer1, siret='9876543216543')
         offer1 = create_offer_with_event_product(venue1)
-        stock1 = create_stock(offer=offer1, beginning_datetime=tomorrow)
+        stock1 = create_stock(beginning_datetime=tomorrow, offer=offer1)
 
         repository.save(stock1, stock, user_offerer, user_offerer1)
 
@@ -71,7 +71,7 @@ class FetchUserEmailsForOffersTest:
         user_offerer = create_user_offerer(user=pro, offerer=offerer)
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=tomorrow)
+        stock = create_stock(beginning_datetime=tomorrow, offer=offer)
 
         repository.save(stock, user_offerer, user)
 

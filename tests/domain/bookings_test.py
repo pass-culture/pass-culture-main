@@ -47,7 +47,7 @@ class BookingsTest:
             venue = create_venue(offerer, name='Librairie de Belleville')
             product = create_product_with_thing_type(extra_data={'isbn': '123456789'}, thing_name='Naruto')
             offer = create_offer_with_thing_product(idx=1, product=product, venue=venue)
-            stock = create_stock(quantity=10, offer=offer, price=10)
+            stock = create_stock(offer=offer, price=10, quantity=10)
             booking = create_booking(user=user, stock=stock, token='ABCDE')
 
             # when
@@ -71,7 +71,7 @@ class BookingsTest:
             venue = create_venue(offerer, name='Librairie de Belleville')
             product = create_product_with_thing_type(extra_data=None, thing_name='Naruto')
             offer = create_offer_with_thing_product(idx=1, product=product, venue=venue)
-            stock = create_stock(quantity=10, offer=offer, price=10)
+            stock = create_stock(offer=offer, price=10, quantity=10)
             booking = create_booking(user=user, stock=stock, token='ABCDE')
 
             # when
@@ -113,7 +113,7 @@ class BookingsTest:
             venue = create_venue(offerer, name='UGC La Défense')
             product = create_product_with_event_type(event_type=ThingType.CINEMA_ABO)
             offer = create_offer_with_thing_product(idx=1, product=product, venue=venue)
-            stock = create_stock(quantity=10, beginning_datetime=datetime(2019, 7, 20, 12, 0, 0), offer=offer)
+            stock = create_stock(beginning_datetime=datetime(2019, 7, 20, 12, 0, 0), offer=offer, quantity=10)
             booking = create_booking(user=user, quantity=1, stock=stock, token='ABCDE')
 
             # when

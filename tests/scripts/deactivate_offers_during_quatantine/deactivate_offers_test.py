@@ -36,7 +36,7 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=yesterday)
+        stock = create_stock(beginning_datetime=yesterday, offer=offer)
 
         repository.save(stock)
 
@@ -53,7 +53,7 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 15, 23, 59))
+        stock = create_stock(beginning_datetime=datetime(2020, 4, 15, 23, 59), offer=offer)
 
         repository.save(stock)
 
@@ -70,7 +70,7 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 16))
+        stock = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer)
 
         repository.save(stock)
 
@@ -87,8 +87,8 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock1 = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 16))
-        stock2 = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 14))
+        stock1 = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer)
+        stock2 = create_stock(beginning_datetime=datetime(2020, 4, 14), offer=offer)
 
         repository.save(stock1, stock2)
 
@@ -105,7 +105,7 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=None)
+        stock = create_stock(beginning_datetime=None, offer=offer)
 
         repository.save(stock)
 

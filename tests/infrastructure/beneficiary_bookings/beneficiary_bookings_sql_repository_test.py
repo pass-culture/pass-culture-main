@@ -141,11 +141,11 @@ class BeneficiaryBookingsSQLRepositoryTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_event_product(venue)
-        stock1 = create_stock(booking_limit_datetime=now, beginning_datetime=three_days, offer=offer1)
+        stock1 = create_stock(beginning_datetime=three_days, booking_limit_datetime=now, offer=offer1)
         offer2 = create_offer_with_event_product(venue)
-        stock2 = create_stock(booking_limit_datetime=now, beginning_datetime=two_days, offer=offer2)
+        stock2 = create_stock(beginning_datetime=two_days, booking_limit_datetime=now, offer=offer2)
         offer3 = create_offer_with_event_product(venue)
-        stock3 = create_stock(booking_limit_datetime=now, beginning_datetime=two_days_bis, offer=offer3)
+        stock3 = create_stock(beginning_datetime=two_days_bis, booking_limit_datetime=now, offer=offer3)
         booking1 = create_booking(user=user, stock=stock1,
                                   recommendation=create_recommendation(user=user, offer=offer1))
         booking2 = create_booking(user=user, stock=stock2,
@@ -171,16 +171,12 @@ class GetStocksInformationTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, url='http://url.com')
-        stock1 = create_stock(offer=offer, price=0,
-                              date_created=datetime(2020, 1, 4),
-                              beginning_datetime=datetime(2020, 3, 5),
-                              booking_limit_datetime=datetime(2020, 1, 6),
-                              date_modified=datetime(2020, 1, 7))
-        stock2 = create_stock(offer=offer, price=12,
-                              date_created=datetime(2020, 2, 4),
-                              beginning_datetime=datetime(2020, 4, 5),
-                              booking_limit_datetime=datetime(2020, 2, 6),
-                              date_modified=datetime(2020, 2, 7))
+        stock1 = create_stock(beginning_datetime=datetime(2020, 3, 5), booking_limit_datetime=datetime(2020, 1, 6),
+                              date_created=datetime(2020, 1, 4), date_modified=datetime(2020, 1, 7), offer=offer,
+                              price=0)
+        stock2 = create_stock(beginning_datetime=datetime(2020, 4, 5), booking_limit_datetime=datetime(2020, 2, 6),
+                              date_created=datetime(2020, 2, 4), date_modified=datetime(2020, 2, 7), offer=offer,
+                              price=12)
 
         repository.save(stock1, stock2)
 

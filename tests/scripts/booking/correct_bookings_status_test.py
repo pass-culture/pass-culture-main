@@ -20,8 +20,8 @@ class GetBookingsCancelledDuringQuarantineWithPaymentTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock1 = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 16))
-        stock2 = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 16))
+        stock1 = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer)
+        stock2 = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer)
         booking1 = create_booking(stock=stock1, user=beneficiary, is_cancelled=True)
         booking2 = create_booking(stock=stock2, user=beneficiary, is_cancelled=True)
         payment = create_payment(offerer=offerer, booking=booking1)
@@ -42,8 +42,8 @@ class GetBookingsCancelledDuringQuarantineWithPaymentTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock1 = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 16))
-        stock2 = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 16))
+        stock1 = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer)
+        stock2 = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer)
         booking1 = create_booking(stock=stock1, user=beneficiary, is_cancelled=True)
         booking2 = create_booking(stock=stock2, user=beneficiary, is_cancelled=True)
         payment = create_payment(offerer=offerer, booking=booking1)
@@ -64,7 +64,7 @@ class GetBookingsCancelledDuringQuarantineWithPaymentTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock1 = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 16))
+        stock1 = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer)
         booking1 = create_booking(stock=stock1, user=beneficiary, is_cancelled=False)
         payment = create_payment(offerer=offerer, booking=booking1)
 
@@ -84,7 +84,7 @@ class GetBookingsCancelledDuringQuarantineWithPaymentTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock1 = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 16))
+        stock1 = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer)
         booking1 = create_booking(stock=stock1, user=beneficiary, is_cancelled=True, token='2QLYYA')
         payment = create_payment(offerer=offerer, booking=booking1)
 
@@ -109,7 +109,7 @@ class CorrectBookingStatusTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 16))
+        stock = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer)
         booking = create_booking(stock=stock, user=beneficiary, is_cancelled=True)
         payment = create_payment(offerer=offerer, booking=booking)
         repository.save(payment)
@@ -139,7 +139,7 @@ class CorrectBookingStatusTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 16))
+        stock = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer)
         booking = create_booking(stock=stock,
                                  user=beneficiary, is_cancelled=True,
                                  date_created=datetime(2019, 7, 3, 20, 4, 4),
@@ -172,7 +172,7 @@ class CorrectBookingStatusTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 16), price=10)
+        stock = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer, price=10)
         booking = create_booking(stock=stock,
                                  user=beneficiary, is_cancelled=True,
                                  date_created=datetime(2019, 7, 3, 20, 4, 4),

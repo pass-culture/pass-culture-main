@@ -110,7 +110,7 @@ class LibrairesStocksTest:
             product = create_product_with_thing_type(id_at_providers='9780199536986')
             offer = create_offer_with_thing_product(venue, product=product,
                                                     id_at_providers='9780199536986@12345678912345')
-            stock = create_stock(quantity=20, id_at_providers='9780199536986@12345678912345', offer=offer)
+            stock = create_stock(id_at_providers='9780199536986@12345678912345', offer=offer, quantity=20)
 
             repository.save(product, offer, stock)
             libraires_stocks = LibrairesStocks(venue_provider)
@@ -187,7 +187,7 @@ class LibrairesStocksTest:
             offer = create_offer_with_thing_product(venue, product=product,
                                                     id_at_providers='9780199536986@12345678912345')
 
-            stock = create_stock(quantity=20, id_at_providers='9780199536986@12345678912345', offer=offer, price=0)
+            stock = create_stock(id_at_providers='9780199536986@12345678912345', offer=offer, price=0, quantity=20)
 
             booking = create_booking(
                 user=create_user(),

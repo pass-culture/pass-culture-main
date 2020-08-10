@@ -16,7 +16,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=datetime.utcnow())
+        stock = create_stock(beginning_datetime=datetime.utcnow(), offer=offer)
         booking = create_booking(user=user, stock=stock)
         feature_send_mail_to_users_enabled.return_value = True
 
@@ -35,7 +35,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=datetime.utcnow())
+        stock = create_stock(beginning_datetime=datetime.utcnow(), offer=offer)
         booking = create_booking(user=user, stock=stock)
         feature_send_mail_to_users_enabled.return_value = False
 
@@ -57,7 +57,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name='Offer name')
-        stock = create_stock(offer=offer, beginning_datetime=beginning_datetime, price=20)
+        stock = create_stock(beginning_datetime=beginning_datetime, offer=offer, price=20)
         booking = create_booking(user=user, stock=stock)
 
         stock.beginningDatetime = new_beginning_datetime

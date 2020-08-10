@@ -109,7 +109,7 @@ class BookingThumbUrlTest:
         product = create_product_with_event_type(thumb_count=1)
         offer = create_offer_with_event_product(product=product, venue=venue)
         mediation = create_mediation(offer=offer, idx=1, thumb_count=1)
-        stock = create_stock(quantity=1, offer=offer, price=12)
+        stock = create_stock(offer=offer, price=12, quantity=1)
         recommendation = create_recommendation(idx=100, mediation=mediation, offer=offer, user=user)
         recommendation.mediationId = mediation.id
 
@@ -130,7 +130,7 @@ class BookingThumbUrlTest:
         offer = create_offer_with_event_product(product=product, venue=venue)
         inactive_mediation = create_mediation(offer=offer, is_active=False, idx=1, thumb_count=1)
         active_mediation = create_mediation(offer=offer, idx=2, thumb_count=1)
-        stock = create_stock(quantity=1, offer=offer, price=12)
+        stock = create_stock(offer=offer, price=12, quantity=1)
 
         # when
         booking = create_booking(user=user, stock=stock, venue=venue)
@@ -148,7 +148,7 @@ class BookingThumbUrlTest:
         product = create_product_with_event_type(thumb_count=1)
         product.id = 2
         offer = create_offer_with_event_product(product=product, venue=venue)
-        stock = create_stock(quantity=1, offer=offer, price=12)
+        stock = create_stock(offer=offer, price=12, quantity=1)
 
         # when
         booking = create_booking(user=user, stock=stock, venue=venue)
@@ -165,7 +165,7 @@ class BookingThumbUrlTest:
         venue = create_venue(offerer)
         product = create_product_with_event_type(thumb_count=0)
         offer = create_offer_with_event_product(product=product, venue=venue)
-        stock = create_stock(quantity=1, offer=offer, price=12)
+        stock = create_stock(offer=offer, price=12, quantity=1)
 
         # when
         booking = create_booking(user=user, stock=stock, venue=venue)
@@ -183,7 +183,7 @@ class BookingThumbUrlTest:
         product = create_product_with_event_type(thumb_count=0)
         offer = create_offer_with_event_product(product=product, venue=venue)
         mediation = create_mediation(offer=offer, idx=1, thumb_count=0)
-        stock = create_stock(quantity=1, offer=offer, price=12)
+        stock = create_stock(offer=offer, price=12, quantity=1)
         recommendation = create_recommendation(idx=100, mediation=mediation, offer=offer, user=user)
         recommendation.mediationId = mediation.id
 

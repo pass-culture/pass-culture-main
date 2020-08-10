@@ -115,7 +115,7 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, last_provider_id=allocine_provider.id,
                                                     id_at_providers='allo')
-            stock = create_stock(quantity=10, id_at_providers='allo-cine', offer=offer)
+            stock = create_stock(id_at_providers='allo-cine', offer=offer, quantity=10)
 
             repository.save(pro, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)
@@ -287,7 +287,7 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id,
                                                     last_provider=tite_live_provider)
-            stock = create_stock(quantity=10, offer=offer)
+            stock = create_stock(offer=offer, quantity=10)
             repository.save(user, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)
 
@@ -312,7 +312,7 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, last_provider_id=allocine_provider.id,
                                                     id_at_providers='test')
-            stock = create_stock(quantity=10, id_at_providers='test-test', offer=offer)
+            stock = create_stock(id_at_providers='test-test', offer=offer, quantity=10)
             repository.save(pro, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)
 

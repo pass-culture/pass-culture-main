@@ -725,7 +725,7 @@ def _create_bookings_with_prices(prices: List[int]):
         offerer = create_offerer(siren=str(siren), name=f'Offerer {i}')
         venue = create_venue(offerer, siret=offerer.siren + '12345')
         offer = create_offer_with_thing_product(venue, thing_name=f'{i}')
-        stock = create_stock(quantity=1000, offer=offer, price=price)
+        stock = create_stock(offer=offer, price=price, quantity=1000)
         user = create_user(email=f'{i}@mail.com')
         deposit = create_deposit(user, amount=500)
         bookings.append(create_booking(user=user, stock=stock, quantity=1))
@@ -740,7 +740,7 @@ def _create_bookings_with_quantities(quantities: List[int]):
         offerer = create_offerer(siren=str(siren), name=f'Offerer {i}')
         venue = create_venue(offerer, siret=offerer.siren + '12345')
         offer = create_offer_with_thing_product(venue, thing_name=f'{i}')
-        stock = create_stock(quantity=1000, offer=offer, price=0)
+        stock = create_stock(offer=offer, price=0, quantity=1000)
         user = create_user(email=f'{i}@mail.com')
         bookings.append(create_booking(user=user, stock=stock, quantity=quantity))
         siren += 1

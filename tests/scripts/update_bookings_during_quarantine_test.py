@@ -20,10 +20,7 @@ class UpdateBookingDuringQuarantineTest:
         user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue=venue)
-        stock = create_stock(
-            offer=offer, price=0,
-            beginning_datetime=datetime(2020, 3, 18, 0, 0, 0)
-        )
+        stock = create_stock(beginning_datetime=datetime(2020, 3, 18, 0, 0, 0), offer=offer, price=0)
         yesterday = datetime.utcnow() - timedelta(days=1)
         booking = create_booking(
             user=user,
@@ -49,10 +46,7 @@ class UpdateBookingDuringQuarantineTest:
         user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue=venue)
-        stock = create_stock(
-            offer=offer, price=0,
-            beginning_datetime=datetime(2019, 3, 12, 00, 00, 00)
-        )
+        stock = create_stock(beginning_datetime=datetime(2019, 3, 12, 00, 00, 00), offer=offer, price=0)
         date_used = datetime(2019, 3, 12, 00, 00, 00)
         booking = create_booking(
             user=user,
@@ -78,10 +72,7 @@ class UpdateBookingDuringQuarantineTest:
         user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue=venue)
-        stock = create_stock(
-            offer=offer, price=0,
-            beginning_datetime=datetime(2019, 3, 12, 00, 00, 00)
-        )
+        stock = create_stock(beginning_datetime=datetime(2019, 3, 12, 00, 00, 00), offer=offer, price=0)
         date_used = datetime(2019, 3, 12, 00, 00, 00)
         booking = create_booking(
             user=user,

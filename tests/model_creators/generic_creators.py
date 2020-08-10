@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timedelta
 from hashlib import sha256
-from typing import Optional
+from typing import Optional, Union
 
 from decimal import Decimal
 from geoalchemy2.shape import from_shape
@@ -104,7 +104,7 @@ def create_criterion(description: str = None,
 
 
 def create_booking(user: UserSQLEntity,
-                   amount: Optional[Decimal] = None,
+                   amount: Optional[Union[Decimal, float]] = None,
                    date_created: datetime = datetime.utcnow(),
                    date_used: datetime = None,
                    idx: int = None,
@@ -403,11 +403,19 @@ def create_seen_offer(offer: OfferSQLEntity, user: UserSQLEntity, date_seen: Opt
     return seen_offer
 
 
-def create_stock(quantity: int = None, booking_limit_datetime: datetime = None, beginning_datetime: datetime = None,
-                 date_created: datetime = datetime.utcnow(), date_modified: datetime = datetime.utcnow(),
-                 date_modified_at_last_provider: datetime = None, has_been_migrated: bool = None, idx: int = None,
-                 id_at_providers: str = None, is_soft_deleted: bool = False, last_provider_id: int = None,
-                 offer: OfferSQLEntity = None, price: float = 10) -> StockSQLEntity:
+def create_stock(beginning_datetime: Optional[datetime] = None,
+                 booking_limit_datetime: Optional[datetime] = None,
+                 date_created: datetime = datetime.utcnow(),
+                 date_modified: datetime = datetime.utcnow(),
+                 date_modified_at_last_provider: Optional[datetime] = None,
+                 has_been_migrated: Optional[bool] = None,
+                 idx: Optional[int] = None,
+                 id_at_providers: Optional[str] = None,
+                 is_soft_deleted: bool = False,
+                 last_provider_id: Optional[int] = None,
+                 offer: Optional[OfferSQLEntity] = None,
+                 price: float = 10,
+                 quantity: Optional[int] = None) -> StockSQLEntity:
     stock = StockSQLEntity()
     stock.quantity = quantity
     stock.beginningDatetime = beginning_datetime
@@ -416,7 +424,8 @@ def create_stock(quantity: int = None, booking_limit_datetime: datetime = None, 
     stock.dateModified = date_modified
     stock.dateModifiedAtLastModified = date_modified_at_last_provider
     stock.hasBeenMigrated = has_been_migrated
-    stock.id = idx
+    if idx:
+        stock.id = idx
     stock.idAtProviders = id_at_providers
     stock.isSoftDeleted = is_soft_deleted
     stock.lastProviderId = last_provider_id

@@ -546,7 +546,7 @@ def _create_bookings_for_departement(bookings_by_departement):
     offerer = create_offerer(name='Offerer', siren=222222222)
     venue = create_venue(offerer, departement_code='95', siret=22222222200001)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock(quantity=1000, offer=offer, price=10)
+    stock = create_stock(offer=offer, price=10, quantity=1000)
 
     for departement_code, quantity in bookings_by_departement:
         user = create_user(departement_code=departement_code, email=f"user_in_{departement_code}@example.net")

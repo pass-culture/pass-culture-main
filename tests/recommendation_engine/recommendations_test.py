@@ -194,6 +194,6 @@ def _create_and_save_stock_for_offerer_in_departements(offerer: Offerer, departe
         offer = create_offer_with_thing_product(venue)
         mediation = create_mediation(offer)
         repository.save(mediation)
-        stock = create_stock(quantity=10, offer=offer)
+        stock = create_stock(offer=offer, quantity=10)
         stock_list.append(stock)
     return stock_list
