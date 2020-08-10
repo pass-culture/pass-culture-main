@@ -1,5 +1,5 @@
 from domain.pro_offerers.paginated_offerers import PaginatedOfferers
-from infrastructure.repository.pro_offerers.paginated_offerer_sql_repository import PaginatedOfferersSQLRepository
+from infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import PaginatedOfferersSQLRepository
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue
@@ -31,7 +31,7 @@ class PaginatedOffererSQLRepositoryTest:
         assert isinstance(paginated_offerers, PaginatedOfferers)
         assert paginated_offerers.total == 1
         assert len(paginated_offerers.offerers) == 1
-        assert paginated_offerers.offerers[0]['userHasAccess'] == True
+        assert paginated_offerers.offerers[0].userHasAccess == True
 
     @clean_database
     def should_return_linked_offerers_with_matching_keywords_in_name(self, app):
@@ -140,4 +140,4 @@ class PaginatedOffererSQLRepositoryTest:
         assert isinstance(paginated_offerers, PaginatedOfferers)
         assert paginated_offerers.total == 1
         assert len(paginated_offerers.offerers) == 1
-        assert paginated_offerers.offerers[0]['id'] == humanize(offerer2.id)
+        assert paginated_offerers.offerers[0].id == offerer2.id

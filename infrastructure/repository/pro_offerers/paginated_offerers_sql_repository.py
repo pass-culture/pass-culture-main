@@ -10,10 +10,10 @@ class PaginatedOfferersSQLRepository(PaginatedOfferersRepository):
     def with_status_and_keywords(self,
                                  user_id: int,
                                  user_is_admin: bool,
-                                 page: Optional[int],
                                  pagination_limit: int,
                                  only_validated_offerers: Optional[bool],
                                  is_filtered_by_offerer_status: bool,
+                                 page: int = 0,
                                  keywords: Optional[str] = None) -> PaginatedOfferers:
         query = Offerer.query
 
