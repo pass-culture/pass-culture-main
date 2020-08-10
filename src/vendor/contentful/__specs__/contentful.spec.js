@@ -206,17 +206,18 @@ describe('src | vendor | contentful', () => {
     expect(modules).toStrictEqual([offersWithCover])
   })
 
-  it('should return an empty array when fetching data failed', async () => {
+  it('should return an error when fetching data failed', async () => {
     // given
+    const error = new Error('fetching error')
     createClient.mockReturnValue({
-      getEntries: jest.fn().mockRejectedValue({}),
+      getEntries: jest.fn().mockRejectedValue(error),
     })
 
     // when
     const modules = await fetchHomepage()
 
     // then
-    expect(modules).toStrictEqual([])
+    expect(modules).toStrictEqual(error)
   })
 
   it('should return a module for ExclusivityPane when an exclusity module', async () => {
@@ -295,7 +296,8 @@ describe('src | vendor | contentful', () => {
 
   it('should return empty array when entry id is provided but fetch failed', async () => {
     // given
-    const mockGetEntry = jest.fn().mockRejectedValue({})
+    const error = new Error('fetching error')
+    const mockGetEntry = jest.fn().mockRejectedValue(error)
     createClient.mockReturnValue({
       getEntry: mockGetEntry,
     })
@@ -305,7 +307,7 @@ describe('src | vendor | contentful', () => {
     const modules = await fetchHomepage({ entryId: entryId })
 
     // then
-    expect(modules).toStrictEqual([])
+    expect(modules).toStrictEqual(error)
   })
 
   it('should return modules when entry id is provided and returns data', async () => {

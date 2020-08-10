@@ -1,5 +1,6 @@
 import { mount } from 'enzyme'
 import React from 'react'
+import ErrorPage from '../ErrorPage/ErrorPage'
 import Home from '../Home'
 import { Link } from 'react-router-dom'
 import { MemoryRouter } from 'react-router'
@@ -221,5 +222,24 @@ describe('src | components | Home', () => {
 
     // then
     expect(fetchHomepage).toHaveBeenCalledWith({ entryId })
+  })
+
+  it('should render an error page when it is impossible to fetch from contentful', async () => {
+    // Given
+    const flushPromises = () => new Promise(setImmediate)
+    fetchHomepage.mockRejectedValue(new Error('fetching error'))
+
+    // When
+    const wrapper = mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>,
+    )
+    await flushPromises()
+    wrapper.update()
+
+    // Then
+    const errorPage = wrapper.find(ErrorPage)
+    expect(errorPage).toHaveLength(1)
   })
 })

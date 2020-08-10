@@ -1,0 +1,36 @@
+.erp-wrapper {
+  align-items: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
+  width: 100%;
+
+  h1 {
+    @include title1();
+
+    margin-top: rem(16px);
+  }
+}
+
+.erp-text-wrapper {
+  @include body();
+
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: rem(16px);
+  text-align: center;
+}
+
+.erp-button {
+  @include button();
+
+  border: rem(2px) solid $white;
+  border-radius: rem(24px);
+  height: rem(48px);
+  margin-top: rem(48px);
+  width: rem(157px);
+}
