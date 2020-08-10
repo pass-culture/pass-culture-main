@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 
-import NotMatch from '../pages/not-match/NotMatch'
+import NotMatchContainer from '../pages/not-match/NotMatchContainer'
 
 class FeaturedRoute extends PureComponent {
   componentDidMount() {
@@ -25,7 +25,7 @@ class FeaturedRoute extends PureComponent {
 
     if (isRouteDisabled) {
       return (<Route
-        component={NotMatch}
+        component={NotMatchContainer}
         path={path}
               />)
     }

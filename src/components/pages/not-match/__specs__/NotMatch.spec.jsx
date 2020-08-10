@@ -1,8 +1,8 @@
-import { mount } from 'enzyme'
 import React from 'react'
+import { mount } from 'enzyme'
 
-import { MemoryRouter } from 'react-router'
 import NotMatch from '../NotMatch'
+import { MemoryRouter } from 'react-router'
 
 describe('notMatch', () => {
   it('should display a message notifying the user they are on a wrong path and add a link to home', () => {

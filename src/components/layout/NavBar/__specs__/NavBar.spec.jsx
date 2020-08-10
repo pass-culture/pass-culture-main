@@ -2,19 +2,12 @@ import { mount } from 'enzyme'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
 
-import { isPathWithNavBar } from '../domain/isPathWithNavBar'
 import NavBar from '../NavBar'
-
-jest.mock('../domain/isPathWithNavBar')
 
 const icon = () => <svg />
 
 describe('nav bar', () => {
   let props
-
-  afterEach(() => {
-    isPathWithNavBar.mockReset()
-  })
 
   describe('when legitimed path', () => {
     beforeEach(() => {
@@ -33,21 +26,6 @@ describe('nav bar', () => {
           },
         ],
       }
-      isPathWithNavBar.mockReturnValue(true)
-    })
-
-    it('should display navbar', () => {
-      // When
-      const wrapper = mount(
-        <MemoryRouter>
-          <NavBar {...props} />
-        </MemoryRouter>
-      )
-
-      // Then
-      const navBar = wrapper.find('nav')
-      expect(navBar).toHaveLength(1)
-      expect(isPathWithNavBar).toHaveBeenCalledWith(props.path)
     })
 
     describe('when feature is enabled', () => {
@@ -102,59 +80,6 @@ describe('nav bar', () => {
         expect(discoveryPageLink).toHaveLength(0)
         expect(props.isFeatureEnabled).toHaveBeenCalledWith('FEATURE_NAME')
       })
-    })
-  })
-
-  describe('when forbiden path', () => {
-    it('should not display navbar', () => {
-      // Given
-      props.path = '/path/without/navbar'
-      isPathWithNavBar.mockReturnValue(false)
-
-      // When
-      const wrapper = mount(
-        <MemoryRouter>
-          <NavBar {...props} />
-        </MemoryRouter>
-      )
-
-      // Then
-      const navBar = wrapper.find('nav')
-      expect(navBar).toHaveLength(0)
-      expect(isPathWithNavBar).toHaveBeenCalledWith(props.path)
-    })
-  })
-
-  describe('when the current path starts with the route', () => {
-    it('should transform link into non link', () => {
-      // Given
-      props = {
-        isFeatureEnabled: jest.fn(() => true),
-        path: '/the/same/path/ME/FA',
-        routes: [
-          {
-            icon,
-            to: '/the/same/path',
-          },
-          {
-            icon,
-            to: '/second-path',
-          },
-        ],
-      }
-      isPathWithNavBar.mockReturnValue(true)
-
-      // When
-      const wrapper = mount(
-        <MemoryRouter>
-          <NavBar {...props} />
-        </MemoryRouter>
-      )
-
-      // Then
-      const navBarList = wrapper.find('nav').find('li')
-      expect(navBarList.at(0).find('a')).toHaveLength(0)
-      expect(navBarList.at(1).find('a')).toHaveLength(1)
     })
   })
 })

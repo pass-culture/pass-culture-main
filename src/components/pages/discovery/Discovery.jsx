@@ -7,7 +7,7 @@ import BookingContainer from '../../layout/Booking/BookingContainer'
 import BookingCancellationContainer from '../../layout/BookingCancellation/BookingCancellationContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import { MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS } from './utils/utils'
-import NotMatch from '../not-match/NotMatch'
+import NotMatchContainer from '../not-match/NotMatchContainer'
 
 class Discovery extends PureComponent {
   constructor(props) {
@@ -170,7 +170,7 @@ class Discovery extends PureComponent {
                 </Route>
               </Route>
               <Route>
-                <NotMatch />
+                <NotMatchContainer />
               </Route>
             </Switch>
           </main>

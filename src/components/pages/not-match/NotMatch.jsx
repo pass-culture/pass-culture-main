@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+
 import Icon from '../../layout/Icon/Icon'
 
 const NotMatch = () => (

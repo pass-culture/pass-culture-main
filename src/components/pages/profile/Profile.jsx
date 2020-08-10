@@ -4,7 +4,7 @@ import { Route, Switch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
-import NotMatch from '../not-match/NotMatch'
+import NotMatchContainer from '../not-match/NotMatchContainer'
 import { getDepartment } from './domain/getDepartment'
 import EditPassword from './EditPassword/EditPassword'
 import LegalNotice from './LegalNotice/LegalNotice'
@@ -65,7 +65,7 @@ const Profile = ({ history, match, user }) => {
             />
           </Route>
           <Route>
-            <NotMatch />
+            <NotMatchContainer />
           </Route>
         </Switch>
       )}

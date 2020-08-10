@@ -3,7 +3,7 @@ import { parse } from 'query-string'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 
-import NotMatch from '../not-match/NotMatch'
+import NotMatchContainer from '../not-match/NotMatchContainer'
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA, SORT_CRITERIA } from './Criteria/criteriaEnums'
 import CriteriaCategory from './CriteriaCategory/CriteriaCategory'
 import CriteriaLocation from './CriteriaLocation/CriteriaLocation'
@@ -192,7 +192,7 @@ class Search extends PureComponent {
           />
         </Route>
         <Route>
-          <NotMatch />
+          <NotMatchContainer />
         </Route>
       </Switch>
     )

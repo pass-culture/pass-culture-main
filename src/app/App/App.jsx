@@ -13,16 +13,18 @@ import routes from '../../components/router/routes'
 import { IS_DEV, PROJECT_NAME } from '../../utils/config'
 import RedirectToMaintenance from './RedirectToMaintenance/RedirectToMaintenance'
 import { StatusBarHelmet } from './StatusBar/StatusBarHelmet'
+import { isPathWithNavBar } from './domain/isPathWithNavBar'
 
 const getPageTitle = obj => `${obj && obj.title ? `${obj.title} - ` : ''}`
 
 const getCurrentRouteObjectByPath = (entries, locpathname) =>
   (entries && entries.filter(obj => obj && matchPath(locpathname, obj))[0]) || null
 
-export const App = ({ children, location, isMaintenanceActivated }) => {
+export const App = ({ children, location, isMaintenanceActivated, isUserConnected }) => {
   if (isMaintenanceActivated) {
     return <RedirectToMaintenance />
   } else {
+    const isNavbarDisplayed = isPathWithNavBar(location.pathname) && isUserConnected
     const currentRouteObj = getCurrentRouteObjectByPath(routes, location.pathname)
     const pageTitle = getPageTitle(currentRouteObj)
 
@@ -35,10 +37,10 @@ export const App = ({ children, location, isMaintenanceActivated }) => {
         </Helmet>
         <StatusBarHelmet pathname={location.pathname} />
         <ErrorCatcherContainer>
-          <NavBarContainer
+          {isNavbarDisplayed && <NavBarContainer
             path={location.pathname}
             routes={routes}
-          />
+                                />}
           {children}
           <OverlayContainer />
           <SplashContainer />
