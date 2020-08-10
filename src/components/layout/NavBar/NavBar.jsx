@@ -10,13 +10,23 @@ const NavBar = ({ isFeatureEnabled, path, routes }) =>
       <ul>
         {routes.map(route => {
           if (route.to && isFeatureEnabled(route.featureName)) {
-            return (
-              <li key={route.to}>
-                <NavLink to={route.to}>
-                  <route.icon />
-                </NavLink>
-              </li>
-            )
+            if (path.startsWith(route.to)) {
+              return (
+                <li key={route.to}>
+                  <span className="active">
+                    <route.icon />
+                  </span>
+                </li>
+              )
+            } else {
+              return (
+                <li key={route.to}>
+                  <NavLink to={route.to}>
+                    <route.icon />
+                  </NavLink>
+                </li>
+              )
+            }
           }
         })}
       </ul>

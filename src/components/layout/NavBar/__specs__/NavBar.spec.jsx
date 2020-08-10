@@ -1,10 +1,9 @@
-import { mount, shallow } from 'enzyme'
-import { createMemoryHistory } from 'history'
+import { mount } from 'enzyme'
 import React from 'react'
-import { Router } from 'react-router'
+import { MemoryRouter } from 'react-router'
 
-import NavBar from '../NavBar'
 import { isPathWithNavBar } from '../domain/isPathWithNavBar'
+import NavBar from '../NavBar'
 
 jest.mock('../domain/isPathWithNavBar')
 
@@ -39,7 +38,11 @@ describe('nav bar', () => {
 
     it('should display navbar', () => {
       // When
-      const wrapper = shallow(<NavBar {...props} />)
+      const wrapper = mount(
+        <MemoryRouter>
+          <NavBar {...props} />
+        </MemoryRouter>
+      )
 
       // Then
       const navBar = wrapper.find('nav')
@@ -55,9 +58,9 @@ describe('nav bar', () => {
       it('should display the first link', () => {
         // When
         const wrapper = mount(
-          <Router history={createMemoryHistory()}>
+          <MemoryRouter>
             <NavBar {...props} />
-          </Router>
+          </MemoryRouter>
         )
 
         // Then
@@ -69,9 +72,9 @@ describe('nav bar', () => {
       it('should display the second link', () => {
         // When
         const wrapper = mount(
-          <Router history={createMemoryHistory()}>
+          <MemoryRouter>
             <NavBar {...props} />
-          </Router>
+          </MemoryRouter>
         )
 
         // Then
@@ -89,9 +92,9 @@ describe('nav bar', () => {
       it('should not display the link', () => {
         // When
         const wrapper = mount(
-          <Router history={createMemoryHistory()}>
+          <MemoryRouter>
             <NavBar {...props} />
-          </Router>
+          </MemoryRouter>
         )
 
         // Then
@@ -109,12 +112,49 @@ describe('nav bar', () => {
       isPathWithNavBar.mockReturnValue(false)
 
       // When
-      const wrapper = shallow(<NavBar {...props} />)
+      const wrapper = mount(
+        <MemoryRouter>
+          <NavBar {...props} />
+        </MemoryRouter>
+      )
 
       // Then
       const navBar = wrapper.find('nav')
       expect(navBar).toHaveLength(0)
       expect(isPathWithNavBar).toHaveBeenCalledWith(props.path)
+    })
+  })
+
+  describe('when the current path starts with the route', () => {
+    it('should transform link into non link', () => {
+      // Given
+      props = {
+        isFeatureEnabled: jest.fn(() => true),
+        path: '/the/same/path/ME/FA',
+        routes: [
+          {
+            icon,
+            to: '/the/same/path',
+          },
+          {
+            icon,
+            to: '/second-path',
+          },
+        ],
+      }
+      isPathWithNavBar.mockReturnValue(true)
+
+      // When
+      const wrapper = mount(
+        <MemoryRouter>
+          <NavBar {...props} />
+        </MemoryRouter>
+      )
+
+      // Then
+      const navBarList = wrapper.find('nav').find('li')
+      expect(navBarList.at(0).find('a')).toHaveLength(0)
+      expect(navBarList.at(1).find('a')).toHaveLength(1)
     })
   })
 })
