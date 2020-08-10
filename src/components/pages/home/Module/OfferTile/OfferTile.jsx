@@ -20,7 +20,6 @@ const OfferTile = ({ historyPush, hit, isSwitching, layout }) => {
     : ''
   const formattedPrice = formatResultPrice(offer.priceMin, offer.priceMax, offer.isDuo)
 
-
   function goToOffer(event) {
     if (!isSwitching) {
       historyPush(`/accueil/details/${offer.id}`)
@@ -50,7 +49,7 @@ const OfferTile = ({ historyPush, hit, isSwitching, layout }) => {
           </div>
         </div>
         <p className="otw-venue">
-          {venue.name}
+          {venue.publicName || venue.name}
         </p>
         <p className="otw-offer-info">
           <span>

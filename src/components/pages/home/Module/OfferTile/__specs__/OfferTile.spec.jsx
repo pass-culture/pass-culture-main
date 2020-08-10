@@ -22,13 +22,14 @@ describe('src | components | OfferTile', () => {
           isDuo: false,
           isEvent: false,
           name: 'Avengers - Age of Ultron',
-          priceMin: 1,
-          priceMax: 1,
+          priceMin: 1.2,
+          priceMax: 1.2,
           thumbUrl: 'my-thumb',
         },
         venue: {
           departementCode: '54',
           name: 'Librairie Kléber',
+          publicName: null
         },
       },
       isSwitching: false,
@@ -83,7 +84,7 @@ describe('src | components | OfferTile', () => {
     expect(img.prop('src')).toBe(DEFAULT_THUMB_URL)
   })
 
-  it('should render an offer tile with venue name', () => {
+  it('should render an offer tile with venue name when public name is not provided', () => {
     // when
     const wrapper = mount(
       <MemoryRouter>
@@ -105,7 +106,7 @@ describe('src | components | OfferTile', () => {
     )
 
     // then
-    const price = wrapper.find({ children: '1 €' })
+    const price = wrapper.find({ children: '1,20 €' })
     expect(price).toHaveLength(1)
   })
 
@@ -139,5 +140,21 @@ describe('src | components | OfferTile', () => {
     // then
     const offerName = wrapper.find({ children: 'Avengers - Age of Ultron' })
     expect(offerName).toHaveLength(1)
+  })
+
+  it('should render an offer tile with venue public name when provided', () => {
+    // given
+    props.hit.venue.publicName = 'Un autre nom pour la librairie'
+
+    // when
+    const wrapper = mount(
+      <MemoryRouter>
+        <OfferTile {...props} />
+      </MemoryRouter>
+    )
+
+    // then
+    const venue = wrapper.find({ children: 'Un autre nom pour la librairie' })
+    expect(venue).toHaveLength(1)
   })
 })

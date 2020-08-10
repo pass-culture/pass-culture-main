@@ -25,6 +25,14 @@ describe('formatResultPrice', () => {
       // then
       expect(result).toStrictEqual('A partir de 1 €')
     })
+
+    it('should return price range starting from minimum price when minimum and maximum prices are different and contain decimals', () => {
+      // when
+      const result = formatResultPrice(1.1, 2.7, true)
+
+      // then
+      expect(result).toStrictEqual('A partir de 1,10 €')
+    })
   })
 
   describe('offer is not duo', () => {
@@ -50,6 +58,14 @@ describe('formatResultPrice', () => {
 
       // then
       expect(result).toStrictEqual('A partir de 1 €')
+    })
+
+    it('should return the minimum price when minimum and maximum prices are similar and contain decimals', () => {
+      // when
+      const result = formatResultPrice(1.6, 1.6, false)
+
+      // then
+      expect(result).toStrictEqual('1,60 €')
     })
   })
 })
