@@ -9,7 +9,3 @@ class PaginatedOffers:
     def __init__(self, offers: List[OfferSQLEntity], total: int):
         self.offers = [as_dict(offer, includes=OFFER_INCLUDES) for offer in offers]
         self.total = total
-        self.headers = {
-            'Total-Data-Count': total,
-            'Access-Control-Expose-Headers': 'Total-Data-Count'
-        }

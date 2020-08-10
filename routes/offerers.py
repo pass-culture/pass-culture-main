@@ -1,3 +1,5 @@
+from typing import List
+
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
@@ -21,10 +23,14 @@ from utils.rest import ensure_current_user_has_rights, \
 from validation.routes.offerers import check_valid_edition
 
 
-def get_dict_offerer(offerer: Offerer):
+def get_dict_offerer(offerer: Offerer) -> dict:
     offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
 
     return as_dict(offerer, includes=OFFERER_INCLUDES)
+
+
+def get_dict_offerers(offerers: List[Offerer]) -> list:
+    return [as_dict(offerer, includes=OFFERER_INCLUDES) for offerer in offerers]
 
 
 @app.route('/offerers', methods=['GET'])
@@ -57,7 +63,7 @@ def list_offerers():
         offerers_request_parameters=offerers_request_parameters
     )
 
-    response = jsonify(paginated_offerers.offerers)
+    response = jsonify(get_dict_offerers(paginated_offerers.offerers))
     response.headers['Total-Data-Count'] = paginated_offerers.total
     response.headers['Access-Control-Expose-Headers'] = 'Total-Data-Count'
 
