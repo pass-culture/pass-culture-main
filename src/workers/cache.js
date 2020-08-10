@@ -12,9 +12,12 @@ import { IS_PROD, IS_LOCALHOST, ROOT_PATH } from '../utils/config'
 // This link also includes instructions on opting out of this behavior.
 
 function registerValidSW(swUrl) {
+
   navigator.serviceWorker
-    .register(swUrl)
-    .then(registration => {
+  .register(swUrl)
+  .then(registration => {
+      console.log(`${ROOT_PATH}/batchsdk-shared-worker.js`)
+      importScripts(`${ROOT_PATH}/batchsdk-shared-worker.js`)
       // eslint-disable-next-line
       registration.onupdatefound = () => {
         const installingWorker = registration.installing

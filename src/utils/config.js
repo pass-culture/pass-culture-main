@@ -31,7 +31,7 @@ export const {
 export const APP_VERSION = version
 export const PROJECT_NAME = 'pass Culture'
 export const IS_DEV = NODE_ENV === 'development'
-export const IS_PROD = !IS_DEV
+export const IS_PROD = true
 
 // NOTE: valeur également présente en dur dans:
 // - ./webapp/README.md

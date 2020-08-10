@@ -202,5 +202,39 @@
   </script>
   <noscript>pass Culture a besoin de JavaScript pour fonctionner.</noscript>
   <div id="root"></div>
+  <script>
+    /* Load remote Batch SDK JavaScript code */
+    (function(b,a,t,c,h,e,r){h='batchSDK';b[h]=b[h]||function() {
+      (b[h].q=b[h].q||[]).push(arguments)};e=a.createElement(t),r=a.getElementsByTagName(t)[0];
+      e.async=1;e.src=c;r.parentNode.insertBefore(e,r);})(window,document,'script','https://via.batch.com/v2/bootstrap.min.js');
+
+    /* Initiate Batch SDK opt-in UI configuration (native prompt) */
+    var batchSDKUIConfig = {
+      native: {}
+    };
+
+    /* Use a specific configuration for the Firefox web browser (custom prompt) */
+    if (navigator.userAgent.indexOf("Firefox") !== -1) {
+      batchSDKUIConfig = {
+          alert: {
+              icon: './home-background.jpg'
+          }
+      }
+    }
+
+    /* Finalize the Batch SDK setup */
+    batchSDK('setup', {
+      useExistingServiceWorker: true,
+      // sameOrigin: false, // for http
+      dev: true, // remove this for prod
+      apiKey: 'DACA8925CD964196B8D1131B343F447F',
+      subdomain: 'passculture_beta_gouv',
+      authKey: '2.ICKjBVVL7kE1q4JGo0h4l6t8yG7Drioexj/D5DUnbXM=',
+      vapidPublicKey: 'BOQoTdq+t4xjBdSjqyHtjELntyNIWrkVaK6C03LUvAQLUQ6yKIoDhXqhneW7JgYUfAfPslUvJiv+XeV/NS4/oO4=',
+      ui: batchSDKUIConfig,
+      defaultIcon: './home-background.jpg', // for Chrome desktop
+      smallIcon: './home-background.jpg', // for Chrome Android
+    });
+    </script>
 </body>
 </html>
