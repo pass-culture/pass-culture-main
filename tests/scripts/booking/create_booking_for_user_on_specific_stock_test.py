@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from models import ThingType, BookingSQLEntity
 from repository import repository
@@ -38,7 +38,8 @@ class CreateBookingForUserOnSpecificStockTest:
 
 class CreateBookingForUserOnSpecificStockBypassingCappingLimitsTest:
     @clean_database
-    def should_book_an_offer_even_if_physical_offer_capping_is_exeeded(self, app):
+    @patch('scripts.booking.create_booking_for_user_on_specific_stock.redis')
+    def should_book_an_offer_even_if_physical_offer_capping_is_exeeded(self, mocked_redis, app):
         # Given
         user = create_user()
         deposit = create_deposit(user)
@@ -57,3 +58,4 @@ class CreateBookingForUserOnSpecificStockBypassingCappingLimitsTest:
 
         # Then
         assert BookingSQLEntity.query.filter_by(stockId=new_stock.id, userId=user.id).one() is not None
+        mocked_redis.add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=new_offer.id)

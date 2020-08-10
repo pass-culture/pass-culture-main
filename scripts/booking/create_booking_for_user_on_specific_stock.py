@@ -1,3 +1,6 @@
+from flask import current_app as app
+
+from connectors import redis
 from domain.booking.booking import Booking
 from domain.booking.booking_validator import check_offer_already_booked, check_quantity_is_valid
 from domain.stock.stock_validator import check_can_book_free_offer, check_stock_is_bookable
@@ -37,3 +40,6 @@ def create_booking_for_user_on_specific_stock_bypassing_capping_limits(user_id: 
                       recommendation_id=recommendation_id)
 
     booking_repository.save(booking)
+
+    redis.add_offer_id(client=app.redis_client, offer_id=stock.offer.id)
+
