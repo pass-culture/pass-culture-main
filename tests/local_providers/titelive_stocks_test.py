@@ -311,8 +311,8 @@ def should_call_api_with_venue_siret_and_last_sync_date(stub_get_stocks_informat
     venue_provider = create_venue_provider(venue,
                                            titelive_stocks_provider, is_active=True,
                                            venue_id_at_offer_provider='77567146400110', last_sync_date=last_sync_date)
-    product1 = create_product_with_thing_type(id_at_providers='0002730757438')
-    repository.save(product1, venue_provider)
+    product = create_product_with_thing_type(id_at_providers='0002730757438')
+    repository.save(product, venue_provider)
 
     titelive_stocks = TiteLiveStocks(venue_provider)
 

@@ -30,7 +30,8 @@ def is_siret_registered(siret: str) -> bool:
 def _build_url(siret: str) -> str:
     return f'{TITELIVE_STOCKS_API_URL}/{siret}'
 
-def _build_params(last_processed_isbn: str = '', modified_since:str = None) -> Dict:
+
+def _build_params(last_processed_isbn: str = '', modified_since: str = None) -> Dict:
     params = {}
     if last_processed_isbn:
         params['after'] = last_processed_isbn
