@@ -35,6 +35,16 @@ test('je peux naviguer vers la recherche', async t => {
     .eql(`${ROOT_PATH}recherche`)
 })
 
+test('je peux naviguer vers la page accueil', async t => {
+  const navBarSearchLink = navBar.nth(2)
+  await t
+    .expect(navBarSearchLink.exists)
+    .ok()
+    .click(navBarSearchLink)
+    .expect(getPageUrl())
+    .eql(`${ROOT_PATH}accueil`)
+})
+
 test('je peux naviguer vers mes réservations', async t => {
   const navBarBookingsLink = navBar.nth(3)
   await t
