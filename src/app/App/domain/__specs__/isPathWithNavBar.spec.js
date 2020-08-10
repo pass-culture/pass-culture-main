@@ -29,15 +29,6 @@ describe('when page matching URI does not contain nav bar', () => {
       '/filtres/localisation',
       '/bienvenue',
       '/typeform',
-      '/beta',
-      '/connexion',
-      '/mot-de-passe-perdu',
-      '/mot-de-passe-perdu/succes?token=ABCDEF',
-      '/activation/error',
-      '/activation/lien-invalide',
-      '/activation/MEFA',
-      '/inscription',
-      '/verification-eligibilite',
     ]
 
     paths.forEach(path => {
