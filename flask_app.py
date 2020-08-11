@@ -1,23 +1,24 @@
-#!/usr/bin/env python
-from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
-from utils.config import REDIS_URL
-from mailjet_rest import Client
-import redis
+import logging
 import os
 
+import redis
 import sentry_sdk
-from sentry_sdk.integrations.flask import FlaskIntegration
 from flask import Flask
 from flask_admin import Admin
 from flask_cors import CORS
 from flask_login import LoginManager
+from mailjet_rest import Client
+from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from models.db import db
 from repository.feature_queries import feature_request_profiling_enabled
 from utils.config import IS_DEV, ENV
+from utils.config import REDIS_URL
 from utils.health_checker import read_version_from_file
 from utils.json_encoder import EnumJSONEncoder
+from utils.logger import configure_pc_logger
+from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
 
 if IS_DEV is False:
     sentry_sdk.init(
@@ -51,6 +52,8 @@ app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
 
+configure_pc_logger()
+
 
 @app.teardown_request
 def remove_db_session(exc):
@@ -69,7 +72,6 @@ cors = CORS(app,
             )
 
 app.url_map.strict_slashes = False
-
 
 with app.app_context():
     app.mailjet_client = Client(
