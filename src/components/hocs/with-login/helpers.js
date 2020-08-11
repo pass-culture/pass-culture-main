@@ -12,7 +12,7 @@ export const getRedirectionPath = ({ currentUser }) => {
   return undefined
 }
 
-export const getRedirectToCurrentLocationOrDiscovery = ({ currentUser, isHomepageDisabled }) => {
+export const getRedirectToCurrentLocationOrDiscoveryOrHome = ({ currentUser, isHomepageDisabled }) => {
   const { needsToFillCulturalSurvey } = currentUser || {}
   if (!needsToFillCulturalSurvey) {
     if (isHomepageDisabled) {

@@ -1,5 +1,5 @@
 import { handleSuccess } from '../withNotRequiredLogin'
-import { getRedirectToCurrentLocationOrDiscovery } from '../helpers'
+import { getRedirectToCurrentLocationOrDiscoveryOrHome } from '../helpers'
 
 jest.mock('../helpers')
 
@@ -9,7 +9,7 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
   })
 
   describe('handleSuccess()', () => {
-    it('should call getRedirectToCurrentLocationOrDiscovery with right parameters', () => {
+    it('should call getRedirectToCurrentLocationOrDiscoveryOrHome with right parameters', () => {
       // given
       const user = {
         email: 'michel.marx@youpi.fr',
@@ -35,7 +35,7 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       })
 
       // then
-      expect(getRedirectToCurrentLocationOrDiscovery).toHaveBeenCalledWith({
+      expect(getRedirectToCurrentLocationOrDiscoveryOrHome).toHaveBeenCalledWith({
         currentUser: {
           email: 'michel.marx@youpi.fr',
           needsToFillCulturalSurvey: false,
@@ -49,14 +49,14 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       })
     })
 
-    it('should not call push history when user is redirected', () => {
+    it('should call push history when user is redirected', () => {
       // given
       const user = null
       const history = {
         push: jest.fn(),
       }
       const location = {}
-      getRedirectToCurrentLocationOrDiscovery.mockReturnValue('/fake-url')
+      getRedirectToCurrentLocationOrDiscoveryOrHome.mockReturnValue('/fake-url')
 
       // when
       handleSuccess({
@@ -69,14 +69,14 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       expect(history.push).toHaveBeenCalledWith('/fake-url')
     })
 
-    it('should call push history when its success', () => {
+    it('should not call push history when user is not redirected', () => {
       // given
       const user = null
       const history = {
         push: jest.fn(),
       }
       const location = {}
-      getRedirectToCurrentLocationOrDiscovery.mockReturnValue(undefined)
+      getRedirectToCurrentLocationOrDiscoveryOrHome.mockReturnValue(undefined)
 
       // when
       handleSuccess({

@@ -1,8 +1,8 @@
-import { getRedirectToCurrentLocationOrDiscovery } from './helpers'
+import { getRedirectToCurrentLocationOrDiscoveryOrHome } from './helpers'
 import withLogin from './withLogin'
 
 export const handleSuccess = ({ currentUser, history, isHomepageDisabled, location }) => {
-  const redirect = getRedirectToCurrentLocationOrDiscovery({
+  const redirect = getRedirectToCurrentLocationOrDiscoveryOrHome({
     currentUser,
     isHomepageDisabled,
     ...location,

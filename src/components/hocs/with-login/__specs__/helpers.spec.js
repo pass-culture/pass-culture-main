@@ -1,4 +1,4 @@
-import { getRedirectionPath, getRedirectToCurrentLocationOrDiscovery } from '../helpers'
+import { getRedirectionPath, getRedirectToCurrentLocationOrDiscoveryOrHome } from '../helpers'
 
 describe('src | hocs | with-login | helpers', () => {
   describe('getRedirectionPath', () => {
@@ -71,7 +71,7 @@ describe('src | hocs | with-login | helpers', () => {
       }
 
       // then
-      const result = getRedirectToCurrentLocationOrDiscovery(props)
+      const result = getRedirectToCurrentLocationOrDiscoveryOrHome(props)
 
       // when
       expect(result).toStrictEqual('/decouverte')
@@ -87,7 +87,7 @@ describe('src | hocs | with-login | helpers', () => {
       }
 
       // then
-      const result = getRedirectToCurrentLocationOrDiscovery(props)
+      const result = getRedirectToCurrentLocationOrDiscoveryOrHome(props)
 
       // when
       expect(result).toStrictEqual('/accueil')
@@ -102,7 +102,7 @@ describe('src | hocs | with-login | helpers', () => {
       }
 
       // then
-      const result = getRedirectToCurrentLocationOrDiscovery(props)
+      const result = getRedirectToCurrentLocationOrDiscoveryOrHome(props)
 
       // when
       expect(result).toBeUndefined()
