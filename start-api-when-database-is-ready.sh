@@ -2,6 +2,7 @@
 
 >&2 echo -e "\n\033[0;32mInstalling prerequisite\n"
 
+apt update
 apt-get install -y postgresql-client
 apt-get install -y libpq-dev
 
