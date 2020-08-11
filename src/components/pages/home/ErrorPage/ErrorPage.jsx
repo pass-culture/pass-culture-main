@@ -3,8 +3,6 @@ import React from 'react'
 import Icon from '../../../layout/Icon/Icon'
 
 const ErrorPage = ({ refreshPage }) => {
-
-
   return (
     <div className="erp-wrapper">
       <Icon

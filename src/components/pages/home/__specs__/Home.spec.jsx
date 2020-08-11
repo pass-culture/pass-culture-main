@@ -224,7 +224,7 @@ describe('src | components | Home', () => {
     expect(fetchHomepage).toHaveBeenCalledWith({ entryId })
   })
 
-  it('should render an error page when it is impossible to fetch from contentful', async () => {
+  it('should render an error page when homepage is not loadable', async () => {
     // Given
     const flushPromises = () => new Promise(setImmediate)
     fetchHomepage.mockRejectedValue(new Error('fetching error'))

@@ -34,7 +34,6 @@ class Home extends Component {
       .then(modules => {
           this.setState({
             modules: modules,
-            fetchingError: false,
           })
         },
       )
@@ -79,7 +78,7 @@ class Home extends Component {
   }
 
   render() {
-    const { modules, fetchingError } = this.state
+    const { fetchingError, modules } = this.state
     const { match, user } = this.props
     const { publicName, wallet_balance } = user
     const formattedPublicName = formatPublicName(publicName)

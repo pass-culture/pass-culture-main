@@ -42,8 +42,8 @@ const _fetchByEntry = ({ client, entryId }) => {
     .then(entry => {
       return _process(entry)
     })
-    .catch((error) => {
-      return error
+    .catch(() => {
+      throw new Error('Something went wrong with the service')
     })
 }
 
@@ -54,8 +54,8 @@ const _fetchLastEntry = ({ client }) => {
       const lastPublishedHomepage = items[0]
       return _process(lastPublishedHomepage)
     })
-    .catch((error) => {
-      return error
+    .catch(() => {
+      throw new Error('Something went wrong with the service')
     })
 }
 

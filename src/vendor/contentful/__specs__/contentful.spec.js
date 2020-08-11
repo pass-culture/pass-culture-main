@@ -17,6 +17,82 @@ jest.mock('contentful', () => ({
   createClient: jest.fn(),
 }))
 describe('src | vendor | contentful', () => {
+  describe('error cases', () => {
+    it('should throw an error when fetching data failed', async () => {
+      // given
+      const error = new Error('Something went wrong with the service')
+      createClient.mockReturnValue({
+        getEntries: jest.fn().mockRejectedValue(error),
+      })
+
+      // when/then
+      await expect(fetchHomepage()).rejects.toThrow(error)
+    })
+
+    it('should throw an error when entry id is provided but fetch failed', async () => {
+      // given
+      const error = new Error('Something went wrong with the service')
+      const mockGetEntry = jest.fn().mockRejectedValue(error)
+      createClient.mockReturnValue({
+        getEntry: mockGetEntry,
+      })
+      const entryId = 'ABCDE'
+
+      // when/then
+      await expect(fetchHomepage({ entryId: entryId })).rejects.toThrow(error)
+    })
+
+    it('should return throw an error when fields of module are empty', async () => {
+      // given
+      const module = {
+        fields: {},
+      }
+      const error = new Error("Something went wrong with the service")
+      createClient.mockReturnValue({
+        getEntries: jest.fn().mockResolvedValue({
+          items: [module],
+        }),
+      })
+
+      // when / then
+      await expect(fetchHomepage()).rejects.toThrow(error)
+    })
+
+    it('should return an empty array when fields of module "algoliaParameters" are empty', async () => {
+      // given
+      const module = {
+        fields: {
+          modules: [
+            {
+              fields: {
+                algoliaParameters: {},
+                displayParameters: {
+                  fields: {
+                    layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
+                  },
+                },
+              },
+              sys: {
+                contentType: {
+                  sys: { id: CONTENT_TYPES.ALGOLIA },
+                },
+              },
+            },
+          ],
+        },
+      }
+      const error = new Error("Something went wrong with the service")
+      createClient.mockReturnValue({
+        getEntries: jest.fn().mockResolvedValue({
+          items: [module],
+        }),
+      })
+
+      // when /then
+      await expect(fetchHomepage()).rejects.toThrow(error)
+    })
+  })
+
   it('should retrieve entries with the right parameters', async () => {
     // given
     const module = {
@@ -206,21 +282,7 @@ describe('src | vendor | contentful', () => {
     expect(modules).toStrictEqual([offersWithCover])
   })
 
-  it('should return an error when fetching data failed', async () => {
-    // given
-    const error = new Error('fetching error')
-    createClient.mockReturnValue({
-      getEntries: jest.fn().mockRejectedValue(error),
-    })
-
-    // when
-    const modules = await fetchHomepage()
-
-    // then
-    expect(modules).toStrictEqual(error)
-  })
-
-  it('should return a module for ExclusivityPane when an exclusity module', async () => {
+  it('should return a module for ExclusivityPane when an exclusivity module', async () => {
     // given
     const module = {
       fields: {
@@ -269,14 +331,16 @@ describe('src | vendor | contentful', () => {
   it('should fetch homepage preview when entry id is provided', async () => {
     // given
     const mockGetEntry = jest.fn().mockResolvedValue({
-      entry: {},
+      fields: {
+        modules: [{ fields: {} }],
+      },
     })
     const mockGetEntries = jest.fn().mockResolvedValue({
       items: [module],
     })
     createClient.mockReturnValue({
-      getEntries: mockGetEntries,
       getEntry: mockGetEntry,
+      getEntries: mockGetEntries,
     })
     const entryId = 'ABCDE'
 
@@ -292,22 +356,6 @@ describe('src | vendor | contentful', () => {
     })
     expect(mockGetEntry).toHaveBeenCalledWith(entryId, { 'include': 2 })
     expect(mockGetEntries).not.toHaveBeenCalled()
-  })
-
-  it('should return empty array when entry id is provided but fetch failed', async () => {
-    // given
-    const error = new Error('fetching error')
-    const mockGetEntry = jest.fn().mockRejectedValue(error)
-    createClient.mockReturnValue({
-      getEntry: mockGetEntry,
-    })
-    const entryId = 'ABCDE'
-
-    // when
-    const modules = await fetchHomepage({ entryId: entryId })
-
-    // then
-    expect(modules).toStrictEqual(error)
   })
 
   it('should return modules when entry id is provided and returns data', async () => {
@@ -358,6 +406,30 @@ describe('src | vendor | contentful', () => {
 
   it('should fetch last homepage when entry id is not provided', async () => {
     // given
+    const module = {
+      fields: {
+        modules: [
+          {
+            fields: {
+              image: {
+                fields: {
+                  file: {
+                    url: '//my-image-url',
+                  },
+                },
+              },
+              title: 'my-title',
+              url: 'my-url',
+            },
+            sys: {
+              contentType: {
+                sys: { id: 'not an algolia module' },
+              },
+            },
+          },
+        ],
+      },
+    }
     const mockGetEntry = jest.fn().mockResolvedValue({
       entry: {},
     })
@@ -366,7 +438,6 @@ describe('src | vendor | contentful', () => {
     })
     createClient.mockReturnValue({
       getEntries: mockGetEntries,
-      getEntry: mockGetEntry,
     })
 
     // when
@@ -380,62 +451,6 @@ describe('src | vendor | contentful', () => {
     })
     expect(mockGetEntry).not.toHaveBeenCalled()
     expect(mockGetEntries).toHaveBeenCalledWith({ content_type: "homepage", "include": 2 })
-  })
-
-  it('should return an error when fields of module are empty', async () => {
-    // given
-    const module = {
-      fields: {},
-    }
-    createClient.mockReturnValue({
-      getEntries: jest.fn().mockResolvedValue({
-        items: [module],
-      }),
-    })
-
-    // when
-    const modules = await fetchHomepage()
-
-    // then
-    const error = new TypeError("Cannot read property 'map' of undefined")
-    expect(modules).toStrictEqual(error)
-  })
-
-  it('should return an empty array when fields of module "algoliaParameters" are empty', async () => {
-    // given
-    const module = {
-      fields: {
-        modules: [
-          {
-            fields: {
-              algoliaParameters: {},
-              displayParameters: {
-                fields: {
-                  layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
-                },
-              },
-            },
-            sys: {
-              contentType: {
-                sys: { id: CONTENT_TYPES.ALGOLIA },
-              },
-            },
-          },
-        ],
-      },
-    }
-    createClient.mockReturnValue({
-      getEntries: jest.fn().mockResolvedValue({
-        items: [module],
-      }),
-    })
-
-    // when
-    const modules = await fetchHomepage()
-
-    // then
-    const error = new TypeError('Cannot convert undefined or null to object')
-    expect(modules).toStrictEqual(error)
   })
 
   it('should return an Offers module when "algoliaParameters" are provided but "displayParameters" are empty', async () => {
