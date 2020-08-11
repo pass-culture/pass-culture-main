@@ -34,12 +34,9 @@ def create_booking_for_user_on_specific_stock_bypassing_capping_limits(user_id: 
     check_stock_is_bookable(stock)
 
     quantity = booking_information.quantity
-    recommendation_id = booking_information.recommendation_id
     amount = stock.price
-    booking = Booking(beneficiary=user, stock=stock, amount=amount, quantity=quantity,
-                      recommendation_id=recommendation_id)
+    booking = Booking(beneficiary=user, stock=stock, amount=amount, quantity=quantity)
 
     booking_repository.save(booking)
 
     redis.add_offer_id(client=app.redis_client, offer_id=stock.offer.id)
-
