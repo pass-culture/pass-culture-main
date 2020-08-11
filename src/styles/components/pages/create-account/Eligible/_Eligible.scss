@@ -40,7 +40,7 @@
     background-color: $white;
     border: none;
     border-radius: 24px;
-    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 6px 0 $black-shadow;
     color: $primary;
     cursor: pointer;
     display: flex;
@@ -53,7 +53,7 @@
     width: 80%;
 
     &:disabled {
-      background-color: rgba(255, 255, 255, 0.3);
+      background-color: rgba($white, 0.3);
       cursor: not-allowed;
       opacity: 1;
     }

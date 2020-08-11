@@ -84,7 +84,7 @@
     background-image: linear-gradient(101deg, $primary -42%, $secondary 128%);
     border: none;
     border-radius: 24px;
-    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 6px 0 $black-shadow;
     color: $white;
     cursor: pointer;
     display: block;
