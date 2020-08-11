@@ -69,7 +69,7 @@ class Deck extends PureComponent {
 
     const isSwipingDownWhileAlreadyOnTop = versoPositionBeforeScroll.top >= -30 && data.y > 0
     if (isSwipingDownWhileAlreadyOnTop) {
-      this.onHandleCloseCardDetails()
+      this.onHandleCloseCardDetails(event)
     } else if (data.y < -height * verticalSlideRatio) {
       this.handleShowCardDetails()
     } else if (offset > horizontalSlideRatio) {
@@ -127,7 +127,11 @@ class Deck extends PureComponent {
     history.push(`${pathname}/details${search}`)
   }
 
-  onHandleCloseCardDetails = () => {
+  onHandleCloseCardDetails = event => {
+    if (event.target.parentNode.type === 'button') {
+      return
+    }
+
     const { history, location, match } = this.props
     const removedDetailsUrl = getUrlWithoutDetailsPart(location, match)
 
