@@ -382,7 +382,7 @@ describe('src | vendor | contentful', () => {
     expect(mockGetEntries).toHaveBeenCalledWith({ content_type: "homepage", "include": 2 })
   })
 
-  it('should return an empty array when fields of module are empty', async () => {
+  it('should return an error when fields of module are empty', async () => {
     // given
     const module = {
       fields: {},
@@ -397,7 +397,8 @@ describe('src | vendor | contentful', () => {
     const modules = await fetchHomepage()
 
     // then
-    expect(modules).toStrictEqual([])
+    const error = new TypeError("Cannot read property 'map' of undefined")
+    expect(modules).toStrictEqual(error)
   })
 
   it('should return an empty array when fields of module "algoliaParameters" are empty', async () => {
@@ -433,7 +434,8 @@ describe('src | vendor | contentful', () => {
     const modules = await fetchHomepage()
 
     // then
-    expect(modules).toStrictEqual([])
+    const error = new TypeError('Cannot convert undefined or null to object')
+    expect(modules).toStrictEqual(error)
   })
 
   it('should return an Offers module when "algoliaParameters" are provided but "displayParameters" are empty', async () => {
