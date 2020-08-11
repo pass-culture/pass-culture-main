@@ -33,6 +33,7 @@ gunicorn==20.0.0
 idna==2.8
 inflect==3.0.2
 isbnlib==3.9.9
+python-json-logger==0.1.11
 jsonschema==2.6.0
 luhn==0.2.0
 lxml==4.4.1
