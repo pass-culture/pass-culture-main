@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  run-tests:
     working_directory: ~/pass-culture-api-ci
     docker:
       - image: circleci/python:3.7.6
@@ -252,7 +252,7 @@ workflows:
   version: 2
   commit:
     jobs:
-      - build:
+      - run-tests:
           filters:
             branches:
               ignore:
