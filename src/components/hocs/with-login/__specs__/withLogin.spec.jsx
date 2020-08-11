@@ -20,7 +20,7 @@ describe('src | components | pages | hocs | with-login | withLogin', () => {
   describe('when just has been mounted', () => {
     it('should display the loading page', () => {
       // given
-      const initialState = { data: { users: [] } }
+      const initialState = { data: { features: [], users: [] } }
       const middlewares = [thunk]
       const mockStore = configureStore(middlewares)
       const store = mockStore(initialState)

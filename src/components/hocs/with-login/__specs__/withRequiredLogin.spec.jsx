@@ -41,7 +41,7 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin - uni
           }
 
           // when
-          handleSuccess(user, history, location)
+          handleSuccess({ currentUser: user, history, location })
 
           // then
           expect(history.push).not.toHaveBeenCalled()
@@ -64,7 +64,7 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin - uni
           }
 
           // when
-          handleSuccess(user, history, location)
+          handleSuccess({ currentUser: user, history, location })
 
           // then
           expect(history.push).toHaveBeenCalledWith('/bienvenue')
@@ -88,7 +88,7 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin - uni
           }
 
           // when
-          handleSuccess(user, history, location)
+          handleSuccess({ currentUser: user, history, location })
 
           // then
           expect(history.push).toHaveBeenCalledWith('/typeform')

@@ -12,10 +12,14 @@ export const getRedirectionPath = ({ currentUser }) => {
   return undefined
 }
 
-export const getRedirectToCurrentLocationOrDiscovery = ({ currentUser }) => {
+export const getRedirectToCurrentLocationOrDiscovery = ({ currentUser, isHomepageDisabled }) => {
   const { needsToFillCulturalSurvey } = currentUser || {}
   if (!needsToFillCulturalSurvey) {
-    return '/decouverte'
+    if (isHomepageDisabled) {
+      return '/decouverte'
+    } else {
+      return '/accueil'
+    }
   }
   return undefined
 }

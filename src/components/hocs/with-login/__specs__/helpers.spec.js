@@ -9,8 +9,6 @@ describe('src | hocs | with-login | helpers', () => {
           currentUser: {
             needsToFillCulturalSurvey: true,
           },
-          pathname: '/my-page',
-          search: '?any=any',
         }
 
         // then
@@ -30,8 +28,6 @@ describe('src | hocs | with-login | helpers', () => {
               needsToFillCulturalSurvey: false,
               needsToSeeTutorials: true,
             },
-            pathname: '/my-page',
-            search: '?any=any',
           }
 
           // then
@@ -65,14 +61,13 @@ describe('src | hocs | with-login | helpers', () => {
   })
 
   describe('getRedirectToCurrentLocationOrDiscovery', () => {
-    it('should return discovery location when user has filled the Typeform', () => {
+    it('should return discovery location when user has filled the Typeform and homepage is disabled', () => {
       // given
       const props = {
         currentUser: {
           needsToFillCulturalSurvey: false,
         },
-        pathname: '/my-page',
-        search: '?any=any',
+        isHomepageDisabled: true
       }
 
       // then
@@ -82,14 +77,28 @@ describe('src | hocs | with-login | helpers', () => {
       expect(result).toStrictEqual('/decouverte')
     })
 
+    it('should return home location when user has filled the Typeform and homepage is enabled', () => {
+      // given
+      const props = {
+        currentUser: {
+          needsToFillCulturalSurvey: false,
+        },
+        isHomepageDisabled: false
+      }
+
+      // then
+      const result = getRedirectToCurrentLocationOrDiscovery(props)
+
+      // when
+      expect(result).toStrictEqual('/accueil')
+    })
+
     it('should return undefined when user has not filled the Typeform', () => {
       // given
       const props = {
         currentUser: {
           needsToFillCulturalSurvey: true,
         },
-        pathname: '/my-page',
-        search: '?any=any',
       }
 
       // then

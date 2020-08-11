@@ -9,9 +9,10 @@ export const handleFail = (history, location) => {
   history.push(`/connexion?de=${fromUrl}`)
 }
 
-export const handleSuccess = (currentUser, history, location) => {
+export const handleSuccess = ({ currentUser, history, isHomepageDisabled, location }) => {
   const redirect = getRedirectionPath({
     currentUser,
+    isHomepageDisabled,
     ...location,
   })
 

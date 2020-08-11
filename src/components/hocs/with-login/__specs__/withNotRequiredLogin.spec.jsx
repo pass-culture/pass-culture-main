@@ -27,7 +27,12 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       }
 
       // when
-      handleSuccess(user, history, location)
+      handleSuccess({
+        currentUser: user,
+        isHomepageDisabled: true,
+        history: history,
+        location: location,
+      })
 
       // then
       expect(getRedirectToCurrentLocationOrDiscovery).toHaveBeenCalledWith({
@@ -36,6 +41,7 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
           needsToFillCulturalSurvey: false,
         },
         hash: '',
+        isHomepageDisabled: true,
         key: expect.any(String),
         pathname: '/test',
         search: '',
@@ -53,7 +59,11 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       getRedirectToCurrentLocationOrDiscovery.mockReturnValue('/fake-url')
 
       // when
-      handleSuccess(user, history, location)
+      handleSuccess({
+        currentUser: user,
+        history: history,
+        location: location,
+      })
 
       // then
       expect(history.push).toHaveBeenCalledWith('/fake-url')
@@ -69,7 +79,11 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       getRedirectToCurrentLocationOrDiscovery.mockReturnValue(undefined)
 
       // when
-      handleSuccess(user, history, location)
+      handleSuccess({
+        currentUser: user,
+        history: history,
+        location: location
+      })
 
       // then
       expect(history.push).not.toHaveBeenCalled()

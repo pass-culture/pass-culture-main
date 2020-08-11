@@ -4,14 +4,9 @@ import { createDataReducer } from 'redux-thunk-data'
 
 export function configureTestStore() {
   const storeEnhancer = applyMiddleware(thunk.withExtraArgument({ rootUrl: 'http://foo.com' }))
-
   const rootReducer = combineReducers({
-    data: createDataReducer({ users: [] }),
+    data: createDataReducer({ features: [], users: [] }),
   })
 
-  const store = createStore(rootReducer, storeEnhancer)
-
-  return store
+  return createStore(rootReducer, storeEnhancer)
 }
-
-export default configureTestStore
