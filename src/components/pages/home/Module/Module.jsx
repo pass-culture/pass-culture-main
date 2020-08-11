@@ -91,7 +91,7 @@ class Module extends Component {
                   <OneItem
                     historyPush={historyPush}
                     isSwitching={isSwitching}
-                    key={`${Math.random() * row}-tile`}
+                    key={`${row}-tile`}
                     layout={layout}
                     moduleName={title}
                     parsedParameters={parsedParameters}
@@ -101,7 +101,7 @@ class Module extends Component {
                   <TwoItems
                     historyPush={historyPush}
                     isSwitching={isSwitching}
-                    key={`${Math.random() * row}-tile`}
+                    key={`${row}-tile`}
                     layout={layout}
                     moduleName={title}
                     parsedParameters={parsedParameters}
