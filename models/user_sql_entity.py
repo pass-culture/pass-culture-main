@@ -70,6 +70,8 @@ class UserSQLEntity(PcObject,
 
     lastName = Column(String(128), nullable=True)
 
+    lastConnectionDate = Column(DateTime, nullable=True)
+
     needsToFillCulturalSurvey = Column(Boolean,
                                        server_default=expression.true(),
                                        default=True)

@@ -181,6 +181,7 @@ def test_pending_validation_return_only_requested_data(app):
                    'firstName': 'John',
                    'isAdmin': False,
                    'lastName': 'Doe',
+                   'lastConnectionDate': None,
                    'phoneNumber': '0612345678',
                    'postalCode': '93100',
                    'publicName': 'John Doe',
