@@ -16,7 +16,9 @@ from repository.feature_queries import feature_request_profiling_enabled
 from routes import install_routes
 from utils.config import IS_DEV, ENV
 from utils.health_checker import read_version_from_file
+from utils.logger import configure_json_logger
 
+configure_json_logger()
 
 if IS_DEV is False:
     sentry_sdk.init(

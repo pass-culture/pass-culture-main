@@ -1,9 +1,9 @@
-import os
 from rq.decorators import job
 
 from workers import worker
-from workers.decorators import job_context, log_job
 from infrastructure.worker_container import save_offerer_bank_informations, save_venue_bank_informations
+from workers.decorators import log_job, \
+    job_context
 
 
 @job(worker.redis_queue, connection=worker.conn)
