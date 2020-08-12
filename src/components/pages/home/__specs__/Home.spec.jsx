@@ -49,6 +49,7 @@ describe('src | components | Home', () => {
         push: jest.fn(),
       },
       match: {},
+      updateCurrentUser: jest.fn(),
       user: {
         publicName: 'Iron Man',
         wallet_balance: 200.1,
@@ -241,5 +242,17 @@ describe('src | components | Home', () => {
     // Then
     const errorPage = wrapper.find(ErrorPage)
     expect(errorPage).toHaveLength(1)
+  })
+
+  it('should update user last connection date when on page', () => {
+    // when
+    mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>,
+    )
+
+    // then
+    expect(props.updateCurrentUser).toHaveBeenCalledTimes(1)
   })
 })

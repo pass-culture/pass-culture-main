@@ -10,7 +10,7 @@ export async function getCurrentUser() {
     },
   })
 
-  if (response.status != 200) return null
+  if (response.status !== 200) return null
 
   return await response.json()
 }
@@ -25,7 +25,7 @@ export async function patchCurrentUser(payload) {
     method: 'PATCH',
   })
 
-  if (response.status != 200) {
+  if (response.status !== 200) {
     if ('json' in response) throw await response.json()
     throw new Error('Error patching currentUser')
   }

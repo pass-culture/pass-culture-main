@@ -27,9 +27,12 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    const { history } = this.props
+    const { history, updateCurrentUser } = this.props
     const queryParams = parse(history.location.search)
 
+    updateCurrentUser({
+      lastConnectionDate: new Date(),
+    })
     fetchHomepage({ entryId: queryParams['entryId'] })
       .then(modules => {
           this.setState({
@@ -137,6 +140,7 @@ Home.propTypes = {
   }).isRequired,
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
+  updateCurrentUser: PropTypes.func.isRequired,
   user: PropTypes.shape({
     publicName: PropTypes.string,
     wallet_balance: PropTypes.number,

@@ -4,13 +4,17 @@ import { selectCurrentUser } from '../../../redux/selectors/currentUserSelector'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { selectUserGeolocation } from '../../../redux/selectors/geolocationSelectors'
+import { updateCurrentUser } from '../../../redux/actions/currentUser'
 
 const mapStateToProps = state => ({
   geolocation: selectUserGeolocation(state),
-  user: selectCurrentUser(state)
+  user: selectCurrentUser(state),
 })
 
 export default compose(
   withRequiredLogin,
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    { updateCurrentUser },
+  ),
 )(Home)
