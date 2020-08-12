@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
+import { parse } from 'query-string'
+import React, { Component, createRef, Fragment } from 'react'
 import { Link, Route } from 'react-router-dom'
 
 import { formatToFrenchDecimal } from '../../../utils/getDisplayPrice'
@@ -8,14 +9,13 @@ import HeaderContainer from '../../layout/Header/HeaderContainer'
 import Icon from '../../layout/Icon/Icon'
 import BusinessModule from './BusinessModule/BusinessModule'
 import { formatPublicName } from './domain/formatPublicName'
+import ExclusivityPane from './domain/ValueObjects/ExclusivityPane'
 import Offers from './domain/ValueObjects/Offers'
 import OffersWithCover from './domain/ValueObjects/OffersWithCover'
 import ErrorPage from './ErrorPage/ErrorPage'
+import ExclusivityModule from './ExclusivityModule/ExclusivityModule'
 import Module from './Module/Module'
 import OfferDetailsContainer from './OfferDetails/OfferDetailsContainer'
-import ExclusivityPane from './domain/ValueObjects/ExclusivityPane'
-import ExclusivityModule from './ExclusivityModule/ExclusivityModule'
-import { parse } from 'query-string'
 
 class Home extends Component {
   constructor(props) {
@@ -23,7 +23,9 @@ class Home extends Component {
     this.state = {
       modules: [],
       fetchingError: false,
+      haveSeenAllModules: false,
     }
+    this.modulesListRef = createRef()
   }
 
   componentDidMount() {
@@ -35,17 +37,35 @@ class Home extends Component {
     })
     fetchHomepage({ entryId: queryParams['entryId'] })
       .then(modules => {
-          this.setState({
-            modules: modules,
-          })
-        },
-      )
+        this.setState({
+          modules: modules,
+        })
+      })
       .catch(() => {
-          this.setState({
-            fetchingError: true,
-          })
-        },
-      )
+        this.setState({
+          fetchingError: true,
+        })
+      })
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { trackAllModulesSeen } = this.props
+    const { haveSeenAllModules, modules } = this.state
+    if (prevState.modules.length !== modules.length) {
+      this.trackAllModulesSeenEvent()
+    }
+    if (prevState.haveSeenAllModules !== haveSeenAllModules) {
+      trackAllModulesSeen(modules.length)
+    }
+  }
+
+  trackAllModulesSeenEvent = () => {
+    const navbarHeight = 60
+    const modulePaddingBottom = 24
+    const hasReachedEndOfPage = (this.modulesListRef.current.getBoundingClientRect().bottom + navbarHeight - modulePaddingBottom - document.documentElement.clientHeight) <= 0
+    if (hasReachedEndOfPage) {
+      this.setState({ haveSeenAllModules: true })
+    }
   }
 
   refreshPage = () => window.location.reload()
@@ -86,49 +106,52 @@ class Home extends Component {
     const { publicName, wallet_balance } = user
     const formattedPublicName = formatPublicName(publicName)
     const formattedWalletBalance = formatToFrenchDecimal(wallet_balance)
-    const atLeastOneModule = modules.length > 0
 
-    return (
-      fetchingError
-        ? <ErrorPage refreshPage={this.refreshPage} />
-        : <Fragment>
-          <div className="home-wrapper">
-            <section className="hw-header">
-              <div className="hw-account">
-                <Link to="/profil">
-                  <Icon
-                    className="hw-account-image"
-                    svg="ico-informations-white"
-                  />
-                </Link>
-              </div>
-              <div className="hw-pseudo">
-                {`Bonjour ${formattedPublicName}`}
-              </div>
-              <div className="hw-wallet">
-                {`Tu as ${formattedWalletBalance} € sur ton pass`}
-              </div>
-            </section>
-            {atLeastOneModule && (
-              <div className="hw-modules">
-                {modules.map((module, row) => this.renderModule(module, row))}
-              </div>
-            )}
-          </div>
-          <Route
-            exact
-            path={`${match.path}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
-            sensitive
-          >
-            <div className="offer-details">
-              <HeaderContainer
-                backTo="/accueil"
-                title="Offre"
-              />
-              <OfferDetailsContainer match={match} />
+    return fetchingError ? (
+      <ErrorPage refreshPage={this.refreshPage} />
+    ) : (
+      <Fragment>
+        <div
+          className="home-wrapper"
+          onScroll={this.trackAllModulesSeenEvent}
+        >
+          <section className="hw-header">
+            <div className="hw-account">
+              <Link to="/profil">
+                <Icon
+                  className="hw-account-image"
+                  svg="ico-informations-white"
+                />
+              </Link>
             </div>
-          </Route>
-        </Fragment>
+            <div className="hw-pseudo">
+              {`Bonjour ${formattedPublicName}`}
+            </div>
+            <div className="hw-wallet">
+              {`Tu as ${formattedWalletBalance} € sur ton pass`}
+            </div>
+          </section>
+          <div
+            className="hw-modules"
+            ref={this.modulesListRef}
+          >
+            {modules.map((module, row) => this.renderModule(module, row))}
+          </div>
+        </div>
+        <Route
+          exact
+          path={`${match.path}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
+          sensitive
+        >
+          <div className="offer-details">
+            <HeaderContainer
+              backTo="/accueil"
+              title="Offre"
+            />
+            <OfferDetailsContainer match={match} />
+          </div>
+        </Route>
+      </Fragment>
     )
   }
 }
@@ -140,6 +163,7 @@ Home.propTypes = {
   }).isRequired,
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
+  trackAllModulesSeen: PropTypes.func.isRequired,
   updateCurrentUser: PropTypes.func.isRequired,
   user: PropTypes.shape({
     publicName: PropTypes.string,

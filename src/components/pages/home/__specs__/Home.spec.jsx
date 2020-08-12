@@ -1,19 +1,19 @@
 import { mount } from 'enzyme'
-import React from 'react'
-import ErrorPage from '../ErrorPage/ErrorPage'
-import Home from '../Home'
-import { Link } from 'react-router-dom'
-import { MemoryRouter } from 'react-router'
-import Icon from '../../../layout/Icon/Icon'
-import { fetchHomepage } from '../../../../vendor/contentful/contentful'
-import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
-import Module from '../Module/Module'
-import Offers from '../domain/ValueObjects/Offers'
-import BusinessPane from '../domain/ValueObjects/BusinessPane'
-import BusinessModule from '../BusinessModule/BusinessModule'
-import ExclusivityPane from '../domain/ValueObjects/ExclusivityPane'
-import ExclusivityModule from '../ExclusivityModule/ExclusivityModule'
 import { parse } from 'query-string'
+import React from 'react'
+import { MemoryRouter } from 'react-router'
+import { Link } from 'react-router-dom'
+import { fetchHomepage } from '../../../../vendor/contentful/contentful'
+import Icon from '../../../layout/Icon/Icon'
+import BusinessModule from '../BusinessModule/BusinessModule'
+import BusinessPane from '../domain/ValueObjects/BusinessPane'
+import ExclusivityPane from '../domain/ValueObjects/ExclusivityPane'
+import Offers from '../domain/ValueObjects/Offers'
+import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
+import ErrorPage from '../ErrorPage/ErrorPage'
+import ExclusivityModule from '../ExclusivityModule/ExclusivityModule'
+import Home from '../Home'
+import Module from '../Module/Module'
 
 jest.mock('../Module/domain/buildTiles', () => ({
   buildPairedTiles: jest.fn().mockReturnValue([]),
@@ -31,6 +31,7 @@ jest.mock('../../../../vendor/algolia/algolia', () => ({
 jest.mock('../domain/parseAlgoliaParameters', () => ({
   parseAlgoliaParameters: jest.fn().mockReturnValue({}),
 }))
+
 describe('src | components | Home', () => {
   let props
 
@@ -49,6 +50,7 @@ describe('src | components | Home', () => {
         push: jest.fn(),
       },
       match: {},
+      trackAllModulesSeen: jest.fn(),
       updateCurrentUser: jest.fn(),
       user: {
         publicName: 'Iron Man',
@@ -66,7 +68,7 @@ describe('src | components | Home', () => {
     const wrapper = mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
@@ -84,7 +86,7 @@ describe('src | components | Home', () => {
     const wrapper = mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
@@ -97,7 +99,7 @@ describe('src | components | Home', () => {
     const wrapper = mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
@@ -118,7 +120,7 @@ describe('src | components | Home', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -145,7 +147,7 @@ describe('src | components | Home', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -174,7 +176,7 @@ describe('src | components | Home', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -197,7 +199,7 @@ describe('src | components | Home', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -217,7 +219,7 @@ describe('src | components | Home', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -234,7 +236,7 @@ describe('src | components | Home', () => {
     const wrapper = mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await flushPromises()
     wrapper.update()
@@ -249,10 +251,118 @@ describe('src | components | Home', () => {
     mount(
       <MemoryRouter>
         <Home {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
     expect(props.updateCurrentUser).toHaveBeenCalledTimes(1)
+  })
+
+  it('should track the user who have seen all modules after scroll', async () => {
+    // Given
+    fetchHomepage.mockResolvedValueOnce([
+      new BusinessPane({
+        title: 'my-title-1',
+      }),
+      new BusinessPane({
+        title: 'my-title-2',
+      }),
+      new BusinessPane({
+        title: 'my-title-3',
+      }),
+    ])
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+    jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 36)
+
+    // When
+    const homeWrapper = wrapper.find('div').first()
+    homeWrapper.invoke('onScroll')()
+
+    // Then
+    expect(props.trackAllModulesSeen).toHaveBeenCalledWith(3)
+  })
+
+  it('should not track the user who have not seen all modules after scroll', async () => {
+    // Given
+    fetchHomepage.mockResolvedValueOnce([
+      new BusinessPane({
+        title: 'my-title-1',
+      }),
+      new BusinessPane({
+        title: 'my-title-2',
+      }),
+      new BusinessPane({
+        title: 'my-title-3',
+      }),
+    ])
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+    jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 35)
+
+    // When
+    const homeWrapper = wrapper.find('div').first()
+    homeWrapper.invoke('onScroll')()
+
+    // Then
+    expect(props.trackAllModulesSeen).not.toHaveBeenCalled()
+  })
+
+  it('should track the user who have seen all modules without scroll', async () => {
+    // Given
+    fetchHomepage.mockResolvedValueOnce([
+      new BusinessPane({
+        title: 'my-title-1',
+      }),
+      new BusinessPane({
+        title: 'my-title-2',
+      }),
+      new BusinessPane({
+        title: 'my-title-3',
+      }),
+    ])
+    jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 37)
+
+    // When
+    await mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+
+    // Then
+    expect(props.trackAllModulesSeen).toHaveBeenCalledWith(3)
+  })
+
+  it('should not track the user who have not seen all modules without scroll', async () => {
+    // Given
+    fetchHomepage.mockResolvedValueOnce([
+      new BusinessPane({
+        title: 'my-title-1',
+      }),
+      new BusinessPane({
+        title: 'my-title-2',
+      }),
+      new BusinessPane({
+        title: 'my-title-3',
+      }),
+    ])
+    jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 35)
+
+    // When
+    await mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+
+    // Then
+    expect(props.trackAllModulesSeen).not.toHaveBeenCalled()
   })
 })
