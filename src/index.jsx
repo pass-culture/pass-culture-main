@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 
 import './styles/index.scss'
 import 'typeface-barlow'
+import 'focus-visible'
 
 import Root from './app/Root'
 import './utils/sentry'

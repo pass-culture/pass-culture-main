@@ -27,3 +27,7 @@ select,
 a {
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
+
+.js-focus-visible :focus:not(.focus-visible) {
+  outline: none;
+}
