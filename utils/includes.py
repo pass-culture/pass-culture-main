@@ -4,6 +4,7 @@ BENEFICIARY_INCLUDES = [
     '-culturalSurveyId',
     '-culturalSurveyFilledDate',
     '-hasSeenTutorials',
+    '-lastConnectionDate',
     '-password',
     '-resetPasswordToken',
     '-resetPasswordTokenValidityLimit',

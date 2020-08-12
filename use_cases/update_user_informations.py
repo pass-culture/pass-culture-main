@@ -9,6 +9,7 @@ class AlterableUserInformations(object):
                  cultural_survey_filled_date: datetime = None,
                  department_code: str = None,
                  email: str = None,
+                 last_connection_date: datetime = None,
                  needs_to_fill_cultural_survey: bool = None,
                  phone_number: str = None,
                  postal_code: str = None,
@@ -19,6 +20,7 @@ class AlterableUserInformations(object):
         self.cultural_survey_filled_date = cultural_survey_filled_date
         self.department_code = department_code
         self.email = email
+        self.last_connection_date = last_connection_date
         self.needs_to_fill_cultural_survey = needs_to_fill_cultural_survey
         self.phone_number = phone_number
         self.postal_code = postal_code
@@ -28,7 +30,6 @@ class AlterableUserInformations(object):
 
 def update_user_informations(user_informations: AlterableUserInformations):
     current_user = find_user_by_id(user_informations.id)
-
     if user_informations.cultural_survey_id is not None:
         current_user.culturalSurveyId = user_informations.cultural_survey_id
 
@@ -40,6 +41,9 @@ def update_user_informations(user_informations: AlterableUserInformations):
 
     if user_informations.email is not None:
         current_user.email = user_informations.email
+
+    if user_informations.last_connection_date is not None:
+        current_user.lastConnectionDate = user_informations.last_connection_date
 
     if user_informations.needs_to_fill_cultural_survey is not None:
         current_user.needsToFillCulturalSurvey = user_informations.needs_to_fill_cultural_survey
@@ -55,7 +59,6 @@ def update_user_informations(user_informations: AlterableUserInformations):
 
     if user_informations.has_seen_tutorials is not None:
         current_user.hasSeenTutorials = user_informations.has_seen_tutorials
-
     repository.save(current_user)
 
     return current_user

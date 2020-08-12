@@ -17,6 +17,7 @@ class UpdateUserInformationsTest:
             cultural_survey_id=None,
             cultural_survey_filled_date=datetime(2020, 4, 22),
             email='han@solo.sw',
+            last_connection_date=datetime(2020, 1, 1),
             needs_to_fill_cultural_survey=False,
             phone_number='05 55 55 55 55',
             postal_code='27200',
@@ -31,6 +32,7 @@ class UpdateUserInformationsTest:
         assert user.culturalSurveyId == None
         assert user.culturalSurveyFilledDate == datetime(2020, 4, 22)
         assert user.email == 'han@solo.sw'
+        assert user.lastConnectionDate == datetime(2020, 1, 1)
         assert user.needsToFillCulturalSurvey == False
         assert user.phoneNumber == '05 55 55 55 55'
         assert user.postalCode == '27200'
