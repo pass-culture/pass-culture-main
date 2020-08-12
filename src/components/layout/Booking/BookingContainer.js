@@ -40,6 +40,8 @@ export const mapDispatchToProps = dispatch => ({
 })
 
 export const mergeProps = (stateProps, dispatchProps, ownProps) => {
+  const { history: { location: { pathname }}} = ownProps
+  const basePath = pathname.match(/^\/([^\/]*)\//)[1]
   const { offer: { id: offerId } = {} } = stateProps
 
   return {
@@ -47,7 +49,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     ...dispatchProps,
     ...ownProps,
     trackBookingSuccess: () => {
-      ownProps.tracking.trackEvent({ action: 'bookingOffer', name: offerId })
+      ownProps.tracking.trackEvent({ action: `${basePath.toUpperCase()} - bookingOffer`, name: offerId })
     },
   }
 }

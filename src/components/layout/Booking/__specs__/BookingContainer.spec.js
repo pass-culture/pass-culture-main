@@ -204,6 +204,11 @@ describe('src | components | layout | Booking | BookingContainer', () => {
         handleSubmit: () => {},
       }
       const ownProps = {
+        history: {
+          location: {
+            pathname: '/reservations/details/AE'
+          }
+        },
         match: {
           params: {
             bookings: 'AE',
@@ -217,6 +222,11 @@ describe('src | components | layout | Booking | BookingContainer', () => {
       expect(mergedProps).toStrictEqual({
         offer: { id: 'B4' },
         handleSubmit: expect.any(Function),
+        history: {
+          location: {
+            pathname: '/reservations/details/AE'
+          }
+        },
         match: {
           params: {
             bookings: 'AE',
@@ -226,7 +236,7 @@ describe('src | components | layout | Booking | BookingContainer', () => {
       })
     })
 
-    it('should map a tracking event for booking an offer', () => {
+    it('should map a tracking event for booking an offer with root path url', () => {
       // given
       const stateProps = {
         offer: {
@@ -234,6 +244,11 @@ describe('src | components | layout | Booking | BookingContainer', () => {
         },
       }
       const ownProps = {
+        history: {
+          location: {
+            pathname: '/reservations/details/AE'
+          }
+        },
         tracking: {
           trackEvent: jest.fn(),
         },
@@ -243,7 +258,7 @@ describe('src | components | layout | Booking | BookingContainer', () => {
 
       // then
       expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-        action: 'bookingOffer',
+        action: 'RESERVATIONS - bookingOffer',
         name: 'B4',
       })
     })
