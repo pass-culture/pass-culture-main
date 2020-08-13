@@ -1,65 +1,32 @@
 import { Selector } from 'testcafe'
-import { ROOT_PATH } from '../src/utils/config'
 
+import { ROOT_PATH } from '../src/utils/config'
 import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
-const section = Selector('.mb-my-booking')
-const tokenLink = section.find('.mb-token-link')
-const datetimeSpan = section.find('.teaser-sub-title')
-const linkToVerso = section.find('.teaser-link')
+fixture('Mes réservations,')
 
-const versoContent = Selector('.verso-content')
-const addressInfo = versoContent.find('address')
-
-const dateTimeRegexMatcher = /^(?:Dimanche|Lundi|Mardi|Mercredi|Jeudi|Vendredi|Samedi)\s(\d{1,2})([/-])(\d{1,2})\2(\d{4})\s([à])\s(\d{1,2})([:])(\d{1,2})/
-
-let userRole
-
-fixture('En consultant la liste de mes réservations, pour chaque "tuile"')
-
-test("je vois la date et l'heure", async t => {
-  userRole = await createUserRoleFromUserSandbox(
+test('en consultant la liste de mes réservations, pour chaque offre', async t => {
+  const userRole = await createUserRoleFromUserSandbox(
     'webapp_06_booking_list',
     'get_existing_webapp_user_with_bookings'
   )
-  await t.useRole(userRole).navigateTo(`${ROOT_PATH}reservations`)
-
-  await t
-    .expect(datetimeSpan.exists)
-    .ok()
-    .expect(datetimeSpan.innerText)
-    .match(dateTimeRegexMatcher)
-})
-
-test('je vois le lieu sur le verso', async t => {
-  userRole = await createUserRoleFromUserSandbox(
-    'webapp_06_booking_list',
-    'get_existing_webapp_user_with_bookings'
-  )
-  await t.useRole(userRole).navigateTo(`${ROOT_PATH}reservations`)
-
-  await t
-    .expect(linkToVerso.exists)
-    .ok()
-    .click(linkToVerso)
-    .wait(500)
-    .expect(addressInfo.exists)
-    .ok()
-})
-
-test('je peux accéder à la contremarque en cliquant sur le lien "Accéder à ma contremarque"', async t => {
-  // given
+  const section = Selector('.mb-my-booking')
+  const tokenLink = section.find('.mb-token-link')
+  const linkToVerso = section.find('.teaser-link')
   const token = Selector('.qr-code-token')
-  userRole = await createUserRoleFromUserSandbox(
-    'webapp_06_booking_list',
-    'get_existing_webapp_user_with_bookings'
-  )
-  await t.useRole(userRole).navigateTo(`${ROOT_PATH}reservations`)
+  const backLink = Selector('.back-link')
 
-  // when
   await t
+    .useRole(userRole)
+    .navigateTo(`${ROOT_PATH}reservations`)
+
+    // je peux accéder à l'offre en cliquant sur la tuile
+    .click(linkToVerso)
+    .click(backLink)
+
+    // je peux accéder à la contremarque en cliquant sur "Voir le QR code"
     .click(tokenLink)
-    // then
     .expect(token.exists)
     .ok()
+    .click(backLink)
 })
