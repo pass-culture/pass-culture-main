@@ -1,0 +1,35 @@
+.primary-button {
+  background-color: $primary;
+  color: $white;
+  font-weight: $weight-bold;
+  font-size: $font-size;
+  line-height: $body-line-height;
+  border-radius: rem(24px);
+  padding: 0 rem(42px);
+  border: 3px solid $primary;
+
+  &:disabled {
+    background-color: $primary-disabled;
+    border: 3px solid $primary-disabled;
+    cursor: not-allowed;
+    opacity: 1;
+  }
+
+  &:hover:not(:disabled) {
+    cursor: pointer;
+  }
+
+  &:focus {
+    outline: none;
+    background: $primary;
+    border: 3px solid $primary-dark;
+  }
+
+  &:active {
+    background-color: $primary-dark;
+  }
+
+  &:focus:not(:active) {
+    box-shadow: none;
+  }
+}

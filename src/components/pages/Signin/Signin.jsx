@@ -46,7 +46,7 @@ class Signin extends PureComponent {
           <div className="columns">
             <div className="column is-offset-6 is-two-fifths sign-page-form">
               <section className="has-text-grey">
-                <div className="hero-body">
+                <div className="text-container">
                   <h1 className="title is-spaced is-1">
                     <span className="has-text-weight-bold ">
                       {'Bienvenue '}
@@ -112,7 +112,7 @@ class Signin extends PureComponent {
                         {'Créer un compte'}
                       </NavLink>
                       <SubmitButton
-                        className="button is-primary"
+                        className="primary-button"
                         id="signin-submit-button"
                       >
                         {'Se connecter'}

@@ -11,7 +11,7 @@ const firstNameInput = Selector('input[name="firstName"]')
 const phoneNumberInput = Selector('input[name="phoneNumber"]')
 const sirenInput = Selector('input[name="siren"]')
 const contactOkInput = Selector('input[name="contact_ok"]')
-const signUpButton = Selector('button.button.is-primary')
+const signUpButton = Selector('button.primary-button')
 const acceptCookieButton = Selector('#hs-eu-confirmation-button')
 
 fixture("Création d'un compte utilisateur·trice")

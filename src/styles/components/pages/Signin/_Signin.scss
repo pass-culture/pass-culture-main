@@ -51,6 +51,12 @@
     padding: 0;
   }
 
+  .text-container {
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding-left: 54px;
+  }
+
   .title,
   .subtitle {
     font-style: italic;
