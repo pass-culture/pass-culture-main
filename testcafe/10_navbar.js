@@ -1,55 +1,48 @@
 import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
+import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 import getPageUrl from './helpers/getPageUrl'
-import { createUserRole } from './helpers/roles'
-import { fetchSandbox } from './helpers/sandboxes'
 
-const linksOfNavBar = Selector('nav ul li a')
+fixture('Navbar,')
 
-fixture('En navigant sur la navbar').beforeEach(async t => {
-  const { user } = await fetchSandbox(
+test('quand je me connecte à l’app je peux naviguer sur le site via la navbar', async t => {
+  const userRole = await createUserRoleFromUserSandbox(
     'webapp_10_menu',
     'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
   )
-  await t.useRole(createUserRole(user)).navigateTo(`${ROOT_PATH}profil`)
-})
+  const linksOfNavBar = Selector('nav ul li a')
+  const navBarDiscoveryLink = linksOfNavBar.nth(0)
+  const navBarSearchLink = linksOfNavBar.nth(0)
+  const navBarHomeLink = linksOfNavBar.nth(1)
+  const navBarBookingsLink = linksOfNavBar.nth(2)
+  const navBarFavoritesLink = linksOfNavBar.nth(3)
 
-test('je peux naviguer vers mes offres', async t => {
-  const navBarOfferLink = linksOfNavBar.nth(0)
   await t
-    .click(navBarOfferLink)
+    .useRole(userRole)
+    .navigateTo(`${ROOT_PATH}profil`)
+
+    // je peux naviguer vers le carrousel
+    .click(navBarDiscoveryLink)
     .expect(getPageUrl())
     .contains(`${ROOT_PATH}decouverte`)
-})
 
-test('je peux naviguer vers la recherche', async t => {
-  const navBarSearchLink = linksOfNavBar.nth(1)
-  await t
+    // je peux naviguer vers la recherche
     .click(navBarSearchLink)
     .expect(getPageUrl())
     .eql(`${ROOT_PATH}recherche`)
-})
 
-test('je peux naviguer vers la page accueil', async t => {
-  const navBarSearchLink = linksOfNavBar.nth(2)
-  await t
-    .click(navBarSearchLink)
+    // je peux naviguer vers la page accueil
+    .click(navBarHomeLink)
     .expect(getPageUrl())
     .eql(`${ROOT_PATH}accueil`)
-})
 
-test('je peux naviguer vers mes réservations', async t => {
-  const navBarBookingsLink = linksOfNavBar.nth(3)
-  await t
+    // je peux naviguer vers la page reservations
     .click(navBarBookingsLink)
     .expect(getPageUrl())
     .eql(`${ROOT_PATH}reservations`)
-})
 
-test('je peux naviguer vers les favoris', async t => {
-  const navBarFavoritesLink = linksOfNavBar.nth(4)
-  await t
+    // je peux naviguer vers la page favoris
     .click(navBarFavoritesLink)
     .expect(getPageUrl())
     .eql(`${ROOT_PATH}favoris`)
