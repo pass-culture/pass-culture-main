@@ -1,38 +1,31 @@
 import { Selector } from 'testcafe'
 
+import { ROOT_PATH } from '../src/utils/config'
 import getPageUrl from './helpers/getPageUrl'
 import { fetchSandbox } from './helpers/sandboxes'
-import { ROOT_PATH } from '../src/utils/config'
 
-const activationEmailSpan = Selector('.activation-email')
-const cguInput = Selector("input[name='cguCheckBox']")
-const newPasswordInput = Selector('#activation-newPassword')
-const newPasswordConfirm = Selector('#activation-newPasswordConfirm')
-const submitButton = Selector("button[type='submit']")
+fixture('Activation d’un compte utilisateur·trice,')
 
-const baseURL = `${ROOT_PATH}activation`
-
-fixture(`Activation d'un compte utilisateur·trice`)
-
-test('lorsque je clique sur le lien reçu par mail et que je saisis mon premier mot de passe, je suis redirigé vers le Typeform', async t => {
-  // given
+test('lorsque je clique sur le lien reçu par e-mail et que je saisis mon premier mot de passe, je suis redirigé vers le Typeform', async t => {
   const { user } = await fetchSandbox(
     'webapp_01_activation',
     'get_existing_webapp_not_validated_user'
   )
   const { email, password, resetPasswordToken } = user
-  const url = `${baseURL}/${resetPasswordToken}?email=${email}`
+  const activationEmailSpan = Selector('.activation-email')
+  const cguInput = Selector("input[name='cguCheckBox']")
+  const newPasswordInput = Selector('#activation-newPassword')
+  const newPasswordConfirm = Selector('#activation-newPasswordConfirm')
+  const submitButton = Selector("button[type='submit']")
 
-  // when
   await t
-    .navigateTo(url)
+    .navigateTo(`${ROOT_PATH}activation/${resetPasswordToken}?email=${email}`)
     .expect(activationEmailSpan.innerText)
     .eql(email)
     .typeText(newPasswordInput, password)
     .typeText(newPasswordConfirm, password)
     .click(cguInput)
     .click(submitButton)
-
-  // then
-  await t.expect(getPageUrl()).eql(`${ROOT_PATH}typeform`)
+    .expect(getPageUrl())
+    .eql(`${ROOT_PATH}typeform`)
 })
