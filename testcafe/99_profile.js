@@ -2,28 +2,24 @@ import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
 import getPageUrl from './helpers/getPageUrl'
-import { fetchSandbox } from './helpers/sandboxes'
 import { createUserRole } from './helpers/roles'
+import { fetchSandbox } from './helpers/sandboxes'
 
-const profilePath = `${ROOT_PATH}profil`
-const homePath = `${ROOT_PATH}accueil`
-const emptyField = 'ctrl+a delete'
-const submitInput = Selector('input[type="submit"]')
+fixture('Profil,')
 
-fixture('Étant connecté, je vais sur mon compte,').beforeEach(async t => {
-  t.ctx.sandbox = await fetchSandbox(
+test('je peux changer mes informations', async t => {
+  const { user } = await fetchSandbox(
     'webapp_10_menu',
     'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
   )
+  const profilePath = `${ROOT_PATH}profil`
+  const homePath = `${ROOT_PATH}accueil`
+  const emptyField = 'ctrl+a delete'
+  const submitInput = Selector('input[type="submit"]')
 
-  const { user } = t.ctx.sandbox
-  t.ctx.user = user
-  const userRole = await createUserRole(user)
+  await t.useRole(createUserRole(user)).navigateTo(profilePath)
 
-  await t.useRole(userRole).navigateTo(profilePath)
-})
-
-test('je clique sur le lien pour accéder au formulaire de mes informations personnelles', async t => {
+  // Je peux changer mes informations personnelles
   const personalInformationsPath = `${ROOT_PATH}profil/informations`
   const personalInformationsLink = Selector('a').withText('Informations personnelles')
   const nicknameInput = Selector('input[name="publicName"]')
@@ -54,9 +50,8 @@ test('je clique sur le lien pour accéder au formulaire de mes informations pers
     .contains(profilePath)
     .expect(updatedNickname.exists)
     .ok()
-})
 
-test('je clique sur le lien pour accéder au formulaire de changement de mot de passe', async t => {
+  // Je peux changer mon mot de passe
   const passwordPath = `${ROOT_PATH}profil/mot-de-passe`
   const passwordLink = Selector('a').withText('Mot de passe')
   const currentPasswordInput = Selector('input').nth(0)
@@ -70,7 +65,6 @@ test('je clique sur le lien pour accéder au formulaire de changement de mot de 
   const userEmailInput = Selector('input[type="email"]')
   const userPasswordInput = Selector('input[type="password"]')
   const signInButton = Selector('button[type="submit"]')
-  const { email } = t.ctx.user
 
   const incorrectPasswordErrorMessage = Selector('pre').withText(
     'Ton ancien mot de passe est incorrect.'
@@ -83,7 +77,7 @@ test('je clique sur le lien pour accéder au formulaire de changement de mot de 
     'Ton mot de passe doit contenir au moins :\n- 12 caractères\n- Un chiffre\n- Une majuscule et une minuscule\n- Un caractère spécial'
   )
 
-  // Je rentre un ancien mot de passe incorrect et j'ai un message d'errreur
+  // Je saisis un ancien mot de passe incorrect et j'ai un message d'erreur
   await t
     .click(passwordLink)
     .expect(getPageUrl())
@@ -95,7 +89,7 @@ test('je clique sur le lien pour accéder au formulaire de changement de mot de 
     .expect(incorrectPasswordErrorMessage.exists)
     .ok()
 
-  // Je rentre un nouveau mot de passe égal à l'ancien et j'ai un message d'erreur
+  // Je saisis un nouveau mot de passe égal à l'ancien et j'ai un message d'erreur
   await t
     .click(currentPasswordInput)
     .pressKey(emptyField)
@@ -110,7 +104,7 @@ test('je clique sur le lien pour accéder au formulaire de changement de mot de 
     .expect(samePasswordErrorMessage.exists)
     .ok()
 
-  // Je rentre un nouveau mot de passe trop faible et j'ai un message d'erreur
+  // Je saisis un nouveau mot de passe trop faible et j'ai un message d'erreur
   await t
     .click(newPasswordInput)
     .pressKey(emptyField)
@@ -137,7 +131,7 @@ test('je clique sur le lien pour accéder au formulaire de changement de mot de 
   // Je me déconnecte et je peux me reconnecter avec mon nouveau mot de passe définit au préalable
   await t
     .click(signoutLink)
-    .typeText(userEmailInput, email)
+    .typeText(userEmailInput, user.email)
     .typeText(userPasswordInput, userNewPassword)
     .click(signInButton)
     .expect(getPageUrl())
