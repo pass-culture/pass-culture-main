@@ -1,30 +1,25 @@
 import { Selector } from 'testcafe'
+
+import { ROOT_PATH } from '../src/utils/config'
 import getPageUrl from './helpers/getPageUrl'
 import { fetchSandbox } from './helpers/sandboxes'
-import { ROOT_PATH } from '../src/utils/config'
 
-const userId = '#user-identifier'
-const passId = '#user-password'
-const errorClass = '.pc-error-message'
-const userPassword = Selector(passId)
-const userIdentifier = Selector(userId)
-const identifierErrors = Selector(`${userId}-error`).find(errorClass)
-const signInButton = Selector('#sign-in-button')
+fixture('Suite à l’activation de mon compte,')
 
-fixture("Suite à l'activation de mon compte,")
-  .page(`${ROOT_PATH}connexion`)
-  .beforeEach(async t => {
-    t.ctx.sandbox = await fetchSandbox(
-      'webapp_02_signin',
-      'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
-    )
-  })
+test('je me connecte et j’accède à la page d’accueil', async t => {
+  const userPassword = Selector('#user-password')
+  const userIdentifier = Selector('#user-identifier')
+  const identifierErrors = Selector('#user-identifier-error').find('.pc-error-message')
+  const signInButton = Selector('#sign-in-button')
+  const {
+    user: { email, password },
+  } = await fetchSandbox(
+    'webapp_02_signin',
+    'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
+  )
 
-test("je me connecte et j'accède à la page d'accueil", async t => {
-  // given
-  const { user } = t.ctx.sandbox
-  const { email, password } = user
   await t
+    .navigateTo(`${ROOT_PATH}connexion`)
     .typeText(
       userIdentifier,
       email,
@@ -32,11 +27,9 @@ test("je me connecte et j'accède à la page d'accueil", async t => {
       { paste: true }
     )
     .typeText(userPassword, password)
-
-  // when
-  await t.click(signInButton)
-
-  // then
-  await t.expect(identifierErrors.count).eql(0)
-  await t.expect(getPageUrl()).contains('/accueil')
+    .click(signInButton)
+    .expect(identifierErrors.count)
+    .eql(0)
+    .expect(getPageUrl())
+    .contains('/accueil')
 })
