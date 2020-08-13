@@ -224,7 +224,7 @@ class OfferSQLEntity(PcObject,
                f" {pluralize(stocks_remaining_quantity, 'restant')}"
 
     @property
-    def thumb_url(self) -> str:
+    def thumbUrl(self) -> str:
         offer_has_active_mediation = any(map(lambda mediation: mediation.isActive, self.mediations))
         if offer_has_active_mediation:
             return self.activeMediation.thumbUrl

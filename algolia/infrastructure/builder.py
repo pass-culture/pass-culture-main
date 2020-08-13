@@ -67,7 +67,7 @@ def build_object(offer: OfferSQLEntity) -> Dict:
             'speaker': speaker,
             'stageDirector': stage_director,
             'stocksDateCreated': sorted(stocks_date_created),
-            'thumbUrl': offer.thumb_url,
+            'thumbUrl': offer.thumbUrl,
             'tags': tags,
             'times': list(set(times)),
             'type': offer.offerType['sublabel'],

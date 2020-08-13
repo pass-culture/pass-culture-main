@@ -19,4 +19,4 @@ class Favorite(object):
     def thumb_url(self) -> str:
         if self.mediation:
             return self.mediation.thumbUrl
-        return self.offer.thumb_url
+        return self.offer.thumbUrl

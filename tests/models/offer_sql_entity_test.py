@@ -873,7 +873,7 @@ class ThumbUrlTest:
         offer.mediations = [create_mediation(idx=1, date_created=datetime(2019, 11, 1, 10, 0, 0), thumb_count=1)]
 
         # then
-        assert offer.thumb_url == 'http://localhost/storage/thumbs/mediations/AE'
+        assert offer.thumbUrl == 'http://localhost/storage/thumbs/mediations/AE'
 
     def test_should_return_thumb_url_with_product_when_mediation_does_not_exist(self):
         # given
@@ -882,14 +882,14 @@ class ThumbUrlTest:
         offer.product.id = 1
 
         # then
-        assert offer.thumb_url == 'http://localhost/storage/thumbs/products/AE'
+        assert offer.thumbUrl == 'http://localhost/storage/thumbs/products/AE'
 
     def test_should_return_empty_thumb_url_when_no_product_nor_mediation(self):
         # given
         offer = OfferSQLEntity()
 
         # then
-        assert offer.thumb_url == ''
+        assert offer.thumbUrl == ''
 
 
 class OfferTypeTest:

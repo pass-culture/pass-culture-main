@@ -45,7 +45,7 @@ OFFER_INCLUDES = [
     "lastProvider",
     "offerType",
     "availabilityMessage",
-    "thumb_url",
+    "thumbUrl",
     {
         "key": "activeMediation",
         "includes": ["thumbUrl"]
@@ -105,6 +105,7 @@ RECOMMENDATION_INCLUDES = [
             'isFullyBooked',
             "isThing",
             "offerType",
+            "thumbUrl",
             {
                 "key": "product",
                 "includes": ["thumbUrl"]
@@ -155,7 +156,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
             {
                 "key": "offer",
                 "includes": [
-                    'thumb_url',
+                    'thumbUrl',
                     'hasBookingLimitDatetimesPassed',
                     'isBookable',
                     'isDigital',
@@ -204,6 +205,7 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
                     "isFullyBooked",
                     "isThing",
                     "offerType",
+                    "thumbUrl",
                     {
                         "key": "product",
                         "includes": ["thumbUrl"]
