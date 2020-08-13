@@ -45,6 +45,7 @@ OFFER_INCLUDES = [
     "lastProvider",
     "offerType",
     "availabilityMessage",
+    "thumb_url",
     {
         "key": "activeMediation",
         "includes": ["thumbUrl"]
@@ -56,7 +57,6 @@ OFFER_INCLUDES = [
     {
         "key": "product",
         "includes": [
-            'thumbUrl',
             '-type'
         ]
     },
