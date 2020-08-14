@@ -111,7 +111,7 @@ class Offerers extends PureComponent {
   renderTextField = () => (
     <Fragment>
       <button
-        className="button is-primary is-outlined search-ok ml12"
+        className="primary-button"
         type="submit"
       >
         {'OK'}

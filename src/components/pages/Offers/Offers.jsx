@@ -201,7 +201,7 @@ class Offers extends PureComponent {
             </p>
             <p className="control">
               <button
-                className="button is-primary is-outlined"
+                className="primary-button"
                 id="search-button"
                 type="submit"
               >

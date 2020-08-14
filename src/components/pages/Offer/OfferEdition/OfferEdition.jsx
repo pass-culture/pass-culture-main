@@ -718,7 +718,7 @@ class OfferEdition extends PureComponent {
                 </NavLink>
               ) : (
                 showAllForm && (
-                  <SubmitButton className="button is-primary is-medium">
+                  <SubmitButton className="primary-button">
                     {'Enregistrer'}
                     {isCreatedEntity && ' et passer ' + (isEventType ? 'aux dates' : 'aux stocks')}
                   </SubmitButton>

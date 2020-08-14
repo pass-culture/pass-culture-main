@@ -41,7 +41,6 @@ describe('src | components | pages | Venue | controls | ReturnOrSubmitControl ',
 
       // then
       const button = wrapper.find('button')
-      expect(button.prop('className')).toBe('button is-primary is-medium is-loading')
       expect(button.prop('disabled')).toBe(false)
       expect(button.prop('type')).toBe('submit')
       expect(button.text()).toBe('Créer')
@@ -59,7 +58,7 @@ describe('src | components | pages | Venue | controls | ReturnOrSubmitControl ',
 
       // then
       const button = wrapper.find('button')
-      expect(button.prop('className')).toBe('button is-primary is-medium is-loading')
+      expect(button.prop('className')).toBe('primary-button is-loading')
       expect(button.prop('disabled')).toBe(true)
       expect(button.prop('type')).toBe('submit')
       expect(button.text()).toBe('Valider')

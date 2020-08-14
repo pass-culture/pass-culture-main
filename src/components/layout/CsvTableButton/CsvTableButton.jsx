@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
+import PrimaryButton from "../buttons/PrimaryButton/PrimaryButton"
 
 class CsvTableButton extends PureComponent {
   handleRedirectToUrl = () => {
@@ -12,13 +13,10 @@ class CsvTableButton extends PureComponent {
   render() {
     const { children } = this.props
     return (
-      <button
-        className="button is-primary is-flex-button"
+      <PrimaryButton
         onClick={this.handleRedirectToUrl}
-        type="button"
-      >
-        {children}
-      </button>
+        text={children}
+      />
     )
   }
 }

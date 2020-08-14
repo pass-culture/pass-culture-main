@@ -278,6 +278,7 @@ class SignupForm extends PureComponent {
                   <PrimaryButton
                     disabled={!valid}
                     text="Créer mon compte"
+                    type="submit"
                   />
                 </div>
               </form>

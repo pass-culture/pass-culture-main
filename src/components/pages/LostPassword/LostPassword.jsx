@@ -117,7 +117,7 @@ class LostPassword extends PureComponent {
                       </div>
                       <div className="field buttons-field">
                         <SubmitButton
-                          className="button is-primary is-outlined"
+                          className="primary-button"
                           id="changePassword"
                           type="submit"
                         >
@@ -165,7 +165,7 @@ class LostPassword extends PureComponent {
 
                       <div className="field buttons-field">
                         <SubmitButton
-                          className="button is-primary is-outlined"
+                          className="primary-button"
                           id="sendTokenByMail"
                           type="submit"
                         >

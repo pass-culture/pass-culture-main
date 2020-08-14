@@ -7,6 +7,7 @@
   border-radius: rem(24px);
   padding: 0 rem(42px);
   border: 3px solid $primary;
+  min-height: rem(36px);
 
   &:disabled {
     background-color: $primary-disabled;

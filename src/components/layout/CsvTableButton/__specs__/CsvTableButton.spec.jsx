@@ -1,4 +1,4 @@
-import { shallow } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import React from 'react'
 
 import CsvTableButton from '../CsvTableButton'
@@ -22,12 +22,13 @@ describe('src | components | layout | CsvTableButton', () => {
   describe('render', () => {
     it('should render a button with the default props', () => {
       // when
-      const wrapper = shallow(<CsvTableButton {...props} />)
+      const wrapper = mount(<CsvTableButton {...props} />)
+      console.log(wrapper.debug())
 
       // then
-      expect(wrapper.prop('className')).toBe('button is-primary is-flex-button')
-      expect(wrapper.prop('onClick')).toStrictEqual(expect.any(Function))
-      expect(wrapper.text()).toBe('foobar')
+      const submitButton = wrapper.find('button[type="button"]')
+      expect(submitButton).toHaveLength(1)
+      expect(submitButton.text()).toStrictEqual("foobar")
     })
   })
 

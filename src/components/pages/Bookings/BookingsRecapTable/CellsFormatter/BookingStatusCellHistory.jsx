@@ -11,7 +11,7 @@ const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
         <span className={`colored-disc ${displayInfoFromStatus.historyClassName}`} />
         {`${displayInfoFromStatus.status} : ${computeDateForStatus(
           item,
-          displayInfoFromStatus.dateFormat
+          displayInfoFromStatus.dateFormat,
         )}`}
       </li>
     )
@@ -21,9 +21,11 @@ const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
     return item.date ? moment.parseZone(item.date).format(dateFormat) : '-'
   }
 
-  return (<div className="booking-status-history">
-    {bookingsStatusHistoryItems}
-  </div>)
+  return (
+    <div className="booking-status-history">
+      {bookingsStatusHistoryItems}
+    </div>
+  )
 }
 
 BookingStatusCellHistory.propTypes = {

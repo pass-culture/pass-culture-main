@@ -25,7 +25,7 @@ const ReturnOrSubmitControl = ({
           </NavLink>
         ) : (
           <button
-            className={classnames('button is-primary is-medium', {
+            className={classnames('primary-button', {
               'is-loading': isRequestPending,
             })}
             disabled={!canSubmit}

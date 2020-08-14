@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
+import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import { requestData } from 'redux-saga-data'
-import classnames from 'classnames'
 import { showNotification } from 'pass-culture-shared'
 
 import Titles from '../../layout/Titles/Titles'
@@ -87,7 +87,7 @@ class Profil extends PureComponent {
           >
             <div className="control">
               <button
-                className={classnames('button is-primary is-medium', {
+                className={classnames('primary-button', {
                   'is-loading': isLoading,
                 })}
                 type="submit"

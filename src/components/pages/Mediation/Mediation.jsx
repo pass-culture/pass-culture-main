@@ -354,7 +354,7 @@ class Mediation extends PureComponent {
           </div>
           <div className="control">
             <button
-              className={classnames('button is-primary is-medium', {
+              className={classnames('primary-button', {
                 'is-loading': isLoading,
               })}
               disabled={!image}
@@ -418,7 +418,7 @@ class Mediation extends PureComponent {
             </p>
             <p className="control">
               <button
-                className="button is-primary is-outlined is-medium"
+                className="primary-button"
                 onClick={this.handleOnOkClick}
                 type="button"
               >
@@ -432,7 +432,7 @@ class Mediation extends PureComponent {
           <label className="label">
             {'...ou depuis votre poste : '}
           </label>
-          <label className="button is-primary is-outlined">
+          <label className="primary-button">
             {'Choisir un fichier '}
             <input
               hidden
