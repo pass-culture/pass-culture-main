@@ -125,7 +125,6 @@ BookingItem.propTypes = {
     id: PropTypes.string,
     qrCode: PropTypes.string,
     quantity: PropTypes.number,
-    thumbUrl: PropTypes.string,
     token: PropTypes.string.isRequired,
   }).isRequired,
   isQrCodeFeatureDisabled: PropTypes.bool.isRequired,

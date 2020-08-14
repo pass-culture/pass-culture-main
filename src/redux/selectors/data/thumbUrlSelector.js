@@ -14,10 +14,6 @@ export const selectThumbUrlByRouterMatch = createCachedSelector(
       return mediation.thumbUrl
     }
 
-    if (booking && booking.thumbUrl) {
-      return booking.thumbUrl
-    }
-
     if (offer && offer.thumbUrl) {
       return offer.thumbUrl
     }

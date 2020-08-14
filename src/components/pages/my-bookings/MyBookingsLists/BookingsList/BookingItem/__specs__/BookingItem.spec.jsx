@@ -18,7 +18,6 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
         qrCode: 'data:image/png;base64,iVIVhzdjeizfjezfoizejojczez',
         stock: {},
         token: 'G9G9G9',
-        thumbUrl: '/mediations/AE',
       },
       isQrCodeFeatureDisabled: true,
       location: {
@@ -133,7 +132,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
 
   it('should render a booking with a thumb url on thumb when mediation is provided', () => {
     // given
-    props.booking.thumbUrl = '/mediations/AE'
+    props.offer.thumbUrl = '/mediations/AE'
 
     // when
     const wrapper = shallow(<BookingItem {...props} />)
