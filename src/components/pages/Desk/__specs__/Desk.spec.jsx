@@ -189,7 +189,7 @@ describe('src | components | pages | Desk | Desk ', () => {
         const button = wrapper.find('button')
         expect(button).toHaveLength(1)
         expect(button.prop('disabled')).toBe(true)
-        expect(button.prop('className')).toBe('button')
+        expect(button.prop('className')).toBe('primary-button')
         expect(button.prop('type')).toBe('submit')
         expect(button.prop('onClick')).toStrictEqual(expect.any(Function))
       })

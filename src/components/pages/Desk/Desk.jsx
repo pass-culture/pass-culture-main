@@ -205,7 +205,7 @@ class Desk extends React.PureComponent {
           />
 
           <button
-            className="button"
+            className="primary-button"
             disabled={status !== CODE_VERIFICATION_SUCCESS}
             onClick={this.handleOnClick(code)}
             type="submit"
