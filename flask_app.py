@@ -71,7 +71,8 @@ def log_request_details(response):
         "method": request.method,
         "urlPattern": request.url_rule,
         "path": request.path,
-        "duration": request_duration_in_milliseconds
+        "duration": request_duration_in_milliseconds,
+        "from": "flask"
     }
     json_logger = logging.getLogger('json')
     json_logger.info("request details", extra=request_data)
