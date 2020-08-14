@@ -8,6 +8,7 @@ import { selectMediationByOfferId } from '../../../redux/selectors/data/mediatio
 import { selectThumbUrlByRouterMatch } from '../../../redux/selectors/data/thumbUrlSelector'
 import { selectBookingById } from '../../../redux/selectors/data/bookingsSelectors'
 import { selectStockById } from '../../../redux/selectors/data/stocksSelectors'
+import { selectOfferById } from '../../../redux/selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match, recommendation } = ownProps
@@ -30,11 +31,12 @@ export const findThumbByBookingId = (state, bookingId) => {
   const stock = selectStockById(state, stockId)
   const { offerId = '' } = stock || {}
   const mediation = selectMediationByOfferId(state, offerId)
+  const offer = selectOfferById(state, offerId)
 
   if (mediation) {
     withMediation = true
   }
-  thumbUrl = booking.thumbUrl ? booking.thumbUrl : DEFAULT_THUMB_URL
+  thumbUrl = offer.thumbUrl ? offer.thumbUrl : DEFAULT_THUMB_URL
 
   return {
     thumbUrl,

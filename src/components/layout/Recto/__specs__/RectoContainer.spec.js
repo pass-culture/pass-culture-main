@@ -17,9 +17,9 @@ describe('components | RectoContainer', () => {
       }
       const state = {
         data: {
-          bookings: [{ id: 'AB', stockId: 'AC', thumbUrl: '/url-to-image/from-booking' }],
+          bookings: [{ id: 'AB', stockId: 'AC' }],
           mediations: [{ id: 'AE', offerId: 'AD' }],
-          offers: [{ id: 'AD', product: {} }],
+          offers: [{ id: 'AD', product: {}, thumbUrl: '/url-to-image/from-booking' }],
           stocks: [{ id: 'AC', offerId: 'AD' }],
         },
       }
@@ -76,9 +76,9 @@ describe('components | RectoContainer', () => {
       }
       const state = {
         data: {
-          bookings: [{ id: 'AB', stockId: 'AC', thumbUrl: '/url-to-image/from-booking' }],
+          bookings: [{ id: 'AB', stockId: 'AC' }],
           mediations: [{ id: 'AE', offerId: 'AD', thumbUrl: '/url-to-image' }],
-          offers: [{ id: 'AD', product: {} }],
+          offers: [{ id: 'AD', product: {}, thumbUrl: '/url-to-image/from-booking' }],
           stocks: [{ id: 'AC', offerId: 'AD' }],
         },
       }
@@ -102,9 +102,15 @@ describe('components | RectoContainer', () => {
       }
       const state = {
         data: {
-          bookings: [{ id: 'AB', stockId: 'AC', thumbUrl: '/url-to-image/from-booking' }],
+          bookings: [{ id: 'AB', stockId: 'AC' }],
           mediations: [],
-          offers: [{ id: 'AD', product: { id: 'AE', thumbUrl: '/url-to-image/from-product' } }],
+          offers: [
+            {
+              id: 'AD',
+              product: { id: 'AE', thumbUrl: '/url-to-image/from-product' },
+              thumbUrl: '/url-to-image/from-booking',
+            },
+          ],
           stocks: [{ id: 'AC', offerId: 'AD' }],
         },
       }
@@ -217,7 +223,7 @@ describe('components | RectoContainer', () => {
         data: {
           bookings: [],
           mediations: [],
-          offers: [{ id: 'AD', thumbUrl: "/url-to-image-from-offer" }],
+          offers: [{ id: 'AD', thumbUrl: '/url-to-image-from-offer' }],
           stocks: [{ id: 'AC', offerId: 'AD' }],
         },
       }
