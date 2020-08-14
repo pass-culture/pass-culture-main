@@ -11,7 +11,6 @@ jobs:
           command: |
             git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git pass-culture-main
             cd pass-culture-main
-            rm -rf shared
             git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-api.git api || git clone https://github.com/betagouv/pass-culture-api.git api
             ./install_lib_ci.sh
       - checkout:
@@ -26,8 +25,6 @@ jobs:
             yarn install
             yarn test:unit --coverage
             yarn coveralls
-      - store_artifacts:
-          path: ~/pass-culture-main/pro/coverage
       - run:
           name: Install dockerize
           command: |
@@ -37,7 +34,7 @@ jobs:
           environment:
             DOCKERIZE_VERSION: v0.6.1
       - run:
-          name: Run API server
+          name: Running API server
           command: |
            cd ~/pass-culture-main
            ./pc start-backend
@@ -49,7 +46,6 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd ~/pass-culture-main/pro
             nvm install
-            yarn install
             yarn start
           background: true
       - run:
@@ -66,8 +62,6 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd ~/pass-culture-main/pro
             nvm install
-            dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
-            dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
       - store_artifacts:
          path: ~/pass-culture-main/pro/testcafe_screenshots
