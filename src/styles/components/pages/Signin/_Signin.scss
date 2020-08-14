@@ -110,6 +110,7 @@
 
   .buttons-field {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     margin-top: rem(32px);
   }
@@ -140,6 +141,10 @@
     img {
       vertical-align: middle;
       padding-right: rem(5px);
+    }
+
+    a, button {
+      margin-bottom: 5px;
     }
 
     &:empty {

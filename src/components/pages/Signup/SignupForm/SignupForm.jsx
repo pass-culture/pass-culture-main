@@ -269,7 +269,7 @@ class SignupForm extends PureComponent {
                 </div>
                 <div className="buttons-field">
                   <NavLink
-                    className="button is-secondary"
+                    className="secondary-button"
                     to="/connexion"
                   >
                     {'J’ai déjà un compte'}

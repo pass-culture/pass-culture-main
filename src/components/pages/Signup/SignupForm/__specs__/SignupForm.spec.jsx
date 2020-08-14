@@ -300,7 +300,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // then
       const navLink = wrapper.find(NavLink)
       expect(navLink).toHaveLength(1)
-      expect(navLink.prop('className')).toBe('button is-secondary')
+      expect(navLink.prop('className')).toBe('secondary-button')
       expect(navLink.prop('to')).toBe('/connexion')
     })
 

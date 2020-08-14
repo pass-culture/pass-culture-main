@@ -271,8 +271,13 @@
 
   .buttons-field {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     margin-top: rem(16px);
+
+    a, button {
+      margin-bottom: 5px;
+    }
 
     .button {
       padding: 0 rem(45px);

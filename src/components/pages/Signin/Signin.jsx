@@ -44,19 +44,19 @@ class Signin extends PureComponent {
         </div>
         <div className="container">
           <div className="columns">
-            <div className="column is-offset-6 is-two-fifths sign-page-form">
+            <div className="column is-offset-6 is-half sign-page-form">
               <section className="has-text-grey">
                 <div className="text-container">
                   <h1 className="title is-spaced is-1">
-                    <span className="has-text-weight-bold ">
+                    <div className="has-text-weight-bold ">
                       {'Bienvenue '}
-                    </span>
-                    <span className="has-text-weight-semibold">
+                    </div>
+                    <div className="has-text-weight-semibold">
                       {'dans la version bêta '}
-                    </span>
-                    <span className="has-text-weight-normal">
+                    </div>
+                    <div className="has-text-weight-normal">
                       {'du pass Culture pro.'}
-                    </span>
+                    </div>
                   </h1>
                   <h2 className="subtitle is-2">
                     {'Et merci de votre participation pour nous aider à l’améliorer !'}
@@ -106,7 +106,7 @@ class Signin extends PureComponent {
                     </div>
                     <div className="field buttons-field">
                       <NavLink
-                        className="button is-secondary"
+                        className="secondary-button"
                         to={accountCreationUrl}
                       >
                         {'Créer un compte'}
