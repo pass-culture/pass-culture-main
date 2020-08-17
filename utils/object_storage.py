@@ -89,7 +89,12 @@ def get_public_object_date(bucket, id):
 
 
 def build_thumb_path(pc_object: Model, index: int) -> str:
-    return inflect_engine.plural(pc_object.__class__.__name__.lower()) \
+    object_lower_class_name = pc_object.__class__.__name__.lower()
+
+    if object_lower_class_name == 'mediationsqlentity':
+        object_lower_class_name = 'mediation'
+
+    return inflect_engine.plural(object_lower_class_name) \
            + "/" \
            + humanize(pc_object.id) \
            + (('_' + str(index)) if index > 0 else '')
