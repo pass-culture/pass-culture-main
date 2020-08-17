@@ -23,12 +23,11 @@ describe('src | components | layout | CsvTableButton', () => {
     it('should render a button with the default props', () => {
       // when
       const wrapper = mount(<CsvTableButton {...props} />)
-      console.log(wrapper.debug())
 
       // then
       const submitButton = wrapper.find('button[type="button"]')
       expect(submitButton).toHaveLength(1)
-      expect(submitButton.text()).toStrictEqual("foobar")
+      expect(submitButton.text()).toStrictEqual('foobar')
     })
   })
 

@@ -9,7 +9,6 @@ import PasswordField from '../../../layout/form/fields/PasswordField'
 import SirenField from '../../../layout/form/fields/SirenField/SirenField'
 import FieldErrors from '../../../layout/form/FieldErrors'
 import Icon from '../../../layout/Icon'
-import PrimaryButton from '../../../layout/buttons/PrimaryButton/PrimaryButton'
 
 const addressAndDesignationFromSirenDecorator = createDecorator({
   field: 'siren',
@@ -274,12 +273,13 @@ class SignupForm extends PureComponent {
                   >
                     {'J’ai déjà un compte'}
                   </NavLink>
-
-                  <PrimaryButton
+                  <button
+                    className="primary-button"
                     disabled={!valid}
-                    text="Créer mon compte"
                     type="submit"
-                  />
+                  >
+                    {'Créer mon compte'}
+                  </button>
                 </div>
               </form>
             )}
