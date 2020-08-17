@@ -26,3 +26,14 @@ class BuildThumbPathTest:
         #then
         assert thumb_path == 'products/PM'
 
+    def test_returns_path_with_index_if_above_0(self):
+        # given
+        product_object = Product()
+        product_object.id = 123
+
+        # when
+        thumb_path = build_thumb_path(product_object, 3)
+
+        #then
+        assert thumb_path == 'products/PM_3'
+
