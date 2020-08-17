@@ -140,6 +140,10 @@
       padding-right: rem(5px);
     }
 
+    a, button {
+      margin-bottom: 5px;
+    }
+
     &:empty {
       display: none;
     }
@@ -152,10 +156,6 @@
 
     input {
       font-weight: $weight-semibold;
-    }
-
-    a, button {
-      margin-bottom: 5px;
     }
 
     .siren {
