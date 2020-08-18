@@ -2,19 +2,22 @@ import PropTypes from 'prop-types'
 import React, { Fragment, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
+import { ApiError } from '../../../layout/ErrorBoundaries/ErrorsPage/ApiError'
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
 import NoItems from '../../../layout/NoItems/NoItems'
 import TeaserContainer from '../../../layout/Teaser/TeaserContainer'
 
 const MyFavoritesList = ({ myFavorites, loadMyFavorites, persistDeleteFavorites }) => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [hasError, setHasError] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [offerIds, setOfferIds] = useState([])
+  /* eslint-disable-next-line */
+  const [apiError, setApiError] = useState(false)
 
-  const handleFail = () => {
-    setHasError(true)
-    setIsLoading(true)
+  const handleFail = (state, action) => {
+    setApiError(() => {
+      throw new ApiError(action.payload.status)
+    })
   }
 
   const handleSuccess = () => {
@@ -23,7 +26,7 @@ const MyFavoritesList = ({ myFavorites, loadMyFavorites, persistDeleteFavorites 
 
   useEffect(() => {
     loadMyFavorites(handleFail, handleSuccess)
-  }, [])
+  }, [loadMyFavorites])
 
   const showFailModal = () => {
     toast.error('La suppression d’un favori a échoué, réessaie plus tard.')
@@ -56,10 +59,7 @@ const MyFavoritesList = ({ myFavorites, loadMyFavorites, persistDeleteFavorites 
 
   return (
     <Fragment>
-      {isLoading && <LoaderContainer
-        hasError={hasError}
-        isLoading={isLoading}
-                    />}
+      {isLoading && <LoaderContainer />}
 
       {!isLoading && (
         <main className="teaser-page">
