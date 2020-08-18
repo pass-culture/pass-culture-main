@@ -3,12 +3,13 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 
+import getMockStore from '../../../../utils/mockStore'
+import { ThrowApiError } from '../../../layout/ErrorBoundaries/ThrowApiError/ThrowApiError'
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
 import MyBookingDetailsContainer from '../MyBookingDetails/MyBookingDetailsContainer'
 import MyBookings from '../MyBookings'
 import QrCodeContainer from '../MyBookingsLists/BookingsList/QrCode/QrCodeContainer'
 import MyBookingsListsContainer from '../MyBookingsLists/MyBookingsListsContainer'
-import getMockStore from '../../../../utils/mockStore'
 
 describe('src | components | MyBookings', () => {
   let props
@@ -60,14 +61,34 @@ describe('src | components | MyBookings', () => {
     })
   })
 
-  describe('render', () => {
-    it('should render a LoaderContainer component when mounted', () => {
+  describe('when data is fetching', () => {
+    it('should display a loading screen', () => {
       // when
-      const wrapper = shallow(<MyBookings {...props} />)
+      const wrapper = mount(
+        <MemoryRouter initialEntries={[props.match.path]}>
+          <MyBookings {...props} />
+        </MemoryRouter>
+      )
 
       // then
       const loader = wrapper.find(LoaderContainer)
       expect(loader).toHaveLength(1)
+    })
+  })
+
+  describe('when API fail', () => {
+    it('should display an error screen', () => {
+      // given
+      jest
+        .spyOn(props, 'requestGetBookings')
+        .mockImplementation(fail => fail({}, { payload: { status: 500 } }))
+
+      // when
+      const wrapper = shallow(<MyBookings {...props} />)
+
+      // then
+      const throwApiError = wrapper.find(ThrowApiError)
+      expect(throwApiError).toHaveLength(1)
     })
   })
 
