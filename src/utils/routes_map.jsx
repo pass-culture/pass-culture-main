@@ -22,6 +22,7 @@ import VenueCreationContainer from '../components/pages/Venue/VenueCreation/Venu
 import VenueEditionContainer from '../components/pages/Venue/VenueEdition/VenueEditionContainer'
 import Unavailable from '../components/pages/Errors/Unavailable/Unavailable'
 import { UNAVAILABLE_ERROR_PAGE } from './routes'
+import StyleguideContainer from "../components/pages/Styleguide/StyleguideContainer"
 
 const RedirectToConnexionComponent = () => <Redirect to="/connexion" />
 
@@ -160,6 +161,11 @@ const routes = [
     component: Unavailable,
     path: UNAVAILABLE_ERROR_PAGE,
     title: 'Page indisponible',
+  },
+  {
+    component: StyleguideContainer,
+    path: '/styleguide',
+    title: 'DEV - Styleguide',
   },
 ]
 
