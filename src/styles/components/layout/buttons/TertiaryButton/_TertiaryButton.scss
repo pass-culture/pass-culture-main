@@ -1,8 +1,7 @@
 .tertiary-button {
   @include button();
   color: $primary;
-  line-height: $body-line-height;
-  min-height: rem(36px);
+  line-height: rem(22px);
 
   &:disabled {
     color: $primary-disabled;
@@ -15,6 +14,20 @@
   }
 
   &:active:not(:disabled) {
+    color: $primary-dark;
+  }
+
+  img {
+    vertical-align: bottom;
+    margin-right: 0.25rem;
+  }
+}
+
+a.tertiary-button {
+  &:hover {
+    color: $primary;
+  }
+  &:active {
     color: $primary-dark;
   }
 }

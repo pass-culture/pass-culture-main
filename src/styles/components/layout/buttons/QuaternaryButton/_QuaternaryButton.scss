@@ -1,20 +1,27 @@
 .quaternary-button {
   @include caption();
   color: $primary;
-  line-height: $body-line-height;
-  min-height: rem(36px);
-
-  &:disabled {
-    color: $primary-disabled;
-    cursor: not-allowed;
-    opacity: 1;
-  }
+  line-height: rem(22px);
 
   &:hover:not(:disabled) {
     cursor: pointer;
+    color: $primary;
   }
 
   &:active:not(:disabled) {
+    color: $primary-dark;
+  }
+
+  img {
+    vertical-align: bottom;
+  }
+}
+
+a.quaternary-button {
+  &:hover {
+    color: $primary;
+  }
+  &:active {
     color: $primary-dark;
   }
 }

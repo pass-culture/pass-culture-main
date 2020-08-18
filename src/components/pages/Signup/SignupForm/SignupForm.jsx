@@ -74,23 +74,23 @@ class SignupForm extends PureComponent {
               }
             </div>
             <a
-              className="sign-up-requirements pc-description-link"
+              className="tertiary-button"
               href="https://docs.passculture.app/le-pass-culture-en-quelques-mots"
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Icon svg="ico-external-site" />
+              <Icon svg="ico-external-site-red" />
               <span>
                 {'Fonctionnement du pass Culture pro'}
               </span>
             </a>
             <a
-              className="sign-up-requirements"
+              className="tertiary-button"
               href="https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/"
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Icon svg="ico-external-site" />
+              <Icon svg="ico-external-site-red" />
               <span>
                 {'Consulter notre centre d’aide'}
               </span>
@@ -225,7 +225,7 @@ class SignupForm extends PureComponent {
                     {'En cliquant sur Créer mon compte, vous acceptez nos '}
                   </span>
                   <a
-                    className="sign-up-info-link"
+                    className="quaternary-button"
                     href="https://docs.passculture.app/textes-normatifs"
                     rel="noopener noreferrer"
                     target="_blank"
@@ -239,7 +239,7 @@ class SignupForm extends PureComponent {
                     {' ainsi que notre '}
                   </span>
                   <a
-                    className="sign-up-info-link"
+                    className="quaternary-button"
                     href="https://docs.passculture.app/textes-normatifs/charte-des-donnees-personnelles"
                     rel="noopener noreferrer"
                     target="_blank"
@@ -255,7 +255,7 @@ class SignupForm extends PureComponent {
                     }
                   </span>
                   <a
-                    className="sign-up-info-link"
+                    className="quaternary-button"
                     href="mailto:support@passculture.app"
                     rel="noopener noreferrer"
                     target="_blank"
