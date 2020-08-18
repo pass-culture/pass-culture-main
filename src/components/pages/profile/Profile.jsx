@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types'
-import React, { Fragment } from 'react'
+import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
-import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import NotMatchContainer from '../not-match/NotMatchContainer'
 import { getDepartment } from './domain/getDepartment'
 import EditPassword from './EditPassword/EditPassword'
@@ -18,59 +17,54 @@ const Profile = ({ history, match, user }) => {
   const department = getDepartment(departmentCode)
 
   return (
-    <Fragment>
-      {user && (
-        <Switch>
-          <Route
-            exact
-            path={`${match.path}/mot-de-passe`}
-          >
-            <EditPassword
-              handleSubmit={handleEditPasswordSubmit}
-              historyPush={history.push}
-              pathToProfile={match.path}
-              triggerSuccessSnackbar={toast.success}
-              user={user}
-            />
-          </Route>
-          <Route
-            exact
-            path={`${match.path}/informations`}
-          >
-            <PersonalInformationsContainer
-              department={department}
-              historyPush={history.push}
-              pathToProfile={match.path}
-              triggerSuccessSnackbar={toast.success}
-              user={user}
-            />
-          </Route>
-          <Route
-            exact
-            path={`${match.path}/mentions-legales`}
-          >
-            <LegalNotice
-              historyPush={history.push}
-              pathToProfile={match.path}
-              userEmail={email}
-            />
-          </Route>
-          <Route
-            exact
-            path={match.path}
-          >
-            <MainView
-              historyPush={history.push}
-              user={user}
-            />
-          </Route>
-          <Route>
-            <NotMatchContainer />
-          </Route>
-        </Switch>
-      )}
-      {!user && <LoaderContainer isLoading />}
-    </Fragment>
+    <Switch>
+      <Route
+        exact
+        path={`${match.path}/mot-de-passe`}
+      >
+        <EditPassword
+          handleSubmit={handleEditPasswordSubmit}
+          historyPush={history.push}
+          pathToProfile={match.path}
+          triggerSuccessSnackbar={toast.success}
+          user={user}
+        />
+      </Route>
+      <Route
+        exact
+        path={`${match.path}/informations`}
+      >
+        <PersonalInformationsContainer
+          department={department}
+          historyPush={history.push}
+          pathToProfile={match.path}
+          triggerSuccessSnackbar={toast.success}
+          user={user}
+        />
+      </Route>
+      <Route
+        exact
+        path={`${match.path}/mentions-legales`}
+      >
+        <LegalNotice
+          historyPush={history.push}
+          pathToProfile={match.path}
+          userEmail={email}
+        />
+      </Route>
+      <Route
+        exact
+        path={match.path}
+      >
+        <MainView
+          historyPush={history.push}
+          user={user}
+        />
+      </Route>
+      <Route>
+        <NotMatchContainer />
+      </Route>
+    </Switch>
   )
 }
 
