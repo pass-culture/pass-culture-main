@@ -1,6 +1,6 @@
-.erp-wrapper {
+.ep-wrapper {
   align-items: center;
-  color: white;
+  color: $white;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -14,18 +14,14 @@
   }
 }
 
-.erp-text-wrapper {
+.ep-text-wrapper {
   @include body();
 
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   margin-top: rem(16px);
   text-align: center;
 }
 
-.erp-button {
+.ep-button {
   @include button();
 
   border: rem(2px) solid $white;

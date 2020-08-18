@@ -5,6 +5,7 @@ import { Link, Route } from 'react-router-dom'
 
 import { formatToFrenchDecimal } from '../../../utils/getDisplayPrice'
 import { fetchHomepage } from '../../../vendor/contentful/contentful'
+import AnyError from '../../layout/ErrorBoundaries/ErrorsPage/AnyError/AnyError'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
 import Icon from '../../layout/Icon/Icon'
 import BusinessModule from './BusinessModule/BusinessModule'
@@ -12,7 +13,6 @@ import { formatPublicName } from './domain/formatPublicName'
 import ExclusivityPane from './domain/ValueObjects/ExclusivityPane'
 import Offers from './domain/ValueObjects/Offers'
 import OffersWithCover from './domain/ValueObjects/OffersWithCover'
-import ErrorPage from './ErrorPage/ErrorPage'
 import ExclusivityModule from './ExclusivityModule/ExclusivityModule'
 import Module from './Module/Module'
 import OfferDetailsContainer from './OfferDetails/OfferDetailsContainer'
@@ -73,8 +73,6 @@ class Home extends Component {
     }
   }
 
-  refreshPage = () => window.location.reload()
-
   renderModule = (module, row) => {
     const { geolocation, history, trackAllTilesSeen } = this.props
     if (module instanceof Offers || module instanceof OffersWithCover) {
@@ -110,7 +108,7 @@ class Home extends Component {
     const formattedWalletBalance = formatToFrenchDecimal(wallet_balance)
 
     return fetchingError ? (
-      <ErrorPage refreshPage={this.refreshPage} />
+      <AnyError />
     ) : (
       <Fragment>
         <div

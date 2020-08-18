@@ -3,14 +3,15 @@ import { parse } from 'query-string'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
 import { Link } from 'react-router-dom'
+
 import { fetchHomepage } from '../../../../vendor/contentful/contentful'
+import AnyError from '../../../layout/ErrorBoundaries/ErrorsPage/AnyError/AnyError'
 import Icon from '../../../layout/Icon/Icon'
 import BusinessModule from '../BusinessModule/BusinessModule'
 import BusinessPane from '../domain/ValueObjects/BusinessPane'
 import ExclusivityPane from '../domain/ValueObjects/ExclusivityPane'
 import Offers from '../domain/ValueObjects/Offers'
 import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
-import ErrorPage from '../ErrorPage/ErrorPage'
 import ExclusivityModule from '../ExclusivityModule/ExclusivityModule'
 import Home from '../Home'
 import Module from '../Module/Module'
@@ -245,8 +246,8 @@ describe('src | components | Home', () => {
     wrapper.update()
 
     // Then
-    const errorPage = wrapper.find(ErrorPage)
-    expect(errorPage).toHaveLength(1)
+    const anyError = wrapper.find(AnyError)
+    expect(anyError).toHaveLength(1)
   })
 
   it('should update user last connection date when on page', () => {

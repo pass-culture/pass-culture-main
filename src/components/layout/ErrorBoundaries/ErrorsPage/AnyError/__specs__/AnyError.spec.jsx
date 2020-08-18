@@ -1,28 +1,22 @@
 import { mount } from 'enzyme'
-import Icon from '../../../../layout/Icon/Icon'
-import ErrorPage from '../ErrorPage'
 import React from 'react'
 
-describe('errorPage', () => {
-  let props
+import AnyError from '../AnyError'
 
-  beforeEach(() => {
-    props = {
-      refreshPage: jest.fn(),
-    }
-  })
-
+describe('src | layout | anyError', () => {
   it('should render an Icon', () => {
     // When
-    const wrapper = mount(<ErrorPage {...props} />)
+    const wrapper = mount(<AnyError />)
 
     // Then
-    expect(wrapper.find(Icon)).toHaveLength(1)
+    const image = wrapper.find('img')
+    expect(image.prop('alt')).toBe('')
+    expect(image.prop('src')).toBe('http://localhost/icons/ico-maintenance.svg')
   })
 
   it('should have a title', () => {
     // When
-    const wrapper = mount(<ErrorPage {...props} />)
+    const wrapper = mount(<AnyError />)
 
     // Then
     expect(wrapper.find({ children: 'Oh non !' })).toHaveLength(1)
@@ -30,7 +24,7 @@ describe('errorPage', () => {
 
   it('should have a body text', () => {
     // When
-    const wrapper = mount(<ErrorPage {...props} />)
+    const wrapper = mount(<AnyError />)
 
     // Then
     expect(wrapper.find({ children: 'Une erreur s’est produite pendant' })).toHaveLength(1)
@@ -39,7 +33,7 @@ describe('errorPage', () => {
 
   it('should have a retry button', () => {
     // When
-    const wrapper = mount(<ErrorPage {...props} />)
+    const wrapper = mount(<AnyError />)
 
     // Then
     expect(wrapper.find('button').find({ children: 'Réessayer' })).toHaveLength(1)
@@ -47,13 +41,17 @@ describe('errorPage', () => {
 
   it('should refresh the page when the retry button is clicked', () => {
     // Given
-    const wrapper = mount(<ErrorPage {...props} />)
+    Object.defineProperty(window.location, 'reload', {
+      writable: true,
+      value: jest.fn(),
+    })
+    const wrapper = mount(<AnyError />)
+    const button = wrapper.find('button').find({ children: 'Réessayer' })
 
     // When
-    const button = wrapper.find('button').find({ children: 'Réessayer' })
     button.invoke('onClick')()
 
     // Then
-    expect(props.refreshPage).toHaveBeenCalledWith()
+    expect(window.location.reload).toHaveBeenCalledWith()
   })
 })

@@ -19,23 +19,8 @@
   }
 }
 
-.loader-title {
-  @include title1();
-
-  margin: rem(16px) 0;
-}
-
 .loader-message {
   color: $white;
   text-align: center;
   width: rem(240px);
-}
-
-.loader-refresh {
-  border: 2px solid $white;
-  border-radius: rem(20px);
-  font-size: rem(16px);
-  font-weight: 600;
-  margin-top: rem(48px);
-  padding: rem(10px) rem(30px);
 }

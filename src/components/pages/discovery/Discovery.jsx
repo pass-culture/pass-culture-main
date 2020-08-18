@@ -1,22 +1,23 @@
 import PropTypes from 'prop-types'
-import React, { Fragment, PureComponent } from 'react'
+import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
-import DeckContainer from './Deck/DeckContainer'
 import BookingContainer from '../../layout/Booking/BookingContainer'
 import BookingCancellationContainer from '../../layout/BookingCancellation/BookingCancellationContainer'
+import ErrorsPage from '../../layout/ErrorBoundaries/ErrorsPage/ErrorsPage'
+import { ThrowApiError } from '../../layout/ErrorBoundaries/ThrowApiError/ThrowApiError'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
-import { MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS } from './utils/utils'
 import NotMatchContainer from '../not-match/NotMatchContainer'
+import DeckContainer from './Deck/DeckContainer'
+import { MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS } from './utils/utils'
 
 class Discovery extends PureComponent {
   constructor(props) {
     super(props)
+
     this.state = {
       atWorldsEnd: false,
-      hasError: false,
-      hasError500: false,
-      hasNoMoreRecommendations: false,
+      httpErrorCode: false,
       isLoading: false,
     }
   }
@@ -81,25 +82,18 @@ class Discovery extends PureComponent {
 
   handleFail = (state, action) => {
     this.setState({
-      hasError: true,
-      hasError500: action.payload.status === 500 ? true : false,
-      hasNoMoreRecommendations: true,
       isLoading: false,
+      httpErrorCode: action.payload.status,
     })
   }
 
   handleSuccess = (state, action) => {
-    const {
-      recommendations,
-      resetReadRecommendations,
-      redirectToFirstRecommendationIfNeeded,
-    } = this.props
+    const { resetReadRecommendations, redirectToFirstRecommendationIfNeeded } = this.props
 
     const { data: loadedRecommendations = [] } = action && action.payload
     const atWorldsEnd = loadedRecommendations.length === 0
-    const hasNoMoreRecommendations = (!recommendations || !recommendations.length) && atWorldsEnd
 
-    this.setState({ atWorldsEnd, hasNoMoreRecommendations, isLoading: false }, () => {
+    this.setState({ atWorldsEnd, isLoading: false }, () => {
       resetReadRecommendations()
       redirectToFirstRecommendationIfNeeded(loadedRecommendations)
     })
@@ -135,11 +129,15 @@ class Discovery extends PureComponent {
 
   render() {
     const { currentRecommendation, match } = this.props
-    const { hasError, hasNoMoreRecommendations, isLoading, hasError500 } = this.state
+    const { isLoading, httpErrorCode } = this.state
 
     return (
-      <Fragment>
-        {!hasNoMoreRecommendations && !isLoading && (
+      <ErrorsPage>
+        {isLoading && <LoaderContainer />}
+
+        {httpErrorCode && <ThrowApiError httpErrorCode={httpErrorCode} />}
+
+        {!isLoading && !httpErrorCode && (
           <main className="discovery-page no-padding page">
             <Switch>
               <Route
@@ -175,15 +173,7 @@ class Discovery extends PureComponent {
             </Switch>
           </main>
         )}
-        {(isLoading || hasError500 || hasError || hasNoMoreRecommendations) && (
-          <LoaderContainer
-            hasError={hasError}
-            hasError500={hasError500}
-            hasNoMoreRecommendations={hasNoMoreRecommendations}
-            isLoading={isLoading}
-          />
-        )}
-      </Fragment>
+      </ErrorsPage>
     )
   }
 }

@@ -2,10 +2,11 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Route } from 'react-router'
 
-import Discovery from '../Discovery'
+import { ThrowApiError } from '../../../layout/ErrorBoundaries/ThrowApiError/ThrowApiError'
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
+import Discovery from '../Discovery'
 
-describe('src | components | pages | discovery | Discovery', () => {
+describe('src | components | Discovery', () => {
   let props
 
   beforeEach(() => {
@@ -48,9 +49,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       // then
       expect(wrapper.state()).toStrictEqual({
         atWorldsEnd: false,
-        hasError: false,
-        hasError500: false,
-        hasNoMoreRecommendations: false,
+        httpErrorCode: false,
         isLoading: false,
       })
     })
@@ -126,15 +125,14 @@ describe('src | components | pages | discovery | Discovery', () => {
 
       // when
       wrapper.setState({
-        hasError: false,
-        hasError500: false,
-        hasNoMoreRecommendations: false,
+        httpErrorCode: false,
         isLoading: false,
       })
 
       // then
-      expect(wrapper.find(Route)).toHaveLength(5)
       expect(wrapper.find(LoaderContainer)).toHaveLength(0)
+      expect(wrapper.find(ThrowApiError)).toHaveLength(0)
+      expect(wrapper.find(Route)).toHaveLength(5)
     })
 
     it('should display error message when API is down', () => {
@@ -143,14 +141,14 @@ describe('src | components | pages | discovery | Discovery', () => {
 
       // when
       wrapper.setState({
-        hasError: true,
-        hasNoMoreRecommendations: true,
+        httpErrorCode: 500,
         isLoading: false,
       })
 
       // then
+      expect(wrapper.find(LoaderContainer)).toHaveLength(0)
+      expect(wrapper.find(ThrowApiError)).toHaveLength(1)
       expect(wrapper.find(Route)).toHaveLength(0)
-      expect(wrapper.find(LoaderContainer)).toHaveLength(1)
     })
 
     it('should display loading message when API is slow', () => {
@@ -159,30 +157,14 @@ describe('src | components | pages | discovery | Discovery', () => {
 
       // when
       wrapper.setState({
-        hasError: false,
-        hasNoMoreRecommendations: true,
+        httpErrorCode: false,
         isLoading: true,
       })
 
       // then
-      expect(wrapper.find(Route)).toHaveLength(0)
       expect(wrapper.find(LoaderContainer)).toHaveLength(1)
-    })
-
-    it('should display no offer message when API returns zero offer', () => {
-      // given
-      const wrapper = shallow(<Discovery {...props} />)
-
-      // when
-      wrapper.setState({
-        hasError: false,
-        hasNoMoreRecommendations: true,
-        isLoading: false,
-      })
-
-      // then
+      expect(wrapper.find(ThrowApiError)).toHaveLength(0)
       expect(wrapper.find(Route)).toHaveLength(0)
-      expect(wrapper.find(LoaderContainer)).toHaveLength(1)
     })
   })
 
@@ -220,9 +202,7 @@ describe('src | components | pages | discovery | Discovery', () => {
         // then
         expect(wrapper.state()).toStrictEqual({
           atWorldsEnd: true,
-          hasError: false,
-          hasError500: false,
-          hasNoMoreRecommendations: false,
+          httpErrorCode: false,
           isLoading: false,
         })
       })
@@ -243,32 +223,7 @@ describe('src | components | pages | discovery | Discovery', () => {
         // then
         expect(wrapper.state()).toStrictEqual({
           atWorldsEnd: false,
-          hasError: false,
-          hasError500: false,
-          hasNoMoreRecommendations: false,
-          isLoading: false,
-        })
-      })
-
-      it('should set hasNoMoreRecommendations state to true when no recommendations have been fetched and no recommendations are loaded', () => {
-        // given
-        const action = {
-          payload: {
-            data: [],
-          },
-        }
-        props.recommendations = []
-        const wrapper = shallow(<Discovery {...props} />)
-
-        // when
-        wrapper.instance().handleSuccess({}, action)
-
-        // then
-        expect(wrapper.state()).toStrictEqual({
-          atWorldsEnd: true,
-          hasError: false,
-          hasError500: false,
-          hasNoMoreRecommendations: true,
+          httpErrorCode: false,
           isLoading: false,
         })
       })
