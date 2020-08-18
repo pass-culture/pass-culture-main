@@ -1,7 +1,7 @@
 import requests
 from typing import Dict
 
-TITELIVE_STOCKS_API_URL = 'https://stock.epagine.fr/stocks'
+TITELIVE_STOCKS_API_URL = 'https://stockv2.epagine.fr/stocks'
 
 
 class ApiTiteLiveException(Exception):
