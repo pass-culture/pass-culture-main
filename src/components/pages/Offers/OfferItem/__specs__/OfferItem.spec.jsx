@@ -46,22 +46,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
   describe('render', () => {
     describe('thumb Component', () => {
-      it('should render a Thumb Component with the given url when offer has an active mediation', () => {
-        // given
-        const wrapper = shallow(<OfferItem {...props} />)
-
-        // when
-        const thumbComponent = wrapper.find(Thumb)
-
-        // then
-        expect(thumbComponent.prop('alt')).toBe('offre')
-        expect(thumbComponent.prop('src')).toBe('https://url.to/thumb')
-      })
-
-      it('should render a Thumb Component with url from product when offer does not have an active mediation', () => {
+      it('should render a Thumb Component with url from offer when offer has a thumb url', () => {
         // given
         props.offer = activeOfferWithOutActiveMediation
-        props.product.thumbUrl = '/fake-product-url'
+        props.offer.thumbUrl = '/fake-product-url'
         props.mediations = []
 
         // when
@@ -73,10 +61,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(thumbComponent.prop('src')).toBe('/fake-product-url')
       })
 
-      it('should render a Thumb Component with an empty url when offer does not have an active mediation and product does not have a thumb url', () => {
+      it('should render a Thumb Component with an empty url when offer does not have a thumb url', () => {
         // given
         props.offer = activeOfferWithOutActiveMediation
-        props.product.thumbUrl = null
+        props.offer.thumbUrl = null
         props.mediations = []
         const wrapper = shallow(<OfferItem {...props} />)
 

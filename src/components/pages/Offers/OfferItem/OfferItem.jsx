@@ -39,20 +39,6 @@ class OfferItem extends PureComponent {
     }
   }
 
-  getThumbUrl = () => {
-    const { offer, product } = this.props
-
-    if (offer.activeMediation) {
-      return offer.activeMediation.thumbUrl
-    }
-
-    if (product && product.thumbUrl) {
-      return product.thumbUrl
-    }
-
-    return ''
-  }
-
   render() {
     const {
       aggregatedStock,
@@ -70,7 +56,6 @@ class OfferItem extends PureComponent {
 
     const { isNew, name } = offer || {}
     const { priceMin, priceMax } = aggregatedStock || {}
-    const thumbUrl = this.getThumbUrl()
     const numberOfMediations = get(mediations, 'length')
     const remainingStockQuantity = get(stocks, 'length')
     const mediationId = get(get(offer, 'activeMediation'), 'id')
@@ -87,7 +72,7 @@ class OfferItem extends PureComponent {
       >
         <Thumb
           alt="offre"
-          src={thumbUrl}
+          src={offer.thumbUrl || ''}
         />
         <div className="list-content">
           <NavLink
@@ -133,10 +118,9 @@ class OfferItem extends PureComponent {
             <li>
               {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
             </li>
-            {availabilityMessage &&
-            <li>
+            {availabilityMessage && <li>
               {availabilityMessage}
-            </li>}
+                                    </li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />

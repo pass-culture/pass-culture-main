@@ -15,9 +15,9 @@ describe('src | LocalProviderInformationContainer', () => {
             isThing: false,
             venueId: 'EFGH',
             productId: 'AGDK',
+            thumbUrl: 'http://localhost/storage/thumbs/products/AERTR',
           },
         ],
-        products: [{ id: 'AGDK', thumbUrl: 'http://localhost/storage/thumbs/products/AERTR' }],
       },
     }
     props = {
