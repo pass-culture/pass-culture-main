@@ -50,7 +50,7 @@ class MyBookings extends PureComponent {
 
         {httpErrorCode && <ThrowApiError httpErrorCode={httpErrorCode} />}
 
-        {!isLoading && (
+        {!isLoading && !httpErrorCode && (
           <Fragment>
             <MyBookingsListsContainer isEmpty={hasNoBookings} />
 
