@@ -1,12 +1,12 @@
 .secondary-button {
   @include button();
   background-color: $white;
-  color: $primary;
-  line-height: rem(29px);
-  border-radius: rem(24px);
-  padding: 0 rem(42px);
   border: 2px solid $primary;
-  min-height: rem(36px);
+  border-radius: rem(24px);
+  color: $primary;
+  height: rem(40px);
+  line-height: rem(15px);
+  padding: 10px 16px;
 
   &:disabled {
     background-color: $white;
@@ -21,8 +21,8 @@
   }
 
   &:active:not(:disabled) {
-    border: 2px solid $primary-dark;
     background-color: $primary-dark;
+    border: 2px solid $primary-dark;
     color: $white;
   }
 
@@ -32,6 +32,8 @@
 }
 
 a.secondary-button {
+  display:block;
+
   &:hover:not(:disabled) {
     color: $primary;
   }

@@ -28,7 +28,7 @@ describe('src | components | pages | Venue | controls | ReturnOrSubmitControl ',
       // then
       const navLink = wrapper.find(NavLink)
       expect(navLink).toHaveLength(1)
-      expect(navLink.prop('className')).toBe('button is-primary is-medium')
+      expect(navLink.prop('className')).toBe('primary-button')
       expect(navLink.prop('to')).toBe('/structures/ABC')
     })
 

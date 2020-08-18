@@ -14,7 +14,7 @@ const venueOption = Selector('#offer-venueId option')
 const typeOption = Selector('#offer-type option')
 const durationMinutesInput = Selector('input.field-duration')
 const descriptionInput = Selector('#offer-description')
-const submitButton = Selector('button.button.is-primary').withText('Enregistrer')
+const submitButton = Selector('button.primary-button').withText('Enregistrer')
 
 fixture('En étant sur la page des offres')
 

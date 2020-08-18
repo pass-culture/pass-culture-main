@@ -13,7 +13,7 @@ class CsvTableButton extends PureComponent {
     const { children } = this.props
     return (
       <button
-        className="button is-primary is-flex-button"
+        className="secondary-button"
         onClick={this.handleRedirectToUrl}
         type="button"
       >

@@ -24,7 +24,7 @@ const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
       </ul>
       <div className="has-text-centered">
         <NavLink
-          className="button is-tertiary is-outlined"
+          className="tertiary-button"
           to={venueCreationUrl}
         >
           {'+ Ajouter un lieu'}

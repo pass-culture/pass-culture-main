@@ -205,7 +205,7 @@ class Desk extends React.PureComponent {
           />
 
           <button
-            className="primary-button"
+            className="button"
             disabled={status !== CODE_VERIFICATION_SUCCESS}
             onClick={this.handleOnClick(code)}
             type="submit"
@@ -216,7 +216,7 @@ class Desk extends React.PureComponent {
           {this.renderChildComponent()}
 
           <NavLink
-            className="button is-primary is-medium is-pulled-right"
+            className="primary-button"
             id="exitlink"
             to="/accueil"
           >

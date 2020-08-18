@@ -44,19 +44,19 @@ class Signin extends PureComponent {
         </div>
         <div className="container">
           <div className="columns">
-            <div className="column is-offset-6 is-half sign-page-form">
+            <div className="column is-offset-6 is-two-fifths sign-page-form">
               <section className="has-text-grey">
-                <div className="text-container">
+                <div className="hero-body">
                   <h1 className="title is-spaced is-1">
-                    <div className="has-text-weight-bold ">
+                    <span className="has-text-weight-bold ">
                       {'Bienvenue '}
-                    </div>
-                    <div className="has-text-weight-semibold">
+                    </span>
+                    <span className="has-text-weight-semibold">
                       {'dans la version bêta '}
-                    </div>
-                    <div className="has-text-weight-normal">
+                    </span>
+                    <span className="has-text-weight-normal">
                       {'du pass Culture pro.'}
-                    </div>
+                    </span>
                   </h1>
                   <h2 className="subtitle is-2">
                     {'Et merci de votre participation pour nous aider à l’améliorer !'}
@@ -94,6 +94,7 @@ class Signin extends PureComponent {
                       />
                       <span>
                         <Link
+                          className="tertiary-button"
                           id="lostPasswordLink"
                           to="/mot-de-passe-perdu"
                         >

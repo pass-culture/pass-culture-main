@@ -5,7 +5,7 @@ import { ROOT_PATH } from '../src/utils/config'
 
 const inputUserIdentifier = Selector('#user-identifier')
 const inputUserPassword = Selector('#user-password')
-const signInButton = Selector('button.button.is-primary')
+const signInButton = Selector('button.primary-button')
 
 fixture('Suite à la création de mon compte').page(`${ROOT_PATH + 'connexion'}`)
 

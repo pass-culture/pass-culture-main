@@ -19,9 +19,12 @@
     }
 
     button {
+      background: $primary;
+      border: 1px solid $primary;
       border-radius: 1.125em;
       font-size: 30px;
       height: 72px;
+      color: $white;
       margin-left: 20px;
     }
 
@@ -69,5 +72,6 @@
 
   #exitlink {
     margin-top: -70px;
+    float: right;
   }
 }

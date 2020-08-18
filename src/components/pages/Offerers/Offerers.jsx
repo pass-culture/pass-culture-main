@@ -111,7 +111,7 @@ class Offerers extends PureComponent {
   renderTextField = () => (
     <Fragment>
       <button
-        className="primary-button"
+        className="secondary-button"
         type="submit"
       >
         {'OK'}
@@ -170,19 +170,20 @@ class Offerers extends PureComponent {
       : UNAVAILABLE_ERROR_PAGE
 
     const actionLink = (
-      <NavLink
-        className="link is-primary is-outlined"
-        to={offererCreationPageURL}
-      >
-        {'+ Ajouter une structure'}
-        <span
+      <span>
+        <NavLink
+          className="primary-button"
+          to={offererCreationPageURL}
+        >
+          {'+ Ajouter une structure'}
+        </NavLink>
+        <Icon
           data-place="bottom"
           data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
           data-type="info"
-        >
-          <Icon svg="picto-tip" />
-        </span>
-      </NavLink>
+          svg="picto-tip"
+        />
+      </span>
     )
 
     return (
