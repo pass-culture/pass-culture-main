@@ -13,13 +13,28 @@ from repository import repository
 
 
 @clean_database
+def test_doesnt_raise_for_basic_beneficiary(app):
+    # Given
+    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription()
+
+    try:
+        # When
+        validate(beneficiary_pre_subcription)
+    except CantRegisterBeneficiary:
+        # Then
+        assert pytest.fail(
+            f'Should not raise an exception when email not given')
+
+
+@clean_database
 def test_raises_if_email_already_taken(app):
     # Given
     email = "email@example.org"
     existing_user = create_user(email=email)
     repository.save(existing_user)
 
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(email=email)
+    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(
+        email=email)
 
     # When
     with pytest.raises(CantRegisterBeneficiary) as error:
@@ -35,14 +50,16 @@ def test_doesnt_raise_if_email_not_taken(app):
     existing_user = create_user(email="email@example.org")
     repository.save(existing_user)
 
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(email="different.email@example.org")
+    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(
+        email="different.email@example.org")
 
     try:
         # When
         validate(beneficiary_pre_subcription)
     except CantRegisterBeneficiary:
         # Then
-        assert pytest.fail(f'Should not raise an exception when email not given')
+        assert pytest.fail(
+            f'Should not raise an exception when email not given')
 
 
 @clean_database
@@ -51,17 +68,20 @@ def test_raises_if_duplicate(app):
     first_name = "John"
     last_name = "Doe"
     date_of_birth = datetime(1993, 2, 2)
-    existing_user = create_user(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
+    existing_user = create_user(
+        first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
     repository.save(existing_user)
 
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
+    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(
+        first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
 
     # When
     with pytest.raises(CantRegisterBeneficiary) as error:
         validate(beneficiary_pre_subcription)
 
     # Then
-    assert str(error.value) == f"User with id {existing_user.id} is a duplicate."
+    assert str(
+        error.value) == f"User with id {existing_user.id} is a duplicate."
 
 
 @clean_database
@@ -84,11 +104,28 @@ def test_doesnt_raise_if_no_exact_duplicate(app):
                                  email="e3@ex.org")
     repository.save(existing_user1, existing_user2, existing_user3)
 
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
+    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(
+        first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
 
     try:
         # When
         validate(beneficiary_pre_subcription)
     except CantRegisterBeneficiary:
         # Then
-        assert pytest.fail(f'Should not raise an exception when email not given')
+        assert pytest.fail(
+            f'Should not raise an exception when email not given')
+
+
+@clean_database
+def test_raises_if_not_eligible(app):
+    # Given
+    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(
+        postal_code='36567')
+
+    # When
+    with pytest.raises(CantRegisterBeneficiary) as error:
+        validate(beneficiary_pre_subcription)
+
+    # Then
+    assert str(
+        error.value) == f"Postal code {beneficiary_pre_subcription.postal_code} is not eligible."

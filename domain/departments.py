@@ -2,6 +2,24 @@ from typing import List
 
 from models import UserSQLEntity
 
+ELIGIBLE_DEPARTMENTS = [
+    '08',
+    '22',
+    '25',
+    '29',
+    '34',
+    '35',
+    '56',
+    '58',
+    '67',
+    '71',
+    '84',
+    '93',
+    '94',
+    '973',
+]
+
+
 DEPARTEMENT_CODE_VISIBILITY = {
     '08': ['02', '08', '51', '55', '59'],
     '22': ['22', '29', '35', '56'],
@@ -27,3 +45,11 @@ def get_departement_codes_from_user(user: UserSQLEntity) -> List[str]:
         return DEPARTEMENT_CODE_VISIBILITY[user.departementCode[:2]]
     else:
         return [user.departementCode]
+
+
+def is_postal_code_eligible(code: str) -> bool:
+    for department in ELIGIBLE_DEPARTMENTS:
+        if code.startswith(department):
+            return True
+
+    return False

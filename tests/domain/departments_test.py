@@ -1,6 +1,7 @@
+import pytest
 from unittest.mock import patch
 
-from domain.departments import get_departement_codes_from_user
+from domain.departments import get_departement_codes_from_user, is_postal_code_eligible
 from tests.model_creators.generic_creators import create_user
 
 
@@ -26,3 +27,29 @@ class GetDepartementCodesFromUser:
 
         # then
         assert departement_codes == ['32']
+
+
+class IsPostalCodeEligibleTest:
+    @pytest.mark.parametrize('postal_code', [
+        '34000',
+        '34898',
+        '97340'
+    ])
+    def test_returns_true_for_eligible_departments(self, postal_code):
+        # when
+        is_eligible = is_postal_code_eligible(postal_code)
+
+        # then
+        assert is_eligible
+
+    @pytest.mark.parametrize('postal_code', [
+        '36000',
+        '36034',
+        '97400'
+    ])
+    def test_returns_false_for_non_eligible_departments(self, postal_code):
+        # when
+        is_eligible = is_postal_code_eligible(postal_code)
+
+        # then
+        assert not is_eligible

@@ -5,6 +5,7 @@ from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
 from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
     CantRegisterBeneficiary
+from domain.departments import is_postal_code_eligible
 from models import UserSQLEntity
 from repository.user_queries import find_by_civility, find_user_by_email
 
@@ -22,15 +23,25 @@ def _check_email_is_not_taken(beneficiary_pre_subscription: BeneficiaryPreSubscr
         raise CantRegisterBeneficiary(f"Email {email} is already taken.")
 
 
+def _check_department_is_eligible(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
+    postal_code = beneficiary_pre_subscription.postal_code
+
+    if not is_postal_code_eligible(postal_code):
+        raise CantRegisterBeneficiary(
+            f"Postal code {postal_code} is not eligible.")
+
+
 def _check_not_a_duplicate(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
     duplicates = get_beneficiary_duplicates(first_name=beneficiary_pre_subscription.first_name,
                                             last_name=beneficiary_pre_subscription.last_name,
                                             date_of_birth=beneficiary_pre_subscription.date_of_birth)
 
     if duplicates:
-        raise CantRegisterBeneficiary(f"User with id {duplicates[0].id} is a duplicate.")
+        raise CantRegisterBeneficiary(
+            f"User with id {duplicates[0].id} is a duplicate.")
 
 
 def validate(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
+    _check_department_is_eligible(beneficiary_pre_subscription)
     _check_email_is_not_taken(beneficiary_pre_subscription)
     _check_not_a_duplicate(beneficiary_pre_subscription)
