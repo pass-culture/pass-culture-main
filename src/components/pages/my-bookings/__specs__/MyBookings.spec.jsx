@@ -77,7 +77,7 @@ describe('src | components | MyBookings', () => {
   })
 
   describe('when API fail', () => {
-    it('should display an error screen', () => {
+    it('should display only an error screen', () => {
       // given
       jest
         .spyOn(props, 'requestGetBookings')
@@ -88,7 +88,13 @@ describe('src | components | MyBookings', () => {
 
       // then
       const throwApiError = wrapper.find(ThrowApiError)
+      const myBookings = wrapper.find(MyBookingsListsContainer)
+      const myBooking = wrapper.find(MyBookingDetailsContainer)
+      const qrCode = wrapper.find(QrCodeContainer)
       expect(throwApiError).toHaveLength(1)
+      expect(myBookings).toHaveLength(0)
+      expect(myBooking).toHaveLength(0)
+      expect(qrCode).toHaveLength(0)
     })
   })
 
