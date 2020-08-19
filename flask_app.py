@@ -65,7 +65,7 @@ def log_request_details(response):
     request_data = {
         "statusCode": response.status_code,
         "method": request.method,
-        "urlPattern": request.url_rule,
+        "route": request.url_rule,
         "path": request.path,
         "duration": request_duration_in_milliseconds,
         "from": "flask"
