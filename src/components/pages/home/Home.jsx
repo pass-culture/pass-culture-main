@@ -52,14 +52,14 @@ class Home extends Component {
     const { trackAllModulesSeen } = this.props
     const { haveSeenAllModules, modules } = this.state
     if (prevState.modules.length !== modules.length) {
-      this.trackAllModulesSeenEvent()
+      this.checkIfAllModulesHaveBeenSeen()
     }
     if (prevState.haveSeenAllModules !== haveSeenAllModules) {
       trackAllModulesSeen(modules.length)
     }
   }
 
-  trackAllModulesSeenEvent = () => {
+  checkIfAllModulesHaveBeenSeen = () => {
     const navbarHeight = 60
     const modulePaddingBottom = 24
     const hasReachedEndOfPage = (this.modulesListRef.current.getBoundingClientRect().bottom + navbarHeight - modulePaddingBottom - document.documentElement.clientHeight) <= 0
@@ -113,7 +113,7 @@ class Home extends Component {
       <Fragment>
         <div
           className="home-wrapper"
-          onScroll={this.trackAllModulesSeenEvent}
+          onScroll={this.checkIfAllModulesHaveBeenSeen}
         >
           <section className="hw-header">
             <div className="hw-account">
