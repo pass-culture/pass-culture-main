@@ -35,6 +35,10 @@
     height: rem(40px);
     margin-bottom: rem(5px);
     margin-top: rem(10px);
+
+    &:focus-within {
+      border: 2px solid $primary;
+    }
   }
 }
 
@@ -52,6 +56,10 @@
     font-size: rem(18px);
     font-style: italic;
     font-weight: 400;
+  }
+
+  &:focus-within {
+    outline: none;
   }
 }
 
