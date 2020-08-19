@@ -4,9 +4,10 @@
   border: 3px solid $primary;
   border-radius: rem(24px);
   color: $white;
+  cursor: pointer;
   height: rem(40px);
   line-height: rem(14px);
-  padding: 10px 16px;
+  padding: rem(10px) rem(16px);
 
   &:disabled {
     background-color: $primary-disabled;
@@ -15,22 +16,14 @@
     opacity: 1;
   }
 
-  &:hover:not(:disabled) {
-    cursor: pointer;
-  }
-
   &:active:not(:disabled) {
     background-color: $primary-dark;
     border: 3px solid $primary-dark;
   }
-
-  &:focus:not(:active) {
-    box-shadow: none;
-  }
 }
 
 a.primary-button {
-  display:block;
+  display: block;
 
   &:hover:not(:disabled) {
     color: $white;

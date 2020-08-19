@@ -3,13 +3,13 @@
 
   .logo-side {
     background-image: $linear-gradient-to-bottom-right;
-    position: fixed;
-    top: 0;
     bottom: 0;
-    left: 0;
-    right: 60%;
-    z-index: 1;
     box-shadow: inset -10px 0 20px 0 $black-shadow;
+    left: 0;
+    position: fixed;
+    right: 60%;
+    top: 0;
+    z-index: 1;
 
     @media (max-width: $tablet) {
       position: relative;
@@ -50,7 +50,8 @@
   .text-container {
     flex-grow: 1;
     flex-shrink: 0;
-    padding-left: 54px;
+    padding-left: rem(54px);
+    padding-right: rem(24px);
   }
 
   .title,
@@ -140,7 +141,7 @@
     }
 
     a, button {
-      margin-bottom: 5px;
+      margin-bottom: rem(5px);
     }
 
     &:empty {

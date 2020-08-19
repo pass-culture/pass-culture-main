@@ -4,8 +4,8 @@
   line-height: rem(22px);
 
   &:hover:not(:disabled) {
-    cursor: pointer;
     color: $primary;
+    cursor: pointer;
   }
 
   &:active:not(:disabled) {
@@ -13,8 +13,8 @@
   }
 
   img {
-    vertical-align: bottom;
     margin-right: rem(4px);
+    vertical-align: bottom;
   }
 }
 

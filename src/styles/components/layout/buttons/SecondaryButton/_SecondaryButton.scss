@@ -4,9 +4,10 @@
   border: 2px solid $primary;
   border-radius: rem(24px);
   color: $primary;
+  cursor: pointer;
   height: rem(40px);
   line-height: rem(15px);
-  padding: 10px 16px;
+  padding: rem(10px) rem(16px);
 
   &:disabled {
     background-color: $white;
@@ -16,23 +17,15 @@
     opacity: 1;
   }
 
-  &:hover:not(:disabled) {
-    cursor: pointer;
-  }
-
   &:active:not(:disabled) {
     background-color: $primary-dark;
     border: 2px solid $primary-dark;
     color: $white;
   }
-
-  &:focus:not(:active) {
-    box-shadow: none;
-  }
 }
 
 a.secondary-button {
-  display:block;
+  display: block;
 
   &:hover:not(:disabled) {
     color: $primary;
