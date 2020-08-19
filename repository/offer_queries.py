@@ -12,7 +12,8 @@ from domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
 from models import BookingSQLEntity, DiscoveryView, DiscoveryViewV3, \
-    EventType, FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Offerer, SeenOffer, StockSQLEntity, ThingType, UserOfferer, UserSQLEntity, VenueSQLEntity
+    EventType, FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Offerer, SeenOffer, StockSQLEntity, ThingType, \
+    UserOfferer, UserSQLEntity, VenueSQLEntity
 from models.db import Model
 from models.feature import FeatureToggle
 from repository import feature_queries
@@ -59,29 +60,6 @@ def _with_active_and_validated_offerer(query):
 def _not_activation_offers(query):
     query = query.filter(OfferSQLEntity.type != str(EventType.ACTIVATION))
     return query.filter(OfferSQLEntity.type != str(ThingType.ACTIVATION))
-
-
-def order_by_with_criteria():
-    order_offers = _order_by_occurs_soon_or_is_thing_then_randomize()[:]
-    order_by_criteria = desc(OfferSQLEntity.baseScore)
-    order_offers.insert(-1, order_by_criteria)
-    return order_offers
-
-
-def _order_by_occurs_soon_or_is_thing_then_randomize():
-    return [desc(_build_occurs_soon_or_is_thing_predicate()), func.random()]
-
-
-def order_by_with_criteria_and_is_digital(end_of_quarantine_date: datetime) -> List[Query]:
-    event_happens_after_quarantine_predicate = StockSQLEntity.query.filter(StockSQLEntity.offerId == OfferSQLEntity.id) \
-        .filter(StockSQLEntity.beginningDatetime > end_of_quarantine_date) \
-        .exists()
-    return [
-        desc(OfferSQLEntity.url != None),
-        desc(event_happens_after_quarantine_predicate),
-        desc(OfferSQLEntity.baseScore),
-        func.random()
-    ]
 
 
 def get_offers_for_recommendation(user: UserSQLEntity, departement_codes: List[str] = None, limit: int = None,
@@ -223,7 +201,7 @@ def _build_occurs_soon_or_is_thing_predicate():
                                        & ((StockSQLEntity.beginningDatetime == None)
                                           | ((StockSQLEntity.beginningDatetime > datetime.utcnow())
                                              & (StockSQLEntity.beginningDatetime < (
-                                                 datetime.utcnow() + timedelta(days=10)))))) \
+                            datetime.utcnow() + timedelta(days=10)))))) \
         .exists()
 
 
@@ -278,9 +256,9 @@ def _offer_has_stocks_compatible_with_days_intervals(days_intervals):
     return StockSQLEntity.query \
         .filter(StockSQLEntity.offerId == OfferSQLEntity.id) \
         .filter(
-            event_beginningdate_in_interval_filter |
-            stock_has_no_beginning_date_time
-        ).exists()
+        event_beginningdate_in_interval_filter |
+        stock_has_no_beginning_date_time
+    ).exists()
 
 
 def build_find_offers_with_filter_parameters(
@@ -329,7 +307,7 @@ def find_searchable_offer(offer_id):
 def _offer_has_bookable_stocks():
     now = datetime.utcnow()
     stock_can_still_be_booked = (StockSQLEntity.bookingLimitDatetime > now) | (
-        StockSQLEntity.bookingLimitDatetime == None)
+            StockSQLEntity.bookingLimitDatetime == None)
     event_has_not_began_yet = (StockSQLEntity.beginningDatetime != None) & (StockSQLEntity.beginningDatetime > now)
     offer_is_on_a_thing = StockSQLEntity.beginningDatetime == None
     bookings_quantity = _build_bookings_quantity_subquery()
@@ -389,7 +367,7 @@ def _filter_bookable_stocks_for_discovery(stocks_query):
     is_not_soft_deleted_predicate = (StockSQLEntity.isSoftDeleted == False)
     bookings_quantity = _build_bookings_quantity_subquery()
     has_remaining_stock = (StockSQLEntity.quantity == None) | (
-        (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
+            (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
 
     stocks_query = stocks_query.outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
         .filter(is_not_soft_deleted_predicate

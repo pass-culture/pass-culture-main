@@ -30,7 +30,6 @@ class GetNonFreeThingOfferWithActiveMediationTest:
             "offer": {
                 'ageMax': None,
                 'ageMin': None,
-                'baseScore': 0,
                 'bookingEmail': 'booking@example.net',
                 'conditions': None,
                 'dateCreated': format_into_utc_date(offer.dateCreated),
@@ -98,7 +97,6 @@ class GetNonFreeEventOfferTest:
             "offer": {
                 'ageMax': None,
                 'ageMin': None,
-                'baseScore': 0,
                 'bookingEmail': 'booking@example.net',
                 'conditions': None,
                 'dateCreated': format_into_utc_date(offer.dateCreated),

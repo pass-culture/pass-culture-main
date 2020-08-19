@@ -77,8 +77,6 @@ def dictify_pc_object(object_to_update: Model) -> Dict:
         del dict_to_update['offer']
     if 'stocks' in dict_to_update:
         del dict_to_update['stocks']
-    if 'baseScore' in dict_to_update:
-        del dict_to_update['baseScore']
     if 'remainingQuantity' in dict_to_update:
         del dict_to_update['remainingQuantity']
     return dict_to_update

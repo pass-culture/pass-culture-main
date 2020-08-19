@@ -49,11 +49,9 @@ class Get:
             assert response.status_code == 200
             assert len(response.json) == 2
             first_favorite = response.json[0]
-            second_favorite = response.json[1]
             assert 'offer' in first_favorite
             assert 'venue' in first_favorite['offer']
-            assert first_favorite['mediationId'] == 'PM'
-            assert second_favorite['mediationId'] is None
+            assert 'mediationId' in first_favorite
             assert 'validationToken' not in first_favorite['offer']['venue']
 
         @clean_database

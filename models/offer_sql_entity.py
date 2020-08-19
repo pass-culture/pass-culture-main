@@ -96,13 +96,6 @@ class OfferSQLEntity(PcObject,
                          nullable=False,
                          default=datetime.utcnow)
 
-    baseScore = column_property(
-        select([func.coalesce(func.sum(Criterion.scoreDelta), 0)]).
-            where(and_(Criterion.id == OfferCriterion.criterionId,
-                       (OfferCriterion.offerId == id))
-                  )
-    )
-
     criteria = relationship('Criterion',
                             backref=db.backref('criteria', lazy='dynamic'),
                             secondary='offer_criterion')

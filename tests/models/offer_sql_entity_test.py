@@ -6,7 +6,7 @@ from models import OfferSQLEntity, ApiErrors, ThingType, EventType, Product, Pro
 from repository import repository
 from routes.serialization import as_dict
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_stock, \
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, \
     create_offerer, \
     create_venue, create_mediation
 from tests.model_creators.specific_creators import create_product_with_thing_type, \
@@ -224,33 +224,6 @@ class AvailabilityMessageTest:
 
             # Then
             assert availability_message == 'Stock expiré'
-
-
-class BaseScoreTest:
-    @clean_database
-    def test_offer_base_score_with_no_criteria(self):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        offer.criteria = []
-        repository.save(offer)
-
-        # Then
-        assert offer.baseScore == 0
-
-    @clean_database
-    def test_offer_base_score_with_multiple_criteria(self):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        offer.criteria = [create_criterion(name='negative', score_delta=-1),
-                          create_criterion(name='positive', score_delta=2)]
-        repository.save(offer)
-
-        # Then
-        assert offer.baseScore == 1
 
 
 class DateRangeTest:

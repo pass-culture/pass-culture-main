@@ -17,7 +17,7 @@ from repository.offer_queries import department_or_national_offers, \
     get_paginated_expired_offer_ids, \
     _build_bookings_quantity_subquery
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_offerer, \
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, \
     create_venue, create_user_offerer, create_provider
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product, \
     create_product_with_event_type, create_offer_with_event_product, create_event_occurrence, \
@@ -452,34 +452,6 @@ class QueryOfferWithRemainingStocksTest:
 
         # Then
         assert offers_count == 1
-
-
-class BaseScoreTest:
-
-    @clean_database
-    def test_order_by_base_score(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34')
-
-        criterion_negative = create_criterion(name='negative', score_delta=-1)
-        criterion_positive = create_criterion(name='positive', score_delta=1)
-
-        offer1 = create_offer_with_thing_product(venue=venue)
-        offer2 = create_offer_with_thing_product(venue=venue)
-
-        offer1.criteria = [criterion_negative]
-        offer2.criteria = [criterion_negative, criterion_positive]
-
-        repository.save(offer1, offer2)
-
-        # When
-        offers = OfferSQLEntity.query \
-            .order_by(OfferSQLEntity.baseScore.desc()) \
-            .all()
-
-        # Then
-        assert offers == [offer2, offer1]
 
 
 def _create_event_stock_and_offer_for_date(venue, date):

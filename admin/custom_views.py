@@ -14,13 +14,12 @@ class OfferAdminView(BaseAdminView):
     can_create = False
     can_edit = True
     can_delete = False
-    column_list = ['id', 'name', 'type', 'baseScore', 'criteria']
+    column_list = ['id', 'name', 'type', 'criteria']
     column_searchable_list = ['name', 'criteria.name']
-    column_sortable_list = ['name', 'type', 'baseScore', 'criteria']
+    column_sortable_list = ['name', 'type', 'criteria']
     column_labels = {
         'name': 'Nom',
         'type': 'Type',
-        'baseScore': 'Score',
         'criteria': 'Tag',
         'criteria.name': 'Tag'
     }
