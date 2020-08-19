@@ -3,12 +3,12 @@ import React, { Component } from 'react'
 import SwipeableViews from 'react-swipeable-views'
 
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
-import { parseAlgoliaParameters } from '../domain/parseAlgoliaParameters'
-import { buildPairedTiles, buildTiles } from './domain/buildTiles'
 import { PANE_LAYOUT } from '../domain/layout'
-import OneItem from './OneItem/OneItem'
+import { parseAlgoliaParameters } from '../domain/parseAlgoliaParameters'
 import Offers from '../domain/ValueObjects/Offers'
 import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
+import { buildPairedTiles, buildTiles } from './domain/buildTiles'
+import OneItem from './OneItem/OneItem'
 import TwoItems from './TwoItems/TwoItems'
 
 class Module extends Component {
@@ -19,6 +19,10 @@ class Module extends Component {
       isSwitching: false,
       nbHits: 0,
       parsedParameters: null,
+      tilesTracking: {
+        haveSeenAllTiles: false,
+        numberOfTiles: 0,
+      },
     }
     this.swipeRatio = 0.2
   }
@@ -39,6 +43,25 @@ class Module extends Component {
           parsedParameters: parsedParameters,
         })
       })
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const {
+      tilesTracking: { haveSeenAllTiles, numberOfTiles },
+    } = this.state
+    const {
+      trackAllTilesSeen,
+      module: { display: { title = 'Missing title' } = {} },
+    } = this.props
+    if (prevState.tilesTracking.haveSeenAllTiles !== haveSeenAllTiles) {
+      trackAllTilesSeen(title, numberOfTiles)
+    }
+  }
+
+  onChangeIndex = numberOfTiles => index => {
+    if (index + 1 === numberOfTiles) {
+      this.setState({ tilesTracking: { haveSeenAllTiles: true, numberOfTiles } })
     }
   }
 
@@ -65,9 +88,9 @@ class Module extends Component {
     const minOffersHasBeenReached = nbHits >= minOffers
     const shouldModuleBeDisplayed = atLeastOneHit && minOffersHasBeenReached
     const isOneItemLayout = layout === PANE_LAYOUT['ONE-ITEM-MEDIUM']
-    const tiles = isOneItemLayout ?
-      buildTiles({ algolia, cover, hits, nbHits }) :
-      buildPairedTiles({ algolia, cover, hits, nbHits })
+    const tiles = isOneItemLayout
+      ? buildTiles({ algolia, cover, hits, nbHits })
+      : buildPairedTiles({ algolia, cover, hits, nbHits })
 
     return (
       shouldModuleBeDisplayed && (
@@ -81,33 +104,38 @@ class Module extends Component {
               disableLazyLoading
               enableMouseEvents
               hysteresis={this.swipeRatio}
+              onChangeIndex={this.onChangeIndex(tiles.length)}
               onSwitching={this.onSwitching}
               onTransitionEnd={this.onTransitionEnd}
               resistance
               slideClassName="module-slides"
             >
-              {tiles.map(tile => {
-                return isOneItemLayout ?
+              {tiles.map((tile, index) => {
+                return isOneItemLayout ? (
                   <OneItem
                     historyPush={historyPush}
                     isSwitching={isSwitching}
-                    key={`${row}-tile`}
-                    layout={layout}
-                    moduleName={title}
-                    parsedParameters={parsedParameters}
-                    row={row}
-                    tile={tile}
-                  /> :
-                  <TwoItems
-                    historyPush={historyPush}
-                    isSwitching={isSwitching}
-                    key={`${row}-tile`}
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={`${index}-tile`}
                     layout={layout}
                     moduleName={title}
                     parsedParameters={parsedParameters}
                     row={row}
                     tile={tile}
                   />
+                ) : (
+                  <TwoItems
+                    historyPush={historyPush}
+                    isSwitching={isSwitching}
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={`${index}-tile`}
+                    layout={layout}
+                    moduleName={title}
+                    parsedParameters={parsedParameters}
+                    row={row}
+                    tile={tile}
+                  />
+                )
               })}
             </SwipeableViews>
           </ul>
@@ -129,6 +157,7 @@ Module.propTypes = {
   historyPush: PropTypes.func.isRequired,
   module: PropTypes.instanceOf(Offers, OffersWithCover).isRequired,
   row: PropTypes.number.isRequired,
+  trackAllTilesSeen: PropTypes.func.isRequired,
 }
 
 export default Module

@@ -14,6 +14,7 @@ import { Provider } from 'react-redux'
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
 }))
+
 describe('src | components | Module', () => {
   let algolia
   let display
@@ -87,12 +88,13 @@ describe('src | components | Module', () => {
       historyPush: jest.fn(),
       module: null,
       row: 1,
+      trackAllTilesSeen: jest.fn(),
     }
     mockStore = getMockStore({
       data: (
         state = {
           readRecommendations: [],
-        },
+        }
       ) => state,
     })
     fetchAlgolia.mockReset()
@@ -107,7 +109,7 @@ describe('src | components | Module', () => {
           nbPages: 0,
           page: 0,
         })
-      }),
+      })
     )
   }
 
@@ -120,7 +122,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     await wrapper.update()
@@ -143,7 +145,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -160,7 +162,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -180,7 +182,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -199,7 +201,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -217,7 +219,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
@@ -236,7 +238,7 @@ describe('src | components | Module', () => {
         <MemoryRouter>
           <Module {...props} />
         </MemoryRouter>
-      </Provider>,
+      </Provider>
     )
 
     await wrapper.update()
@@ -248,8 +250,8 @@ describe('src | components | Module', () => {
       dispatch: expect.any(Function),
       historyPush: props.historyPush,
       isSwitching: false,
-      layout: "one-item-medium",
-      moduleName: "Les offres près de chez toi!",
+      layout: 'one-item-medium',
+      moduleName: 'Les offres près de chez toi!',
       parameters: {
         aroundRadius: null,
         beginningDatetime: null,
@@ -259,7 +261,7 @@ describe('src | components | Module', () => {
           longitude: 2,
         },
         hitsPerPage: 3,
-        offerCategories: ["CINEMA", "LECON", "LIVRE"],
+        offerCategories: ['CINEMA', 'LECON', 'LIVRE'],
         offerIsDuo: true,
         offerIsFree: false,
         offerIsNew: true,
@@ -281,7 +283,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -299,7 +301,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -309,7 +311,7 @@ describe('src | components | Module', () => {
   })
 
   it('should not render a see more tile when algolia parameters contains beginningDatetime', async () => {
-    algolia.beginningDatetime = "2020-01-01T20:00:00"
+    algolia.beginningDatetime = '2020-01-01T20:00:00'
     mockAlgolia({ hits: [offerOne], nbHits: 5 })
     props.module = new Offers({ algolia, display })
 
@@ -317,7 +319,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -327,7 +329,7 @@ describe('src | components | Module', () => {
   })
 
   it('should not render a see more tile when algolia parameters contains endingDatetime', async () => {
-    algolia.endingDatetime = "2020-01-01T20:00:00"
+    algolia.endingDatetime = '2020-01-01T20:00:00'
     mockAlgolia({ hits: [offerOne], nbHits: 5 })
     props.module = new Offers({ algolia, display })
 
@@ -335,7 +337,7 @@ describe('src | components | Module', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <Module {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -358,7 +360,7 @@ describe('src | components | Module', () => {
           <MemoryRouter>
             <Module {...props} />
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       )
       await wrapper.update()
 
@@ -369,6 +371,91 @@ describe('src | components | Module', () => {
       expect(imageCover).toHaveLength(1)
       const offerTiles = wrapper.find(OfferTile)
       expect(offerTiles).toHaveLength(2)
+    })
+  })
+
+  describe('tiles tracking', () => {
+    describe('only one tile', () => {
+      it('should not track user on render for last tile seen if there is only one tile', async () => {
+        // Given
+        mockAlgolia({ hits: [offerOne], nbHits: 1 })
+        props.module = new Offers({ algolia, display })
+
+        // When
+        await mount(
+          <MemoryRouter>
+            <Module {...props} />
+          </MemoryRouter>
+        )
+
+        // Then
+        expect(props.trackAllTilesSeen).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('multiple tiles', () => {
+      let tilesWrapper
+      let offerThree
+
+      beforeEach(async () => {
+        offerThree = {
+          objectID: 'BF',
+          offer: {
+            dates: [],
+            id: 'BF',
+            label: 'Presse',
+            name: 'Naruto',
+            priceMax: 1,
+            priceMin: 12,
+            thumbUrl: 'http://localhost/storage/thumbs/mediations/PP',
+          },
+          venue: {
+            name: 'Librairie Kléber',
+          },
+        }
+        mockAlgolia({ hits: [offerOne, offerTwo, offerThree], nbHits: 3 })
+        props = {
+          ...props,
+          module: new Offers({ algolia, display }),
+        }
+
+        const wrapper = await mount(
+          <MemoryRouter>
+            <Module {...props} />
+          </MemoryRouter>
+        )
+        wrapper.update()
+        tilesWrapper = wrapper.find('ul').children()
+      })
+
+      it('should not track user if tile seen is not the last', () => {
+        // When
+        tilesWrapper.invoke('onChangeIndex')(1)
+
+        // Then
+        expect(props.trackAllTilesSeen).not.toHaveBeenCalled()
+      })
+
+      it('should track user if tile seen is the last one', () => {
+        // When
+        tilesWrapper.invoke('onChangeIndex')(1)
+        tilesWrapper.invoke('onChangeIndex')(2)
+
+        // Then
+        expect(props.trackAllTilesSeen).toHaveBeenCalledTimes(1)
+        expect(props.trackAllTilesSeen).toHaveBeenCalledWith(display.title, 3)
+      })
+
+      it('should track user only once if last tile is seen multiple times', () => {
+        // When
+        tilesWrapper.invoke('onChangeIndex')(1)
+        tilesWrapper.invoke('onChangeIndex')(2)
+        tilesWrapper.invoke('onChangeIndex')(1)
+        tilesWrapper.invoke('onChangeIndex')(2)
+
+        // Then
+        expect(props.trackAllTilesSeen).toHaveBeenCalledTimes(1)
+      })
     })
   })
 })

@@ -49,5 +49,20 @@ describe('home container', () => {
         name: 'Number of modules: 5',
       })
     })
+
+    it('should contain a function to track user who have seen all tiles', () => {
+      // Given
+      const ownProps = { tracking: { trackEvent: jest.fn() } }
+      const props = mergeProps({}, {}, ownProps)
+
+      // When
+      props.trackAllTilesSeen('Exclu', 3)
+
+      // Then
+      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+        action: 'AllTilesSeen',
+        name: 'Module name: Exclu - Number of tiles: 3',
+      })
+    })
   })
 })

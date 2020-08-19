@@ -51,6 +51,7 @@ describe('src | components | Home', () => {
       },
       match: {},
       trackAllModulesSeen: jest.fn(),
+      trackAllTilesSeen: jest.fn(),
       updateCurrentUser: jest.fn(),
       user: {
         publicName: 'Iron Man',
@@ -132,6 +133,7 @@ describe('src | components | Home', () => {
       historyPush: expect.any(Function),
       module: offersWithCover,
       row: 0,
+      trackAllTilesSeen: props.trackAllTilesSeen,
     })
   })
 
@@ -159,6 +161,7 @@ describe('src | components | Home', () => {
       historyPush: expect.any(Function),
       module: offers,
       row: 0,
+      trackAllTilesSeen: props.trackAllTilesSeen,
     })
   })
 
@@ -258,111 +261,113 @@ describe('src | components | Home', () => {
     expect(props.updateCurrentUser).toHaveBeenCalledTimes(1)
   })
 
-  it('should track the user who have seen all modules after scroll', async () => {
-    // Given
-    fetchHomepage.mockResolvedValueOnce([
-      new BusinessPane({
-        title: 'my-title-1',
-      }),
-      new BusinessPane({
-        title: 'my-title-2',
-      }),
-      new BusinessPane({
-        title: 'my-title-3',
-      }),
-    ])
-    const wrapper = await mount(
-      <MemoryRouter>
-        <Home {...props} />
-      </MemoryRouter>
-    )
-    jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 36)
+  describe('modules tracking', () => {
+    it('should track the user who have seen all modules after scroll', async () => {
+      // Given
+      fetchHomepage.mockResolvedValueOnce([
+        new BusinessPane({
+          title: 'my-title-1',
+        }),
+        new BusinessPane({
+          title: 'my-title-2',
+        }),
+        new BusinessPane({
+          title: 'my-title-3',
+        }),
+      ])
+      const wrapper = await mount(
+        <MemoryRouter>
+          <Home {...props} />
+        </MemoryRouter>
+      )
+      jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 36)
 
-    // When
-    const homeWrapper = wrapper.find('div').first()
-    homeWrapper.invoke('onScroll')()
+      // When
+      const homeWrapper = wrapper.find('div').first()
+      homeWrapper.invoke('onScroll')()
 
-    // Then
-    expect(props.trackAllModulesSeen).toHaveBeenCalledWith(3)
-  })
+      // Then
+      expect(props.trackAllModulesSeen).toHaveBeenCalledWith(3)
+    })
 
-  it('should not track the user who have not seen all modules after scroll', async () => {
-    // Given
-    fetchHomepage.mockResolvedValueOnce([
-      new BusinessPane({
-        title: 'my-title-1',
-      }),
-      new BusinessPane({
-        title: 'my-title-2',
-      }),
-      new BusinessPane({
-        title: 'my-title-3',
-      }),
-    ])
-    const wrapper = await mount(
-      <MemoryRouter>
-        <Home {...props} />
-      </MemoryRouter>
-    )
-    jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 35)
+    it('should not track the user who have not seen all modules after scroll', async () => {
+      // Given
+      fetchHomepage.mockResolvedValueOnce([
+        new BusinessPane({
+          title: 'my-title-1',
+        }),
+        new BusinessPane({
+          title: 'my-title-2',
+        }),
+        new BusinessPane({
+          title: 'my-title-3',
+        }),
+      ])
+      const wrapper = await mount(
+        <MemoryRouter>
+          <Home {...props} />
+        </MemoryRouter>
+      )
+      jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 35)
 
-    // When
-    const homeWrapper = wrapper.find('div').first()
-    homeWrapper.invoke('onScroll')()
+      // When
+      const homeWrapper = wrapper.find('div').first()
+      homeWrapper.invoke('onScroll')()
 
-    // Then
-    expect(props.trackAllModulesSeen).not.toHaveBeenCalled()
-  })
+      // Then
+      expect(props.trackAllModulesSeen).not.toHaveBeenCalled()
+    })
 
-  it('should track the user who have seen all modules without scroll', async () => {
-    // Given
-    fetchHomepage.mockResolvedValueOnce([
-      new BusinessPane({
-        title: 'my-title-1',
-      }),
-      new BusinessPane({
-        title: 'my-title-2',
-      }),
-      new BusinessPane({
-        title: 'my-title-3',
-      }),
-    ])
-    jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 37)
+    it('should track the user who have seen all modules without scroll', async () => {
+      // Given
+      fetchHomepage.mockResolvedValueOnce([
+        new BusinessPane({
+          title: 'my-title-1',
+        }),
+        new BusinessPane({
+          title: 'my-title-2',
+        }),
+        new BusinessPane({
+          title: 'my-title-3',
+        }),
+      ])
+      jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 37)
 
-    // When
-    await mount(
-      <MemoryRouter>
-        <Home {...props} />
-      </MemoryRouter>
-    )
+      // When
+      await mount(
+        <MemoryRouter>
+          <Home {...props} />
+        </MemoryRouter>
+      )
 
-    // Then
-    expect(props.trackAllModulesSeen).toHaveBeenCalledWith(3)
-  })
+      // Then
+      expect(props.trackAllModulesSeen).toHaveBeenCalledWith(3)
+    })
 
-  it('should not track the user who have not seen all modules without scroll', async () => {
-    // Given
-    fetchHomepage.mockResolvedValueOnce([
-      new BusinessPane({
-        title: 'my-title-1',
-      }),
-      new BusinessPane({
-        title: 'my-title-2',
-      }),
-      new BusinessPane({
-        title: 'my-title-3',
-      }),
-    ])
-    jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 35)
+    it('should not track the user who have not seen all modules without scroll', async () => {
+      // Given
+      fetchHomepage.mockResolvedValueOnce([
+        new BusinessPane({
+          title: 'my-title-1',
+        }),
+        new BusinessPane({
+          title: 'my-title-2',
+        }),
+        new BusinessPane({
+          title: 'my-title-3',
+        }),
+      ])
+      jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 35)
 
-    // When
-    await mount(
-      <MemoryRouter>
-        <Home {...props} />
-      </MemoryRouter>
-    )
+      // When
+      await mount(
+        <MemoryRouter>
+          <Home {...props} />
+        </MemoryRouter>
+      )
 
-    // Then
-    expect(props.trackAllModulesSeen).not.toHaveBeenCalled()
+      // Then
+      expect(props.trackAllModulesSeen).not.toHaveBeenCalled()
+    })
   })
 })

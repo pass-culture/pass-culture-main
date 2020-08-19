@@ -62,7 +62,12 @@ class Home extends Component {
   checkIfAllModulesHaveBeenSeen = () => {
     const navbarHeight = 60
     const modulePaddingBottom = 24
-    const hasReachedEndOfPage = (this.modulesListRef.current.getBoundingClientRect().bottom + navbarHeight - modulePaddingBottom - document.documentElement.clientHeight) <= 0
+    const hasReachedEndOfPage =
+      this.modulesListRef.current.getBoundingClientRect().bottom +
+        navbarHeight -
+        modulePaddingBottom -
+        document.documentElement.clientHeight <=
+      0
     if (hasReachedEndOfPage) {
       this.setState({ haveSeenAllModules: true })
     }
@@ -71,7 +76,7 @@ class Home extends Component {
   refreshPage = () => window.location.reload()
 
   renderModule = (module, row) => {
-    const { geolocation, history } = this.props
+    const { geolocation, history, trackAllTilesSeen } = this.props
     if (module instanceof Offers || module instanceof OffersWithCover) {
       return (
         <Module
@@ -80,23 +85,20 @@ class Home extends Component {
           key={`${row}-module`}
           module={module}
           row={row}
+          trackAllTilesSeen={trackAllTilesSeen}
         />
       )
     } else {
       if (module instanceof ExclusivityPane) {
-        return (
-          <ExclusivityModule
-            key={`${row}-exclusivity-module`}
-            module={module}
-          />
-        )
-      }
-      return (
-        <BusinessModule
-          key={`${row}-business-module`}
+        return (<ExclusivityModule
+          key={`${row}-exclusivity-module`}
           module={module}
-        />
-      )
+                />)
+      }
+      return (<BusinessModule
+        key={`${row}-business-module`}
+        module={module}
+              />)
     }
   }
 
@@ -164,6 +166,7 @@ Home.propTypes = {
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
   trackAllModulesSeen: PropTypes.func.isRequired,
+  trackAllTilesSeen: PropTypes.func.isRequired,
   updateCurrentUser: PropTypes.func.isRequired,
   user: PropTypes.shape({
     publicName: PropTypes.string,

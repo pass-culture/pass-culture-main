@@ -25,6 +25,12 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
         name: `Number of modules: ${numberOfModules}`,
       })
     },
+    trackAllTilesSeen: (moduleName, numberOfModules) => {
+      ownProps.tracking.trackEvent({
+        action: 'AllTilesSeen',
+        name: `Module name: ${moduleName} - Number of tiles: ${numberOfModules}`,
+      })
+    },
   }
 }
 
