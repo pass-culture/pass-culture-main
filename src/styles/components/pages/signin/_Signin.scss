@@ -4,6 +4,17 @@
   background-image: $linear-gradient-to-right;
   color: $white;
   overflow: auto;
+
+  .input-inner {
+    border: 2px solid $white;
+    border-radius: rem(32px);
+    padding: 0;
+  }
+
+  .input-inner:focus-within {
+    border: 2px solid $primary;
+    padding: 0;
+  }
 }
 
 .lf-container {
