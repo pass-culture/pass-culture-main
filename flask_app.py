@@ -18,7 +18,6 @@ from utils.config import IS_DEV, ENV
 from utils.config import REDIS_URL
 from utils.health_checker import read_version_from_file
 from utils.json_encoder import EnumJSONEncoder
-from utils.logger import configure_pc_logger
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
 
 if IS_DEV is False:
@@ -52,9 +51,6 @@ app.config['REMEMBER_COOKIE_DURATION'] = 90 * 24 * 3600
 app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
-
-configure_pc_logger()
-
 
 
 @app.before_request

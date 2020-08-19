@@ -5,14 +5,7 @@ from utils.config import LOG_LEVEL
 from pythonjsonlogger import jsonlogger
 
 
-def configure_pc_logger():
-    logging.basicConfig(format='%(asctime)s %(name)-8s %(levelname)-8s %(message)s',
-                        level=LOG_LEVEL,
-                        datefmt='%Y-%m-%d %H:%M:%S')
-    _disable_werkzeug_request_logs()
-
-
-def _disable_werkzeug_request_logs():
+def disable_werkzeug_request_logs():
     werkzeug_logger = logging.getLogger('werkzeug')
     werkzeug_logger.setLevel(logging.ERROR)
 
@@ -30,7 +23,8 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
     def add_fields(self, log_record, record, message_dict):
         super(CustomJsonFormatter, self).add_fields(log_record, record, message_dict)
 
-        log_record['timestamp'] = datetime.fromtimestamp(record.__dict__.get('created')).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        log_record['timestamp'] = datetime.fromtimestamp(record.__dict__.get('created')).strftime(
+            '%Y-%m-%dT%H:%M:%S.%fZ')
         log_record['level'] = record.__dict__.get('levelname')
         log_record['message'] = record.__dict__.get('message')
 
@@ -43,6 +37,10 @@ def pc_logging(level: int, *args: str) -> None:
 
 class AttrDict():
     def __init__(self) -> None:
+        logging.basicConfig(format='%(asctime)s %(name)-8s %(levelname)-8s %(message)s',
+                            level=LOG_LEVEL,
+                            datefmt='%Y-%m-%d %H:%M:%S')
+
         self.critical = lambda *args: pc_logging(logging.CRITICAL, *args)
         self.debug = lambda *args: pc_logging(logging.DEBUG, *args)
         self.error = lambda *args: pc_logging(logging.ERROR, *args)
