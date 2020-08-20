@@ -2,20 +2,18 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 
-import ErrorsPage from '../../layout/ErrorBoundaries/ErrorsPage/ErrorsPage'
+import { ApiError } from '../../layout/ErrorBoundaries/ApiError'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import MyBookingDetailsContainer from './MyBookingDetails/MyBookingDetailsContainer'
 import QrCodeContainer from './MyBookingsLists/BookingsList/QrCode/QrCodeContainer'
 import MyBookingsListsContainer from './MyBookingsLists/MyBookingsListsContainer'
-import { ThrowApiError } from '../../layout/ErrorBoundaries/ThrowApiError/ThrowApiError'
 
 class MyBookings extends PureComponent {
   constructor(props) {
     super(props)
 
     this.state = {
-      httpErrorCode: false,
       isLoading: true,
     }
   }
@@ -27,9 +25,8 @@ class MyBookings extends PureComponent {
   }
 
   handleFail = (state, action) => {
-    this.setState({
-      httpErrorCode: action.payload.status,
-      isLoading: false,
+    this.setState(() => {
+      throw new ApiError(action.payload.status)
     })
   }
 
@@ -41,16 +38,14 @@ class MyBookings extends PureComponent {
 
   render() {
     const { bookings, isQrCodeFeatureDisabled, match } = this.props
-    const { isLoading, httpErrorCode } = this.state
+    const { isLoading } = this.state
     const hasNoBookings = bookings.length === 0
 
     return (
-      <ErrorsPage>
+      <Fragment>
         {isLoading && <LoaderContainer />}
 
-        {httpErrorCode && <ThrowApiError httpErrorCode={httpErrorCode} />}
-
-        {!isLoading && !httpErrorCode && (
+        {!isLoading && (
           <Fragment>
             <MyBookingsListsContainer isEmpty={hasNoBookings} />
 
@@ -88,7 +83,7 @@ class MyBookings extends PureComponent {
             </Switch>
           </Fragment>
         )}
-      </ErrorsPage>
+      </Fragment>
     )
   }
 }

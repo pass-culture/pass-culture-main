@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 
 import getMockStore from '../../../../utils/mockStore'
-import { ThrowApiError } from '../../../layout/ErrorBoundaries/ThrowApiError/ThrowApiError'
+import { ApiError } from '../../../layout/ErrorBoundaries/ApiError'
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
 import MyBookingDetailsContainer from '../MyBookingDetails/MyBookingDetailsContainer'
 import MyBookings from '../MyBookings'
@@ -84,17 +84,10 @@ describe('src | components | MyBookings', () => {
         .mockImplementation(fail => fail({}, { payload: { status: 500 } }))
 
       // when
-      const wrapper = shallow(<MyBookings {...props} />)
+      const wrapper = () => shallow(<MyBookings {...props} />)
 
       // then
-      const throwApiError = wrapper.find(ThrowApiError)
-      const myBookings = wrapper.find(MyBookingsListsContainer)
-      const myBooking = wrapper.find(MyBookingDetailsContainer)
-      const qrCode = wrapper.find(QrCodeContainer)
-      expect(throwApiError).toHaveLength(1)
-      expect(myBookings).toHaveLength(0)
-      expect(myBooking).toHaveLength(0)
-      expect(qrCode).toHaveLength(0)
+      expect(wrapper).toThrow(ApiError)
     })
   })
 
