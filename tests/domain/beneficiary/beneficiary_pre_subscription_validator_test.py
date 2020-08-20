@@ -7,7 +7,7 @@ from tests.domain_creators.generic_creators import \
 from tests.model_creators.generic_creators import create_user
 
 from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
-    CantRegisterBeneficiary
+    BeneficiaryIsADupplicate, BeneficiaryIsNotEligible, CantRegisterBeneficiary
 from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
 from repository import repository
 
@@ -37,7 +37,7 @@ def test_raises_if_email_already_taken(app):
         email=email)
 
     # When
-    with pytest.raises(CantRegisterBeneficiary) as error:
+    with pytest.raises(BeneficiaryIsADupplicate) as error:
         validate(beneficiary_pre_subcription)
 
     # Then
@@ -76,7 +76,7 @@ def test_raises_if_duplicate(app):
         first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
 
     # When
-    with pytest.raises(CantRegisterBeneficiary) as error:
+    with pytest.raises(BeneficiaryIsADupplicate) as error:
         validate(beneficiary_pre_subcription)
 
     # Then
@@ -123,7 +123,7 @@ def test_raises_if_not_eligible(app):
         postal_code='36567')
 
     # When
-    with pytest.raises(CantRegisterBeneficiary) as error:
+    with pytest.raises(BeneficiaryIsNotEligible) as error:
         validate(beneficiary_pre_subcription)
 
     # Then

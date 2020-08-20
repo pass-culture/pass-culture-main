@@ -4,7 +4,7 @@ from typing import List
 from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
 from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
-    CantRegisterBeneficiary
+    BeneficiaryIsADupplicate, BeneficiaryIsNotEligible
 from domain.departments import is_postal_code_eligible
 from models import UserSQLEntity
 from repository.user_queries import find_by_civility, find_user_by_email
@@ -20,14 +20,14 @@ def _check_email_is_not_taken(beneficiary_pre_subscription: BeneficiaryPreSubscr
     email = beneficiary_pre_subscription.email
 
     if find_user_by_email(email):
-        raise CantRegisterBeneficiary(f"Email {email} is already taken.")
+        raise BeneficiaryIsADupplicate(f"Email {email} is already taken.")
 
 
 def _check_department_is_eligible(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
     postal_code = beneficiary_pre_subscription.postal_code
 
     if not is_postal_code_eligible(postal_code):
-        raise CantRegisterBeneficiary(
+        raise BeneficiaryIsNotEligible(
             f"Postal code {postal_code} is not eligible.")
 
 
@@ -37,7 +37,7 @@ def _check_not_a_duplicate(beneficiary_pre_subscription: BeneficiaryPreSubscript
                                             date_of_birth=beneficiary_pre_subscription.date_of_birth)
 
     if duplicates:
-        raise CantRegisterBeneficiary(
+        raise BeneficiaryIsADupplicate(
             f"User with id {duplicates[0].id} is a duplicate.")
 
 

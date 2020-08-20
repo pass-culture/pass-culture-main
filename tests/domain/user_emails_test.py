@@ -10,6 +10,8 @@ from tests.model_creators.specific_creators import create_offer_with_thing_produ
     create_stock_with_event_offer
 from tests.test_utils import create_mocked_bookings
 
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
+    BeneficiaryIsADupplicate, BeneficiaryIsNotEligible
 from domain.booking.booking import Booking
 from domain.stock.stock import Stock
 from domain.user_emails import send_activation_email, \
@@ -555,18 +557,38 @@ class SendResetPasswordUserEmailTest:
 
 
 class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
-    @patch('domain.user_emails.make_beneficiary_pre_subscription_rejected_data',
+    @patch('domain.user_emails.make_dupplicate_beneficiary_pre_subscription_rejected_data',
            return_value={'MJ-TemplateID': 1530996})
-    def when_feature_send_emails_enabled_sends_a_reset_password_email_to_pro_user(self,
-                                                                                  mock_retrieve_data_for_reset_password_user_email,
-                                                                                  app):
+    def when_beneficiary_is_a_dupplicate_sends_correct_template(self,
+                                                                mocked_make_data,
+                                                                app):
         # given
         beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription()
         mocked_send_email = Mock()
+        error = BeneficiaryIsADupplicate("Dupplicate")
 
         # when
-        send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, mocked_send_email)
+        send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, error, mocked_send_email)
 
         # then
-        mock_retrieve_data_for_reset_password_user_email.assert_called_once_with(beneficiary_pre_subscription)
+        mocked_make_data.assert_called_once_with(beneficiary_pre_subscription)
         mocked_send_email.assert_called_once_with(data={'MJ-TemplateID': 1530996})
+
+
+class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
+    @patch('domain.user_emails.make_not_eligible_beneficiary_pre_subscription_rejected_data',
+           return_value={'MJ-TemplateID': 1619528})
+    def when_beneficiary_is_not_eligible_sends_correct_template(self,
+                                                                mocked_make_data,
+                                                                app):
+        # given
+        beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription()
+        mocked_send_email = Mock()
+        error = BeneficiaryIsNotEligible("Dupplicate")
+
+        # when
+        send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, error, mocked_send_email)
+
+        # then
+        mocked_make_data.assert_called_once_with(beneficiary_pre_subscription)
+        mocked_send_email.assert_called_once_with(data={'MJ-TemplateID': 1619528})

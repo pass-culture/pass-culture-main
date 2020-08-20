@@ -7,6 +7,8 @@ from tests.domain_creators.generic_creators import \
     create_domain_beneficiary_pre_subcription
 from tests.model_creators.generic_creators import create_user
 
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
+    BeneficiaryIsADupplicate, BeneficiaryIsNotEligible, CantRegisterBeneficiary
 from infrastructure.repository.beneficiary.beneficiary_sql_repository import \
     BeneficiarySQLRepository
 from models import BeneficiaryImport, UserSQLEntity
@@ -209,28 +211,18 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
     assert beneficiary_import.detail == f"Postal code {postal_code} is not eligible."
 
 
+@patch('use_cases.create_beneficiary_from_application.validate')
 @patch('use_cases.create_beneficiary_from_application.send_raw_email')
 @patch('use_cases.create_beneficiary_from_application.send_rejection_email_to_beneficiary_pre_subscription')
 @clean_database
-def test_send_email_when_cannot_save_beneficiary(mocked_send_rejection_email_to_beneficiary_pre_subscription,
-                                                 stubed_send_raw_email,
-                                                 app):
+def test_calls_send_rejection_mail_with_validation_error(mocked_send_rejection_email_to_beneficiary_pre_subscription,
+                                                         stubed_send_raw_email,
+                                                         stubed_validate,
+                                                         app):
     # Given
-    first_name = 'Thomas'
-    last_name = 'DURAND'
-    date_of_birth = datetime(1995, 2, 5)
-    existing_user_id = 4
-
-    user = create_user(first_name=first_name, last_name=last_name,
-                       date_of_birth=date_of_birth, idx=existing_user_id)
-    repository.save(user)
-
     application_id = 7
     beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription(
-        date_of_birth=date_of_birth,
-        application_id=application_id,
-        first_name=first_name,
-        last_name=last_name,
+        application_id=application_id
     )
     beneficiary_pre_subscription_repository = MagicMock()
     beneficiary_pre_subscription_repository.get_application_by.return_value = beneficiary_pre_subscription
@@ -238,10 +230,13 @@ def test_send_email_when_cannot_save_beneficiary(mocked_send_rejection_email_to_
         beneficiary_pre_subscription_repository=beneficiary_pre_subscription_repository,
         beneficiary_repository=BeneficiarySQLRepository()
     )
+    error = CantRegisterBeneficiary("Some reason")
+    stubed_validate.side_effect = error
 
     # When
     create_beneficiary_from_application.execute(application_id)
 
     # Then
     mocked_send_rejection_email_to_beneficiary_pre_subscription.assert_called_once_with(beneficiary_pre_subscription=beneficiary_pre_subscription,
+                                                                                        error=error,
                                                                                         send_email=stubed_send_raw_email)
