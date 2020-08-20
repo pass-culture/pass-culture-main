@@ -3,7 +3,7 @@ import React, { Fragment } from 'react'
 import Helmet from 'react-helmet'
 import { matchPath } from 'react-router-dom'
 
-import ErrorCatcherContainer from '../../components/layout/ErrorCatcher/ErrorCatcherContainer'
+import ErrorCatcher from '../../components/layout/ErrorBoundaries/ErrorCatcher/ErrorCatcher'
 import NavBarContainer from '../../components/layout/NavBar/NavBarContainer'
 import Notifications from '../../components/layout/Notifications/Notifications'
 import OverlayContainer from '../../components/layout/Overlay/OverlayContainer'
@@ -11,9 +11,9 @@ import SharePopinContainer from '../../components/layout/Share/SharePopinContain
 import SplashContainer from '../../components/layout/Splash/SplashContainer'
 import routes from '../../components/router/routes'
 import { IS_DEV, PROJECT_NAME } from '../../utils/config'
+import { isPathWithNavBar } from './domain/isPathWithNavBar'
 import RedirectToMaintenance from './RedirectToMaintenance/RedirectToMaintenance'
 import { StatusBarHelmet } from './StatusBar/StatusBarHelmet'
-import { isPathWithNavBar } from './domain/isPathWithNavBar'
 
 const getPageTitle = obj => `${obj && obj.title ? `${obj.title} - ` : ''}`
 
@@ -40,13 +40,13 @@ export const App = ({ children, location, isMaintenanceActivated, isUserConnecte
           path={location.pathname}
           routes={routes}
                               />}
-        <ErrorCatcherContainer>
+        <ErrorCatcher>
           {children}
           <OverlayContainer />
           <SplashContainer />
           <SharePopinContainer />
           <Notifications />
-        </ErrorCatcherContainer>
+        </ErrorCatcher>
       </Fragment>
     )
   }

@@ -178,16 +178,3 @@ img {
   overflow: hidden;
   position: relative;
 }
-
-#error-catcher {
-  @extend .flex-center;
-  @extend .flex-rows;
-  @extend .text-center;
-  @extend .is-italic;
-  @extend .is-overlay;
-  @extend .is-white-text;
-
-  background-image: $linear-gradient-to-right;
-  opacity: 1;
-  z-index: $zindex-application-loader;
-}

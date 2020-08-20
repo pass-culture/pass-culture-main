@@ -31,27 +31,12 @@ describe('src | layout | anyError', () => {
     expect(wrapper.find({ children: 'le chargement de la page.' })).toHaveLength(1)
   })
 
-  it('should have a retry button', () => {
+  it('should reload the page when the retry link is clicked', () => {
     // When
     const wrapper = mount(<AnyError />)
 
     // Then
-    expect(wrapper.find('button').find({ children: 'Réessayer' })).toHaveLength(1)
-  })
-
-  it('should refresh the page when the retry button is clicked', () => {
-    // Given
-    Object.defineProperty(window.location, 'reload', {
-      writable: true,
-      value: jest.fn(),
-    })
-    const wrapper = mount(<AnyError />)
-    const button = wrapper.find('button').find({ children: 'Réessayer' })
-
-    // When
-    button.invoke('onClick')()
-
-    // Then
-    expect(window.location.reload).toHaveBeenCalledWith()
+    const link = wrapper.find('a').find({ children: 'Réessayer' })
+    expect(link.prop('href')).toBe('/')
   })
 })

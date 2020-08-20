@@ -26,7 +26,7 @@ describe('src | layout | PageErrors', () => {
   })
 
   describe('when 504 gateway timeout error', () => {
-    it('should display an specific error message', () => {
+    it('should display a specific error message', () => {
       // given
       const error = new ApiError(504)
 
@@ -45,7 +45,7 @@ describe('src | layout | PageErrors', () => {
   })
 
   describe('when 404 page not found error', () => {
-    it('should display an specific error message', () => {
+    it('should display a specific error message', () => {
       // given
       const error = new ApiError(404)
 
@@ -66,7 +66,7 @@ describe('src | layout | PageErrors', () => {
   })
 
   describe('when other than 504 error', () => {
-    it('should display an specific error message', () => {
+    it('should display a specific error message', () => {
       // given
       const error = new ApiError(500)
 
