@@ -3,7 +3,7 @@ import React from 'react'
 import { MemoryRouter } from 'react-router'
 
 import NotMatch from '../../../../pages/not-match/NotMatch'
-import { ApiError } from '../../ApiError'
+import { ApiError } from '../ApiError'
 import AnyError from '../AnyError/AnyError'
 import ErrorsPage from '../ErrorsPage'
 import GatewayTimeoutError from '../GatewayTimeoutError/GatewayTimeoutError'

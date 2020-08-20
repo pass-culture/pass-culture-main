@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Route } from 'react-router'
 
-import { ApiError } from '../../../layout/ErrorBoundaries/ApiError'
+import { ApiError } from '../../../layout/ErrorBoundaries/ErrorsPage/ApiError'
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
 import Discovery from '../Discovery'
 

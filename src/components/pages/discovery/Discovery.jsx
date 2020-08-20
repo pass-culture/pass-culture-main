@@ -4,7 +4,7 @@ import { Route, Switch } from 'react-router-dom'
 
 import BookingContainer from '../../layout/Booking/BookingContainer'
 import BookingCancellationContainer from '../../layout/BookingCancellation/BookingCancellationContainer'
-import { ApiError } from '../../layout/ErrorBoundaries/ApiError'
+import { ApiError } from '../../layout/ErrorBoundaries/ErrorsPage/ApiError'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import NotMatchContainer from '../not-match/NotMatchContainer'
 import DeckContainer from './Deck/DeckContainer'

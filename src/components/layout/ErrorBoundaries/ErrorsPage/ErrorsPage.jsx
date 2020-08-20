@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
 import NotMatch from '../../../pages/not-match/NotMatch'
-import { ApiError } from '../ApiError'
+import { ApiError } from './ApiError'
 import AnyError from './AnyError/AnyError'
 import GatewayTimeoutError from './GatewayTimeoutError/GatewayTimeoutError'
 
