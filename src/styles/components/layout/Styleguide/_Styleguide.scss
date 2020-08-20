@@ -1,34 +1,59 @@
 .styleguide-page {
   h2 {
     @include title2();
-    margin-bottom: rem(10px);
+    margin-bottom: rem(20px);
   }
 
   input {
     display: block;
+    margin-bottom: rem(15px);
   }
+
+  .flex-block {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 rem(20px);
+
+    .class-name {
+      color: $primary;
+      font-style: italic;
+      font-weight: 500;
+    }
+  }
+}
+
+
+.sub-label-input-text {
+  @include caption();
+  color: $grey-dark;
+  margin-left: rem(5px);
 }
 
 .input-text {
   @include body();
-
-  height: rem(40px);
-  border-radius: 22px;
   border: 1px solid $grey-medium;
+  border-radius: 22px;
   color: $black;
+  height: rem(40px);
+  margin-top: rem(9px);
   padding: 10px 16px;
 
   &:focus {
-    outline-offset: 0;
-    outline: none;
     border: 2px solid $primary;
-    height: rem(38px);
+    outline: none;
+    outline-offset: 0;
   }
 
   &:disabled {
-    opacity: 1;
-    border: none;
     background-color: $grey-light;
+    border: none;
     color: $grey-dark;
+    opacity: 1;
   }
+}
+
+.input-text-description {
+  text-align: center;
+  width: 60%;
 }
