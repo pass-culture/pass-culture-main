@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Route } from 'react-router'
 
-import { ThrowApiError } from '../../../layout/ErrorBoundaries/ThrowApiError/ThrowApiError'
+import { ApiError } from '../../../layout/ErrorBoundaries/ApiError'
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
 import Discovery from '../Discovery'
 
@@ -49,7 +49,6 @@ describe('src | components | Discovery', () => {
       // then
       expect(wrapper.state()).toStrictEqual({
         atWorldsEnd: false,
-        httpErrorCode: false,
         isLoading: false,
       })
     })
@@ -125,30 +124,26 @@ describe('src | components | Discovery', () => {
 
       // when
       wrapper.setState({
-        httpErrorCode: false,
         isLoading: false,
       })
 
       // then
       expect(wrapper.find(LoaderContainer)).toHaveLength(0)
-      expect(wrapper.find(ThrowApiError)).toHaveLength(0)
       expect(wrapper.find(Route)).toHaveLength(5)
     })
 
     it('should display error message when API is down', () => {
       // given
-      const wrapper = shallow(<Discovery {...props} />)
+      props.shouldReloadRecommendations = true
+      jest
+        .spyOn(props, 'loadRecommendations')
+        .mockImplementation((success, fail) => fail({}, { payload: { status: 500 } }))
 
       // when
-      wrapper.setState({
-        httpErrorCode: 500,
-        isLoading: false,
-      })
+      const wrapper = () => shallow(<Discovery {...props} />)
 
       // then
-      expect(wrapper.find(LoaderContainer)).toHaveLength(0)
-      expect(wrapper.find(ThrowApiError)).toHaveLength(1)
-      expect(wrapper.find(Route)).toHaveLength(0)
+      expect(wrapper).toThrow(ApiError)
     })
 
     it('should display loading message when API is slow', () => {
@@ -157,13 +152,11 @@ describe('src | components | Discovery', () => {
 
       // when
       wrapper.setState({
-        httpErrorCode: false,
         isLoading: true,
       })
 
       // then
       expect(wrapper.find(LoaderContainer)).toHaveLength(1)
-      expect(wrapper.find(ThrowApiError)).toHaveLength(0)
       expect(wrapper.find(Route)).toHaveLength(0)
     })
   })
@@ -202,7 +195,6 @@ describe('src | components | Discovery', () => {
         // then
         expect(wrapper.state()).toStrictEqual({
           atWorldsEnd: true,
-          httpErrorCode: false,
           isLoading: false,
         })
       })
@@ -223,7 +215,6 @@ describe('src | components | Discovery', () => {
         // then
         expect(wrapper.state()).toStrictEqual({
           atWorldsEnd: false,
-          httpErrorCode: false,
           isLoading: false,
         })
       })

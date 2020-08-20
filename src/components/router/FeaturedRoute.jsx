@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 
+import ErrorsPage from '../layout/ErrorBoundaries/ErrorsPage/ErrorsPage'
 import NotMatchContainer from '../pages/not-match/NotMatchContainer'
 
 class FeaturedRoute extends PureComponent {
@@ -30,7 +31,11 @@ class FeaturedRoute extends PureComponent {
               />)
     }
 
-    return <Route {...routeProps} />
+    return (
+      <ErrorsPage>
+        <Route {...routeProps} />
+      </ErrorsPage>
+    )
   }
 }
 

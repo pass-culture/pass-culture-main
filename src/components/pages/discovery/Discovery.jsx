@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import BookingContainer from '../../layout/Booking/BookingContainer'
 import BookingCancellationContainer from '../../layout/BookingCancellation/BookingCancellationContainer'
-import ErrorsPage from '../../layout/ErrorBoundaries/ErrorsPage/ErrorsPage'
-import { ThrowApiError } from '../../layout/ErrorBoundaries/ThrowApiError/ThrowApiError'
+import { ApiError } from '../../layout/ErrorBoundaries/ApiError'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import NotMatchContainer from '../not-match/NotMatchContainer'
 import DeckContainer from './Deck/DeckContainer'
@@ -17,7 +16,6 @@ class Discovery extends PureComponent {
 
     this.state = {
       atWorldsEnd: false,
-      httpErrorCode: false,
       isLoading: false,
     }
   }
@@ -81,9 +79,8 @@ class Discovery extends PureComponent {
   }
 
   handleFail = (state, action) => {
-    this.setState({
-      isLoading: false,
-      httpErrorCode: action.payload.status,
+    this.setState(() => {
+      throw new ApiError(action.payload.status)
     })
   }
 
@@ -129,15 +126,13 @@ class Discovery extends PureComponent {
 
   render() {
     const { currentRecommendation, match } = this.props
-    const { isLoading, httpErrorCode } = this.state
+    const { isLoading } = this.state
 
     return (
-      <ErrorsPage>
+      <Fragment>
         {isLoading && <LoaderContainer />}
 
-        {httpErrorCode && <ThrowApiError httpErrorCode={httpErrorCode} />}
-
-        {!isLoading && !httpErrorCode && (
+        {!isLoading && (
           <main className="discovery-page no-padding page">
             <Switch>
               <Route
@@ -173,7 +168,7 @@ class Discovery extends PureComponent {
             </Switch>
           </main>
         )}
-      </ErrorsPage>
+      </Fragment>
     )
   }
 }
