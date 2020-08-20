@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 
 import ErrorsPage from '../layout/ErrorBoundaries/ErrorsPage/ErrorsPage'
-import NotMatchContainer from '../pages/not-match/NotMatchContainer'
+import PageNotFoundContainer from '../layout/ErrorBoundaries/ErrorsPage/PageNotFound/PageNotFoundContainer'
 
 class FeaturedRoute extends PureComponent {
   componentDidMount() {
@@ -26,7 +26,7 @@ class FeaturedRoute extends PureComponent {
 
     if (isRouteDisabled) {
       return (<Route
-        component={NotMatchContainer}
+        component={PageNotFoundContainer}
         path={path}
               />)
     }

@@ -3,8 +3,8 @@ import { Provider } from 'react-redux'
 import { BrowserRouter, Switch } from 'react-router-dom'
 import { PersistGate } from 'redux-persist/integration/react'
 
+import PageNotFoundContainer from '../components/layout/ErrorBoundaries/ErrorsPage/PageNotFound/PageNotFoundContainer'
 import MatomoContainer from '../components/matomo/MatomoContainer'
-import NotMatchContainer from '../components/pages/not-match/NotMatchContainer'
 import FeaturedRouteContainer from '../components/router/FeaturedRouteContainer'
 import routes from '../components/router/routes'
 import Tracking from '../components/tracking/Tracking'
@@ -30,7 +30,7 @@ const Root = () => (
                 />
               ))}
               <FeaturedRouteContainer
-                component={NotMatchContainer}
+                component={PageNotFoundContainer}
                 path="*"
                 title="404"
               />

@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import NotMatch from '../../../pages/not-match/NotMatch'
-import { ApiError } from './ApiError'
 import AnyError from './AnyError/AnyError'
+import { ApiError } from './ApiError'
 import GatewayTimeoutError from './GatewayTimeoutError/GatewayTimeoutError'
+import PageNotFound from './PageNotFound/PageNotFound'
 
 class ErrorsPage extends Component {
   static getDerivedStateFromError() {
@@ -37,7 +37,7 @@ class ErrorsPage extends Component {
     if (!hasError) return children
 
     if (httpCode === 404) {
-      return <NotMatch />
+      return <PageNotFound />
     } else if (httpCode === 504) {
       return <GatewayTimeoutError />
     } else {

@@ -2,11 +2,11 @@ import { mount } from 'enzyme'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
 
-import NotMatch from '../../../../pages/not-match/NotMatch'
-import { ApiError } from '../ApiError'
 import AnyError from '../AnyError/AnyError'
+import { ApiError } from '../ApiError'
 import ErrorsPage from '../ErrorsPage'
 import GatewayTimeoutError from '../GatewayTimeoutError/GatewayTimeoutError'
+import PageNotFound from '../PageNotFound/PageNotFound'
 import { Children } from './Children'
 
 describe('src | layout | PageErrors', () => {
@@ -60,8 +60,8 @@ describe('src | layout | PageErrors', () => {
       wrapper.find(Children).simulateError(error)
 
       // then
-      const notMatch = wrapper.find(NotMatch)
-      expect(notMatch).toHaveLength(1)
+      const pageNotFound = wrapper.find(PageNotFound)
+      expect(pageNotFound).toHaveLength(1)
     })
   })
 

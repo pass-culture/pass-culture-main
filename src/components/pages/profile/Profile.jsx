@@ -3,7 +3,7 @@ import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
-import NotMatchContainer from '../not-match/NotMatchContainer'
+import PageNotFoundContainer from '../../layout/ErrorBoundaries/ErrorsPage/PageNotFound/PageNotFoundContainer'
 import { getDepartment } from './domain/getDepartment'
 import EditPassword from './EditPassword/EditPassword'
 import LegalNotice from './LegalNotice/LegalNotice'
@@ -62,7 +62,7 @@ const Profile = ({ history, match, user }) => {
         />
       </Route>
       <Route>
-        <NotMatchContainer />
+        <PageNotFoundContainer />
       </Route>
     </Switch>
   )

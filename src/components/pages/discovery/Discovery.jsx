@@ -5,8 +5,8 @@ import { Route, Switch } from 'react-router-dom'
 import BookingContainer from '../../layout/Booking/BookingContainer'
 import BookingCancellationContainer from '../../layout/BookingCancellation/BookingCancellationContainer'
 import { ApiError } from '../../layout/ErrorBoundaries/ErrorsPage/ApiError'
+import PageNotFoundContainer from '../../layout/ErrorBoundaries/ErrorsPage/PageNotFound/PageNotFoundContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
-import NotMatchContainer from '../not-match/NotMatchContainer'
 import DeckContainer from './Deck/DeckContainer'
 import { MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS } from './utils/utils'
 
@@ -163,7 +163,7 @@ class Discovery extends PureComponent {
                 </Route>
               </Route>
               <Route>
-                <NotMatchContainer />
+                <PageNotFoundContainer />
               </Route>
             </Switch>
           </main>

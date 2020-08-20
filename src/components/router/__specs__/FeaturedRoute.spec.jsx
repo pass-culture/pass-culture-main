@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Route } from 'react-router-dom'
 
-import NotMatchContainer from '../../pages/not-match/NotMatchContainer'
+import PageNotFoundContainer from '../../layout/ErrorBoundaries/ErrorsPage/PageNotFound/PageNotFoundContainer'
 import FeaturedRoute from '../FeaturedRoute'
 
 const Foo = () => <div />
@@ -59,7 +59,7 @@ describe('src | components | router | FeaturedRoute', () => {
       // then
       const routeWrapper = wrapper.find(Route)
       expect(routeWrapper).toHaveLength(1)
-      expect(routeWrapper.props().component).toBe(NotMatchContainer)
+      expect(routeWrapper.props().component).toBe(PageNotFoundContainer)
       expect(props.requestGetFeatures).toHaveBeenCalledTimes(0)
     })
 
