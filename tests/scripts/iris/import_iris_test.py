@@ -2,12 +2,11 @@ import os
 from pathlib import Path
 
 import geopandas as gpd
-from shapely.geometry import Polygon, Point
+from shapely.geometry import Point, Polygon
+from tests.conftest import clean_database
 
 from models import IrisFrance
-from scripts.iris.import_iris import read_iris_shape_file, import_iris_shape_file_to_table, fill_iris_from, \
-    create_centroid_from_polygon
-from tests.conftest import clean_database
+from scripts.iris.import_iris import create_centroid_from_polygon, fill_iris_from, import_iris_shape_file_to_table, read_iris_shape_file
 
 
 def test_read_iris_shape_file_should_read_shape_file_and_return_correct_data_in_wgs84_format():
@@ -23,17 +22,16 @@ def test_read_iris_shape_file_should_read_shape_file_and_return_correct_data_in_
     assert iris_df.crs == {'init': 'epsg:4326'}
 
 
-@clean_database
-def test_fill_iris_from_should_save_iris_row_in_table(app):
+def test_fill_iris_from_should_return_iris(app):
     # Given
     iris_row = gpd.GeoSeries(data={'CODE_IRIS': '973020116',
                                    'geometry': Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])})
 
     # When
-    fill_iris_from(iris_row)
+    iris_france = fill_iris_from(iris_row)
 
     # Check
-    assert IrisFrance.query.count() == 1
+    assert isinstance(iris_france, IrisFrance)
 
 
 @clean_database
