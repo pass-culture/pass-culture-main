@@ -19,12 +19,9 @@ class Module extends Component {
       isSwitching: false,
       nbHits: 0,
       parsedParameters: null,
-      tilesTracking: {
-        haveSeenAllTiles: false,
-        numberOfTiles: 0,
-      },
     }
     this.swipeRatio = 0.2
+    this.haveAlreadySeenAllTiles = false
   }
 
   componentDidMount() {
@@ -46,22 +43,17 @@ class Module extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const {
-      tilesTracking: { haveSeenAllTiles, numberOfTiles },
-    } = this.state
+  onChangeIndex = numberOfTiles => index => {
     const {
       trackAllTilesSeen,
       module: { display: { title = 'Missing title' } = {} },
     } = this.props
-    if (prevState.tilesTracking.haveSeenAllTiles !== haveSeenAllTiles) {
-      trackAllTilesSeen(title, numberOfTiles)
-    }
-  }
+    const haveSeenAllTilesForTheFirstTime =
+      index + 1 === numberOfTiles && !this.haveAlreadySeenAllTiles
 
-  onChangeIndex = numberOfTiles => index => {
-    if (index + 1 === numberOfTiles) {
-      this.setState({ tilesTracking: { haveSeenAllTiles: true, numberOfTiles } })
+    if (haveSeenAllTilesForTheFirstTime) {
+      trackAllTilesSeen(title, numberOfTiles)
+      this.haveAlreadySeenAllTiles = true
     }
   }
 
