@@ -2,12 +2,12 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const NoItems = ({ sentence }) => (
+const NoItems = ({ isHomepageDisabled, sentence }) => (
   <div className="teaser-container">
     <div className="teaser-link-container">
       <Link
         className="teaser-link-offers"
-        to="/decouverte"
+        to={isHomepageDisabled ? "/decouverte" : "/accueil"}
       >
         {'Lance-toi !'}
       </Link>
@@ -19,6 +19,7 @@ const NoItems = ({ sentence }) => (
 )
 
 NoItems.propTypes = {
+  isHomepageDisabled: PropTypes.bool.isRequired,
   sentence: PropTypes.string.isRequired,
 }
 

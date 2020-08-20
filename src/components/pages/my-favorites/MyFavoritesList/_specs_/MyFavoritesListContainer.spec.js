@@ -1,5 +1,7 @@
 import { favoriteNormalizer } from '../../../../../utils/normalizers'
-import { mapDispatchToProps } from '../../MyFavoritesList/MyFavoritesListContainer'
+import { mapDispatchToProps, mapStateToProps } from '../../MyFavoritesList/MyFavoritesListContainer'
+import selectIsFeatureDisabled from '../../../../router/selectors/selectIsFeatureDisabled'
+import { selectFavorites } from '../../../../../redux/selectors/data/favoritesSelectors'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
@@ -8,8 +10,27 @@ jest.mock('redux-thunk-data', () => {
     requestData,
   }
 })
+jest.mock('../../../../router/selectors/selectIsFeatureDisabled', () => jest.fn())
+jest.mock('../../../../../redux/selectors/data/favoritesSelectors', () => ({
+  selectFavorites: jest.fn(),
+}))
 
 describe('src | components | MyFavorites', () => {
+  describe('mapStateToProps', () => {
+    it('should contain the favorites and the homepage feature', () => {
+      // Given
+      selectIsFeatureDisabled.mockReturnValue(false)
+      selectFavorites.mockReturnValue(['mocked favorite'])
+
+      // When
+      const props = mapStateToProps(expect.any(Object))
+
+      // Then
+      expect(props.isHomepageDisabled).toBe(false)
+      expect(props.myFavorites).toStrictEqual(['mocked favorite'])
+    })
+  })
+
   describe('loadMyFavorites()', () => {
     it('should get my favorites from API', () => {
       // given

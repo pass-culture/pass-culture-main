@@ -9,6 +9,7 @@ const MyBookingsLists = ({
   bookingsOfTheWeek,
   finishedAndUsedAndCancelledBookings,
   isEmpty,
+  isHomepageDisabled,
   upComingBookings,
 }) => (
   <main className="teaser-page">
@@ -16,7 +17,12 @@ const MyBookingsLists = ({
       {'Réservations'}
     </h1>
 
-    {isEmpty && <NoItems sentence="Dès que tu auras réservé une offre, tu la retrouveras ici." />}
+    {isEmpty && (
+      <NoItems
+        isHomepageDisabled={isHomepageDisabled}
+        sentence="Dès que tu auras réservé une offre, tu la retrouveras ici."
+      />
+    )}
 
     {!isEmpty && bookingsOfTheWeek.length > 0 && (
       <section className="mb-section">
@@ -71,6 +77,7 @@ MyBookingsLists.propTypes = {
   bookingsOfTheWeek: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   finishedAndUsedAndCancelledBookings: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   isEmpty: PropTypes.bool,
+  isHomepageDisabled: PropTypes.bool.isRequired,
   upComingBookings: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 

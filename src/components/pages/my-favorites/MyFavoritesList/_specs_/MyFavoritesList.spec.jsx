@@ -14,6 +14,7 @@ describe('my Favorites', () => {
       loadMyFavorites: jest.fn((fail, success) => success()),
       myFavorites: [],
       persistDeleteFavorites: jest.fn(),
+      isHomepageDisabled: false,
     }
   })
 
@@ -42,7 +43,7 @@ describe('my Favorites', () => {
       // then
       const redirectButton = wrapper.find('a')
       expect(redirectButton.text()).toBe('Lance-toi !')
-      expect(redirectButton.prop('href')).toBe('/decouverte')
+      expect(redirectButton.prop('href')).toBe('/accueil')
     })
 
     it('should display a description text', () => {

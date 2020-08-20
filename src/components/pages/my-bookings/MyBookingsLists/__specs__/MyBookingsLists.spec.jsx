@@ -13,6 +13,7 @@ describe('src | components | MyBookingsLists', () => {
       finishedAndUsedAndCancelledBookings: [],
       upComingBookings: [],
       bookingsOfTheWeek: [],
+      isHomepageDisabled: false,
     }
   })
 
@@ -37,7 +38,7 @@ describe('src | components | MyBookingsLists', () => {
       // then
       const redirectButton = wrapper.find('a')
       expect(redirectButton.text()).toBe('Lance-toi !')
-      expect(redirectButton.prop('href')).toBe('/decouverte')
+      expect(redirectButton.prop('href')).toBe('/accueil')
     })
 
     it('should display a description text', () => {

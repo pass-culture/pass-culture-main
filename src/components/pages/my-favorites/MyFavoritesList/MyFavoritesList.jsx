@@ -6,7 +6,7 @@ import LoaderContainer from '../../../layout/Loader/LoaderContainer'
 import NoItems from '../../../layout/NoItems/NoItems'
 import TeaserContainer from '../../../layout/Teaser/TeaserContainer'
 
-const MyFavoritesList = ({ myFavorites, loadMyFavorites, persistDeleteFavorites }) => {
+const MyFavoritesList = ({ isHomepageDisabled, myFavorites, loadMyFavorites, persistDeleteFavorites }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
@@ -67,7 +67,10 @@ const MyFavoritesList = ({ myFavorites, loadMyFavorites, persistDeleteFavorites 
             {'Favoris'}
           </h1>
           {hasNoFavorite ? (
-            <NoItems sentence="Dès que tu auras ajouté une offre à tes favoris, tu la retrouveras ici." />
+            <NoItems
+              isHomepageDisabled={isHomepageDisabled}
+              sentence="Dès que tu auras ajouté une offre à tes favoris, tu la retrouveras ici."
+            />
           ) : (
             <section>
               {isEditMode ? (
@@ -122,6 +125,7 @@ MyFavoritesList.defaultProps = {
 }
 
 MyFavoritesList.propTypes = {
+  isHomepageDisabled: PropTypes.bool.isRequired,
   loadMyFavorites: PropTypes.func.isRequired,
   myFavorites: PropTypes.arrayOf(PropTypes.shape()),
   persistDeleteFavorites: PropTypes.func.isRequired,
