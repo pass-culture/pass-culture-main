@@ -130,28 +130,8 @@
   }
 
   label {
-    color: $grey-dark;
     display: block;
-    font-size: rem(20px);
     margin-bottom: rem(32px);
-  }
-
-  label.sign-up-checkbox {
-    color: $black;
-    display: flex;
-    font-size: rem($font-size);
-    margin-bottom: rem(16px);
-  }
-
-  label.sign-up-cgu {
-    color: $black;
-    font-size: rem($font-size);
-    font-weight: $weight-bold;
-    margin-bottom: rem(16px);
-
-    & a {
-      text-decoration: underline;
-    }
   }
 
   .sub-label {
@@ -160,42 +140,12 @@
     font-size: rem(14px);
   }
 
-  input:not([type='checkbox']) {
-    -webkit-appearance: none;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-    -ms-flex-align: center;
-    -ms-flex-pack: start;
-    background-color: $white;
-    border: 2px solid $grey-medium;
-    border-radius: $control-radius;
-    display: -ms-inline-flexbox;
-    display: inline-flex;
-    font-weight: $weight-semibold;
-    font-size: rem(16px);
-    height: rem(36px);
-    max-width: 100%;
-    margin-top: rem(8px);
-    outline: none;
-    padding: calc(0.375em - 2px) rem(16px);
-    width: 100%;
-  }
-
-  input::placeholder {
-    color: $grey-dark;
-  }
-
-  input:focus {
-    border-color: $primary;
-  }
-
   .field-siren-control {
     margin-top: rem(8px);
   }
 
   .field-siren-control input {
     margin-top: 0;
-    width: rem(128px);
   }
 
   .field-siren-input-value {
@@ -215,7 +165,6 @@
     display: flex;
     -ms-flex-pack: start;
     justify-content: flex-start;
-    margin-top: rem(8px);
   }
 
   .field-password > input {

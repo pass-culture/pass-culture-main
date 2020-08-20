@@ -78,29 +78,6 @@
     margin-top: rem(32px);
   }
 
-  label {
-    margin-bottom: rem(8px);
-
-    h3 {
-      position: relative;
-      font-size: $size-3;
-
-      &.with-subtitle {
-        float: left;
-      }
-    }
-
-    p {
-      font-size: 0.9rem;
-      text-align: right;
-    }
-
-    a {
-      text-decoration: underline;
-      color: $black;
-    }
-  }
-
   .cgu-field {
     font-weight: $weight-bold;
   }
@@ -119,24 +96,14 @@
 
   .errors {
     color: $primary;
+    display: flex;
+    align-items: center;
     font-size: 0.9rem;
     font-weight: 500;
     line-height: rem(32px);
-    list-style-type: none;
     text-align: left;
-    transition: transform 0.2s ease-in-out;
-
-    li {
-      margin-bottom: rem(16px);
-    }
-
-    &.pop {
-      transform: scale(1.04);
-      transform-origin: 0 50%;
-    }
 
     img {
-      vertical-align: middle;
       padding-right: rem(5px);
     }
 
@@ -149,42 +116,7 @@
     }
   }
 
-  .field {
-    label {
-      display: block;
-    }
-
-    input {
-      font-weight: $weight-semibold;
-    }
-
-    .siren {
-      width: 50%;
-    }
-  }
-
-  .information-text {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: row;
-    margin-top: rem(24px);
-
-    img {
-      height: rem(21px);
-      margin-right: rem(6px);
-      margin-top: rem(3px);
-    }
-
-    p {
-      color: $grey-dark;
-      font-size: rem(13px);
-      line-height: rem(16px);
-      text-align: justify;
-
-      a {
-        color: inherit;
-        text-decoration: underline;
-      }
-    }
+  .email-input {
+    margin-bottom: rem(25px);
   }
 }

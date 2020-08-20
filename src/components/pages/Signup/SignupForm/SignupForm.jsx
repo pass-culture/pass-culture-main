@@ -111,15 +111,16 @@ class SignupForm extends PureComponent {
           >
             {({ handleSubmit, valid, values }) => (
               <form onSubmit={handleSubmit}>
-                <label>
+                <label className="input-text">
                   {'Adresse e-mail'}
                   <span className="field-asterisk">
                     {'*'}
                   </span>
-                  <p className="sub-label">
+                  <span className="it-sub-label">
                     {'...pour se connecter et récupérer son mot de passe en cas d’oubli'}
-                  </p>
+                  </span>
                   <Field
+                    className="it-input"
                     component="input"
                     name="email"
                     placeholder="nom@exemple.fr"
@@ -130,15 +131,16 @@ class SignupForm extends PureComponent {
                   <FieldErrors customMessage={errors ? errors.email : null} />
                 </label>
 
-                <label>
+                <label className="input-text">
                   {'Mot de passe'}
                   <span className="field-asterisk">
                     {'*'}
                   </span>
-                  <span className="sub-label">
+                  <span className="it-sub-label">
                     {'...pour se connecter'}
                   </span>
                   <PasswordField
+                    className="it-input-with-icon"
                     name="password"
                     placeholder="Mon mot de passe"
                     required
@@ -147,12 +149,13 @@ class SignupForm extends PureComponent {
                   <FieldErrors customMessage={errors ? errors.password : null} />
                 </label>
 
-                <label>
+                <label className="input-text">
                   {'Nom'}
                   <span className="field-asterisk">
                     {'*'}
                   </span>
                   <Field
+                    className="it-input"
                     component="input"
                     name="lastName"
                     placeholder="Mon nom"
@@ -162,12 +165,13 @@ class SignupForm extends PureComponent {
                   <FieldErrors customMessage={errors ? errors.lastName : null} />
                 </label>
 
-                <label>
+                <label className="input-text">
                   {'Prénom'}
                   <span className="field-asterisk">
                     {'*'}
                   </span>
                   <Field
+                    className="it-input"
                     component="input"
                     name="firstName"
                     placeholder="Mon prénom"
@@ -178,15 +182,16 @@ class SignupForm extends PureComponent {
                   <FieldErrors customMessage={errors ? errors.publicName : null} />
                 </label>
 
-                <label>
+                <label className="input-text">
                   {'Téléphone'}
                   <span className="field-asterisk">
                     {'*'}
                   </span>
-                  <p className="sub-label">
+                  <span className="it-sub-label">
                     {'...utilisé uniquement par l’équipe du pass Culture'}
-                  </p>
+                  </span>
                   <Field
+                    className="it-input"
                     component="input"
                     name="phoneNumber"
                     placeholder="Mon numéro de téléphone"

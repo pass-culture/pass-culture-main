@@ -1,19 +1,29 @@
-import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
+import Icon from '../../layout/Icon'
 import { mapApiToBrowser } from '../../../utils/translate'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 
 class Signin extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.state = {
+      emailValue: '',
+      passwordValue: '',
+      isPasswordHidden: true,
+      hasErrorMessage: false,
+    }
+  }
+
   onHandleSuccessRedirect = (state, action) => {
     const { hasOffers } = action.payload.datum || false
     const { hasPhysicalVenues } = action.payload.datum || false
     const hasOffersWithPhysicalVenues = hasOffers && hasPhysicalVenues
-    const { query } = this.props
+    const { query, history } = this.props
     const queryParams = query.parse()
     const fromUrl = queryParams[mapApiToBrowser.from]
 
@@ -21,14 +31,44 @@ class Signin extends PureComponent {
       return decodeURIComponent(fromUrl)
     }
 
-    return hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
+    const newRoute = hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
+    history.push(newRoute)
   }
 
-  handleOnEnterKey = event => event.form.onSubmit()
+  onHandleFail = (state, action) => {
+    if (action.payload.errors.password || action.payload.errors.identifier) {
+      this.setState({ hasErrorMessage: true })
+    }
+  }
+
+  handleInputEmailChange = event => {
+    this.setState({ emailValue: event.target.value })
+    this.setState({ hasErrorMessage: false })
+  }
+
+  handleInputPasswordChange = event => {
+    this.setState({ passwordValue: event.target.value })
+    this.setState({ hasErrorMessage: false })
+  }
+
+  handleToggleHidden = e => {
+    e.preventDefault()
+    this.setState(previousState => ({
+      isPasswordHidden: !previousState.isPasswordHidden,
+    }))
+  }
+
+  handleOnSubmit = () => {
+    const { submit } = this.props
+    const { emailValue, passwordValue } = this.state
+
+    return submit(emailValue, passwordValue, this.onHandleSuccessRedirect, this.onHandleFail)
+  }
 
   render() {
-    const { errors, isAccountCreationAvailable } = this.props
-
+    const { isAccountCreationAvailable } = this.props
+    const { isPasswordHidden, emailValue, passwordValue, hasErrorMessage } = this.state
+    const isSubmitButtonDisabled = emailValue === '' || passwordValue === ''
     const accountCreationUrl = isAccountCreationAvailable ? '/inscription' : UNAVAILABLE_ERROR_PAGE
 
     return (
@@ -45,7 +85,7 @@ class Signin extends PureComponent {
         <div className="container">
           <div className="columns">
             <div className="column is-offset-6 is-two-fifths sign-page-form">
-              <section className="has-text-grey">
+              <section>
                 <div className="text-container">
                   <h1 className="title is-spaced is-1">
                     <span className="has-text-weight-bold ">
@@ -67,44 +107,70 @@ class Signin extends PureComponent {
                     </span>
                     {'Champs obligatoires'}
                   </span>
-                  <Form
-                    action="/users/signin"
-                    blockComponent={null}
-                    handleSuccessNotification={null}
-                    handleSuccessRedirect={this.onHandleSuccessRedirect}
-                    layout="vertical"
-                    name="user"
-                    onEnterKey={this.handleOnEnterKey}
-                  >
+                  <form>
                     <div className="field-group">
-                      <Field
-                        label="Adresse e-mail"
-                        name="identifier"
-                        placeholder="Identifiant (e-mail)"
-                        required
-                        type="email"
-                      />
-                      <Field
-                        autoComplete="current-password"
-                        label="Mot de passe"
-                        name="password"
-                        placeholder="Mot de passe"
-                        required
-                        type="password"
-                      />
-                      <span>
-                        <Link
-                          className="tertiary-link"
-                          id="lostPasswordLink"
-                          to="/mot-de-passe-perdu"
-                        >
-                          {'Mot de passe égaré ?'}
-                        </Link>
-                      </span>
+                      <label className="input-text">
+                        {'Adresse e-mail'}
+                        <span className="field-asterisk">
+                          {'*'}
+                        </span>
+                        <input
+                          className="it-input email-input"
+                          name="identifier"
+                          onChange={this.handleInputEmailChange}
+                          placeholder="Identifiant (e-mail)"
+                          required
+                          type="email"
+                          value={emailValue}
+                        />
+                      </label>
+                      <label className="input-text">
+                        {'Mot de passe'}
+                        <span className="field-asterisk">
+                          {'*'}
+                        </span>
+                        <div className="it-with-icon-container">
+                          <input
+                            className="it-input-with-icon"
+                            name="password"
+                            onChange={this.handleInputPasswordChange}
+                            placeholder="Mot de passe"
+                            required
+                            type={isPasswordHidden ? 'password' : 'text'}
+                            value={passwordValue}
+                          />
+                          <button
+                            className="it-icon"
+                            onClick={this.handleToggleHidden}
+                            type="button"
+                          >
+                            <Icon
+                              alt={
+                                isPasswordHidden
+                                  ? 'Afficher le mot de passe'
+                                  : 'Cacher le mot de passe'
+                              }
+                              svg={isPasswordHidden ? 'ico-eye close' : 'ico-eye'}
+                            />
+                          </button>
+                        </div>
+                      </label>
+                      {hasErrorMessage && (
+                        <div className="errors">
+                          <Icon svg="picto-warning" />
+                          {'Identifiant ou mot de passe incorrect.'}
+                        </div>
+                      )}
                     </div>
-                    <div className="errors">
-                      {errors}
-                    </div>
+                    <span>
+                      <Link
+                        className="tertiary-link"
+                        id="lostPasswordLink"
+                        to="/mot-de-passe-perdu"
+                      >
+                        {'Mot de passe égaré ?'}
+                      </Link>
+                    </span>
                     <div className="field buttons-field">
                       <Link
                         className="secondary-link"
@@ -112,14 +178,17 @@ class Signin extends PureComponent {
                       >
                         {'Créer un compte'}
                       </Link>
-                      <SubmitButton
-                        className="primary-button"
+                      <button
+                        className="button is-primary"
+                        disabled={isSubmitButtonDisabled}
                         id="signin-submit-button"
+                        onClick={this.handleOnSubmit}
+                        type="button"
                       >
                         {'Se connecter'}
-                      </SubmitButton>
+                      </button>
                     </div>
-                  </Form>
+                  </form>
                 </div>
               </section>
             </div>
@@ -131,7 +200,6 @@ class Signin extends PureComponent {
 }
 
 Signin.propTypes = {
-  errors: PropTypes.string.isRequired,
   query: PropTypes.shape().isRequired,
 }
 

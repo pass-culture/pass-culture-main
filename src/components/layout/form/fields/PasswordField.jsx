@@ -34,22 +34,24 @@ class PasswordInput extends PureComponent {
 
     return (
       <span className="field-password">
-        <Field
-          {...this.props}
-          component="input"
-          type={isPasswordHidden ? 'password' : 'text'}
-        />
-        <button
-          className="button button-show-password"
-          onClick={this.handleToggleHidden}
-          type="button"
-        >
-          <Icon
-            alt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
-            svg={isPasswordHidden ? 'ico-eye close' : 'ico-eye'}
+        <div className="it-with-icon-container">
+          <Field
+            {...this.props}
+            component="input"
+            type={isPasswordHidden ? 'password' : 'text'}
           />
-          &nbsp;
-        </button>
+          <button
+            className="button button-show-password it-icon"
+            onClick={this.handleToggleHidden}
+            type="button"
+          >
+            <Icon
+              alt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
+              svg={isPasswordHidden ? 'ico-eye close' : 'ico-eye'}
+            />
+            &nbsp;
+          </button>
+        </div>
 
         <Icon
           alt="Caractéristiques obligatoires du mot de passe"
