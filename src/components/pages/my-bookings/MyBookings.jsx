@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 
-import { ApiError } from '../../layout/ErrorBoundaries/ApiError'
+import { ApiError } from '../../layout/ErrorBoundaries/ErrorsPage/ApiError'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import MyBookingDetailsContainer from './MyBookingDetails/MyBookingDetailsContainer'

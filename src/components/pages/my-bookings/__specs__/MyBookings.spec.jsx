@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 
 import getMockStore from '../../../../utils/mockStore'
-import { ApiError } from '../../../layout/ErrorBoundaries/ApiError'
+import { ApiError } from '../../../layout/ErrorBoundaries/ErrorsPage/ApiError'
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
 import MyBookingDetailsContainer from '../MyBookingDetails/MyBookingDetailsContainer'
 import MyBookings from '../MyBookings'
