@@ -1,0 +1,34 @@
+.styleguide-page {
+  h2 {
+    @include title2();
+    margin-bottom: rem(10px);
+  }
+
+  input {
+    display: block;
+  }
+}
+
+.input-text {
+  @include body();
+
+  height: rem(40px);
+  border-radius: 22px;
+  border: 1px solid $grey-medium;
+  color: $black;
+  padding: 10px 16px;
+
+  &:focus {
+    outline-offset: 0;
+    outline: none;
+    border: 2px solid $primary;
+    height: rem(38px);
+  }
+
+  &:disabled {
+    opacity: 1;
+    border: none;
+    background-color: $grey-light;
+    color: $grey-dark;
+  }
+}

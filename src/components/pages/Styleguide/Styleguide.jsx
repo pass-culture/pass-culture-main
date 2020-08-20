@@ -5,7 +5,8 @@ import Icon from "../../layout/Icon"
 
 const Styleguide = () => (
   <Main name="styleguide">
-    <Titles title="Styleguide" />
+    <Titles title="Styleguide"/>
+    <h2>Boutons</h2>
     <div>
       <a
         className="primary-button"
@@ -18,7 +19,7 @@ const Styleguide = () => (
         </span>
       </a>
     </div>
-    <br />
+    <br/>
     <div>
       <a
         className="secondary-button"
@@ -31,21 +32,21 @@ const Styleguide = () => (
         </span>
       </a>
     </div>
-    <br />
+    <br/>
     <div>
-    <a
-      className="tertiary-button"
-      href="/"
-      rel="noopener noreferrer"
-      target="_blank"
-    >
-      <Icon svg="ico-external-site-red"/>
-      <span>
+      <a
+        className="tertiary-button"
+        href="/"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <Icon svg="ico-external-site-red"/>
+        <span>
         {'Bouton Tertiary'}
       </span>
-    </a>
+      </a>
     </div>
-    <br />
+    <br/>
     <div>
       <a
         className="quaternary-button"
@@ -58,7 +59,22 @@ const Styleguide = () => (
           {'Bouton Quaternary'}
         </span>
       </a>
-  </div>
+    </div>
+    <br/>
+    <h2>Inputs</h2>
+    <input
+      className="input-text"
+      name="toto"
+      type="text"
+      placeholder="placeholder"
+    />
+    <input
+      className="input-text"
+      name="toto"
+      type="text"
+      disabled
+      placeholder="placeholder disabled"
+    />
   </Main>
 )
 
