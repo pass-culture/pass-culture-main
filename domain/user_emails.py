@@ -16,7 +16,7 @@ from emails.beneficiary_offer_cancellation import \
 from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
     BeneficiaryIsNotEligible
 from emails.beneficiary_pre_subscription_rejected import \
-    make_dupplicate_beneficiary_pre_subscription_rejected_data, make_not_eligible_beneficiary_pre_subscription_rejected_data
+    make_duplicate_beneficiary_pre_subscription_rejected_data, make_not_eligible_beneficiary_pre_subscription_rejected_data
 from emails.beneficiary_warning_after_pro_booking_cancellation import \
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation
 from emails.new_offerer_validation import \
@@ -189,7 +189,7 @@ def send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscri
         data = make_not_eligible_beneficiary_pre_subscription_rejected_data(
             beneficiary_pre_subscription)
     else:
-        data = make_dupplicate_beneficiary_pre_subscription_rejected_data(
+        data = make_duplicate_beneficiary_pre_subscription_rejected_data(
             beneficiary_pre_subscription)
 
     send_email(data=data)

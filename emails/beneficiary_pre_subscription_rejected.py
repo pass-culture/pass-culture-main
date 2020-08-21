@@ -7,7 +7,7 @@ from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
 SUPPORT_EMAIL_ADDRESS = os.environ.get('SUPPORT_EMAIL_ADDRESS')
 
 
-def make_dupplicate_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> Dict:
+def make_duplicate_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> Dict:
     beneficiary_email = beneficiary_pre_subscription.email
 
     return {

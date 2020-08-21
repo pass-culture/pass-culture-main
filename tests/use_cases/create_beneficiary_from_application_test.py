@@ -8,7 +8,7 @@ from tests.domain_creators.generic_creators import \
 from tests.model_creators.generic_creators import create_user
 
 from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
-    BeneficiaryIsADupplicate, BeneficiaryIsNotEligible, CantRegisterBeneficiary
+    BeneficiaryIsADuplicate, BeneficiaryIsNotEligible, CantRegisterBeneficiary
 from infrastructure.repository.beneficiary.beneficiary_sql_repository import \
     BeneficiarySQLRepository
 from models import BeneficiaryImport, UserSQLEntity

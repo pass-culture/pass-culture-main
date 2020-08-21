@@ -7,13 +7,14 @@ from tests.domain_creators.generic_creators import \
 from tests.model_creators.generic_creators import create_user
 
 from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
-    BeneficiaryIsADupplicate, BeneficiaryIsNotEligible, CantRegisterBeneficiary
-from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
+    BeneficiaryIsADuplicate, BeneficiaryIsNotEligible, CantRegisterBeneficiary
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import \
+    _is_postal_code_eligible, validate
 from repository import repository
 
 
 @clean_database
-def test_doesnt_raise_for_basic_beneficiary(app):
+def test_should_not_raise_exception_for_valid_beneficiary(app):
     # Given
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription()
 
@@ -37,7 +38,7 @@ def test_raises_if_email_already_taken(app):
         email=email)
 
     # When
-    with pytest.raises(BeneficiaryIsADupplicate) as error:
+    with pytest.raises(BeneficiaryIsADuplicate) as error:
         validate(beneficiary_pre_subcription)
 
     # Then
@@ -76,7 +77,7 @@ def test_raises_if_duplicate(app):
         first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
 
     # When
-    with pytest.raises(BeneficiaryIsADupplicate) as error:
+    with pytest.raises(BeneficiaryIsADuplicate) as error:
         validate(beneficiary_pre_subcription)
 
     # Then
@@ -116,11 +117,16 @@ def test_doesnt_raise_if_no_exact_duplicate(app):
             f'Should not raise an exception when email not given')
 
 
+@pytest.mark.parametrize('postal_code', [
+    '36000',
+    '36034',
+    '97400'
+])
 @clean_database
-def test_raises_if_not_eligible(app):
+def test_raises_if_not_eligible(app, postal_code):
     # Given
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(
-        postal_code='36567')
+        postal_code=postal_code)
 
     # When
     with pytest.raises(BeneficiaryIsNotEligible) as error:
@@ -128,4 +134,25 @@ def test_raises_if_not_eligible(app):
 
     # Then
     assert str(
-        error.value) == f"Postal code {beneficiary_pre_subcription.postal_code} is not eligible."
+        error.value) == f"Postal code {postal_code} is not eligible."
+
+
+@pytest.mark.parametrize('postal_code', [
+    '34000',
+    '34898',
+    '97340'
+])
+@clean_database
+def test_should_not_raise_if_eligible(app, postal_code):
+    # Given
+    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(
+        postal_code=postal_code)
+
+
+    try:
+        # When
+        validate(beneficiary_pre_subcription)
+    except CantRegisterBeneficiary:
+        # Then
+        assert pytest.fail(
+            f'Should not raise when postal code is eligible')

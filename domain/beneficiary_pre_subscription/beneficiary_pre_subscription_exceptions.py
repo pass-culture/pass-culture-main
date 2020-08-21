@@ -2,7 +2,7 @@ class CantRegisterBeneficiary(Exception):
     pass
 
 
-class BeneficiaryIsADupplicate(CantRegisterBeneficiary):
+class BeneficiaryIsADuplicate(CantRegisterBeneficiary):
     pass
 
 
