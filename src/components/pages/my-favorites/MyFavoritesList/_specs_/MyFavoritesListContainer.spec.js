@@ -15,7 +15,7 @@ jest.mock('../../../../../redux/selectors/data/favoritesSelectors', () => ({
 
 describe('src | components | MyFavorites', () => {
   describe('mapStateToProps', () => {
-    it('should contain the favorites and the homepage feature', () => {
+    it('should contain the favorites', () => {
       // Given
       selectFavorites.mockReturnValue(['mocked favorite'])
 
