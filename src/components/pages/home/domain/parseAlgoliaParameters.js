@@ -1,3 +1,5 @@
+import { CATEGORY_CRITERIA } from '../../search/Criteria/criteriaEnums'
+
 export const CONTENTFUL_PARAMETERS = {
   AROUND_RADIUS: 'aroundRadius',
   BEGINNING_DATETIME: 'beginningDatetime',
@@ -23,14 +25,19 @@ export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
   const priceMax = parameters[CONTENTFUL_PARAMETERS.PRICE_MAX]
 
   const notGeolocatedButRadiusIsProvided = !isGeolocated && aroundRadius
-  const geolocatedButGeolocationIsInvalid = isGeolocated && !geolocation.latitude && !geolocation.longitude
+  const geolocatedButGeolocationIsInvalid =
+    isGeolocated && !geolocation.latitude && !geolocation.longitude
 
   if (notGeolocatedButRadiusIsProvided || geolocatedButGeolocationIsInvalid) {
     return null
   }
 
-  const beginningDatetime = parameters[CONTENTFUL_PARAMETERS.BEGINNING_DATETIME] ? new Date(parameters[CONTENTFUL_PARAMETERS.BEGINNING_DATETIME]) : null
-  const endingDatetime = parameters[CONTENTFUL_PARAMETERS.ENDING_DATETIME] ? new Date(parameters[CONTENTFUL_PARAMETERS.ENDING_DATETIME]) : null
+  const beginningDatetime = parameters[CONTENTFUL_PARAMETERS.BEGINNING_DATETIME]
+    ? new Date(parameters[CONTENTFUL_PARAMETERS.BEGINNING_DATETIME])
+    : null
+  const endingDatetime = parameters[CONTENTFUL_PARAMETERS.ENDING_DATETIME]
+    ? new Date(parameters[CONTENTFUL_PARAMETERS.ENDING_DATETIME])
+    : null
 
   return {
     aroundRadius: aroundRadius || null,
@@ -38,7 +45,7 @@ export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
     endingDatetime: endingDatetime,
     geolocation: geolocation || null,
     hitsPerPage: parameters[CONTENTFUL_PARAMETERS.HITS_PER_PAGE] || null,
-    offerCategories: parameters[CONTENTFUL_PARAMETERS.CATEGORIES] || [],
+    offerCategories: buildCategories(parameters[CONTENTFUL_PARAMETERS.CATEGORIES] || []),
     offerIsDuo: parameters[CONTENTFUL_PARAMETERS.IS_DUO] || false,
     offerIsFree: parameters[CONTENTFUL_PARAMETERS.IS_FREE] || false,
     offerIsNew: parameters[CONTENTFUL_PARAMETERS.NEWEST_ONLY] || false,
@@ -56,3 +63,8 @@ export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
 const buildPriceRange = ({ priceMin = 0, priceMax = 500 }) => {
   return [priceMin, priceMax]
 }
+
+const buildCategories = categoriesLabel =>
+  Object.values(CATEGORY_CRITERIA)
+    .filter(categoryCriterion => categoriesLabel.includes(categoryCriterion.label))
+    .map(categoryCriterion => categoryCriterion.facetFilter)

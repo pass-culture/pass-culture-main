@@ -26,10 +26,10 @@ describe('src | components | parseAlgoliaParameters', () => {
     })
   })
 
-  it('should return parsed algolia parameters with categories when provided', () => {
+  it('should return parsed algolia parameters with mapped categories when provided', () => {
     // given
     const parameters = {
-      categories: ['CINEMA', 'LECON', 'LIVRE'],
+      categories: ['Cinéma', 'Cours, ateliers', 'Livres'],
     }
 
     // when
@@ -365,8 +365,8 @@ describe('src | components | parseAlgoliaParameters', () => {
     // then
     expect(result).toStrictEqual({
       aroundRadius: null,
-      beginningDatetime:null,
-      endingDatetime:null,
+      beginningDatetime: null,
+      endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
       offerCategories: [],
@@ -449,7 +449,10 @@ describe('src | components | parseAlgoliaParameters', () => {
       }
 
       // when
-      const result = parseAlgoliaParameters({ geolocation: { latitude: null, longitude: null }, parameters })
+      const result = parseAlgoliaParameters({
+        geolocation: { latitude: null, longitude: null },
+        parameters,
+      })
 
       // then
       expect(result).toBeNull()
@@ -463,7 +466,10 @@ describe('src | components | parseAlgoliaParameters', () => {
       }
 
       // when
-      const result = parseAlgoliaParameters({ geolocation: { latitude: null, longitude: null }, parameters })
+      const result = parseAlgoliaParameters({
+        geolocation: { latitude: null, longitude: null },
+        parameters,
+      })
 
       // then
       expect(result).toBeNull()
@@ -473,8 +479,8 @@ describe('src | components | parseAlgoliaParameters', () => {
   describe('beginningDatetime & endingDatetime', () => {
     it('should return algolia parameters with a beginning date when provided', () => {
       // given
-      const beginningDatetime = new Date(2020, 9, 1,22,0,0)
-      const beginningDatetimeAsString = "2020-10-01T22:00:00"
+      const beginningDatetime = new Date(2020, 9, 1, 22, 0, 0)
+      const beginningDatetimeAsString = '2020-10-01T22:00:00'
       const parameters = {
         beginningDatetime: beginningDatetimeAsString,
       }
@@ -494,7 +500,7 @@ describe('src | components | parseAlgoliaParameters', () => {
         offerIsFree: false,
         offerIsNew: false,
         offerTypes: { isDigital: false, isEvent: false, isThing: false },
-        priceRange: [0,500],
+        priceRange: [0, 500],
         searchAround: false,
         tags: [],
       })
@@ -502,8 +508,8 @@ describe('src | components | parseAlgoliaParameters', () => {
 
     it('should return algolia parameters with an ending date when provided', () => {
       // given
-      const endingDatetime = new Date(2020, 9, 1,22,0,0)
-      const endingDatetimeAsString = "2020-10-01T22:00:00"
+      const endingDatetime = new Date(2020, 9, 1, 22, 0, 0)
+      const endingDatetimeAsString = '2020-10-01T22:00:00'
       const parameters = {
         endingDatetime: endingDatetimeAsString,
       }
@@ -523,7 +529,7 @@ describe('src | components | parseAlgoliaParameters', () => {
         offerIsFree: false,
         offerIsNew: false,
         offerTypes: { isDigital: false, isEvent: false, isThing: false },
-        priceRange: [0,500],
+        priceRange: [0, 500],
         searchAround: false,
         tags: [],
       })
@@ -531,10 +537,10 @@ describe('src | components | parseAlgoliaParameters', () => {
 
     it('should return algolia parameters with a begginnig date and an ending date when provided', () => {
       // given
-      const beginningDatetime = new Date(2020, 9, 1,0,0,0)
-      const endingDatetime = new Date(2020, 9, 2,0,0,0)
-      const beginningDatetimeAsString = "2020-10-01T00:00:00"
-      const endingDatetimeAsString = "2020-10-02T00:00:00"
+      const beginningDatetime = new Date(2020, 9, 1, 0, 0, 0)
+      const endingDatetime = new Date(2020, 9, 2, 0, 0, 0)
+      const beginningDatetimeAsString = '2020-10-01T00:00:00'
+      const endingDatetimeAsString = '2020-10-02T00:00:00'
       const parameters = {
         beginningDatetime: beginningDatetimeAsString,
         endingDatetime: endingDatetimeAsString,
@@ -555,7 +561,7 @@ describe('src | components | parseAlgoliaParameters', () => {
         offerIsFree: false,
         offerIsNew: false,
         offerTypes: { isDigital: false, isEvent: false, isThing: false },
-        priceRange: [0,500],
+        priceRange: [0, 500],
         searchAround: false,
         tags: [],
       })

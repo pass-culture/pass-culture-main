@@ -28,7 +28,7 @@ describe('src | components | Module', () => {
     algolia = {
       aroundRadius: null,
       beginningDatetime: null,
-      categories: ['CINEMA', 'LECON', 'LIVRE'],
+      categories: ['Cinéma', 'Cours, ateliers', 'Livres'],
       endingDatetime: null,
       hitsPerPage: 3,
       isDigital: false,
