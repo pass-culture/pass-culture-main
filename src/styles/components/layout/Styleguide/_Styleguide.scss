@@ -4,9 +4,12 @@
     margin-bottom: rem(20px);
   }
 
+  h3 {
+    @include title3();
+  }
+
   input {
     display: block;
-    margin-bottom: rem(15px);
   }
 
   .flex-block {
@@ -23,37 +26,99 @@
   }
 }
 
-
-.sub-label-input-text {
-  @include caption();
-  color: $grey-dark;
-  margin-left: rem(5px);
-}
-
 .input-text {
-  @include body();
-  border: 1px solid $grey-medium;
-  border-radius: 22px;
-  color: $black;
-  height: rem(40px);
-  margin-top: rem(9px);
-  padding: 10px 16px;
-
-  &:focus {
-    border: 2px solid $primary;
-    outline: none;
-    outline-offset: 0;
+  .it-sub-label {
+    @include caption();
+    color: $grey-dark;
+    float: right;
+    margin-left: rem(5px);
   }
 
-  &:disabled {
-    background-color: $grey-light;
+  // Input text without icon
+  .it-input {
+    @include body();
+    border: 1px solid $grey-medium;
+    border-radius: 22px;
+    color: $black;
+    height: rem(40px);
+    margin-bottom: rem(15px);
+    margin-top: rem(9px);
+    padding: 10px 16px;
+
+    &:focus {
+      border: 2px solid $primary;
+      outline: none;
+      outline-offset: 0;
+    }
+
+    &:disabled {
+      background-color: $grey-light;
+      border: none;
+      color: $grey-dark;
+      opacity: 1;
+    }
+  }
+
+  // Input text with icon
+  .it-with-icon-container {
+    align-items: center;
+    border: 1px solid $grey-medium;
+    border-radius: 22px;
+    display: flex;
+    height: rem(40px);
+    justify-content: space-between;
+    margin-bottom: rem(10px);
+    margin-top: rem(9px);
+    overflow: hidden;
+    width: 100%;
+
+    &:focus-within {
+      border: 2px solid $primary;
+    }
+
+    &.disabled {
+      background-color: $grey-light;
+      border: none;
+    }
+  }
+
+  .it-input-with-icon {
+    @include body();
     border: none;
-    color: $grey-dark;
-    opacity: 1;
+    color: $black;
+    flex: 1;
+    height: 100%;
+    padding: 10px 16px;
+    outline: none;
+
+    &:disabled {
+      color: $grey-dark;
+      background-color: $grey-light;
+      opacity: 1;
+    }
+  }
+
+  .it-icon {
+    background: none;
+    border: none;
+    height: 100%;
+    margin: 0 16px;
+    outline: none;
+    vertical-align: center;
+
+    img {
+      height: 100%;
+    }
   }
 }
 
-.input-text-description {
+.it-description {
   text-align: center;
   width: 60%;
+}
+
+.it-icon-snippet {
+  border-radius: 5px;
+  padding: 0;
+  text-align: left;
 }
