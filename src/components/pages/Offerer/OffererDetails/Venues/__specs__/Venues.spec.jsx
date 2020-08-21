@@ -35,10 +35,10 @@ describe('src | components | pages | OffererCreation | Venues', () => {
           const wrapper = shallow(<Venues {...props} />)
 
           // when
-          const navLink = wrapper.find('NavLink')
+          const link = wrapper.find({ children: '+ Ajouter un lieu' })
 
           // then
-          expect(navLink.prop('to')).toBe('/structures/5767Fdtre/lieux/creation')
+          expect(link.prop('to')).toBe('/structures/5767Fdtre/lieux/creation')
         })
       })
       describe('when the venue creation is disabled', () => {
@@ -49,10 +49,10 @@ describe('src | components | pages | OffererCreation | Venues', () => {
           const wrapper = shallow(<Venues {...props} />)
 
           // when
-          const navLink = wrapper.find('NavLink')
+          const link = wrapper.find({ children: '+ Ajouter un lieu' })
 
           // then
-          expect(navLink.prop('to')).toBe('/erreur/indisponible')
+          expect(link.prop('to')).toBe('/erreur/indisponible')
         })
       })
     })

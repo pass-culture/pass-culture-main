@@ -1,7 +1,7 @@
 import { Icon, pluralize } from 'pass-culture-shared'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const buildLinkIdFromVenue = ({ publicName, name }) => {
   const nameToFormat = publicName || name
@@ -19,32 +19,32 @@ function VenueItem({ venue }) {
       </div>
       <div className="list-content">
         <p className="name">
-          <NavLink
+          <Link
             id={`a-${buildLinkIdFromVenue(venue)}`}
             to={showPath}
           >
             {publicName || name}
-          </NavLink>
+          </Link>
         </p>
         <ul className="actions">
           <li>
-            <NavLink
+            <Link
               className="has-text-primary"
               to={`/offres/creation?lieu=${id}&structure=${managingOffererId}`}
             >
               <Icon svg="ico-offres-r" />
               {' Créer une offre'}
-            </NavLink>
+            </Link>
           </li>
           {venue.nOffers > 0 ? (
             <li>
-              <NavLink
+              <Link
                 className="has-text-primary"
                 to={`/offres?lieu=${id}&structure=${managingOffererId}`}
               >
                 <Icon svg="ico-offres-r" />
                 {pluralize(venue.nOffers, 'offres')}
-              </NavLink>
+              </Link>
             </li>
           ) : (
             <li>
@@ -62,9 +62,9 @@ function VenueItem({ venue }) {
         </ul>
       </div>
       <div className="caret">
-        <NavLink to={showPath}>
+        <Link to={showPath}>
           <Icon svg="ico-next-S" />
-        </NavLink>
+        </Link>
       </div>
     </li>
   )

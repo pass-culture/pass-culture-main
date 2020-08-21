@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme'
 import { Icon } from 'pass-culture-shared'
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import MediationsManager from '../MediationsManager'
 
@@ -36,7 +36,7 @@ describe('src | MediationsManager', () => {
         expect(informationMessageWrapper.exists()).toBe(true)
       })
 
-      it('should render a NavLink with a icon and info message inside', () => {
+      it('should render a Link with a icon and info message inside', () => {
         // given
         props.offer = {
           id: 'ABC',
@@ -47,7 +47,7 @@ describe('src | MediationsManager', () => {
         const wrapper = shallow(<MediationsManager {...props} />)
 
         // then
-        const addMediationLink = wrapper.find(NavLink)
+        const addMediationLink = wrapper.find(Link)
         expect(addMediationLink.exists()).toBe(true)
         const spans = wrapper.find('span')
         expect(spans).toHaveLength(2)
@@ -55,7 +55,7 @@ describe('src | MediationsManager', () => {
         expect(spans.at(1).text()).toBe('Ajouter une accroche')
       })
 
-      it('should render a NavLink with an Icon inside', () => {
+      it('should render a Link with an Icon inside', () => {
         // given
         props.offer = {
           id: 'ABC',
@@ -66,7 +66,7 @@ describe('src | MediationsManager', () => {
         const wrapper = shallow(<MediationsManager {...props} />)
 
         // then
-        const navLink = wrapper.find(NavLink)
+        const navLink = wrapper.find(Link)
         const spans = navLink.find('span')
         const icon = spans.at(0).find(Icon)
         expect(icon).toHaveLength(1)
@@ -94,7 +94,7 @@ describe('src | MediationsManager', () => {
     })
 
     describe('when there is an offer and an active mediation', () => {
-      it('should render a NavLink component', () => {
+      it('should render a Link component', () => {
         // given
         props.offer = {
           id: 'ABC',
@@ -105,7 +105,7 @@ describe('src | MediationsManager', () => {
         const wrapper = shallow(<MediationsManager {...props} />)
 
         // then
-        const navLink = wrapper.find(NavLink)
+        const navLink = wrapper.find(Link)
         expect(navLink).toHaveLength(1)
         expect(navLink.prop('className')).toBe('button is-primary is-outlined')
         expect(navLink.prop('to')).toBe('/offres/ABC/accroches/nouveau')
@@ -122,7 +122,7 @@ describe('src | MediationsManager', () => {
         const wrapper = shallow(<MediationsManager {...props} />)
 
         // then
-        const navLink = wrapper.find(NavLink)
+        const navLink = wrapper.find(Link)
         const spans = navLink.find('span')
         const icon = spans.at(0).find(Icon)
         expect(icon).toHaveLength(1)

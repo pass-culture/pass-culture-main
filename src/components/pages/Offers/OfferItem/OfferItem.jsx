@@ -4,7 +4,7 @@ import { Icon, pluralize } from 'pass-culture-shared'
 import React, { PureComponent } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import PropTypes from 'prop-types'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import Price from '../../../layout/Price'
 import Thumb from '../../../layout/Thumb'
@@ -75,7 +75,7 @@ class OfferItem extends PureComponent {
           src={offer.thumbUrl || ''}
         />
         <div className="list-content">
-          <NavLink
+          <Link
             className="name"
             title={name}
             to={`/offres/${offer.id}${search}`}
@@ -83,7 +83,7 @@ class OfferItem extends PureComponent {
             <Dotdotdot clamp={1}>
               {name}
             </Dotdotdot>
-          </NavLink>
+          </Link>
           <ul className="infos">
             <li className="is-uppercase">
               {offerTypeLabel}
@@ -108,12 +108,12 @@ class OfferItem extends PureComponent {
               </li>
             )}
             <li>
-              <NavLink
+              <Link
                 className="has-text-primary"
                 to={`/offres/${offer.id}?gestion`}
               >
                 {this.buildProductNavLinkLabel(offer, remainingStockQuantity)}
-              </NavLink>
+              </Link>
             </li>
             <li>
               {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
@@ -135,7 +135,7 @@ class OfferItem extends PureComponent {
           </ul>
           <ul className="actions offer-actions-list">
             <li>
-              <NavLink
+              <Link
                 className={`button is-small ${
                   numberOfMediations ? 'is-tertiary' : 'is-primary is-outlined'
                 } add-mediations-link`}
@@ -147,7 +147,7 @@ class OfferItem extends PureComponent {
                 <span>
                   {numberOfMediations ? 'Accroches' : 'Ajouter une Accroche'}
                 </span>
-              </NavLink>
+              </Link>
             </li>
             {offerHasActiveMediations && (
               <li>
@@ -160,13 +160,13 @@ class OfferItem extends PureComponent {
             )}
             {offerisEditable && (
               <li>
-                <NavLink
+                <Link
                   className="button is-tertiary is-small edit-link"
                   to={`/offres/${offer.id}`}
                 >
                   <Icon svg="ico-pen-r" />
                   {'Modifier'}
-                </NavLink>
+                </Link>
               </li>
             )}
             <li>

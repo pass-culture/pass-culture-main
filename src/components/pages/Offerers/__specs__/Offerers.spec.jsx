@@ -4,7 +4,7 @@ import { shallow } from 'enzyme'
 import Offerers from '../Offerers'
 import OffererItemContainer from '../OffererItem/OffererItemContainer'
 import PendingOffererItem from '../OffererItem/PendingOffererItem'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Titles from '../../../layout/Titles/Titles'
 
 describe('src | components | Offerers', () => {
@@ -206,7 +206,7 @@ describe('src | components | Offerers', () => {
             .first()
             .dive()
 
-          const link = pageHeading.find(NavLink)
+          const link = pageHeading.find(Link)
 
           // then
           expect(link.prop('to')).toBe('/structures/creation')
@@ -225,7 +225,7 @@ describe('src | components | Offerers', () => {
             .first()
             .dive()
 
-          const link = pageHeading.find(NavLink)
+          const link = pageHeading.find(Link)
 
           // then
           expect(link.prop('to')).toBe('/erreur/indisponible')

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import { getRequestErrorStringFromErrors } from 'pass-culture-shared'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import DeskState from './DeskState/DeskState'
 import Main from '../../layout/Main'
 import Titles from '../../layout/Titles/Titles'
@@ -215,13 +215,13 @@ class Desk extends React.PureComponent {
 
           {this.renderChildComponent()}
 
-          <NavLink
+          <Link
             className="primary-button"
             id="exitlink"
             to="/accueil"
           >
             {'Terminer'}
-          </NavLink>
+          </Link>
         </div>
       </Main>
     )

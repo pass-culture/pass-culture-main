@@ -1,7 +1,7 @@
 import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
-import { NavLink, Router } from 'react-router-dom'
+import { Link, Router } from 'react-router-dom'
 
 import VenueItem from '../VenueItem'
 
@@ -31,7 +31,7 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
           </Router>
         )
         const venueName = wrapper.find('.name')
-        const navLink = venueName.find(NavLink)
+        const navLink = venueName.find(Link)
 
         // then
         expect(venueName.text()).toBe('fake name')
@@ -50,7 +50,7 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
           </Router>
         )
         const venueName = wrapper.find('.name')
-        const navLink = venueName.find(NavLink)
+        const navLink = venueName.find(Link)
 
         // then
         expect(venueName.text()).toBe('fake public name')
@@ -66,7 +66,7 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
           </Router>
         )
         const actions = wrapper.find('.actions')
-        const navLink = actions.find(NavLink)
+        const navLink = actions.find(Link)
 
         // then
         expect(navLink.text()).toBe(' Créer une offre')
@@ -82,7 +82,7 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
           </Router>
         )
         const actions = wrapper.find('.actions')
-        const navLink = actions.find(NavLink)
+        const navLink = actions.find(Link)
         const actionsTypes = actions.find('li')
 
         // then
@@ -98,7 +98,7 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
           </Router>
         )
         const actions = wrapper.find('.actions')
-        const navLink = actions.find(NavLink)
+        const navLink = actions.find(Link)
 
         // then
         expect(navLink.at(1).text()).toBe('3 offres')
@@ -114,7 +114,7 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
           </Router>
         )
         const caret = wrapper.find('.caret')
-        const navLink = caret.find(NavLink)
+        const navLink = caret.find(Link)
 
         // then
         expect(navLink.prop('to')).toBe('/structures/ABC/lieux/AAA')

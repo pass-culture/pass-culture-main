@@ -1,7 +1,7 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const ReturnOrSubmitControl = ({
   canSubmit,
@@ -17,12 +17,12 @@ const ReturnOrSubmitControl = ({
     >
       <div className="control">
         {readOnly ? (
-          <NavLink
+          <Link
             className="primary-button"
             to={`/structures/${offererId}`}
           >
             {'Terminer'}
-          </NavLink>
+          </Link>
         ) : (
           <button
             className={classnames('primary-button', {

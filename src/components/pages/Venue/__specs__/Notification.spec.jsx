@@ -1,6 +1,6 @@
 import { mount } from 'enzyme'
 import React from 'react'
-import { NavLink, Router } from 'react-router-dom'
+import { Router } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 import NotificationMessage from '../Notification'
 
@@ -22,12 +22,12 @@ describe('src | components | pages | Venue | Notification', () => {
       </Router>
     )
     const textMessage = wrapper.find('p')
-    const navLink = wrapper.find(NavLink)
+    const link = textMessage.find({ children: 'créer une offre' }).at(1)
 
     // then
     expect(textMessage.text()).toBe(
       'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement. '
     )
-    expect(navLink.prop('to')).toBe('/offres/creation?lieu=TY&structure=FT')
+    expect(link.prop('href')).toBe('/offres/creation?lieu=TY&structure=FT')
   })
 })

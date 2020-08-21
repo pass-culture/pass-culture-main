@@ -11,7 +11,7 @@ import {
 } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ReactToolTip from 'react-tooltip'
 import { requestData } from 'redux-saga-data'
 
@@ -709,13 +709,13 @@ class OfferEdition extends PureComponent {
             </div>
             <div className="control">
               {readOnly ? (
-                <NavLink
+                <Link
                   className="primary-button"
                   to="/offres"
                 >
                   {'Terminer '}
                   {isModifiedEntity && !isOfferActive && 'et activer'}
-                </NavLink>
+                </Link>
               ) : (
                 showAllForm && (
                   <SubmitButton className="primary-button">

@@ -1,7 +1,7 @@
 import { Icon } from 'pass-culture-shared'
 import get from 'lodash.get'
 import React, { PureComponent } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import MediationItem from './MediationItem/MediationItem'
 import PropTypes from 'prop-types'
@@ -54,7 +54,7 @@ class MediationsManager extends PureComponent {
           </ul>
           <p>
             {offer && (
-              <NavLink
+              <Link
                 className={`button is-primary ${numberOfMediations > 0 ? 'is-outlined' : ''}`}
                 to={`/offres/${get(offer, 'id')}/accroches/nouveau`}
               >
@@ -64,7 +64,7 @@ class MediationsManager extends PureComponent {
                 <span>
                   {'Ajouter une accroche'}
                 </span>
-              </NavLink>
+              </Link>
             )}
           </p>
         </div>

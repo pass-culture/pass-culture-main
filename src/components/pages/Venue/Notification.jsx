@@ -1,7 +1,7 @@
 import React from 'react'
 import { closeNotification } from 'pass-culture-shared'
 import { CREATION } from '../../hocs/withFrenchQueryRouter'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const handleOnClick = dispatch => () => dispatch(closeNotification())
 const NotificationMessage = ({ venueId, offererId, dispatch }) => {
@@ -9,12 +9,12 @@ const NotificationMessage = ({ venueId, offererId, dispatch }) => {
   return (
     <p>
       {'Lieu créé. Vous pouvez maintenant y '}
-      <NavLink
+      <Link
         onClick={handleOnClick(dispatch)}
         to={createOfferPathname}
       >
         {'créer une offre'}
-      </NavLink>
+      </Link>
       {', ou en importer automatiquement. '}
     </p>
   )

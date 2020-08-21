@@ -1,7 +1,7 @@
 import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
-import { NavLink, Router } from 'react-router-dom'
+import { Link, Router } from 'react-router-dom'
 
 import OffererItem from '../OffererItem'
 
@@ -91,7 +91,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
           </Router>
         )
         const caret = wrapper.find('.caret')
-        const navLink = caret.find(NavLink)
+        const navLink = caret.find(Link)
 
         // then
         expect(navLink.prop('to')).toBe('/structures/AE')
@@ -114,7 +114,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
           </Router>
         )
         const createOffer = wrapper.find('.name')
-        const navLink = createOffer.find(NavLink)
+        const navLink = createOffer.find(Link)
 
         // then
         expect(navLink.text()).toBe('Fake Name')
@@ -139,7 +139,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
             </Router>
           )
           const createOffer = wrapper.find('#create-offer-action')
-          const navLink = createOffer.find(NavLink)
+          const navLink = createOffer.find(Link)
 
           // then
           expect(navLink.text()).toBe('Nouvelle offre numérique')
@@ -167,7 +167,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
             </Router>
           )
           const createOffer = wrapper.find('#create-offer-action')
-          const navLink = createOffer.find(NavLink)
+          const navLink = createOffer.find(Link)
 
           // then
           expect(navLink.text()).toBe('Nouvelle offre')
@@ -198,7 +198,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
           </Router>
         )
         const actions = wrapper.find('.count-offers-action')
-        const navLink = actions.find(NavLink)
+        const navLink = actions.find(Link)
 
         // then
         expect(navLink.text()).toBe('42 offres')
@@ -259,7 +259,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
           </Router>
         )
         const actions = wrapper.find('#count-venues-action')
-        const navLink = actions.find(NavLink)
+        const navLink = actions.find(Link)
 
         // then
         expect(navLink.text()).toBe('3 lieux')
@@ -278,7 +278,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
           </Router>
         )
         const actions = wrapper.find('#count-venues-action')
-        const navLink = actions.find(NavLink)
+        const navLink = actions.find(Link)
 
         // then
         expect(navLink.text()).toBe('0 lieu')
@@ -298,7 +298,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
         // when
         const wrapper = shallow(<OffererItem {...props} />)
-        const createVenueLink = wrapper.find('#create-venue-action').find(NavLink)
+        const createVenueLink = wrapper.find('#create-venue-action').find(Link)
 
         // then
         expect(createVenueLink.prop('to')).toBe('/structures/AE/lieux/creation')
@@ -316,7 +316,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
         // when
         const wrapper = shallow(<OffererItem {...props} />)
-        const createVenueLink = wrapper.find('#create-venue-action').find(NavLink)
+        const createVenueLink = wrapper.find('#create-venue-action').find(Link)
 
         // then
         expect(createVenueLink.prop('to')).toBe('/erreur/indisponible')

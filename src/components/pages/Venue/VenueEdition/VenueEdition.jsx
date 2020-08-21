@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Icon from '../../../layout/Icon'
 import Main from '../../../layout/Main'
 import Titles from '../../../layout/Titles/Titles'
@@ -180,7 +180,7 @@ class VenueEdition extends PureComponent {
     const showForm = !initialIsVirtual && typeof offerer !== 'undefined'
 
     const actionLink = !!initialId && (
-      <NavLink
+      <Link
         className="cta button is-primary"
         id="action-create-offer"
         to={`/offres/creation?lieu=${initialId}&structure=${offererId}`}
@@ -191,7 +191,7 @@ class VenueEdition extends PureComponent {
         <span>
           {'Créer une offre'}
         </span>
-      </NavLink>
+      </Link>
     )
 
     return (

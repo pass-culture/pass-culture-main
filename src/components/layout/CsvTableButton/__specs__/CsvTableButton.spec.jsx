@@ -25,9 +25,8 @@ describe('src | components | layout | CsvTableButton', () => {
       const wrapper = mount(<CsvTableButton {...props} />)
 
       // then
-      const submitButton = wrapper.find('button[type="button"]')
-      expect(submitButton).toHaveLength(1)
-      expect(submitButton.text()).toStrictEqual('foobar')
+      const button = wrapper.find('button[type="button"]').find({ children: 'foobar' })
+      expect(button).toHaveLength(1)
     })
   })
 

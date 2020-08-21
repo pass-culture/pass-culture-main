@@ -1,6 +1,5 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import { NavLink } from 'react-router-dom'
 
 import Signin from '../Signin'
 
@@ -32,7 +31,7 @@ describe('src | components | pages | Signin | Signin ', () => {
         it('should redirect to the creation page', () => {
           // when
           const wrapper = shallow(<Signin {...props} />)
-          const createAccountLink = wrapper.find(NavLink)
+          const createAccountLink = wrapper.find({ children: 'Créer un compte' })
 
           // then
           expect(createAccountLink.prop('to')).toStrictEqual('/inscription')
@@ -46,7 +45,7 @@ describe('src | components | pages | Signin | Signin ', () => {
 
           // when
           const wrapper = shallow(<Signin {...props} />)
-          const createAccountLink = wrapper.find(NavLink)
+          const createAccountLink = wrapper.find({ children: 'Créer un compte' })
 
           // then
           expect(createAccountLink.prop('to')).toStrictEqual('/erreur/indisponible')

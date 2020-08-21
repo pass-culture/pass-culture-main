@@ -1,6 +1,6 @@
 import React from 'react'
 import { mount, shallow } from 'enzyme'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Dotdotdot from 'react-dotdotdot'
 import Thumb from '../../../../../components/layout/Thumb'
 
@@ -255,7 +255,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const wrapper = shallow(<OfferItem {...props} />)
 
         // Then
-        const firstLink = wrapper.find(NavLink).first()
+        const firstLink = wrapper.find(Link).first()
         expect(firstLink.prop('title')).toStrictEqual('Harry Potter vol.1')
       })
 
@@ -268,7 +268,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const wrapper = shallow(<OfferItem {...props} />)
 
         // then
-        const navLinkComponent = wrapper.find(NavLink).first()
+        const navLinkComponent = wrapper.find(Link).first()
         expect(navLinkComponent.prop('className')).toBe('name')
         expect(navLinkComponent.prop('to')).toBe('/offres/M4?orderBy=offer.id+desc')
         expect(navLinkComponent.prop('title')).toBe('fake name')
@@ -426,7 +426,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           .at(1)
           .find('li')
           .at(0)
-          .find(NavLink)
+          .find(Link)
         expect(navLinkComponent.prop('className')).toBe('has-text-primary')
         expect(navLinkComponent.prop('to')).toBe('/offres/M4?gestion')
         expect(navLinkComponent.text()).toBe('2 dates')
@@ -490,7 +490,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           .at(1)
           .find('li')
           .at(0)
-          .find(NavLink)
+          .find(Link)
         expect(navLinkComponent.prop('className')).toBe('has-text-primary')
         expect(navLinkComponent.prop('to')).toBe('/offres/THING?gestion')
         expect(navLinkComponent.text()).toBe('1 prix')

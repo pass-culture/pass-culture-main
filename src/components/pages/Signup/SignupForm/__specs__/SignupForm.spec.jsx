@@ -1,7 +1,7 @@
 import React from 'react'
 import SignupForm from '../SignupForm'
 import { mount } from 'enzyme'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 import { Router } from 'react-router'
 
@@ -289,7 +289,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       expect(errors.text()).toBe('erreur sur le mail')
     })
 
-    it('should render a NavLink component with the right props', () => {
+    it('should render a Link component', () => {
       // when
       const wrapper = mount(
         <Router history={history}>
@@ -298,10 +298,8 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const navLink = wrapper.find(NavLink)
-      expect(navLink).toHaveLength(1)
-      expect(navLink.prop('className')).toBe('secondary-button')
-      expect(navLink.prop('to')).toBe('/connexion')
+      const link = wrapper.find(Link)
+      expect(link).toHaveLength(1)
     })
 
     it('should render a SubmitButton component with the right props', () => {
@@ -315,7 +313,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // then
       const submitButton = wrapper.find('button[type="submit"]')
       expect(submitButton).toHaveLength(1)
-      expect(submitButton.prop('className')).toBe('primary-button')
       expect(submitButton.prop('type')).toBe('submit')
       expect(submitButton.text()).toBe('Créer mon compte')
     })

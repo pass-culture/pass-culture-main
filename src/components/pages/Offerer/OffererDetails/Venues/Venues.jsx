@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React from 'react'
 import VenueItem from './VenueItem/VenueItem'
@@ -23,12 +23,12 @@ const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
         ))}
       </ul>
       <div className="has-text-centered">
-        <NavLink
+        <Link
           className="tertiary-button"
           to={venueCreationUrl}
         >
           {'+ Ajouter un lieu'}
-        </NavLink>
+        </Link>
       </div>
     </div>
   )

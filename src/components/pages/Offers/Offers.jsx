@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
 import React, { PureComponent } from 'react'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import Titles from '../../layout/Titles/Titles'
 import Spinner from '../../layout/Spinner'
@@ -160,7 +160,7 @@ class Offers extends PureComponent {
     const [orderName, orderDirection] = (orderBy || '').split('+')
 
     const actionLink = !isAdmin && (
-      <NavLink
+      <Link
         className="cta button is-primary"
         to={createOfferTo}
       >
@@ -170,7 +170,7 @@ class Offers extends PureComponent {
         <span>
           {'Créer une offre'}
         </span>
-      </NavLink>
+      </Link>
     )
 
     return (

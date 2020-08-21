@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 
@@ -345,12 +345,12 @@ class Mediation extends PureComponent {
           style={{ justifyContent: 'space-between' }}
         >
           <div className="control">
-            <NavLink
+            <Link
               className="button is-primary is-outlined is-medium"
               to={backPath}
             >
               {'Annuler'}
-            </NavLink>
+            </Link>
           </div>
           <div className="control">
             <button

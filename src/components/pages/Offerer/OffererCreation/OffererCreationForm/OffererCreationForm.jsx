@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { FormSpy } from 'react-final-form'
 import SirenField from '../../../../layout/form/fields/SirenField/SirenField'
 
@@ -44,12 +44,12 @@ class OffererCreationForm extends Component {
           </div>
           <div className="offerer-form-validation">
             <div className="control">
-              <NavLink
+              <Link
                 className="secondary-button"
                 to="/structures"
               >
                 {'Retour'}
-              </NavLink>
+              </Link>
             </div>
             <div className="control">
               <button

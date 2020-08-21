@@ -1,6 +1,6 @@
 import { Icon, pluralize } from 'pass-culture-shared'
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../../utils/routes'
 
@@ -23,9 +23,9 @@ const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable
     <li className="offerer-item">
       <div className="list-content">
         <p className="name">
-          <NavLink to={showPath}>
+          <Link to={showPath}>
             {name}
-          </NavLink>
+          </Link>
         </p>
         {!isValidated && (
           <p
@@ -38,25 +38,25 @@ const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable
 
         <ul className="actions">
           <li id="create-offer-action">
-            <NavLink
+            <Link
               className="has-text-primary"
               to={createOfferLink}
             >
               <Icon svg="ico-offres-r" />
               {'Nouvelle offre'}
               {canCreateOnlyVirtualOffer && ' numérique'}
-            </NavLink>
+            </Link>
           </li>
 
           {nOffers && nOffers > 0 ? (
             <li className="count-offers-action">
-              <NavLink
+              <Link
                 className="has-text-primary"
                 to={`/offres?structure=${id}`}
               >
                 <Icon svg="ico-offres-r" />
                 {pluralize(nOffers, 'offres')}
-              </NavLink>
+              </Link>
             </li>
           ) : (
             <li className="count-offers-action">
@@ -65,30 +65,30 @@ const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable
           )}
 
           <li id="count-venues-action">
-            <NavLink
+            <Link
               className="has-text-primary"
               to={`/structures/${id}/`}
             >
               <Icon svg="ico-venue" />
               {pluralize(physicalVenues.length, 'lieux')}
-            </NavLink>
+            </Link>
           </li>
 
           <li id="create-venue-action">
-            <NavLink
+            <Link
               className="has-text-primary"
               to={venueCreationUrl}
             >
               <Icon svg="ico-venue-r" />
               {'Nouveau lieu'}
-            </NavLink>
+            </Link>
           </li>
         </ul>
       </div>
       <div className="caret">
-        <NavLink to={showPath}>
+        <Link to={showPath}>
           <Icon svg="ico-next-S" />
-        </NavLink>
+        </Link>
       </div>
     </li>
   )

@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
-import { NavLink } from 'react-router-dom'
 import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 import { mapApiToBrowser } from '../../../utils/translate'
 import TextField from '../../layout/form/fields/TextField'
@@ -16,6 +15,7 @@ import PendingOffererItem from './OffererItem/PendingOffererItem'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
+import { Link } from 'react-router-dom'
 
 class Offerers extends PureComponent {
   constructor(props) {
@@ -171,12 +171,12 @@ class Offerers extends PureComponent {
 
     const actionLink = (
       <span>
-        <NavLink
+        <Link
           className="primary-button"
           to={offererCreationPageURL}
         >
           {'+ Ajouter une structure'}
-        </NavLink>
+        </Link>
         <Icon
           data-place="bottom"
           data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"

@@ -13,7 +13,7 @@ import {
 
 import React, { PureComponent, Fragment } from 'react'
 import ReactToolTip from 'react-tooltip'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
@@ -799,24 +799,24 @@ class OfferCreation extends PureComponent {
           >
             <div className="control">
               {readOnly && isEditableOffer && (
-                <NavLink
+                <Link
                   className="secondary-button"
                   id="modify-offer-button"
                   to={`/offres/${offerId}/edition`}
                 >
                   {'Modifier l’offre'}
-                </NavLink>
+                </Link>
               )}
             </div>
             <div className="control">
               {readOnly ? (
-                <NavLink
+                <Link
                   className="primary-button"
                   to="/offres"
                 >
                   {'Terminer '}
                   {isModifiedEntity && !isOfferActive && 'et activer'}
-                </NavLink>
+                </Link>
               ) : (
                 showAllForm && (
                   <SubmitButton className="primary-button">

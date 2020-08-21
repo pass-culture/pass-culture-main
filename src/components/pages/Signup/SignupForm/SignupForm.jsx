@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import createDecorator from 'final-form-calculate'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Field, Form } from 'react-final-form'
 
 import bindAddressAndDesignationFromSiren from '../../Offerer/OffererCreation/decorators/bindSirenFieldToDesignation'
@@ -267,12 +267,12 @@ class SignupForm extends PureComponent {
                   </a>
                 </div>
                 <div className="buttons-field">
-                  <NavLink
+                  <Link
                     className="secondary-button"
                     to="/connexion"
                   >
                     {'J’ai déjà un compte'}
-                  </NavLink>
+                  </Link>
                   <button
                     className="primary-button"
                     disabled={!valid}

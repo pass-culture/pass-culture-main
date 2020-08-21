@@ -1,7 +1,7 @@
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import { NavLink, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
@@ -106,12 +106,12 @@ class Signin extends PureComponent {
                       {errors}
                     </div>
                     <div className="field buttons-field">
-                      <NavLink
+                      <Link
                         className="secondary-button"
                         to={accountCreationUrl}
                       >
                         {'Créer un compte'}
-                      </NavLink>
+                      </Link>
                       <SubmitButton
                         className="primary-button"
                         id="signin-submit-button"

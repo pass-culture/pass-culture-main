@@ -6,11 +6,11 @@ import { createUserRole } from './helpers/roles'
 
 const creditInput = Selector('#mediation-credit')
 const editorZoneDiv = Selector('div.editor-zone').filterVisible()
-const submitButton = Selector('button.primary-button').withText('Valider')
+const submitButton = Selector('button').withText('Valider')
 const imageUrlInput = Selector("input[placeholder='URL du fichier']")
-const imageUrlButton = Selector('button.primary-button').withText('OK')
+const imageUrlButton = Selector('button').withText('OK')
 const urlInput = Selector("input[placeholder='URL du fichier']")
-const urlButton = Selector('button.primary-button').withText('OK')
+const urlButton = Selector('button').withText('OK')
 
 let userRole
 let dataFromSandbox

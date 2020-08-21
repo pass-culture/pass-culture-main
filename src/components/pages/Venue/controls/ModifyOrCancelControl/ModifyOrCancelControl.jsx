@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 class ModifyOrCancelControl extends PureComponent {
   handleOnCLick = () => {
@@ -19,13 +19,13 @@ class ModifyOrCancelControl extends PureComponent {
     return (
       <div className="control">
         {readOnly ? (
-          <NavLink
+          <Link
             className="secondary-button"
             id="modify-venue"
             to={`/structures/${offererId}/lieux/${venueId}?modification`}
           >
             {'Modifier le lieu'}
-          </NavLink>
+          </Link>
         ) : (
           <button
             className="secondary-button"

@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import CreateControl from '../CreateControl'
 
@@ -20,7 +20,7 @@ describe('src | components | pages | Venue | controls | CreateControl ', () => {
       const wrapper = shallow(<CreateControl {...props} />)
 
       // then
-      const navLink = wrapper.find(NavLink)
+      const navLink = wrapper.find(Link)
       const spanText = navLink.find('span')
 
       expect(navLink.prop('className')).toBe('button is-tertiary is-medium')
