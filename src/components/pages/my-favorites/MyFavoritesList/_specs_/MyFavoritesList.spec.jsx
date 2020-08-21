@@ -14,7 +14,6 @@ describe('my Favorites', () => {
       loadMyFavorites: jest.fn((fail, success) => success()),
       myFavorites: [],
       persistDeleteFavorites: jest.fn(),
-      isHomepageDisabled: false,
     }
   })
 
@@ -32,7 +31,7 @@ describe('my Favorites', () => {
   })
 
   describe('when there are no favorites', () => {
-    it('should display a button that redirects to discovery page', () => {
+    it('should display a button that redirects to home page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter initialEntries={['/favoris']}>
@@ -43,7 +42,7 @@ describe('my Favorites', () => {
       // then
       const redirectButton = wrapper.find('a')
       expect(redirectButton.text()).toBe('Lance-toi !')
-      expect(redirectButton.prop('href')).toBe('/accueil')
+      expect(redirectButton.prop('href')).toBe('/')
     })
 
     it('should display a description text', () => {

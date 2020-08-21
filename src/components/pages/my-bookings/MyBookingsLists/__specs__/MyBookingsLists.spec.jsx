@@ -13,7 +13,6 @@ describe('src | components | MyBookingsLists', () => {
       finishedAndUsedAndCancelledBookings: [],
       upComingBookings: [],
       bookingsOfTheWeek: [],
-      isHomepageDisabled: false,
     }
   })
 
@@ -27,7 +26,7 @@ describe('src | components | MyBookingsLists', () => {
   })
 
   describe('when I have no bookings', () => {
-    it('should display a button that redirects to discovery page', () => {
+    it('should display a button that redirects to home page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter initialEntries={['/reservations']}>
@@ -38,7 +37,7 @@ describe('src | components | MyBookingsLists', () => {
       // then
       const redirectButton = wrapper.find('a')
       expect(redirectButton.text()).toBe('Lance-toi !')
-      expect(redirectButton.prop('href')).toBe('/accueil')
+      expect(redirectButton.prop('href')).toBe('/')
     })
 
     it('should display a description text', () => {

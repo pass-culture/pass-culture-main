@@ -1,6 +1,4 @@
 import { connect } from 'react-redux'
-import { FEATURES } from '../../../router/selectors/features'
-import selectIsFeatureDisabled from '../../../router/selectors/selectIsFeatureDisabled'
 
 import MyBookingsLists from './MyBookingsLists'
 import {
@@ -17,7 +15,6 @@ export const mapStateToProps = state => {
   const bookingsOfTheWeek = selectEventBookingsOfTheWeek(state)
   const cancelledBookings = selectCancelledBookings(state)
   const finishedEventBookings = selectFinishedEventBookings(state)
-  const isHomepageDisabled = selectIsFeatureDisabled(state, FEATURES.HOMEPAGE)
   const upComingBookings = selectUpComingBookings(state)
   const usedThingBookings = selectUsedThingBookings(state)
   const finishedAndUsedAndCancelledBookings = [
@@ -26,12 +23,7 @@ export const mapStateToProps = state => {
     ...cancelledBookings,
   ]
 
-  return {
-    bookingsOfTheWeek,
-    finishedAndUsedAndCancelledBookings,
-    isHomepageDisabled,
-    upComingBookings,
-  }
+  return { bookingsOfTheWeek, finishedAndUsedAndCancelledBookings, upComingBookings }
 }
 
 export default compose(

@@ -38,7 +38,6 @@ describe('src | components | MyBookings', () => {
               token: 't',
             },
           ],
-          features: [],
           offers: [
             {
               id: 'o1',

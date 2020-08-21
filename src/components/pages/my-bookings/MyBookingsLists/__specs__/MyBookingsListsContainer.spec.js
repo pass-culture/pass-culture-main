@@ -9,7 +9,6 @@ describe('src | components | pages | my-bookings | MyBookingsLists | MyBookingsL
           bookings: [],
           offers: [],
           stocks: [],
-          features: [],
         },
       }
 
@@ -21,7 +20,6 @@ describe('src | components | pages | my-bookings | MyBookingsLists | MyBookingsL
         bookingsOfTheWeek: [],
         finishedAndUsedAndCancelledBookings: [],
         upComingBookings: [],
-        isHomepageDisabled: true,
       })
     })
   })
