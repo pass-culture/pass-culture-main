@@ -1,14 +1,15 @@
-.quaternary-button {
+@mixin quaternary {
   @include caption();
+
   color: $primary;
   line-height: rem(22px);
 
-  &:hover:not(:disabled) {
+  &:hover {
     color: $primary;
     cursor: pointer;
   }
 
-  &:active:not(:disabled) {
+  &:active {
     color: $primary-dark;
   }
 
@@ -18,11 +19,6 @@
   }
 }
 
-a.quaternary-button {
-  &:hover {
-    color: $primary;
-  }
-  &:active {
-    color: $primary-dark;
-  }
+.quaternary-button, .quaternary-link {
+  @include quaternary();
 }

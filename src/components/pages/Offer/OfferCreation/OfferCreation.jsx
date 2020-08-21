@@ -800,7 +800,7 @@ class OfferCreation extends PureComponent {
             <div className="control">
               {readOnly && isEditableOffer && (
                 <Link
-                  className="secondary-button"
+                  className="secondary-link"
                   id="modify-offer-button"
                   to={`/offres/${offerId}/edition`}
                 >
@@ -811,7 +811,7 @@ class OfferCreation extends PureComponent {
             <div className="control">
               {readOnly ? (
                 <Link
-                  className="primary-button"
+                  className="primary-link"
                   to="/offres"
                 >
                   {'Terminer '}

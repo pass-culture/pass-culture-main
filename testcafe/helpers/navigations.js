@@ -24,7 +24,7 @@ export const navigateToOffersAs = user => async t => {
 
 export const navigateToNewOffererAs = (user, userRole) => async t => {
   await navigateToOfferersAs(user, userRole)(t)
-  const newOffererAnchor = Selector("a.primary-button[href='/structures/creation']")
+  const newOffererAnchor = Selector('a').withText('+ Ajouter une structure')
 
   await t.click(newOffererAnchor)
 }

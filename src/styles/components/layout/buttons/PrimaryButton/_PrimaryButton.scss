@@ -1,5 +1,6 @@
-.primary-button {
+@mixin primary {
   @include button();
+
   background-color: $primary;
   border: 3px solid $primary;
   border-radius: rem(24px);
@@ -9,26 +10,32 @@
   line-height: rem(14px);
   padding: rem(10px) rem(16px);
 
+  &:active {
+    background-color: $primary-dark;
+    border: 3px solid $primary-dark;
+    color: $white;
+  }
+
+  &:hover {
+    color: $white;
+  }
+}
+
+.primary-button {
+  @include primary();
+
   &:disabled {
     background-color: $primary-disabled;
     border: 3px solid $primary-disabled;
     cursor: not-allowed;
     opacity: 1;
   }
-
-  &:active:not(:disabled) {
-    background-color: $primary-dark;
-    border: 3px solid $primary-dark;
-  }
 }
 
-a.primary-button {
-  display: block;
+.primary-link {
+  @include primary();
 
-  &:hover:not(:disabled) {
-    color: $white;
-  }
-  &:active:not(:disabled) {
+  &:active {
     color: $white;
   }
 }

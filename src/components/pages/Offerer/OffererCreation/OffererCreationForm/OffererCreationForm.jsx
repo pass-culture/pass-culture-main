@@ -45,7 +45,7 @@ class OffererCreationForm extends Component {
           <div className="offerer-form-validation">
             <div className="control">
               <Link
-                className="secondary-button"
+                className="secondary-link"
                 to="/structures"
               >
                 {'Retour'}

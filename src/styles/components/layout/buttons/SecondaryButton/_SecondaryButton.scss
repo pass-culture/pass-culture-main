@@ -1,5 +1,6 @@
-.secondary-button {
+@mixin secondary {
   @include button();
+
   background-color: $white;
   border: 2px solid $primary;
   border-radius: rem(24px);
@@ -9,6 +10,19 @@
   line-height: rem(15px);
   padding: rem(10px) rem(16px);
 
+  &:active {
+    background-color: $primary-dark;
+    border: 2px solid $primary-dark;
+  }
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+.secondary-button {
+  @include secondary();
+
   &:disabled {
     background-color: $white;
     border: 3px solid $primary-disabled;
@@ -16,21 +30,12 @@
     cursor: not-allowed;
     opacity: 1;
   }
-
-  &:active:not(:disabled) {
-    background-color: $primary-dark;
-    border: 2px solid $primary-dark;
-    color: $white;
-  }
 }
 
-a.secondary-button {
-  display: block;
+.secondary-link {
+  @include secondary();
 
-  &:hover:not(:disabled) {
-    color: $primary;
-  }
-  &:active:not(:disabled) {
+  &:active {
     color: $white;
   }
 }

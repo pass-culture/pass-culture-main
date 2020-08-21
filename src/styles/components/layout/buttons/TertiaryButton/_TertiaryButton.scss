@@ -1,19 +1,15 @@
-.tertiary-button {
+@mixin tertiary {
   @include button();
+
   color: $primary;
   line-height: rem(22px);
 
-  &:disabled {
-    color: $primary-disabled;
-    cursor: not-allowed;
-    opacity: 1;
-  }
-
-  &:hover:not(:disabled) {
+  &:hover {
+    color: $primary;
     cursor: pointer;
   }
 
-  &:active:not(:disabled) {
+  &:active {
     color: $primary-dark;
   }
 
@@ -23,11 +19,6 @@
   }
 }
 
-a.tertiary-button {
-  &:hover {
-    color: $primary;
-  }
-  &:active {
-    color: $primary-dark;
-  }
+.tertiary-button, .tertiary-link {
+  @include tertiary();
 }

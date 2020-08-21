@@ -24,7 +24,7 @@ const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
       </ul>
       <div className="has-text-centered">
         <Link
-          className="tertiary-button"
+          className="tertiary-link"
           to={venueCreationUrl}
         >
           {'+ Ajouter un lieu'}

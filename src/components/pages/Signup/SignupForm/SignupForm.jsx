@@ -74,7 +74,7 @@ class SignupForm extends PureComponent {
               }
             </div>
             <a
-              className="tertiary-button"
+              className="tertiary-link"
               href="https://docs.passculture.app/le-pass-culture-en-quelques-mots"
               rel="noopener noreferrer"
               target="_blank"
@@ -85,7 +85,7 @@ class SignupForm extends PureComponent {
               </span>
             </a>
             <a
-              className="tertiary-button"
+              className="tertiary-link"
               href="https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/"
               rel="noopener noreferrer"
               target="_blank"
@@ -225,7 +225,7 @@ class SignupForm extends PureComponent {
                     {'En cliquant sur Créer mon compte, vous acceptez nos '}
                   </span>
                   <a
-                    className="quaternary-button"
+                    className="quaternary-link"
                     href="https://docs.passculture.app/textes-normatifs"
                     rel="noopener noreferrer"
                     target="_blank"
@@ -239,7 +239,7 @@ class SignupForm extends PureComponent {
                     {' ainsi que notre '}
                   </span>
                   <a
-                    className="quaternary-button"
+                    className="quaternary-link"
                     href="https://docs.passculture.app/textes-normatifs/charte-des-donnees-personnelles"
                     rel="noopener noreferrer"
                     target="_blank"
@@ -255,7 +255,7 @@ class SignupForm extends PureComponent {
                     }
                   </span>
                   <a
-                    className="quaternary-button"
+                    className="quaternary-link"
                     href="mailto:support@passculture.app"
                     rel="noopener noreferrer"
                     target="_blank"
@@ -268,7 +268,7 @@ class SignupForm extends PureComponent {
                 </div>
                 <div className="buttons-field">
                   <Link
-                    className="secondary-button"
+                    className="secondary-link"
                     to="/connexion"
                   >
                     {'J’ai déjà un compte'}

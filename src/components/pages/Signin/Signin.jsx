@@ -94,7 +94,7 @@ class Signin extends PureComponent {
                       />
                       <span>
                         <Link
-                          className="tertiary-button"
+                          className="tertiary-link"
                           id="lostPasswordLink"
                           to="/mot-de-passe-perdu"
                         >
@@ -107,7 +107,7 @@ class Signin extends PureComponent {
                     </div>
                     <div className="field buttons-field">
                       <Link
-                        className="secondary-button"
+                        className="secondary-link"
                         to={accountCreationUrl}
                       >
                         {'Créer un compte'}

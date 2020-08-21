@@ -124,7 +124,7 @@
     margin-bottom: rem(32px);
   }
 
-  .tertiary-button {
+  .tertiary-link {
     display: flex;
     align-items: center;
   }
@@ -256,10 +256,6 @@
     flex-wrap: wrap;
     justify-content: space-between;
     margin-top: rem(16px);
-
-    a, button {
-      margin-bottom: rem(5px);
-    }
 
     .button {
       padding: 0 rem(45px);

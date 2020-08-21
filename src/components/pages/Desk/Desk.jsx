@@ -216,7 +216,7 @@ class Desk extends React.PureComponent {
           {this.renderChildComponent()}
 
           <Link
-            className="primary-button"
+            className="primary-link"
             id="exitlink"
             to="/accueil"
           >

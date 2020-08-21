@@ -20,7 +20,7 @@ class ModifyOrCancelControl extends PureComponent {
       <div className="control">
         {readOnly ? (
           <Link
-            className="secondary-button"
+            className="secondary-link"
             id="modify-venue"
             to={`/structures/${offererId}/lieux/${venueId}?modification`}
           >
