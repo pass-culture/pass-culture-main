@@ -1,12 +1,10 @@
 import { mount } from 'enzyme'
 import React from 'react'
-import { MemoryRouter } from 'react-router'
 
 import AnyError from '../AnyError/AnyError'
 import { ApiError } from '../ApiError'
 import ErrorsPage from '../ErrorsPage'
 import GatewayTimeoutError from '../GatewayTimeoutError/GatewayTimeoutError'
-import PageNotFound from '../PageNotFound/PageNotFound'
 import { Children } from './Children'
 
 describe('src | layout | PageErrors', () => {
@@ -44,27 +42,6 @@ describe('src | layout | PageErrors', () => {
     })
   })
 
-  describe('when 404 page not found error', () => {
-    it('should display a specific error message', () => {
-      // given
-      const error = new ApiError(404)
-
-      // when
-      const wrapper = mount(
-        <MemoryRouter>
-          <ErrorsPage>
-            <Children />
-          </ErrorsPage>
-        </MemoryRouter>
-      )
-      wrapper.find(Children).simulateError(error)
-
-      // then
-      const pageNotFound = wrapper.find(PageNotFound)
-      expect(pageNotFound).toHaveLength(1)
-    })
-  })
-
   describe('when other than 504 error', () => {
     it('should display a specific error message', () => {
       // given
@@ -81,6 +58,26 @@ describe('src | layout | PageErrors', () => {
       // then
       const anyError = wrapper.find(AnyError)
       expect(anyError).toHaveLength(1)
+    })
+  })
+
+  describe('when other than http error', () => {
+    it('should delegate to other error catcher', () => {
+      // given
+      const Children = () => {
+        throw new Error('whatever')
+      }
+
+      // when
+      const wrapper = () =>
+        mount(
+          <ErrorsPage>
+            <Children />
+          </ErrorsPage>
+        )
+
+      // then
+      expect(wrapper).toThrow(Error)
     })
   })
 })

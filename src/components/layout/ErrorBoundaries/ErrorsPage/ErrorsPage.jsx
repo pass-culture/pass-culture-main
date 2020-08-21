@@ -4,12 +4,15 @@ import React, { Component } from 'react'
 import AnyError from './AnyError/AnyError'
 import { ApiError } from './ApiError'
 import GatewayTimeoutError from './GatewayTimeoutError/GatewayTimeoutError'
-import PageNotFound from './PageNotFound/PageNotFound'
 
 class ErrorsPage extends Component {
-  static getDerivedStateFromError() {
-    return {
-      hasError: true,
+  static getDerivedStateFromError(error) {
+    if (error instanceof ApiError) {
+      return {
+        httpCode: error.httpCode,
+      }
+    } else {
+      throw error
     }
   }
 
@@ -17,28 +20,17 @@ class ErrorsPage extends Component {
     super(props)
 
     this.state = {
-      hasError: false,
-      httpCode: 0,
-    }
-  }
-
-  componentDidCatch(error) {
-    if (error instanceof ApiError) {
-      this.setState({
-        httpCode: error.httpCode,
-      })
+      httpCode: false,
     }
   }
 
   render() {
-    const { hasError, httpCode } = this.state
+    const { httpCode } = this.state
     const { children } = this.props
 
-    if (!hasError) return children
+    if (!httpCode) return children
 
-    if (httpCode === 404) {
-      return <PageNotFound />
-    } else if (httpCode === 504) {
+    if (httpCode === 504) {
       return <GatewayTimeoutError />
     } else {
       return <AnyError />
