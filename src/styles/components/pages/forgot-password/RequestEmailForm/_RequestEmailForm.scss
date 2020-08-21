@@ -1,15 +1,26 @@
-.form-label-inner {
-  font-size: rem(16px);
-}
+.logout-form-main {
+  .form-label-inner {
+    @include body();
+  }
 
-::placeholder {
-  color: $grey-dark;
-  font-style: normal !important;
-}
+  .input-inner {
+    border: 2px solid $white;
+  }
 
-#np-cancel-link,
-#np-ok-button {
-  color: $white;
-  font-size: rem(16px);
-  font-weight: 700;
+  .input-inner:focus-within {
+    outline: none;
+    border: 2px solid $primary;
+  }
+
+  ::placeholder {
+    color: $grey-dark;
+    font-style: normal !important;
+  }
+
+  #np-cancel-link,
+  #np-ok-button {
+    @include button();
+
+    color: $white;
+  }
 }
