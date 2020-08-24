@@ -300,6 +300,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // then
       const link = wrapper.find(Link)
       expect(link).toHaveLength(1)
+      expect(link.prop('to')).toStrictEqual('/connexion')
     })
 
     it('should render a SubmitButton component with the right props', () => {
