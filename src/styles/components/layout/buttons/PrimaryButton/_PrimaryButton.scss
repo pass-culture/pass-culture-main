@@ -10,13 +10,11 @@
   line-height: rem(14px);
   padding: rem(10px) rem(16px);
 
-  &:active {
+  &:active,
+  &:hover,
+  &:focus {
     background-color: $primary-dark;
     border: 3px solid $primary-dark;
-    color: $white;
-  }
-
-  &:hover {
     color: $white;
   }
 }
