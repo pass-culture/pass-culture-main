@@ -1,17 +1,17 @@
 @mixin quaternary {
   @include caption();
 
-  color: $primary;
+  color: $black;
   line-height: rem(22px);
 
   &:hover {
-    color: $primary;
+    color: $black;
     cursor: pointer;
     text-decoration: underline;
   }
 
   &:active {
-    color: $primary-dark;
+    color: $black;
   }
 
   img {

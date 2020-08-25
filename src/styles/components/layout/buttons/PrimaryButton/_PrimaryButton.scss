@@ -7,8 +7,8 @@
   color: $white;
   cursor: pointer;
   height: rem(40px);
-  line-height: rem(14px);
-  padding: rem(10px) rem(16px);
+  line-height: rem(34px);
+  padding: 0 rem(16px);
 
   &:active,
   &:hover,
@@ -36,6 +36,7 @@
 
 .primary-link {
   @include primary();
+  display: inline-block;
 
   &:active {
     color: $white;
