@@ -432,7 +432,7 @@ class Mediation extends PureComponent {
           <label className="label">
             {'...ou depuis votre poste : '}
           </label>
-          <label className="button is-primary is-medium">
+          <label className="secondary-link">
             {'Choisir un fichier '}
             <input
               hidden
