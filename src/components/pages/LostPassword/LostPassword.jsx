@@ -42,7 +42,10 @@ class LostPassword extends PureComponent {
                       {'Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe'}
                     </h2>
 
-                    <Link to="/connexion">
+                    <Link
+                      className="primary-link"
+                      to="/connexion"
+                    >
                       {'Se connecter'}
                     </Link>
                   </div>
@@ -62,7 +65,10 @@ class LostPassword extends PureComponent {
                       }
                     </h2>
 
-                    <Link to="/accueil">
+                    <Link
+                      className="primary-link"
+                      to="/accueil"
+                    >
                       {'Revenir à l’accueil'}
                     </Link>
                   </div>

@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom'
 import Icon from '../../../layout/Icon'
 import Main from '../../../layout/Main'
 import Titles from '../../../layout/Titles/Titles'
-import CreateControl from './../controls/CreateControl/CreateControl'
 import ModifyOrCancelControl from './../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from './../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 import IdentifierFields from './../fields/IdentifierFields/IdentifierFields'
@@ -148,10 +147,6 @@ class VenueEdition extends PureComponent {
             readOnly={readOnly}
             venueId={venueId}
           />
-          {readOnly && <CreateControl
-            offererId={offererId}
-            venueId={venueId}
-                       />}
           <ReturnOrSubmitControl
             canSubmit={canSubmit}
             isRequestPending={isRequestPending}

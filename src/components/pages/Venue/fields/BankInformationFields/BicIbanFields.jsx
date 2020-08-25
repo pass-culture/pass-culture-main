@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 export const BicIbanFields = ({ iban, bic }) => (
   <Fragment>
     <a
-      className="bi-external-link bi-external-link--mod-topright"
+      className="tertiary-link"
       href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
       rel="noopener noreferrer"
       target="_blank"

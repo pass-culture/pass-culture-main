@@ -13,7 +13,7 @@ const BankInformation = ({ offerer }) => (
     {offerer.areBankInformationProvided ? (
       <Fragment>
         <a
-          className="bi-external-link bi-external-link--mod-topright"
+          className="tertiary-link"
           href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
           rel="noopener noreferrer"
           target="_blank"

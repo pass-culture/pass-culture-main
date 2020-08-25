@@ -85,6 +85,10 @@
         color: inherit;
         text-decoration: underline;
       }
+
+      a.quaternary-link {
+        color: $primary;
+      }
     }
   }
 
@@ -249,6 +253,10 @@
     font-size: rem(14px);
     font-weight: 500;
     line-height: rem(22px);
+  }
+
+  .sign-up-infos-before-signup a {
+    color: $primary;
   }
 
   .buttons-field {

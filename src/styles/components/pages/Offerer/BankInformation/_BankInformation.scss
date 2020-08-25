@@ -26,7 +26,7 @@
     }
   }
 
-  .bi-external-link {
+  .bi-external-link{
     font-weight: $weight-bold;
 
     > img {
@@ -38,6 +38,17 @@
       position: absolute;
       top: rem(-6px);
       right: 0;
+    }
+  }
+
+  .tertiary-link {
+    position: absolute;
+    top: rem(-6px);
+    right: 0;
+
+    > img {
+      vertical-align: sub;
+      margin-right: rem(5px);
     }
   }
 }

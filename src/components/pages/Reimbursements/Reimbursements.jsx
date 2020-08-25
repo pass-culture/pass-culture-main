@@ -16,7 +16,7 @@ const Reimbursements = () => (
       {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
     </p>
     <hr />
-    <div className="control flex-columns items-center flex-end">
+    <div className="flex-end">
       <DownloadButtonContainer
         filename="remboursements_pass_culture"
         href={`${API_URL}/reimbursements/csv`}
@@ -24,9 +24,6 @@ const Reimbursements = () => (
       >
         {'Télécharger la liste des remboursements'}
       </DownloadButtonContainer>
-    </div>
-    <br />
-    <div className="control flex-columns items-center flex-end">
       <CsvTableButtonContainer href={`${API_URL}/reimbursements/csv`}>
         {'Afficher la liste des remboursements'}
       </CsvTableButtonContainer>

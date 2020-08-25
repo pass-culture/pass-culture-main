@@ -79,7 +79,7 @@ class SignupForm extends PureComponent {
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Icon svg="ico-external-site-red" />
+              <Icon svg="ico-external-site" />
               <span>
                 {'Fonctionnement du pass Culture pro'}
               </span>
@@ -90,7 +90,7 @@ class SignupForm extends PureComponent {
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Icon svg="ico-external-site-red" />
+              <Icon svg="ico-external-site" />
               <span>
                 {'Consulter notre centre d’aide'}
               </span>
