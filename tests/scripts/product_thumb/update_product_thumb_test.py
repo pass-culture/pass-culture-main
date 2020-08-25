@@ -1,13 +1,12 @@
 import os
 from unittest.mock import MagicMock, patch
 
-from repository import repository
-from scripts.product_thumb.update_product_thumb import process_product_thumb, _compute_product_id_from_uri, \
-    _get_product_thumb, \
-    OBJECT_STORAGE_URL, process_file
 from tests.conftest import clean_database
 from tests.model_creators.specific_creators import create_product_with_thing_type
 from tests.scripts.product_thumb.test_image_as_bytes import IMAGE_AS_BYTES
+
+from repository import repository
+from scripts.product_thumb.update_product_thumb import OBJECT_STORAGE_URL, _compute_product_id_from_uri, _get_product_thumb, process_file, process_product_thumb
 from utils.human_ids import humanize
 
 
