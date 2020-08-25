@@ -12,6 +12,21 @@
     display: block;
   }
 
+  ul {
+    margin: rem(10px);
+    background-color: $grey-light;
+    padding: rem(10px);
+  }
+
+  li:hover a {
+    color: $white;
+    background-color: $primary;
+  }
+
+  hr.separator {
+    border: 1px solid $grey-medium;
+  }
+
   .flex-block {
     align-items: center;
     display: flex;

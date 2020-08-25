@@ -8,11 +8,25 @@ const Styleguide = () => {
   return (
     <Main name="styleguide">
       <Titles title="Styleguide" />
-      <h2>
+      <ul>
+        <li>
+          <a href="#sg-buttons">
+            {'Boutons'}
+          </a>
+        </li>
+        <li>
+          <a href="#sg-inputtext">
+            {'Inputs texte'}
+          </a>
+        </li>
+      </ul>
+      <hr className="separator" />
+      <h2 id="sg-buttons">
         {'Boutons'}
       </h2>
       <StyleguideButtons />
-      <h2>
+      <hr className="separator" />
+      <h2 id="sg-inputtext">
         {'Inputs'}
       </h2>
       <StyleguideInputText />
