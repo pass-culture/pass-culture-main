@@ -45,7 +45,7 @@ export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
     endingDatetime: endingDatetime,
     geolocation: geolocation || null,
     hitsPerPage: parameters[CONTENTFUL_PARAMETERS.HITS_PER_PAGE] || null,
-    offerCategories: buildCategories(parameters[CONTENTFUL_PARAMETERS.CATEGORIES] || []),
+    offerCategories: _buildCategories(parameters[CONTENTFUL_PARAMETERS.CATEGORIES] || []),
     offerIsDuo: parameters[CONTENTFUL_PARAMETERS.IS_DUO] || false,
     offerIsFree: parameters[CONTENTFUL_PARAMETERS.IS_FREE] || false,
     offerIsNew: parameters[CONTENTFUL_PARAMETERS.NEWEST_ONLY] || false,
@@ -54,17 +54,23 @@ export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
       isEvent: parameters[CONTENTFUL_PARAMETERS.IS_EVENT] || false,
       isThing: parameters[CONTENTFUL_PARAMETERS.IS_THING] || false,
     },
-    priceRange: buildPriceRange({ priceMin, priceMax }),
+    priceRange: _buildPriceRange({ priceMin, priceMax }),
     searchAround: parameters[CONTENTFUL_PARAMETERS.IS_GEOLOCATED] || false,
     tags: parameters[CONTENTFUL_PARAMETERS.TAGS] || [],
   }
 }
 
-const buildPriceRange = ({ priceMin = 0, priceMax = 500 }) => {
+const _buildPriceRange = ({ priceMin = 0, priceMax = 500 }) => {
   return [priceMin, priceMax]
 }
 
-const buildCategories = categoriesLabel =>
-  Object.values(CATEGORY_CRITERIA)
-    .filter(categoryCriterion => categoriesLabel.includes(categoryCriterion.label))
-    .map(categoryCriterion => categoryCriterion.facetFilter)
+const _buildCategories = categoriesLabel => {
+  const categories = []
+  Object.values(CATEGORY_CRITERIA).forEach(categoryCriterion => {
+    if (categoriesLabel.includes(categoryCriterion.label)) {
+      categories.push(categoryCriterion.facetFilter)
+    }
+  })
+
+  return categories
+}
