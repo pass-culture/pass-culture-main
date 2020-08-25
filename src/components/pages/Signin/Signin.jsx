@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom'
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
 import Icon from '../../layout/Icon'
-import { mapApiToBrowser } from '../../../utils/translate'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 
 class Signin extends PureComponent {
@@ -23,13 +22,7 @@ class Signin extends PureComponent {
     const { hasOffers } = action.payload.datum || false
     const { hasPhysicalVenues } = action.payload.datum || false
     const hasOffersWithPhysicalVenues = hasOffers && hasPhysicalVenues
-    const { query, history } = this.props
-    const queryParams = query.parse()
-    const fromUrl = queryParams[mapApiToBrowser.from]
-
-    if (fromUrl) {
-      return decodeURIComponent(fromUrl)
-    }
+    const { history } = this.props
 
     const newRoute = hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
     history.push(newRoute)
@@ -200,7 +193,9 @@ class Signin extends PureComponent {
 }
 
 Signin.propTypes = {
-  query: PropTypes.shape().isRequired,
+  history: PropTypes.shape().isRequired,
+  isAccountCreationAvailable: PropTypes.bool.isRequired,
+  submit: PropTypes.func.isRequired,
 }
 
 export default Signin
