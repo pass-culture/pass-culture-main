@@ -18,9 +18,15 @@
     padding: rem(10px);
   }
 
+  li {
+    padding: rem(2px) 0;
+    text-align: rem(10px);
+  }
+
   li:hover a {
     color: $white;
     background-color: $primary;
+    padding: rem(3px);
   }
 
   hr.separator {
