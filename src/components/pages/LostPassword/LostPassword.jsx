@@ -5,15 +5,45 @@ import { Link } from 'react-router-dom'
 
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
+import Icon from '../../layout/Icon'
 
 class LostPassword extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.state = {
+      emailValue: '',
+      hasErrorMessage: false,
+    }
+  }
   onHandleSuccessRedirectForResetPassword = () => '/mot-de-passe-perdu?change=1'
+
+  onHandleFail = () => this.setState({ hasErrorMessage: true })
 
   storeValue = token => () => token
 
-  onHandleSuccessRedirectForResetPasswordRequest = () => '/mot-de-passe-perdu?envoye=1'
+  onHandleSuccessRedirectForResetPasswordRequest = () => {
+    const { history } = this.props
+    history.push('/mot-de-passe-perdu?envoye=1')
+  }
+
+  submitResetPassword = () => {
+    const { submitResetPassword } = this.props
+    const { emailValue } = this.state
+
+    return submitResetPassword(
+      emailValue,
+      this.onHandleSuccessRedirectForResetPasswordRequest,
+      this.onHandleFail
+    )
+  }
+
+  handleInputEmailChange = event => {
+    this.setState({ emailValue: event.target.value })
+    this.setState({ hasErrorMessage: false })
+  }
 
   render() {
+    const { hasErrorMessage, emailValue } = this.state
     const { change, envoye, errors, token } = this.props
 
     return (
@@ -153,32 +183,37 @@ class LostPassword extends PureComponent {
                       </span>
                       {'Champs obligatoires'}
                     </span>
-                    <Form
-                      action="/users/reset-password"
-                      blockComponent={null}
-                      handleSuccessNotification={null}
-                      handleSuccessRedirect={this.onHandleSuccessRedirectForResetPasswordRequest}
-                      layout="vertical"
-                      name="user"
-                    >
-                      <Field
-                        label="Adresse e-mail"
-                        name="email"
-                        placeholder="Identifiant (e-mail)"
-                        required
-                        type="email"
-                      />
-
-                      <div className="field buttons-field">
-                        <SubmitButton
-                          className="primary-button"
-                          id="sendTokenByMail"
-                          type="submit"
-                        >
-                          {'Envoyer'}
-                        </SubmitButton>
+                    {hasErrorMessage && (
+                      <div className="server-error-message">
+                        <Icon svg="picto-warning" />
+                        <span>
+                          {"Une erreur s'est produite, veuillez réessayer ultérieurement."}
+                        </span>
                       </div>
-                    </Form>
+                    )}
+                    <form>
+                      <label className="input-text">
+                        {'Adresse e-mail'}
+                        <span className="field-asterisk">
+                          {'*'}
+                        </span>
+                        <input
+                          className="it-input"
+                          onChange={this.handleInputEmailChange}
+                          placeholder="Identifiant (e-mail)"
+                          required
+                          type="text"
+                          value={emailValue}
+                        />
+                      </label>
+                      <button
+                        className="primary-button"
+                        onClick={this.submitResetPassword}
+                        type="button"
+                      >
+                        {'Envoyer'}
+                      </button>
+                    </form>
                   </div>
                 </section>
               )}

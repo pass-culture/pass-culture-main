@@ -179,7 +179,7 @@ class Signin extends PureComponent {
                         {'Créer un compte'}
                       </Link>
                       <button
-                        className="button is-primary"
+                        className="primary-button"
                         disabled={isSubmitButtonDisabled}
                         id="signin-submit-button"
                         onClick={this.handleOnSubmit}
