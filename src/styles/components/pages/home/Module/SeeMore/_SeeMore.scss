@@ -3,16 +3,10 @@
 
   .smw-image-one-item-medium {
     align-items: center;
-    display: flex;
-    justify-content: center;
-
-    background-image: url('/home-group.png');
-    background-repeat: no-repeat;
-    background-size: cover;
-    box-shadow: 0 rem(2px) rem(4px) 0 $black-shadow;
-    background-color: $grey;
     border-radius: rem(8px);
+    display: flex;
     height: rem(160px);
+    justify-content: center;
     width: 99%;
 
     .smw-content-wrapper {
@@ -22,19 +16,16 @@
 
       span {
         @include button();
-        color: $white;
       }
     }
   }
 
   .smw-image-two-items {
     align-items: center;
-    background-color: $white;
     border-radius: rem(8px);
-    border: 1px solid $grey-medium;
     display: flex;
-    justify-content: center;
     height: rem(160px);
+    justify-content: center;
     width: 47.5%;
 
     .smw-content-wrapper {
@@ -44,8 +35,28 @@
 
       span {
         @include button();
-        color: $secondary;
       }
+    }
+  }
+
+  .smw-image-first-module {
+    background-color: $grey;
+    background-image: url('/home-group.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    box-shadow: 0 rem(2px) rem(4px) 0 $black-shadow;
+
+    .smw-content-wrapper span {
+      color: $white;
+    }
+  }
+
+  .smw-image-default-module {
+    background-color: $white;
+    border: 1px solid $grey-medium;
+
+    .smw-content-wrapper span {
+      color: $secondary;
     }
   }
 }

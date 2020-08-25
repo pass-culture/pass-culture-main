@@ -231,6 +231,7 @@ describe('src | components | Module', () => {
     // given
     mockAlgolia({ hits: [offerOne], nbHits: 5 })
     props.module = new Offers({ algolia, display })
+    props.row = 0
 
     // when
     const wrapper = await mount(
@@ -249,6 +250,7 @@ describe('src | components | Module', () => {
     expect(seeMore.props()).toStrictEqual({
       dispatch: expect.any(Function),
       historyPush: props.historyPush,
+      isInFirstModule: true,
       isSwitching: false,
       layout: 'one-item-medium',
       moduleName: 'Les offres près de chez toi!',

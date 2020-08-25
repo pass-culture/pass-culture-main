@@ -11,10 +11,11 @@ describe('src | components | SeeMore', () => {
 
   beforeEach(() => {
     props = {
+      isInFirstModule: false,
       isSwitching: false,
       historyPush: jest.fn(),
       layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
-      moduleName: "Un super module près de chez toi",
+      moduleName: 'Un super module près de chez toi',
       parameters: {
         aroundRadius: null,
         geolocation: { latitude: 1, longitude: 2 },
@@ -27,19 +28,19 @@ describe('src | components | SeeMore', () => {
         searchAround: true,
         tags: [],
       },
-      trackSeeMoreHasBeenClicked: jest.fn()
+      trackSeeMoreHasBeenClicked: jest.fn(),
     }
   })
 
-  it('should render a white icon for the see more component when layout is one item', () => {
+  it('should render a white icon for the see more component when is in the first module', () => {
     // Given
-    props.layout = PANE_LAYOUT['ONE-ITEM-MEDIUM']
+    props.isInFirstModule = true
 
     // When
     const wrapper = mount(
       <MemoryRouter>
         <SeeMore {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // Then
@@ -47,15 +48,15 @@ describe('src | components | SeeMore', () => {
     expect(icon.prop('svg')).toBe('ico-offres-home-white')
   })
 
-  it('should render a purple icon for the see more component when layout is two items', () => {
+  it('should render a purple icon for the see more component when is not in the first module', () => {
     // Given
-    props.layout = PANE_LAYOUT['TWO-ITEMS']
+    props.isInFirstModule = false
 
     // When
     const wrapper = mount(
       <MemoryRouter>
         <SeeMore {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // Then
@@ -63,12 +64,12 @@ describe('src | components | SeeMore', () => {
     expect(icon.prop('svg')).toBe('ico-offres-home-purple')
   })
 
-  it('should a "En voir plus" label', () => {
+  it('should render a "En voir plus" label', () => {
     // When
     const wrapper = mount(
       <MemoryRouter>
         <SeeMore {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // Then
@@ -82,7 +83,7 @@ describe('src | components | SeeMore', () => {
       aroundRadius: null,
       geolocation: { latitude: null, longitude: null },
       hitsPerPage: 2,
-      offerCategories: ["SPECTACLE", "CINEMA"],
+      offerCategories: ['SPECTACLE', 'CINEMA'],
       offerIsDuo: false,
       offerIsNew: false,
       offerTypes: { isDigital: false, isEvent: true, isThing: false },
@@ -93,7 +94,7 @@ describe('src | components | SeeMore', () => {
     const wrapper = mount(
       <MemoryRouter>
         <SeeMore {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // When
@@ -104,9 +105,9 @@ describe('src | components | SeeMore', () => {
     expect(props.historyPush).toHaveBeenCalledWith({
       parametersFromHome: {
         aroundRadius: null,
-        geolocation: { "latitude": null, "longitude": null },
+        geolocation: { latitude: null, longitude: null },
         hitsPerPage: 2,
-        offerCategories: ["SPECTACLE", "CINEMA"],
+        offerCategories: ['SPECTACLE', 'CINEMA'],
         offerIsDuo: false,
         offerIsNew: false,
         offerTypes: { isDigital: false, isEvent: true, isThing: false },
@@ -114,8 +115,8 @@ describe('src | components | SeeMore', () => {
         searchAround: false,
         tags: [],
       },
-      pathname: "/recherche/resultats",
-      search: "?autour-de=non&categories=SPECTACLE;CINEMA",
+      pathname: '/recherche/resultats',
+      search: '?autour-de=non&categories=SPECTACLE;CINEMA',
     })
   })
 
@@ -136,7 +137,7 @@ describe('src | components | SeeMore', () => {
     const wrapper = mount(
       <MemoryRouter>
         <SeeMore {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // When
@@ -157,8 +158,8 @@ describe('src | components | SeeMore', () => {
         searchAround: true,
         tags: [],
       },
-      pathname: "/recherche/resultats",
-      search: "?autour-de=oui&latitude=1&longitude=2",
+      pathname: '/recherche/resultats',
+      search: '?autour-de=oui&latitude=1&longitude=2',
     })
   })
 
@@ -179,7 +180,7 @@ describe('src | components | SeeMore', () => {
     const wrapper = mount(
       <MemoryRouter>
         <SeeMore {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // When

@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import { Link } from 'react-router-dom'
+
 import Icon from '../../../../layout/Icon/Icon'
 import { PANE_LAYOUT } from '../../domain/layout'
-import { Link } from 'react-router-dom'
 
 const buildSearchParameters = parameters => {
   const { geolocation, offerCategories, searchAround } = parameters
@@ -23,7 +24,15 @@ const preventDefault = event => {
   event.preventDefault()
 }
 
-const SeeMore = ({ historyPush, isSwitching, layout, moduleName, parameters, trackSeeMoreHasBeenClicked }) => {
+const SeeMore = ({
+  historyPush,
+  isInFirstModule,
+  isSwitching,
+  layout,
+  moduleName,
+  parameters,
+  trackSeeMoreHasBeenClicked,
+}) => {
   function goToSearchPage(event) {
     if (!isSwitching) {
       trackSeeMoreHasBeenClicked(moduleName)
@@ -39,18 +48,22 @@ const SeeMore = ({ historyPush, isSwitching, layout, moduleName, parameters, tra
   return (
     <li
       className="see-more-wrapper"
-      key='see-more'
+      key="see-more"
     >
       <Link
         onClick={goToSearchPage}
         onMouseDown={preventDefault}
         to={noOp}
       >
-        <div className={`smw-image-${layout}`}>
+        <div
+          className={`smw-image-${layout} smw-image-${
+            isInFirstModule ? 'first' : 'default'
+          }-module`}
+        >
           <div className="smw-content-wrapper">
             <Icon
               className="smw-icon-wrapper"
-              svg={`${layout === PANE_LAYOUT['ONE-ITEM-MEDIUM'] ? 'ico-offres-home-white' : 'ico-offres-home-purple'}`}
+              svg={`ico-offres-home-${isInFirstModule ? 'white' : 'purple'}`}
             />
             <span>
               {'En voir plus'}
@@ -69,6 +82,7 @@ SeeMore.defaultProps = {
 
 SeeMore.propTypes = {
   historyPush: PropTypes.func.isRequired,
+  isInFirstModule: PropTypes.bool.isRequired,
   isSwitching: PropTypes.bool.isRequired,
   layout: PropTypes.string,
   moduleName: PropTypes.string,
