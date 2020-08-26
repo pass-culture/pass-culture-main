@@ -19,7 +19,7 @@ export const mapStateToProps = (state, ownProps) => {
 }
 
 export const mapDispatchToProps = dispatch => ({
-  submitResetPassword: (emailValue, success, fail) => {
+  submitResetPasswordRequest: (emailValue, success, fail) => {
     dispatch(
       requestData({
         apiPath: '/users/reset-password',
@@ -29,6 +29,18 @@ export const mapDispatchToProps = dispatch => ({
         method: 'POST',
       })
     )
+  },
+
+  submitResetPassword: (newPassword, token, success, fail) => {
+      dispatch(
+          requestData({
+              apiPath: '/users/new-password',
+              body: { newPassword, token },
+              handleFail: fail,
+              handleSuccess: success,
+              method: 'POST',
+          })
+      )
   },
 })
 

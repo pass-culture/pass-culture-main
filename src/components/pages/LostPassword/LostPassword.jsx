@@ -1,4 +1,3 @@
-import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
@@ -12,12 +11,28 @@ class LostPassword extends PureComponent {
     super(props)
     this.state = {
       emailValue: '',
-      hasErrorMessage: false,
+      hasPasswordResetRequestErrorMessage: false,
+      hasPasswordResetErrorMessage: false,
+      newPasswordErrorMessage: '',
+      newPasswordValue: '',
     }
   }
-  onHandleSuccessRedirectForResetPassword = () => '/mot-de-passe-perdu?change=1'
 
-  onHandleFail = () => this.setState({ hasErrorMessage: true })
+  onHandleSuccessRedirectForResetPassword = () => {
+    const { history } = this.props
+    history.push('/mot-de-passe-perdu?change=1')
+  }
+
+  onHandleFailForResetPasswordRequest = () =>
+    this.setState({ hasPasswordResetRequestErrorMessage: true })
+
+  onHandleFailForResetPassword = (state, action) => {
+    if (action.payload.errors.newPassword) {
+      this.setState({ newPasswordErrorMessage: action.payload.errors.newPassword[0] })
+    } else {
+      this.setState({ hasPasswordResetErrorMessage: true })
+    }
+  }
 
   storeValue = token => () => token
 
@@ -26,25 +41,48 @@ class LostPassword extends PureComponent {
     history.push('/mot-de-passe-perdu?envoye=1')
   }
 
-  submitResetPassword = () => {
-    const { submitResetPassword } = this.props
+  submitResetPasswordRequest = () => {
+    const { submitResetPasswordRequest } = this.props
     const { emailValue } = this.state
 
-    return submitResetPassword(
+    return submitResetPasswordRequest(
       emailValue,
       this.onHandleSuccessRedirectForResetPasswordRequest,
-      this.onHandleFail
+      this.onHandleFailForResetPasswordRequest
+    )
+  }
+
+  submitResetPassword = () => {
+    const { submitResetPassword, token } = this.props
+    const { newPasswordValue } = this.state
+
+    return submitResetPassword(
+      newPasswordValue,
+      token,
+      this.onHandleSuccessRedirectForResetPassword,
+      this.onHandleFailForResetPassword
     )
   }
 
   handleInputEmailChange = event => {
     this.setState({ emailValue: event.target.value })
-    this.setState({ hasErrorMessage: false })
+    this.setState({ hasPasswordResetRequestErrorMessage: false })
+  }
+
+  handleInputPasswordChange = event => {
+    this.setState({ newPasswordValue: event.target.value })
+    this.setState({ hasPasswordResetErrorMessage: false })
   }
 
   render() {
-    const { hasErrorMessage, emailValue } = this.state
-    const { change, envoye, errors, token } = this.props
+    const {
+      hasPasswordResetRequestErrorMessage,
+      hasPasswordResetErrorMessage,
+      newPasswordErrorMessage,
+      emailValue,
+      newPasswordValue,
+    } = this.state
+    const { change, envoye, token } = this.props
 
     return (
       <Main
@@ -121,46 +159,45 @@ class LostPassword extends PureComponent {
                       </span>
                       {' Champs obligatoires'}
                     </span>
-                    <Form
-                      action="/users/new-password"
-                      BlockComponent={null}
-                      handleSuccessNotification={null}
-                      handleSuccessRedirect={this.onHandleSuccessRedirectForResetPassword}
-                      layout="vertical"
-                      name="user"
-                      patch={{ token }}
-                    >
-                      <Field
-                        name="token"
-                        storeValue={this.storeValue(token)}
-                        type="hidden"
-                      />
-
-                      <Field
-                        label="Nouveau mot de passe"
-                        name="newPassword"
-                        placeholder="******"
-                        required
-                        type="password"
-                        value="lolilol"
-                      />
-                      <div className="errors">
-                        {Object.keys(errors).map(field => (
-                          <div key={field}>
-                            {errors[field].join(' ')}
+                    {hasPasswordResetErrorMessage && (
+                      <div className="server-error-message">
+                        <Icon svg="picto-warning" />
+                        <span>
+                          {"Une erreur s'est produite, veuillez réessayer ultérieurement."}
+                        </span>
+                      </div>
+                    )}
+                    <form>
+                      <label className="input-text">
+                        {'Nouveau mot de passe'}
+                        <span className="field-asterisk">
+                          {'*'}
+                        </span>
+                        <input
+                          className="it-input"
+                          onChange={this.handleInputPasswordChange}
+                          placeholder="*****"
+                          required
+                          type="password"
+                          value={newPasswordValue}
+                        />
+                        {newPasswordErrorMessage && (
+                          <div className="password-error-message">
+                            <Icon svg="picto-warning" />
+                            <pre>
+                              {newPasswordErrorMessage}
+                            </pre>
                           </div>
-                        ))}
-                      </div>
-                      <div className="field buttons-field">
-                        <SubmitButton
-                          className="primary-button"
-                          id="changePassword"
-                          type="submit"
-                        >
-                          {'Envoyer'}
-                        </SubmitButton>
-                      </div>
-                    </Form>
+                        )}
+                      </label>
+                      <button
+                        className="primary-button"
+                        onClick={this.submitResetPassword}
+                        type="button"
+                      >
+                        {'Envoyer'}
+                      </button>
+                    </form>
                   </div>
                 </section>
               )}
@@ -183,7 +220,7 @@ class LostPassword extends PureComponent {
                       </span>
                       {'Champs obligatoires'}
                     </span>
-                    {hasErrorMessage && (
+                    {hasPasswordResetRequestErrorMessage && (
                       <div className="server-error-message">
                         <Icon svg="picto-warning" />
                         <span>
@@ -202,13 +239,13 @@ class LostPassword extends PureComponent {
                           onChange={this.handleInputEmailChange}
                           placeholder="Identifiant (e-mail)"
                           required
-                          type="text"
+                          type="email"
                           value={emailValue}
                         />
                       </label>
                       <button
                         className="primary-button"
-                        onClick={this.submitResetPassword}
+                        onClick={this.submitResetPasswordRequest}
                         type="button"
                       >
                         {'Envoyer'}
@@ -228,7 +265,8 @@ class LostPassword extends PureComponent {
 LostPassword.propTypes = {
   change: PropTypes.bool.isRequired,
   envoye: PropTypes.bool.isRequired,
-  errors: PropTypes.shape().isRequired,
+  submitResetPassword: PropTypes.func.isRequired,
+  submitResetPasswordRequest: PropTypes.func.isRequired,
   token: PropTypes.string.isRequired,
 }
 

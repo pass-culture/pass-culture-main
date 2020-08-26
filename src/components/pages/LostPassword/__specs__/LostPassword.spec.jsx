@@ -1,9 +1,10 @@
-import { shallow } from 'enzyme'
-import { Field, Form, SubmitButton } from 'pass-culture-shared'
+import { mount, shallow } from 'enzyme'
 import React from 'react'
 
-import Logo from '../../../layout/Logo'
 import LostPassword from '../LostPassword'
+import { MemoryRouter } from 'react-router'
+import { Provider } from 'react-redux'
+import configureStore from '../../../../utils/store'
 
 describe('src | components | pages | LostPassword', () => {
   let props
@@ -12,27 +13,139 @@ describe('src | components | pages | LostPassword', () => {
     props = {
       change: false,
       envoye: false,
-      errors: {},
       token: 'ABC',
+      history: {
+        push: jest.fn(),
+      },
+      submitResetPassword: jest.fn(),
+      submitResetPasswordRequest: jest.fn(),
     }
   })
 
-  it('should display sentences, a form with two fields', () => {
-    // when
-    const wrapper = shallow(<LostPassword {...props} />)
+  describe('when user wants to reset password', () => {
+    beforeEach(() => {
+      props.token = ''
+    })
 
-    // then
-    const logo = wrapper.find(Logo)
-    const sentence1 = wrapper.find({ children: 'Créer un nouveau mot de passe' })
-    const sentence2 = wrapper.find({ children: 'Saisissez le nouveau mot de passe' })
-    const form = wrapper.find(Form)
-    const field = wrapper.find(Field)
-    const submitButton = wrapper.find(SubmitButton)
-    expect(logo).toHaveLength(1)
-    expect(sentence1).toHaveLength(1)
-    expect(sentence2).toHaveLength(1)
-    expect(form).toHaveLength(1)
-    expect(field).toHaveLength(2)
-    expect(submitButton).toHaveLength(1)
+    it('should display one input with submit button to receive user email', () => {
+      // given
+      const store = configureStore({
+        data: {
+          users: [{ id: 'CMOI' }],
+        },
+      }).store
+
+      // when
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <LostPassword {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
+
+      // then
+      const emailInput = wrapper.find('input[type="email"]')
+      expect(emailInput).toHaveLength(1)
+      const submitButton = wrapper.find({ children: 'Envoyer' }).find('button')
+      expect(submitButton).toHaveLength(1)
+    })
+
+    describe('when user successfully change request password change', () => {
+      it('should redirect success message page', () => {
+        // when
+        const wrapper = shallow(<LostPassword {...props} />)
+        wrapper.instance().onHandleSuccessRedirectForResetPasswordRequest()
+
+        // then
+        expect(props.history.push).toHaveBeenCalledWith('/mot-de-passe-perdu?envoye=1')
+      })
+    })
+
+    describe('when user does not succeed request password change', () => {
+      it('should display error message', () => {
+        // when
+        const wrapper = shallow(<LostPassword {...props} />)
+        wrapper.instance().onHandleFailForResetPasswordRequest()
+
+        // then
+        const errorMessage = wrapper
+          .findWhere(
+            node => node.text() === "Une erreur s'est produite, veuillez réessayer ultérieurement."
+          )
+          .first()
+        expect(errorMessage).toHaveLength(1)
+      })
+    })
+  })
+
+  describe('when user resets password', () => {
+    beforeEach(() => {
+      props.token = 'ABC'
+    })
+
+    it('should display one input with submit button to receive new user password', () => {
+      // given
+      const store = configureStore({
+        data: {
+          users: [{ id: 'CMOI' }],
+        },
+      }).store
+
+      // when
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <LostPassword {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
+
+      // then
+      const passwordInput = wrapper.find('input[type="password"]')
+      expect(passwordInput).toHaveLength(1)
+      const submitButton = wrapper
+        .find('button')
+        .findWhere(node => node.text() === 'Envoyer')
+        .first()
+      expect(submitButton).toHaveLength(1)
+    })
+
+    describe('when user successfully change request password change', () => {
+      it('should redirect success message page', () => {
+        // when
+        const wrapper = shallow(<LostPassword {...props} />)
+        wrapper.instance().onHandleSuccessRedirectForResetPasswordRequest()
+
+        // then
+        expect(props.history.push).toHaveBeenCalledWith('/mot-de-passe-perdu?envoye=1')
+      })
+    })
+
+    describe('when user does not succeed password change', () => {
+      it('should display error message', () => {
+        // given
+        const action = {
+          payload: {
+            errors: {
+              errorMessage: 'Server error',
+            },
+          },
+        }
+        const state = {}
+
+        // when
+        const wrapper = shallow(<LostPassword {...props} />)
+        wrapper.instance().onHandleFailForResetPassword(state, action)
+
+        // then
+        const errorMessage = wrapper
+          .findWhere(
+            node => node.text() === "Une erreur s'est produite, veuillez réessayer ultérieurement."
+          )
+          .first()
+        expect(errorMessage).toHaveLength(1)
+      })
+    })
   })
 })

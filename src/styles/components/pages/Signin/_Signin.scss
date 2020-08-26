@@ -129,6 +129,23 @@
     }
   }
 
+  .password-error-message {
+    display: flex;
+    color: $primary;
+    margin-bottom: rem(32px);
+
+    span {
+      margin-left: rem(5px);
+    }
+
+    pre {
+      white-space: pre-wrap;
+      font-family: inherit;
+      background: none;
+      color: $primary;
+    }
+  }
+
   .it-input {
     margin-bottom: rem(32px);
   }
