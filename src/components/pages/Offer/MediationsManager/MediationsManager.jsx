@@ -1,10 +1,10 @@
-import { Icon } from 'pass-culture-shared'
 import get from 'lodash.get'
 import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
 import MediationItem from './MediationItem/MediationItem'
 import PropTypes from 'prop-types'
+import { SVGStars } from "../../../svg/SVGStars"
 
 class MediationsManager extends PureComponent {
   hasAtLeastOneActiveMediation() {
@@ -14,7 +14,6 @@ class MediationsManager extends PureComponent {
 
   render() {
     const { mediations, offer } = this.props
-    const numberOfMediations = get(mediations, 'length')
 
     return (
       <div className="mediation-manager">
@@ -55,12 +54,10 @@ class MediationsManager extends PureComponent {
           <p>
             {offer && (
               <Link
-                className={`button is-primary ${numberOfMediations > 0 ? 'is-outlined' : ''}`}
+                className="secondary-link"
                 to={`/offres/${get(offer, 'id')}/accroches/nouveau`}
               >
-                <span className="icon">
-                  <Icon svg={numberOfMediations > 0 ? 'ico-stars' : 'ico-stars-w'} />
-                </span>
+                <SVGStars />
                 <span>
                   {'Ajouter une accroche'}
                 </span>

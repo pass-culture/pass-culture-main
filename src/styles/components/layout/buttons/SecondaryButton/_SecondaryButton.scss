@@ -7,8 +7,15 @@
   color: $primary;
   cursor: pointer;
   height: rem(40px);
-  line-height: rem(36px);
+  line-height: rem(35px);
   padding: 0 rem(16px);
+
+  svg {
+    margin-right: rem(16px);
+    vertical-align: middle;
+    width: rem(25px);
+    height: rem(25px);
+  }
 
   &:active,
   &:hover,
@@ -16,6 +23,10 @@
     background-color: $primary-dark;
     border: 2px solid $primary-dark;
     color: $white;
+
+    svg {
+      filter: brightness(0) invert(1);
+    }
   }
 
   &:focus {

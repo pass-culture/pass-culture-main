@@ -1,9 +1,9 @@
 import { shallow } from 'enzyme'
-import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
 import MediationsManager from '../MediationsManager'
+import { SVGStars } from '../../../../svg/SVGStars'
 
 describe('src | MediationsManager', () => {
   let props
@@ -49,10 +49,8 @@ describe('src | MediationsManager', () => {
         // then
         const addMediationLink = wrapper.find(Link)
         expect(addMediationLink.exists()).toBe(true)
-        const spans = wrapper.find('span')
-        expect(spans).toHaveLength(2)
-        expect(spans.at(0).find(Icon)).toHaveLength(1)
-        expect(spans.at(1).text()).toBe('Ajouter une accroche')
+        expect(addMediationLink.find(SVGStars)).toHaveLength(1)
+        expect(wrapper.find('span').text()).toBe('Ajouter une accroche')
       })
 
       it('should render a Link with an Icon inside', () => {
@@ -67,10 +65,7 @@ describe('src | MediationsManager', () => {
 
         // then
         const navLink = wrapper.find(Link)
-        const spans = navLink.find('span')
-        const icon = spans.at(0).find(Icon)
-        expect(icon).toHaveLength(1)
-        expect(icon.prop('svg')).toBe('ico-stars-w')
+        expect(navLink.find(SVGStars)).toHaveLength(1)
       })
     })
 
@@ -107,11 +102,10 @@ describe('src | MediationsManager', () => {
         // then
         const navLink = wrapper.find(Link)
         expect(navLink).toHaveLength(1)
-        expect(navLink.prop('className')).toBe('button is-primary is-outlined')
         expect(navLink.prop('to')).toBe('/offres/ABC/accroches/nouveau')
       })
 
-      it('should render an Icon component with the prop ico-stars when mediations', () => {
+      it('should render an Icon component with the correct icon when mediations', () => {
         // given
         props.offer = {
           id: 'ABC',
@@ -123,10 +117,7 @@ describe('src | MediationsManager', () => {
 
         // then
         const navLink = wrapper.find(Link)
-        const spans = navLink.find('span')
-        const icon = spans.at(0).find(Icon)
-        expect(icon).toHaveLength(1)
-        expect(icon.prop('svg')).toBe('ico-stars')
+        expect(navLink.find(SVGStars)).toHaveLength(1)
       })
 
       it('should not display an information message', () => {

@@ -10,6 +10,13 @@
   line-height: rem(34px);
   padding: 0 rem(16px);
 
+  svg {
+    margin-right: rem(16px);
+    vertical-align: middle;
+    width: rem(25px);
+    height: rem(25px);
+  }
+
   &:active,
   &:hover,
   &:focus {
