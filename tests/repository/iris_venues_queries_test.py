@@ -5,7 +5,6 @@ from models import IrisVenues
 from repository import repository
 from repository.iris_venues_queries import find_ids_of_irises_located_near_venue, insert_venue_in_iris_venue, \
     delete_venue_from_iris_venues, get_iris_containing_user_location, find_venues_located_near_iris
-
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_venue, create_offerer, create_iris, create_iris_venue
 
