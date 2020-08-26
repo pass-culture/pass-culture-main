@@ -1065,37 +1065,10 @@ class GetValidBookingsByUserId:
         repository.save(booking1, booking2)
 
         # When
-        bookings = booking_queries.find_for_my_bookings_page(user1.id)
+        bookings = booking_queries.find_user_bookings_for_recommendation(user1.id)
 
         # Then
         assert bookings == [booking1]
-
-    @clean_database
-    def test_should_return_bookings_by_type_other_than_ACTIVATION(self, app: fixture):
-        # Given
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer1 = create_offer_with_event_product(
-            venue, event_type='ThingType.ACTIVATION')
-        offer2 = create_offer_with_event_product(
-            venue, event_type='EventType.ACTIVATION')
-        offer3 = create_offer_with_event_product(
-            venue, event_type='ThingType.ANY')
-        stock1 = create_stock(offer=offer1)
-        stock2 = create_stock(offer=offer2)
-        stock3 = create_stock(offer=offer3)
-        booking1 = create_booking(user=user, stock=stock1)
-        booking2 = create_booking(user=user, stock=stock2)
-        booking3 = create_booking(user=user, stock=stock3)
-        repository.save(booking1, booking2, booking3)
-
-        # When
-        bookings = booking_queries.find_for_my_bookings_page(user.id)
-
-        # Then
-        assert bookings == [booking3]
 
     @clean_database
     def test_should_return_bookings_when_there_is_one_cancelled_booking(self, app: fixture):
@@ -1114,7 +1087,7 @@ class GetValidBookingsByUserId:
         repository.save(booking1, booking2, booking3)
 
         # When
-        bookings = booking_queries.find_for_my_bookings_page(user.id)
+        bookings = booking_queries.find_user_bookings_for_recommendation(user.id)
 
         # Then
         assert booking1 not in bookings
@@ -1133,7 +1106,7 @@ class GetValidBookingsByUserId:
         repository.save(booking1, booking2)
 
         # When
-        bookings = booking_queries.find_for_my_bookings_page(user.id)
+        bookings = booking_queries.find_user_bookings_for_recommendation(user.id)
 
         # Then
         assert bookings == [booking1]
@@ -1163,7 +1136,7 @@ class GetValidBookingsByUserId:
         repository.save(booking1, booking2, booking3)
 
         # When
-        bookings = booking_queries.find_for_my_bookings_page(user.id)
+        bookings = booking_queries.find_user_bookings_for_recommendation(user.id)
 
         # Then
         assert bookings == [booking1, booking3, booking2]

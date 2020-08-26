@@ -438,7 +438,7 @@ def find_not_used_and_not_cancelled() -> List[BookingSQLEntity]:
         .all()
 
 
-def find_for_my_bookings_page(user_id: int) -> List[BookingSQLEntity]:
+def find_user_bookings_for_recommendation(user_id: int) -> List[BookingSQLEntity]:
     return _build_find_ordered_user_bookings(user_id) \
         .all()
 

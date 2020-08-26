@@ -101,7 +101,7 @@ RECOMMENDATION_INCLUDES = [
             'hasBookingLimitDatetimesPassed',
             "isThing",
             "offerType",
-             "stocks",
+            "stocks",
             {
                 "key": "venue",
                 "includes": [

@@ -1,16 +1,17 @@
+import time
 from typing import List, Dict
 
 from models import Recommendation, BookingSQLEntity
 from repository import booking_queries
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
-from utils.includes import RECOMMENDATION_INCLUDES, WEBAPP_GET_BOOKING_INCLUDES
+from utils.includes import RECOMMENDATION_INCLUDES
 
 
 def serialize_recommendations(recommendations: List[Recommendation], user_id: int) -> List[Dict]:
     serialized_recommendations = [serialize_recommendation(recommendation, user_id, query_booking=False)
                                   for recommendation in recommendations]
-    bookings = booking_queries.find_for_my_bookings_page(user_id)
+    bookings = booking_queries.find_user_bookings_for_recommendation(user_id)
     bookings_by_offer = _get_bookings_by_offer(bookings)
     for serialized_recommendation in serialized_recommendations:
         offer_id = dehumanize(serialized_recommendation["offerId"])
@@ -42,11 +43,7 @@ def add_offer_and_stock_information(serialized_recommendation: Dict) -> None:
 
 
 def _serialize_bookings(bookings: List[BookingSQLEntity]) -> List[Dict]:
-    return list(map(_serialize_booking, bookings))
-
-
-def _serialize_booking(booking: BookingSQLEntity) -> Dict:
-    return as_dict(booking, includes=WEBAPP_GET_BOOKING_INCLUDES)
+    return list(map(as_dict, bookings))
 
 
 def _get_bookings_by_offer(bookings: List[BookingSQLEntity]) -> Dict:

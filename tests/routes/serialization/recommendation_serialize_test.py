@@ -52,9 +52,10 @@ class SerializeRecommendationTest:
 
 class SerializeRecommendationsTest:
     @patch('routes.serialization.recommendation_serialize.booking_queries.find_from_recommendation')
-    @patch('routes.serialization.recommendation_serialize.booking_queries.find_for_my_bookings_page')
-    def test_should_call_find_for_my_bookings_page_and_not_find_from_recommendation(self, find_for_my_bookings_page,
-                                                                                    find_from_recommendation):
+    @patch('routes.serialization.recommendation_serialize.booking_queries.find_user_bookings_for_recommendation')
+    def test_should_call_find_user_bookings_for_recommendation_and_not_find_from_recommendation(self,
+                                                                                                find_user_bookings_for_recommendation,
+                                                                                                find_from_recommendation):
         # Given
         user = create_user(email='user@test.com')
         offerer = create_offerer()
@@ -66,19 +67,20 @@ class SerializeRecommendationsTest:
         mediation = create_mediation(offer)
         recommendation = create_recommendation(offer, user, mediation=mediation)
         recommendation.offerId = 1
-        find_for_my_bookings_page.return_value = [
+        find_user_bookings_for_recommendation.return_value = [
             create_booking(user=user, stock=stock, venue=venue, recommendation=recommendation)]
 
         # When
         serialized_recommendations = serialize_recommendations([recommendation], user)
 
         # Then
-        find_for_my_bookings_page.assert_called_once()
+        find_user_bookings_for_recommendation.assert_called_once()
         find_from_recommendation.assert_not_called()
         assert 'bookings' in serialized_recommendations[0]
 
-    @patch('routes.serialization.recommendation_serialize.booking_queries.find_for_my_bookings_page')
-    def test_should_return_dict_with_bookings_key_and_empty_list_when_no_bookings(self, find_for_my_bookings_page):
+    @patch('routes.serialization.recommendation_serialize.booking_queries.find_user_bookings_for_recommendation')
+    def test_should_return_dict_with_bookings_key_and_empty_list_when_no_bookings(self,
+                                                                                  find_user_bookings_for_recommendation):
         # Given
         user = create_user(email='user@test.com')
         offerer = create_offerer()
@@ -90,7 +92,7 @@ class SerializeRecommendationsTest:
         mediation = create_mediation(offer)
         recommendation = create_recommendation(offer, user, mediation=mediation)
         recommendation.offerId = 1
-        find_for_my_bookings_page.return_value = []
+        find_user_bookings_for_recommendation.return_value = []
 
         # When
         serialized_recommendations = serialize_recommendations([recommendation], user)
@@ -98,9 +100,9 @@ class SerializeRecommendationsTest:
         # Then
         assert serialized_recommendations[0]['bookings'] == []
 
-    @patch('routes.serialization.recommendation_serialize.booking_queries.find_for_my_bookings_page')
+    @patch('routes.serialization.recommendation_serialize.booking_queries.find_user_bookings_for_recommendation')
     def test_should_return_dict_with_bookings_key_and_empty_list_for_recommendation_without_bookings_and_with_serialized_booking_list_for_recommendation_with_booking(
-            self, find_for_my_bookings_page):
+            self, find_user_bookings_for_recommendation):
         # Given
         user = create_user(email='user@test.com')
         offerer = create_offerer()
@@ -117,7 +119,7 @@ class SerializeRecommendationsTest:
         recommendation1.offerId = 1
         recommendation2 = create_recommendation(offer2, user, mediation=mediation2)
         recommendation2.offerId = 2
-        find_for_my_bookings_page.return_value = [
+        find_user_bookings_for_recommendation.return_value = [
             create_booking(user=user, stock=stock2, venue=venue, recommendation=recommendation2)]
 
         # When
