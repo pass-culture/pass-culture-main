@@ -58,7 +58,7 @@ const StyleguideButtons = () => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <Icon svg="ico-external-site-red" />
+        <Icon svg="ico-external-site" />
         <span>
           {'Bouton Tertiary'}
         </span>
@@ -81,7 +81,7 @@ const StyleguideButtons = () => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <Icon svg="ico-external-site-red" />
+        <Icon svg="ico-external-site" />
         <span>
           {'Bouton Quaternary'}
         </span>
