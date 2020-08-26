@@ -1,16 +1,16 @@
-from typing import List
+from typing import List, Dict
 
-from models import Recommendation, BookingSQLEntity, UserSQLEntity
+from models import Recommendation, BookingSQLEntity
 from repository import booking_queries
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.includes import RECOMMENDATION_INCLUDES, WEBAPP_GET_BOOKING_INCLUDES
 
 
-def serialize_recommendations(recommendations: List[Recommendation], user: UserSQLEntity) -> dict:
-    serialized_recommendations = [serialize_recommendation(recommendation, user, query_booking=False)
+def serialize_recommendations(recommendations: List[Recommendation], user_id: int) -> List[Dict]:
+    serialized_recommendations = [serialize_recommendation(recommendation, user_id, query_booking=False)
                                   for recommendation in recommendations]
-    bookings = booking_queries.find_for_my_bookings_page(user.id)
+    bookings = booking_queries.find_for_my_bookings_page(user_id)
     bookings_by_offer = _get_bookings_by_offer(bookings)
     for serialized_recommendation in serialized_recommendations:
         offer_id = dehumanize(serialized_recommendation["offerId"])
@@ -23,23 +23,33 @@ def serialize_recommendations(recommendations: List[Recommendation], user: UserS
     return serialized_recommendations
 
 
-def serialize_recommendation(recommendation: Recommendation, user: UserSQLEntity, query_booking: bool = True) -> dict:
+def serialize_recommendation(recommendation: Recommendation, user_id: int, query_booking: bool = True) -> Dict:
     serialized_recommendation = as_dict(recommendation, includes=RECOMMENDATION_INCLUDES)
     if query_booking and recommendation.offer:
-        bookings = booking_queries.find_from_recommendation(recommendation, user)
+        bookings = booking_queries.find_from_recommendation(recommendation, user_id)
         serialized_recommendation['bookings'] = _serialize_bookings(bookings)
+
+    add_offer_and_stock_information(serialized_recommendation)
+
     return serialized_recommendation
 
 
-def _serialize_bookings(bookings: List[BookingSQLEntity]) -> List[dict]:
+def add_offer_and_stock_information(serialized_recommendation: Dict) -> None:
+    serialized_recommendation['offer']['isBookable'] = True
+    for index, stock in enumerate(serialized_recommendation['offer']['stocks']):
+        serialized_recommendation['offer']['stocks'][index]['isBookable'] = True
+        serialized_recommendation['offer']['stocks'][index]['remainingQuantity'] = 'unlimited'
+
+
+def _serialize_bookings(bookings: List[BookingSQLEntity]) -> List[Dict]:
     return list(map(_serialize_booking, bookings))
 
 
-def _serialize_booking(booking: BookingSQLEntity) -> dict:
+def _serialize_booking(booking: BookingSQLEntity) -> Dict:
     return as_dict(booking, includes=WEBAPP_GET_BOOKING_INCLUDES)
 
 
-def _get_bookings_by_offer(bookings: List[BookingSQLEntity]) -> list:
+def _get_bookings_by_offer(bookings: List[BookingSQLEntity]) -> Dict:
     bookings_by_offer = {}
 
     for booking in bookings:

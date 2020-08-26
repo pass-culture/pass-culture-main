@@ -99,17 +99,9 @@ RECOMMENDATION_INCLUDES = [
             "dateRange",
             "isEvent",
             'hasBookingLimitDatetimesPassed',
-            'isBookable',
-            'isFullyBooked',
             "isThing",
             "offerType",
-            {
-                "key": "stocks",
-                "includes": [
-                    'isBookable',
-                    'remainingQuantity'
-                ]
-            },
+             "stocks",
             {
                 "key": "venue",
                 "includes": [

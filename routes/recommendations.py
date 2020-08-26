@@ -1,8 +1,7 @@
 from typing import Dict
 
-from flask import current_app as app, jsonify, request, redirect
+from flask import current_app as app, jsonify, request, redirect, Request
 from flask_login import current_user, login_required
-from werkzeug.local import LocalProxy
 
 from domain.build_recommendations import move_requested_recommendation_first
 from models import Recommendation
@@ -30,7 +29,7 @@ def get_recommendation(offer_id):
         dehumanize(request.args.get('mediationId'))
     )
 
-    return jsonify(serialize_recommendation(recommendation, current_user)), 200
+    return jsonify(serialize_recommendation(recommendation, user_id=current_user.id)), 200
 
 
 @app.route('/recommendations/<recommendation_id>', methods=['PATCH'])
@@ -41,7 +40,7 @@ def patch_recommendation(recommendation_id):
     recommendation = query.first_or_404()
     recommendation.populate_from_dict(request.json)
     repository.save(recommendation)
-    return jsonify(serialize_recommendation(recommendation, current_user)), 200
+    return jsonify(serialize_recommendation(recommendation, user_id=current_user.id)), 200
 
 
 @app.route('/recommendations/read', methods=['PUT'])
@@ -55,7 +54,7 @@ def put_read_recommendations():
         Recommendation.id.in_(read_recommendation_ids)
     ).all()
 
-    return jsonify(serialize_recommendations(read_recommendations, current_user)), 200
+    return jsonify(serialize_recommendations(read_recommendations, user_id=current_user.id)), 200
 
 
 @app.route('/recommendations/v2', methods=['PUT'])
@@ -78,7 +77,7 @@ def put_recommendations():
         return _put_non_geolocated_recommendations(request)
 
 
-def _put_geolocated_recommendations(request: LocalProxy) -> (Dict, int):
+def _put_geolocated_recommendations(request: Request) -> (Dict, int):
     latitude = request.args.get('latitude')
     longitude = request.args.get('longitude')
     user_is_geolocated = latitude is not None and longitude is not None
@@ -93,10 +92,10 @@ def _put_geolocated_recommendations(request: LocalProxy) -> (Dict, int):
                                                               sent_offers_ids=sent_offers_ids,
                                                               limit=BLOB_SIZE)
 
-    return jsonify(serialize_recommendations(recommendations, current_user)), 200
+    return jsonify(serialize_recommendations(recommendations, user_id=current_user.id)), 200
 
 
-def _put_non_geolocated_recommendations(request: LocalProxy) -> (Dict, int):
+def _put_non_geolocated_recommendations(request: Request) -> (Dict, int):
     update_read_recommendations(request.json.get('readRecommendations'))
     sent_offers_ids = dehumanize_ids_list(request.json.get('offersSentInLastCall'))
 
@@ -117,4 +116,4 @@ def _put_non_geolocated_recommendations(request: LocalProxy) -> (Dict, int):
         recommendations = move_requested_recommendation_first(recommendations,
                                                               requested_recommendation)
 
-    return jsonify(serialize_recommendations(recommendations, current_user)), 200
+    return jsonify(serialize_recommendations(recommendations, user_id=current_user.id)), 200

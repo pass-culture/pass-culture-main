@@ -5,7 +5,7 @@ from typing import List, Set, Union, Optional
 
 from dateutil import tz
 from sqlalchemy import func, desc, text
-from sqlalchemy.orm import Query
+from sqlalchemy.orm import Query, selectinload
 
 from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, ThingBookingRecap, BookBookingRecap
 from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
@@ -130,12 +130,9 @@ def _select_only_needed_fields_for_bookings_info(query: Query) -> Query:
                                UserSQLEntity.email.label('user_email'))
 
 
-def find_from_recommendation(recommendation: Recommendation, user: UserSQLEntity) -> List[BookingSQLEntity]:
-    return _query_keep_on_non_activation_offers() \
+def find_from_recommendation(recommendation: Recommendation, user_id: int) -> List[BookingSQLEntity]:
+    return _build_find_ordered_user_bookings(user_id=user_id) \
         .filter(OfferSQLEntity.id == recommendation.offerId) \
-        .distinct(BookingSQLEntity.stockId) \
-        .filter(BookingSQLEntity.userId == user.id) \
-        .order_by(BookingSQLEntity.stockId, BookingSQLEntity.isCancelled, BookingSQLEntity.dateCreated.desc()) \
         .all()
 
 
@@ -226,9 +223,9 @@ def _build_bookings_recap_query(user_id: int) -> Query:
             BookingSQLEntity.amount.label("bookingAmount"),
             BookingSQLEntity.dateUsed.label("dateUsed"),
             BookingSQLEntity.cancellationDate.label("cancellationDate"),
-        OfferSQLEntity.name.label("offerName"),
-        OfferSQLEntity.id.label("offerId"),
-        OfferSQLEntity.extraData.label("offerExtraData"),
+            OfferSQLEntity.name.label("offerName"),
+            OfferSQLEntity.id.label("offerId"),
+            OfferSQLEntity.extraData.label("offerExtraData"),
             Payment.currentStatus.label("paymentStatus"),
             Payment.lastProcessedDate.label("paymentDate"),
             UserSQLEntity.firstName.label("beneficiaryFirstname"),
@@ -442,11 +439,20 @@ def find_not_used_and_not_cancelled() -> List[BookingSQLEntity]:
 
 
 def find_for_my_bookings_page(user_id: int) -> List[BookingSQLEntity]:
-    return _query_keep_on_non_activation_offers() \
+    return _build_find_ordered_user_bookings(user_id) \
+        .all()
+
+
+def _build_find_ordered_user_bookings(user_id: int) -> Query:
+    return BookingSQLEntity.query \
+        .join(StockSQLEntity) \
+        .join(OfferSQLEntity) \
         .distinct(BookingSQLEntity.stockId) \
         .filter(BookingSQLEntity.userId == user_id) \
         .order_by(BookingSQLEntity.stockId, BookingSQLEntity.isCancelled, BookingSQLEntity.dateCreated.desc()) \
-        .all()
+        .options(
+            selectinload(BookingSQLEntity.stock)
+        )
 
 
 def get_only_offer_ids_from_bookings(user: UserSQLEntity) -> List[int]:
