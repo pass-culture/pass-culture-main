@@ -10,7 +10,6 @@ describe('src | components | Recto', () => {
     const props = {
       areDetailsVisible: true,
       thumbUrl: '/fake-url',
-      withMediation: true,
     }
 
     // when
@@ -20,6 +19,5 @@ describe('src | components | Recto', () => {
     const thumb = wrapper.find(Thumb)
     expect(thumb.prop('src')).toBe('/fake-url')
     expect(thumb.prop('translated')).toBe(true)
-    expect(thumb.prop('withMediation')).toBe(true)
   })
 })

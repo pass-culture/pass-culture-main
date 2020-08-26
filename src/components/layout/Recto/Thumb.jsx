@@ -1,18 +1,14 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-const Thumb = ({ withMediation, src, translated }) => {
+const Thumb = ({ src, translated }) => {
   const backgroundStyle = (src && { backgroundImage: `url('${src}')` }) || {}
   const thumbStyle = Object.assign(backgroundStyle, {
-    backgroundSize: withMediation ? 'cover' : null,
+    backgroundSize: 'cover',
     backgroundColor: 'grey',
   })
   return (
     <div className="thumb">
-      {!withMediation && <div
-        className="background"
-        style={backgroundStyle}
-                         />}
       <div
         className={`image ${translated !== undefined ? 'translatable' : ''} ${
           translated ? 'translated' : ''
@@ -26,13 +22,11 @@ const Thumb = ({ withMediation, src, translated }) => {
 Thumb.defaultProps = {
   src: null,
   translated: false,
-  withMediation: false,
 }
 
 Thumb.propTypes = {
   src: PropTypes.string,
   translated: PropTypes.bool,
-  withMediation: PropTypes.bool,
 }
 
 export default Thumb

@@ -3,27 +3,22 @@ import React from 'react'
 
 import Thumb from './Thumb'
 
-const Recto = ({ areDetailsVisible, thumbUrl, withMediation }) => (
+const Recto = ({ areDetailsVisible, thumbUrl }) => (
   <div className="recto">
-    {thumbUrl && (
-      <Thumb
-        src={thumbUrl}
-        translated={areDetailsVisible}
-        withMediation={withMediation}
-      />
-    )}
+    {thumbUrl && <Thumb
+      src={thumbUrl}
+      translated={areDetailsVisible}
+                 />}
   </div>
 )
 
 Recto.defaultProps = {
   thumbUrl: null,
-  withMediation: null,
 }
 
 Recto.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
   thumbUrl: PropTypes.string,
-  withMediation: PropTypes.bool,
 }
 
 export default Recto

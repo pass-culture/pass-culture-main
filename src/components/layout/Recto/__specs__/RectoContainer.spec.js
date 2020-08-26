@@ -30,11 +30,10 @@ describe('components | RectoContainer', () => {
       // then
       expect(result).toStrictEqual({
         thumbUrl: '/url-to-image/from-booking',
-        withMediation: true,
       })
     })
 
-    it('should return mediation when offer id is provided and offer has a mediation', () => {
+    it('should return recommendation thumbUrl when offer id is provided and offer has a mediation', () => {
       // given
       const props = {
         match: {
@@ -42,9 +41,7 @@ describe('components | RectoContainer', () => {
             offerId: 'AD',
           },
         },
-        recommendation: {
-          thumbUrl: '/url-to-image',
-        },
+        recommendation: { thumbUrl: '/url-to-image' },
       }
       const state = {
         data: {
@@ -61,7 +58,6 @@ describe('components | RectoContainer', () => {
       // then
       expect(result).toStrictEqual({
         thumbUrl: '/url-to-image',
-        withMediation: true,
       })
     })
   })
@@ -89,7 +85,6 @@ describe('components | RectoContainer', () => {
       // then
       expect(result).toStrictEqual({
         thumbUrl: '/url-to-image/from-booking',
-        withMediation: true,
       })
     })
 
@@ -121,7 +116,6 @@ describe('components | RectoContainer', () => {
       // then
       expect(result).toStrictEqual({
         thumbUrl: '/url-to-image/from-booking',
-        withMediation: false,
       })
     })
 
@@ -147,7 +141,6 @@ describe('components | RectoContainer', () => {
       // then
       expect(result).toStrictEqual({
         thumbUrl: '/default/thumb/url',
-        withMediation: false,
       })
     })
   })
@@ -160,9 +153,11 @@ describe('components | RectoContainer', () => {
           offerId: 'AD',
         },
       }
+
       const recommendation = {
         thumbUrl: '/url-to-image',
       }
+
       const state = {
         data: {
           bookings: [],
@@ -178,7 +173,6 @@ describe('components | RectoContainer', () => {
       // then
       expect(result).toStrictEqual({
         thumbUrl: '/url-to-image',
-        withMediation: true,
       })
     })
 
@@ -189,12 +183,14 @@ describe('components | RectoContainer', () => {
           offerId: 'AD',
         },
       }
+
       const recommendation = undefined
+
       const state = {
         data: {
           bookings: [],
-          mediations: [{ id: 'AE', offerId: 'AD', thumbUrl: '/url-to-image' }],
-          offers: [{ id: 'AD', product: {} }],
+          mediations: [{ id: 'AE', offerId: 'AD' }],
+          offers: [{ id: 'AD', product: {}, thumbUrl: '/url-to-image' }],
           stocks: [{ id: 'AC', offerId: 'AD' }],
         },
       }
@@ -205,7 +201,6 @@ describe('components | RectoContainer', () => {
       // then
       expect(result).toStrictEqual({
         thumbUrl: '/url-to-image',
-        withMediation: true,
       })
     })
 
@@ -216,9 +211,9 @@ describe('components | RectoContainer', () => {
           offerId: 'AD',
         },
       }
-      const recommendation = {
-        thumbUrl: '/url-to-image-from-recommendation',
-      }
+
+      const recommendation = undefined
+
       const state = {
         data: {
           bookings: [],
@@ -234,7 +229,6 @@ describe('components | RectoContainer', () => {
       // then
       expect(result).toStrictEqual({
         thumbUrl: '/url-to-image-from-offer',
-        withMediation: false,
       })
     })
   })
