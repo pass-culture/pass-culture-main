@@ -2,16 +2,18 @@ import sys
 import requests
 from typing import List, Optional
 
+
 def extract_commit_status(commit_sha1: str, project_jobs_infos: str, test_name:str) -> Optional[str]:
     for job in project_jobs_infos :
         if job['build_parameters']['CIRCLE_JOB'] == test_name and job['vcs_revision'] == commit_sha1 :
             return job['status']
     return None
 
+
 def get_project_jobs_infos(branch_name: str) -> Optional[str]:
-    project_url = 'https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/' + branch_name
+    project_url = 'https://circleci.com/api/v1.1/project/github/pass-culture/pass-culture-main/tree/' + branch_name
     response = requests.get(project_url)
-    if response.status_code != 200 :
+    if response.status_code != 200:
         print('Error while requesting CircleCi. Return Code :', response.status_code)
         return None
     return response.json()
@@ -42,7 +44,7 @@ def main():
     for test_name in tests_names:
         commit_status = extract_commit_status(commit_sha1, project_jobs_infos, test_name)
 
-        if commit_status != "success" :
+        if commit_status != "success":
             print('Error, job ', test_name, " has status ", commit_status, "for commit ", commit_sha1)
             sys.exit(1)
 
@@ -52,4 +54,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

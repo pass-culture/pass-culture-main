@@ -323,7 +323,7 @@ teardown(){
     # git checkout current branch
     mock_set_output "${mock_git}" "Exit success !" 21
 
-    # curl https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/production
+    # curl https://circleci.com/api/v1.1/project/github/pass-culture/pass-culture-main/tree/production
     mock_set_output "${mock_curl}" '[{ "vcs_revision" : "commit_hash",
         "workflows" : {
             "job_name" : "job_name",
@@ -415,7 +415,7 @@ teardown(){
     # git checkout current branch
     mock_set_output "${mock_git}" "Exit success !" 21
 
-    # curl https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/production
+    # curl https://circleci.com/api/v1.1/project/github/pass-culture/pass-culture-main/tree/production
     mock_set_output "${mock_curl}" '[{ "vcs_revision" : "other_commit_hash",
         "workflows" : {
             "job_name" : "job_name",
@@ -428,7 +428,7 @@ teardown(){
         }
     },{
     }]' 1
-    # curl https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/production
+    # curl https://circleci.com/api/v1.1/project/github/pass-culture/pass-culture-main/tree/production
     mock_set_output "${mock_curl}" '[{ "vcs_revision" : "commit_hash",
         "workflows" : {
             "job_name" : "job_name",
