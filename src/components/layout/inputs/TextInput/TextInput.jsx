@@ -2,7 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const TextInput = ({ disabled, label, name, onChange, placeholder, required, sublabel, type }) => (
-  <label className="input-text">
+  <label
+    className="input-text"
+    htmlFor={name}
+  >
     {label}
     <span className="it-sub-label">
       {sublabel}

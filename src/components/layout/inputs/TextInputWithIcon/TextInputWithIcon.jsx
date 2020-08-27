@@ -2,8 +2,23 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { ROOT_PATH } from '../../../../utils/config'
 
-const TextInputWithIcon = ({ disabled, icon, iconAlt, label, name, onChange, onClick, placeholder, required, sublabel, type }) => (
-  <label className="input-text">
+const TextInputWithIcon = ({
+  disabled,
+  icon,
+  iconAlt,
+  label,
+  name,
+  onChange,
+  onClick,
+  placeholder,
+  required,
+  sublabel,
+  type,
+}) => (
+  <label
+    className="input-text"
+    htmlFor={name}
+  >
     {label}
     <span className="it-sub-label">
       {sublabel}
@@ -20,8 +35,8 @@ const TextInputWithIcon = ({ disabled, icon, iconAlt, label, name, onChange, onC
       />
       <button
         className="it-icon"
-        type="button"
         onClick={onClick}
+        type="button"
       >
         <img
           alt={iconAlt}

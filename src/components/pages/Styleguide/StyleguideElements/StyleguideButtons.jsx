@@ -10,7 +10,7 @@ const StyleguideButtons = () => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        {'Bouton Primary'}
+        {'Primary Button'}
       </a>
       <div>
         {'classe'}
@@ -34,7 +34,7 @@ const StyleguideButtons = () => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        {'Bouton Secondary'}
+        {'Secondary Button'}
       </a>
       <div>
         {'classe'}
@@ -50,17 +50,17 @@ const StyleguideButtons = () => {
     </div>
   )
 
-  const tertiaryButton = (
+  const tertiaryLink = (
     <div className="flex-block">
       <a
-        className="tertiary-button"
+        className="tertiary-link"
         href="/"
         rel="noopener noreferrer"
         target="_blank"
       >
         <Icon svg="ico-external-site" />
         <span>
-          {'Bouton Tertiary'}
+          {'Tertiary Link'}
         </span>
       </a>
       <div>
@@ -73,17 +73,17 @@ const StyleguideButtons = () => {
     </div>
   )
 
-  const quaternaryButton = (
+  const quaternaryLink = (
     <div className="flex-block">
       <a
-        className="quaternary-button"
+        className="quaternary-link"
         href="/"
         rel="noopener noreferrer"
         target="_blank"
       >
         <Icon svg="ico-external-site" />
         <span>
-          {'Bouton Quaternary'}
+          {'Quaternary Link'}
         </span>
       </a>
       <div>
@@ -102,9 +102,9 @@ const StyleguideButtons = () => {
       <hr />
       {secondaryButton}
       <hr />
-      {tertiaryButton}
+      {tertiaryLink}
       <hr />
-      {quaternaryButton}
+      {quaternaryLink}
       <br />
     </div>
   )

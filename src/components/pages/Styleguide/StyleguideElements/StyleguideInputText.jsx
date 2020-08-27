@@ -4,59 +4,53 @@ import TextInputWithIcon from '../../../layout/inputs/TextInputWithIcon/TextInpu
 
 const StyleguideInputText = () => {
   const inputTextEnabled = String.raw`
-    <label className="input-text">
-      {'Intitulé'}
-      <span className="it-sub-label">
-        {'Intitulé secondaire'}
-      </span>
-      <input className="it-input" />
-    </label>
+    <TextInput
+      label="Intitulé"
+      name="input-text-default"
+      onChange={onChange}
+      placeholder="placeholder"
+      required
+      sublabel="Intitulé secondaire"
+      type="text"
+    />
   `
 
   const inputTextDisabled = String.raw`
-    <label className="input-text">
-      {'Intitulé'}
-      <span className="it-sub-label">
-        {'Intitulé secondaire'}
-      </span>
-      <input
-        className="it-input"
-        disabled
-      />
-    </label>
+    <TextInput
+      disabled
+      label="Intitulé"
+      name="input-text-disabled"
+      placeholder="placeholder disabled"
+      sublabel="Intitulé secondaire"
+      type="text"
+    />
   `
 
   const inputWithIconEnabled = String.raw`
-  <label className="input-text"}>
-    {'Intitulé'}
-    <span className="it-sub-label">
-      {'Intitulé secondaire'}
-    </span>
-    <div className="it-with-icon-container">
-      <input className="it-input-with-icon" />
-      <button className="it-icon">
-        <Icon svg="ico-search" />
-      </button>
-    </div>
-  </label>
+    <TextInputWithIcon
+      icon="ico-search"
+      iconAlt="alt-for-icon"
+      label="Intitulé"
+      name="input-text-icon-default"
+      onChange={onChange}
+      onClick={onClick}
+      placeholder="placeholder with icon"
+      sublabel="Intitulé secondaire"
+      type="text"
+    />
    `
 
   const inputWithIconDisabled = String.raw`
-  <label className="input-text"}>
-    {'Intitulé'}
-    <span className="it-sub-label">
-      {'Intitulé secondaire'}
-    </span>
-    <div className="it-with-icon-container disabled">
-      <input
-        className="it-with-icon"
-        disabled
-       />
-      <button className="it-icon">
-        <Icon svg="ico-search" />
-      </button>
-    </div>
-  </label>
+    <TextInputWithIcon
+      disabled
+      icon="ico-search"
+      iconAlt="alt-for-icon"
+      label="Intitulé"
+      name="input-text-icon-disabled"
+      placeholder="placeholder with icon"
+      sublabel="Intitulé secondaire"
+      type="text"
+    />
   `
 
   function onClick() {
@@ -70,7 +64,7 @@ const StyleguideInputText = () => {
   return (
     <div>
       <h3>
-        {'Input Text - Default'}
+        {'Text Input - Default'}
       </h3>
       <div className="flex-block">
         <TextInput
@@ -110,7 +104,7 @@ const StyleguideInputText = () => {
       </div>
       <hr />
       <h3>
-        {'Input Text - With Icon'}
+        {'Text Input - With Icon'}
       </h3>
       <div className="flex-block">
         <div>

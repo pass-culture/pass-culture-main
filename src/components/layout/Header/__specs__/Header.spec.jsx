@@ -48,7 +48,7 @@ describe('src | components | Layout | Header', () => {
           .props().children
 
         // then
-        expect(navLinks).toHaveLength(7)
+        expect(navLinks).toHaveLength(8)
         expect(linkTitle).toStrictEqual('Structure juridique')
       })
 
@@ -65,7 +65,7 @@ describe('src | components | Layout | Header', () => {
           .props().children
 
         // then
-        expect(navLinks).toHaveLength(7)
+        expect(navLinks).toHaveLength(8)
         expect(linkTitle).toStrictEqual('Structures juridiques')
       })
     })
