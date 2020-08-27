@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom'
 
 import Icon from '../Icon'
 import Logo from '../Logo'
-import { HELP_PAGE_URL, IS_DEV } from '../../../utils/config'
+import { HELP_PAGE_URL, STYLEGUIDE_ACTIVE } from '../../../utils/config'
 
 class Header extends PureComponent {
   constructor() {
@@ -177,7 +177,7 @@ class Header extends PureComponent {
                       </span>
                     </NavLink>
                   )}
-                  {IS_DEV && (
+                  {STYLEGUIDE_ACTIVE && (
                     <NavLink
                       className="navbar-item"
                       to="/styleguide"

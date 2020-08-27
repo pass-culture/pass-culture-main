@@ -1,6 +1,6 @@
 import React from 'react'
-import TextInput from '../TestComposantInput/TextInput'
-import TextInputWithIcon from '../TestComposantInput/TextInputWithIcon'
+import TextInput from '../../../layout/inputs/TextInput/TextInput'
+import TextInputWithIcon from '../../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
 
 const StyleguideInputText = () => {
   const inputTextEnabled = String.raw`
@@ -59,11 +59,12 @@ const StyleguideInputText = () => {
   </label>
   `
 
-  const onClick = () => {
-    alert('icon a étai cliquer')
+  function onClick() {
+    console.log('OnClick icon input')
   }
-  const onChange = () => {
-    alert('icon a étai changeai')
+
+  function onChange() {
+    console.log('OnChange input text')
   }
 
   return (
@@ -115,12 +116,14 @@ const StyleguideInputText = () => {
         <div>
           <TextInputWithIcon
             icon="ico-search"
+            iconAlt="alt-for-icon"
             label="Intitulé"
             name="input-text-icon-default"
+            onChange={onChange}
+            onClick={onClick}
             placeholder="placeholder with icon"
             sublabel="Intitulé secondaire"
             type="text"
-            onClick={onClick}
           />
         </div>
         <div className="it-description">
@@ -137,9 +140,9 @@ const StyleguideInputText = () => {
           <TextInputWithIcon
             disabled
             icon="ico-search"
+            iconAlt="alt-for-icon"
             label="Intitulé"
             name="input-text-icon-disabled"
-            onChange={onChange}
             placeholder="placeholder with icon"
             sublabel="Intitulé secondaire"
             type="text"

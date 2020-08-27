@@ -1,0 +1,32 @@
+.input-text {
+  .it-sub-label {
+    @include caption();
+    color: $grey-dark;
+    float: right;
+    margin-left: rem(5px);
+  }
+
+  .it-input {
+    @include body();
+    border: 1px solid $grey-medium;
+    border-radius: 22px;
+    color: $black;
+    height: rem(40px);
+    margin-bottom: rem(15px);
+    margin-top: rem(9px);
+    padding: 10px 16px;
+
+    &:focus {
+      border: 2px solid $primary;
+      outline: none;
+      outline-offset: 0;
+    }
+
+    &:disabled {
+      background-color: $grey-light;
+      border: none;
+      color: $grey-dark;
+      opacity: 1;
+    }
+  }
+}
