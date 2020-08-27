@@ -20,8 +20,8 @@ const CloseLink = ({ actionOnClick, closeTitle, closeTo }) => (
 
 CloseLink.defaultProps = {
   actionOnClick: null,
-  closeTitle: 'Retourner à la page découverte',
-  closeTo: '/decouverte',
+  closeTitle: 'Fermer',
+  closeTo: '/',
 }
 
 CloseLink.propTypes = {

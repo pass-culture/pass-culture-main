@@ -55,3 +55,17 @@
   margin-top: rem(-115px);
   margin-bottom: $navbar-height + rem(20px);
 }
+
+.home-details-wrapper {
+  .close-link {
+    background-color: $black;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    z-index: $zindex-navbar;
+  }
+
+  .recto {
+    top: 0;
+  }
+}

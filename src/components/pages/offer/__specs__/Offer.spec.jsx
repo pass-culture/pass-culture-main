@@ -4,7 +4,6 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import getMockStore from '../../../../utils/mockStore'
-import CloseLink from '../../../layout/Header/CloseLink/CloseLink'
 import Offer from '../Offer'
 
 describe('offer', () => {
@@ -13,39 +12,39 @@ describe('offer', () => {
 
   beforeEach(() => {
     props = {
-      isHomepageDisabled: true,
       match: {
-        path: '/offre/details/ME/FA',
+        path:
+          '/offre/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId(vide|[A-Z0-9]+)?',
       },
     }
   })
 
-  it('should display a close icon to /decouverte, details and footer for a given offer', () => {
+  it('should have a close link to home page and details of a given offer', () => {
     // given
     mockStore = getMockStore({
       currentUser: (
         state = {
           id: 'Rt4R45ETEs',
           wallet_balance: 0,
-        },
+        }
       ) => state,
       data: (
         state = {
           bookings: [],
+          offers: [{ id: 'ME', name: 'Offer name example' }],
+          stocks: [],
           favorites: [],
           features: [],
           mediations: [],
-          offers: [],
-          stocks: [],
           recommendations: [],
           users: [],
-        },
+        }
       ) => state,
       geolocation: (
         state = {
           latitude: 1,
           longitude: 2,
-        },
+        }
       ) => state,
     })
 
@@ -55,55 +54,15 @@ describe('offer', () => {
         <MemoryRouter initialEntries={['/offre/details/ME/FA']}>
           <Offer {...props} />
         </MemoryRouter>
-      </Provider>,
+      </Provider>
     )
 
     // then
-    const closeIcon = wrapper.find(CloseLink)
+    const closeLink = wrapper.find('a[href="/"]')
+    expect(closeLink).toHaveLength(1)
+    const closeIcon = closeLink.find('img[alt="Fermer"]')
     expect(closeIcon).toHaveLength(1)
-    expect(closeIcon.prop('closeTo')).toBe('/decouverte')
-  })
-
-  it('should render a close icon to homepage url when homepage feature is enabled', () => {
-    props.isHomepageDisabled = false
-    mockStore = getMockStore({
-      currentUser: (
-        state = {
-          id: 'Rt4R45ETEs',
-          wallet_balance: 0,
-        },
-      ) => state,
-      data: (
-        state = {
-          bookings: [],
-          favorites: [],
-          features: [],
-          mediations: [],
-          offers: [],
-          stocks: [],
-          recommendations: [],
-          users: [],
-        },
-      ) => state,
-      geolocation: (
-        state = {
-          latitude: 1,
-          longitude: 2,
-        },
-      ) => state,
-    })
-
-    // when
-    const wrapper = mount(
-      <Provider store={mockStore}>
-        <MemoryRouter initialEntries={['/offre/details/ME/FA']}>
-          <Offer {...props} />
-        </MemoryRouter>
-      </Provider>,
-    )
-
-    // then
-    const closeIcon = wrapper.find(CloseLink)
-    expect(closeIcon.prop('closeTo')).toBe('/accueil')
+    const detailsTitle = wrapper.find({ children: 'Offer name example' }).closest('h1')
+    expect(detailsTitle).toHaveLength(1)
   })
 })

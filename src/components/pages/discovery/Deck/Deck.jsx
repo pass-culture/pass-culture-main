@@ -214,7 +214,6 @@ class Deck extends PureComponent {
         {detailView && (
           <CloseLink
             actionOnClick={this.scrollToTheTop}
-            closeTitle="Fermer"
             closeTo={this.buildCloseToUrl()}
           />
         )}

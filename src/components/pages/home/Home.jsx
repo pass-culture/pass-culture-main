@@ -6,7 +6,7 @@ import { Link, Route } from 'react-router-dom'
 import { formatToFrenchDecimal } from '../../../utils/getDisplayPrice'
 import { fetchHomepage } from '../../../vendor/contentful/contentful'
 import AnyError from '../../layout/ErrorBoundaries/ErrorsPage/AnyError/AnyError'
-import HeaderContainer from '../../layout/Header/HeaderContainer'
+import CloseLink from '../../layout/Header/CloseLink/CloseLink'
 import Icon from '../../layout/Icon/Icon'
 import BusinessModule from './BusinessModule/BusinessModule'
 import { formatPublicName } from './domain/formatPublicName'
@@ -143,11 +143,8 @@ class Home extends Component {
           path={`${match.path}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
           sensitive
         >
-          <div className="offer-details">
-            <HeaderContainer
-              backTo="/accueil"
-              title="Offre"
-            />
+          <div className="home-details-wrapper">
+            <CloseLink closeTo="/accueil" />
             <OfferDetailsContainer match={match} />
           </div>
         </Route>
