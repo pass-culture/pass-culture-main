@@ -68,7 +68,7 @@ class CheckCIStatusTest:
     def when_get_project_jobs_infos_is_called_with_wrong_tag_name_returns_None(self, requests_mock):
         # Given
         tag_name = '1.23.4'
-        requests_mock.get('https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/' + tag_name, json=[{'job_id': '12'}], status_code=404)
+        requests_mock.get('https://circleci.com/api/v1.1/project/github/pass-culture/pass-culture-main/tree/' + tag_name, json=[{'job_id': '12'}], status_code=404)
 
         # When
         project_info = get_project_jobs_infos(tag_name)
@@ -79,7 +79,7 @@ class CheckCIStatusTest:
     def when_get_project_jobs_infos_is_called_with_right_tag_name_returns_job_id(self, requests_mock):
         # Given
         tag_name = '1.3.4'
-        requests_mock.get('https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/' + tag_name, json=[{'job_id': '12'}], status_code=200)
+        requests_mock.get('https://circleci.com/api/v1.1/project/github/pass-culture/pass-culture-main/tree/' + tag_name, json=[{'job_id': '12'}], status_code=200)
 
         # When
         job_statuses = get_project_jobs_infos(tag_name)
