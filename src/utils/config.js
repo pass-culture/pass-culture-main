@@ -5,6 +5,7 @@ import 'moment-timezone'
 moment.locale('fr-fr')
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
+const ENV_NAME = process.env.ENVIRONMENT_NAME
 // NOTE -> le script PC remplace
 // la valeur de `LAST_DEPLOYED_COMMIT`
 // par le numéro de commit qui a été deployé
@@ -14,7 +15,7 @@ export const IS_DEBUG = true
 
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
-export const STYLEGUIDE_ACTIVE = process.env.ENVIRONMENT_NAME === 'development' || 'testing'
+export const STYLEGUIDE_ACTIVE = ENV_NAME !== 'production' && ENV_NAME !== 'staging'
 
 export const DELETE = '_delete_'
 
