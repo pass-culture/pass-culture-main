@@ -1,8 +1,9 @@
 import { Selector } from 'testcafe'
 
-import { fetchSandbox } from './helpers/sandboxes'
+import { getPathname, getUrlParams } from './helpers/location'
 import { navigateToNewOfferAs, navigateToOfferAs, navigateToOffersAs } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
+import { fetchSandbox } from './helpers/sandboxes'
 
 const closeInput = Selector('button').withText('Fermer')
 const nameInput = Selector('#offer-name')
@@ -16,42 +17,34 @@ const durationMinutesInput = Selector('input.field-duration')
 const descriptionInput = Selector('#offer-description')
 const submitButton = Selector('button').withText('Enregistrer')
 
-fixture('En étant sur la page des offres')
+fixture('En étant sur la page des offres,')
 
-test("J'ai accès à l'ensemble de mes offres", async t => {
-  // given
+test('j’ai accès à l’ensemble de mes offres', async t => {
   const { user } = await fetchSandbox(
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_visible_activated_offer'
   )
+  const offerItem = Selector('li.offer-item')
   await navigateToOffersAs(user)(t)
 
-  // when
-  const offerItem = Selector('li.offer-item')
-
-  // then
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/offres')
-  await t.expect(offerItem.count).gt(0)
+  await t
+    .expect(getPathname())
+    .eql('/offres')
+    .expect(offerItem.count)
+    .gt(0)
 })
 
-test('Je recherche une offre et je clique sur celle-ci pour accéder au détail', async t => {
-  // given
+test('je recherche une offre et je clique sur celle-ci pour accéder au détail', async t => {
   const { offer, user } = await fetchSandbox(
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_visible_activated_offer'
   )
-
-  // when
   await navigateToOfferAs(user, offer, createUserRole(user))(t)
 
-  // then
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).match(/\/offres\/([A-Z0-9]*)/)
+  await t.expect(getPathname()).match(/\/offres\/([A-Z0-9]*)/)
 })
 
-test('Je peux créer une offre de type événement', async t => {
-  // given
+test('je peux créer une offre de type événement', async t => {
   const { offerer, user, venue } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
@@ -67,79 +60,56 @@ test('Je peux créer une offre de type événement', async t => {
     "Atelier d'initiation pour reconnaître tout ce qui est du pipotron dans vos lectures de tous les jours. ",
     "Suivi d'une séance de dédicaces.",
   ].join('')
-  const eventDuration = '02:00'
-  const eventName = 'Rencontre avec Franck Lepage'
-  const eventType = 'Conférences, rencontres et découverte des métiers'
-  const { name: offererName } = offerer
-  const { name: venueName } = venue
   await navigateToNewOfferAs(user, null, null, userRole)(t)
 
-  // when
   await t
-    .typeText(nameInput, eventName)
+    .typeText(nameInput, 'Rencontre avec Franck Lepage')
     .click(typeInput)
-    .click(typeOption.withText(eventType))
+    .click(typeOption.withText('Conférences, rencontres et découverte des métiers'))
     .click(offererInput)
-    .click(offererOption.withText(offererName))
+    .click(offererOption.withText(offerer.name))
     .click(venueInput)
-    .click(venueOption.withText(venueName))
-    .typeText(durationMinutesInput, eventDuration)
+    .click(venueOption.withText(venue.name))
+    .typeText(durationMinutesInput, '02:00')
     .typeText(descriptionInput, eventDescription)
     .click(submitButton)
-
-  // then
-  const location = await t.eval(() => window.location)
-  await t
-    .expect(location.pathname)
+    .expect(getPathname())
     .match(/\/offres\/([A-Z0-9]*)$/)
-    .expect(location.search)
+    .expect(getUrlParams())
     .eql('?gestion')
 })
 
-test('Je peux créer une offre avec des sous-types', async t => {
-  // given
+test('je peux créer une offre avec des sous-types', async t => {
   const { offerer, user, venue } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
   )
-
   const musicTypeInput = Selector('#offer-musicType')
   const musicTypeOption = Selector('#offer-musicType option')
   const musicSubTypeInput = Selector('#offer-musicSubType')
   const musicSubTypeOption = Selector('#offer-musicSubType option')
-  const eventDescription = 'Venez re découvrir PNL en accoustique, sans auto-tune'
-  const eventDurationMinutes = '01:30'
-  const eventName = 'Concert de PNL Unplugged'
-  const eventType = 'Musique - concerts, festivals'
   const eventMusicType = 'Hip-Hop/Rap'
   const eventMusicSubType = 'Rap Alternatif'
-  const { name: offererName } = offerer
-  const { name: venueName } = venue
   await navigateToNewOfferAs(user)(t)
 
-  // when
   await t
-    .typeText(nameInput, eventName)
+    .typeText(nameInput, 'Concert de PNL Unplugged')
     .click(typeInput)
-    .click(typeOption.withText(eventType))
+    .click(typeOption.withText('Musique - concerts, festivals'))
     .click(musicTypeInput)
     .click(musicTypeOption.withText(eventMusicType))
     .click(musicSubTypeInput)
     .click(musicSubTypeOption.withText(eventMusicSubType))
     .click(offererInput)
-    .click(offererOption.withText(offererName))
+    .click(offererOption.withText(offerer.name))
     .click(venueInput)
-    .click(venueOption.withText(venueName))
-    .typeText(durationMinutesInput, eventDurationMinutes)
-    .typeText(descriptionInput, eventDescription)
+    .click(venueOption.withText(venue.name))
+    .typeText(durationMinutesInput, '01:30')
+    .typeText(descriptionInput, 'Venez re découvrir PNL en accoustique, sans auto-tune')
     .click(submitButton)
-
-  // then
-  const location = await t.eval(() => window.location)
-  await t
-    .expect(location.pathname)
+    .expect(getPathname())
     .match(/\/offres\/([A-Z0-9]*)$/)
-    .expect(location.search)
+    .expect(getUrlParams())
     .eql('?gestion')
     .click(closeInput)
     .expect(musicTypeOption.withText(eventMusicType).exists)

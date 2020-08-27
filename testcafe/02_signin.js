@@ -1,45 +1,38 @@
 import { Selector } from 'testcafe'
 
-import { fetchSandbox } from './helpers/sandboxes'
 import { ROOT_PATH } from '../src/utils/config'
+import { getPathname } from './helpers/location'
+import { fetchSandbox } from './helpers/sandboxes'
 
 const inputUserIdentifier = Selector('#user-identifier')
 const inputUserPassword = Selector('#user-password')
 const signInButton = Selector('button').withText('Se connecter')
 
-fixture('Suite à la création de mon compte').page(`${ROOT_PATH + 'connexion'}`)
+fixture('Suite à la création de mon compte,')
 
-test("Je me connecte avec un compte valide, sans offres, et je suis redirigé·e vers la page 'structures'", async t => {
-  // given
+test('je me connecte avec un compte valide, sans offres, et je suis redirigé·e vers la page "structures"', async t => {
   const { user } = await fetchSandbox('pro_02_signin', 'get_existing_pro_validated_user')
-  const { email, password } = user
 
-  // when
   await t
-    .typeText(inputUserIdentifier, email)
-    .typeText(inputUserPassword, password)
+    .navigateTo(`${ROOT_PATH}connexion`)
+    .typeText(inputUserIdentifier, user.email)
+    .typeText(inputUserPassword, user.password)
     .click(signInButton)
-
-  // then
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/structures')
+    .expect(getPathname())
+    .eql('/structures')
 })
 
-test("Je me connecte avec un compte valide, avec des offres existantes, et je suis redirigé·e vers la page 'offres'", async t => {
-  // given
+test('je me connecte avec un compte valide, avec des offres existantes, et je suis redirigé·e vers la page "offres"', async t => {
   const { user } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
   )
-  const { email, password } = user
 
-  // when
   await t
-    .typeText(inputUserIdentifier, email)
-    .typeText(inputUserPassword, password)
+    .navigateTo(`${ROOT_PATH}connexion`)
+    .typeText(inputUserIdentifier, user.email)
+    .typeText(inputUserPassword, user.password)
     .click(signInButton)
-
-  // then
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/offres')
+    .expect(getPathname())
+    .eql('/offres')
 })

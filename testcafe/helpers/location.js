@@ -1,3 +1,5 @@
 import { ClientFunction } from 'testcafe'
 
-export const getPageUrl = ClientFunction(() => window.location.href.toString())
+export const getPathname = ClientFunction(() => window.location.pathname)
+
+export const getUrlParams = ClientFunction(() => window.location.search)

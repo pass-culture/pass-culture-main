@@ -1,34 +1,34 @@
 import { Selector } from 'testcafe'
 
-import { fetchSandbox } from './helpers/sandboxes'
-import { createUserRole } from './helpers/roles'
 import { ROOT_PATH } from '../src/utils/config'
+import { getPathname } from './helpers/location'
+import { createUserRole } from './helpers/roles'
+import { fetchSandbox } from './helpers/sandboxes'
 
-const pageTitleHeader = Selector('h1')
-const deskLink = Selector("a[href^='/guichet']")
-const navbarAnchor = Selector('a.navbar-link, span.navbar-burger').filterVisible()
-const codeInput = Selector('.form input[type="text"]')
-const state = Selector('.form .state')
-const stateText = Selector('.form .state span')
-const exitlink = Selector('#exitlink')
-const registerButton = Selector('.form button[type="submit"]')
+fixture('En étant sur la page de validation des contremarques,')
 
-fixture('En étant sur la page de validation des contremarques').page(`${ROOT_PATH}guichet`)
-
-test('Je peux valider une contremarque', async t => {
-  // given
+test('je peux valider une contremarque', async t => {
   const { booking, user } = await fetchSandbox(
     'pro_10_desk',
     'get_existing_pro_validated_user_with_validated_offerer_with_validated_user_offerer_with_thing_offer_with_stock_with_not_used_booking'
   )
-  const { token } = booking
-  await t.useRole(createUserRole(user))
-  await t.click(navbarAnchor).click(deskLink)
-  await t.expect(pageTitleHeader.innerText).eql('Guichet')
+  const pageTitleHeader = Selector('h1')
+  const deskLink = Selector("a[href^='/guichet']")
+  const navbarAnchor = Selector('a.navbar-link, span.navbar-burger').filterVisible()
+  const codeInput = Selector('.form input[type="text"]')
+  const state = Selector('.form .state')
+  const stateText = Selector('.form .state span')
+  const exitlink = Selector('#exitlink')
+  const registerButton = Selector('.form button[type="submit"]')
 
-  // when
   await t
-    .typeText(codeInput, token)
+    .useRole(createUserRole(user))
+    .navigateTo(`${ROOT_PATH}guichet`)
+    .click(navbarAnchor)
+    .click(deskLink)
+    .expect(pageTitleHeader.innerText)
+    .eql('Guichet')
+    .typeText(codeInput, booking.token)
     .expect(stateText.innerText)
     .eql('Coupon vérifié, cliquez sur "Valider" pour enregistrer')
     .expect(state.classNames)
@@ -39,8 +39,6 @@ test('Je peux valider une contremarque', async t => {
     .expect(state.classNames)
     .contains('success')
     .click(exitlink)
-
-  // then
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/accueil')
+    .expect(getPathname())
+    .eql('/accueil')
 })

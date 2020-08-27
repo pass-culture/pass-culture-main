@@ -1,9 +1,9 @@
 import { Selector } from 'testcafe'
 
-import { fetchSandbox } from './helpers/sandboxes'
 import { navigateAfterVenueSubmit } from './helpers/navigations'
-import { getSiretRequestMockAs } from './helpers/sirenes'
 import { createUserRole } from './helpers/roles'
+import { fetchSandbox } from './helpers/sandboxes'
+import { getSiretRequestMockAs } from './helpers/sirenes'
 
 const addressInput = Selector('input[name="address"]')
 const addressSuggestion = Selector('.location-viewer .menu .item')
@@ -16,10 +16,9 @@ const postalCodeInput = Selector('input[name="postalCode"]')
 const siretInput = Selector('input[name="siret"]')
 const newVenueButton = Selector('a').withText('+ Ajouter un lieu')
 
-fixture("En étant sur la page de création d'un lieu")
+fixture('En étant sur la page de création d’un lieu,')
 
-test('Je peux créer un lieu avec un SIRET valide', async t => {
-  // given
+test('je peux créer un lieu avec un SIRET valide', async t => {
   const { offerer, user } = await fetchSandbox(
     'pro_05_venue',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
@@ -38,17 +37,13 @@ test('Je peux créer un lieu avec un SIRET valide', async t => {
     postalCode,
     siret,
   }
+
   await t
     .addRequestHooks(getSiretRequestMockAs(venue))
     .useRole(createUserRole(user))
-    .navigateTo('/structures/' + offererId)
+    .navigateTo(`/structures/${offererId}`)
     .click(newVenueButton)
-
-  // when
-  await t.typeText(siretInput, siret)
-
-  // then
-  await t
+    .typeText(siretInput, siret)
     .expect(nameInput.value)
     .eql(venueName)
     .expect(addressInput.value)
@@ -64,41 +59,27 @@ test('Je peux créer un lieu avec un SIRET valide', async t => {
   await navigateAfterVenueSubmit('creation')(t)
 })
 
-test('Je peux créer un lieu sans SIRET', async t => {
-  // given
+test('je peux créer un lieu sans SIRET', async t => {
   const { offerer, user } = await fetchSandbox(
     'pro_05_venue',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
   )
-  const { id: offererId } = offerer
-  const address = '1 place du trocadéro Paris'
-  const city = 'Paris'
-  const comment = 'Test sans SIRET'
-  const latitude = '48.862412'
-  const longitude = '2.282002'
-  const name = 'Le lieu sympa de type sans siret'
-  const postalCode = '75016'
+
   await t
     .useRole(createUserRole(user))
-    .navigateTo('/structures/' + offererId)
+    .navigateTo(`/structures/${offerer.id}`)
     .click(newVenueButton)
-
-  // when
-  await t
-    .typeText(nameInput, name)
-    .typeText(commentInput, comment)
-    .typeText(addressInput, address)
-
-  // then
-  await t
+    .typeText(nameInput, 'Le lieu sympa de type sans siret')
+    .typeText(commentInput, 'Test sans SIRET')
+    .typeText(addressInput, '1 place du trocadéro Paris')
     .click(addressSuggestion)
     .expect(postalCodeInput.value)
-    .eql(postalCode)
+    .eql('75016')
     .expect(cityInput.value)
-    .eql(city)
+    .eql('Paris')
     .expect(latitudeInput.value)
-    .eql(latitude)
+    .eql('48.862412')
     .expect(longitudeInput.value)
-    .eql(longitude)
+    .eql('2.282002')
   await navigateAfterVenueSubmit('creation')(t)
 })

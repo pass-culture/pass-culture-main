@@ -1,6 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
+import { getPathname } from './helpers/location'
 import { fetchSandbox } from './helpers/sandboxes'
 import { getSirenRequestMockWithDefaultValues } from './helpers/sirenes'
 
@@ -14,96 +15,62 @@ const contactOkInput = Selector('input[name="contact_ok"]')
 const signUpButton = Selector('button').withText('Créer mon compte')
 const acceptCookieButton = Selector('#hs-eu-confirmation-button')
 
-fixture("Création d'un compte utilisateur·trice")
-  .page(`${ROOT_PATH}inscription`)
+fixture('Création d’un compte utilisateur·trice,').page(`${ROOT_PATH}inscription`)
 
-test("Je peux créer un compte avec un SIREN non existant en base de données," +
-  " et je suis redirigé·e vers la page de confirmation de l'inscription", async t => {
-  // given
-  const email = 'pctest0.pro93.cafe0@btmx.fr'
-  const firstName = 'PC Test 0 Pro'
-  const lastName = '93 Café0'
-  const phoneNumber = '0102030405'
-  const password = 'user@AZERTY123'
-  const siren = '501106520'
-
-  await t.addRequestHooks(getSirenRequestMockWithDefaultValues())
-  await t.expect(acceptCookieButton.exists).ok()
-
-  // when
+test('je peux créer un compte avec un SIREN non existant en base de données, et je suis redirigé·e vers la page de confirmation de l’inscription', async t => {
   await t
+    .addRequestHooks(getSirenRequestMockWithDefaultValues())
+    .expect(acceptCookieButton.exists)
+    .ok()
     .click(acceptCookieButton)
-    .typeText(emailInput, email)
-    .typeText(passwordInput, password)
-    .typeText(lastNameInput, lastName)
-    .typeText(firstNameInput, firstName)
-    .typeText(phoneNumberInput, phoneNumber)
-    .typeText(sirenInput, siren)
-
-  // then
-  await t.expect(signUpButton.hasAttribute('disabled')).ok()
-
-  // when
-  await t
+    .typeText(emailInput, 'pctest0.pro93.cafe0@btmx.fr')
+    .typeText(passwordInput, 'user@AZERTY123')
+    .typeText(lastNameInput, '93 Café0')
+    .typeText(firstNameInput, 'PC Test 0 Pro')
+    .typeText(phoneNumberInput, '0102030405')
+    .typeText(sirenInput, '501106520')
+    .expect(signUpButton.hasAttribute('disabled'))
+    .ok()
     .click(contactOkInput)
     .click(signUpButton)
-
-  // then
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/inscription/confirmation')
+    .expect(getPathname())
+    .eql('/inscription/confirmation')
 })
 
-test("Je peux créer un compte avec un SIREN déjà existant en base de données," +
-  " et je suis redirigé·e vers la page de confirmation de l'inscription", async t => {
-  // given
+test('je peux créer un compte avec un SIREN déjà existant en base de données, et je suis redirigé·e vers la page de confirmation de l’inscription', async t => {
   const { offerer } = await fetchSandbox('pro_01_signup', 'get_existing_pro_user_with_offerer')
-  const email = 'pctest0.pro93.cafe1@btmx.fr'
-  const firstName = 'PC Test Pro'
-  const lastName = '93 Café1'
-  const phoneNumber = '0102030405'
-  const password = 'user@AZERTY123'
-  const { siren } = offerer
 
-  await t.addRequestHooks(getSirenRequestMockWithDefaultValues())
-  await t.expect(acceptCookieButton.exists).ok()
-
-  // when
   await t
+    .addRequestHooks(getSirenRequestMockWithDefaultValues())
+    .expect(acceptCookieButton.exists)
+    .ok()
     .click(acceptCookieButton)
-    .typeText(emailInput, email)
-    .typeText(passwordInput, password)
-    .typeText(lastNameInput, lastName)
-    .typeText(firstNameInput, firstName)
-    .typeText(phoneNumberInput, phoneNumber)
-    .typeText(sirenInput, siren)
+    .typeText(emailInput, 'pctest0.pro93.cafe1@btmx.fr')
+    .typeText(passwordInput, 'user@AZERTY123')
+    .typeText(lastNameInput, '93 Café1')
+    .typeText(firstNameInput, 'PC Test Pro')
+    .typeText(phoneNumberInput, '0102030405')
+    .typeText(sirenInput, offerer.siren)
     .click(contactOkInput)
     .click(signUpButton)
-
-  // then
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/inscription/confirmation')
+    .expect(getPathname())
+    .eql('/inscription/confirmation')
 })
 
-test('Lorsque je clique sur le lien de validation de création du compte reçu par email, je suis redirigé·e vers la page de connexion', async t => {
-  // given
+test('lorsque je clique sur le lien de validation de création du compte reçu par email, je suis redirigé·e vers la page de connexion', async t => {
   const { user } = await fetchSandbox(
     'pro_01_signup',
     'get_existing_pro_not_validated_user_with_real_offerer'
   )
-  const { validationToken } = user
 
-  // when
-  await t.navigateTo('/inscription/validation/' + validationToken)
-
-  // then
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/connexion')
+  await t
+    .navigateTo(`/inscription/validation/${user.validationToken}`)
+    .expect(getPathname())
+    .eql('/connexion')
 })
 
-test('La balise script pour le tracking HubSpot est présente sur la page', async t => {
-  // given - when
+test('la balise script pour le tracking HubSpot est présente sur la page', async t => {
   const trackingScript = Selector('script[src="//js.hs-scripts.com/5119289.js"]')
 
-  // then
   await t.expect(trackingScript.exists).ok()
 })
