@@ -47,7 +47,7 @@ class PasswordInput extends PureComponent {
           >
             <Icon
               alt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
-              svg={isPasswordHidden ? 'ico-eye close' : 'ico-eye'}
+              svg={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
             />
             &nbsp;
           </button>

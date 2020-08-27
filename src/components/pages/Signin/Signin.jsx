@@ -100,6 +100,12 @@ class Signin extends PureComponent {
                     </span>
                     {'Champs obligatoires'}
                   </span>
+                  {hasErrorMessage && (
+                    <div className="errors">
+                      <Icon svg="picto-warning" />
+                      {'Identifiant ou mot de passe incorrect.'}
+                    </div>
+                  )}
                   <form>
                     <div className="field-group">
                       <label className="input-text">
@@ -143,17 +149,11 @@ class Signin extends PureComponent {
                                   ? 'Afficher le mot de passe'
                                   : 'Cacher le mot de passe'
                               }
-                              svg={isPasswordHidden ? 'ico-eye close' : 'ico-eye'}
+                              svg={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
                             />
                           </button>
                         </div>
                       </label>
-                      {hasErrorMessage && (
-                        <div className="errors">
-                          <Icon svg="picto-warning" />
-                          {'Identifiant ou mot de passe incorrect.'}
-                        </div>
-                      )}
                     </div>
                     <span>
                       <Link
