@@ -43,8 +43,41 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
+function getRecommendationsFromAPI(
+  userCoordinates,
+  dispatch,
+  readRecommendations,
+  offersSentInLastCall,
+  handleFail,
+  handleSuccess
+) {
+  let queryParams = getCoordinatesApiPathQueryString(userCoordinates)
+
+  dispatch(
+    requestData({
+      apiPath: `/recommendations?${queryParams}`,
+      body: {
+        readRecommendations,
+        offersSentInLastCall,
+      },
+      handleFail: handleFail,
+      handleSuccess: handleSuccess,
+      method: 'PUT',
+      normalizer: recommendationNormalizer,
+    })
+  )
+}
+
+function isGeolocationGrantedByUser(permissions) {
+  return permissions.status === 'granted'
+}
+
+function areValidCoordinates(coordinates) {
+  return coordinates && coordinates.latitude && coordinates.longitude
+}
+
 export const mapDispatchToProps = (dispatch, prevProps) => ({
-  loadRecommendations: (
+  loadRecommendations: async (
     handleSuccess,
     handleFail,
     currentRecommendation,
@@ -56,21 +89,42 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
     const offersSentInLastCall =
       (shouldReloadRecommendations && []) ||
       (recommendations && recommendations.map(reco => reco.offerId))
-    let queryParams = getCoordinatesApiPathQueryString(coordinates)
 
-    dispatch(
-      requestData({
-        apiPath: `/recommendations?${queryParams}`,
-        body: {
-          readRecommendations,
-          offersSentInLastCall,
+    const permissions = await navigator.permissions.query({ name: 'geolocation' })
+
+    if (!areValidCoordinates(coordinates) && isGeolocationGrantedByUser(permissions)) {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          getRecommendationsFromAPI(
+            position.coords,
+            dispatch,
+            readRecommendations,
+            offersSentInLastCall,
+            handleFail,
+            handleSuccess
+          )
         },
-        handleFail: handleFail,
-        handleSuccess: handleSuccess,
-        method: 'PUT',
-        normalizer: recommendationNormalizer,
-      })
-    )
+        function() {
+          getRecommendationsFromAPI(
+            null,
+            dispatch,
+            readRecommendations,
+            offersSentInLastCall,
+            handleFail,
+            handleSuccess
+          )
+        }
+      )
+    } else {
+      getRecommendationsFromAPI(
+        coordinates,
+        dispatch,
+        readRecommendations,
+        offersSentInLastCall,
+        handleFail,
+        handleSuccess
+      )
+    }
   },
   redirectToFirstRecommendationIfNeeded: loadedRecommendations => {
     const { match, history } = prevProps
