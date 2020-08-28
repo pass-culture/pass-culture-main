@@ -14,6 +14,7 @@ const TextInputWithIcon = ({
   required,
   sublabel,
   type,
+  value,
 }) => (
   <label
     className="input-text"
@@ -32,6 +33,7 @@ const TextInputWithIcon = ({
         placeholder={placeholder}
         required={required}
         type={type}
+        value={value}
       />
       <button
         className="it-icon"
@@ -67,6 +69,7 @@ TextInputWithIcon.propTypes = {
   required: PropTypes.bool,
   sublabel: PropTypes.string,
   type: PropTypes.string,
+  value: PropTypes.string.isRequired,
 }
 
 export default TextInputWithIcon

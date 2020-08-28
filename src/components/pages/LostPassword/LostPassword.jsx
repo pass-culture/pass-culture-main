@@ -84,10 +84,12 @@ class LostPassword extends PureComponent {
 
   render() {
     const {
+      emailValue,
       hasPasswordResetRequestErrorMessage,
       hasPasswordResetErrorMessage,
       newPasswordErrorMessage,
       isPasswordHidden,
+      newPasswordValue,
     } = this.state
     const { change, envoye, token } = this.props
 
@@ -160,9 +162,6 @@ class LostPassword extends PureComponent {
                     <h2 className="subtitle is-2">
                       {'Saisissez le nouveau mot de passe'}
                     </h2>
-                    <span className="has-text-grey">
-                      {'Tout les champs sont obligatoires'}
-                    </span>
                     {hasPasswordResetErrorMessage && (
                       <div className="server-error-message">
                         <Icon svg="picto-warning" />
@@ -183,7 +182,9 @@ class LostPassword extends PureComponent {
                         onClick={this.handleToggleHidden}
                         placeholder="*****"
                         required
+                        sublabel="obligatoire"
                         type={isPasswordHidden ? 'password' : 'text'}
+                        value={newPasswordValue}
                       />
 
                       {newPasswordErrorMessage && (
@@ -219,9 +220,6 @@ class LostPassword extends PureComponent {
                         'Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre compte.'
                       }
                     </h2>
-                    <span className="has-text-grey">
-                      {'Tout les champs sont obligatoires'}
-                    </span>
 
                     {hasPasswordResetRequestErrorMessage && (
                       <div className="server-error-message">
@@ -239,7 +237,9 @@ class LostPassword extends PureComponent {
                         onChange={this.handleInputEmailChange}
                         placeholder="Identifiant (e-mail)"
                         required
+                        sublabel="obligatoire"
                         type="email"
+                        value={emailValue}
                       />
 
                       <button

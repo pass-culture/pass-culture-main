@@ -97,10 +97,7 @@ class Signin extends PureComponent {
                     {'Et merci de votre participation pour nous aider à l’améliorer !'}
                   </h2>
                   <span className="has-text-grey">
-                    <span className="required-legend">
-                      {'*'}
-                    </span>
-                    {'Tout les champs sont obligatoires'}
+                    {'Tous les champs sont obligatoires'}
                   </span>
                   {hasErrorMessage && (
                     <div className="errors">
@@ -116,6 +113,7 @@ class Signin extends PureComponent {
                         onChange={this.handleInputEmailChange}
                         placeholder="Identifiant (e-mail)"
                         required
+                        value={emailValue}
                       />
                       <TextInputWithIcon
                         icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
@@ -129,6 +127,7 @@ class Signin extends PureComponent {
                         placeholder="Mot de passe"
                         required
                         type={isPasswordHidden ? 'password' : 'text'}
+                        value={passwordValue}
                       />
                     </div>
                     <span>

@@ -39,7 +39,6 @@ TextInput.defaultProps = {
   required: false,
   sublabel: '',
   type: 'text',
-  value: '',
 }
 
 TextInput.propTypes = {
@@ -51,7 +50,7 @@ TextInput.propTypes = {
   required: PropTypes.bool,
   sublabel: PropTypes.string,
   type: PropTypes.string,
-  value: PropTypes.string,
+  value: PropTypes.string.isRequired,
 }
 
 export default TextInput
