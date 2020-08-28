@@ -1,7 +1,4 @@
 .input-text {
-  display: flex;
-  flex-direction: column;
-
   .it-sub-label {
     @include caption();
     color: $grey-dark;
@@ -14,10 +11,12 @@
     border: 1px solid $grey-medium;
     border-radius: 22px;
     color: $black;
+    display: block;
     height: rem(40px);
     margin-bottom: rem(15px);
     margin-top: rem(9px);
     padding: 10px 16px;
+    width: 100%;
 
     &:focus {
       border: 2px solid $primary;

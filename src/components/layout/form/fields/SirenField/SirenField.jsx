@@ -41,7 +41,7 @@ const SirenField = () => {
               placeholder="123 456 789"
               sublabel="obligatoire"
             />
-            {meta.modified && (
+            {meta.modified && meta.error && (
               <div className="siren-input-error">
                 <Icon svg="picto-echec" />
                 {meta.error}

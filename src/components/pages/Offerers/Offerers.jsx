@@ -131,15 +131,6 @@ class Offerers extends PureComponent {
         >
           {'OK'}
         </button>
-        <button
-          className="button is-tertiary"
-          disabled
-          type="button"
-        >
-          &nbsp;
-          <Icon svg="ico-filter" />
-          &nbsp;
-        </button>
       </div>
     </form>
   )
