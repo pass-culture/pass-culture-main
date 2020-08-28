@@ -1,5 +1,5 @@
 import uniq from 'lodash.uniq'
-import getNormalizedMergedState from './getNormalizedMergedState'
+import { getNormalizedMergedState } from './getNormalizedMergedState'
 import { getDefaultCommitFrom } from './utils'
 
 export function getNormalizedCommittedState(state, patch, config) {
@@ -27,9 +27,7 @@ export function getNormalizedCommittedState(state, patch, config) {
     }
   })
 
-  const collectionNames = uniq(
-    (commits || []).map(commit => commit.collectionName)
-  )
+  const collectionNames = uniq((commits || []).map(commit => commit.collectionName))
   collectionNames.forEach(collectionName => {
     delete stateWithPossibleDeletedCollections[collectionName]
   })
@@ -60,5 +58,3 @@ export function getNormalizedCommittedState(state, patch, config) {
     { ...stateWithPossibleDeletedCollections, ...patch }
   )
 }
-
-export default getNormalizedCommittedState

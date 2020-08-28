@@ -6,5 +6,3 @@ export function getUrlFromConfig(config) {
   }
   return url
 }
-
-export default getUrlFromConfig

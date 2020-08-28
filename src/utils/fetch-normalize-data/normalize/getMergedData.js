@@ -8,9 +8,7 @@ export function getMergedData(nextData, previousData, config) {
   const { isMergingDatum, isMutatingDatum, resolve } = config
   const getDatumIdValue = config.getDatumIdValue || getDefaultDatumIdValue
   const isMutatingArray =
-    typeof config.isMutatingArray === 'undefined'
-      ? true
-      : config.isMutatingArray
+    typeof config.isMutatingArray === 'undefined' ? true : config.isMutatingArray
 
   const mergedData = isMutatingArray ? [...previousData] : previousData
 
@@ -18,11 +16,9 @@ export function getMergedData(nextData, previousData, config) {
   // their right place in the resolved array
   nextData.forEach(nextDatum => {
     const previousIndex = previousData.findIndex(
-      previousDatum =>
-        getDatumIdValue(previousDatum) === getDatumIdValue(nextDatum)
+      previousDatum => getDatumIdValue(previousDatum) === getDatumIdValue(nextDatum)
     )
-    const resolvedIndex =
-      previousIndex === -1 ? mergedData.length : previousIndex
+    const resolvedIndex = previousIndex === -1 ? mergedData.length : previousIndex
 
     let datum
 
@@ -33,16 +29,9 @@ export function getMergedData(nextData, previousData, config) {
         config,
       })
     } else if (isMutatingDatum) {
-      datum = Object.assign(
-        {},
-        isMergingDatum && previousData[previousIndex],
-        nextDatum
-      )
+      datum = Object.assign({}, isMergingDatum && previousData[previousIndex], nextDatum)
     } else if (isMergingDatum) {
-      datum =
-        previousIndex !== -1
-          ? merge(previousData[previousIndex], nextDatum)
-          : nextDatum
+      datum = previousIndex !== -1 ? merge(previousData[previousIndex], nextDatum) : nextDatum
     } else {
       datum = nextDatum
     }
@@ -52,5 +41,3 @@ export function getMergedData(nextData, previousData, config) {
 
   return mergedData
 }
-
-export default getMergedData

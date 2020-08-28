@@ -1,14 +1,13 @@
-import { handleApiError, handleServerError, handleTimeoutError } from './errors'
+import { handleApiError } from './errors/handleApiError'
+import { handleServerError } from './errors/handleServerError'
+import { handleTimeoutError } from './errors/handleTimeoutError'
 import { fetchData } from './fetchData'
-import getConfigWithDefaultValues from './getConfigWithDefaultValues'
-import getUrlFromConfig from './getUrlFromConfig'
-import handleApiSuccess from './handleApiSuccess'
+import { getConfigWithDefaultValues } from './getConfigWithDefaultValues'
+import { getUrlFromConfig } from './getUrlFromConfig'
+import { handleApiSuccess } from './handleApiSuccess'
 import { isSuccessStatus, isTimeoutStatus } from './status'
 
-export async function fetchToSuccessOrFailData(
-  reducer,
-  configWithoutDefaultValues
-) {
+export async function fetchToSuccessOrFailData(reducer, configWithoutDefaultValues) {
   const config = getConfigWithDefaultValues(configWithoutDefaultValues)
 
   const url = getUrlFromConfig(config)
@@ -37,5 +36,3 @@ export async function fetchToSuccessOrFailData(
     handleServerError(reducer, error, config)
   }
 }
-
-export default fetchToSuccessOrFailData

@@ -1,23 +1,23 @@
-import getConfigWithDefaultValues from '../../fetch/getConfigWithDefaultValues'
+import { getConfigWithDefaultValues } from '../../fetch/getConfigWithDefaultValues'
 import {
   ASSIGN_DATA,
   COMMIT_DATA,
   DELETE_DATA,
   MERGE_DATA,
   REINITIALIZE_DATA,
-  SET_DATA
+  SET_DATA,
 } from './actions'
-import getTypeSuffixFromConfig from './getTypeSuffixFromConfig'
+import { getTypeSuffixFromConfig } from './getTypeSuffixFromConfig'
 
 export const assignData = patch => ({
   patch,
   type: ASSIGN_DATA,
 })
 
-export const commitData = (commits, config={}) => ({
+export const commitData = (commits, config = {}) => ({
   commits,
   config,
-  type: COMMIT_DATA
+  type: COMMIT_DATA,
 })
 
 export const deleteData = (patch, config = {}) => ({
@@ -41,7 +41,7 @@ export const mergeData = (patch, config = {}) => ({
 export const purgeData = key => ({
   key,
   type: 'persist/PURGE',
-  result: () => null
+  result: () => null,
 })
 
 export const _requestData = (config = {}) => {

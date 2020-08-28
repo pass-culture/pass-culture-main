@@ -15,5 +15,3 @@ export function handleTimeoutError(reducer, payload, config) {
     handleFail(state, action)
   }
 }
-
-export default handleTimeoutError

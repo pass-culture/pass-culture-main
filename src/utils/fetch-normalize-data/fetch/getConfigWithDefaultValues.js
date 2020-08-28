@@ -4,5 +4,3 @@ export function getConfigWithDefaultValues(config) {
     ...config,
   }
 }
-
-export default getConfigWithDefaultValues

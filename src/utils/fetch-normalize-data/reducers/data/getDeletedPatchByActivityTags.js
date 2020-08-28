@@ -1,4 +1,4 @@
-const getDeletedPatchByActivityTags = (patch, activityTags) => {
+export const getDeletedPatchByActivityTags = (patch, activityTags) => {
   const deletedPatch = {}
   Object.keys(patch).forEach(key => {
     const filteredEntities = patch[key].filter(
@@ -13,5 +13,3 @@ const getDeletedPatchByActivityTags = (patch, activityTags) => {
   })
   return deletedPatch
 }
-
-export default getDeletedPatchByActivityTags

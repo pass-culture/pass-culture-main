@@ -31,11 +31,7 @@ export function getProcessedData(data, config) {
   const getDatumIdValue = config.getDatumIdValue || getDefaultDatumIdValue
   const unifyConfig = Object.assign({ data }, config)
 
-  const processedData = data.map((datum, index) =>
-    getProcessedDatum(datum, index, unifyConfig)
-  )
+  const processedData = data.map((datum, index) => getProcessedDatum(datum, index, unifyConfig))
 
   return uniqBy(processedData, getDatumIdValue)
 }
-
-export default getProcessedData

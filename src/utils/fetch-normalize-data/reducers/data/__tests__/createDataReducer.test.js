@@ -4,9 +4,9 @@ import {
   commitData,
   deleteData,
   reinitializeData,
-  successData
+  successData,
 } from '../actionCreators'
-import createDataReducer from '../createDataReducer'
+import { createDataReducer } from '../createDataReducer'
 
 Date.now = jest.spyOn(Date, 'now').mockImplementation(() => 1487076708000)
 
@@ -207,12 +207,7 @@ describe('src | createDataReducer', () => {
       const foos = [{ id: 'AE' }]
 
       // when
-      store.dispatch(
-        successData(
-          { data: foos, status: 200 },
-          { apiPath: '/foos', method: 'GET' }
-        )
-      )
+      store.dispatch(successData({ data: foos, status: 200 }, { apiPath: '/foos', method: 'GET' }))
 
       // then
       const expectedFoos = foos.map(foo => ({

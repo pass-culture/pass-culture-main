@@ -1,25 +1,16 @@
-import getNormalizedCommittedState from '../../normalize/getNormalizedCommittedState'
-import getNormalizedDeletedState from '../../normalize/getNormalizedDeletedState'
-import getNormalizedMergedState from '../../normalize/getNormalizedMergedState'
+import { getNormalizedCommittedState } from '../../normalize/getNormalizedCommittedState'
+import { getNormalizedDeletedState } from '../../normalize/getNormalizedDeletedState'
+import { getNormalizedMergedState } from '../../normalize/getNormalizedMergedState'
 import { getDefaultCommitFrom } from '../../normalize/utils'
-import {
-  ASSIGN_DATA,
-  COMMIT_DATA,
-  DELETE_DATA,
-  MERGE_DATA,
-  REINITIALIZE_DATA
-} from './actions'
-import getDeletedPatchByActivityTag from './getDeletedPatchByActivityTag'
-import getSuccessState from './getSuccessState'
-import reinitializeState from './reinitializeState'
-
+import { ASSIGN_DATA, COMMIT_DATA, DELETE_DATA, MERGE_DATA, REINITIALIZE_DATA } from './actions'
+import { getDeletedPatchByActivityTags } from './getDeletedPatchByActivityTags'
+import { getSuccessState } from './getSuccessState'
+import { reinitializeState } from './reinitializeState'
 
 export const createDataReducer = (initialState = {}, extraConfig = {}) => {
   const wrappedReducer = (state, action) => {
     const keepFromCommit =
-      (action.config || {}).keepFromCommit ||
-      extraConfig.keepFromCommit ||
-      getDefaultCommitFrom
+      (action.config || {}).keepFromCommit || extraConfig.keepFromCommit || getDefaultCommitFrom
 
     if (action.type === ASSIGN_DATA) {
       return {
@@ -34,22 +25,17 @@ export const createDataReducer = (initialState = {}, extraConfig = {}) => {
         { commits: action.commits },
         {
           getDatumIdKey: () => 'localIdentifier',
-          getDatumIdValue: commit =>
-            commit.id || `${commit.uuid}/${commit.dateCreated}`,
+          getDatumIdValue: commit => commit.id || `${commit.uuid}/${commit.dateCreated}`,
           isMergingDatum: true,
         }
       )
-      return getNormalizedCommittedState(
-        state,
-        { commits: nextCommits },
-        { keepFromCommit }
-      )
+      return getNormalizedCommittedState(state, { commits: nextCommits }, { keepFromCommit })
     }
 
     if (action.type === DELETE_DATA) {
       let patch = action.patch || state
       if (action.config.activityTags) {
-        patch = getDeletedPatchByActivityTag(patch, action.config.activityTags)
+        patch = getDeletedPatchByActivityTags(patch, action.config.activityTags)
       }
       return {
         ...state,
@@ -90,9 +76,7 @@ export const createDataReducer = (initialState = {}, extraConfig = {}) => {
 
   const reducer = (state = initialState, action) => {
     const keepFromCommit =
-      (action.config || {}).keepFromCommit ||
-      extraConfig.keepFromCommit ||
-      getDefaultCommitFrom
+      (action.config || {}).keepFromCommit || extraConfig.keepFromCommit || getDefaultCommitFrom
 
     const nextState = wrappedReducer(state, action)
     if (state.commits !== nextState.commits) {
@@ -107,5 +91,3 @@ export const createDataReducer = (initialState = {}, extraConfig = {}) => {
 
   return reducer
 }
-
-export default createDataReducer

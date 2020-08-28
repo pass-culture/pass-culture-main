@@ -1,14 +1,12 @@
 import {
   errorTimeoutStatusCode,
   successStatusCodesWithDataOrDatum,
-  successStatusCodesWithoutDataAndDatum
+  successStatusCodesWithoutDataAndDatum,
 } from './status'
 
-export const GLOBAL_RESULT_ERROR =
-  'Result returned by the server is not at the good json format'
+export const GLOBAL_RESULT_ERROR = 'Result returned by the server is not at the good json format'
 
-export const TIMEOUT_RESULT_ERROR =
-  'Server did not respond within the specified timeout interval'
+export const TIMEOUT_RESULT_ERROR = 'Server did not respond within the specified timeout interval'
 
 export async function getPayload(result, config) {
   const globalResultError = config.globalResultError || GLOBAL_RESULT_ERROR
@@ -69,5 +67,3 @@ export async function getPayload(result, config) {
   payload.errors = await result.json()
   return payload
 }
-
-export default getPayload

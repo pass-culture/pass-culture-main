@@ -13,5 +13,3 @@ export function handleApiSuccess(reducer, payload, config) {
     handleSuccess(state, action)
   }
 }
-
-export default handleApiSuccess

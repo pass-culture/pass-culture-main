@@ -1,11 +1,11 @@
-import getInit from './getInit'
-import getPayload from './getPayload'
+import { httpParameters } from './getInit'
+import { getPayload } from './getPayload'
 import { errorTimeoutStatusCode } from './status'
 
 export async function fetchData(url, config = {}) {
   const { fetchTimeout } = config
 
-  const fetchConfig = getInit(config)
+  const fetchConfig = httpParameters(config)
   const fetchPromise = fetch(url, fetchConfig)
 
   let result
@@ -25,5 +25,3 @@ export async function fetchData(url, config = {}) {
 
   return payload
 }
-
-export default fetchData

@@ -1,7 +1,7 @@
-import getStateKeyFromApiPath from './getStateKeyFromApiPath'
-import getStateKeyFromUrl from './getStateKeyFromUrl'
+import { getStateKeyFromApiPath } from './getStateKeyFromApiPath'
+import { getStateKeyFromUrl } from './getStateKeyFromUrl'
 
-function getStateKeyFromConfig(config) {
+export function getStateKeyFromConfig(config) {
   const { apiPath, url } = config
 
   if (config.stateKey === null) return null
@@ -12,5 +12,3 @@ function getStateKeyFromConfig(config) {
     (url && getStateKeyFromUrl(url))
   )
 }
-
-export default getStateKeyFromConfig

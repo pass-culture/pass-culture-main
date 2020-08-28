@@ -1,4 +1,4 @@
-const reinitializeState = (state, initialState, config) => {
+export const reinitializeState = (state, initialState, config) => {
   if (!config.excludes) return initialState
 
   return Object.keys(initialState).reduce((resetState, currentStateKey) => {
@@ -11,5 +11,3 @@ const reinitializeState = (state, initialState, config) => {
     return resetState
   }, {})
 }
-
-export default reinitializeState

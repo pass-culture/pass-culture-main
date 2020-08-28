@@ -15,5 +15,3 @@ export function handleApiError(reducer, payload, config) {
     handleFail(state, action)
   }
 }
-
-export default handleApiError

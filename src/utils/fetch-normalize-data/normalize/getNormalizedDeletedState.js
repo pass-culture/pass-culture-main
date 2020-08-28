@@ -1,4 +1,4 @@
-import getProcessedData from './getProcessedData'
+import { getProcessedData } from './getProcessedData'
 import { getDefaultDatumIdValue } from './utils'
 
 export function getNormalizedDeletedState(state, patch, config) {
@@ -28,5 +28,3 @@ export function getNormalizedDeletedState(state, patch, config) {
 
   return nextState
 }
-
-export default getNormalizedDeletedState

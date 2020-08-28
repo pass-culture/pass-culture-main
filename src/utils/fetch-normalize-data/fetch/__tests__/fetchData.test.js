@@ -34,7 +34,7 @@ describe('src | fetch | fetchData', () => {
   })
 
   describe('when there is a fetch timeout', () => {
-    it('should return success when fetchTimeout is above delay', async () => {
+    it('should return success when fetchTimeout is under delay', async () => {
       // given
       const config = {
         fetchTimeout: 150,
@@ -48,7 +48,7 @@ describe('src | fetch | fetchData', () => {
       expect(result.status).toBe(200)
       expect(result.datum).toStrictEqual(mockSuccess)
     })
-    it('should return fail when gateway timeout is under delay', async () => {
+    it('should return fail when gateway timeout is above delay', async () => {
       // given
       const config = {
         fetchTimeout: 50,

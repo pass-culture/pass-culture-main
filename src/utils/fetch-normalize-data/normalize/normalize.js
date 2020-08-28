@@ -1,8 +1,5 @@
-// no-param-reassign is done on purpose
-/* eslint-disable no-param-reassign */
-import getReshapedNormalizer from './getReshapedNormalizer'
+import { getReshapedNormalizer } from './getReshapedNormalizer'
 
-// MUTATING FUNCTION
 export function normalizeDataAtItem(data, datumKey, stateKey, config) {
   const { doWithNormalizedPatch } = config
 
@@ -28,7 +25,6 @@ export function normalizeDataAtItem(data, datumKey, stateKey, config) {
   }
 }
 
-// MUTATING FUNCTION
 export function normalizeData(data, config) {
   const {
     isMergingDatum: globalIsMergingDatum,
@@ -39,24 +35,15 @@ export function normalizeData(data, config) {
   const reshapedNormalizer = getReshapedNormalizer(normalizer)
 
   Object.keys(normalizer).forEach(datumKey => {
-    const {
-      isMergingDatum,
-      isMutatingDatum,
-      process,
-      resolve,
-      stateKey,
-    } = reshapedNormalizer[datumKey]
+    const { isMergingDatum, isMutatingDatum, process, resolve, stateKey } = reshapedNormalizer[
+      datumKey
+    ]
     const subNormalizer = reshapedNormalizer[datumKey].normalizer || {}
 
     const subConfig = Object.assign({}, config, {
-      isMergingDatum:
-        typeof isMergingDatum !== 'undefined'
-          ? isMergingDatum
-          : globalIsMergingDatum,
+      isMergingDatum: typeof isMergingDatum !== 'undefined' ? isMergingDatum : globalIsMergingDatum,
       isMutatingDatum:
-        typeof isMutatingDatum !== 'undefined'
-          ? isMutatingDatum
-          : globalIsMutatingDatum,
+        typeof isMutatingDatum !== 'undefined' ? isMutatingDatum : globalIsMutatingDatum,
       normalizer: { [stateKey]: { normalizer: subNormalizer, stateKey } },
       process,
       resolve,
@@ -66,7 +53,6 @@ export function normalizeData(data, config) {
   })
 }
 
-// MUTATING FUNCTION
 export function normalize(obj, config) {
   const { normalizer } = config
   if (normalizer) {
@@ -86,5 +72,3 @@ export function normalize(obj, config) {
     })
   }
 }
-
-export default normalize

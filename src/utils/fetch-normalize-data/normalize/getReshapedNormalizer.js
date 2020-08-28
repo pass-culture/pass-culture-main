@@ -8,11 +8,9 @@ export function getReshapedNormalizer(normalizer) {
       reshapedNormalizer[datumKey].activityTag = stateKeyOrObj.activityTag
       reshapedNormalizer[datumKey].apiPath = stateKeyOrObj.apiPath
       reshapedNormalizer[datumKey].isMergingArray = stateKeyOrObj.isMergingArray
-      reshapedNormalizer[datumKey].isMutatingDatum =
-        stateKeyOrObj.isMutatingDatum
+      reshapedNormalizer[datumKey].isMutatingDatum = stateKeyOrObj.isMutatingDatum
       reshapedNormalizer[datumKey].isMergingDatum = stateKeyOrObj.isMergingDatum
-      reshapedNormalizer[datumKey].isMutatingDatum =
-        stateKeyOrObj.isMutatingDatum
+      reshapedNormalizer[datumKey].isMutatingDatum = stateKeyOrObj.isMutatingDatum
       reshapedNormalizer[datumKey].method = stateKeyOrObj.method
       reshapedNormalizer[datumKey].normalizer = stateKeyOrObj.normalizer
       reshapedNormalizer[datumKey].process = stateKeyOrObj.process
@@ -27,5 +25,3 @@ export function getReshapedNormalizer(normalizer) {
 
   return reshapedNormalizer
 }
-
-export default getReshapedNormalizer
