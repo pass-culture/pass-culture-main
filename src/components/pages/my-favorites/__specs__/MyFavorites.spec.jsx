@@ -24,7 +24,7 @@ describe('my favorites', () => {
           bookings: [],
           favorites: [],
           mediations: [],
-          offers: [],
+          offers: [{ id: 'O1' }],
           recommendations: [],
           stocks: [],
           users: [

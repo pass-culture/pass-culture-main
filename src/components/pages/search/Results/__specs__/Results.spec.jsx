@@ -2,6 +2,7 @@ import { mount, shallow } from 'enzyme'
 import { createBrowserHistory, createMemoryHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
 import { Router } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import configureStore from 'redux-mock-store'
@@ -9,6 +10,7 @@ import thunk from 'redux-thunk'
 
 import state from '../../../../../mocks/state'
 import { isGeolocationEnabled } from '../../../../../utils/geolocation'
+import getMockStore from '../../../../../utils/mockStore'
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import Spinner from '../../../../layout/Spinner/Spinner'
@@ -840,9 +842,9 @@ describe('components | Results', () => {
         // given
         props.parametersFromHome = {
           aroundRadius: 1,
-          geolocation: { latitude: 1, longitude: 1},
+          geolocation: { latitude: 1, longitude: 1 },
           hitsPerPage: 2,
-          offerCategories: ["SPECTACLE"],
+          offerCategories: ['SPECTACLE'],
           offerIsDuo: false,
           offerIsNew: false,
           offerTypes: { isDigital: false, isEvent: true, isThing: false },
@@ -872,7 +874,7 @@ describe('components | Results', () => {
           aroundRadius: 1,
           geolocation: { latitude: 40.1, longitude: 41.1 },
           keywords: '',
-          offerCategories: ["SPECTACLE"],
+          offerCategories: ['SPECTACLE'],
           offerIsDuo: false,
           offerIsFree: false,
           offerIsNew: false,
@@ -892,9 +894,9 @@ describe('components | Results', () => {
         // given
         props.parametersFromHome = {
           aroundRadius: 100,
-          geolocation: { latitude: 1, longitude: 1},
+          geolocation: { latitude: 1, longitude: 1 },
           hitsPerPage: 2,
-          offerCategories: ["SPECTACLE"],
+          offerCategories: ['SPECTACLE'],
           offerIsDuo: false,
           offerIsNew: false,
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
@@ -2562,15 +2564,40 @@ describe('components | Results', () => {
 
     it('should render item details when current route is /recherche/resultats/details/AE', () => {
       // given
-      history.push('/recherche/resultats/details/AE')
+      store = getMockStore({
+        currentUser: (
+          state = {
+            id: 'Rt4R45ETEs',
+            wallet_balance: 0,
+          }
+        ) => state,
+        data: (
+          state = {
+            bookings: [],
+            offers: [{ id: 'AE', name: 'Offer name example' }],
+            stocks: [],
+            favorites: [],
+            features: [],
+            mediations: [],
+            recommendations: [],
+            users: [],
+          }
+        ) => state,
+        geolocation: (
+          state = {
+            latitude: 1,
+            longitude: 2,
+          }
+        ) => state,
+      })
 
       // when
       const wrapper = mount(
-        <Router history={history}>
+        <MemoryRouter initialEntries={['/recherche/resultats/details/AE']}>
           <Provider store={store}>
             <Results {...props} />
           </Provider>
-        </Router>
+        </MemoryRouter>
       )
 
       // then
@@ -2783,15 +2810,42 @@ describe('components | Results', () => {
 
       it('should render header when on details page', () => {
         // given
-        history.push('/recherche/resultats/details/AE?mots-cles=librairie&page=1')
+        store = getMockStore({
+          currentUser: (
+            state = {
+              id: 'Rt4R45ETEs',
+              wallet_balance: 0,
+            }
+          ) => state,
+          data: (
+            state = {
+              bookings: [],
+              offers: [{ id: 'AE', name: 'Offer name example' }],
+              stocks: [],
+              favorites: [],
+              features: [],
+              mediations: [],
+              recommendations: [],
+              users: [],
+            }
+          ) => state,
+          geolocation: (
+            state = {
+              latitude: 1,
+              longitude: 2,
+            }
+          ) => state,
+        })
 
         // when
         const wrapper = mount(
-          <Router history={history}>
+          <MemoryRouter
+            initialEntries={['/recherche/resultats/details/AE?mots-cles=librairie&page=1']}
+          >
             <Provider store={store}>
               <Results {...props} />
             </Provider>
-          </Router>
+          </MemoryRouter>
         )
 
         // then

@@ -19,18 +19,26 @@ export class Filters extends PureComponent {
   constructor(props) {
     super(props)
     const {
-      aroundRadius,
-      date,
-      offerIsFilteredByDate,
-      offerIsFilteredByTime,
-      offerIsDuo,
-      offerIsFree,
-      offerIsNew,
-      offerTypes,
-      priceRange,
-      searchAround,
-      sortBy,
-      timeRange,
+      aroundRadius = DEFAULT_RADIUS_IN_KILOMETERS,
+      date = null,
+      offerIsFilteredByDate = false,
+      offerIsFilteredByTime = false,
+      offerIsDuo = false,
+      offerIsFree = false,
+      offerIsNew = false,
+      offerTypes = {
+        isDigital: false,
+        isEvent: false,
+        isThing: false,
+      },
+      priceRange = PRICE_FILTER.DEFAULT_RANGE,
+      searchAround = {
+        everywhere: true,
+        place: false,
+        user: false,
+      },
+      sortBy = '',
+      timeRange = TIME_FILTER.DEFAULT_RANGE,
     } = props.initialFilters
     const offerCategories = this.buildCategoriesStateFromProps()
     this.state = {
@@ -60,7 +68,8 @@ export class Filters extends PureComponent {
   buildCategoriesStateFromProps = () => {
     const { initialFilters } = this.props
 
-    return initialFilters.offerCategories.reduce((object, arrayValue) => {
+    const { offerCategories = [] } = initialFilters
+    return offerCategories.reduce((object, arrayValue) => {
       object[arrayValue] = true
       return object
     }, {})
@@ -945,28 +954,7 @@ export class Filters extends PureComponent {
 }
 
 Filters.defaultProps = {
-  initialFilters: {
-    aroundRadius: DEFAULT_RADIUS_IN_KILOMETERS,
-    date: null,
-    offerIsFilteredByDate: false,
-    offerIsFilteredByTime: false,
-    offerCategories: [],
-    offerIsDuo: false,
-    offerIsFree: false,
-    offerTypes: {
-      isDigital: false,
-      isEvent: false,
-      isThing: false,
-    },
-    priceRange: PRICE_FILTER.DEFAULT_RANGE,
-    searchAround: {
-      everywhere: true,
-      place: false,
-      user: false,
-    },
-    sortBy: '',
-    timeRange: TIME_FILTER.DEFAULT_RANGE,
-  },
+  initialFilters: {},
   place: {
     geolocation: { latitude: null, longitude: null },
     name: null,
