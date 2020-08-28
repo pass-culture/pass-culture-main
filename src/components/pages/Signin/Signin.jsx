@@ -6,6 +6,8 @@ import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
 import Icon from '../../layout/Icon'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
+import TextInput from '../../layout/inputs/TextInput/TextInput'
+import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
 
 class Signin extends PureComponent {
   constructor(props) {
@@ -98,7 +100,7 @@ class Signin extends PureComponent {
                     <span className="required-legend">
                       {'*'}
                     </span>
-                    {'Champs obligatoires'}
+                    {'Tout les champs sont obligatoires'}
                   </span>
                   {hasErrorMessage && (
                     <div className="errors">
@@ -108,52 +110,26 @@ class Signin extends PureComponent {
                   )}
                   <form>
                     <div className="field-group">
-                      <label className="input-text">
-                        {'Adresse e-mail'}
-                        <span className="field-asterisk">
-                          {'*'}
-                        </span>
-                        <input
-                          className="it-input email-input"
-                          name="identifier"
-                          onChange={this.handleInputEmailChange}
-                          placeholder="Identifiant (e-mail)"
-                          required
-                          type="email"
-                          value={emailValue}
-                        />
-                      </label>
-                      <label className="input-text">
-                        {'Mot de passe'}
-                        <span className="field-asterisk">
-                          {'*'}
-                        </span>
-                        <div className="it-with-icon-container">
-                          <input
-                            className="it-input-with-icon"
-                            name="password"
-                            onChange={this.handleInputPasswordChange}
-                            placeholder="Mot de passe"
-                            required
-                            type={isPasswordHidden ? 'password' : 'text'}
-                            value={passwordValue}
-                          />
-                          <button
-                            className="it-icon"
-                            onClick={this.handleToggleHidden}
-                            type="button"
-                          >
-                            <Icon
-                              alt={
-                                isPasswordHidden
-                                  ? 'Afficher le mot de passe'
-                                  : 'Cacher le mot de passe'
-                              }
-                              svg={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
-                            />
-                          </button>
-                        </div>
-                      </label>
+                      <TextInput
+                        label="Adresse e-mail"
+                        name="identifier"
+                        onChange={this.handleInputEmailChange}
+                        placeholder="Identifiant (e-mail)"
+                        required
+                      />
+                      <TextInputWithIcon
+                        icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
+                        iconAlt={
+                          isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'
+                        }
+                        label="Mot de passe"
+                        name="password"
+                        onChange={this.handleInputPasswordChange}
+                        onClick={this.handleToggleHidden}
+                        placeholder="Mot de passe"
+                        required
+                        type={isPasswordHidden ? 'password' : 'text'}
+                      />
                     </div>
                     <span>
                       <Link

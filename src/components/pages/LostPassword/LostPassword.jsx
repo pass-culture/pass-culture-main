@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom'
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
 import Icon from '../../layout/Icon'
+import TextInput from '../../layout/inputs/TextInput/TextInput'
+import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
 
 class LostPassword extends PureComponent {
   constructor(props) {
@@ -15,6 +17,7 @@ class LostPassword extends PureComponent {
       hasPasswordResetErrorMessage: false,
       newPasswordErrorMessage: '',
       newPasswordValue: '',
+      isPasswordHidden: true,
     }
   }
 
@@ -33,8 +36,6 @@ class LostPassword extends PureComponent {
       this.setState({ hasPasswordResetErrorMessage: true })
     }
   }
-
-  storeValue = token => () => token
 
   onHandleSuccessRedirectForResetPasswordRequest = () => {
     const { history } = this.props
@@ -74,13 +75,19 @@ class LostPassword extends PureComponent {
     this.setState({ hasPasswordResetErrorMessage: false })
   }
 
+  handleToggleHidden = e => {
+    e.preventDefault()
+    this.setState(previousState => ({
+      isPasswordHidden: !previousState.isPasswordHidden,
+    }))
+  }
+
   render() {
     const {
       hasPasswordResetRequestErrorMessage,
       hasPasswordResetErrorMessage,
       newPasswordErrorMessage,
-      emailValue,
-      newPasswordValue,
+      isPasswordHidden,
     } = this.state
     const { change, envoye, token } = this.props
 
@@ -143,7 +150,7 @@ class LostPassword extends PureComponent {
                 </section>
               )}
               {token && (
-                <section className="hero has-text-grey">
+                <section className="hero has-text-grey password-reset-request-form">
                   <div className="hero-body">
                     <h1 className="title is-spaced is-1">
                       <span className="has-text-weight-normal">
@@ -154,10 +161,7 @@ class LostPassword extends PureComponent {
                       {'Saisissez le nouveau mot de passe'}
                     </h2>
                     <span className="has-text-grey">
-                      <span className="required-legend">
-                        {'*'}
-                      </span>
-                      {' Champs obligatoires'}
+                      {'Tout les champs sont obligatoires'}
                     </span>
                     {hasPasswordResetErrorMessage && (
                       <div className="server-error-message">
@@ -168,28 +172,29 @@ class LostPassword extends PureComponent {
                       </div>
                     )}
                     <form>
-                      <label className="input-text">
-                        {'Nouveau mot de passe'}
-                        <span className="field-asterisk">
-                          {'*'}
-                        </span>
-                        <input
-                          className="it-input"
-                          onChange={this.handleInputPasswordChange}
-                          placeholder="*****"
-                          required
-                          type="password"
-                          value={newPasswordValue}
-                        />
-                        {newPasswordErrorMessage && (
-                          <div className="password-error-message">
-                            <Icon svg="picto-warning" />
-                            <pre>
-                              {newPasswordErrorMessage}
-                            </pre>
-                          </div>
-                        )}
-                      </label>
+                      <TextInputWithIcon
+                        icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
+                        iconAlt={
+                          isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'
+                        }
+                        label="Nouveau mot de passe"
+                        name="password"
+                        onChange={this.handleInputPasswordChange}
+                        onClick={this.handleToggleHidden}
+                        placeholder="*****"
+                        required
+                        type={isPasswordHidden ? 'password' : 'text'}
+                      />
+
+                      {newPasswordErrorMessage && (
+                        <div className="password-error-message">
+                          <Icon svg="picto-warning" />
+                          <pre>
+                            {newPasswordErrorMessage}
+                          </pre>
+                        </div>
+                      )}
+
                       <button
                         className="primary-button"
                         onClick={this.submitResetPassword}
@@ -202,7 +207,7 @@ class LostPassword extends PureComponent {
                 </section>
               )}
               {!token && !envoye && !change && (
-                <section className="hero has-text-grey">
+                <section className="hero has-text-grey password-reset-request">
                   <div className="hero-body">
                     <h1 className="title is-spaced is-1">
                       <span className="has-text-weight-normal">
@@ -215,11 +220,9 @@ class LostPassword extends PureComponent {
                       }
                     </h2>
                     <span className="has-text-grey">
-                      <span className="required-legend">
-                        {'*'}
-                      </span>
-                      {'Champs obligatoires'}
+                      {'Tout les champs sont obligatoires'}
                     </span>
+
                     {hasPasswordResetRequestErrorMessage && (
                       <div className="server-error-message">
                         <Icon svg="picto-warning" />
@@ -228,21 +231,17 @@ class LostPassword extends PureComponent {
                         </span>
                       </div>
                     )}
+
                     <form>
-                      <label className="input-text">
-                        {'Adresse e-mail'}
-                        <span className="field-asterisk">
-                          {'*'}
-                        </span>
-                        <input
-                          className="it-input"
-                          onChange={this.handleInputEmailChange}
-                          placeholder="Identifiant (e-mail)"
-                          required
-                          type="email"
-                          value={emailValue}
-                        />
-                      </label>
+                      <TextInput
+                        label="Adresse e-mail"
+                        name="email"
+                        onChange={this.handleInputEmailChange}
+                        placeholder="Identifiant (e-mail)"
+                        required
+                        type="email"
+                      />
+
                       <button
                         className="primary-button"
                         onClick={this.submitResetPasswordRequest}

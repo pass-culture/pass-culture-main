@@ -58,6 +58,7 @@ TextInputWithIcon.defaultProps = {
 TextInputWithIcon.propTypes = {
   disabled: PropTypes.bool,
   icon: PropTypes.string.isRequired,
+  iconAlt: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func,

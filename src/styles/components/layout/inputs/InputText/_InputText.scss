@@ -1,4 +1,7 @@
 .input-text {
+  display: flex;
+  flex-direction: column;
+
   .it-sub-label {
     @include caption();
     color: $grey-dark;
