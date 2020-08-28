@@ -113,6 +113,7 @@ class Signin extends PureComponent {
                         onChange={this.handleInputEmailChange}
                         placeholder="Identifiant (e-mail)"
                         required
+                        type="email"
                         value={emailValue}
                       />
                       <TextInputWithIcon

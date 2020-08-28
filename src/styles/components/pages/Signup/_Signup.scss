@@ -129,15 +129,8 @@
     align-items: center;
   }
 
-  label {
-    display: block;
-    margin-bottom: rem(32px);
-  }
-
-  .sub-label {
-    color: $grey-dark;
-    display: inline;
-    font-size: rem(14px);
+  .field {
+    margin-bottom: rem(20px);
   }
 
   .field-siren-control {
@@ -163,8 +156,11 @@
 
   .field-password {
     display: flex;
-    -ms-flex-pack: start;
-    justify-content: flex-start;
+    justify-content: space-between;
+  }
+
+  .field-password > label {
+    width: 100%;
   }
 
   .field-password > input {
@@ -189,8 +185,7 @@
   }
 
   .field-password > img {
-    padding-left: rem(15px);
-    padding-right: rem(15px);
+    padding: rem(22px) rem(15px) 0;
   }
 
   .sign-up-infos-before-signup {

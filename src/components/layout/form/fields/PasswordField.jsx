@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
 import Icon from '../../Icon'
+import TextInputWithIcon from '../../inputs/TextInputWithIcon/TextInputWithIcon'
 
 class PasswordInput extends PureComponent {
   constructor(props) {
@@ -29,30 +30,33 @@ class PasswordInput extends PureComponent {
           </Fragment>`
   }
 
-  render() {
+  renderPasswordField = ({ input }) => {
     const { isPasswordHidden } = this.state
 
     return (
-      <span className="field-password">
-        <div className="it-with-icon-container">
-          <Field
-            {...this.props}
-            component="input"
-            type={isPasswordHidden ? 'password' : 'text'}
-          />
-          <button
-            className="button button-show-password it-icon"
-            onClick={this.handleToggleHidden}
-            type="button"
-          >
-            <Icon
-              alt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
-              svg={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
-            />
-            &nbsp;
-          </button>
-        </div>
+      <TextInputWithIcon
+        icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
+        iconAlt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
+        label="Mot de passe"
+        name="password"
+        onChange={input.onChange}
+        onClick={this.handleToggleHidden}
+        placeholder="Mon mot de passe"
+        required
+        sublabel="...pour se connecter"
+        type={isPasswordHidden ? 'password' : 'text'}
+        value={input.value}
+      />
+    )
+  }
 
+  render() {
+    return (
+      <span className="field-password">
+        <Field
+          component={this.renderPasswordField}
+          name="password"
+        />
         <Icon
           alt="Caractéristiques obligatoires du mot de passe"
           currentitem="false"

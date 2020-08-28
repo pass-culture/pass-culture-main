@@ -6,9 +6,10 @@ import { Field, Form } from 'react-final-form'
 
 import bindAddressAndDesignationFromSiren from '../../Offerer/OffererCreation/decorators/bindSirenFieldToDesignation'
 import PasswordField from '../../../layout/form/fields/PasswordField'
-import SirenField from '../../../layout/form/fields/SirenField/SirenField'
+import SirenField from './SirenField/SirenField'
 import FieldErrors from '../../../layout/form/FieldErrors'
 import Icon from '../../../layout/Icon'
+import TextInput from '../../../layout/inputs/TextInput/TextInput'
 
 const addressAndDesignationFromSirenDecorator = createDecorator({
   field: 'siren',
@@ -55,6 +56,60 @@ class SignupForm extends PureComponent {
     createNewProUser(values, this.onHandleFail, this.onHandleSuccess)
   }
 
+  renderEmailTextField = ({ input }) => {
+    return (
+      <TextInput
+        label="Adresse e-mail"
+        name="email"
+        onChange={input.onChange}
+        placeholder="nom@exemple.fr"
+        required
+        sublabel="...pour se connecter et récupérer son mot de passe en cas d’oubli"
+        value={input.value}
+      />
+    )
+  }
+
+  renderNameTextField = ({ input }) => {
+    return (
+      <TextInput
+        label="Nom"
+        name="lastName"
+        onChange={input.onChange}
+        placeholder="Mon nom"
+        required
+        value={input.value}
+      />
+    )
+  }
+
+  renderFirstNameTextField = ({ input }) => {
+    return (
+      <TextInput
+        label="Prénom"
+        name="firstName"
+        onChange={input.onChange}
+        placeholder="Mon prénom"
+        required
+        value={input.value}
+      />
+    )
+  }
+
+  renderPhoneNumberField = ({ input }) => {
+    return (
+      <TextInput
+        label="Téléphone"
+        name="phoneNumber"
+        onChange={input.onChange}
+        placeholder="Mon numéro de téléphone"
+        required
+        sublabel="...utilisé uniquement par l’équipe du pass Culture"
+        value={input.value}
+      />
+    )
+  }
+
   render() {
     const { errors } = this.props
 
@@ -97,10 +152,7 @@ class SignupForm extends PureComponent {
             </a>
           </div>
           <div className="sign-up-tips">
-            <span className="field-asterisk">
-              {'*'}
-            </span>
-            {' Champs obligatoires'}
+            {'Tous les champs sont obligatoires'}
           </div>
           <div>
             {}
@@ -111,119 +163,75 @@ class SignupForm extends PureComponent {
           >
             {({ handleSubmit, valid, values }) => (
               <form onSubmit={handleSubmit}>
-                <label className="input-text">
-                  {'Adresse e-mail'}
-                  <span className="field-asterisk">
-                    {'*'}
-                  </span>
-                  <span className="it-sub-label">
-                    {'...pour se connecter et récupérer son mot de passe en cas d’oubli'}
-                  </span>
+                <div className="field">
                   <Field
-                    className="it-input"
-                    component="input"
+                    component={this.renderEmailTextField}
                     name="email"
-                    placeholder="nom@exemple.fr"
-                    required
                     type="text"
                     validate={required}
                   />
                   <FieldErrors customMessage={errors ? errors.email : null} />
-                </label>
+                </div>
 
-                <label className="input-text">
-                  {'Mot de passe'}
-                  <span className="field-asterisk">
-                    {'*'}
-                  </span>
-                  <span className="it-sub-label">
-                    {'...pour se connecter'}
-                  </span>
-                  <PasswordField
-                    className="it-input-with-icon"
-                    name="password"
-                    placeholder="Mon mot de passe"
-                    required
-                    validate={required}
-                  />
+                <div className="field">
+                  <PasswordField />
                   <FieldErrors customMessage={errors ? errors.password : null} />
-                </label>
+                </div>
 
-                <label className="input-text">
-                  {'Nom'}
-                  <span className="field-asterisk">
-                    {'*'}
-                  </span>
+                <div className="field">
                   <Field
-                    className="it-input"
-                    component="input"
+                    component={this.renderNameTextField}
                     name="lastName"
-                    placeholder="Mon nom"
                     required
                     validate={required}
                   />
                   <FieldErrors customMessage={errors ? errors.lastName : null} />
-                </label>
+                </div>
 
-                <label className="input-text">
-                  {'Prénom'}
-                  <span className="field-asterisk">
-                    {'*'}
-                  </span>
+                <div className="field">
                   <Field
-                    className="it-input"
-                    component="input"
+                    component={this.renderFirstNameTextField}
                     name="firstName"
-                    placeholder="Mon prénom"
-                    required
                     validate={required}
                   />
                   <FieldErrors customMessage={errors ? errors.firstName : null} />
                   <FieldErrors customMessage={errors ? errors.publicName : null} />
-                </label>
+                </div>
 
-                <label className="input-text">
-                  {'Téléphone'}
-                  <span className="field-asterisk">
-                    {'*'}
-                  </span>
-                  <span className="it-sub-label">
-                    {'...utilisé uniquement par l’équipe du pass Culture'}
-                  </span>
+                <div className="field">
                   <Field
-                    className="it-input"
-                    component="input"
+                    component={this.renderPhoneNumberField}
                     name="phoneNumber"
-                    placeholder="Mon numéro de téléphone"
                     required
                     validate={required}
                   />
                   <FieldErrors customMessage={errors ? errors.phoneNumber : null} />
-                </label>
+                </div>
 
-                <SirenField
-                  subLabel="... de la structure que vous représentez"
-                  value={values.name}
-                />
+                <div className="field">
+                  <SirenField value={values.name} />
+                </div>
 
-                <label className="sign-up-checkbox">
-                  <Field
-                    component="input"
-                    name="contact_ok"
-                    required
-                    type="checkbox"
-                    validate={required}
-                  />
-                  <span>
-                    {
-                      'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture'
-                    }
-                    <span className="field-asterisk">
-                      {'*'}
+                <div className="field">
+                  <label className="sign-up-checkbox">
+                    <Field
+                      component="input"
+                      name="contact_ok"
+                      required
+                      type="checkbox"
+                      validate={required}
+                    />
+                    <span>
+                      {
+                        'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture'
+                      }
+                      <span className="field-asterisk">
+                        {'*'}
+                      </span>
                     </span>
-                  </span>
-                  <FieldErrors customMessage={errors ? errors.contact_ok : null} />
-                </label>
+                    <FieldErrors customMessage={errors ? errors.contact_ok : null} />
+                  </label>
+                </div>
 
                 <div className="sign-up-infos-before-signup">
                   <span>
