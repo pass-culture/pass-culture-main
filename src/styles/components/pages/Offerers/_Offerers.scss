@@ -12,6 +12,25 @@
     }
   }
 
+  .form-search {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+
+    label {
+      flex: 2;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+    }
+
+    button {
+      margin-bottom: rem(15px);
+    }
+  }
+
   .title-action-links span {
     align-items: center;
     display: flex;

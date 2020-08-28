@@ -1,21 +1,21 @@
 import PropTypes from 'prop-types'
-import React, { Fragment, PureComponent } from 'react'
+import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
+import { Link } from 'react-router-dom'
+
 import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 import { mapApiToBrowser } from '../../../utils/translate'
-import TextField from '../../layout/form/fields/TextField'
+import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
+import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
+import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 import Icon from '../../layout/Icon'
 import Main from '../../layout/Main'
 import Spinner from '../../layout/Spinner'
 import Titles from '../../layout/Titles/Titles'
-
+import TextInput from '../../layout/inputs/TextInput/TextInput'
 import OffererItemContainer from './OffererItem/OffererItemContainer'
 import PendingOffererItem from './OffererItem/PendingOffererItem'
-import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
-import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
-import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
-import { Link } from 'react-router-dom'
 
 class Offerers extends PureComponent {
   constructor(props) {
@@ -24,6 +24,7 @@ class Offerers extends PureComponent {
     this.state = {
       hasMore: false,
       isLoading: false,
+      keywordsInputValue:'',
     }
   }
 
@@ -67,6 +68,10 @@ class Offerers extends PureComponent {
     }
   }
 
+  changeKeywordsValue = event => {
+    this.setState({ keywordsInputValue: event.target.value })
+  }
+
   handleRequestData = () => {
     const { loadOfferers } = this.props
 
@@ -94,9 +99,10 @@ class Offerers extends PureComponent {
     this.setState({ isLoading: true, hasMore: true }, loadOfferers(handleSuccess, handleFail))
   }
 
-  handleOnKeywordsSubmit = values => {
+  handleOnKeywordsSubmit = () => {
     const { query, resetLoadedOfferers } = this.props
-    const { keywords } = values
+    const { keywordsInputValue } = this.state
+    const keywords = keywordsInputValue
     const queryParams = query.parse()
 
     const isEmptyKeywords = typeof keywords === 'undefined' || keywords === ''
@@ -109,35 +115,32 @@ class Offerers extends PureComponent {
     if (queryParams[mapApiToBrowser.keywords] !== keywords) resetLoadedOfferers()
   }
 
-  renderTextField = () => (
-    <Fragment>
-      <button
-        className="secondary-button"
-        type="submit"
-      >
-        {'OK'}
-      </button>
-      <button
-        className="button is-tertiary"
-        disabled
-        type="button"
-      >
-        &nbsp;
-        <Icon svg="ico-filter" />
-        &nbsp;
-      </button>
-    </Fragment>
-  )
-
   renderForm = ({ handleSubmit }) => (
     <form onSubmit={handleSubmit}>
-      {'Rechercher une structure :'}
-      <TextField
-        id="search"
-        name="keywords"
-        placeholder="Saisissez un ou plusieurs mots complets"
-        renderValue={this.renderTextField}
-      />
+      <div className="form-search">
+        <TextInput
+          label="Rechercher une structure :"
+          name="keywords"
+          onChange={this.changeKeywordsValue}
+          placeholder="Saisissez un ou plusieurs mots complets"
+          value={this.state.keywordsInputValue}
+        />
+        <button
+          className="secondary-button"
+          type="submit"
+        >
+          {'OK'}
+        </button>
+        <button
+          className="button is-tertiary"
+          disabled
+          type="button"
+        >
+          &nbsp;
+          <Icon svg="ico-filter" />
+          &nbsp;
+        </button>
+      </div>
     </form>
   )
 
