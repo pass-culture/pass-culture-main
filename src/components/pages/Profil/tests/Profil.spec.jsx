@@ -1,14 +1,16 @@
-import { shallow } from 'enzyme'
+import { shallow, mount } from 'enzyme'
 import React from 'react'
-import { Form } from 'react-final-form'
 
-import TextField from '../../../layout/form/fields/TextField'
 import Titles from '../../../layout/Titles/Titles'
 import Profil from '../Profil'
+import { MemoryRouter } from 'react-router'
+import configureStore from '../../../../utils/store'
+import { Provider } from 'react-redux'
 
 describe('src | components | pages | Profil', () => {
   let dispatch
   let props
+  let store
 
   beforeEach(() => {
     dispatch = jest.fn()
@@ -19,6 +21,12 @@ describe('src | components | pages | Profil', () => {
       },
       dispatch,
     }
+    store = configureStore({
+      data: {
+        users: [{ id: 'CMOI', publicName: 'user' }],
+        offerers: [],
+      },
+    }).store
   })
 
   it('should render a Titles component with right properties', () => {
@@ -31,31 +39,36 @@ describe('src | components | pages | Profil', () => {
     expect(titlesComponent.prop('title')).toBe('Profil')
   })
 
-  it('should render three TextField components with the right properties', () => {
+  it('should render two inputs for name and email address', () => {
     // when
-    const wrapper = shallow(<Profil {...props} />)
+    const wrapper = mount(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Profil {...props} />
+        </MemoryRouter>
+      </Provider>
+    )
 
     // then
-    const form = wrapper.find(Form).dive()
-    const textFieldComponents = form.find(TextField)
-    expect(textFieldComponents).toHaveLength(2)
-    expect(textFieldComponents.at(0).prop('name')).toBe('publicName')
-    expect(textFieldComponents.at(0).prop('label')).toBe('Nom :')
-    expect(textFieldComponents.at(0).prop('placeholder')).toBe('3 caractères minimum')
-    expect(textFieldComponents.at(0).prop('required')).toBe(true)
-    expect(textFieldComponents.at(1).prop('name')).toBe('email')
-    expect(textFieldComponents.at(1).prop('label')).toBe('E-mail :')
-    expect(textFieldComponents.at(1).prop('required')).toBe(true)
+    const inputName = wrapper.findWhere(node => node.text() === 'Nom :').first()
+    const inputEmail = wrapper.findWhere(node => node.text() === 'E-mail :').first()
+    expect(inputName).toHaveLength(1)
+    expect(inputEmail).toHaveLength(1)
   })
 
   it('should update user informations successfully when submitting form', () => {
     // given
-    const wrapper = shallow(<Profil {...props} />)
-    const formComponent = wrapper.find(Form).dive()
-    const innerForm = formComponent.find('form')
+    const wrapper = mount(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Profil {...props} />
+        </MemoryRouter>
+      </Provider>
+    )
+    const submitButton = wrapper.find({ children: 'Enregistrer' })
 
     // when
-    innerForm.simulate('submit')
+    submitButton.invoke('onClick')()
 
     // then
     expect(dispatch.mock.calls[0][0]).toStrictEqual({
@@ -72,7 +85,6 @@ describe('src | components | pages | Profil', () => {
       },
       type: 'REQUEST_DATA_PATCH_/USERS/CURRENT',
     })
-    expect(wrapper.state('isLoading')).toBe(true)
   })
 
   describe('functions', () => {

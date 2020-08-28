@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react'
-import { Form } from 'react-final-form'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import { requestData } from 'redux-saga-data'
@@ -7,27 +6,33 @@ import { showNotification } from 'pass-culture-shared'
 
 import Titles from '../../layout/Titles/Titles'
 import Main from '../../layout/Main'
-import TextField from '../../layout/form/fields/TextField'
 import { version } from '../../../../package.json'
+import TextInput from '../../layout/inputs/TextInput/TextInput'
 
 class Profil extends PureComponent {
   constructor(props) {
     super(props)
+    const { currentUser } = this.props
+    const { email, publicName } = currentUser
 
     this.state = {
       isLoading: false,
+      emailInputValue: email,
+      publicNameInputValue: publicName,
     }
   }
 
-  handleOnSubmit = formValues => {
+  handleOnSubmit = () => {
     this.setState({ isLoading: true })
     const { dispatch } = this.props
-    const { email, publicName } = formValues
-    const payload = { email, publicName }
+    const { emailInputValue, publicNameInputValue } = this.state
 
     const config = {
       apiPath: '/users/current',
-      body: payload,
+      body: {
+        publicName: publicNameInputValue,
+        email: emailInputValue,
+      },
       handleSuccess: this.handleSuccess,
       handleFail: this.handleFail,
       method: 'PATCH',
@@ -60,24 +65,35 @@ class Profil extends PureComponent {
     )
   }
 
-  renderForm = ({ handleSubmit }) => {
-    const { isLoading } = this.state
+  handleEmailInputChange = event => {
+    this.setState({ emailInputValue: event.target.value })
+  }
+
+  handleNameInputChange = event => {
+    this.setState({ publicNameInputValue: event.target.value })
+  }
+
+  renderForm = () => {
+    const { isLoading, publicNameInputValue, emailInputValue } = this.state
 
     return (
-      <form onSubmit={handleSubmit}>
+      <form>
         <div>
           <div className="field-profil-input">
-            <TextField
+            <TextInput
               label="Nom :"
               name="publicName"
+              onChange={this.handleNameInputChange}
               placeholder="3 caractères minimum"
               required
+              value={publicNameInputValue}
             />
-            <TextField
+            <TextInput
               label="E-mail :"
               name="email"
-              required
-              type="email"
+              onChange={this.handleEmailInputChange}
+              placeholder=""
+              value={emailInputValue}
             />
           </div>
 
@@ -90,7 +106,8 @@ class Profil extends PureComponent {
                 className={classnames('primary-button', {
                   'is-loading': isLoading,
                 })}
-                type="submit"
+                onClick={this.handleOnSubmit}
+                type="button"
               >
                 {'Enregistrer'}
               </button>
@@ -105,7 +122,6 @@ class Profil extends PureComponent {
   }
 
   render() {
-    const { currentUser } = this.props
     const backTo = { path: '/accueil', label: 'Accueil' }
 
     return (
@@ -114,11 +130,7 @@ class Profil extends PureComponent {
         name="profile"
       >
         <Titles title="Profil" />
-        <Form
-          initialValues={currentUser}
-          onSubmit={this.handleOnSubmit}
-          render={this.renderForm}
-        />
+        {this.renderForm()}
         <hr />
       </Main>
     )
