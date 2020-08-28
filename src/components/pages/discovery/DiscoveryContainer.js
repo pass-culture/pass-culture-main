@@ -1,22 +1,24 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { assignData, requestData } from 'redux-thunk-data'
+
+import { saveLastRecommendationsRequestTimestamp } from '../../../redux/actions/lastRecommendationsRequestTimestamp'
+import { updateSeedLastRequestTimestamp } from '../../../redux/actions/pagination'
 import { selectReadRecommendations } from '../../../redux/selectors/data/readRecommendationsSelectors'
 import { selectRecommendations } from '../../../redux/selectors/data/recommendationsSelectors'
+import { selectUserGeolocation } from '../../../redux/selectors/geolocationSelectors'
 import { selectSeedLastRequestTimestamp } from '../../../redux/selectors/pagination/paginationSelector'
+import withGeolocationTracking from '../../../tracking/withGeolocationTracking'
+import { assignData } from '../../../utils/fetch-normalize-data/reducers/data/actionCreators'
+import { requestData } from '../../../utils/fetch-normalize-data/requestData'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import Discovery from './Discovery'
 import selectCurrentRecommendation from './selectors/selectCurrentRecommendation'
+import { getCoordinatesApiPathQueryString } from './utils/buildApiPathQueryString'
 import {
   checkIfShouldReloadRecommendationsBecauseOfLongTime,
-  isDiscoveryStartupUrl,
+  isDiscoveryStartupUrl
 } from './utils/utils'
-import { selectUserGeolocation } from '../../../redux/selectors/geolocationSelectors'
-import { getCoordinatesApiPathQueryString } from './utils/buildApiPathQueryString'
-import { saveLastRecommendationsRequestTimestamp } from '../../../redux/actions/lastRecommendationsRequestTimestamp'
-import { updateSeedLastRequestTimestamp } from '../../../redux/actions/pagination'
-import withGeolocationTracking from '../../../tracking/withGeolocationTracking'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps

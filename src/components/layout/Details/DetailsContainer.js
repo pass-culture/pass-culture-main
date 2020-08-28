@@ -1,8 +1,8 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { requestData } from 'redux-thunk-data'
 
+import { requestData } from '../../../utils/fetch-normalize-data/requestData'
 import isCancelView from '../../../utils/isCancelView'
 import { offerNormalizer } from '../../../utils/normalizers'
 import Details from './Details'

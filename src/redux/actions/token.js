@@ -1,4 +1,4 @@
-import { requestData } from 'redux-thunk-data'
+import { requestData } from "../../utils/fetch-normalize-data/requestData"
 
 export const TOKEN_ACTIONS = {
   CHANGE_TOKEN_STATUS: 'SET_TOKEN_STATUS',

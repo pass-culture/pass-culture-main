@@ -9,8 +9,8 @@ import thunk from 'redux-thunk'
 import LoadingPage from '../../../layout/LoadingPage/LoadingPage'
 import withLogin from '../withLogin'
 
-jest.mock('redux-thunk-data', () => ({
-  ...jest.requireActual('redux-thunk-data'),
+jest.mock('../../../../utils/fetch-normalize-data/requestData', () => ({
+  ...jest.requireActual('/../../../../utils/fetch-normalize-data/requestData'),
   requestData: () => {
     return { type: 'REQUEST_DATA' }
   },

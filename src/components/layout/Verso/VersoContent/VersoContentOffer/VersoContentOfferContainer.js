@@ -1,13 +1,12 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { requestData } from 'redux-thunk-data'
 
-import { selectBookables } from '../../../../../redux/selectors/data/stocksSelectors'
 import { selectBookingByRouterMatch } from '../../../../../redux/selectors/data/bookingsSelectors'
 import { selectOfferByRouterMatch } from '../../../../../redux/selectors/data/offersSelectors'
-import { selectDistanceByRouterMatch } from '../../../../../redux/selectors/geolocationSelectors'
-import { selectUserGeolocation } from '../../../../../redux/selectors/geolocationSelectors'
+import { selectBookables } from '../../../../../redux/selectors/data/stocksSelectors'
+import { selectDistanceByRouterMatch, selectUserGeolocation } from '../../../../../redux/selectors/geolocationSelectors'
+import { requestData } from '../../../../../utils/fetch-normalize-data/requestData'
 import getStyle from './utils/getStyle'
 import VersoContentOffer from './VersoContentOffer'
 

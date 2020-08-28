@@ -2,11 +2,11 @@ import { selectFavorites } from '../../../../../redux/selectors/data/favoritesSe
 import { favoriteNormalizer } from '../../../../../utils/normalizers'
 import { mapDispatchToProps, mapStateToProps } from '../../MyFavoritesList/MyFavoritesListContainer'
 
-jest.mock('redux-thunk-data', () => {
-  const { requestData } = jest.requireActual('fetch-normalize-data')
+jest.mock('../../../../../utils/fetch-normalize-data/requestData', () => {
+  const { _requestData } = jest.requireActual('../../../../../utils/fetch-normalize-data/reducers/data/actionCreators')
 
   return {
-    requestData,
+    requestData: _requestData,
   }
 })
 jest.mock('../../../../../redux/selectors/data/favoritesSelectors', () => ({

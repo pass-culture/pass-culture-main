@@ -1,15 +1,14 @@
-import { mapDispatchToProps, mapStateToProps } from '../DiscoveryContainer'
 import { recommendationNormalizer } from '../../../../utils/normalizers'
+import { mapDispatchToProps, mapStateToProps } from '../DiscoveryContainer'
 
-jest.mock('redux-thunk-data', () => {
-  const { assignData, createDataReducer, deleteData, requestData } = jest.requireActual(
-    'fetch-normalize-data'
-  )
+jest.mock('../../../../utils/fetch-normalize-data/requestData', () => {
+  const { assignData, createDataReducer, deleteData, _requestData } = jest.requireActual('../../../../utils/fetch-normalize-data/reducers/data/actionCreators')
+
   return {
     assignData,
     createDataReducer,
     deleteData,
-    requestData,
+    requestData: _requestData,
   }
 })
 jest.useFakeTimers()

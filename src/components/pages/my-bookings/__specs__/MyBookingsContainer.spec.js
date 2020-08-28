@@ -1,11 +1,11 @@
-import { mapDispatchToProps, mapStateToProps } from '../MyBookingsContainer'
 import { myBookingsNormalizer } from '../../../../utils/normalizers'
+import { mapDispatchToProps, mapStateToProps } from '../MyBookingsContainer'
 
-jest.mock('redux-thunk-data', () => {
-  const { requestData } = jest.requireActual('fetch-normalize-data')
+jest.mock('../../../../utils/fetch-normalize-data/requestData', () => {
+  const { _requestData } = jest.requireActual('../../../../utils/fetch-normalize-data/reducers/data/actionCreators')
 
   return {
-    requestData,
+    requestData: _requestData,
   }
 })
 

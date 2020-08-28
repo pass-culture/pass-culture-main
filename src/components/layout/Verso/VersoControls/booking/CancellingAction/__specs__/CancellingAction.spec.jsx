@@ -9,11 +9,11 @@ import getMockStore from '../../../../../../../utils/mockStore'
 import CancellingAction from '../CancellingAction'
 import CancellingActionContainer from '../CancellingActionContainer'
 
-jest.mock('redux-thunk-data', () => {
-  const { requestData } = jest.requireActual('fetch-normalize-data')
+jest.mock('../../../../../../../utils/fetch-normalize-data/requestData', () => {
+  const { _requestData } = jest.requireActual('../../../../../../../utils/fetch-normalize-data/reducers/data/actionCreators')
 
   return {
-    requestData,
+    requestData: _requestData,
   }
 })
 

@@ -1,12 +1,12 @@
 import moment from 'moment'
 
-import { mapDispatchToProps, mapStateToProps } from '../CardContainer'
 import { configureStore } from '../../../../../../utils/store'
+import { mapDispatchToProps, mapStateToProps } from '../CardContainer'
 
 navigator.geolocation = {}
 
-jest.mock('redux-thunk-data', () => ({
-  ...jest.requireActual('redux-thunk-data'),
+jest.mock('../../../../../../utils/fetch-normalize-data/requestData', () => ({
+  ...jest.requireActual('../../../../../../utils/fetch-normalize-data/requestData'),
   requestData: () => {
     return {
       type: 'REQUEST_DATA',

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
-import { requestData } from 'redux-thunk-data'
 
 import { selectFavorites } from '../../../../redux/selectors/data/favoritesSelectors'
+import { requestData } from '../../../../utils/fetch-normalize-data/requestData'
 import { favoriteNormalizer } from '../../../../utils/normalizers'
 import MyFavoritesList from './MyFavoritesList'
 

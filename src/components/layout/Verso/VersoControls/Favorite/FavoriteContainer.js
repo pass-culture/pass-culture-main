@@ -1,12 +1,12 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { requestData } from 'redux-thunk-data'
 
 import { selectBookingById } from '../../../../../redux/selectors/data/bookingsSelectors'
 import { selectFavoriteByOfferId } from '../../../../../redux/selectors/data/favoritesSelectors'
 import { selectMediationByOfferId } from '../../../../../redux/selectors/data/mediationsSelectors'
 import { selectStockById } from '../../../../../redux/selectors/data/stocksSelectors'
+import { requestData } from '../../../../../utils/fetch-normalize-data/requestData'
 import Favorite from './Favorite'
 
 const API_PATH_TO_FAVORITES_ENDPOINT = '/favorites'

@@ -3,12 +3,13 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import withSizes from 'react-sizes'
 import { compose } from 'redux'
-import { mergeData, requestData } from 'redux-thunk-data'
 
-import Card from './Card'
-import { getRecommendationSelectorByCardPosition } from '../../utils/utils'
+import { mergeData } from '../../../../../utils/fetch-normalize-data/reducers/data/actionCreators'
+import { requestData } from '../../../../../utils/fetch-normalize-data/requestData'
 import { recommendationNormalizer } from '../../../../../utils/normalizers'
 import selectIsFeatureDisabled from '../../../../router/selectors/selectIsFeatureDisabled'
+import { getRecommendationSelectorByCardPosition } from '../../utils/utils'
+import Card from './Card'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match, position } = ownProps

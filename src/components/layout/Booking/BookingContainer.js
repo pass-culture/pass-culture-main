@@ -1,11 +1,11 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { requestData } from 'redux-thunk-data'
 
-import { selectBookablesWithoutDateNotAvailable } from '../../../redux/selectors/data/stocksSelectors'
 import { selectOfferByRouterMatch } from '../../../redux/selectors/data/offersSelectors'
 import { selectRecommendationByRouterMatch } from '../../../redux/selectors/data/recommendationsSelectors'
+import { selectBookablesWithoutDateNotAvailable } from '../../../redux/selectors/data/stocksSelectors'
+import { requestData } from '../../../utils/fetch-normalize-data/requestData'
 import { bookingNormalizer } from '../../../utils/normalizers'
 import withTracking from '../../hocs/withTracking'
 import Booking from './Booking'

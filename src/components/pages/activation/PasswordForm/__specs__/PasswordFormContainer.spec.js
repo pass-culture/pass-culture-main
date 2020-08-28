@@ -1,9 +1,8 @@
-import { requestData } from 'redux-thunk-data'
-
+import { setTokenStatus, validateToken } from '../../../../../redux/actions/token'
+import { requestData } from '../../../../../utils/fetch-normalize-data/requestData'
 import { mapDispatchToProps, mapStateToProps } from '../PasswordFormContainer'
-import { validateToken, setTokenStatus } from '../../../../../redux/actions/token'
 
-jest.mock('redux-thunk-data', () => ({
+jest.mock('../../../../../utils/fetch-normalize-data/requestData', () => ({
   requestData: jest.fn(),
 }))
 

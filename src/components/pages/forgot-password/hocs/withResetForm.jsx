@@ -2,7 +2,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form as FinalForm } from 'react-final-form'
 import { connect } from 'react-redux'
-import { requestData } from 'redux-thunk-data'
+
+import { requestData } from '../../../../utils/fetch-normalize-data/requestData'
 
 const noop = () => {}
 

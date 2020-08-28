@@ -2,19 +2,19 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { requestData } from 'redux-thunk-data'
 
-import withTracking from '../../../../../hocs/withTracking'
-import CancellingAction from './CancellingAction'
-import PopinButton from './PopinButton'
-import { bookingNormalizer } from '../../../../../../utils/normalizers'
 import { closeSharePopin, openSharePopin } from '../../../../../../redux/actions/share'
 import {
   selectBookingByRouterMatch,
-  selectPastEventBookingByOfferId,
+  selectPastEventBookingByOfferId
 } from '../../../../../../redux/selectors/data/bookingsSelectors'
 import { selectOfferByRouterMatch } from '../../../../../../redux/selectors/data/offersSelectors'
 import { selectStockById } from '../../../../../../redux/selectors/data/stocksSelectors'
+import { requestData } from '../../../../../../utils/fetch-normalize-data/requestData'
+import { bookingNormalizer } from '../../../../../../utils/normalizers'
+import withTracking from '../../../../../hocs/withTracking'
+import CancellingAction from './CancellingAction'
+import PopinButton from './PopinButton'
 
 export const getCancellingUrl = (bookingId, params, pathname, search) => {
   let bookingUrl = pathname

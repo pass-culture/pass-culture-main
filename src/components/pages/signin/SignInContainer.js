@@ -1,10 +1,10 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { requestData } from 'redux-thunk-data'
 
-import SignIn from './SignIn'
-import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
+import { requestData } from '../../../utils/fetch-normalize-data/requestData'
 import { FEATURES } from '../../router/selectors/features'
+import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
+import SignIn from './SignIn'
 
 export const mapStateToProps = state => {
   const homepageIsDisabled = selectIsFeatureDisabled(state, FEATURES.HOMEPAGE)

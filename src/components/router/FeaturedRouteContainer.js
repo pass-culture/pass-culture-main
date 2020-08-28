@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
-import { requestData } from 'redux-thunk-data'
 
+import { requestData } from '../../utils/fetch-normalize-data/requestData'
 import FeaturedRoute from './FeaturedRoute'
 import selectIsFeatureDisabled from './selectors/selectIsFeatureDisabled'
 
