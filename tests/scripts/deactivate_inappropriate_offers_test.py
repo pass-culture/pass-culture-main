@@ -11,18 +11,18 @@ from tests.model_creators.specific_creators import create_offer_with_thing_produ
 class DeactivateInappropriateOffersTest:
     @patch('scripts.deactivate_inappropriate_offers.redis')
     @clean_database
-    def test_should_deactivate_offers_containing_hentai(self, mocked_redis, app):
+    def test_should_deactivate_offers_with_inappropriate_content(self, mocked_redis, app):
         # Given
         offerer = create_offerer()
-        product_1 = create_product_with_thing_type(description='Hentaï')
-        product_2 = create_product_with_thing_type(description='produit de type hentaï')
+        product_1 = create_product_with_thing_type(description='premier produit inapproprié')
+        product_2 = create_product_with_thing_type(description='second produit inapproprié')
         venue = create_venue(offerer)
         offer_1 = create_offer_with_thing_product(product=product_1, venue=venue)
         offer_2 = create_offer_with_thing_product(product=product_2, venue=venue)
         repository.save(offer_1, offer_2)
 
         # When
-        deactivate_inappropriate_offers()
+        deactivate_inappropriate_offers([offer_1.id, offer_2.id])
 
         # Then
         products = Product.query.all()
