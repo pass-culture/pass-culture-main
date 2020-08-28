@@ -3,8 +3,9 @@ import { Field } from 'react-final-form'
 import formatSiren from './formatSiren'
 import { composeValidators, removeWhitespaces } from 'react-final-form-utils'
 import { getSirenInformation } from '../../../../pages/Offerer/OffererCreation/decorators/getSirenInformation'
-import FieldErrors from '../../FieldErrors'
 import PropTypes from 'prop-types'
+import TextInput from '../../../inputs/TextInput/TextInput'
+import Icon from '../../../Icon'
 
 const required = value => {
   return value ? undefined : 'Ce champ est obligatoire'
@@ -21,52 +22,37 @@ export const existsInINSEERegistry = async value => {
   return undefined
 }
 
-const SirenField = props => (
-  <Field
-    format={formatSiren}
-    minLength={11}
-    name="siren"
-    validate={composeValidators(required, mustHaveTheProperLength, existsInINSEERegistry)}
-  >
-    {({ input, meta }) => {
-      return (
-        <label className="field-siren input-text">
-          <span className="field-siren-label">
-            {'SIREN'}
-            <span className="field-asterisk">
-              {'*'}
-            </span>
-          </span>
-
-          {props.subLabel && <span className="it-sub-label">
-            {props.subLabel}
-                             </span>}
-
-          <div className="field-siren-control">
-            <span className="field-siren-input-value">
-              <input
-                {...input}
-                className="it-input"
-                placeholder="123 456 789"
-                required
-                type="text"
-              />
-
-              {props.value && <span className="field-siren-value">
-                {props.value}
-                              </span>}
-            </span>
-
-            <FieldErrors
-              className="field-siren-error"
-              meta={meta}
+const SirenField = () => {
+  return (
+    <Field
+      format={formatSiren}
+      minLength={11}
+      name="siren"
+      validate={composeValidators(required, mustHaveTheProperLength, existsInINSEERegistry)}
+    >
+      {({ input, meta }) => {
+        return (
+          <div>
+            <TextInput
+              {...input}
+              label="SIREN"
+              maxLength="11"
+              name="siren"
+              placeholder="123 456 789"
+              sublabel="obligatoire"
             />
+            {meta.modified && (
+              <div className="siren-input-error">
+                <Icon svg="picto-echec" />
+                {meta.error}
+              </div>
+            )}
           </div>
-        </label>
-      )
-    }}
-  </Field>
-)
+        )
+      }}
+    </Field>
+  )
+}
 
 SirenField.defaultProps = {
   subLabel: null,

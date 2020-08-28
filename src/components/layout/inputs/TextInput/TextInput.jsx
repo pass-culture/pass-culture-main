@@ -1,7 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const TextInput = ({ disabled, label, name, onChange, placeholder, required, sublabel, type }) => (
+const TextInput = ({
+  disabled,
+  label,
+  name,
+  onChange,
+  placeholder,
+  required,
+  sublabel,
+  type,
+  value,
+}) => (
   <label
     className="input-text"
     htmlFor={name}
@@ -18,6 +28,7 @@ const TextInput = ({ disabled, label, name, onChange, placeholder, required, sub
       placeholder={placeholder}
       required={required}
       type={type}
+      value={value}
     />
   </label>
 )
@@ -28,6 +39,7 @@ TextInput.defaultProps = {
   required: false,
   sublabel: '',
   type: 'text',
+  value: '',
 }
 
 TextInput.propTypes = {
@@ -39,6 +51,7 @@ TextInput.propTypes = {
   required: PropTypes.bool,
   sublabel: PropTypes.string,
   type: PropTypes.string,
+  value: PropTypes.string,
 }
 
 export default TextInput

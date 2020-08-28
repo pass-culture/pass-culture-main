@@ -2,4 +2,25 @@
   display: flex;
   width: 100%;
   justify-content: space-between;
+
+}
+
+.op-creation-form {
+  .it-input {
+    display: block;
+    width: 100%;
+  }
+
+  .siren-input-error {
+    display: flex;
+    align-items: center;
+    color: $primary;
+    font-size: rem(14px);
+    font-weight: 500;
+    margin-bottom: rem(15px);
+
+    img {
+      margin-right: rem(5px);
+    }
+  }
 }
