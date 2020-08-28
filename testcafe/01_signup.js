@@ -28,6 +28,7 @@ test("Je peux créer un compte avec un SIREN non existant en base de données," 
   const siren = '501106520'
 
   await t.addRequestHooks(getSirenRequestMockWithDefaultValues())
+  await t.expect(acceptCookieButton.exists).ok()
 
   // when
   await t
@@ -64,6 +65,7 @@ test("Je peux créer un compte avec un SIREN déjà existant en base de données
   const { siren } = offerer
 
   await t.addRequestHooks(getSirenRequestMockWithDefaultValues())
+  await t.expect(acceptCookieButton.exists).ok()
 
   // when
   await t
