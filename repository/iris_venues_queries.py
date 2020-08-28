@@ -16,17 +16,8 @@ def find_ids_of_irises_located_near_venue(venue_id: int, search_radius: int) -> 
 
 
 def insert_venue_in_iris_venue(venue_id: int, iris_ids_near_venue: List[int]) -> None:
-    irises_venues = []
-    for iris_id in iris_ids_near_venue:
-        iris_venue = {'venueId': venue_id, 'irisId': iris_id}
-        irises_venues.append(iris_venue)
-
+    irises_venues = [{'venueId': venue_id, 'irisId': iris_id} for iris_id in iris_ids_near_venue]
     _bulk_insert_iris_venues(irises_venues)
-
-
-def _bulk_insert_iris_venues(iris_venue_information: List[Dict]) -> None:
-    db.session.bulk_insert_mappings(IrisVenues, iris_venue_information)
-    db.session.commit()
 
 
 def delete_venue_from_iris_venues(venue_id: int) -> None:
@@ -47,3 +38,8 @@ def get_iris_containing_user_location(latitude: float, longitude: float) -> int:
 def find_venues_located_near_iris(iris_id: int) -> List[int]:
     iris_venues = IrisVenues.query.filter_by(irisId=iris_id).all()
     return [iris_venue.venueId for iris_venue in iris_venues]
+
+
+def _bulk_insert_iris_venues(iris_venue_information: List[Dict]) -> None:
+    db.session.bulk_insert_mappings(IrisVenues, iris_venue_information)
+    db.session.commit()
