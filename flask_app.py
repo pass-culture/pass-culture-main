@@ -67,6 +67,7 @@ def log_request_details(response):
         "method": request.method,
         "route": request.url_rule,
         "path": request.path,
+        "queryParams": request.query_string.decode('UTF-8'),
         "duration": request_duration_in_milliseconds,
         "from": "flask"
     }
