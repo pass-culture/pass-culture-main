@@ -1,4 +1,3 @@
-API_URL='https://backend.passculture-testing.beta.gouv.fr'
 NETLIFY_SITE_ID_WEBAPP="cb3b0dbc-e891-47a6-8834-b9759f39af1d"
 NETLIFY_SITE_ID_PRO="b1eeb798-1791-4202-bd97-94d2d0571913"
 NODE_ENV="testing"
