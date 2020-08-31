@@ -145,7 +145,10 @@ class Home extends Component {
         >
           <div className="home-details-wrapper">
             <CloseLink closeTo="/accueil" />
-            <OfferDetailsContainer match={match} />
+            <OfferDetailsContainer
+              match={match}
+              withHeader={false}
+            />
           </div>
         </Route>
       </Fragment>

@@ -2,10 +2,9 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 
+import isDetailsView from '../../../utils/isDetailsView'
 import BookingContainer from '../../layout/Booking/BookingContainer'
 import BookingCancellationContainer from '../../layout/BookingCancellation/BookingCancellationContainer'
-import isDetailsView from '../../../utils/isDetailsView'
-
 import RectoContainer from '../Recto/RectoContainer'
 import VersoContainer from '../Verso/VersoContainer'
 
@@ -44,19 +43,25 @@ class Details extends PureComponent {
   }
 
   renderBookingCancellation = route => {
-    return (<BookingCancellationContainer
-      extraClassName="with-header"
+    const { withHeader } = this.props
+    return (
+      <BookingCancellationContainer
+        extraClassName={`${withHeader ? 'with-header' : ''}`}
+        {...route}
+      />
+    )
+  }
+
+  renderBooking = route => {
+    const { withHeader } = this.props
+    return (<BookingContainer
+      extraClassName={`${withHeader ? 'with-header' : ''}`}
       {...route}
             />)
   }
 
-  renderBooking = route => (<BookingContainer
-    extraClassName="with-header"
-    {...route}
-                            />)
-
   render() {
-    const { bookingPath } = this.props
+    const { bookingPath, withHeader } = this.props
     const { isDetailsView } = this.state
 
     return (
@@ -68,7 +73,7 @@ class Details extends PureComponent {
         />
         <VersoContainer
           areDetailsVisible={isDetailsView}
-          extraClassName="with-header"
+          extraClassName={`${withHeader ? 'with-header' : ''}`}
         />
         {isDetailsView && <RectoContainer areDetailsVisible />}
       </Fragment>
@@ -79,6 +84,7 @@ class Details extends PureComponent {
 Details.defaultProps = {
   bookingPath: '',
   cancelView: false,
+  withHeader: true,
 }
 
 Details.propTypes = {
@@ -91,6 +97,7 @@ Details.propTypes = {
       offerId: PropTypes.string,
     }),
   }).isRequired,
+  withHeader: PropTypes.bool,
 }
 
 export default Details
