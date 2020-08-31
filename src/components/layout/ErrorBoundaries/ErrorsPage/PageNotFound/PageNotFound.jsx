@@ -16,7 +16,7 @@ const PageNotFound = () => (
       {'Cette page n’existe pas.'}
     </div>
     <Link
-      className="ep-button"
+      className="ep-retry"
       to="/"
     >
       {'Retour'}

@@ -28,7 +28,7 @@ class ErrorCatcher extends PureComponent {
           {'Une erreur est survenue.'}
         </h1>
         <a
-          className="ep-button"
+          className="ep-retry"
           href="/"
         >
           {'Retour aux offres'}

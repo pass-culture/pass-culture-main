@@ -20,10 +20,16 @@ const AnyError = () => (
       </div>
     </div>
     <a
-      className="ep-button"
+      className="ep-retry"
       href={window.location.pathname}
     >
       {'Réessayer'}
+    </a>
+    <a
+      className="ep-contact"
+      href="mailto:support@passculture.app"
+    >
+      {'Contacter le support'}
     </a>
   </main>
 )

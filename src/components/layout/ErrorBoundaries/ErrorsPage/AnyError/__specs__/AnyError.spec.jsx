@@ -43,4 +43,13 @@ describe('src | layout | AnyError', () => {
     const link = wrapper.find('a').find({ children: 'Réessayer' })
     expect(link.prop('href')).toBe('/')
   })
+
+  it('should can contact the support', () => {
+    // When
+    const wrapper = mount(<AnyError />)
+
+    // Then
+    const link = wrapper.find('a').find({ children: 'Contacter le support' })
+    expect(link.prop('href')).toBe('mailto:support@passculture.app')
+  })
 })

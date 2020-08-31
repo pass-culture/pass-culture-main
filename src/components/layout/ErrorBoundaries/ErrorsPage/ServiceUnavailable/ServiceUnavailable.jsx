@@ -20,7 +20,7 @@ const ServiceUnavailable = () => (
       </div>
     </div>
     <a
-      className="ep-button"
+      className="ep-retry"
       href={window.location.pathname}
     >
       {'Réessayer'}
