@@ -7,8 +7,7 @@ from models import DiscoveryView, MediationSQLEntity, OfferSQLEntity, Recommenda
 from models.db import db
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository import mediation_queries, repository
-from repository.offer_queries import find_searchable_offer, \
-    get_offers_for_recommendation_v3
+from repository.offer_queries import find_searchable_offer, get_offers_for_recommendation_v3
 from repository.recommendation_queries import find_recommendation_already_created_on_discovery
 from utils.logger import logger
 
@@ -61,19 +60,26 @@ def create_recommendations_for_discovery_v3(user: UserSQLEntity, user_iris_id: O
         recommendations.append(_create_recommendation_from_offers(user, offer))
     repository.save(*recommendations)
 
-    return _get_recommendation_with_information([recommendation.id for recommendation in recommendations])
+    recommendation_ids = [recommendation.id for recommendation in recommendations]
+
+    return _get_recommendation_with_information(recommendation_ids)
 
 
 def _get_recommendation_with_information(recommendation_ids: List[int]) -> List[Recommendation]:
-    return Recommendation.query.filter(
-        Recommendation.id.in_(recommendation_ids)
-    ).options(
-        joinedload(Recommendation.offer).joinedload(OfferSQLEntity.venue).joinedload(VenueSQLEntity.managingOfferer)
-    ).options(
-        joinedload(Recommendation.offer).joinedload(OfferSQLEntity.stocks)
-    ).options(
-        joinedload(Recommendation.offer).joinedload(OfferSQLEntity.mediations)
-    ).all()
+    return Recommendation.query \
+        .filter(
+            Recommendation.id.in_(recommendation_ids)) \
+        .options(
+            joinedload(Recommendation.offer)
+            .joinedload(OfferSQLEntity.venue)
+            .joinedload(VenueSQLEntity.managingOfferer)) \
+        .options(
+            joinedload(Recommendation.offer)
+            .joinedload(OfferSQLEntity.stocks)) \
+        .options(
+            joinedload(Recommendation.offer)
+            .joinedload(OfferSQLEntity.mediations)) \
+        .all()
 
 
 def _create_recommendation_from_ids(user, offer_id, mediation_id=None):

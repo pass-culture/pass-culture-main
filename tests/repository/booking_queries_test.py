@@ -4,24 +4,19 @@ import pytest
 from dateutil import tz
 from freezegun import freeze_time
 from pytest import fixture
+from tests.conftest import clean_database
+from tests.model_creators.activity_creators import create_booking_activity, save_all_activities
+from tests.model_creators.generic_creators import create_booking, create_deposit, create_offerer, create_payment, create_recommendation, create_stock, create_user, create_user_offerer, create_venue
+from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_stock_from_offer, create_stock_with_event_offer, \
+    create_stock_with_thing_offer
 
-from domain.booking_recap.booking_recap import EventBookingRecap, BookBookingRecap
+from domain.booking_recap.booking_recap import BookBookingRecap, EventBookingRecap
 from models import BookingSQLEntity, EventType, ThingType
 from models.api_errors import ApiErrors, ResourceNotFoundError
 from models.payment_status import TransactionStatus
 from models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY
 from repository import booking_queries, repository
 from repository.booking_queries import find_by_pro_user_id, find_first_matching_from_offer_by_user
-from tests.conftest import clean_database
-from tests.model_creators.activity_creators import create_booking_activity, \
-    save_all_activities
-from tests.model_creators.generic_creators import create_booking, \
-    create_deposit, create_offerer, create_payment, create_stock, create_user, create_venue, create_user_offerer, \
-    create_recommendation
-from tests.model_creators.specific_creators import \
-    create_offer_with_event_product, create_offer_with_thing_product, \
-    create_stock_from_offer, create_stock_with_event_offer, \
-    create_stock_with_thing_offer
 
 NOW = datetime.utcnow()
 ONE_DAY_AGO = NOW - timedelta(days=1)

@@ -1,7 +1,6 @@
-import time
-from typing import List, Dict
+from typing import Dict, List
 
-from models import Recommendation, BookingSQLEntity
+from models import BookingSQLEntity, Recommendation
 from repository import booking_queries
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize

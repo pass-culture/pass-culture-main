@@ -1,17 +1,16 @@
 import math
 from collections import namedtuple
 from datetime import datetime
-from typing import List, Set, Union, Optional
+from typing import List, Optional, Set, Union
 
 from dateutil import tz
-from sqlalchemy import func, desc, text
+from sqlalchemy import desc, func, text
 from sqlalchemy.orm import Query, selectinload
 
-from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, ThingBookingRecap, BookBookingRecap
+from domain.booking_recap.booking_recap import BookBookingRecap, BookingRecap, EventBookingRecap, ThingBookingRecap
 from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from domain.postal_code.postal_code import PostalCode
-from models import UserOfferer
-from models import VenueSQLEntity
+from models import UserOfferer, VenueSQLEntity
 from models.api_errors import ResourceNotFoundError
 from models.booking_sql_entity import BookingSQLEntity
 from models.db import db
@@ -21,7 +20,7 @@ from models.offerer import Offerer
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 from models.recommendation import Recommendation
-from models.stock_sql_entity import StockSQLEntity, EVENT_AUTOMATIC_REFUND_DELAY
+from models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY, StockSQLEntity
 from models.user_sql_entity import UserSQLEntity
 from repository import offer_queries
 from utils.date import get_department_timezone
@@ -138,12 +137,12 @@ def find_from_recommendation(recommendation: Recommendation, user_id: int) -> Li
 
 def is_offer_already_booked_by_user(user_id: int, offer: OfferSQLEntity) -> bool:
     return BookingSQLEntity.query \
-               .filter_by(userId=user_id) \
-               .filter_by(isCancelled=False) \
-               .join(StockSQLEntity) \
-               .join(OfferSQLEntity) \
-               .filter(OfferSQLEntity.id == offer.id) \
-               .count() > 0
+        .filter_by(userId=user_id) \
+        .filter_by(isCancelled=False) \
+        .join(StockSQLEntity) \
+        .join(OfferSQLEntity) \
+        .filter(OfferSQLEntity.id == offer.id) \
+        .count() > 0
 
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> BookingSQLEntity:
@@ -394,7 +393,7 @@ def find_date_used(booking: BookingSQLEntity) -> datetime:
 
 def find_user_activation_booking(user: UserSQLEntity) -> BookingSQLEntity:
     is_activation_offer = (OfferSQLEntity.type == str(ThingType.ACTIVATION)) | (
-            OfferSQLEntity.type == str(EventType.ACTIVATION))
+        OfferSQLEntity.type == str(EventType.ACTIVATION))
 
     return BookingSQLEntity.query \
         .join(UserSQLEntity) \
@@ -443,18 +442,6 @@ def find_user_bookings_for_recommendation(user_id: int) -> List[BookingSQLEntity
         .all()
 
 
-def _build_find_ordered_user_bookings(user_id: int) -> Query:
-    return BookingSQLEntity.query \
-        .join(StockSQLEntity) \
-        .join(OfferSQLEntity) \
-        .distinct(BookingSQLEntity.stockId) \
-        .filter(BookingSQLEntity.userId == user_id) \
-        .order_by(BookingSQLEntity.stockId, BookingSQLEntity.isCancelled, BookingSQLEntity.dateCreated.desc()) \
-        .options(
-            selectinload(BookingSQLEntity.stock)
-        )
-
-
 def get_only_offer_ids_from_bookings(user: UserSQLEntity) -> List[int]:
     offers_booked = OfferSQLEntity.query \
         .join(StockSQLEntity) \
@@ -499,3 +486,15 @@ def find_first_matching_from_offer_by_user(offer_id: int, user_id: int) -> Optio
         .filter(StockSQLEntity.offerId == offer_id) \
         .order_by(desc(BookingSQLEntity.dateCreated)) \
         .first()
+
+
+def _build_find_ordered_user_bookings(user_id: int) -> Query:
+    return BookingSQLEntity.query \
+        .join(StockSQLEntity) \
+        .join(OfferSQLEntity) \
+        .distinct(BookingSQLEntity.stockId) \
+        .filter(BookingSQLEntity.userId == user_id) \
+        .order_by(BookingSQLEntity.stockId, BookingSQLEntity.isCancelled, BookingSQLEntity.dateCreated.desc()) \
+        .options(
+            selectinload(BookingSQLEntity.stock)
+        )

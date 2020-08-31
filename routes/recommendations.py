@@ -1,18 +1,19 @@
 from typing import Dict
 
-from flask import current_app as app, jsonify, request, redirect, Request
+from flask import Request
+from flask import current_app as app
+from flask import jsonify, redirect, request
 from flask_login import current_user, login_required
 
 from domain.build_recommendations import move_requested_recommendation_first
 from models import Recommendation
 from models.feature import FeatureToggle
-from recommendations_engine import create_recommendations_for_discovery, \
-    give_requested_recommendation_to_user
+from recommendations_engine import create_recommendations_for_discovery, give_requested_recommendation_to_user
 from recommendations_engine.recommendations import create_recommendations_for_discovery_v3
-from repository import repository, feature_queries
+from repository import feature_queries, repository
 from repository.iris_venues_queries import get_iris_containing_user_location
 from repository.recommendation_queries import update_read_recommendations
-from routes.serialization.recommendation_serialize import serialize_recommendations, serialize_recommendation
+from routes.serialization.recommendation_serialize import serialize_recommendation, serialize_recommendations
 from utils.config import BLOB_SIZE
 from utils.human_ids import dehumanize, dehumanize_ids_list
 from utils.rest import expect_json_data
