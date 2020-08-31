@@ -8,6 +8,8 @@ import Titles from '../../layout/Titles/Titles'
 import Main from '../../layout/Main'
 import { version } from '../../../../package.json'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
+import { checkIfEmailIsValid } from './domain/checkIfEmailIsValid'
+import Icon from '../../layout/Icon'
 
 class Profil extends PureComponent {
   constructor(props) {
@@ -19,6 +21,7 @@ class Profil extends PureComponent {
       isLoading: false,
       emailInputValue: email,
       publicNameInputValue: publicName,
+      hasEmailInputError: false,
     }
   }
 
@@ -38,7 +41,15 @@ class Profil extends PureComponent {
       method: 'PATCH',
       isMergingDatum: true,
     }
-    dispatch(requestData(config))
+
+    const isEmailValid = checkIfEmailIsValid(emailInputValue)
+    if (isEmailValid) {
+      dispatch(requestData(config))
+      this.setState({hasEmailInputError:false})
+
+    }else {
+      this.setState({hasEmailInputError:true})
+    }
   }
 
   handleFail = () => {
@@ -69,12 +80,18 @@ class Profil extends PureComponent {
     this.setState({ emailInputValue: event.target.value })
   }
 
-  handleNameInputChange = event => {
+  handlePublicNameInputChange = event => {
     this.setState({ publicNameInputValue: event.target.value })
   }
 
+  isSubmitDisabled = () => {
+    const { emailInputValue, publicNameInputValue } = this.state
+
+    return  publicNameInputValue.length < 3 || emailInputValue === ''
+  }
+
   renderForm = () => {
-    const { isLoading, publicNameInputValue, emailInputValue } = this.state
+    const { isLoading, publicNameInputValue, emailInputValue, hasEmailInputError } = this.state
 
     return (
       <form>
@@ -83,7 +100,7 @@ class Profil extends PureComponent {
             <TextInput
               label="Nom :"
               name="publicName"
-              onChange={this.handleNameInputChange}
+              onChange={this.handlePublicNameInputChange}
               placeholder="3 caractères minimum"
               required
               value={publicNameInputValue}
@@ -95,6 +112,12 @@ class Profil extends PureComponent {
               placeholder=""
               value={emailInputValue}
             />
+            { hasEmailInputError && (
+              <div className="errors">
+                <Icon svg="picto-warning" />
+                {'Le format de l’email est incorrect.'}
+              </div>
+            )}
           </div>
 
           <div
@@ -106,6 +129,7 @@ class Profil extends PureComponent {
                 className={classnames('primary-button', {
                   'is-loading': isLoading,
                 })}
+                disabled={this.isSubmitDisabled()}
                 onClick={this.handleOnSubmit}
                 type="button"
               >

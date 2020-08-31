@@ -1,5 +1,22 @@
-.app-version {
-  font-size: 0.7rem;
-  padding-right: 0.5rem;
-  text-align: right;
+.profile-page {
+  .app-version {
+    font-size: 0.7rem;
+    padding-right: 0.5rem;
+    text-align: right;
+  }
+
+  .errors {
+    color: $primary;
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: rem(32px);
+    margin-bottom: rem(15px);
+    text-align: left;
+
+    img {
+      padding-right: rem(5px);
+    }
+  }
 }

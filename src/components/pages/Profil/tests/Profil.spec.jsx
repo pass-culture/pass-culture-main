@@ -16,7 +16,7 @@ describe('src | components | pages | Profil', () => {
     dispatch = jest.fn()
     props = {
       currentUser: {
-        email: 'fake email',
+        email: 'fake@exemple.com',
         publicName: 'fake publicName',
       },
       dispatch,
@@ -75,7 +75,7 @@ describe('src | components | pages | Profil', () => {
       config: {
         apiPath: '/users/current',
         body: {
-          email: 'fake email',
+          email: 'fake@exemple.com',
           publicName: 'fake publicName',
         },
         handleFail: expect.any(Function),
@@ -85,6 +85,61 @@ describe('src | components | pages | Profil', () => {
       },
       type: 'REQUEST_DATA_PATCH_/USERS/CURRENT',
     })
+  })
+
+  it('should disable submit button when email input value is empty', () => {
+    // given
+    props.currentUser.email = ''
+    const wrapper = mount(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Profil {...props} />
+        </MemoryRouter>
+      </Provider>
+    )
+    const submitButton = wrapper.find({ children: 'Enregistrer' })
+
+    // then
+    expect(submitButton.prop('disabled')).toBe(true)
+  })
+
+  it('should disable submit button when name input value is under 3 characters', () => {
+    // given
+    const wrapper = mount(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Profil {...props} />
+        </MemoryRouter>
+      </Provider>
+    )
+    const inputName = wrapper.findWhere(node => node.text() === 'Nom :').first()
+
+    // when
+    inputName.invoke('onChange')({target:{value:'AA'}})
+    const submitButton = wrapper.find({ children: 'Enregistrer' })
+
+    // then
+    expect(submitButton.prop('disabled')).toBe(true)
+  })
+
+  it('should display an error message on submit if email format is not valid', () => {
+    // given
+    const wrapper = mount(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Profil {...props} />
+        </MemoryRouter>
+      </Provider>
+    )
+    const inputEmail = wrapper.findWhere(node => node.text() === 'E-mail :').first()
+
+    // when
+    inputEmail.invoke('onChange')({target:{value:'fake@email'}})
+    wrapper.find({ children: 'Enregistrer' }).invoke('onClick')()
+    const errorMessage = wrapper.findWhere(node => node.text() === 'Le format de l’email est incorrect.').first()
+
+    // then
+    expect(errorMessage).toHaveLength(1)
   })
 
   describe('functions', () => {
