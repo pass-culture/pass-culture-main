@@ -2,6 +2,7 @@ import {
   errorTimeoutStatusCode,
   successStatusCodesWithDataOrDatum,
   successStatusCodesWithoutDataAndDatum,
+  errorServiceUnavailableStatusCode,
 } from './status'
 
 export const GLOBAL_RESULT_ERROR = 'Result returned by the server is not at the good json format'
@@ -26,6 +27,18 @@ export async function getPayload(result, config) {
       },
       {
         timeout: [timeoutResultError],
+      },
+    ]
+    return payload
+  }
+
+  if (errorServiceUnavailableStatusCode === status) {
+    payload.errors = [
+      {
+        global: [globalResultError],
+      },
+      {
+        timeout: [result.statusText],
       },
     ]
     return payload

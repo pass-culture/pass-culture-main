@@ -4,6 +4,7 @@ import React, { Component } from 'react'
 import AnyError from './AnyError/AnyError'
 import { ApiError } from './ApiError'
 import GatewayTimeoutError from './GatewayTimeoutError/GatewayTimeoutError'
+import ServiceUnavailable from './ServiceUnavailable/ServiceUnavailable'
 
 class ErrorsPage extends Component {
   static getDerivedStateFromError(error) {
@@ -32,6 +33,8 @@ class ErrorsPage extends Component {
 
     if (httpCode === 504) {
       return <GatewayTimeoutError />
+    } else if (httpCode === 503) {
+      return <ServiceUnavailable />
     } else {
       return <AnyError />
     }
