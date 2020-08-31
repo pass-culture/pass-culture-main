@@ -7,11 +7,8 @@ import {
 
 export const GLOBAL_RESULT_ERROR = 'Result returned by the server is not at the good json format'
 
-export const TIMEOUT_RESULT_ERROR = 'Server did not respond within the specified timeout interval'
-
 export async function getPayload(result, config) {
   const globalResultError = config.globalResultError || GLOBAL_RESULT_ERROR
-  const timeoutResultError = config.timeoutResultError || TIMEOUT_RESULT_ERROR
   const { ok, status } = result
   const headers = {}
   result.headers.forEach((value, key) => {
@@ -20,19 +17,7 @@ export async function getPayload(result, config) {
 
   const payload = { headers, ok, status }
 
-  if (errorTimeoutStatusCode === status) {
-    payload.errors = [
-      {
-        global: [globalResultError],
-      },
-      {
-        timeout: [timeoutResultError],
-      },
-    ]
-    return payload
-  }
-
-  if (errorServiceUnavailableStatusCode === status) {
+  if (errorTimeoutStatusCode === status || errorServiceUnavailableStatusCode === status) {
     payload.errors = [
       {
         global: [globalResultError],
