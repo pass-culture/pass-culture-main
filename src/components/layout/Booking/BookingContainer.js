@@ -41,7 +41,8 @@ export const mapDispatchToProps = dispatch => ({
 
 export const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const { history: { location: { pathname }}} = ownProps
-  const basePath = pathname.match(/^\/([^\/]*)\//)[1]
+  const regExp = '^/([^/]*)/'
+  const basePath = pathname.match(regExp)[1]
   const { offer: { id: offerId } = {} } = stateProps
 
   return {

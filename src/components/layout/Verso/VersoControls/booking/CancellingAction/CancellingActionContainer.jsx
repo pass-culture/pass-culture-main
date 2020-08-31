@@ -47,7 +47,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   const { history, location } = ownProps
   const { pathname, search } = location
 
-  const handleClosePopin = () => {
+  function handleClosePopin() {
     dispatch(closeSharePopin())
     const nextPathname = pathname.split(/\/reservation(\/|$|\/$)/)[0]
     const nextUrl = `${nextPathname}${search}`
@@ -64,7 +64,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       label: 'Non',
     }
     const okButton = <PopinButton {...propsOk} />
-
     const options = {
       buttons: [
         okButton,
@@ -90,20 +89,28 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         handleSuccess: () => handleSuccessPopin(offerId),
         method: 'PUT',
         normalizer: bookingNormalizer,
-      })
+      }),
     )
   }
 
   return {
     openCancelPopin: (bookingId, offerName, offerId) => {
-      const yesButton = (<PopinButton
-        action={() => cancelBooking(bookingId, offerId)}
-        label="Oui"
-                         />)
-      const noButton = (<PopinButton
-        action={handleClosePopin}
-        label="Non"
-                        />)
+      function yesButtonAction() {
+        cancelBooking(bookingId, offerId)
+      }
+
+      const yesButton = (
+        <PopinButton
+          action={yesButtonAction}
+          label="Oui"
+        />
+      )
+
+      const noButton = (
+        <PopinButton
+          action={handleClosePopin}
+          label="Non"
+        />)
       const options = {
         buttons: [
           yesButton,
@@ -123,6 +130,6 @@ export default compose(
   withTracking('Offer'),
   connect(
     mapStateToProps,
-    mapDispatchToProps
-  )
+    mapDispatchToProps,
+  ),
 )(CancellingAction)
