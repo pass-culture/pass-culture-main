@@ -47,8 +47,8 @@ class UpdateOfferAndBookingStatusTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
-        booking1 = create_booking(user=user, stock=stock, token='AZERTY', is_used=True, is_cancelled=False)
-        booking2 = create_booking(user=user, stock=stock, token='AZEDFV', is_cancelled=False)
+        booking1 = create_booking(idx=1, user=user, stock=stock, token='AZERTY', is_used=True, is_cancelled=False)
+        booking2 = create_booking(idx=2, user=user, stock=stock, token='AZEDFV', is_cancelled=False)
         repository.save(venue, product, offer, stock, booking1, booking2, user)
 
         stub_read_bookings_token_from_file.return_value = [
@@ -60,7 +60,7 @@ class UpdateOfferAndBookingStatusTest:
         update_offer_and_booking_status('fake/path')
 
         # Then
-        bookings = BookingSQLEntity.query.all()
+        bookings = BookingSQLEntity.query.order_by(BookingSQLEntity.id.asc()).all()
         assert not bookings[0].isCancelled
         assert bookings[1].isCancelled
 
