@@ -3,7 +3,11 @@ import React from 'react'
 
 import AnyError from '../AnyError'
 
-describe('src | layout | anyError', () => {
+jest.mock('../../../../../../utils/config', () => ({
+  ICONS_URL: 'http://path/to/icons',
+}))
+
+describe('src | layout | AnyError', () => {
   it('should render an Icon', () => {
     // When
     const wrapper = mount(<AnyError />)
@@ -11,7 +15,7 @@ describe('src | layout | anyError', () => {
     // Then
     const image = wrapper.find('img')
     expect(image.prop('alt')).toBe('')
-    expect(image.prop('src')).toBe('http://localhost/icons/ico-maintenance.svg')
+    expect(image.prop('src')).toBe('http://path/to/icons/ico-maintenance.svg')
   })
 
   it('should have a title', () => {
