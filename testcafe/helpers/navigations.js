@@ -24,7 +24,7 @@ export const navigateToOffersAs = user => async t => {
 
 export const navigateToNewOffererAs = (user, userRole) => async t => {
   await navigateToOfferersAs(user, userRole)(t)
-  const newOffererAnchor = Selector('a').withText('+ Ajouter une structure')
+  const newOffererAnchor = Selector('a').withText('Ajouter une structure')
 
   await t.click(newOffererAnchor)
 }
@@ -121,7 +121,7 @@ export const navigateToOfferAs = (user, offer, userRole) => async t => {
 }
 
 export const navigateToNewMediationAs = (user, offer, userRole) => async t => {
-  const addMediationAnchor = Selector('a.button').withText('Ajouter une accroche')
+  const addMediationAnchor = Selector('a').withText('Ajouter une accroche')
 
   await navigateToOfferAs(user, offer, userRole)(t)
 

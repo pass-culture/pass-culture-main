@@ -175,7 +175,10 @@ class Offerers extends PureComponent {
           className="primary-button"
           to={offererCreationPageURL}
         >
-          {'+ Ajouter une structure'}
+          <span>
+            {'+'}
+          </span>
+          {'Ajouter une structure'}
         </Link>
         <Icon
           data-place="bottom"

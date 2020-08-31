@@ -38,7 +38,12 @@
     justify-content: center;
   }
 
-  button.secondary-button {
+  .primary-button span {
+    display: inline;
+    margin-right: rem(16px);
+  }
+
+  .secondary-button {
     margin-left: rem(10px);
   }
 
