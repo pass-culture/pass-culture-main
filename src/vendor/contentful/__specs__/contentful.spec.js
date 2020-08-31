@@ -1,11 +1,11 @@
 import { createClient } from 'contentful'
 import { fetchHomepage } from '../contentful'
-import BusinessPane from '../../../components/pages/home/domain/ValueObjects/BusinessPane'
+import BusinessPane from '../../../components/pages/home/MainView/domain/ValueObjects/BusinessPane'
 import { CONTENT_TYPES } from '../constants'
-import { PANE_LAYOUT } from '../../../components/pages/home/domain/layout'
-import Offers from '../../../components/pages/home/domain/ValueObjects/Offers'
-import OffersWithCover from '../../../components/pages/home/domain/ValueObjects/OffersWithCover'
-import ExclusivityPane from '../../../components/pages/home/domain/ValueObjects/ExclusivityPane'
+import { PANE_LAYOUT } from '../../../components/pages/home/MainView/domain/layout'
+import Offers from '../../../components/pages/home/MainView/domain/ValueObjects/Offers'
+import OffersWithCover from '../../../components/pages/home/MainView/domain/ValueObjects/OffersWithCover'
+import ExclusivityPane from '../../../components/pages/home/MainView/domain/ValueObjects/ExclusivityPane'
 import {
   CONTENTFUL_ACCESS_TOKEN,
   CONTENTFUL_ENVIRONMENT,

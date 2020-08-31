@@ -21,7 +21,11 @@ import TypeFormContainer from '../pages/typeform/TypeformContainer'
 import EligibilityCheck from '../pages/create-account/EligibilityCheck'
 import Debug from '../pages/debug/DebugPage'
 
-import { IS_DEBUG_PAGE_ACTIVE, IS_HOME_PAGE_ACTIVE, IS_ID_CHECK_PAGE_ACTIVE } from '../../utils/config'
+import {
+  IS_DEBUG_PAGE_ACTIVE,
+  IS_HOME_PAGE_ACTIVE,
+  IS_ID_CHECK_PAGE_ACTIVE,
+} from '../../utils/config'
 import HomeContainer from '../pages/home/HomeContainer'
 import { IcoNavHome } from '../layout/NavBar/Icons/IcoNavHome'
 
@@ -162,7 +166,7 @@ if (IS_HOME_PAGE_ACTIVE) {
   const profilPageOutOfNavbar = {
     component: profilPage.component,
     path: profilPage.path,
-    title: profilPage.title
+    title: profilPage.title,
   }
   routes = routes.filter(route => route.path !== '/profil')
   routes.push(profilPageOutOfNavbar)

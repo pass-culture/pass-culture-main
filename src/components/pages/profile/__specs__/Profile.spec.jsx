@@ -32,7 +32,6 @@ describe('profile page', () => {
       expect(routes.at(0).prop('path')).toBe('/profil/mot-de-passe')
       expect(routes.at(1).prop('path')).toBe('/profil/informations')
       expect(routes.at(2).prop('path')).toBe('/profil/mentions-legales')
-      expect(routes.at(3).prop('path')).toBe('/profil')
     })
   })
 })

@@ -1,11 +1,11 @@
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import withTracking from '../../hocs/withTracking'
-import Home from './Home'
 import { selectCurrentUser } from '../../../redux/selectors/currentUserSelector'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { selectUserGeolocation } from '../../../redux/selectors/geolocationSelectors'
 import { updateCurrentUser } from '../../../redux/actions/currentUser'
+import Home from './Home'
 
 export const mapStateToProps = state => ({
   geolocation: selectUserGeolocation(state),
@@ -40,6 +40,6 @@ export default compose(
   connect(
     mapStateToProps,
     mapDispatchToProps,
-    mergeProps
-  )
+    mergeProps,
+  ),
 )(Home)

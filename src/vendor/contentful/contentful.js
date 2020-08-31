@@ -6,10 +6,10 @@ import {
   CONTENTFUL_SPACE_ID,
 } from '../../utils/config'
 import { CONTENT_FIELDS, CONTENT_TYPES } from './constants'
-import OffersWithCover from '../../components/pages/home/domain/ValueObjects/OffersWithCover'
-import Offers from '../../components/pages/home/domain/ValueObjects/Offers'
-import BusinessPane from '../../components/pages/home/domain/ValueObjects/BusinessPane'
-import ExclusivityPane from '../../components/pages/home/domain/ValueObjects/ExclusivityPane'
+import OffersWithCover from '../../components/pages/home/MainView/domain/ValueObjects/OffersWithCover'
+import Offers from '../../components/pages/home/MainView/domain/ValueObjects/Offers'
+import BusinessPane from '../../components/pages/home/MainView/domain/ValueObjects/BusinessPane'
+import ExclusivityPane from '../../components/pages/home/MainView/domain/ValueObjects/ExclusivityPane'
 
 const DEPTH_LEVEL = 2
 

@@ -1,6 +1,11 @@
 export const shouldStatusBarBeColored = pathname => {
   const pathWithColoredHeader = [
     '/accueil',
+    '/accueil/details/(.+)',
+    '/accueil/details/(.+)/reservation/annulation/confirmation',
+    '/accueil/profil/informations',
+    '/accueil/profil/mot-de-passe',
+    '/accueil/profil/mentions-legales',
     '/recherche/criteres-categorie',
     '/recherche/criteres-localisation',
     '/recherche/criteres-localisation/place',
@@ -16,9 +21,6 @@ export const shouldStatusBarBeColored = pathname => {
     '/favoris/details/(.+)/(.+)',
     '/favoris/details/(.+)/(.+)/reservation',
     '/favoris/details/(.+)/(.+)/reservation/(.+)/annulation/confirmation',
-    '/profil/informations',
-    '/profil/mot-de-passe',
-    '/profil/mentions-legales',
   ]
 
   return RegExp(`(${pathWithColoredHeader.join('|')})$`).test(pathname)
