@@ -3,6 +3,10 @@ import React from 'react'
 
 import GatewayTimeoutError from '../GatewayTimeoutError'
 
+jest.mock('../../../../../../utils/config', () => ({
+  ICONS_URL: 'http://path/to/icons',
+}))
+
 describe('src | layout | GatewayTimeoutError', () => {
   it('should render an Icon', () => {
     // When
@@ -11,7 +15,7 @@ describe('src | layout | GatewayTimeoutError', () => {
     // Then
     const image = wrapper.find('img')
     expect(image.prop('alt')).toBe('')
-    expect(image.prop('src')).toBe('http://localhost/icons/ico-people.svg')
+    expect(image.prop('src')).toBe('http://path/to/icons/ico-people.svg')
   })
 
   it('should have a title', () => {
