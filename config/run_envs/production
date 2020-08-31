@@ -1,6 +1,4 @@
-API_URL='https://backend.passculture.beta.gouv.fr'
 NETLIFY_SITE_ID_WEBAPP="5efa658a-4a29-488d-a009-1c787e064807"
 NETLIFY_SITE_ID_PRO="270695c1-0f4c-4a36-b468-5573422be461"
 NODE_ENV="production"
-MATOMO_SERVER_URL="https://pc-matomo-production.scalingo.io/"
 ENVIRONMENT_NAME="production"
