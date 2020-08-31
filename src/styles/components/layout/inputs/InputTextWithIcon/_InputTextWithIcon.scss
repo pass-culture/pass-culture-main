@@ -10,6 +10,12 @@
   overflow: hidden;
   width: 100%;
 
+  img {
+    width: rem(30px);
+    height: rem(30px);
+    cursor: pointer;
+  }
+
   &:focus-within {
     border: 2px solid $primary;
   }
@@ -17,6 +23,11 @@
   &.disabled {
     background-color: $grey-light;
     border: none;
+
+    img {
+      filter: opacity(0.5);
+      cursor: not-allowed;
+    }
   }
 
   .it-input-with-icon {
