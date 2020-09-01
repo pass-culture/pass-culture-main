@@ -313,6 +313,7 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y realpath
             curl -O https://cli-dl.scalingo.io/install && bash install
+            scalingo login --api-token $SCALINGO_API_TOKEN
             ./pc -e testing sandbox --name=industrial
       - run:
           name: Notify PC Ops Bot
