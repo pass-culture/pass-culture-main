@@ -176,35 +176,7 @@ describe('components | RectoContainer', () => {
       })
     })
 
-    it('should return front text and thumb url from mediation when offer has a mediation and no recommendation', () => {
-      // given
-      const match = {
-        params: {
-          offerId: 'AD',
-        },
-      }
-
-      const recommendation = undefined
-
-      const state = {
-        data: {
-          bookings: [],
-          mediations: [{ id: 'AE', offerId: 'AD' }],
-          offers: [{ id: 'AD', product: {}, thumbUrl: '/url-to-image' }],
-          stocks: [{ id: 'AC', offerId: 'AD' }],
-        },
-      }
-
-      // when
-      const result = findThumbByOfferId(state, match.params.offerId, match, recommendation)
-
-      // then
-      expect(result).toStrictEqual({
-        thumbUrl: '/url-to-image',
-      })
-    })
-
-    it('should return no front text and use thumb url from product when offer has no mediation', () => {
+    it('should return no front text and use thumb url from offer when offer has no mediation', () => {
       // given
       const match = {
         params: {
@@ -229,6 +201,34 @@ describe('components | RectoContainer', () => {
       // then
       expect(result).toStrictEqual({
         thumbUrl: '/url-to-image-from-offer',
+      })
+    })
+
+    it('should use default thumb url when no mediation and offer has no thumb url', () => {
+      // given
+      const match = {
+        params: {
+          offerId: 'AD',
+        },
+      }
+
+      const recommendation = undefined
+
+      const state = {
+        data: {
+          bookings: [],
+          mediations: [],
+          offers: [{ id: 'AD', thumbUrl: null }],
+          stocks: [{ id: 'AC', offerId: 'AD' }],
+        },
+      }
+
+      // when
+      const result = findThumbByOfferId(state, match.params.offerId, match, recommendation)
+
+      // then
+      expect(result).toStrictEqual({
+        thumbUrl: '/default/thumb/url',
       })
     })
   })

@@ -37,19 +37,25 @@ export const findThumbByBookingId = (state, bookingId) => {
 }
 
 export const findThumbByOfferId = (state, offerId, match, recommendation) => {
+  if (recommendation) {
+    return {
+      thumbUrl: recommendation && recommendation.thumbUrl,
+    }
+  }
+
   const offer = selectOfferById(state, offerId)
-  const thumbUrl = recommendation
-    ? recommendation.thumbUrl
-    : offer
-    ? offer.thumbUrl
-    : DEFAULT_THUMB_URL
+  if (offer) {
+    return {
+      thumbUrl: offer.thumbUrl ? offer.thumbUrl : DEFAULT_THUMB_URL,
+    }
+  }
 
   return {
-    thumbUrl,
+    thumbUrl: DEFAULT_THUMB_URL,
   }
 }
 
 export default compose(
   withRouter,
-  connect(mapStateToProps)
+  connect(mapStateToProps),
 )(Recto)
