@@ -35,11 +35,10 @@ const SirenField = props => {
           <div>
             <TextInput
               {...input}
-              label="SIREN"
+              label="SIREN de la structure que vous représentez"
               maxLength="11"
               name="siren"
               placeholder="123 456 789"
-              sublabel="... de la structure que vous représentez"
             />
 
             {props.value && (

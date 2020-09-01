@@ -43,7 +43,6 @@ class PasswordInput extends PureComponent {
         onIconClick={this.handleToggleHidden}
         placeholder="Mon mot de passe"
         required
-        sublabel="...pour se connecter"
         type={isPasswordHidden ? 'password' : 'text'}
         value={input.value}
       />

@@ -63,7 +63,6 @@ class SignupForm extends PureComponent {
       onChange={input.onChange}
       placeholder="nom@exemple.fr"
       required
-      sublabel="...pour se connecter et récupérer son mot de passe en cas d’oubli"
       value={input.value}
     />
   )
@@ -92,12 +91,11 @@ class SignupForm extends PureComponent {
 
   renderPhoneNumberField = ({ input }) => (
     <TextInput
-      label="Téléphone"
+      label="Téléphone (utilisé uniquement par l’équipe du pass Culture)"
       name="phoneNumber"
       onChange={input.onChange}
       placeholder="Mon numéro de téléphone"
       required
-      sublabel="...utilisé uniquement par l’équipe du pass Culture"
       value={input.value}
     />
   )
@@ -204,9 +202,6 @@ class SignupForm extends PureComponent {
                     {
                       'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture'
                     }
-                    <span className="field-asterisk">
-                      {'*'}
-                    </span>
                   </span>
                   <FieldErrors customMessage={errors ? errors.contact_ok : null} />
                 </label>
