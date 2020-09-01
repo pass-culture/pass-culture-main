@@ -7,7 +7,6 @@
 
   .errors {
     @include caption();
-
     align-items: center;
     color: $primary;
     display: flex;
