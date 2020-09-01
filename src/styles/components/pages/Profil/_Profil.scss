@@ -6,11 +6,10 @@
   }
 
   .errors {
+    @include caption();
+    align-items: center;
     color: $primary;
     display: flex;
-    align-items: center;
-    font-size: 0.9rem;
-    font-weight: 500;
     line-height: rem(32px);
     margin-bottom: rem(15px);
     text-align: left;

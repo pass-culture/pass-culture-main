@@ -1,7 +1,7 @@
 .offerer-form-validation {
   display: flex;
-  width: 100%;
   justify-content: space-between;
+  width: 100%;
 
 }
 
@@ -12,11 +12,10 @@
   }
 
   .siren-input-error {
-    display: flex;
+    @include caption();
     align-items: center;
     color: $primary;
-    font-size: rem(14px);
-    font-weight: 500;
+    display: flex;
     margin-bottom: rem(15px);
 
     img {

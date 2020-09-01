@@ -56,59 +56,51 @@ class SignupForm extends PureComponent {
     createNewProUser(values, this.onHandleFail, this.onHandleSuccess)
   }
 
-  renderEmailTextField = ({ input }) => {
-    return (
-      <TextInput
-        label="Adresse e-mail"
-        name="email"
-        onChange={input.onChange}
-        placeholder="nom@exemple.fr"
-        required
-        sublabel="...pour se connecter et récupérer son mot de passe en cas d’oubli"
-        value={input.value}
-      />
-    )
-  }
+  renderEmailTextField = ({ input }) => (
+    <TextInput
+      label="Adresse e-mail"
+      name="email"
+      onChange={input.onChange}
+      placeholder="nom@exemple.fr"
+      required
+      sublabel="...pour se connecter et récupérer son mot de passe en cas d’oubli"
+      value={input.value}
+    />
+  )
 
-  renderNameTextField = ({ input }) => {
-    return (
-      <TextInput
-        label="Nom"
-        name="lastName"
-        onChange={input.onChange}
-        placeholder="Mon nom"
-        required
-        value={input.value}
-      />
-    )
-  }
+  renderNameTextField = ({ input }) => (
+    <TextInput
+      label="Nom"
+      name="lastName"
+      onChange={input.onChange}
+      placeholder="Mon nom"
+      required
+      value={input.value}
+    />
+  )
 
-  renderFirstNameTextField = ({ input }) => {
-    return (
-      <TextInput
-        label="Prénom"
-        name="firstName"
-        onChange={input.onChange}
-        placeholder="Mon prénom"
-        required
-        value={input.value}
-      />
-    )
-  }
+  renderFirstNameTextField = ({ input }) => (
+    <TextInput
+      label="Prénom"
+      name="firstName"
+      onChange={input.onChange}
+      placeholder="Mon prénom"
+      required
+      value={input.value}
+    />
+  )
 
-  renderPhoneNumberField = ({ input }) => {
-    return (
-      <TextInput
-        label="Téléphone"
-        name="phoneNumber"
-        onChange={input.onChange}
-        placeholder="Mon numéro de téléphone"
-        required
-        sublabel="...utilisé uniquement par l’équipe du pass Culture"
-        value={input.value}
-      />
-    )
-  }
+  renderPhoneNumberField = ({ input }) => (
+    <TextInput
+      label="Téléphone"
+      name="phoneNumber"
+      onChange={input.onChange}
+      placeholder="Mon numéro de téléphone"
+      required
+      sublabel="...utilisé uniquement par l’équipe du pass Culture"
+      value={input.value}
+    />
+  )
 
   render() {
     const { errors } = this.props

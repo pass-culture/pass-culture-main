@@ -68,7 +68,7 @@ describe('src | components | pages | Signin | Signin ', () => {
         .find('button')
 
       // When
-      eyePasswordInput.simulate('click')
+      eyePasswordInput.invoke('onClick')({ preventDefault: jest.fn() })
 
       //then
       const passwordInput = wrapper
@@ -94,8 +94,8 @@ describe('src | components | pages | Signin | Signin ', () => {
           .find('button')
 
         // When
-        eyePasswordInput.simulate('click')
-        eyePasswordInput.simulate('click')
+        eyePasswordInput.invoke('onClick')({ preventDefault: jest.fn() })
+        eyePasswordInput.invoke('onClick')({ preventDefault: jest.fn() })
 
         //then
         const passwordInput = wrapper
@@ -125,8 +125,15 @@ describe('src | components | pages | Signin | Signin ', () => {
         props.isAccountCreationAvailable = false
 
         // when
-        const wrapper = shallow(<Signin {...props} />)
-        const createAccountLink = wrapper.find({ children: 'Créer un compte' })
+        const wrapper = mount(
+          <Provider store={store}>
+            <MemoryRouter>
+              <Signin {...props} />
+            </MemoryRouter>
+          </Provider>
+        )
+
+        const createAccountLink = wrapper.find({ children: 'Créer un compte' }).at(0)
 
         // then
         expect(createAccountLink.prop('to')).toStrictEqual('/erreur/indisponible')
@@ -146,13 +153,13 @@ describe('src | components | pages | Signin | Signin ', () => {
       )
 
       const emailInput = wrapper.find('input[type="email"]')
-      emailInput.simulate('change', { target: { value: 'un email' } })
+      emailInput.invoke('onChange')({ target: { value: 'un email' } })
       const passwordInput = wrapper.find('input[type="password"]')
-      passwordInput.simulate('change', { target: { value: 'un mot de passe' } })
+      passwordInput.invoke('onChange')({ target: { value: 'un mot de passe' } })
       const submitButton = wrapper.find({ children: 'Se connecter' })
 
       // When
-      submitButton.simulate('click')
+      submitButton.invoke('onClick')()
 
       // then
       expect(props.submit).toHaveBeenCalledWith(

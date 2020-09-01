@@ -12,8 +12,8 @@
     z-index: 1;
 
     @media (max-width: $tablet) {
-      position: relative;
       height: rem(100px);
+      position: relative;
 
       img {
         left: 0;
@@ -68,10 +68,10 @@
   }
 
   h2 {
-    margin-bottom: rem(12px);
-    font-weight: $weight-medium;
     font-size: rem(20px);
+    font-weight: $weight-medium;
     line-height: rem(24px);
+    margin-bottom: rem(12px);
   }
 
   form {
@@ -90,14 +90,14 @@
   }
 
   h4 {
-    font-size: $size-normal;
     float: left;
+    font-size: $size-normal;
   }
 
   .errors {
+    align-items: center;
     color: $primary;
     display: flex;
-    align-items: center;
     font-size: 0.9rem;
     font-weight: 500;
     line-height: rem(32px);
@@ -122,17 +122,18 @@
   }
 
   .server-error-message {
-    display: flex;
     color: $primary;
+    display: flex;
     margin-top: rem(32px);
+
     span {
       margin-left: rem(5px);
     }
   }
 
   .password-error-message {
-    display: flex;
     color: $primary;
+    display: flex;
     margin-bottom: rem(32px);
 
     span {
@@ -140,10 +141,10 @@
     }
 
     pre {
-      white-space: pre-wrap;
-      font-family: inherit;
       background: none;
       color: $primary;
+      font-family: inherit;
+      white-space: pre-wrap;
     }
   }
 

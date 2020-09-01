@@ -13,9 +13,9 @@
   }
 
   .form-search {
+    align-items: flex-end;
     display: flex;
     flex-direction: row;
-    align-items: flex-end;
 
     label {
       flex: 2;
