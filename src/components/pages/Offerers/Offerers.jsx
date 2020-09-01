@@ -86,6 +86,7 @@ class Offerers extends PureComponent {
 
     const handleFail = () => {
       this.setState({
+        hasMore: false,
         isLoading: false,
       })
     }
