@@ -4,8 +4,8 @@ import { ROOT_PATH } from '../src/utils/config'
 import { getPathname } from './helpers/location'
 import { fetchSandbox } from './helpers/sandboxes'
 
-const inputUserIdentifier = Selector('#user-identifier')
-const inputUserPassword = Selector('#user-password')
+const inputUserIdentifier = Selector('input[name="identifier"]')
+const inputUserPassword = Selector('input[name="password"]')
 const signInButton = Selector('button').withText('Se connecter')
 
 fixture('Suite à la création de mon compte,')

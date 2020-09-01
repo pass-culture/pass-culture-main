@@ -16,7 +16,7 @@ test('en étant sur la page de création d’une structure', async t => {
   const user = dataFromSandbox.user
   const userRole = createUserRole(user)
   const sirenInput = Selector('input[name=siren]')
-  const sirenErrorInput = Selector('.field-errors')
+  const sirenErrorInput = Selector('.siren-input-error')
   const submitButton = Selector('button[type=submit]')
   const formSelector = Selector('form')
   const getFormContent = ClientFunction(() => formSelector().innerHTML, {

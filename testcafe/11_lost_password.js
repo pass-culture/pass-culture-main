@@ -4,12 +4,12 @@ import { ROOT_PATH } from '../src/utils/config'
 import { getPathname, getUrlParams } from './helpers/location'
 import { fetchSandbox } from './helpers/sandboxes'
 
-const inputUserEmail = Selector('#user-email')
+const inputUserEmail = Selector('input[type="email"]')
 const forgotPasswordLink = Selector('#lostPasswordLink')
-const sendTokenButton = Selector('#sendTokenByMail')
+const sendTokenButton = Selector('.password-reset-request button')
 const pageH1 = Selector('h1')
-const submitNewPasswordButton = Selector('#changePassword')
-const userNewPasswordInput = Selector('#user-newPassword')
+const submitNewPasswordButton = Selector('.password-reset-request-form .submit-button')
+const userNewPasswordInput = Selector('input[name="password"]')
 
 fixture('En étant déconnecté de l’application').page(`${ROOT_PATH}connexion`)
 

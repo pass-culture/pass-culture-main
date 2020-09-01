@@ -197,7 +197,7 @@ class LostPassword extends PureComponent {
                       )}
 
                       <button
-                        className="primary-button"
+                        className="primary-button submit-button"
                         onClick={this.submitResetPassword}
                         type="button"
                       >
