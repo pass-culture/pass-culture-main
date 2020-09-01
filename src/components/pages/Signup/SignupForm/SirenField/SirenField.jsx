@@ -5,7 +5,6 @@ import { composeValidators, removeWhitespaces } from 'react-final-form-utils'
 import { getSirenInformation } from '../../../../pages/Offerer/OffererCreation/decorators/getSirenInformation'
 import PropTypes from 'prop-types'
 import TextInput from '../../../../layout/inputs/TextInput/TextInput'
-import Icon from '../../../../layout/Icon'
 
 const required = value => {
   return value ? undefined : 'Ce champ est obligatoire'
@@ -35,6 +34,7 @@ const SirenField = props => {
           <div>
             <TextInput
               {...input}
+              errors={meta.modified && meta.error ? meta.error : null}
               label="SIREN de la structure que vous représentez"
               maxLength="11"
               name="siren"
@@ -48,13 +48,6 @@ const SirenField = props => {
                   {props.value}
                 </span>}
               </span>
-            )}
-
-            {meta.modified && meta.error && (
-              <div className="siren-input-error">
-                <Icon svg="picto-echec" />
-                {meta.error}
-              </div>
             )}
           </div>
         )

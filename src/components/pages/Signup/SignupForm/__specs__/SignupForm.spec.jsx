@@ -285,8 +285,8 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const errors = wrapper.find('.field-error-message')
-      expect(errors.text()).toBe('erreur sur le mail')
+      const error = wrapper.find({ children : "erreur sur le mail" })
+      expect(error).toHaveLength(1)
     })
 
     it('should render a Link component', () => {

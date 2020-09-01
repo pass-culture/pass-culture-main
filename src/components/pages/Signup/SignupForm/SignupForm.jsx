@@ -56,49 +56,66 @@ class SignupForm extends PureComponent {
     createNewProUser(values, this.onHandleFail, this.onHandleSuccess)
   }
 
-  renderEmailTextField = ({ input }) => (
-    <TextInput
-      label="Adresse e-mail"
-      name="email"
-      onChange={input.onChange}
-      placeholder="nom@exemple.fr"
-      required
-      value={input.value}
-    />
-  )
+  renderEmailTextField = ({ input }) => {
+    const {errors} = this.props
+    return (
+      <TextInput
+        errors={errors ? errors.email : null}
+        label="Adresse e-mail"
+        name="email"
+        onChange={input.onChange}
+        placeholder="nom@exemple.fr"
+        required
 
-  renderNameTextField = ({ input }) => (
-    <TextInput
-      label="Nom"
-      name="lastName"
-      onChange={input.onChange}
-      placeholder="Mon nom"
-      required
-      value={input.value}
-    />
-  )
+        value={input.value}
+      />)
 
-  renderFirstNameTextField = ({ input }) => (
-    <TextInput
-      label="Prénom"
-      name="firstName"
-      onChange={input.onChange}
-      placeholder="Mon prénom"
-      required
-      value={input.value}
-    />
-  )
+  }
 
-  renderPhoneNumberField = ({ input }) => (
-    <TextInput
-      label="Téléphone (utilisé uniquement par l’équipe du pass Culture)"
-      name="phoneNumber"
-      onChange={input.onChange}
-      placeholder="Mon numéro de téléphone"
-      required
-      value={input.value}
-    />
-  )
+  renderNameTextField = ({ input }) => {
+    const {errors} = this.props
+    return (
+      <TextInput
+        errors={errors ? errors.lastName : null}
+        label="Nom"
+        name="lastName"
+        onChange={input.onChange}
+        placeholder="Mon nom"
+        required
+        value={input.value}
+      />
+    )
+  }
+
+  renderFirstNameTextField = ({ input }) => {
+    const { errors } = this.props
+    return (
+      <TextInput
+        errors={errors ? errors.publicName : null}
+        label="Prénom"
+        name="firstName"
+        onChange={input.onChange}
+        placeholder="Mon prénom"
+        required
+        value={input.value}
+      />
+    )
+  }
+
+  renderPhoneNumberField = ({ input }) => {
+    const { errors } = this.props
+    return (
+      <TextInput
+        errors={errors ? errors.phoneNumber : null}
+        label="Téléphone(utilisé uniquement par l’équipe du pass Culture)"
+        name="phoneNumber"
+        onChange={input.onChange}
+        placeholder="Mon numéro de téléphone"
+        required
+        value={input.value}
+      />
+    )
+  }
 
   render() {
     const { errors } = this.props
@@ -159,10 +176,8 @@ class SignupForm extends PureComponent {
                   type="text"
                   validate={required}
                 />
-                <FieldErrors customMessage={errors ? errors.email : null} />
 
-                <PasswordField />
-                <FieldErrors customMessage={errors ? errors.password : null} />
+                <PasswordField errors={errors ? errors.password : null} />
 
                 <Field
                   component={this.renderNameTextField}
@@ -170,15 +185,12 @@ class SignupForm extends PureComponent {
                   required
                   validate={required}
                 />
-                <FieldErrors customMessage={errors ? errors.lastName : null} />
 
                 <Field
                   component={this.renderFirstNameTextField}
                   name="firstName"
                   validate={required}
                 />
-                <FieldErrors customMessage={errors ? errors.firstName : null} />
-                <FieldErrors customMessage={errors ? errors.publicName : null} />
 
                 <Field
                   component={this.renderPhoneNumberField}
@@ -186,9 +198,10 @@ class SignupForm extends PureComponent {
                   required
                   validate={required}
                 />
-                <FieldErrors customMessage={errors ? errors.phoneNumber : null} />
 
-                <SirenField value={values.name} />
+                <SirenField
+                  value={values.name}
+                />
 
                 <label className="sign-up-checkbox">
                   <Field

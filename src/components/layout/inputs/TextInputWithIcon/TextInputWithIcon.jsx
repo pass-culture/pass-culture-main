@@ -1,59 +1,71 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { ROOT_PATH } from '../../../../utils/config'
+import Icon from '../../Icon'
 
-const TextInputWithIcon = ({
-  disabled,
-  icon,
-  iconAlt,
-  label,
-  name,
-  onChange,
-  onIconClick,
-  placeholder,
-  required,
-  sublabel,
-  type,
-  value,
-}) => (
-  <label
-    className="input-text"
-    htmlFor={name}
-  >
-    <div className="labels">
+const TextInputWithIcon = (
+  {
+     disabled,
+     errors,
+     icon,
+     iconAlt,
+     label,
+     name,
+     onChange,
+    onIconClick,
+     placeholder,
+     required,
+     sublabel,
+     type,
+     value,
+   }) =>
+  (
+    <label
+      className="input-text"
+      htmlFor={name}
+    >
       {label}
       <span className="it-sub-label">
         {sublabel}
       </span>
-    </div>
-    <div className={`it-with-icon-container ${disabled ? 'disabled' : ''}`}>
-      <input
-        className="it-input-with-icon"
-        disabled={disabled}
-        id={name}
-        name={name}
-        onChange={onChange}
-        placeholder={placeholder}
-        required={required}
-        type={type}
-        value={value}
-      />
-      <button
-        className="it-icon"
-        onClick={onIconClick}
-        type="button"
-      >
-        <img
-          alt={iconAlt}
-          src={`${ROOT_PATH}/icons/${icon}.svg`}
+      <div className={`it-with-icon-container ${disabled ? 'disabled' : ''}`}>
+        <input
+          className="it-input-with-icon"
+          disabled={disabled}
+          name={name}
+          onChange={onChange}
+          placeholder={placeholder}
+          required={required}
+          type={type}
+          value={value}
         />
-      </button>
-    </div>
-  </label>
+        <button
+          className="it-icon"
+          onClick={onClick}
+          type="button"
+        >
+          <img
+            alt={iconAlt}
+            src={`${ROOT_PATH}/icons/${icon}.svg`}
+          />
+        </button>
+      </div>
+      {errors &&
+      <span className="it-errors">
+        <Icon
+          alt="Une erreur est survenue"
+          svg="picto-echec"
+        />
+        <pre>
+          {errors}
+        </pre>
+      </span>}
+    </label>
 )
 
 TextInputWithIcon.defaultProps = {
   disabled: false,
+  errors: null,
   onChange: null,
   required: false,
   sublabel: '',
@@ -62,6 +74,7 @@ TextInputWithIcon.defaultProps = {
 
 TextInputWithIcon.propTypes = {
   disabled: PropTypes.bool,
+  errors: PropTypes.string,
   icon: PropTypes.string.isRequired,
   iconAlt: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,

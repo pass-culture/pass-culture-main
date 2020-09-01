@@ -36,9 +36,11 @@ class PasswordInput extends PureComponent {
 
   renderPasswordField = ({ input }) => {
     const { isPasswordHidden } = this.state
+    const { errors } = this.props
 
     return (
       <TextInputWithIcon
+        errors={errors ? errors : null}
         icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
         iconAlt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
         label="Mot de passe"

@@ -133,58 +133,29 @@
     margin-bottom: rem(15px);
   }
 
-  .field-siren-control {
-    margin-top: rem(8px);
-  }
-
-  .field-siren-control input {
-    margin-top: 0;
-  }
-
-  .field-siren-input-value {
-    align-items: center;
-    display: flex;
-  }
-
-  .field-siren-value {
-    color: $black;
-    font-size: $font-size;
-    font-weight: $weight-semibold;
-    padding-left: 0.25rem;
-    text-transform: uppercase;
-  }
 
   .field-password {
     display: flex;
+    position: relative;
     justify-content: space-between;
   }
 
+  .field-password .it-errors img {
+    align-self: flex-start;
+  }
+
   .field-password > label {
-    width: 100%;
-  }
-
-  .field-password > input {
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-    border-right: none;
-    margin-top: 0;
-  }
-
-  .field-password > button {
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
-    border-top-right-radius: $control-radius;
-    border-bottom-right-radius: $control-radius;
-    border-width: rem(2px);
-    padding-left: rem(16px);
-    padding-right: rem(16px);
-  }
-
-  .field-password:focus-within > button {
-    border-color: $primary;
+    width: 90%;
   }
 
   .field-password > img {
+    position: absolute;
+    right: rem(16px);
+    top: rem(37px);
+  }
+
+  .field-password pre {
+    line-height: rem(18px);
     padding: rem(7px) rem(15px) 0;
   }
 

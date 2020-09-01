@@ -1,8 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Icon from "../../Icon"
 
 const TextInput = ({
   disabled,
+  errors,
   label,
   name,
   onChange,
@@ -33,11 +35,22 @@ const TextInput = ({
       type={type}
       value={value}
     />
+    {errors &&
+      <span className="it-errors">
+        <Icon
+          alt="Une erreur est survenue"
+          svg="picto-echec"
+        />
+        <pre>
+          {errors}
+        </pre>
+      </span>}
   </label>
 )
 
 TextInput.defaultProps = {
   disabled: false,
+  errors: null,
   onChange: null,
   required: false,
   sublabel: '',
@@ -46,6 +59,7 @@ TextInput.defaultProps = {
 
 TextInput.propTypes = {
   disabled: PropTypes.bool,
+  errors: PropTypes.string,
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func,

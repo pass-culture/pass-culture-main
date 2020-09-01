@@ -12,6 +12,31 @@
     margin-left: rem(5px);
   }
 
+  .it-errors {
+    @include caption();
+    align-items: center;
+    color: $primary;
+    display: flex;
+    line-height: rem(32px);
+    margin-top: rem(8px);
+    text-align: left;
+
+    img {
+      margin-right: rem(5px);
+      height: rem(15px);
+      width: rem(15px);
+    }
+
+    pre {
+      background: none;
+      color: $primary;
+      font-family: inherit;
+      font-size: inherit;
+      white-space: pre-wrap;
+      padding: 0;
+    }
+  }
+
   .it-input {
     @include body();
 
@@ -20,7 +45,6 @@
     color: $black;
     display: block;
     height: rem(40px);
-    margin-bottom: rem(15px);
     margin-top: rem(9px);
     padding: rem(10px) rem(16px);
     width: 100%;
