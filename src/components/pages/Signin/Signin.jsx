@@ -124,7 +124,7 @@ class Signin extends PureComponent {
                         label="Mot de passe"
                         name="password"
                         onChange={this.handleInputPasswordChange}
-                        onClick={this.handleToggleHidden}
+                        onIconClick={this.handleToggleHidden}
                         placeholder="Mot de passe"
                         required
                         type={isPasswordHidden ? 'password' : 'text'}

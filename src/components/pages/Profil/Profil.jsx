@@ -45,10 +45,9 @@ class Profil extends PureComponent {
     const isEmailValid = checkIfEmailIsValid(emailInputValue)
     if (isEmailValid) {
       dispatch(requestData(config))
-      this.setState({hasEmailInputError:false})
-
-    }else {
-      this.setState({hasEmailInputError:true})
+      this.setState({ hasEmailInputError: false })
+    } else {
+      this.setState({ hasEmailInputError: true })
     }
   }
 
@@ -87,7 +86,7 @@ class Profil extends PureComponent {
   isSubmitDisabled = () => {
     const { emailInputValue, publicNameInputValue } = this.state
 
-    return  publicNameInputValue.length < 3 || emailInputValue === ''
+    return publicNameInputValue.length < 3 || emailInputValue === ''
   }
 
   renderForm = () => {
@@ -112,7 +111,7 @@ class Profil extends PureComponent {
               placeholder=""
               value={emailInputValue}
             />
-            { hasEmailInputError && (
+            {hasEmailInputError && (
               <div className="errors">
                 <Icon svg="picto-warning" />
                 {'Le format de l’email est incorrect.'}

@@ -179,7 +179,7 @@ class LostPassword extends PureComponent {
                         label="Nouveau mot de passe"
                         name="password"
                         onChange={this.handleInputPasswordChange}
-                        onClick={this.handleToggleHidden}
+                        onIconClick={this.handleToggleHidden}
                         placeholder="*****"
                         required
                         sublabel="obligatoire"

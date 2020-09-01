@@ -9,7 +9,7 @@ const TextInputWithIcon = ({
   label,
   name,
   onChange,
-  onClick,
+  onIconClick,
   placeholder,
   required,
   sublabel,
@@ -37,7 +37,7 @@ const TextInputWithIcon = ({
       />
       <button
         className="it-icon"
-        onClick={onClick}
+        onClick={onIconClick}
         type="button"
       >
         <img
@@ -64,7 +64,7 @@ TextInputWithIcon.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func,
-  onClick: PropTypes.func.isRequired,
+  onIconClick: PropTypes.func.isRequired,
   placeholder: PropTypes.string.isRequired,
   required: PropTypes.bool,
   sublabel: PropTypes.string,

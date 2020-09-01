@@ -33,7 +33,7 @@ const StyleguideInputText = () => {
       label="Intitulé"
       name="input-text-icon-default"
       onChange={onChange}
-      onClick={onClick}
+      onIconClick={onClick}
       placeholder="placeholder with icon"
       sublabel="Intitulé secondaire"
       type="text"
@@ -114,7 +114,7 @@ const StyleguideInputText = () => {
             label="Intitulé"
             name="input-text-icon-default"
             onChange={onChange}
-            onClick={onClick}
+            onIconClick={onClick}
             placeholder="placeholder with icon"
             sublabel="Intitulé secondaire"
             type="text"

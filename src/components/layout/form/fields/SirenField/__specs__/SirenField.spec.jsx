@@ -1,6 +1,6 @@
 import { existsInINSEERegistry } from '../SirenField'
 
-describe('src | components | SirenField', () => {
+describe('components | SirenField', () => {
   describe('existsInINSEERegistry', () => {
     beforeEach(() => {
       fetch.resetMocks()

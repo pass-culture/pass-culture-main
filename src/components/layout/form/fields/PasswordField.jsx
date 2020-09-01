@@ -40,7 +40,7 @@ class PasswordInput extends PureComponent {
         label="Mot de passe"
         name="password"
         onChange={input.onChange}
-        onClick={this.handleToggleHidden}
+        onIconClick={this.handleToggleHidden}
         placeholder="Mon mot de passe"
         required
         sublabel="...pour se connecter"
