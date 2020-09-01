@@ -12,6 +12,7 @@ const cancelOptions = {
 
 const submitOptions = {
   className: 'is-bold is-white-text',
+  id: 'success-view-submit',
   disabled: false,
   label: 'Connexion',
   url: '/connexion',
@@ -50,7 +51,7 @@ class SuccessView extends PureComponent {
         </div>
         <FormFooter
           cancel={(!token && cancelOptions) || null}
-          submit={submitOptions}
+          submit={[submitOptions]}
         />
       </div>
     )

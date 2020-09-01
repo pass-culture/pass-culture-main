@@ -17,6 +17,7 @@ const cancelOptions = {
 
 const submitOptions = {
   className: 'is-bold is-white-text',
+  id: 'reset-password-submit',
   label: 'OK',
 }
 
@@ -66,7 +67,7 @@ export const ResetPasswordForm = ({ canSubmit, formErrors, isLoading }) => (
     </div>
     <FormFooter
       cancel={cancelOptions}
-      submit={{ ...submitOptions, disabled: !canSubmit }}
+      submit={[{ ...submitOptions, disabled: !canSubmit }]}
     />
   </Fragment>
 )

@@ -1,5 +1,6 @@
 import React from 'react'
-import { shallow } from 'enzyme'
+import { mount, shallow } from 'enzyme'
+import { MemoryRouter } from 'react-router'
 
 import FormFooter from '../FormFooter'
 import { Link } from 'react-router-dom'
@@ -12,14 +13,15 @@ describe('components | FormFooter', () => {
         const props = {
           cancel: null,
           className: null,
-          externalLink: null,
-          submit: {
-            className: 'my-class',
-            disabled: false,
-            id: 'my-id',
-            label: 'my-label',
-            url: 'my-url',
-          },
+          submit: [
+            {
+              className: 'my-class',
+              disabled: false,
+              id: 'my-id',
+              label: 'my-label',
+              url: 'my-url',
+            },
+          ],
         }
 
         // when
@@ -33,8 +35,40 @@ describe('components | FormFooter', () => {
           className: 'flex-1 my-class',
           disabled: false,
           id: 'my-id',
+          onClick: expect.any(Function),
+          onKeyPress: expect.any(Function),
           to: 'my-url',
         })
+      })
+
+      it('should trigger tracker event when click on link when provided', () => {
+        // given
+        const trackerMock = jest.fn()
+        const props = {
+          cancel: null,
+          className: null,
+          submit: [
+            {
+              className: 'my-class',
+              id: 'my-id',
+              label: 'my-label',
+              tracker: trackerMock,
+              url: 'my-url',
+            },
+          ],
+        }
+        const wrapper = mount(
+          <MemoryRouter>
+            <FormFooter {...props} />
+          </MemoryRouter>
+        )
+        const externalLink = wrapper.find('a[id="my-id"]')
+
+        // when
+        externalLink.simulate('click')
+
+        // then
+        expect(trackerMock).toHaveBeenCalledWith()
       })
 
       it('should render a cancel link when a cancel url is provided', () => {
@@ -48,7 +82,6 @@ describe('components | FormFooter', () => {
             url: 'my-url',
           },
           className: null,
-          externalLink: null,
           submit: null,
         }
 
@@ -63,71 +96,10 @@ describe('components | FormFooter', () => {
           className: 'flex-1 my-class',
           disabled: false,
           id: 'my-id',
-          to: 'my-url',
-        })
-      })
-    })
-
-    describe('external links', () => {
-      it('should render an external link when an url is provided', () => {
-        // given
-        const props = {
-          cancel: null,
-          className: null,
-          externalLink: {
-            className: 'my-class',
-            id: 'my-id',
-            label: 'my-label',
-            title: 'my-title',
-            url: 'my-url',
-          },
-          submit: null,
-        }
-
-        // when
-        const wrapper = shallow(<FormFooter {...props} />)
-
-        // then
-        const externalLink = wrapper.find('a')
-        expect(externalLink).toHaveLength(1)
-        expect(externalLink.props()).toStrictEqual({
-          children: 'my-label',
-          className: 'flex-1 my-class',
-          href: 'my-url',
-          id: 'my-id',
           onClick: expect.any(Function),
           onKeyPress: expect.any(Function),
-          role: 'button',
-          tabIndex: '0',
-          target: '_blank',
-          title: 'my-title',
+          to: 'my-url',
         })
-      })
-
-      it('should trigger tracker event when click on link when provided', () => {
-        // given
-        const trackerMock = jest.fn()
-        const props = {
-          cancel: null,
-          className: null,
-          externalLink: {
-            className: 'my-class',
-            id: 'my-id',
-            label: 'my-label',
-            title: 'my-title',
-            tracker: trackerMock,
-            url: 'my-url',
-          },
-          submit: null,
-        }
-        const wrapper = shallow(<FormFooter {...props} />)
-        const externalLink = wrapper.find('a')
-
-        // when
-        externalLink.simulate('click')
-
-        // then
-        expect(trackerMock).toHaveBeenCalledWith()
       })
     })
 
@@ -138,12 +110,14 @@ describe('components | FormFooter', () => {
           cancel: null,
           className: null,
           externalLink: null,
-          submit: {
-            className: 'my-class',
-            disabled: false,
-            id: 'my-id',
-            label: 'my-label',
-          },
+          submit: [
+            {
+              className: 'my-class',
+              disabled: false,
+              id: 'my-id',
+              label: 'my-label',
+            },
+          ],
         }
 
         // when

@@ -10,7 +10,7 @@ import Icon from '../../../layout/Icon/Icon'
 describe('components | BetaPage', () => {
   it('should render page component with pass culture information', () => {
     // when
-    const wrapper = shallow(<BetaPage />)
+    const wrapper = shallow(<BetaPage trackSignup={jest.fn()} />)
 
     // then
     const line1 = wrapper.findWhere(node => node.text() === 'Bienvenue dans\nton pass Culture')
@@ -29,7 +29,7 @@ describe('components | BetaPage', () => {
 
   it('should render an Icon component for page background', () => {
     // when
-    const wrapper = shallow(<BetaPage />)
+    const wrapper = shallow(<BetaPage trackSignup={jest.fn()} />)
 
     // then
     const icon = wrapper.find(Icon)
@@ -48,18 +48,19 @@ describe('components | BetaPage', () => {
     // then
     const footer = wrapper.find(FormFooter)
     expect(footer).toHaveLength(1)
-    expect(footer.prop('externalLink')).toStrictEqual({
-      id: 'sign-up-link',
-      label: 'Créer un compte',
-      title: 'Créer un compte (nouvelle fenêtre)',
-      tracker: trackSignupMock,
-      url: 'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture',
-    })
-    expect(footer.prop('submit')).toStrictEqual({
-      id: 'sign-in-link',
-      label: "J'ai un compte",
-      url: '/connexion',
-    })
+    expect(footer.prop('submit')).toStrictEqual([
+      {
+        id: 'sign-up-link',
+        label: 'Créer un compte',
+        tracker: trackSignupMock,
+        url: '/verification-eligibilite',
+      },
+      {
+        id: 'sign-in-link',
+        label: "J'ai un compte",
+        url: '/connexion',
+      },
+    ])
   })
 
   it('should redirect to sign in page when clicking on sign in link', () => {
@@ -67,7 +68,7 @@ describe('components | BetaPage', () => {
     const history = createBrowserHistory()
     const wrapper = mount(
       <Router history={history}>
-        <BetaPage />
+        <BetaPage trackSignup={jest.fn()} />
       </Router>
     )
     const signInLink = wrapper.findWhere(node => node.text() === "J'ai un compte").first()

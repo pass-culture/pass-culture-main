@@ -33,12 +33,14 @@ export const RequestEmailForm = ({ canSubmit, isLoading, formErrors }) => (
         label: 'Annuler',
         url: '/connexion',
       }}
-      submit={{
-        className: 'is-bold is-white-text',
-        id: 'np-ok-button',
-        label: 'OK',
-        disabled: !canSubmit,
-      }}
+      submit={[
+        {
+          className: 'is-bold is-white-text',
+          id: 'np-ok-button',
+          label: 'OK',
+          disabled: !canSubmit,
+        },
+      ]}
     />
   </Fragment>
 )

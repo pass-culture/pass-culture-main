@@ -82,11 +82,13 @@ class SignIn extends PureComponent {
             label: 'Annuler',
             url: '/beta',
           }}
-          submit={{
-            disabled: !canSubmit,
-            id: 'sign-in-button',
-            label: 'Connexion',
-          }}
+          submit={[
+            {
+              disabled: !canSubmit,
+              id: 'sign-in-button',
+              label: 'Connexion',
+            },
+          ]}
         />
       </form>
     )
@@ -105,7 +107,7 @@ class SignIn extends PureComponent {
 }
 
 SignIn.defaultProps = {
-  homepageIsDisabled: true
+  homepageIsDisabled: true,
 }
 
 SignIn.propTypes = {
