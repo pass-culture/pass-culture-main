@@ -38,7 +38,7 @@ describe('when status is other that 200', () => {
     // When
     const expected = signOut()
 
-    // When Then
+    // Then
     await expect(expected).rejects.toThrow('Status: 582, Status text: Error')
   })
 })

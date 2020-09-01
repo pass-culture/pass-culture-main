@@ -47,7 +47,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   const { history, location } = ownProps
   const { pathname, search } = location
 
-  function handleClosePopin() {
+  function handleClosePopinAction() {
     dispatch(closeSharePopin())
     const nextPathname = pathname.split(/\/reservation(\/|$|\/$)/)[0]
     const nextUrl = `${nextPathname}${search}`
@@ -60,7 +60,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     const { booking: bookingError } = errors || {}
     const message = bookingError || ['Une erreur inconnue s’est produite']
     const propsOk = {
-      action: handleClosePopin,
+      action: handleClosePopinAction,
       label: 'Non',
     }
     const okButton = <PopinButton {...propsOk} />
@@ -108,7 +108,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
       const noButton = (
         <PopinButton
-          action={handleClosePopin}
+          action={handleClosePopinAction}
           label="Non"
         />)
       const options = {

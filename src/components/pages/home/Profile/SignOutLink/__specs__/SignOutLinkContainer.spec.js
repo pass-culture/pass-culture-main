@@ -40,4 +40,3 @@ describe('sign out button container', () => {
     })
   })
 })
-// SUCCESS_DATA_PATCH_USERS/CURRENT

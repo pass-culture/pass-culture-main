@@ -113,8 +113,8 @@ describe('src | components | MainView', () => {
     )
 
     // then
-    const title = wrapper.find({ children: 'Tu as 200,1 € sur ton pass' })
-    expect(title).toHaveLength(1)
+    const subtitle = wrapper.find({ children: 'Tu as 200,1 € sur ton pass' })
+    expect(subtitle).toHaveLength(1)
   })
 
   it('should render a module component when module is for offers with cover', async () => {
