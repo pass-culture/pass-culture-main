@@ -19,6 +19,11 @@ describe('should status bar be colored', () => {
       // given
       const pathsWithPinkHeader = [
         '/accueil',
+        '/accueil/details/(.+)',
+        '/accueil/details/(.+)/reservation/annulation/confirmation',
+        '/accueil/profil/informations',
+        '/accueil/profil/mot-de-passe',
+        '/accueil/profil/mentions-legales',
         '/recherche/criteres-categorie',
         '/recherche/criteres-localisation',
         '/recherche/criteres-localisation/place',
@@ -34,9 +39,6 @@ describe('should status bar be colored', () => {
         '/favoris/details/4L/V12',
         '/favoris/details/AGJK/BCD3/reservation',
         '/favoris/details/AGJK/BCD3/reservation/KL/annulation/confirmation',
-        '/profil/informations',
-        '/profil/mot-de-passe',
-        '/profil/mentions-legales',
       ]
 
       pathsWithPinkHeader.forEach(path => {

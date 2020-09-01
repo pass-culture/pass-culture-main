@@ -1,10 +1,10 @@
 import { connect } from 'react-redux'
-import { reinitializeData } from 'redux-thunk-data'
 
 import { updateSeedLastRequestTimestamp } from '../../../../../redux/actions/pagination'
 import SignOutLink from './SignOutLink'
 import { selectReadRecommendations } from '../../../../../redux/selectors/data/readRecommendationsSelectors'
 import { resetCurrentUser } from '../../../../../redux/actions/currentUser'
+import { reinitializeData } from '../../../../../utils/fetch-normalize-data/reducers/data/actionCreators'
 
 const resetSeedLastRequestTimestamp = date => updateSeedLastRequestTimestamp(date)
 

@@ -1,7 +1,7 @@
 import { mapDispatchToProps } from '../SignOutLinkContainer'
 
-jest.mock('redux-thunk-data', () => {
-  const { reinitializeData } = jest.requireActual('fetch-normalize-data')
+jest.mock('../../../../../../utils/fetch-normalize-data/requestData', () => {
+  const { reinitializeData } = jest.requireActual('../../../../utils/fetch-normalize-data/reducers/data/actionCreators')
 
   return {
     reinitializeData,
