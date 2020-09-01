@@ -12,15 +12,15 @@ test('je peux changer mes informations', async t => {
     'webapp_10_menu',
     'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
   )
-  const profilePath = `${ROOT_PATH}profil`
   const homePath = `${ROOT_PATH}accueil`
+  const profilePath = `${homePath}/profil`
   const emptyField = 'ctrl+a delete'
   const submitInput = Selector('input[type="submit"]')
 
   await t.useRole(createUserRole(user)).navigateTo(profilePath)
 
   // Je peux changer mes informations personnelles
-  const personalInformationsPath = `${ROOT_PATH}profil/informations`
+  const personalInformationsPath = `${profilePath}/informations`
   const personalInformationsLink = Selector('a').withText('Informations personnelles')
   const nicknameInput = Selector('input[name="publicName"]')
   const newNickname = 'aa'
@@ -52,7 +52,7 @@ test('je peux changer mes informations', async t => {
     .ok()
 
   // Je peux changer mon mot de passe
-  const passwordPath = `${ROOT_PATH}profil/mot-de-passe`
+  const passwordPath = `${profilePath}/mot-de-passe`
   const passwordLink = Selector('a').withText('Mot de passe')
   const currentPasswordInput = Selector('input').nth(0)
   const newPasswordInput = Selector('input').nth(1)

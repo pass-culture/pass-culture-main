@@ -13,14 +13,13 @@ test('quand je me connecte à l’app je peux naviguer sur le site via la navbar
   )
   const linksOfNavBar = Selector('nav ul li a')
   const navBarDiscoveryLink = linksOfNavBar.nth(0)
-  const navBarSearchLink = linksOfNavBar.nth(0)
-  const navBarHomeLink = linksOfNavBar.nth(1)
-  const navBarBookingsLink = linksOfNavBar.nth(2)
-  const navBarFavoritesLink = linksOfNavBar.nth(3)
+  const navBarSearchLink = linksOfNavBar.nth(1)
+  const navBarHomeLink = linksOfNavBar.nth(2)
+  const navBarBookingsLink = linksOfNavBar.nth(3)
+  const navBarFavoritesLink = linksOfNavBar.nth(4)
 
   await t
     .useRole(userRole)
-    .navigateTo(`${ROOT_PATH}profil`)
 
     // je peux naviguer vers le carrousel
     .click(navBarDiscoveryLink)

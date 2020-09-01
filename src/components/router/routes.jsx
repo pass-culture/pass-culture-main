@@ -21,11 +21,7 @@ import TypeFormContainer from '../pages/typeform/TypeformContainer'
 import EligibilityCheck from '../pages/create-account/EligibilityCheck'
 import Debug from '../pages/debug/DebugPage'
 
-import {
-  IS_DEBUG_PAGE_ACTIVE,
-  IS_HOME_PAGE_ACTIVE,
-  IS_ID_CHECK_PAGE_ACTIVE,
-} from '../../utils/config'
+import { IS_DEBUG_PAGE_ACTIVE, IS_ID_CHECK_PAGE_ACTIVE } from '../../utils/config'
 import HomeContainer from '../pages/home/HomeContainer'
 import { IcoNavHome } from '../layout/NavBar/Icons/IcoNavHome'
 
@@ -132,6 +128,7 @@ let routes = [
   },
   {
     component: ProfileContainer,
+    featureName: 'WEBAPP_PROFILE_PAGE',
     icon: IcoNavProfile,
     to: '/profil',
     path: '/profil',
@@ -159,17 +156,6 @@ if (IS_ID_CHECK_PAGE_ACTIVE) {
     path: '/verification-eligibilite',
     title: 'ID Check',
   })
-}
-
-if (IS_HOME_PAGE_ACTIVE) {
-  const profilPage = routes.find(route => route.path === '/profil')
-  const profilPageOutOfNavbar = {
-    component: profilPage.component,
-    path: profilPage.path,
-    title: profilPage.title,
-  }
-  routes = routes.filter(route => route.path !== '/profil')
-  routes.push(profilPageOutOfNavbar)
 }
 
 export default routes
