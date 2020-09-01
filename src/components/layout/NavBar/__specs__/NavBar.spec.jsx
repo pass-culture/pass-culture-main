@@ -67,7 +67,7 @@ describe('nav bar', () => {
     expect(allLinks.at(0).find('svg')).toHaveLength(1)
   })
 
-  it('should display the all links when there is no notion of feature flipping', () => {
+  it('should display all links when there is no notion of feature flipping', () => {
     // given
     props.routes = [
       { icon, to: '/first-path' },
