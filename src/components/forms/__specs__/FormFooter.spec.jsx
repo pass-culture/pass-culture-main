@@ -62,10 +62,10 @@ describe('components | FormFooter', () => {
             <FormFooter {...props} />
           </MemoryRouter>
         )
-        const externalLink = wrapper.find('a[id="my-id"]')
+        const regularLink = wrapper.find('a[id="my-id"]')
 
         // when
-        externalLink.simulate('click')
+        regularLink.invoke('onClick')({})
 
         // then
         expect(trackerMock).toHaveBeenCalledWith()
