@@ -31,6 +31,7 @@ class FeatureToggle(enum.Enum):
     API_SIRENE_AVAILABLE = 'Active les fonctionnalitées liées à l\'API Sirene'
     CLEAN_DISCOVERY_VIEW = 'Nettoyer les données en base de données liées à la mise à jour régulière'
     WEBAPP_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil de la webapp"
+    WEBAPP_PROFILE_PAGE = "Permettre l affichage de la page profil (route dédiée + navbar)"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
