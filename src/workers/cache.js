@@ -12,13 +12,9 @@ import { IS_PROD, IS_LOCALHOST, ROOT_PATH } from '../utils/config'
 // This link also includes instructions on opting out of this behavior.
 
 function registerValidSW(swUrl) {
-
   navigator.serviceWorker
   .register(swUrl)
   .then(registration => {
-      console.log(`${ROOT_PATH}/batchsdk-shared-worker.js`)
-      importScripts(`${ROOT_PATH}/batchsdk-shared-worker.js`)
-      // eslint-disable-next-line
       registration.onupdatefound = () => {
         const installingWorker = registration.installing
         installingWorker.onstatechange = () => {
@@ -66,7 +62,7 @@ function checkValidServiceWorker(swUrl) {
 }
 
 export default function register() {
-  if (IS_PROD && 'serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location)
     if (publicUrl.origin !== window.location.origin) {
@@ -78,22 +74,8 @@ export default function register() {
 
     window.addEventListener('load', () => {
       const swUrl = `${ROOT_PATH}/service-worker.js`
-
-      if (IS_LOCALHOST) {
-        // This is running on localhost. Lets check if a service worker still exists or not.
-        checkValidServiceWorker(swUrl)
-      } else {
-        // Is not local host. Just register service worker
-        registerValidSW(swUrl)
-      }
-    })
-  }
-}
-
-export function unregister() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready.then(registration => {
-      registration.unregister()
+      checkValidServiceWorker(swUrl)
+      registerValidSW(swUrl)
     })
   }
 }

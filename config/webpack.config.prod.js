@@ -174,6 +174,7 @@ module.exports = {
       fileName: 'asset-manifest.json',
     }),
     new SWPrecacheWebpackPlugin({
+      importScripts: [`${publicUrl}/batchsdk-shared-worker.js`],
       dontCacheBustUrlsMatching: /\.\w{8}\./,
       filename: 'service-worker.js',
       logger(message) {
