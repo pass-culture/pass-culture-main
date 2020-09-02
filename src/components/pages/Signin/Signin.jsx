@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom'
 
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
-import Icon from '../../layout/Icon'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
+import GenericError from '../../layout/form/GenericError/GenericError'
 
 class Signin extends PureComponent {
   constructor(props) {
@@ -100,12 +100,7 @@ class Signin extends PureComponent {
                   <span className="has-text-grey">
                     {'Tous les champs sont obligatoires'}
                   </span>
-                  {hasErrorMessage && (
-                    <div className="errors">
-                      <Icon svg="picto-warning" />
-                      {'Identifiant ou mot de passe incorrect.'}
-                    </div>
-                  )}
+                  {hasErrorMessage && <GenericError message={'Identifiant ou mot de passe incorrect.'} />}
                   <form onSubmit={this.handleOnSubmit}>
                     <div className="field-group">
                       <TextInput

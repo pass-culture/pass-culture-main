@@ -1,0 +1,23 @@
+.generic-error {
+  @include caption();
+
+  align-items: center;
+  background-color: $notification-error;
+  color: $black;
+  display: flex;
+  height: rem(50px);
+  justify-content: center;
+  margin-top: rem(16px);
+  text-align: center;
+
+  img {
+    height: rem(24px);
+    padding-right: rem(5px);
+    filter: brightness(0) invert(0);
+    width: rem(24px);
+  }
+
+  .generic-error-message {
+    width: 80%;
+  }
+}

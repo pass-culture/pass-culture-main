@@ -7,6 +7,7 @@ import Main from '../../layout/Main'
 import Icon from '../../layout/Icon'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
+import GenericError from '../../layout/form/GenericError/GenericError'
 
 class LostPassword extends PureComponent {
   constructor(props) {
@@ -177,14 +178,12 @@ class LostPassword extends PureComponent {
                       {'Saisissez le nouveau mot de passe'}
                     </h2>
                     {hasPasswordResetErrorMessage && (
-                      <div className="server-error-message">
-                        <Icon svg="picto-warning" />
-                        <span>
-                          {"Une erreur s'est produite, veuillez réessayer ultérieurement."}
-                        </span>
-                      </div>
+                      <GenericError message={'Une erreur s\'est produite, veuillez réessayer ultérieurement.'} />
                     )}
-                    <form onSubmit={this.submitResetPassword}>
+                    <form
+                      onSubmit={this.submitResetPassword}
+                      className="new-password-form"
+                    >
                       <TextInputWithIcon
                         icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
                         iconAlt={
@@ -236,12 +235,7 @@ class LostPassword extends PureComponent {
                     </h2>
 
                     {hasPasswordResetRequestErrorMessage && (
-                      <div className="server-error-message">
-                        <Icon svg="picto-warning" />
-                        <span>
-                          {"Une erreur s'est produite, veuillez réessayer ultérieurement."}
-                        </span>
-                      </div>
+                      <GenericError message={'Une erreur s\'est produite, veuillez réessayer ultérieurement.'} />
                     )}
 
                     <form onSubmit={this.submitResetPasswordRequest}>
