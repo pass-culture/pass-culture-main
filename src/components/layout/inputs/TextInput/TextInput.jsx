@@ -16,13 +16,16 @@ const TextInput = ({
     className="input-text"
     htmlFor={name}
   >
-    {label}
-    <span className="it-sub-label">
-      {sublabel}
-    </span>
+    <div className="labels">
+      {label}
+      <span className="it-sub-label">
+        {sublabel}
+      </span>
+    </div>
     <input
       className="it-input"
       disabled={disabled}
+      id={name}
       name={name}
       onChange={onChange}
       placeholder={placeholder}

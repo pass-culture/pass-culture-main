@@ -1,4 +1,9 @@
 .input-text {
+  .labels {
+    display: flex;
+    justify-content: space-between;
+  }
+
   .it-sub-label {
     @include caption();
 
