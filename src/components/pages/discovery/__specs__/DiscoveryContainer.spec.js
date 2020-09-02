@@ -81,7 +81,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
 
   describe('mapDispatchToProps()', () => {
     describe('when mapping loadRecommendations', () => {
-      it('should load the recommendations with page equals 1 when no current recommendation', async () => {
+      it('should load the recommendations with page equals 1 when no current recommendation without user geolocation when it is denied', async () => {
         // given
         const handleRequestSuccess = jest.fn()
         const handleRequestFail = jest.fn()
@@ -137,125 +137,70 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         })
       })
 
-      it('should load the recommendations with page equals 2 when current recommendation is a valid one attached to an offer', async () => {
-        // given
-        const handleRequestSuccess = jest.fn()
-        const handleRequestFail = jest.fn()
-        const currentRecommendation = {
-          id: 'ABC3',
-          index: 1,
-          offerId: 'ABC2',
-        }
-        const recommendations = [{ id: 'AE3', index: 3, offerId: 'AE5' }]
-        const readRecommendations = null
-        const shouldReloadRecommendations = false
-        const functions = mapDispatchToProps(dispatch, props)
-        const { loadRecommendations } = functions
+      it(
+        'should load the recommendations with page equals 2' +
+          ' when current recommendation is a valid one attached to an offer' +
+          ' without user geolocation when it is denied',
+        async () => {
+          // given
+          const handleRequestSuccess = jest.fn()
+          const handleRequestFail = jest.fn()
+          const currentRecommendation = {
+            id: 'ABC3',
+            index: 1,
+            offerId: 'ABC2',
+          }
+          const recommendations = [{ id: 'AE3', index: 3, offerId: 'AE5' }]
+          const readRecommendations = null
+          const shouldReloadRecommendations = false
+          const functions = mapDispatchToProps(dispatch, props)
+          const { loadRecommendations } = functions
 
-        Object.defineProperty(navigator, 'permissions', {
-          writable: true,
-          value: {
-            query: jest.fn(() => ({
-              status: 'denied',
-            })),
-          },
-        })
-
-        Object.defineProperty(navigator, 'geolocation', {
-          writable: true,
-          value: {
-            getCurrentPosition: jest.fn(success => success()),
-          },
-        })
-
-        // when
-        await loadRecommendations(
-          handleRequestSuccess,
-          handleRequestFail,
-          currentRecommendation,
-          recommendations,
-          readRecommendations,
-          shouldReloadRecommendations
-        )
-
-        // then
-        expect(dispatch.mock.calls[0][0]).toStrictEqual({
-          config: {
-            apiPath: `/recommendations?`,
-            body: {
-              readRecommendations: null,
-              offersSentInLastCall: ['AE5'],
+          Object.defineProperty(navigator, 'permissions', {
+            writable: true,
+            value: {
+              query: jest.fn(() => ({
+                status: 'denied',
+              })),
             },
-            handleFail: handleRequestFail,
-            handleSuccess: handleRequestSuccess,
-            method: 'PUT',
-            normalizer: recommendationNormalizer,
-          },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
-        })
-      })
+          })
 
-      it('should make request with given geolocation to API', async () => {
-        // given
-        const handleRequestSuccess = jest.fn()
-        const handleRequestFail = jest.fn()
-        const currentRecommendation = {
-          id: 'ABC3',
-          index: 1,
-          offerId: 'ABC2',
-        }
-        const recommendations = [{ id: 'AE3', index: 3, offerId: 'AE4' }]
-        const readRecommendations = null
-        const shouldReloadRecommendations = false
-        const functions = mapDispatchToProps(dispatch, props)
-        const { loadRecommendations } = functions
-        const coordinates = { latitude: 48.192, longitude: 1.291 }
-
-        Object.defineProperty(navigator, 'permissions', {
-          writable: true,
-          value: {
-            query: jest.fn(() => ({
-              status: 'granted',
-            })),
-          },
-        })
-
-        Object.defineProperty(navigator, 'geolocation', {
-          writable: true,
-          value: {
-            getCurrentPosition: jest.fn(success => success()),
-          },
-        })
-
-        // when
-        await loadRecommendations(
-          handleRequestSuccess,
-          handleRequestFail,
-          currentRecommendation,
-          recommendations,
-          readRecommendations,
-          shouldReloadRecommendations,
-          coordinates
-        )
-
-        // then
-        expect(dispatch.mock.calls[0][0]).toStrictEqual({
-          config: {
-            apiPath: `/recommendations?longitude=1.291&latitude=48.192`,
-            body: {
-              readRecommendations: null,
-              offersSentInLastCall: ['AE4'],
+          Object.defineProperty(navigator, 'geolocation', {
+            writable: true,
+            value: {
+              getCurrentPosition: jest.fn(success => success()),
             },
-            handleFail: handleRequestFail,
-            handleSuccess: handleRequestSuccess,
-            method: 'PUT',
-            normalizer: recommendationNormalizer,
-          },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?LONGITUDE=1.291&LATITUDE=48.192',
-        })
-      })
+          })
 
-      it('should load the recommendations when user is geolocated', async () => {
+          // when
+          await loadRecommendations(
+            handleRequestSuccess,
+            handleRequestFail,
+            currentRecommendation,
+            recommendations,
+            readRecommendations,
+            shouldReloadRecommendations
+          )
+
+          // then
+          expect(dispatch.mock.calls[0][0]).toStrictEqual({
+            config: {
+              apiPath: `/recommendations?`,
+              body: {
+                readRecommendations: null,
+                offersSentInLastCall: ['AE5'],
+              },
+              handleFail: handleRequestFail,
+              handleSuccess: handleRequestSuccess,
+              method: 'PUT',
+              normalizer: recommendationNormalizer,
+            },
+            type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
+          })
+        }
+      )
+
+      it('should load recommendations using user geolocation when user geolocation is granted', async () => {
         // given
         const handleRequestSuccess = jest.fn()
         const handleRequestFail = jest.fn()
