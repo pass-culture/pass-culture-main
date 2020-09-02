@@ -5,7 +5,7 @@ import Signin from '../Signin'
 import { MemoryRouter } from 'react-router'
 import { Provider } from 'react-redux'
 import configureStore from '../../../../utils/store'
-import GenericError from '../../../layout/form/GenericError/GenericError'
+import GenericError from '../../../layout/inputs/Errors/GenericError'
 
 describe('src | components | pages | Signin | Signin ', () => {
   let submit

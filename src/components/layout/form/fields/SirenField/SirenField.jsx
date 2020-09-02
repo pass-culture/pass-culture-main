@@ -33,7 +33,7 @@ const SirenField = () => (
           <Fragment>
             <TextInput
               {...input}
-              errors={meta.modified && meta.error ? meta.error : null}
+              error={meta.modified && meta.error ? meta.error : null}
               label="SIREN"
               maxLength="11"
               name="siren"

@@ -34,7 +34,7 @@ const SirenField = props => {
           <div>
             <TextInput
               {...input}
-              errors={meta.modified && meta.error ? meta.error : null}
+              error={meta.modified && meta.error ? meta.error : null}
               label="SIREN de la structure que vous représentez"
               maxLength="11"
               name="siren"

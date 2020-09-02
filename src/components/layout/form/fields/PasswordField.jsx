@@ -40,7 +40,7 @@ class PasswordInput extends PureComponent {
 
     return (
       <TextInputWithIcon
-        errors={errors ? errors : null}
+        error={errors ? errors : null}
         icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
         iconAlt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
         label="Mot de passe"

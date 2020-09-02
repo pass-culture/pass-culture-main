@@ -7,7 +7,7 @@ import Main from '../../layout/Main'
 import Icon from '../../layout/Icon'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
-import GenericError from '../../layout/form/GenericError/GenericError'
+import GenericError from '../../layout/inputs/Errors/GenericError'
 
 class LostPassword extends PureComponent {
   constructor(props) {
@@ -178,7 +178,9 @@ class LostPassword extends PureComponent {
                       {'Saisissez le nouveau mot de passe'}
                     </h2>
                     {hasPasswordResetErrorMessage && (
-                      <GenericError message={'Une erreur s\'est produite, veuillez réessayer ultérieurement.'} />
+                      <GenericError
+                        message={"Une erreur s'est produite, veuillez réessayer ultérieurement."}
+                      />
                     )}
                     <form
                       onSubmit={this.submitResetPassword}
@@ -235,7 +237,9 @@ class LostPassword extends PureComponent {
                     </h2>
 
                     {hasPasswordResetRequestErrorMessage && (
-                      <GenericError message={'Une erreur s\'est produite, veuillez réessayer ultérieurement.'} />
+                      <GenericError
+                        message={"Une erreur s'est produite, veuillez réessayer ultérieurement."}
+                      />
                     )}
 
                     <form onSubmit={this.submitResetPasswordRequest}>

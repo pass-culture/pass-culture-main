@@ -7,7 +7,7 @@ import Main from '../../layout/Main'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
-import GenericError from '../../layout/form/GenericError/GenericError'
+import GenericError from '../../layout/inputs/Errors/GenericError'
 
 class Signin extends PureComponent {
   constructor(props) {
@@ -100,7 +100,9 @@ class Signin extends PureComponent {
                   <span className="has-text-grey">
                     {'Tous les champs sont obligatoires'}
                   </span>
-                  {hasErrorMessage && <GenericError message={'Identifiant ou mot de passe incorrect.'} />}
+                  {hasErrorMessage && (
+                    <GenericError message="Identifiant ou mot de passe incorrect." />
+                  )}
                   <form onSubmit={this.handleOnSubmit}>
                     <div className="field-group">
                       <TextInput

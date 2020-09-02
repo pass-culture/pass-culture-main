@@ -4,12 +4,18 @@ const StyleguideAgenda = () => {
   return (
     <ul>
       <li>
-        <a href="#sg-buttons">
+        <a
+          className="tertiary-link"
+          href="#sg-buttons"
+        >
           {'Boutons'}
         </a>
       </li>
       <li>
-        <a href="#sg-inputtext">
+        <a
+          className="tertiary-link"
+          href="#sg-inputtext"
+        >
           {'Inputs texte'}
         </a>
       </li>

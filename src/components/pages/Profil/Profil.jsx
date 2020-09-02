@@ -107,7 +107,7 @@ class Profil extends PureComponent {
               value={publicNameInputValue}
             />
             <TextInput
-              errors={hasEmailInputError ? 'Le format de l’email est incorrect.' : null}
+              error={hasEmailInputError ? 'Le format de l’email est incorrect.' : null}
               label="E-mail :"
               name="email"
               onChange={this.handleEmailInputChange}

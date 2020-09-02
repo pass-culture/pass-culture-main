@@ -57,10 +57,10 @@ class SignupForm extends PureComponent {
   }
 
   renderEmailTextField = ({ input }) => {
-    const {errors} = this.props
+    const { errors } = this.props
     return (
       <TextInput
-        errors={errors ? errors.email : null}
+        error={errors ? errors.email : null}
         label="Adresse e-mail"
         name="email"
         onChange={input.onChange}
@@ -68,15 +68,15 @@ class SignupForm extends PureComponent {
         required
 
         value={input.value}
-      />)
-
+      />
+    )
   }
 
   renderNameTextField = ({ input }) => {
-    const {errors} = this.props
+    const { errors } = this.props
     return (
       <TextInput
-        errors={errors ? errors.lastName : null}
+        error={errors ? errors.lastName : null}
         label="Nom"
         name="lastName"
         onChange={input.onChange}
@@ -91,7 +91,7 @@ class SignupForm extends PureComponent {
     const { errors } = this.props
     return (
       <TextInput
-        errors={errors ? errors.publicName : null}
+        error={errors ? errors.publicName : null}
         label="Prénom"
         name="firstName"
         onChange={input.onChange}
@@ -106,7 +106,7 @@ class SignupForm extends PureComponent {
     const { errors } = this.props
     return (
       <TextInput
-        errors={errors ? errors.phoneNumber : null}
+        error={errors ? errors.phoneNumber : null}
         label="Téléphone(utilisé uniquement par l’équipe du pass Culture)"
         name="phoneNumber"
         onChange={input.onChange}

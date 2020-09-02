@@ -53,6 +53,19 @@ const StyleguideInputText = () => {
     />
   `
 
+  const inputWithErrorMessage = String.raw`
+    <TextInputWithIcon
+      error="La saisie du champs n'est pas correcte"
+      icon="ico-search"
+      iconAlt="alt-for-icon"
+      label="Intitulé"
+      name="input-text-icon-disabled"
+      placeholder="placeholder with icon"
+      sublabel="Intitulé secondaire"
+      type="text"
+    />
+  `
+
   function onClick() {
     console.log('OnClick icon input')
   }
@@ -64,7 +77,7 @@ const StyleguideInputText = () => {
   return (
     <div>
       <h3>
-        {'Text Input - Default'}
+        {'Champs textuel'}
       </h3>
       <div className="flex-block">
         <TextInput
@@ -104,7 +117,7 @@ const StyleguideInputText = () => {
       </div>
       <hr />
       <h3>
-        {'Text Input - With Icon'}
+        {'Champs textuel avec icône'}
       </h3>
       <div className="flex-block">
         <div>
@@ -146,6 +159,31 @@ const StyleguideInputText = () => {
           <pre className="it-icon-snippet">
             <code>
               {inputWithIconDisabled}
+            </code>
+          </pre>
+        </div>
+      </div>
+      <hr />
+      <h3>
+        {'Champs textuel en erreur'}
+      </h3>
+      <div className="flex-block">
+        <div>
+          <TextInputWithIcon
+            error={"La saisie n'est pas correcte"}
+            icon="ico-search"
+            iconAlt="alt-for-icon"
+            label="Intitulé"
+            name="input-text-icon-disabled"
+            placeholder="placeholder with icon"
+            sublabel="Intitulé secondaire"
+            type="text"
+          />
+        </div>
+        <div className="it-description">
+          <pre className="it-icon-snippet">
+            <code>
+              {inputWithErrorMessage}
             </code>
           </pre>
         </div>
