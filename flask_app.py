@@ -69,6 +69,7 @@ def log_request_details(response):
         "path": request.path,
         "queryParams": request.query_string.decode('UTF-8'),
         "duration": request_duration_in_milliseconds,
+        "size": response.headers.get('Content-Length', type=int),
         "from": "flask"
     }
     json_logger = logging.getLogger('json')
