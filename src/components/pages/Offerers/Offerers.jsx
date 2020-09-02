@@ -24,7 +24,7 @@ class Offerers extends PureComponent {
     this.state = {
       hasMore: false,
       isLoading: false,
-      keywordsInputValue:'',
+      keywordsInputValue: '',
     }
   }
 
@@ -115,15 +115,20 @@ class Offerers extends PureComponent {
     if (queryParams[mapApiToBrowser.keywords] !== keywords) resetLoadedOfferers()
   }
 
-  renderForm = ({ handleSubmit }) => (
-    <form onSubmit={handleSubmit}>
-      <div className="form-search">
+  renderForm = ({ handleSubmit }) => {
+    const { keywordsInputValue } = this.state
+
+    return (
+      <form
+        className="form-search"
+        onSubmit={handleSubmit}
+      >
         <TextInput
           label="Rechercher une structure :"
           name="keywords"
           onChange={this.changeKeywordsValue}
           placeholder="Saisissez un ou plusieurs mots complets"
-          value={this.state.keywordsInputValue}
+          value={keywordsInputValue}
         />
         <button
           className="secondary-button"
@@ -131,9 +136,9 @@ class Offerers extends PureComponent {
         >
           {'OK'}
         </button>
-      </div>
-    </form>
-  )
+      </form>
+    )
+  }
 
   onPageChange = page => {
     const { query } = this.props

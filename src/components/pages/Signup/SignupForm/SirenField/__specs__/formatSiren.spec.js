@@ -7,10 +7,10 @@ describe('src | components | pages | OffererCreation | siren | formatSiren', () 
       const siren = undefined
 
       // when
-      const formatedSiret = formatSiren(siren)
+      const formatedSiren = formatSiren(siren)
 
       // then
-      expect(formatedSiret).toBe('')
+      expect(formatedSiren).toBe('')
     })
   })
 
@@ -20,10 +20,10 @@ describe('src | components | pages | OffererCreation | siren | formatSiren', () 
       const siren = ''
 
       // when
-      const formatedSiret = formatSiren(siren)
+      const formatedSiren = formatSiren(siren)
 
       // then
-      expect(formatedSiret).toBe('')
+      expect(formatedSiren).toBe('')
     })
   })
 
@@ -33,10 +33,10 @@ describe('src | components | pages | OffererCreation | siren | formatSiren', () 
       const siren = '100F'
 
       // when
-      const formatedSiret = formatSiren(siren)
+      const formatedSiren = formatSiren(siren)
 
       // then
-      expect(formatedSiret).toBe('100')
+      expect(formatedSiren).toBe('100')
     })
   })
 
@@ -46,10 +46,10 @@ describe('src | components | pages | OffererCreation | siren | formatSiren', () 
       const siren = '41816609600069'
 
       // when
-      const formatedSiret = formatSiren(siren)
+      const formatedSiren = formatSiren(siren)
 
       // then
-      expect(formatedSiret).toBe('418 166 096')
+      expect(formatedSiren).toBe('418 166 096')
     })
   })
 
@@ -59,10 +59,10 @@ describe('src | components | pages | OffererCreation | siren | formatSiren', () 
       const siren = '418    166 096'
 
       // when
-      const formatedSiret = formatSiren(siren)
+      const formatedSiren = formatSiren(siren)
 
       // then
-      expect(formatedSiret).toBe('418 166 096')
+      expect(formatedSiren).toBe('418 166 096')
     })
   })
 })

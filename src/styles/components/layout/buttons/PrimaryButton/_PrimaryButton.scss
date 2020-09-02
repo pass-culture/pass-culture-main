@@ -36,6 +36,7 @@
 
 .primary-link {
   @include primary();
+
   display: inline-block;
 
   &:active {

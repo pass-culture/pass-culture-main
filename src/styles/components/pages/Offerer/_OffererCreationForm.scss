@@ -13,6 +13,7 @@
 
   .siren-input-error {
     @include caption();
+
     align-items: center;
     color: $primary;
     display: flex;

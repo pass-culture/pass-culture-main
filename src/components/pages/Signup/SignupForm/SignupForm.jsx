@@ -155,75 +155,61 @@ class SignupForm extends PureComponent {
           >
             {({ handleSubmit, valid, values }) => (
               <form onSubmit={handleSubmit}>
-                <div className="field">
-                  <Field
-                    component={this.renderEmailTextField}
-                    name="email"
-                    type="text"
-                    validate={required}
-                  />
-                  <FieldErrors customMessage={errors ? errors.email : null} />
-                </div>
+                <Field
+                  component={this.renderEmailTextField}
+                  name="email"
+                  type="text"
+                  validate={required}
+                />
+                <FieldErrors customMessage={errors ? errors.email : null} />
 
-                <div className="field">
-                  <PasswordField />
-                  <FieldErrors customMessage={errors ? errors.password : null} />
-                </div>
+                <PasswordField />
+                <FieldErrors customMessage={errors ? errors.password : null} />
 
-                <div className="field">
+                <Field
+                  component={this.renderNameTextField}
+                  name="lastName"
+                  required
+                  validate={required}
+                />
+                <FieldErrors customMessage={errors ? errors.lastName : null} />
+
+                <Field
+                  component={this.renderFirstNameTextField}
+                  name="firstName"
+                  validate={required}
+                />
+                <FieldErrors customMessage={errors ? errors.firstName : null} />
+                <FieldErrors customMessage={errors ? errors.publicName : null} />
+
+                <Field
+                  component={this.renderPhoneNumberField}
+                  name="phoneNumber"
+                  required
+                  validate={required}
+                />
+                <FieldErrors customMessage={errors ? errors.phoneNumber : null} />
+
+                <SirenField value={values.name} />
+
+                <label className="sign-up-checkbox">
                   <Field
-                    component={this.renderNameTextField}
-                    name="lastName"
+                    component="input"
+                    name="contact_ok"
                     required
+                    type="checkbox"
                     validate={required}
                   />
-                  <FieldErrors customMessage={errors ? errors.lastName : null} />
-                </div>
-
-                <div className="field">
-                  <Field
-                    component={this.renderFirstNameTextField}
-                    name="firstName"
-                    validate={required}
-                  />
-                  <FieldErrors customMessage={errors ? errors.firstName : null} />
-                  <FieldErrors customMessage={errors ? errors.publicName : null} />
-                </div>
-
-                <div className="field">
-                  <Field
-                    component={this.renderPhoneNumberField}
-                    name="phoneNumber"
-                    required
-                    validate={required}
-                  />
-                  <FieldErrors customMessage={errors ? errors.phoneNumber : null} />
-                </div>
-
-                <div className="field">
-                  <SirenField value={values.name} />
-                </div>
-
-                <div className="field">
-                  <label className="sign-up-checkbox">
-                    <Field
-                      component="input"
-                      name="contact_ok"
-                      required
-                      type="checkbox"
-                      validate={required}
-                    />
-                    <span>
-                      {
-                        'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture'
-                      }
-                      <span className="field-asterisk">
-                        {'*'}
-                      </span>
+                  <span>
+                    {
+                      'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture'
+                    }
+                    <span className="field-asterisk">
+                      {'*'}
                     </span>
-                    <FieldErrors customMessage={errors ? errors.contact_ok : null} />
-                  </label>
-                </div>
+                  </span>
+                  <FieldErrors customMessage={errors ? errors.contact_ok : null} />
+                </label>
 
                 <div className="sign-up-infos-before-signup">
                   <span>

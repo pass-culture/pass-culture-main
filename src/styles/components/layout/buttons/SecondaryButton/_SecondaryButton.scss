@@ -37,6 +37,7 @@
 
 .secondary-link {
   @include secondary();
+
   display: inline-block;
 
   &:active {

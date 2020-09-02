@@ -1,6 +1,7 @@
 .input-text {
   .it-sub-label {
     @include caption();
+
     color: $grey-dark;
     float: right;
     margin-left: rem(5px);
@@ -8,6 +9,7 @@
 
   .it-input {
     @include body();
+
     border: 1px solid $grey-medium;
     border-radius: 22px;
     color: $black;

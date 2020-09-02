@@ -1,4 +1,4 @@
-import { checkIfEmailIsValid } from '../checkIfEmailIsValid'
+import { isValidEmail } from '../isValidEmail'
 
 describe('check if email is valid', () => {
   it('should return true for a valid email', () => {
@@ -14,7 +14,7 @@ describe('check if email is valid', () => {
     ]
     validEmailList.forEach(email => {
       // When
-      const isEmailValid = checkIfEmailIsValid(email)
+      const isEmailValid = isValidEmail(email)
 
       // Then
       expect(isEmailValid).toBe(true)
@@ -40,7 +40,7 @@ describe('check if email is valid', () => {
     ]
     invalidEmailList.forEach(email => {
       // When
-      const isEmailValid = checkIfEmailIsValid(email)
+      const isEmailValid = isValidEmail(email)
 
       // Then
       expect(isEmailValid).toBe(false)

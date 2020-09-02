@@ -51,22 +51,22 @@ describe('src | components | pages | LostPassword', () => {
       expect(submitButton).toHaveLength(1)
     })
 
-    describe('when user successfully change request password change', () => {
+    describe('when user successfully request password change', () => {
       it('should redirect success message page', () => {
         // when
         const wrapper = shallow(<LostPassword {...props} />)
-        wrapper.instance().onHandleSuccessRedirectForResetPasswordRequest()
+        wrapper.instance().redirectToResetPasswordRequestSuccessPage()
 
         // then
         expect(props.history.push).toHaveBeenCalledWith('/mot-de-passe-perdu?envoye=1')
       })
     })
 
-    describe('when user does not succeed request password change', () => {
+    describe('when user does not succeed to request password change', () => {
       it('should display error message', () => {
         // when
         const wrapper = shallow(<LostPassword {...props} />)
-        wrapper.instance().onHandleFailForResetPasswordRequest()
+        wrapper.instance().displayPasswordResetRequestErrorMessage()
 
         // then
         const errorMessage = wrapper
@@ -111,14 +111,14 @@ describe('src | components | pages | LostPassword', () => {
       expect(submitButton).toHaveLength(1)
     })
 
-    describe('when user successfully change request password change', () => {
+    describe('when user successfully change password', () => {
       it('should redirect success message page', () => {
         // when
         const wrapper = shallow(<LostPassword {...props} />)
-        wrapper.instance().onHandleSuccessRedirectForResetPasswordRequest()
+        wrapper.instance().redirectToResetPasswordSuccessPage()
 
         // then
-        expect(props.history.push).toHaveBeenCalledWith('/mot-de-passe-perdu?envoye=1')
+        expect(props.history.push).toHaveBeenCalledWith('/mot-de-passe-perdu?change=1')
       })
     })
 
@@ -136,7 +136,7 @@ describe('src | components | pages | LostPassword', () => {
 
         // when
         const wrapper = shallow(<LostPassword {...props} />)
-        wrapper.instance().onHandleFailForResetPassword(state, action)
+        wrapper.instance().displayPasswordResetErrorMessages(state, action)
 
         // then
         const errorMessage = wrapper

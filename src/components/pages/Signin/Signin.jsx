@@ -53,7 +53,8 @@ class Signin extends PureComponent {
     }))
   }
 
-  handleOnSubmit = () => {
+  handleOnSubmit = event => {
+    event.preventDefault()
     const { submit } = this.props
     const { emailValue, passwordValue } = this.state
 
@@ -105,7 +106,7 @@ class Signin extends PureComponent {
                       {'Identifiant ou mot de passe incorrect.'}
                     </div>
                   )}
-                  <form>
+                  <form onSubmit={this.handleOnSubmit}>
                     <div className="field-group">
                       <TextInput
                         label="Adresse e-mail"
@@ -131,15 +132,13 @@ class Signin extends PureComponent {
                         value={passwordValue}
                       />
                     </div>
-                    <span>
-                      <Link
-                        className="tertiary-link"
-                        id="lostPasswordLink"
-                        to="/mot-de-passe-perdu"
-                      >
-                        {'Mot de passe égaré ?'}
-                      </Link>
-                    </span>
+                    <Link
+                      className="tertiary-link"
+                      id="lostPasswordLink"
+                      to="/mot-de-passe-perdu"
+                    >
+                      {'Mot de passe égaré ?'}
+                    </Link>
                     <div className="field buttons-field">
                       <Link
                         className="secondary-link"
@@ -151,8 +150,7 @@ class Signin extends PureComponent {
                         className="primary-button"
                         disabled={isSubmitButtonDisabled}
                         id="signin-submit-button"
-                        onClick={this.handleOnSubmit}
-                        type="button"
+                        type="submit"
                       >
                         {'Se connecter'}
                       </button>

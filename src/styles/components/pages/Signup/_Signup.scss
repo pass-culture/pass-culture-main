@@ -129,8 +129,8 @@
     align-items: center;
   }
 
-  .field {
-    margin-bottom: rem(20px);
+  label {
+    margin-bottom: rem(15px);
   }
 
   .field-siren-control {
@@ -185,7 +185,7 @@
   }
 
   .field-password > img {
-    padding: rem(22px) rem(15px) 0;
+    padding: rem(7px) rem(15px) 0;
   }
 
   .sign-up-infos-before-signup {
@@ -193,6 +193,7 @@
     font-size: rem(14px);
     font-weight: 500;
     line-height: rem(22px);
+    margin-top: rem(20px);
   }
 
   .buttons-field {

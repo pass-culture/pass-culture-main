@@ -156,10 +156,10 @@ describe('src | components | pages | Signin | Signin ', () => {
       emailInput.invoke('onChange')({ target: { value: 'un email' } })
       const passwordInput = wrapper.find('input[type="password"]')
       passwordInput.invoke('onChange')({ target: { value: 'un mot de passe' } })
-      const submitButton = wrapper.find({ children: 'Se connecter' })
+      const submitButton = wrapper.find('form')
 
       // When
-      submitButton.invoke('onClick')()
+      submitButton.invoke('onSubmit')({ preventDefault: jest.fn() })
 
       // then
       expect(props.submit).toHaveBeenCalledWith(

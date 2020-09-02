@@ -65,10 +65,10 @@ describe('src | components | pages | Profil', () => {
         </MemoryRouter>
       </Provider>
     )
-    const submitButton = wrapper.find({ children: 'Enregistrer' })
+    const submitButton = wrapper.find('form')
 
     // when
-    submitButton.invoke('onClick')()
+    submitButton.invoke('onSubmit')({ preventDefault: jest.fn() })
 
     // then
     expect(dispatch.mock.calls[0][0]).toStrictEqual({
@@ -115,7 +115,7 @@ describe('src | components | pages | Profil', () => {
     const inputName = wrapper.findWhere(node => node.text() === 'Nom :').first()
 
     // when
-    inputName.invoke('onChange')({target:{value:'AA'}})
+    inputName.invoke('onChange')({ target: { value: 'AA' } })
     const submitButton = wrapper.find({ children: 'Enregistrer' })
 
     // then
@@ -134,9 +134,11 @@ describe('src | components | pages | Profil', () => {
     const inputEmail = wrapper.findWhere(node => node.text() === 'E-mail :').first()
 
     // when
-    inputEmail.invoke('onChange')({target:{value:'fake@email'}})
-    wrapper.find({ children: 'Enregistrer' }).invoke('onClick')()
-    const errorMessage = wrapper.findWhere(node => node.text() === 'Le format de l’email est incorrect.').first()
+    inputEmail.invoke('onChange')({ target: { value: 'fake@email' } })
+    wrapper.find('form').invoke('onSubmit')({ preventDefault: jest.fn() })
+    const errorMessage = wrapper
+      .findWhere(node => node.text() === 'Le format de l’email est incorrect.')
+      .first()
 
     // then
     expect(errorMessage).toHaveLength(1)

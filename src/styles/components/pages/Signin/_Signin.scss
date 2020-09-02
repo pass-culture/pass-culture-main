@@ -64,14 +64,11 @@
   }
 
   h1 {
-    font-weight: $weight-medium;
+    @include title1();
   }
 
   h2 {
-    font-size: rem(20px);
-    font-weight: $weight-medium;
-    line-height: rem(24px);
-    margin-bottom: rem(12px);
+    @include title2();
   }
 
   form {
@@ -146,9 +143,5 @@
       font-family: inherit;
       white-space: pre-wrap;
     }
-  }
-
-  .it-input {
-    margin-bottom: rem(32px);
   }
 }

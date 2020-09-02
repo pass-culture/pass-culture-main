@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { Field } from 'react-final-form'
 import formatSiren from './formatSiren'
 import { composeValidators, removeWhitespaces } from 'react-final-form-utils'
@@ -22,37 +22,35 @@ export const existsInINSEERegistry = async value => {
   return undefined
 }
 
-const SirenField = () => {
-  return (
-    <Field
-      format={formatSiren}
-      minLength={11}
-      name="siren"
-      validate={composeValidators(required, mustHaveTheProperLength, existsInINSEERegistry)}
-    >
-      {({ input, meta }) => {
-        return (
-          <div>
-            <TextInput
-              {...input}
-              label="SIREN"
-              maxLength="11"
-              name="siren"
-              placeholder="123 456 789"
-              sublabel="obligatoire"
-            />
-            {meta.modified && meta.error && (
-              <div className="siren-input-error">
-                <Icon svg="picto-echec" />
-                {meta.error}
-              </div>
-            )}
-          </div>
-        )
-      }}
-    </Field>
-  )
-}
+const SirenField = () => (
+  <Field
+    format={formatSiren}
+    minLength={11}
+    name="siren"
+    validate={composeValidators(required, mustHaveTheProperLength, existsInINSEERegistry)}
+  >
+    {({ input, meta }) => {
+      return (
+        <Fragment>
+          <TextInput
+            {...input}
+            label="SIREN"
+            maxLength="11"
+            name="siren"
+            placeholder="123 456 789"
+            sublabel="obligatoire"
+          />
+          {meta.modified && meta.error && (
+            <div className="siren-input-error">
+              <Icon svg="picto-echec" />
+              {meta.error}
+            </div>
+          )}
+        </Fragment>
+      )
+    }}
+  </Field>
+)
 
 SirenField.defaultProps = {
   subLabel: null,

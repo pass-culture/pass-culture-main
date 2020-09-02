@@ -1,6 +1,7 @@
 .styleguide-page {
   h2 {
     @include title2();
+
     margin-bottom: rem(20px);
   }
 

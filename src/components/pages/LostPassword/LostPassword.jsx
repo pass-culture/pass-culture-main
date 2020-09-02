@@ -21,15 +21,12 @@ class LostPassword extends PureComponent {
     }
   }
 
-  onHandleSuccessRedirectForResetPassword = () => {
+  redirectToResetPasswordSuccessPage = () => {
     const { history } = this.props
     history.push('/mot-de-passe-perdu?change=1')
   }
 
-  onHandleFailForResetPasswordRequest = () =>
-    this.setState({ hasPasswordResetRequestErrorMessage: true })
-
-  onHandleFailForResetPassword = (state, action) => {
+  displayPasswordResetErrorMessages = (state, action) => {
     if (action.payload.errors.newPassword) {
       this.setState({ newPasswordErrorMessage: action.payload.errors.newPassword[0] })
     } else {
@@ -37,31 +34,36 @@ class LostPassword extends PureComponent {
     }
   }
 
-  onHandleSuccessRedirectForResetPasswordRequest = () => {
+  redirectToResetPasswordRequestSuccessPage = () => {
     const { history } = this.props
     history.push('/mot-de-passe-perdu?envoye=1')
   }
 
-  submitResetPasswordRequest = () => {
+  displayPasswordResetRequestErrorMessage = () =>
+    this.setState({ hasPasswordResetRequestErrorMessage: true })
+
+  submitResetPasswordRequest = event => {
+    event.preventDefault()
     const { submitResetPasswordRequest } = this.props
     const { emailValue } = this.state
 
     return submitResetPasswordRequest(
       emailValue,
-      this.onHandleSuccessRedirectForResetPasswordRequest,
-      this.onHandleFailForResetPasswordRequest
+      this.redirectToResetPasswordRequestSuccessPage,
+      this.displayPasswordResetRequestErrorMessage
     )
   }
 
-  submitResetPassword = () => {
+  submitResetPassword = event => {
+    event.preventDefault()
     const { submitResetPassword, token } = this.props
     const { newPasswordValue } = this.state
 
     return submitResetPassword(
       newPasswordValue,
       token,
-      this.onHandleSuccessRedirectForResetPassword,
-      this.onHandleFailForResetPassword
+      this.redirectToResetPasswordSuccessPage,
+      this.displayPasswordResetErrorMessages
     )
   }
 
@@ -75,8 +77,8 @@ class LostPassword extends PureComponent {
     this.setState({ hasPasswordResetErrorMessage: false })
   }
 
-  handleToggleHidden = e => {
-    e.preventDefault()
+  handleToggleHidden = event => {
+    event.preventDefault()
     this.setState(previousState => ({
       isPasswordHidden: !previousState.isPasswordHidden,
     }))
@@ -170,7 +172,7 @@ class LostPassword extends PureComponent {
                         </span>
                       </div>
                     )}
-                    <form>
+                    <form onSubmit={this.submitResetPassword}>
                       <TextInputWithIcon
                         icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
                         iconAlt={
@@ -198,8 +200,7 @@ class LostPassword extends PureComponent {
 
                       <button
                         className="primary-button submit-button"
-                        onClick={this.submitResetPassword}
-                        type="button"
+                        type="submit"
                       >
                         {'Envoyer'}
                       </button>
@@ -230,7 +231,7 @@ class LostPassword extends PureComponent {
                       </div>
                     )}
 
-                    <form>
+                    <form onSubmit={this.submitResetPasswordRequest}>
                       <TextInput
                         label="Adresse e-mail"
                         name="email"
@@ -244,8 +245,7 @@ class LostPassword extends PureComponent {
 
                       <button
                         className="primary-button"
-                        onClick={this.submitResetPasswordRequest}
-                        type="button"
+                        type="submit"
                       >
                         {'Envoyer'}
                       </button>

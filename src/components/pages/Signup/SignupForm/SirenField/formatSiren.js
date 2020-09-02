@@ -6,8 +6,9 @@ const formatSiren = input => {
   const inputWithoutWhitespaces = removeWhitespaces(input)
   const siren = inputWithoutWhitespaces.substring(0, 9)
   const sirenWithOnlyDigits = siren.replace(/[/\D]/, '')
+  const groupThreeNumbersRegex = /.{1,3}/g
 
-  return (sirenWithOnlyDigits.match(/.{1,3}/g) || []).join(' ')
+  return sirenWithOnlyDigits.match(groupThreeNumbersRegex).join(' ')
 }
 
 export default formatSiren

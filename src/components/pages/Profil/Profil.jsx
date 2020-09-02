@@ -8,7 +8,7 @@ import Titles from '../../layout/Titles/Titles'
 import Main from '../../layout/Main'
 import { version } from '../../../../package.json'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
-import { checkIfEmailIsValid } from './domain/checkIfEmailIsValid'
+import { isValidEmail } from './domain/isValidEmail'
 import Icon from '../../layout/Icon'
 
 class Profil extends PureComponent {
@@ -25,7 +25,8 @@ class Profil extends PureComponent {
     }
   }
 
-  handleOnSubmit = () => {
+  handleOnSubmit = event => {
+    event.preventDefault()
     this.setState({ isLoading: true })
     const { dispatch } = this.props
     const { emailInputValue, publicNameInputValue } = this.state
@@ -42,7 +43,7 @@ class Profil extends PureComponent {
       isMergingDatum: true,
     }
 
-    const isEmailValid = checkIfEmailIsValid(emailInputValue)
+    const isEmailValid = isValidEmail(emailInputValue)
     if (isEmailValid) {
       dispatch(requestData(config))
       this.setState({ hasEmailInputError: false })
@@ -93,48 +94,46 @@ class Profil extends PureComponent {
     const { isLoading, publicNameInputValue, emailInputValue, hasEmailInputError } = this.state
 
     return (
-      <form>
-        <div>
-          <div className="field-profil-input">
-            <TextInput
-              label="Nom :"
-              name="publicName"
-              onChange={this.handlePublicNameInputChange}
-              placeholder="3 caractères minimum"
-              required
-              value={publicNameInputValue}
-            />
-            <TextInput
-              label="E-mail :"
-              name="email"
-              onChange={this.handleEmailInputChange}
-              placeholder=""
-              value={emailInputValue}
-            />
-            {hasEmailInputError && (
-              <div className="errors">
-                <Icon svg="picto-warning" />
-                {'Le format de l’email est incorrect.'}
-              </div>
-            )}
+      <form
+        className="field-profil-input"
+        onSubmit={this.handleOnSubmit}
+      >
+        <TextInput
+          label="Nom :"
+          name="publicName"
+          onChange={this.handlePublicNameInputChange}
+          placeholder="3 caractères minimum"
+          required
+          value={publicNameInputValue}
+        />
+        <TextInput
+          label="E-mail :"
+          name="email"
+          onChange={this.handleEmailInputChange}
+          placeholder=""
+          value={emailInputValue}
+        />
+        {hasEmailInputError && (
+          <div className="errors">
+            <Icon svg="picto-warning" />
+            {'Le format de l’email est incorrect.'}
           </div>
+        )}
 
-          <div
-            className="field is-grouped"
-            style={{ justifyContent: 'space-between' }}
-          >
-            <div className="control">
-              <button
-                className={classnames('primary-button', {
-                  'is-loading': isLoading,
-                })}
-                disabled={this.isSubmitDisabled()}
-                onClick={this.handleOnSubmit}
-                type="button"
-              >
-                {'Enregistrer'}
-              </button>
-            </div>
+        <div
+          className="field is-grouped"
+          style={{ justifyContent: 'space-between' }}
+        >
+          <div className="control">
+            <button
+              className={classnames('primary-button', {
+                'is-loading': isLoading,
+              })}
+              disabled={this.isSubmitDisabled()}
+              type="submit"
+            >
+              {'Enregistrer'}
+            </button>
           </div>
         </div>
         <div className="app-version">
