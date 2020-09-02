@@ -5,6 +5,7 @@ import LostPassword from '../LostPassword'
 import { MemoryRouter } from 'react-router'
 import { Provider } from 'react-redux'
 import configureStore from '../../../../utils/store'
+import GenericError from '../../../layout/form/GenericError/GenericError'
 
 describe('src | components | pages | LostPassword', () => {
   let props
@@ -95,12 +96,10 @@ describe('src | components | pages | LostPassword', () => {
         wrapper.instance().displayPasswordResetRequestErrorMessage()
 
         // then
-        const errorMessage = wrapper
-          .findWhere(
-            node => node.text() === "Une erreur s'est produite, veuillez réessayer ultérieurement."
-          )
-          .first()
-        expect(errorMessage).toHaveLength(1)
+        const genericError = wrapper.find(GenericError)
+        expect(genericError.prop('message')).toStrictEqual(
+          "Une erreur s'est produite, veuillez réessayer ultérieurement."
+        )
       })
     })
   })
@@ -191,12 +190,11 @@ describe('src | components | pages | LostPassword', () => {
         wrapper.instance().displayPasswordResetErrorMessages(state, action)
 
         // then
-        const errorMessage = wrapper
-          .findWhere(
-            node => node.text() === "Une erreur s'est produite, veuillez réessayer ultérieurement."
-          )
-          .first()
-        expect(errorMessage).toHaveLength(1)
+
+        const genericError = wrapper.find(GenericError)
+        expect(genericError.prop('message')).toStrictEqual(
+          "Une erreur s'est produite, veuillez réessayer ultérieurement."
+        )
       })
     })
   })

@@ -9,7 +9,6 @@ import Main from '../../layout/Main'
 import { version } from '../../../../package.json'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import { isValidEmail } from './domain/isValidEmail'
-import Icon from '../../layout/Icon'
 
 class Profil extends PureComponent {
   constructor(props) {
@@ -98,27 +97,24 @@ class Profil extends PureComponent {
         className="field-profil-input"
         onSubmit={this.handleOnSubmit}
       >
-        <TextInput
-          label="Nom :"
-          name="publicName"
-          onChange={this.handlePublicNameInputChange}
-          placeholder="3 caractères minimum"
-          required
-          value={publicNameInputValue}
-        />
-        <TextInput
-          label="E-mail :"
-          name="email"
-          onChange={this.handleEmailInputChange}
-          placeholder=""
-          value={emailInputValue}
-        />
-        {hasEmailInputError && (
-          <div className="errors">
-            <Icon svg="picto-warning" />
-            {'Le format de l’email est incorrect.'}
+          <div className="field-profil-input">
+            <TextInput
+              label="Nom :"
+              name="publicName"
+              onChange={this.handlePublicNameInputChange}
+              placeholder="3 caractères minimum"
+              required
+              value={publicNameInputValue}
+            />
+            <TextInput
+              errors={hasEmailInputError ? 'Le format de l’email est incorrect.' : null}
+              label="E-mail :"
+              name="email"
+              onChange={this.handleEmailInputChange}
+              placeholder="votre email"
+              value={emailInputValue}
+            />
           </div>
-        )}
 
         <div
           className="field is-grouped"

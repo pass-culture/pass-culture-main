@@ -5,6 +5,11 @@
     text-align: right;
   }
 
+  .input-text {
+    display: block;
+    margin-bottom: rem(16px);
+  }
+
   .errors {
     @include caption();
     align-items: center;

@@ -5,7 +5,6 @@ import { composeValidators, removeWhitespaces } from 'react-final-form-utils'
 import { getSirenInformation } from '../../../../pages/Offerer/OffererCreation/decorators/getSirenInformation'
 import PropTypes from 'prop-types'
 import TextInput from '../../../inputs/TextInput/TextInput'
-import Icon from '../../../Icon'
 
 const required = value => {
   return value ? undefined : 'Ce champ est obligatoire'
@@ -23,34 +22,29 @@ export const existsInINSEERegistry = async value => {
 }
 
 const SirenField = () => (
-  <Field
-    format={formatSiren}
-    minLength={11}
-    name="siren"
-    validate={composeValidators(required, mustHaveTheProperLength, existsInINSEERegistry)}
-  >
-    {({ input, meta }) => {
-      return (
-        <Fragment>
-          <TextInput
-            {...input}
-            label="SIREN"
-            maxLength="11"
-            name="siren"
-            placeholder="123 456 789"
-            sublabel="obligatoire"
-          />
-          {meta.modified && meta.error && (
-            <div className="siren-input-error">
-              <Icon svg="picto-echec" />
-              {meta.error}
-            </div>
-          )}
-        </Fragment>
-      )
-    }}
-  </Field>
-)
+    <Field
+      format={formatSiren}
+      minLength={11}
+      name="siren"
+      validate={composeValidators(required, mustHaveTheProperLength, existsInINSEERegistry)}
+    >
+      {({ input, meta }) => {
+        return (
+          <Fragment>
+            <TextInput
+              {...input}
+              errors={meta.modified && meta.error ? meta.error : null}
+              label="SIREN"
+              maxLength="11"
+              name="siren"
+              placeholder="123 456 789"
+              sublabel="obligatoire"
+            />
+          </Fragment>
+        )
+      }}
+    </Field>
+  )
 
 SirenField.defaultProps = {
   subLabel: null,

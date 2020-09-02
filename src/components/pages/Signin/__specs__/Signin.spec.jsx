@@ -5,6 +5,7 @@ import Signin from '../Signin'
 import { MemoryRouter } from 'react-router'
 import { Provider } from 'react-redux'
 import configureStore from '../../../../utils/store'
+import GenericError from '../../../layout/form/GenericError/GenericError'
 
 describe('src | components | pages | Signin | Signin ', () => {
   let submit
@@ -265,10 +266,8 @@ describe('src | components | pages | Signin | Signin ', () => {
         wrapper.instance().onHandleFail(state, action)
 
         // then
-        const errorMessage = wrapper
-          .findWhere(node => node.text() === 'Identifiant ou mot de passe incorrect.')
-          .first()
-        expect(errorMessage).toHaveLength(1)
+        const genericError = wrapper.find(GenericError)
+        expect(genericError.prop('message')).toStrictEqual('Identifiant ou mot de passe incorrect.')
       })
     })
   })

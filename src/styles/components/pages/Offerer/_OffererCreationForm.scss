@@ -6,21 +6,8 @@
 }
 
 .op-creation-form {
-  .it-input {
+  .input-text {
     display: block;
-    width: 100%;
-  }
-
-  .siren-input-error {
-    @include caption();
-
-    align-items: center;
-    color: $primary;
-    display: flex;
-    margin-bottom: rem(15px);
-
-    img {
-      margin-right: rem(5px);
-    }
+    margin-bottom: rem(16px);
   }
 }
