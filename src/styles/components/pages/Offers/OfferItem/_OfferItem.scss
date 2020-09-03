@@ -1,80 +1,59 @@
 li.offer-item {
-  img {
-    max-height: 100px;
+  align-items: center;
+  display: grid;
+  grid-column-gap: rem(16px);
+  grid-template-columns: rem(82px) 1fr 1fr 1fr rem(96px) rem(40px);
+
+  .name {
+    @include button();
+
+    margin-bottom: rem(4px);
   }
 
-  .infos {
-    margin-bottom: 1rem;
-  }
-
-  .name,
-  .infos,
   .offer-thumb {
-    opacity: 0.5;
+    height: rem(84px);
+    object-fit: cover;
+    width: 100%;
   }
 
-  &.active {
-    .name,
-    .infos,
-    .offer-thumb {
-      opacity: 1;
-    }
-  }
-
-  ul {
-    border-top: 1px solid $grey-light;
-
-    li,
-    .label {
-      font-size: 0.82rem;
-      display: inline;
-    }
-  }
-
-  ul.main-list & .list-content {
+  .default-thumb {
+    align-items: center;
+    background-color: $grey-medium;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
+    height: rem(84px);
+    justify-content: center;
+
+    svg {
+      height: 75%;
+      width: 75%;
+    }
   }
 
-  ul.actions {
-    &.offer-actions-list {
-      justify-content: flex-end;
-      padding-top: 0.2rem;
+  &.inactive {
+    .name,
+    .offer-thumb,
+    .default-thumb {
+      opacity: 0.5;
+    }
+  }
 
-      a,
-      button {
-        font-weight: $weight-medium;
-      }
+  .title-container a {
+    display: block;
+  }
 
-      img {
-        height: 0.6rem;
-      }
+  .stocks {
+    color: $primary;
+  }
 
-      li {
-        flex-grow: 1;
-        text-align: center;
+  .secondary-link,
+  .secondary-button {
+    align-items: center;
+    display: flex;
+    justify-content: center;
 
-        &:nth-child(2) {
-          border-right: 1px solid $grey-light;
-        }
-
-        &:nth-child(3) {
-          border-right: 1px solid $grey-light;
-        }
-
-        &:first-child {
-          flex-grow: 6;
-          text-align: left;
-        }
-
-        &:last-child {
-          width: rem(50px);
-          text-align: center;
-          border-right: none;
-        }
-      }
+    img {
+      max-height: rem(16px);
+      max-width: rem(16px);
     }
   }
 }

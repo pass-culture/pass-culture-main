@@ -4,17 +4,8 @@ import { requestData } from 'redux-saga-data'
 import { withRouter } from 'react-router'
 
 import OfferItem from './OfferItem'
-
-import {
-  selectAggregatedStockByOfferId,
-  selectLatestDateByOfferId,
-  selectStocksByOfferId,
-} from '../../../../selectors/data/stocksSelectors'
-import { selectMediationsByOfferId } from '../../../../selectors/data/mediationsSelectors'
-import { selectProductById } from '../../../../selectors/data/productsSelectors'
-import { selectTypeValueByOffer } from '../../../../selectors/data/typesSelectors'
+import { selectStocksByOfferId } from '../../../../selectors/data/stocksSelectors'
 import { selectVenueById } from '../../../../selectors/data/venuesSelectors'
-import { selectOffererById } from '../../../../selectors/data/offerersSelectors'
 import { offerNormalizer } from '../../../../utils/normalizers'
 import withTracking from '../../../hocs/withTracking'
 
@@ -38,21 +29,13 @@ export const mapDispatchToProps = dispatch => ({
 
 export const mapStateToProps = (state, ownProps) => {
   const { offer } = ownProps
-  const { id: offerId, productId, venueId } = offer
-  const product = selectProductById(state, productId)
+  const { id: offerId, venueId } = offer
   const venue = selectVenueById(state, venueId)
-  const offerer = selectOffererById(state, venue.managingOffererId)
 
   const availabilityMessage = offer.availabilityMessage
 
   return {
-    aggregatedStock: selectAggregatedStockByOfferId(state, offerId),
-    maxDate: selectLatestDateByOfferId(state, offerId),
-    mediations: selectMediationsByOfferId(state, offerId),
-    product,
     stocks: selectStocksByOfferId(state, offerId),
-    offerer,
-    offerTypeLabel: selectTypeValueByOffer(state, offer),
     availabilityMessage,
     venue,
   }

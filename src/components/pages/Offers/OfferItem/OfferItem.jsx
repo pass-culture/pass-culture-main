@@ -1,27 +1,12 @@
-import classnames from 'classnames'
-import get from 'lodash.get'
-import { Icon, pluralize } from 'pass-culture-shared'
-import React, { PureComponent } from 'react'
-import Dotdotdot from 'react-dotdotdot'
+import { pluralize } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
-import Price from '../../../layout/Price'
-import Thumb from '../../../layout/Thumb'
-import OfferPreviewLink from '../../../layout/OfferPreviewLink/OfferPreviewLink'
-import { buildWebappDiscoveryUrl } from '../../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
+import Icon from '../../../layout/Icon'
+import { SVGOffers } from '../../../svg/SVGOffers'
 
 class OfferItem extends PureComponent {
-  handleHrefClick = event => {
-    event.preventDefault()
-    const { offer } = this.props
-    const offerId = get(offer, 'id')
-    const mediationId = get(get(offer, 'activeMediation'), 'id')
-    const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
-
-    window.open(offerWebappUrl, 'targetWindow', 'toolbar=no,width=375,height=667').focus()
-  }
-
   handleOnDeactivateClick = () => {
     const { offer, updateOffer, trackActivateOffer, trackDeactivateOffer } = this.props
     const { id, isActive } = offer || {}
@@ -41,170 +26,78 @@ class OfferItem extends PureComponent {
 
   render() {
     const {
-      aggregatedStock,
       availabilityMessage,
       location: { search },
-      maxDate,
-      mediations,
       offer,
-      offerTypeLabel,
-      offerer,
-      product,
       stocks,
       venue,
     } = this.props
 
-    const { isNew, name } = offer || {}
-    const { priceMin, priceMax } = aggregatedStock || {}
-    const numberOfMediations = get(mediations, 'length')
-    const remainingStockQuantity = get(stocks, 'length')
-    const mediationId = get(get(offer, 'activeMediation'), 'id')
-    const offerWebappUrl = buildWebappDiscoveryUrl(offer.id, mediationId)
-    const offerHasActiveMediations = get(offer, 'activeMediation')
-    const offerisEditable = get(offer, 'isEditable')
+    const { name } = offer || {}
+    const stockSize = stocks ? stocks.length : null
+    const offerIsEditable = offer ? offer.isEditable : null
 
     return (
-      <li
-        className={classnames('offer-item', {
-          active: offer.isActive,
-          product,
-        })}
-      >
-        <Thumb
-          alt="offre"
-          src={offer.thumbUrl || ''}
-        />
-        <div className="list-content">
+      <li className={`offer-item ${!offer.isActive ? 'inactive' : ''}`}>
+        {offer.thumbUrl ? (
+          <img
+            alt=""
+            className="offer-thumb"
+            src={offer.thumbUrl || ''}
+          />
+        ) : (
+          <div className="default-thumb">
+            <SVGOffers />
+          </div>
+        )}
+        <div className="title-container">
           <Link
             className="name"
-            title={name}
+            title="Afficher le détail de l'offre"
             to={`/offres/${offer.id}${search}`}
           >
-            <Dotdotdot clamp={1}>
-              {name}
-            </Dotdotdot>
+            {name}
           </Link>
-          <ul className="infos">
-            <li className="is-uppercase">
-              {offerTypeLabel}
-            </li>
-            <li>
-              <span className="label">
-                {'Structure : '}
-              </span>
-              {offerer && offerer.name}
-            </li>
-            <li>
-              <span className="label">
-                {'Lieu : '}
-              </span>
-              {(venue && venue.publicName) || venue.name}
-            </li>
-          </ul>
-          <ul className="infos">
-            {isNew && (
-              <li>
-                <div className="recently-added" />
-              </li>
-            )}
-            <li>
-              <Link
-                className="has-text-primary"
-                to={`/offres/${offer.id}?gestion`}
-              >
-                {this.buildProductNavLinkLabel(offer, remainingStockQuantity)}
-              </Link>
-            </li>
-            <li>
-              {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
-            </li>
-            {availabilityMessage &&
-            <li>
-              {availabilityMessage}
-            </li>}
-            <li>
-              {priceMin === priceMax ? (
-                <Price value={priceMin || 0} />
-              ) : (
-                <span>
-                  <Price value={priceMin} />
-                  {' - '}
-                  <Price value={priceMax} />
-                </span>
-              )}
-            </li>
-          </ul>
-          <ul className="actions offer-actions-list">
-            <li>
-              <Link
-                className={`button is-small ${
-                  numberOfMediations ? 'is-tertiary' : 'is-primary is-outlined'
-                } add-mediations-link`}
-                to={`/offres/${offer.id}${numberOfMediations ? '' : `/accroches/nouveau${search}`}`}
-              >
-                <span className="icon">
-                  <Icon svg="ico-stars" />
-                </span>
-                <span>
-                  {numberOfMediations ? 'Accroches' : 'Ajouter une Accroche'}
-                </span>
-              </Link>
-            </li>
-            {offerHasActiveMediations && (
-              <li>
-                <OfferPreviewLink
-                  className="button is-tertiary is-small offer-preview-link"
-                  offerWebappUrl={offerWebappUrl}
-                  onClick={this.handleHrefClick}
-                />
-              </li>
-            )}
-            {offerisEditable && (
-              <li>
-                <Link
-                  className="button is-tertiary is-small edit-link"
-                  to={`/offres/${offer.id}`}
-                >
-                  <Icon svg="ico-pen-r" />
-                  {'Modifier'}
-                </Link>
-              </li>
-            )}
-            <li>
-              <button
-                className="button is-tertiary is-small activ-switch"
-                onClick={this.handleOnDeactivateClick}
-                type="button"
-              >
-                {offer.isActive ? (
-                  <span>
-                    <Icon svg="ico-close-r" />
-                    {'Désactiver'}
-                  </span>
-                ) : (
-                  'Activer'
-                )}
-              </button>
-            </li>
-          </ul>
+          <Link
+            className="stocks quaternary-link"
+            title="Afficher le détail des stocks"
+            to={`/offres/${offer.id}?gestion`}
+          >
+            {this.buildProductNavLinkLabel(offer, stockSize)}
+          </Link>
         </div>
+        <span>
+          {(venue && venue.publicName) || venue.name}
+        </span>
+        {availabilityMessage && <span>
+          {availabilityMessage}
+                                </span>}
+        <button
+          className="secondary-button"
+          onClick={this.handleOnDeactivateClick}
+          type="button"
+        >
+          {offer.isActive ? 'Désactiver' : 'Activer'}
+        </button>
+        {offerIsEditable && (
+          <Link
+            className="secondary-link"
+            to={`/offres/${offer.id}`}
+          >
+            <Icon svg="ico-pen-r" />
+          </Link>
+        )}
       </li>
     )
   }
 }
 
 OfferItem.propTypes = {
-  aggregatedStock: PropTypes.shape().isRequired,
   availabilityMessage: PropTypes.string.isRequired,
   location: PropTypes.shape({
     search: PropTypes.string.isRequired,
   }).isRequired,
-  maxDate: PropTypes.shape().isRequired,
-  mediations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   offer: PropTypes.shape().isRequired,
-  offerTypeLabel: PropTypes.string.isRequired,
-  offerer: PropTypes.shape().isRequired,
-  product: PropTypes.shape().isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   trackActivateOffer: PropTypes.func.isRequired,
   trackDeactivateOffer: PropTypes.func.isRequired,

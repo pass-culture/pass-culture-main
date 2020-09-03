@@ -306,7 +306,7 @@ class Offers extends PureComponent {
           )}
 
           <LoadingInfiniteScroll
-            className="offers-list main-list"
+            className="offers-list"
             element="ul"
             handlePageChange={this.onPageChange}
             handlePageReset={this.onPageReset}

@@ -13,11 +13,13 @@ const Icon = ({ png, svg, alt, ...imgProps }) => {
 }
 
 Icon.defaultProps = {
+  alt: '',
   png: null,
   svg: null,
 }
 
 Icon.propTypes = {
+  alt: PropTypes.string,
   png: PropTypes.string,
   svg: PropTypes.string,
 }
