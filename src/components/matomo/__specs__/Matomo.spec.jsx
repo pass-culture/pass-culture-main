@@ -1,9 +1,10 @@
-import configureMockStore from 'redux-mock-store'
-import { createBrowserHistory } from 'history'
 import { mount } from 'enzyme'
-import { Provider } from 'react-redux'
+import { createBrowserHistory } from 'history'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { Router } from 'react-router'
+
+import getMockStore from '../../../utils/mockStore'
 import MatomoContainer from '../MatomoContainer'
 
 jest.mock('../../../utils/config', () => ({
@@ -11,14 +12,11 @@ jest.mock('../../../utils/config', () => ({
   ANDROID_APPLICATION_ID: 'app.passculture.testing.webapp',
 }))
 
-describe('src | components | matomo | Matomo', () => {
+describe('src | components | Matomo', () => {
   let fakeMatomo
   let history
-  let initialState
   let store
   let props
-
-  const mockStore = configureMockStore()
 
   beforeEach(() => {
     history = createBrowserHistory()
@@ -27,14 +25,9 @@ describe('src | components | matomo | Matomo', () => {
       push: jest.fn(),
     }
     window._paq = fakeMatomo
-    initialState = {
-      currentUser: null,
-      geolocation: {
-        latitude: null,
-        longitude: null,
-      },
-    }
-    store = mockStore(initialState)
+    store = getMockStore({
+      currentUser: (state = null) => state,
+    })
   })
 
   it('should push a new page displayed event', () => {
@@ -107,14 +100,12 @@ describe('src | components | matomo | Matomo', () => {
   describe('when user is logged', () => {
     it('should dispatch the user id when current user is logged', () => {
       // given
-      store = mockStore({
-        currentUser: {
-          id: '5FYTbfk4TR',
-        },
-        geolocation: {
-          latitude: null,
-          longitude: null,
-        },
+      store = getMockStore({
+        currentUser: (
+          state = {
+            id: '5FYTbfk4TR',
+          }
+        ) => state,
       })
 
       // when
@@ -134,14 +125,12 @@ describe('src | components | matomo | Matomo', () => {
   describe('when user is coming from webapp', () => {
     it('should dispatch user id with the right platform and custom variable', () => {
       // Given
-      store = mockStore({
-        currentUser: {
-          id: '5FYTbfk4TR',
-        },
-        geolocation: {
-          latitude: null,
-          longitude: null,
-        },
+      store = getMockStore({
+        currentUser: (
+          state = {
+            id: '5FYTbfk4TR',
+          }
+        ) => state,
       })
 
       // When
@@ -180,14 +169,12 @@ describe('src | components | matomo | Matomo', () => {
         get: () => 'android-app://app.passculture.testing.webapp',
       })
 
-      store = mockStore({
-        currentUser: {
-          id: '5FYTbfk4TR',
-        },
-        geolocation: {
-          latitude: null,
-          longitude: null,
-        },
+      store = getMockStore({
+        currentUser: (
+          state = {
+            id: '5FYTbfk4TR',
+          }
+        ) => state,
       })
 
       // When

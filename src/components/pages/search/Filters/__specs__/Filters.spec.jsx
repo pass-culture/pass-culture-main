@@ -5,8 +5,8 @@ import Slider, { Range } from 'rc-slider'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
-import configureStore from 'redux-mock-store'
 
+import getMockStore from '../../../../../utils/mockStore'
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import { Criteria } from '../../Criteria/Criteria'
@@ -40,7 +40,9 @@ const stubRef = wrapper => {
 describe('components | Filters', () => {
   const actualDate = global.Date
   const now = new Date(2020, 3, 14)
-  const store = configureStore([])()
+  const store = getMockStore({
+    data: (state = {}) => state,
+  })
   let props
 
   beforeEach(() => {

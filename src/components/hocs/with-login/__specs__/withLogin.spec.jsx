@@ -3,9 +3,8 @@ import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
-import configureStore from 'redux-mock-store'
-import thunk from 'redux-thunk'
 
+import getMockStore from '../../../../utils/mockStore'
 import LoadingPage from '../../../layout/LoadingPage/LoadingPage'
 import withLogin from '../withLogin'
 
@@ -16,14 +15,17 @@ jest.mock('../../../../utils/fetch-normalize-data/requestData', () => ({
   },
 }))
 
-describe('src | components | pages | hocs | with-login | withLogin', () => {
+describe('src | components | withLogin', () => {
   describe('when just has been mounted', () => {
     it('should display the loading page', () => {
       // given
-      const initialState = { data: { features: [], users: [] } }
-      const middlewares = [thunk]
-      const mockStore = configureStore(middlewares)
-      const store = mockStore(initialState)
+      const store = getMockStore({
+        data: (
+          state = {
+            features: [],
+          }
+        ) => state,
+      })
       let dispatch = jest.fn()
       const wrappedComponent = () => (<h1>
         {'Hello World !'}

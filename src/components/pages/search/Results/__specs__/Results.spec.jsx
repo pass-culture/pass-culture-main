@@ -5,10 +5,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 import { Router } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import configureStore from 'redux-mock-store'
-import thunk from 'redux-thunk'
 
-import state from '../../../../../mocks/state'
 import { isGeolocationEnabled } from '../../../../../utils/geolocation'
 import getMockStore from '../../../../../utils/mockStore'
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
@@ -2535,11 +2532,12 @@ describe('components | Results', () => {
   describe('when navigating', () => {
     let history
     let store
-    const buildStore = configureStore([thunk])
 
     beforeEach(() => {
       history = createMemoryHistory()
-      store = buildStore(state)
+      store = getMockStore({
+        data: (state = {}) => state,
+      })
     })
 
     it('should render search main page when current route is /recherche/resultats', () => {
@@ -2861,13 +2859,9 @@ describe('components | Results', () => {
       const history = createBrowserHistory()
       history.push('/recherche/resultats?mots-cles=librairie')
       props.history = history
-      const initialState = {
-        geolocation: {
-          latitude: 40.1,
-          longitude: 41.1,
-        },
-      }
-      const store = configureStore([])(initialState)
+      const store = getMockStore({
+        data: (state = {}) => state,
+      })
       const wrapper = mount(
         <Provider store={store}>
           <Router history={history}>
@@ -2900,7 +2894,9 @@ describe('components | Results', () => {
       const history = createBrowserHistory()
       history.push('/recherche/resultats?mots-cles=librairie')
       props.history = history
-      const store = configureStore([])({})
+      const store = getMockStore({
+        data: (state = {}) => state,
+      })
       const wrapper = await mount(
         <Provider store={store}>
           <Router history={history}>
@@ -2934,7 +2930,9 @@ describe('components | Results', () => {
       const history = createBrowserHistory()
       history.push('/recherche/resultats/tri?mots-cles=librairie&tri=_by_price')
       props.history = history
-      const store = configureStore([])({})
+      const store = getMockStore({
+        data: (state = {}) => state,
+      })
       const wrapper = await mount(
         <Provider store={store}>
           <Router history={history}>
@@ -2960,7 +2958,9 @@ describe('components | Results', () => {
       const history = createBrowserHistory()
       history.push('/recherche/resultats/tri?mots-cles=&tri=_by_price')
       props.history = history
-      const store = configureStore([])({})
+      const store = getMockStore({
+        data: (state = {}) => state,
+      })
       const wrapper = mount(
         <Provider store={store}>
           <Router history={history}>
@@ -3033,7 +3033,9 @@ describe('components | Results', () => {
         )
       history.push('/recherche/resultats/tri?mots-cles=&tri=_by_price')
       props.history = history
-      const store = configureStore([])({})
+      const store = getMockStore({
+        data: (state = {}) => state,
+      })
       const wrapper = await mount(
         <Provider store={store}>
           <Router history={history}>
