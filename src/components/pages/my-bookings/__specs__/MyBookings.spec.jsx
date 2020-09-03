@@ -35,13 +35,14 @@ describe('src | components | MyBookings', () => {
           bookings: [
             {
               id: 'A9',
-              stockId: 's1',
+              isCancelled: false,
+              stockId: 'S1',
               token: 't',
             },
           ],
           offers: [
             {
-              id: 'o1',
+              id: 'O1',
               name: 'fake offer',
               venue: {
                 departementCode: '',
@@ -51,9 +52,9 @@ describe('src | components | MyBookings', () => {
           ],
           stocks: [
             {
-              id: 's1',
-              offerId: 'o1',
-              beginningDatetime: '2019-07-08T20:00:00Z',
+              id: 'S1',
+              offerId: 'O1',
+              beginningDatetime: '2919-07-08T20:00:00Z',
             },
           ],
         }
@@ -121,7 +122,7 @@ describe('src | components | MyBookings', () => {
 
       // when
       const wrapper = mount(
-        <MemoryRouter initialEntries={[`${props.match.path}/details/A9/qrcode`]}>
+        <MemoryRouter initialEntries={[`${props.match.path}/details/O1/qrcode`]}>
           <Provider store={mockStore}>
             <MyBookings {...props} />
           </Provider>
@@ -143,7 +144,7 @@ describe('src | components | MyBookings', () => {
 
       // when
       const wrapper = mount(
-        <MemoryRouter initialEntries={[`${props.match.path}/details/A9/qrcode`]}>
+        <MemoryRouter initialEntries={[`${props.match.path}/details/O1/qrcode`]}>
           <Provider store={mockStore}>
             <MyBookings {...props} />
           </Provider>

@@ -2,14 +2,13 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import Icon from '../../../../../layout/Icon/Icon'
-import Ribbon from '../../../../../layout/Ribbon/Ribbon'
-import { getTimezone } from '../../../../../../utils/timezone'
 import { humanizeDate } from '../../../../../../utils/date/date'
 import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
+import { getTimezone } from '../../../../../../utils/timezone'
+import Icon from '../../../../../layout/Icon/Icon'
+import Ribbon from '../../../../../layout/Ribbon/Ribbon'
 
-const getDetailsUrl = (bookingId, location) =>
-  `/reservations/details/${bookingId}${location.search}`
+const getDetailsUrl = (offer, location) => `/reservations/details/${offer.id}${location.search}`
 
 const getQrCodeUrl = detailsUrl => `${detailsUrl}/qrcode`
 
@@ -23,13 +22,13 @@ const BookingItem = ({
   shouldDisplayToken,
   trackConsultOffer,
 }) => {
-  const { id: bookingId, qrCode, quantity, token } = booking
+  const { qrCode, quantity, token } = booking
   const { beginningDatetime } = stock
   const { label, type } = ribbon || {}
   const { name: offerName, venue, thumbUrl } = offer
   const { departementCode } = venue
   const isDuo = quantity === 2
-  const detailsUrl = getDetailsUrl(bookingId, location)
+  const detailsUrl = getDetailsUrl(offer, location)
   const timeZone = getTimezone(departementCode)
   const humanizedDate = beginningDatetime && humanizeDate(beginningDatetime, timeZone)
 

@@ -52,7 +52,7 @@ class MyBookings extends PureComponent {
             <Switch>
               <Route
                 exact
-                path={`${match.path}/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
+                path={`${match.path}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
                 sensitive
               >
                 <div className="offer-details">
@@ -61,13 +61,13 @@ class MyBookings extends PureComponent {
                     title="Réservations"
                   />
                   <MyBookingDetailsContainer
-                    bookingPath={`${match.path}/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)/:cancellation(annulation)?/:confirmation(confirmation)?`}
+                    bookingPath={`${match.path}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
                   />
                 </div>
               </Route>
               <Route
                 exact
-                path={`${match.path}/:details(details)/:bookingId([A-Z0-9]+)/:qrcode(qrcode)`}
+                path={`${match.path}/:details(details)/:offerId([A-Z0-9]+)/:qrcode(qrcode)`}
                 sensitive
               >
                 {!isQrCodeFeatureDisabled && (
