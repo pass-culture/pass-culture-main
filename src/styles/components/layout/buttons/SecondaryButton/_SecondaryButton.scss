@@ -7,7 +7,7 @@
   color: $primary;
   cursor: pointer;
   height: rem(40px);
-  line-height: rem(35px);
+  line-height: rem(40px);
   padding: 0 rem(16px);
 
   svg {
@@ -24,6 +24,7 @@
     border: 2px solid $primary-dark;
     color: $white;
 
+    img,
     svg {
       filter: brightness(0) invert(1);
     }
