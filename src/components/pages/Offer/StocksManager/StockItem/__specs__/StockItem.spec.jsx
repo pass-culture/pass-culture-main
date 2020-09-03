@@ -5,7 +5,7 @@ import { Field } from 'react-final-form'
 import { Provider } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
 
-import configureStore from '../../../../../../utils/store'
+import { getStubStore } from '../../../../../../utils/stubStore'
 import Offer from '../../ValueObjects/Offer'
 import StockItem from '../StockItem'
 import EventFields from '../sub-components/fields/EventFields/EventFields'
@@ -70,22 +70,24 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
         props.stock = stock
         props.timezone = 'Europe/Paris'
 
-        const store = configureStore({
-          data: {
-            offers: [
-              {
-                id: 'EM',
-                productId: 'EM',
-                venueId: 'CE',
-                isEvent: true,
-              },
-            ],
-            offerers: [{ id: 'BQ', postalCode: '97300' }],
-            products: [{ id: 'AE' }],
-            stocks: [stock],
-            venues: [{ id: 'CE', managingOffererId: 'BQ' }],
-          },
-        }).store
+        const store = getStubStore({
+          data: (
+            state = {
+              offers: [
+                {
+                  id: 'EM',
+                  productId: 'EM',
+                  venueId: 'CE',
+                  isEvent: true,
+                },
+              ],
+              offerers: [{ id: 'BQ', postalCode: '97300' }],
+              products: [{ id: 'AE' }],
+              stocks: [stock],
+              venues: [{ id: 'CE', managingOffererId: 'BQ' }],
+            }
+          ) => state,
+        })
 
         wrapper = mount(
           <Provider store={store}>
@@ -245,22 +247,24 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           quantity: 56,
         }
 
-        const store = configureStore({
-          data: {
-            offers: [
-              {
-                id: 'EM',
-                productId: 'EM',
-                venueId: 'CE',
-                isEvent: true,
-              },
-            ],
-            offerers: [{ id: 'BQ', postalCode: '97300' }],
-            products: [{ id: 'AE' }],
-            stocks: [stock],
-            venues: [{ id: 'CE', managingOffererId: 'BQ' }],
-          },
-        }).store
+        const store = getStubStore({
+          data: (
+            state = {
+              offers: [
+                {
+                  id: 'EM',
+                  productId: 'EM',
+                  venueId: 'CE',
+                  isEvent: true,
+                },
+              ],
+              offerers: [{ id: 'BQ', postalCode: '97300' }],
+              products: [{ id: 'AE' }],
+              stocks: [stock],
+              venues: [{ id: 'CE', managingOffererId: 'BQ' }],
+            }
+          ) => state,
+        })
 
         wrapper = mount(
           <Provider store={store}>
@@ -348,22 +352,24 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
     beforeEach(() => {
       const history = createBrowserHistory()
       history.push(`/offres/EM?gestion&lieu=CE&stock=creation`)
-      const store = configureStore({
-        data: {
-          offers: [
-            {
-              id: 'EM',
-              productId: 'EM',
-              venueId: 'CE',
-              isEvent: true,
-            },
-          ],
-          offerers: [{ id: 'BQ', postalCode: '97300' }],
-          products: [{ id: 'AE' }],
-          stocks: [],
-          venues: [{ id: 'CE', managingOffererId: 'BQ' }],
-        },
-      }).store
+      const store = getStubStore({
+        data: (
+          state = {
+            offers: [
+              {
+                id: 'EM',
+                productId: 'EM',
+                venueId: 'CE',
+                isEvent: true,
+              },
+            ],
+            offerers: [{ id: 'BQ', postalCode: '97300' }],
+            products: [{ id: 'AE' }],
+            stocks: [],
+            venues: [{ id: 'CE', managingOffererId: 'BQ' }],
+          }
+        ) => state,
+      })
 
       props.stockPatch = {
         beginningDatetime: '2020-01-27T20:00:00Z',

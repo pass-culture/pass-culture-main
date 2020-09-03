@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 import { requestData } from 'redux-saga-data'
 
-import configureStore from '../../../../../../../../utils/store'
+import { getStubStore } from '../../../../../../../../utils/stubStore'
 import EditAndDeleteControl from '../EditAndDeleteControl'
 
 jest.mock('redux-saga-data', () => {
@@ -38,7 +38,9 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
       isEvent: true,
     }
     history = createBrowserHistory()
-    store = configureStore().store
+    store = getStubStore({
+      data: (state = {}) => state,
+    })
   })
 
   describe('handleOnConfirmDeleteClick()', () => {

@@ -4,10 +4,10 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 import { NavLink } from 'react-router-dom'
-import * as usersSelectors from '../../../../selectors/data/usersSelectors'
-import configureStore from '../../../../utils/store'
-import OfferItem from '../OfferItem/OfferItemContainer'
 
+import * as usersSelectors from '../../../../selectors/data/usersSelectors'
+import { getStubStore } from '../../../../utils/stubStore'
+import OfferItem from '../OfferItem/OfferItemContainer'
 import Offers, { createLinkToOfferCreation } from '../Offers'
 import mockedOffers from './offersMock'
 
@@ -184,7 +184,18 @@ describe('src | components | pages | Offers | Offers', () => {
         it('should display a link to create an offer', () => {
           // given
           props.currentUser.isAdmin = false
-          const store = configureStore().store
+          const store = getStubStore({
+            data: (
+              state = {
+                offerers: [],
+              }
+            ) => state,
+            modal: (
+              state = {
+                config: {},
+              }
+            ) => state,
+          })
           const history = createBrowserHistory()
           jest
             .spyOn(usersSelectors, 'selectCurrentUser')
@@ -211,7 +222,18 @@ describe('src | components | pages | Offers | Offers', () => {
       describe('when structure (or offererId)', () => {
         it('should render link properly', () => {
           // given
-          const store = configureStore().store
+          const store = getStubStore({
+            data: (
+              state = {
+                offerers: [],
+              }
+            ) => state,
+            modal: (
+              state = {
+                config: {},
+              }
+            ) => state,
+          })
           const history = createBrowserHistory()
           jest
             .spyOn(usersSelectors, 'selectCurrentUser')
@@ -238,7 +260,18 @@ describe('src | components | pages | Offers | Offers', () => {
       describe('when lieu or (VenueId)', () => {
         it('should render link properly', () => {
           // given
-          const store = configureStore().store
+          const store = getStubStore({
+            data: (
+              state = {
+                offerers: [],
+              }
+            ) => state,
+            modal: (
+              state = {
+                config: {},
+              }
+            ) => state,
+          })
           const history = createBrowserHistory()
           jest
             .spyOn(usersSelectors, 'selectCurrentUser')

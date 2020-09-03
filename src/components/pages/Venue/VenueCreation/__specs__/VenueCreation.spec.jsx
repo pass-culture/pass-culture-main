@@ -4,11 +4,11 @@ import React from 'react'
 import { Form } from 'react-final-form'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
+
 import * as usersSelectors from '../../../../../selectors/data/usersSelectors'
-import configureStore from '../../../../../utils/store'
+import { getStubStore } from '../../../../../utils/stubStore'
 import AddressField from '../../fields/LocationFields/AddressField'
 import LocationFields from '../../fields/LocationFields/LocationFields'
-
 import VenueCreation from '../VenueCreation'
 
 describe('src | components | pages | Venue', () => {
@@ -155,13 +155,26 @@ describe('src | components | pages | Venue', () => {
           siret: null,
         }
 
-        jest.spyOn(usersSelectors, 'selectCurrentUser').mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
+        jest
+          .spyOn(usersSelectors, 'selectCurrentUser')
+          .mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
 
         props.venue = {
           publicName: 'fake public name',
         }
 
-        const { store } = configureStore()
+        const store = getStubStore({
+          data: (
+            state = {
+              offerers: [],
+            }
+          ) => state,
+          modal: (
+            state = {
+              config: {},
+            }
+          ) => state,
+        })
         const history = createBrowserHistory()
         history.push(`/structures/AE/lieux/TR?modification`)
 

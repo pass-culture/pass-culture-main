@@ -4,11 +4,11 @@ import React from 'react'
 import { Form } from 'react-final-form'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
+
 import * as usersSelectors from '../../../../../selectors/data/usersSelectors'
-import configureStore from '../../../../../utils/store'
+import { getStubStore } from '../../../../../utils/stubStore'
 import AddressField from '../../fields/LocationFields/AddressField'
 import LocationFields from '../../fields/LocationFields/LocationFields'
-
 import VenueEdition from '../VenueEdition'
 
 describe('src | components | pages | VenueEdition', () => {
@@ -115,7 +115,20 @@ describe('src | components | pages | VenueEdition', () => {
           },
         }
 
-        const { store } = configureStore()
+        const store = getStubStore({
+          data: (
+            state = {
+              offerers: [],
+              providers: [],
+              venueProviders: [],
+            }
+          ) => state,
+          modal: (
+            state = {
+              config: {},
+            }
+          ) => state,
+        })
         const history = createBrowserHistory()
         history.push(`/structures/AE/lieux/TR?modification`)
 
@@ -177,7 +190,20 @@ describe('src | components | pages | VenueEdition', () => {
             id: 'CM',
           }
 
-          const { store } = configureStore()
+          const store = getStubStore({
+            data: (
+              state = {
+                offerers: [],
+                providers: [],
+                venueProviders: [],
+              }
+            ) => state,
+            modal: (
+              state = {
+                config: {},
+              }
+            ) => state,
+          })
           const history = createMemoryHistory()
           history.push('/structures/APEQ/lieux/CM')
 

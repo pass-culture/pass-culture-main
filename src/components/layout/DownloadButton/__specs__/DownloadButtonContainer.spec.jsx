@@ -3,8 +3,8 @@ import { showNotification } from 'pass-culture-shared'
 import React from 'react'
 import { Provider } from 'react-redux'
 
+import { getStubStore } from '../../../../utils/stubStore'
 import DownloadButtonContainer from '../DownloadButtonContainer'
-import configureStore from '../../../../utils/store'
 
 global.fetch = url => {
   if (url.includes('reimbursements/csv')) {
@@ -26,7 +26,9 @@ describe('src | components | Layout | DownloadButtonContainer', () => {
       children: 'Fake title',
       href: 'https://foo.com/reimbursements/csv',
     }
-    const { store } = configureStore()
+    const store = getStubStore({
+      data: (state = {}) => state,
+    })
     jest.spyOn(store, 'dispatch')
 
     // when
@@ -49,7 +51,9 @@ describe('src | components | Layout | DownloadButtonContainer', () => {
       children: 'Fake title',
       href: 'https://foo.com/wrong-url',
     }
-    const { store } = configureStore()
+    const store = getStubStore({
+      data: (state = {}) => state,
+    })
     jest.spyOn(store, 'dispatch')
 
     // when

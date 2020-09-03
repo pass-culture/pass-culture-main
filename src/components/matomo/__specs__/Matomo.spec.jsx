@@ -4,7 +4,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 
-import configureStore from '../../../utils/store'
+import { getStubStore } from '../../../utils/stubStore'
 import MatomoContainer from '../MatomoContainer'
 
 describe('src | components | Matomo', () => {
@@ -20,7 +20,9 @@ describe('src | components | Matomo', () => {
       push: jest.fn(),
     }
     window._paq = fakeMatomo
-    store = configureStore().store
+    store = getStubStore({
+      data: (state = {}) => state,
+    })
   })
 
   it('should push a new page displayed event', () => {
@@ -93,14 +95,16 @@ describe('src | components | Matomo', () => {
   describe('when user is logged', () => {
     it('should dispatch setUserId with current user id', () => {
       // given
-      const { store } = configureStore({
-        data: {
-          users: [
-            {
-              id: 'TY',
-            },
-          ],
-        },
+      const store = getStubStore({
+        data: (
+          state = {
+            users: [
+              {
+                id: 'TY',
+              },
+            ],
+          }
+        ) => state,
       })
 
       // when
