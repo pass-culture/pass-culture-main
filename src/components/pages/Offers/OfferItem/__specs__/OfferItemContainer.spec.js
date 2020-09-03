@@ -27,89 +27,6 @@ describe('src | components | pages | OfferItemContainer', () => {
       }
     })
 
-    it('should return the value aggregatedStock', () => {
-      // when
-      const result = mapStateToProps(state, ownProps)
-      const expected = {
-        quantity: 0,
-        priceMax: 0,
-        priceMin: 0,
-      }
-
-      // then
-      expect(result.aggregatedStock).toStrictEqual(expected)
-    })
-
-    it('should not return the value maxDate when no stocks', () => {
-      // given
-
-      // when
-      const result = mapStateToProps(state, ownProps)
-      const expected = null
-
-      // then
-      expect(result.maxDate).toStrictEqual(expected)
-    })
-
-    it('should return the value mediations', () => {
-      // when
-      const result = mapStateToProps(state, ownProps)
-      const expected = {
-        authorId: null,
-        backText: 'Some back test',
-        credit: null,
-        dateCreated: '2019-03-07T10:39:23.560464Z',
-        dateModifiedAtLastProvider: '2019-03-07T10:40:08.324689Z',
-        frontText: 'Some front text',
-        id: 'H4',
-        idAtProviders: null,
-        isActive: true,
-        lastProviderId: null,
-        modelName: 'Mediation',
-        offerId: 'UU',
-        thumbCount: 1,
-        tutoIndex: null,
-      }
-
-      // then
-      expect(result.mediations[0]).toStrictEqual(expected)
-    })
-
-    it('should return an object of prop product', () => {
-      // when
-      const result = mapStateToProps(state, ownProps)
-      const expected = {
-        dateModifiedAtLastProvider: '2019-03-07T10:40:03.865368Z',
-        description:
-          'Ainsi la personne avec qui elle avait confessé qu’elle allait goûter, avec qui elle vous avait supplié de la laisser goûter, cette personne, raison avouée par la nécessité, ce n’était pas elle, c’était une autre, c’était encore autre chose ! Autre chose, quoi ? Une autre, qui ?',
-        extraData: {
-          author: 'Eloise Jomenrency',
-        },
-        id: 'LY',
-        idAtProviders: '1297',
-        isNational: true,
-        lastProviderId: null,
-        mediaUrls: ['test/urls'],
-        modelName: 'Product',
-        name: 'Dormons peu soupons bien',
-        offerType: {
-          description:
-            'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
-          proLabel: 'Jeux Vidéo',
-          offlineOnly: false,
-          onlineOnly: true,
-          sublabel: 'Jouer',
-          type: 'Thing',
-          value: 'ThingType.JEUX_VIDEO',
-        },
-        thumbCount: 1,
-        url: 'https://ilestencoretemps.fr/',
-      }
-
-      // then
-      expect(result.product).toStrictEqual(expected)
-    })
-
     it('should return the value stocks', () => {
       // when
 
@@ -118,43 +35,6 @@ describe('src | components | pages | OfferItemContainer', () => {
 
       // then
       expect(result.stocks).toStrictEqual(expected)
-    })
-
-    it('should return an object of prop offerer', () => {
-      // when
-      const result = mapStateToProps(state, ownProps)
-      const expected = {
-        address: 'RUE DES SAPOTILLES',
-        bic: 'QSDFGH8Z566',
-        city: 'Cayenne',
-        dateCreated: '2019-03-07T10:39:23.560414Z',
-        dateModifiedAtLastProvider: '2019-03-07T10:39:57.823508Z',
-        iban: 'FR7630001007941234567890185',
-        id: 'BA',
-        idAtProviders: null,
-        isActive: true,
-        isValidated: true,
-        lastProviderId: null,
-        modelName: 'Offerer',
-        nOffers: 5,
-        name: 'Bar des amis',
-        postalCode: '97300',
-        siren: '222222233',
-        thumbCount: 0,
-        validationToken: null,
-      }
-
-      // then
-      expect(result.offerer).toStrictEqual(expected)
-    })
-
-    it('should return the value of offerTypeLabel', () => {
-      // when
-      const result = mapStateToProps(state, ownProps)
-      const expected = 'Jeux Vidéo'
-
-      // then
-      expect(result.offerTypeLabel).toStrictEqual(expected)
     })
 
     it('should return the value of availabilityMessage', () => {

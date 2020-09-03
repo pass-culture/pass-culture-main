@@ -65,4 +65,20 @@
       @extend .ml5;
     }
   }
+
+  .offer-row {
+    align-items: center;
+    display: grid;
+    grid-column-gap: rem(16px);
+    grid-template-columns: rem(82px) 1fr 1fr 1fr rem(96px) rem(40px);
+  }
+
+  .venue-title,
+  .stock-title {
+    @include caption();
+  }
+
+  .venue-title {
+    grid-column-start: 3;
+  }
 }

@@ -1,9 +1,6 @@
 import React from 'react'
 import { mount, shallow } from 'enzyme'
-import { Link } from 'react-router-dom'
-import Dotdotdot from 'react-dotdotdot'
-import Thumb from '../../../../../components/layout/Thumb'
-
+import { MemoryRouter } from 'react-router'
 import OfferItem from '../OfferItem'
 import offersMock from '../../__specs__/offersMock'
 
@@ -46,34 +43,40 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
   describe('render', () => {
     describe('thumb Component', () => {
-      it('should render a Thumb Component with url from offer when offer has a thumb url', () => {
+      it('should render an image with url from offer when offer has a thumb url', () => {
         // given
         props.offer = activeOfferWithOutActiveMediation
         props.offer.thumbUrl = '/fake-product-url'
         props.mediations = []
 
         // when
-        const wrapper = shallow(<OfferItem {...props} />)
+        const wrapper = mount(
+          <MemoryRouter>
+            <OfferItem {...props} />
+          </MemoryRouter>
+        )
 
         // then
-        const thumbComponent = wrapper.find(Thumb)
-        expect(thumbComponent.prop('alt')).toBe('offre')
-        expect(thumbComponent.prop('src')).toBe('/fake-product-url')
+        const thumbImage = wrapper.find('img')
+        expect(thumbImage.prop('src')).toBe('/fake-product-url')
       })
 
-      it('should render a Thumb Component with an empty url when offer does not have a thumb url', () => {
+      it('should render an image with an empty url when offer does not have a thumb url', () => {
         // given
         props.offer = activeOfferWithOutActiveMediation
         props.offer.thumbUrl = null
         props.mediations = []
-        const wrapper = shallow(<OfferItem {...props} />)
 
+        const wrapper = mount(
+          <MemoryRouter>
+            <OfferItem {...props} />
+          </MemoryRouter>
+        )
         // when
-        const thumbComponent = wrapper.find(Thumb)
+        const thumbDefaultImage = wrapper.find('svg')
 
         // then
-        expect(thumbComponent.prop('alt')).toBe('offre')
-        expect(thumbComponent.prop('src')).toBe('')
+        expect(thumbDefaultImage).toHaveLength(1)
       })
     })
 
@@ -106,229 +109,105 @@ describe('src | components | pages | Offers | OfferItem', () => {
         })
       })
 
-      describe('preview link', () => {
-        it('should not be displayed when offer has no active mediation', () => {
-          // given
-          props.offer = activeOfferWithOutActiveMediation
-
-          const wrapper = shallow(<OfferItem {...props} />)
-
-          // when
-          const offerPreviewLink = wrapper.find('OfferPreviewLink')
-
-          // then
-          expect(offerPreviewLink).toHaveLength(0)
-        })
-
-        it('should be displayed when offer is no editable has an active mediation', () => {
-          // given
-          props.offer = activeOfferWithActiveMediationAndNotEditable
-          const wrapper = shallow(<OfferItem {...props} />)
-
-          // when
-          const offerPreviewLink = wrapper.find('OfferPreviewLink')
-
-          // then
-          expect(offerPreviewLink).toHaveLength(1)
-        })
-
-        it('should be displayed when offer has an active mediation', () => {
-          // given
-          props.offer = activeOfferWithActiveMediation
-
-          const wrapper = shallow(<OfferItem {...props} />)
-
-          // when
-          const offerPreviewLink = wrapper.find('OfferPreviewLink')
-
-          // then
-          expect(offerPreviewLink).toHaveLength(1)
-          expect(offerPreviewLink.prop('offerWebappUrl')).toMatch('/offre/details/M4/HA')
-        })
-
-        it('should open a new window with correct link', () => {
-          // given
-          props.offer = activeOfferWithActiveMediation
-
-          const wrapper = shallow(<OfferItem {...props} />)
-          const offerPreviewLink = wrapper.find('OfferPreviewLink')
-
-          jest.spyOn(global.window, 'open').mockImplementation(() => Object.create(window))
-
-          jest.spyOn(global.window, 'focus').mockImplementation(() => {})
-
-          const url = 'http://localhost/offre/details/M4/HA'
-
-          // when
-          offerPreviewLink.simulate('click', { preventDefault: jest.fn() })
-
-          // then
-          expect(global.window.open).toHaveBeenCalledWith(
-            url,
-            'targetWindow',
-            'toolbar=no,width=375,height=667'
-          )
-        })
-      })
-
       describe('edit offer link', () => {
         it('should be displayed when offer is editable', () => {
           // given
           props.offer = activeOfferWithActiveMediation
 
-          const wrapper = shallow(<OfferItem {...props} />)
-
           // when
-          const editOfferLink = wrapper.find('.edit-link')
+          const wrapper = mount(
+            <MemoryRouter>
+              <OfferItem {...props} />
+            </MemoryRouter>
+          )
 
           // then
+          const editOfferLink = wrapper.find(
+            `a[href="/offres/${activeOfferWithActiveMediation.id}"]`
+          )
           expect(editOfferLink).toHaveLength(1)
         })
 
         it('should not be displayed when offer is no editable', () => {
           // given
           props.offer = activeOfferWithActiveMediationAndNotEditable
-          const wrapper = shallow(<OfferItem {...props} />)
 
           // when
-          const editOfferLink = wrapper.find('.edit-link')
+          const wrapper = mount(
+            <MemoryRouter>
+              <OfferItem {...props} />
+            </MemoryRouter>
+          )
 
           // then
+          const editOfferLink = wrapper.find(
+            `a[href="/offres/${activeOfferWithActiveMediationAndNotEditable.id}"]`
+          )
           expect(editOfferLink).toHaveLength(0)
-        })
-      })
-
-      describe('mediations link', () => {
-        it('should display a link to offer when offer has one or more mediations', () => {
-          // given
-          props.offer = activeOfferWithActiveMediation
-          const wrapper = shallow(<OfferItem {...props} />)
-
-          // when
-          const addMediationsLink = wrapper.find('.add-mediations-link')
-          const textSpan = addMediationsLink.find('span').at(1)
-          const icon = addMediationsLink.find('Icon')
-
-          // then
-          expect(addMediationsLink).toHaveLength(1)
-          expect(addMediationsLink.prop('className')).toBe(
-            'button is-small is-tertiary add-mediations-link'
-          )
-          expect(addMediationsLink.prop('to')).toBe('/offres/M4')
-          expect(icon.prop('svg')).toBe('ico-stars')
-          expect(textSpan.text()).toBe('Accroches')
-        })
-
-        it('should display a link to add a mediation when offer no mediations yet', () => {
-          // given
-          props.mediations = []
-          props.offer = activeOfferWithOutActiveMediation
-
-          const wrapper = shallow(<OfferItem {...props} />)
-
-          // when
-          const addMediationsLink = wrapper.find('.add-mediations-link')
-          const textSpan = addMediationsLink.find('span').at(1)
-          const icon = addMediationsLink.find('Icon')
-
-          // thenu
-          expect(addMediationsLink).toHaveLength(1)
-          expect(addMediationsLink.prop('className')).toBe(
-            'button is-small is-primary is-outlined add-mediations-link'
-          )
-          expect(addMediationsLink.prop('to')).toBe(
-            '/offres/GH/accroches/nouveau?orderBy=offer.id+desc'
-          )
-          expect(icon.prop('svg')).toBe('ico-stars')
-          expect(textSpan.text()).toBe('Ajouter une Accroche')
         })
       })
     })
 
     describe('offer title', () => {
-      it('should display title from offer and not use product details', () => {
-        // Given
-        props.offer.name = 'Harry Potter vol.1'
-        props.product.name = 'Harry Potter vol.2'
-
-        // When
-        const wrapper = shallow(<OfferItem {...props} />)
-
-        // Then
-        const firstLink = wrapper.find(Link).first()
-        expect(firstLink.prop('title')).toStrictEqual('Harry Potter vol.1')
-      })
-
-      it('should contain a Navlink Component with the right props and containing a DotDotDot component', () => {
+      it('should contain a link with the offer name and details link', () => {
         // given
-        props.offer.name = 'fake name'
+        props.offer.name = 'Harry Potter vol.1'
         props.stocks = []
 
         // when
-        const wrapper = shallow(<OfferItem {...props} />)
+        const wrapper = mount(
+          <MemoryRouter>
+            <OfferItem {...props} />
+          </MemoryRouter>
+        )
 
         // then
-        const navLinkComponent = wrapper.find(Link).first()
-        expect(navLinkComponent.prop('className')).toBe('name')
-        expect(navLinkComponent.prop('to')).toBe('/offres/M4?orderBy=offer.id+desc')
-        expect(navLinkComponent.prop('title')).toBe('fake name')
-        const dotdotdotComponent = navLinkComponent.find(Dotdotdot)
-        expect(dotdotdotComponent.prop('clamp')).toBe(1)
-        expect(dotdotdotComponent.html()).toBe('<div>fake name</div>')
+        const titleLink = wrapper.find(`a[href="/offres/${props.offer.id}?orderBy=offer.id+desc"]`)
+        expect(titleLink).toHaveLength(1)
+        expect(titleLink.prop('title')).toBe("Afficher le détail de l'offre")
+        expect(titleLink.text()).toBe('Harry Potter vol.1')
       })
     })
 
-    it('should display informations of the type of offer, the offerer and the venue name when venue public name is not given', () => {
+    it('should display the venue name when venue public name is not given', () => {
       // given
-      props.offerTypeLabel = 'a thing'
-      props.offerer = {
-        name: 'UGC',
-      }
       props.venue = {
         name: 'Paris',
       }
 
       // when
-      const wrapper = shallow(<OfferItem {...props} />)
+      const wrapper = mount(
+        <MemoryRouter>
+          <OfferItem {...props} />
+        </MemoryRouter>
+      )
 
       // then
-      const offerInfosElement = wrapper.find('ul.infos').first()
-      const infosSubItems = offerInfosElement.find('li')
-      expect(infosSubItems).toHaveLength(3)
-
-      expect(infosSubItems.at(0).prop('className')).toBe('is-uppercase')
-      expect(infosSubItems.at(0).text()).toBe('a thing')
-      expect(infosSubItems.at(1).text()).toStrictEqual('Structure : UGC')
-      expect(infosSubItems.at(2).text()).toStrictEqual('Lieu : Paris')
+      const venueName = wrapper.find({ children: 'Paris' })
+      expect(venueName).toHaveLength(1)
     })
 
-    it('should display informations of the type of offer, the offerer and the venue public name when is given', () => {
+    it('should display the venue public name when is given', () => {
       // given
-      props.offerTypeLabel = 'a thing'
-      props.offerer = {
-        name: 'UGC',
-      }
       props.venue = {
         name: 'Paris',
         publicName: 'lieu de ouf',
       }
 
       // when
-      const wrapper = shallow(<OfferItem {...props} />)
+      const wrapper = mount(
+        <MemoryRouter>
+          <OfferItem {...props} />
+        </MemoryRouter>
+      )
 
       // then
-      const offerInfosElement = wrapper.find('ul.infos').first()
-      const infosSubItems = offerInfosElement.find('li')
-      expect(infosSubItems).toHaveLength(3)
-
-      expect(infosSubItems.at(0).prop('className')).toBe('is-uppercase')
-      expect(infosSubItems.at(0).text()).toBe('a thing')
-      expect(infosSubItems.at(1).text()).toBe('Structure : UGC')
-      expect(infosSubItems.at(2).text()).toBe('Lieu : lieu de ouf')
+      const venueName = wrapper.find({ children: 'lieu de ouf' })
+      expect(venueName).toHaveLength(1)
     })
 
     describe('when offer is an event product ', () => {
-      it('should display the correct text when 0 ticket available', () => {
+      it('should display the availability message', () => {
         // given
         props.product = {
           offerType: { label: 'Conférence — Débat — Dédicace' },
@@ -338,79 +217,19 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.offer = activeOfferWithActiveMediation
 
         // when
-        const wrapper = shallow(<OfferItem {...props} />)
+        const wrapper = mount(
+          <MemoryRouter>
+            <OfferItem {...props} />
+          </MemoryRouter>
+        )
 
         // then
-        const ulElements = wrapper.find('ul')
-        const stockAvailabilityElement = ulElements
-          .at(1)
-          .find('li')
-          .at(2)
-        expect(stockAvailabilityElement.text()).toBe('Plus de stock restant')
-      })
-
-      it('should display the correct text when 1 ticket is available', () => {
-        // given
-        props.product = {
-          offerType: { label: 'Conférence — Débat — Dédicace' },
-        }
-        props.stocks = [{}]
-        props.availabilityMessage = 'Encore 1 stock restant'
-        props.offer = activeOfferWithActiveMediation
-
-        // when
-        const wrapper = shallow(<OfferItem {...props} />)
-
-        // then
-        const ulElements = wrapper.find('ul')
-        const stockAvailabilityElement = ulElements
-          .at(1)
-          .find('li')
-          .at(2)
-        expect(stockAvailabilityElement.text()).toBe('Encore 1 stock restant')
-      })
-
-      it('should display the correct text when 2 tickets are available', () => {
-        // given
-        props.product = {
-          offerType: { label: 'Conférence — Débat — Dédicace' },
-        }
-        props.stocks = [{}, {}]
-        props.availabilityMessage = 'Encore 2 stocks restant'
-        props.offer = activeOfferWithActiveMediation
-
-        // when
-        const wrapper = shallow(<OfferItem {...props} />)
-
-        // then
-        const ulElements = wrapper.find('ul')
-        const stockAvailabilityElement = ulElements
-          .at(1)
-          .find('li')
-          .at(2)
-        expect(stockAvailabilityElement.text()).toBe('Encore 2 stocks restant')
+        const venueName = wrapper.find({ children: 'Plus de stock restant' })
+        expect(venueName).toHaveLength(1)
       })
 
       it('should display the correct text "2 dates" on the link redirecting to the offer management', () => {
         // given
-        const options = {
-          context: {
-            router: {
-              history: {
-                push: jest.fn(),
-                replace: jest.fn(),
-                createHref: jest.fn(),
-              },
-              route: {
-                location: {},
-                match: {},
-              },
-            },
-          },
-          childContextTypes: {
-            router: jest.fn(),
-          },
-        }
         props.product = {
           offerType: { label: 'Conférence — Débat — Dédicace' },
         }
@@ -418,23 +237,20 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.offer = activeOfferWithActiveMediation
 
         // when
-        const wrapper = mount(<OfferItem {...props} />, options)
+        const wrapper = mount(
+          <MemoryRouter>
+            <OfferItem {...props} />
+          </MemoryRouter>
+        )
 
         // then
-        const ulElements = wrapper.find('ul')
-        const navLinkComponent = ulElements
-          .at(1)
-          .find('li')
-          .at(0)
-          .find(Link)
-        expect(navLinkComponent.prop('className')).toBe('has-text-primary')
-        expect(navLinkComponent.prop('to')).toBe('/offres/M4?gestion')
-        expect(navLinkComponent.text()).toBe('2 dates')
+        const stockLink = wrapper.find(`a[href="/offres/${props.offer.id}?gestion"]`)
+        expect(stockLink.text()).toBe('2 dates')
       })
     })
 
     describe('when offer is a thing product', () => {
-      it('should display the correct text when 0 thing is available', () => {
+      it('should display the availability message', () => {
         // given
         props.product = {
           offerType: { label: 'Une place de cinéma' },
@@ -444,37 +260,19 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.offer = activeThingOfferWithActiveMediation
 
         // when
-        const wrapper = shallow(<OfferItem {...props} />)
+        const wrapper = mount(
+          <MemoryRouter>
+            <OfferItem {...props} />
+          </MemoryRouter>
+        )
 
         // then
-        const ulElements = wrapper.find('ul')
-        const stockAvailabilityElement = ulElements
-          .at(1)
-          .find('li')
-          .at(2)
-        expect(stockAvailabilityElement.text()).toBe('Plus de stock restant')
+        const venueName = wrapper.find({ children: 'Plus de stock restant' })
+        expect(venueName).toHaveLength(1)
       })
 
       it('should display the correct text "1 prix" on the link redirecting to the offer management', () => {
         // given
-        const options = {
-          context: {
-            router: {
-              history: {
-                push: jest.fn(),
-                replace: jest.fn(),
-                createHref: jest.fn(),
-              },
-              route: {
-                location: {},
-                match: {},
-              },
-            },
-          },
-          childContextTypes: {
-            router: jest.fn(),
-          },
-        }
         props.product = {
           offerType: { label: 'Une place de cinéma' },
         }
@@ -482,18 +280,15 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.offer = activeThingOfferWithActiveMediation
 
         // when
-        const wrapper = mount(<OfferItem {...props} />, options)
+        const wrapper = mount(
+          <MemoryRouter>
+            <OfferItem {...props} />
+          </MemoryRouter>
+        )
 
         // then
-        const ulElements = wrapper.find('ul')
-        const navLinkComponent = ulElements
-          .at(1)
-          .find('li')
-          .at(0)
-          .find(Link)
-        expect(navLinkComponent.prop('className')).toBe('has-text-primary')
-        expect(navLinkComponent.prop('to')).toBe('/offres/THING?gestion')
-        expect(navLinkComponent.text()).toBe('1 prix')
+        const stockLink = wrapper.find(`a[href="/offres/${props.offer.id}?gestion"]`)
+        expect(stockLink.text()).toBe('1 prix')
       })
     })
   })

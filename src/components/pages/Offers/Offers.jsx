@@ -305,6 +305,14 @@ class Offers extends PureComponent {
             </div>
           )}
 
+          <div className="offer-row">
+            <span className="venue-title">
+              {'Lieu'}
+            </span>
+            <span className="stock-title">
+              {'Stock'}
+            </span>
+          </div>
           <LoadingInfiniteScroll
             className="offers-list"
             element="ul"

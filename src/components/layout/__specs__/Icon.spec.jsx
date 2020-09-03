@@ -4,14 +4,6 @@ import React from 'react'
 import Icon from '../Icon'
 
 describe('src | components | layout | Icon ', () => {
-  let props
-
-  beforeEach(() => {
-    props = {
-      svg: 'picto-svg',
-    }
-  })
-
   describe('render', () => {
     it('should render an image with correct props when svg given', () => {
       // when
@@ -20,7 +12,7 @@ describe('src | components | layout | Icon ', () => {
       // then
       const image = wrapper.find('img')
       expect(image).toHaveLength(1)
-      expect(image.props().alt).toBeUndefined()
+      expect(image.props().alt).toBe('')
       expect(image.props().src).toMatch(/(icons\/picto-svg.svg)/)
     })
 
@@ -31,7 +23,7 @@ describe('src | components | layout | Icon ', () => {
       // then
       const image = wrapper.find('img')
       expect(image).toHaveLength(1)
-      expect(image.props().alt).toBeUndefined()
+      expect(image.props().alt).toBe('')
       expect(image.props().src).toMatch(/(icons\/icon-png.png)/)
     })
 

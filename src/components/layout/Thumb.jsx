@@ -1,20 +1,28 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-const Thumb = ({ src }) => {
-  const backgroundStyle = { backgroundImage: `url('${src}')` }
-  return (
-    <div className="thumb">
-      <div
-        className="background"
-        style={backgroundStyle}
-      />
+import { SVGOffers } from '../svg/SVGOffers'
+
+const Thumb = ({ url }) => {
+  return url ? (
+    <img
+      alt=""
+      className="offer-thumb"
+      src={url}
+    />
+  ) : (
+    <div className="default-thumb">
+      <SVGOffers />
     </div>
   )
 }
 
+Thumb.defaultProps = {
+  url: '',
+}
+
 Thumb.propTypes = {
-  src: PropTypes.string.isRequired,
+  url: PropTypes.string,
 }
 
 export default Thumb

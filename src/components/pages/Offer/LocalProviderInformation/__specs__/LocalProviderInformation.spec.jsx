@@ -39,8 +39,7 @@ describe('src | LocalProviderInformationContainer', () => {
       // then
       const thumb = wrapper.find(Thumb)
       expect(thumb).toHaveLength(1)
-      expect(thumb.prop('alt')).toBe('couverture du livre Super Livre')
-      expect(thumb.prop('src')).toBe('http://localhost/storage/thumbs/products/AERTR')
+      expect(thumb.prop('url')).toBe('http://localhost/storage/thumbs/products/AERTR')
     })
   })
 })

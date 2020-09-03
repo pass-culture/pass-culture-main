@@ -1,8 +1,5 @@
-li.offer-item {
-  align-items: center;
-  display: grid;
-  grid-column-gap: rem(16px);
-  grid-template-columns: rem(82px) 1fr 1fr 1fr rem(96px) rem(40px);
+.offer-item {
+  grid-template-rows: auto auto;
 
   .name {
     @include button();
@@ -12,21 +9,11 @@ li.offer-item {
 
   .offer-thumb {
     height: rem(84px);
-    object-fit: cover;
     width: 100%;
   }
 
   .default-thumb {
-    align-items: center;
-    background-color: $grey-medium;
-    display: flex;
-    height: rem(84px);
-    justify-content: center;
-
-    svg {
-      height: 75%;
-      width: 75%;
-    }
+    height: 84px;
   }
 
   &.inactive {
@@ -55,5 +42,12 @@ li.offer-item {
       max-height: rem(16px);
       max-width: rem(16px);
     }
+  }
+
+  hr {
+    background: none;
+    border-top: 1px solid $grey-medium;
+    grid-column: 1/7;
+    margin: rem(16px) 0;
   }
 }

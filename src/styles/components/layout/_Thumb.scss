@@ -1,17 +1,21 @@
-.thumb {
+.offer-thumb {
   height: 100px;
   width: 75px;
-  position: relative;
-  overflow: hidden;
+  object-fit: cover;
+  border-radius: 3px;
+}
 
-  .background {
-    background-color: $grey-light;
-    background-size: cover;
-    background-position: center;
-    height: 100%;
-    width: 100%;
-    position: relative;
-    background-repeat: no-repeat;
-    box-sizing: content-box;
+.default-thumb {
+  align-items: center;
+  background-color: $grey-medium;
+  display: flex;
+  height: 100px;
+  width: 75px;
+  justify-content: center;
+  border-radius: 3px;
+
+  svg {
+    height: 75%;
+    width: 75%;
   }
 }

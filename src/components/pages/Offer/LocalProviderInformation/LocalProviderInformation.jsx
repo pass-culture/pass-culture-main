@@ -10,9 +10,8 @@ class LocalProviderInformation extends PureComponent {
   }
 
   render() {
-    const { offerName, offererId, providerInfo, thumbUrl, venueId } = this.props
+    const { offererId, providerInfo, thumbUrl, venueId } = this.props
 
-    const thumbAltDescription = 'couverture du livre ' + offerName
     const tooltip =
       '<div>' +
       '<p>Vous pouvez modifier vos choix de synchronisation sur' +
@@ -28,10 +27,7 @@ class LocalProviderInformation extends PureComponent {
     return (
       <div className="provider-information">
         <div className="provider-thumb">
-          <Thumb
-            alt={thumbAltDescription}
-            src={thumbUrl}
-          />
+          <Thumb url={thumbUrl} />
         </div>
         <div className="provider-details">
           <div className="provider-header">
@@ -57,7 +53,7 @@ class LocalProviderInformation extends PureComponent {
           <div className="provider-explanation">
             <p>
               {'Le visuel par défaut, les informations et le stock de cette offre sont synchronisés' +
-              ` avec les données ${providerInfo.name} tous les soirs.`}
+                ` avec les données ${providerInfo.name} tous les soirs.`}
             </p>
           </div>
         </div>
@@ -71,7 +67,6 @@ LocalProviderInformation.defaultProps = {
 }
 
 LocalProviderInformation.propTypes = {
-  offerName: PropTypes.string.isRequired,
   offererId: PropTypes.string.isRequired,
   providerInfo: PropTypes.shape().isRequired,
   thumbUrl: PropTypes.string,

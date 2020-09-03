@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
 import Icon from '../../../layout/Icon'
-import { SVGOffers } from '../../../svg/SVGOffers'
+import Thumb from '../../../layout/Thumb'
 
 class OfferItem extends PureComponent {
   handleOnDeactivateClick = () => {
@@ -38,18 +38,8 @@ class OfferItem extends PureComponent {
     const offerIsEditable = offer ? offer.isEditable : null
 
     return (
-      <li className={`offer-item ${!offer.isActive ? 'inactive' : ''}`}>
-        {offer.thumbUrl ? (
-          <img
-            alt=""
-            className="offer-thumb"
-            src={offer.thumbUrl || ''}
-          />
-        ) : (
-          <div className="default-thumb">
-            <SVGOffers />
-          </div>
-        )}
+      <li className={`offer-item ${!offer.isActive ? 'inactive' : ''} offer-row`}>
+        <Thumb url={offer.thumbUrl} />
         <div className="title-container">
           <Link
             className="name"
@@ -87,6 +77,7 @@ class OfferItem extends PureComponent {
             <Icon svg="ico-pen-r" />
           </Link>
         )}
+        <hr />
       </li>
     )
   }
