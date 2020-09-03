@@ -1,16 +1,15 @@
 import { mount, shallow } from 'enzyme'
+import { createBrowserHistory } from 'history'
 import React from 'react'
+import { Field } from 'react-final-form'
+import { Provider } from 'react-redux'
+import { Route, Router, Switch } from 'react-router-dom'
 
+import configureStore from '../../../../../../utils/store'
+import Offer from '../../ValueObjects/Offer'
 import StockItem from '../StockItem'
 import EventFields from '../sub-components/fields/EventFields/EventFields'
 import ProductFieldsContainer from '../sub-components/fields/ProductFields/ProductFieldsContainer'
-import configureStore from 'redux-mock-store'
-import { createBrowserHistory } from 'history'
-
-import { Provider } from 'react-redux'
-import { Route, Router, Switch } from 'react-router-dom'
-import { Field } from 'react-final-form'
-import Offer from '../../ValueObjects/Offer'
 
 describe('src | components | pages | Offer | StocksManager | StockItem', () => {
   let props
@@ -48,9 +47,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       beforeEach(() => {
         const history = createBrowserHistory()
         history.push(`/offres/EM?gestion&lieu=CE`)
-        const middleWares = []
-        const mockStore = configureStore(middleWares)
-
         const stock = {
           id: 'G9',
           beginningDatetime: '2020-01-20T20:00:00Z',
@@ -74,7 +70,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
         props.stock = stock
         props.timezone = 'Europe/Paris'
 
-        const store = mockStore({
+        const store = configureStore({
           data: {
             offers: [
               {
@@ -89,7 +85,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
             stocks: [stock],
             venues: [{ id: 'CE', managingOffererId: 'BQ' }],
           },
-        })
+        }).store
 
         wrapper = mount(
           <Provider store={store}>
@@ -225,8 +221,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       beforeEach(() => {
         const history = createBrowserHistory()
         history.push(`/offres/EM?gestion&lieu=CE`)
-        const middleWares = []
-        const mockStore = configureStore(middleWares)
 
         const stock = {
           id: 'G9',
@@ -251,7 +245,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           quantity: 56,
         }
 
-        const store = mockStore({
+        const store = configureStore({
           data: {
             offers: [
               {
@@ -266,7 +260,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
             stocks: [stock],
             venues: [{ id: 'CE', managingOffererId: 'BQ' }],
           },
-        })
+        }).store
 
         wrapper = mount(
           <Provider store={store}>
@@ -354,21 +348,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
     beforeEach(() => {
       const history = createBrowserHistory()
       history.push(`/offres/EM?gestion&lieu=CE&stock=creation`)
-      const middleWares = []
-      const mockStore = configureStore(middleWares)
-
-      props.stockPatch = {
-        beginningDatetime: '2020-01-27T20:00:00Z',
-        offerId: 'EM',
-        offererId: 'ZZ',
-        price: 0,
-      }
-
-      props.isEvent = true
-      props.stock = {}
-      props.timezone = 'Europe/Paris'
-
-      const store = mockStore({
+      const store = configureStore({
         data: {
           offers: [
             {
@@ -383,7 +363,18 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           stocks: [],
           venues: [{ id: 'CE', managingOffererId: 'BQ' }],
         },
-      })
+      }).store
+
+      props.stockPatch = {
+        beginningDatetime: '2020-01-27T20:00:00Z',
+        offerId: 'EM',
+        offererId: 'ZZ',
+        price: 0,
+      }
+
+      props.isEvent = true
+      props.stock = {}
+      props.timezone = 'Europe/Paris'
 
       wrapper = mount(
         <Provider store={store}>

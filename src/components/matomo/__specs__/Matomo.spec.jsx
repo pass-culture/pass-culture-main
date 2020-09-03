@@ -1,19 +1,16 @@
-import configureMockStore from 'redux-mock-store'
-import { createBrowserHistory } from 'history'
 import { mount } from 'enzyme'
-import { Provider } from 'react-redux'
+import { createBrowserHistory } from 'history'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 
+import configureStore from '../../../utils/store'
 import MatomoContainer from '../MatomoContainer'
 
-describe('src | components | matomo | Matomo', () => {
+describe('src | components | Matomo', () => {
   let fakeMatomo
   let history
-  let initialState
   let store
-
-  const mockStore = configureMockStore()
 
   beforeEach(() => {
     history = createBrowserHistory()
@@ -23,12 +20,7 @@ describe('src | components | matomo | Matomo', () => {
       push: jest.fn(),
     }
     window._paq = fakeMatomo
-    initialState = {
-      data: {
-        users: [],
-      },
-    }
-    store = mockStore(initialState)
+    store = configureStore().store
   })
 
   it('should push a new page displayed event', () => {
@@ -101,7 +93,7 @@ describe('src | components | matomo | Matomo', () => {
   describe('when user is logged', () => {
     it('should dispatch setUserId with current user id', () => {
       // given
-      store = mockStore({
+      const { store } = configureStore({
         data: {
           users: [
             {

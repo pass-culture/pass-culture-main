@@ -1,23 +1,26 @@
 import { render, shallow } from 'enzyme'
+import { createBrowserHistory } from 'history'
 import React from 'react'
-import { requestData } from 'redux-saga-data'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
-import { createBrowserHistory } from 'history'
-import configureMockStore from 'redux-mock-store'
+import { requestData } from 'redux-saga-data'
 
+import configureStore from '../../../../../../../../utils/store'
 import EditAndDeleteControl from '../EditAndDeleteControl'
 
-jest.mock('redux-saga-data', () => ({
-  requestData: jest.fn(),
-}))
+jest.mock('redux-saga-data', () => {
+  const actualModule = jest.requireActual('redux-saga-data')
+
+  return {
+    ...actualModule,
+    requestData: jest.fn(),
+  }
+})
 
 describe('src | components | pages | Offer | StockManager | StockItem | sub-components | EditAndDeleteControl', () => {
   let props
   let history
   let store
-
-  const mockStore = configureMockStore()
 
   beforeEach(() => {
     props = {
@@ -34,9 +37,8 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
       query: {},
       isEvent: true,
     }
-
     history = createBrowserHistory()
-    store = mockStore()
+    store = configureStore().store
   })
 
   describe('handleOnConfirmDeleteClick()', () => {
