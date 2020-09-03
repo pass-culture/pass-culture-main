@@ -165,7 +165,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // then
       const field = wrapper.find('label').at(0)
       expect(field.text()).toBe(
-        'Adresse e-mail...pour se connecter et récupérer son mot de passe en cas d’oubli'
+        'Adresse e-mail'
       )
       const input = field.find('input')
       expect(input.prop('name')).toBe('email')
@@ -183,7 +183,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const field = wrapper.find('label').at(1)
-      expect(field.text()).toBe('Mot de passe...pour se connecter')
+      expect(field.text()).toBe('Mot de passe')
       const input = field.find('input')
       expect(input.prop('name')).toBe('password')
       expect(input.prop('placeholder')).toBe('Mon mot de passe')
@@ -232,7 +232,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const field = wrapper.find('label').at(4)
-      expect(field.text()).toBe('Téléphone...utilisé uniquement par l’équipe du pass Culture')
+      expect(field.text()).toBe('Téléphone (utilisé uniquement par l’équipe du pass Culture)')
       const input = field.find('input')
       expect(input.prop('name')).toBe('phoneNumber')
       expect(input.prop('placeholder')).toBe('Mon numéro de téléphone')
@@ -248,7 +248,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const field = wrapper.find('label').at(5)
-      expect(field.text()).toBe('SIREN... de la structure que vous représentez')
+      expect(field.text()).toBe('SIREN de la structure que vous représentez')
       const input = field.find('input')
       expect(input.prop('name')).toBe('siren')
       expect(input.prop('placeholder')).toBe('123 456 789')
@@ -266,7 +266,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // then
       const field = wrapper.find('label').at(6)
       expect(field.text()).toBe(
-        'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture*'
+        'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture'
       )
       const input = field.find('input')
       expect(input.prop('name')).toBe('contact_ok')

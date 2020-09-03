@@ -43,9 +43,10 @@ const SirenField = props => {
 
             {props.value && (
               <span className="field-siren-value">
-                {props.value && <span className="field-siren-value">
+                {props.value &&
+                <span className="field-siren-value">
                   {props.value}
-                                </span>}
+                </span>}
               </span>
             )}
 
