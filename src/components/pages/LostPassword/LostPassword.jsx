@@ -7,7 +7,7 @@ import Main from '../../layout/Main'
 import Icon from '../../layout/Icon'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
-import GenericError from '../../layout/inputs/Errors/GenericError'
+import GenericError from '../../layout/errors/GenericError'
 
 class LostPassword extends PureComponent {
   constructor(props) {
@@ -183,8 +183,8 @@ class LostPassword extends PureComponent {
                       />
                     )}
                     <form
-                      onSubmit={this.submitResetPassword}
                       className="new-password-form"
+                      onSubmit={this.submitResetPassword}
                     >
                       <TextInputWithIcon
                         icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}

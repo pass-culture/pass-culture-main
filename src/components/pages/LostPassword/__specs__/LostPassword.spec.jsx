@@ -5,7 +5,7 @@ import LostPassword from '../LostPassword'
 import { MemoryRouter } from 'react-router'
 import { Provider } from 'react-redux'
 import configureStore from '../../../../utils/store'
-import GenericError from '../../../layout/inputs/Errors/GenericError'
+import GenericError from '../../../layout/errors/GenericError'
 
 describe('src | components | pages | LostPassword', () => {
   let props
@@ -97,7 +97,7 @@ describe('src | components | pages | LostPassword', () => {
 
         // then
         const genericError = wrapper.find(GenericError)
-        expect(genericError.prop('message')).toStrictEqual(
+        expect(genericError.prop('message')).toBe(
           "Une erreur s'est produite, veuillez réessayer ultérieurement."
         )
       })
@@ -192,7 +192,7 @@ describe('src | components | pages | LostPassword', () => {
         // then
 
         const genericError = wrapper.find(GenericError)
-        expect(genericError.prop('message')).toStrictEqual(
+        expect(genericError.prop('message')).toBe(
           "Une erreur s'est produite, veuillez réessayer ultérieurement."
         )
       })

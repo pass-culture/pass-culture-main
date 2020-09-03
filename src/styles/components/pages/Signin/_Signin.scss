@@ -69,6 +69,7 @@
 
   h2 {
     @include title2();
+
     line-height: rem(24px);
     margin-bottom: rem(12px);
   }

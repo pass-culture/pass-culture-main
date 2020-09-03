@@ -66,7 +66,6 @@ class SignupForm extends PureComponent {
         onChange={input.onChange}
         placeholder="nom@exemple.fr"
         required
-
         value={input.value}
       />
     )
@@ -107,7 +106,7 @@ class SignupForm extends PureComponent {
     return (
       <TextInput
         error={errors ? errors.phoneNumber : null}
-        label="Téléphone(utilisé uniquement par l’équipe du pass Culture)"
+        label="Téléphone (utilisé uniquement par l’équipe du pass Culture)"
         name="phoneNumber"
         onChange={input.onChange}
         placeholder="Mon numéro de téléphone"
@@ -199,9 +198,7 @@ class SignupForm extends PureComponent {
                   validate={required}
                 />
 
-                <SirenField
-                  value={values.name}
-                />
+                <SirenField value={values.name} />
 
                 <label className="sign-up-checkbox">
                   <Field

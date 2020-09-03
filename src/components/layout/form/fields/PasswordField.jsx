@@ -2,12 +2,13 @@ import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
 import Icon from '../../Icon'
 import TextInputWithIcon from '../../inputs/TextInputWithIcon/TextInputWithIcon'
+import PropTypes from 'prop-types'
 
 export const isNotValid = value => {
   return !value
 }
 
-class PasswordInput extends PureComponent {
+class PasswordField extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -40,7 +41,7 @@ class PasswordInput extends PureComponent {
 
     return (
       <TextInputWithIcon
-        error={errors ? errors : null}
+        error={errors ? errors[0] : null}
         icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
         iconAlt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
         label="Mot de passe"
@@ -75,4 +76,8 @@ class PasswordInput extends PureComponent {
   }
 }
 
-export default PasswordInput
+PasswordField.propTypes = {
+  errors: PropTypes.arrayOf(PropTypes.string).isRequired,
+}
+
+export default PasswordField

@@ -7,7 +7,7 @@ import Main from '../../layout/Main'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
-import GenericError from '../../layout/inputs/Errors/GenericError'
+import GenericError from '../../layout/errors/GenericError'
 
 class Signin extends PureComponent {
   constructor(props) {
