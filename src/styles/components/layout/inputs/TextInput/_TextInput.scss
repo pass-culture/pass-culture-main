@@ -27,7 +27,8 @@
     width: 100%;
 
     &:focus {
-      border: 2px solid $primary;
+      box-shadow: 0 0 0 1px $primary inset;
+      border: 1px solid $primary;
       outline: none;
       outline-offset: 0;
     }

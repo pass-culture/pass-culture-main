@@ -21,7 +21,8 @@
   }
 
   &:focus-within {
-    border: 2px solid $primary;
+    box-shadow: 0 0 0 1px $primary inset;
+    border: 1px solid $primary;
   }
 
   &.disabled {
@@ -47,6 +48,10 @@
     height: 100%;
     padding: 10px 16px;
     outline: none;
+
+    &:focus {
+      z-index: -1;
+    }
 
     &:disabled {
       color: $grey-dark;
