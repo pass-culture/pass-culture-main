@@ -8,7 +8,7 @@ import { MemoryRouter } from 'react-router'
 import OfferTile from '../OfferTile/OfferTile'
 import OffersWithCover from '../../domain/ValueObjects/OffersWithCover'
 import SeeMore from '../SeeMore/SeeMore'
-import getMockStore from '../../../../../../utils/mockStore'
+import { getStubStore } from '../../../../../../utils/stubStore'
 import { Provider } from 'react-redux'
 
 jest.mock('../../../../../../vendor/algolia/algolia', () => ({
@@ -90,7 +90,7 @@ describe('src | components | Module', () => {
       row: 1,
       trackAllTilesSeen: jest.fn(),
     }
-    mockStore = getMockStore({
+    mockStore = getStubStore({
       data: (
         state = {
           readRecommendations: [],

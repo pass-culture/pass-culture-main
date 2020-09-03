@@ -3,7 +3,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 
-import getMockStore from '../../../../utils/mockStore'
+import { getStubStore } from '../../../../utils/stubStore'
 import { ApiError } from '../../../layout/ErrorBoundaries/ErrorsPage/ApiError'
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
 import MyBookingDetailsContainer from '../MyBookingDetails/MyBookingDetailsContainer'
@@ -29,7 +29,7 @@ describe('src | components | MyBookings', () => {
       },
       requestGetBookings: jest.fn(),
     }
-    mockStore = getMockStore({
+    mockStore = getStubStore({
       data: (
         state = {
           bookings: [

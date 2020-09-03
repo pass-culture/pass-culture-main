@@ -4,7 +4,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
 
-import getMockStore from '../../../../utils/mockStore'
+import { getStubStore } from '../../../../utils/stubStore'
 import LoadingPage from '../../../layout/LoadingPage/LoadingPage'
 import withLogin from '../withLogin'
 
@@ -19,7 +19,7 @@ describe('src | components | withLogin', () => {
   describe('when just has been mounted', () => {
     it('should display the loading page', () => {
       // given
-      const store = getMockStore({
+      const store = getStubStore({
         data: (
           state = {
             features: [],

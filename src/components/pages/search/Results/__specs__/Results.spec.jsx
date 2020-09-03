@@ -7,7 +7,7 @@ import { Router } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 import { isGeolocationEnabled } from '../../../../../utils/geolocation'
-import getMockStore from '../../../../../utils/mockStore'
+import { getStubStore } from '../../../../../utils/stubStore'
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import Spinner from '../../../../layout/Spinner/Spinner'
@@ -2535,7 +2535,7 @@ describe('components | Results', () => {
 
     beforeEach(() => {
       history = createMemoryHistory()
-      store = getMockStore({
+      store = getStubStore({
         data: (state = {}) => state,
       })
     })
@@ -2562,7 +2562,7 @@ describe('components | Results', () => {
 
     it('should render item details when current route is /recherche/resultats/details/AE', () => {
       // given
-      store = getMockStore({
+      store = getStubStore({
         currentUser: (
           state = {
             id: 'Rt4R45ETEs',
@@ -2808,7 +2808,7 @@ describe('components | Results', () => {
 
       it('should render header when on details page', () => {
         // given
-        store = getMockStore({
+        store = getStubStore({
           currentUser: (
             state = {
               id: 'Rt4R45ETEs',
@@ -2859,7 +2859,7 @@ describe('components | Results', () => {
       const history = createBrowserHistory()
       history.push('/recherche/resultats?mots-cles=librairie')
       props.history = history
-      const store = getMockStore({
+      const store = getStubStore({
         data: (state = {}) => state,
       })
       const wrapper = mount(
@@ -2894,7 +2894,7 @@ describe('components | Results', () => {
       const history = createBrowserHistory()
       history.push('/recherche/resultats?mots-cles=librairie')
       props.history = history
-      const store = getMockStore({
+      const store = getStubStore({
         data: (state = {}) => state,
       })
       const wrapper = await mount(
@@ -2930,7 +2930,7 @@ describe('components | Results', () => {
       const history = createBrowserHistory()
       history.push('/recherche/resultats/tri?mots-cles=librairie&tri=_by_price')
       props.history = history
-      const store = getMockStore({
+      const store = getStubStore({
         data: (state = {}) => state,
       })
       const wrapper = await mount(
@@ -2958,7 +2958,7 @@ describe('components | Results', () => {
       const history = createBrowserHistory()
       history.push('/recherche/resultats/tri?mots-cles=&tri=_by_price')
       props.history = history
-      const store = getMockStore({
+      const store = getStubStore({
         data: (state = {}) => state,
       })
       const wrapper = mount(
@@ -3033,7 +3033,7 @@ describe('components | Results', () => {
         )
       history.push('/recherche/resultats/tri?mots-cles=&tri=_by_price')
       props.history = history
-      const store = getMockStore({
+      const store = getStubStore({
         data: (state = {}) => state,
       })
       const wrapper = await mount(

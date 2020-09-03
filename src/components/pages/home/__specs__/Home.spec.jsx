@@ -2,7 +2,7 @@ import { mount } from 'enzyme'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
-import getMockStore from '../../../../utils/mockStore'
+import { getStubStore } from '../../../../utils/stubStore'
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import { fetchHomepage } from '../../../../vendor/contentful/contentful'
 import Home from '../Home'
@@ -52,7 +52,7 @@ describe('src | components | home', () => {
 
   it('should render a profil page when navigating to /accueil/profil', async () => {
     // When
-    const mockStore = getMockStore({
+    const mockStore = getStubStore({
       currentUser: (
         state = new User({
           email: 'john.doe@example.fr',

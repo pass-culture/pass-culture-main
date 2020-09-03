@@ -3,7 +3,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import getMockStore from '../../../../../utils/mockStore'
+import { getStubStore } from '../../../../../utils/stubStore'
 import ListLinks from '../ListLinks'
 
 describe('my informations', () => {
@@ -11,7 +11,7 @@ describe('my informations', () => {
   let props
 
   beforeEach(() => {
-    mockStore = getMockStore({
+    mockStore = getStubStore({
       data: (
         state = {
           readRecommendations: [],

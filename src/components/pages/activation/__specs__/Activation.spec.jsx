@@ -3,13 +3,13 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import getMockStore from '../../../../utils/mockStore'
+import { getStubStore } from '../../../../utils/stubStore'
 import Activation from '../Activation'
 
 describe('activation', () => {
   it('should render route for activating password when token adn email are given', () => {
     // when
-    const mockStore = getMockStore({
+    const mockStore = getStubStore({
       token: (
         state = {
           hasBeenChecked: false,

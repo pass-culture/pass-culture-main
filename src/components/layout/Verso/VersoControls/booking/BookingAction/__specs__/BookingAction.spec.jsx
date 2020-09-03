@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 
 import { selectOfferByRouterMatch } from '../../../../../../../redux/selectors/data/offersSelectors'
-import getMockStore from '../../../../../../../utils/mockStore'
+import { getStubStore } from '../../../../../../../utils/stubStore'
 import Price from '../../../../../Price/Price'
 import BookingAction from '../BookingAction'
 import BookingActionContainer from '../BookingActionContainer'
@@ -72,7 +72,7 @@ describe('components | BookingAction', () => {
 
       const mockHistory = createMemoryHistory()
       mockHistory.push('/decouverte?param=value')
-      const mockStore = getMockStore({
+      const mockStore = getStubStore({
         data: (
           state = {
             bookings: [],

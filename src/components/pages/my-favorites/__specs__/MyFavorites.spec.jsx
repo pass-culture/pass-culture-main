@@ -3,7 +3,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 
-import getMockStore from '../../../../utils/mockStore'
+import { getStubStore } from '../../../../utils/stubStore'
 import MyFavoriteDetailsContainer from '../MyFavoriteDetails/MyFavoriteDetailsContainer'
 import MyFavorites from '../MyFavorites'
 import MyFavoritesListContainer from '../MyFavoritesList/MyFavoritesListContainer'
@@ -13,7 +13,7 @@ describe('my favorites', () => {
   let props
 
   beforeEach(() => {
-    mockStore = getMockStore({
+    mockStore = getStubStore({
       currentUser: (
         state = {
           wallet_balance: 0,

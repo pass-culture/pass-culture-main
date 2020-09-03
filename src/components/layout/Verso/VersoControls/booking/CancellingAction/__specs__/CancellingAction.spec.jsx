@@ -5,12 +5,14 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Route, Router } from 'react-router'
 
-import getMockStore from '../../../../../../../utils/mockStore'
+import { getStubStore } from '../../../../../../../utils/stubStore'
 import CancellingAction from '../CancellingAction'
 import CancellingActionContainer from '../CancellingActionContainer'
 
 jest.mock('../../../../../../../utils/fetch-normalize-data/requestData', () => {
-  const { _requestData } = jest.requireActual('../../../../../../../utils/fetch-normalize-data/reducers/data/actionCreators')
+  const { _requestData } = jest.requireActual(
+    '../../../../../../../utils/fetch-normalize-data/reducers/data/actionCreators'
+  )
 
   return {
     requestData: _requestData,
@@ -66,7 +68,7 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
 
       const mockHistory = createMemoryHistory()
       mockHistory.push('/reservations/details/b1?param=value')
-      const mockStore = getMockStore({
+      const mockStore = getStubStore({
         data: (
           state = {
             bookings: [

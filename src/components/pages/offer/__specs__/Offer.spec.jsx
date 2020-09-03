@@ -3,7 +3,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import getMockStore from '../../../../utils/mockStore'
+import { getStubStore } from '../../../../utils/stubStore'
 import Offer from '../Offer'
 
 describe('offer', () => {
@@ -21,7 +21,7 @@ describe('offer', () => {
 
   it('should have a close link to home page and details of a given offer', () => {
     // given
-    mockStore = getMockStore({
+    mockStore = getStubStore({
       currentUser: (
         state = {
           id: 'Rt4R45ETEs',

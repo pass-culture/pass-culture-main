@@ -4,7 +4,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 
-import getMockStore from '../../../utils/mockStore'
+import { getStubStore } from '../../../utils/stubStore'
 import MatomoContainer from '../MatomoContainer'
 
 jest.mock('../../../utils/config', () => ({
@@ -25,7 +25,7 @@ describe('src | components | Matomo', () => {
       push: jest.fn(),
     }
     window._paq = fakeMatomo
-    store = getMockStore({
+    store = getStubStore({
       currentUser: (state = null) => state,
     })
   })
@@ -100,7 +100,7 @@ describe('src | components | Matomo', () => {
   describe('when user is logged', () => {
     it('should dispatch the user id when current user is logged', () => {
       // given
-      store = getMockStore({
+      store = getStubStore({
         currentUser: (
           state = {
             id: '5FYTbfk4TR',
@@ -125,7 +125,7 @@ describe('src | components | Matomo', () => {
   describe('when user is coming from webapp', () => {
     it('should dispatch user id with the right platform and custom variable', () => {
       // Given
-      store = getMockStore({
+      store = getStubStore({
         currentUser: (
           state = {
             id: '5FYTbfk4TR',
@@ -169,7 +169,7 @@ describe('src | components | Matomo', () => {
         get: () => 'android-app://app.passculture.testing.webapp',
       })
 
-      store = getMockStore({
+      store = getStubStore({
         currentUser: (
           state = {
             id: '5FYTbfk4TR',
