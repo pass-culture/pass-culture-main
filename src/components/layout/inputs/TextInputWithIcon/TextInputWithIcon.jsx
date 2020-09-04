@@ -26,7 +26,7 @@ const TextInputWithIcon = ({
     <span className="it-sub-label">
       {sublabel}
     </span>
-    <div className={`it-with-icon-container ${disabled ? 'disabled' : ''}`}>
+    <div className={`it-with-icon-container ${disabled ? 'disabled' : ''} ${error ? 'error' : ''}`}>
       <input
         className="it-input-with-icon"
         disabled={disabled}

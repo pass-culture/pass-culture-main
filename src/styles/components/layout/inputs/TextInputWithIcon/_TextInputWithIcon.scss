@@ -29,6 +29,10 @@
     }
   }
 
+  &.error:not(:focus-within) {
+    border: 2px solid $red-error;
+  }
+
   .it-input-with-icon {
     @include body();
 
