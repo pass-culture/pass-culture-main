@@ -48,7 +48,7 @@ describe('components | BetaPage', () => {
     // then
     const footer = wrapper.find(FormFooter)
     expect(footer).toHaveLength(1)
-    expect(footer.prop('submit')).toStrictEqual([
+    expect(footer.prop('internalLinks')).toStrictEqual([
       {
         id: 'sign-up-link',
         label: 'Créer un compte',

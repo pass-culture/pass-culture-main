@@ -13,7 +13,7 @@ describe('components | FormFooter', () => {
         const props = {
           cancel: null,
           className: null,
-          submit: [
+          internalLinks: [
             {
               className: 'my-class',
               disabled: false,
@@ -47,7 +47,7 @@ describe('components | FormFooter', () => {
         const props = {
           cancel: null,
           className: null,
-          submit: [
+          internalLinks: [
             {
               className: 'my-class',
               id: 'my-id',
@@ -74,15 +74,17 @@ describe('components | FormFooter', () => {
       it('should render a cancel link when a cancel url is provided', () => {
         // given
         const props = {
-          cancel: {
-            className: 'my-class',
-            disabled: false,
-            id: 'my-id',
-            label: 'my-label',
-            url: 'my-url',
-          },
+          internalLinks: [
+            {
+              className: 'my-class',
+              disabled: false,
+              id: 'my-id',
+              label: 'my-label',
+              url: 'my-url',
+            },
+          ],
           className: null,
-          submit: null,
+          submitButton: null,
         }
 
         // when
@@ -109,15 +111,12 @@ describe('components | FormFooter', () => {
         const props = {
           cancel: null,
           className: null,
-          externalLink: null,
-          submit: [
-            {
-              className: 'my-class',
-              disabled: false,
-              id: 'my-id',
-              label: 'my-label',
-            },
-          ],
+          submitButton: {
+            className: 'my-class',
+            disabled: false,
+            id: 'my-id',
+            label: 'my-label',
+          },
         }
 
         // when

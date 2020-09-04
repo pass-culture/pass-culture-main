@@ -34,7 +34,7 @@ const BetaPage = ({ trackSignup }) => (
       </div>
     </main>
     <FormFooter
-      submit={[
+      internalLinks={[
         {
           id: 'sign-up-link',
           label: 'Créer un compte',

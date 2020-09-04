@@ -8,7 +8,7 @@ import PasswordField from '../../../forms/inputs/PasswordField'
 import withNotRequiredLogin from '../../../hocs/with-login/withNotRequiredLogin'
 import withResetForm from '../hocs/withResetForm'
 
-const cancelOptions = {
+const cancelLink = {
   className: 'is-white-text',
   disabled: false,
   label: 'Annuler',
@@ -66,8 +66,8 @@ export const ResetPasswordForm = ({ canSubmit, formErrors, isLoading }) => (
       </div>
     </div>
     <FormFooter
-      cancel={cancelOptions}
-      submit={[{ ...submitOptions, disabled: !canSubmit }]}
+      internalLinks={[cancelLink]}
+      submitButton={{ ...submitOptions, disabled: !canSubmit }}
     />
   </Fragment>
 )

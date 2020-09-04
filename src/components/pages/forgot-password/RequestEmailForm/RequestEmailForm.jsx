@@ -27,20 +27,20 @@ export const RequestEmailForm = ({ canSubmit, isLoading, formErrors }) => (
       </div>
     </div>
     <FormFooter
-      cancel={{
-        className: 'is-white-text',
-        id: 'np-cancel-link',
-        label: 'Annuler',
-        url: '/connexion',
-      }}
-      submit={[
+      internalLinks={[
         {
-          className: 'is-bold is-white-text',
-          id: 'np-ok-button',
-          label: 'OK',
-          disabled: !canSubmit,
+          className: 'is-white-text',
+          id: 'np-cancel-link',
+          label: 'Annuler',
+          url: '/connexion',
         },
       ]}
+      submitButton={{
+        className: 'is-bold is-white-text',
+        id: 'np-ok-button',
+        label: 'OK',
+        disabled: !canSubmit,
+      }}
     />
   </Fragment>
 )

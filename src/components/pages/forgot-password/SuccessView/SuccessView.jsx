@@ -3,14 +3,14 @@ import React, { PureComponent, Fragment } from 'react'
 
 import FormFooter from '../../../forms/FormFooter'
 
-const cancelOptions = {
+const retryLink = {
   className: 'is-white-text',
   disabled: false,
   label: 'Recommencer',
   url: '/mot-de-passe-perdu',
 }
 
-const submitOptions = {
+const signInLink = {
   className: 'is-bold is-white-text',
   id: 'success-view-submit',
   disabled: false,
@@ -49,10 +49,7 @@ class SuccessView extends PureComponent {
         <div className="is-italic fs22">
           {renderSuccessMessage()}
         </div>
-        <FormFooter
-          cancel={(!token && cancelOptions) || null}
-          submit={[submitOptions]}
-        />
+        <FormFooter internalLinks={token ? [signInLink] : [retryLink, signInLink]} />
       </div>
     )
   }
