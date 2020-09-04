@@ -50,17 +50,24 @@ class FormFooter extends PureComponent {
     }
   }
 
-  renderInnerLinkOrSubmitButton = innerLinkOrSubmitButton => {
-    const isSubmitButton = !innerLinkOrSubmitButton.url
+  renderInnerLinkOrSubmitButton = (innerLinkOrSubmitButton, index, linksOrButtons) => {
+    const numberOfLinksOrButton = linksOrButtons.length
+    const showSeparator = index + 1 !== numberOfLinksOrButton
     const isInnerLink = innerLinkOrSubmitButton.url
-    if (isInnerLink) return this.renderLink(innerLinkOrSubmitButton)
-    if (isSubmitButton) return this.renderSubmitButton(innerLinkOrSubmitButton)
+    return [
+      isInnerLink
+        ? this.renderLink(innerLinkOrSubmitButton)
+        : this.renderSubmitButton(innerLinkOrSubmitButton),
+      showSeparator && this.renderSeparator(),
+    ]
   }
+
+  renderSeparator = () => <hr className="dotted-left-2x-white flex-0" />
 
   render() {
     const { cancel, submit } = this.props
     const isCancelLink = Boolean(cancel && cancel.url)
-    const hideSeparator = !isCancelLink || !submit
+    const showSeparator = isCancelLink && submit
 
     if (this.isDisplayedOnInstagram()) {
       const arbitraryValueToScrollToTheBottom = 10000
@@ -75,7 +82,7 @@ class FormFooter extends PureComponent {
         id="logout-form-footer"
       >
         {isCancelLink && this.renderLink(cancel)}
-        {!hideSeparator && <hr className="dotted-left-2x-white flex-0" />}
+        {showSeparator && this.renderSeparator()}
         {submit && submit.map(this.renderInnerLinkOrSubmitButton)}
       </footer>
     )
