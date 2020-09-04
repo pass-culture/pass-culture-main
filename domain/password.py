@@ -2,17 +2,15 @@ import re
 from datetime import datetime, timedelta
 from typing import Dict
 
-import bcrypt
-
 from models import ApiErrors, UserSQLEntity
+from models.user_sql_entity import hash_password
 from utils.token import random_token
 
 RESET_PASSWORD_TOKEN_LENGTH = 10
 
 
-def random_password():
-    return bcrypt.hashpw(random_token(length=12).encode('utf-8'), bcrypt.gensalt())
-
+def random_password() -> bytes:
+    return hash_password(random_token(length=12))
 
 
 def check_password_validity(new_password: str, new_confirmation_password: str, old_password: str, user: UserSQLEntity) -> None:

@@ -1,8 +1,9 @@
 from decimal import Decimal
+from unittest.mock import patch
 
 import pytest
 
-from models import ApiErrors, RightsType, ThingType
+from models import ApiErrors, RightsType, ThingType, user_sql_entity
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
@@ -334,7 +335,7 @@ class needsToSeeTutorialsTest:
         repository.save(user)
         # then
         assert user.needsToSeeTutorials is False
-        
+
     @clean_database
     def test_pro_user_has_not_to_see_tutorials_when_already_seen(self, app):
         # given
@@ -343,3 +344,29 @@ class needsToSeeTutorialsTest:
         repository.save(user)
         # then
         assert user.needsToSeeTutorials is False
+
+
+class DevEnvironmentPasswordHasherTest:
+
+    def test_hash_password_uses_md5(self):
+        hashed = user_sql_entity.hash_password('secret')
+        assert hashed == b'5ebe2294ecd0e0f08eab7690d2a6ee69'
+
+    def test_check_password(self):
+        hashed = user_sql_entity.hash_password('secret')
+        assert not user_sql_entity.check_password('wrong', hashed)
+        assert user_sql_entity.check_password('secret', hashed)
+
+
+@patch('models.user_sql_entity.IS_DEV', False)
+class ProdEnvironmentPasswordHasherTest:
+
+    def test_hash_password_uses_bcrypt(self):
+        hashed = user_sql_entity.hash_password('secret')
+        assert hashed != 'secret'
+        assert hashed.startswith(b'$2b$')  # bcrypt prefix
+
+    def test_check_password(self):
+        hashed = user_sql_entity.hash_password('secret')
+        assert not user_sql_entity.check_password('wrong', hashed)
+        assert user_sql_entity.check_password('secret', hashed)

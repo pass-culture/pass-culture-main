@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from hashlib import md5
 
 import bcrypt
 from sqlalchemy import Binary, \
@@ -23,6 +24,39 @@ from models.pc_object import PcObject
 from models.stock_sql_entity import StockSQLEntity
 from models.user_offerer import UserOfferer, RightsType
 from models.versioned_mixin import VersionedMixin
+from utils.config import IS_DEV
+
+
+
+def _hash_password_with_bcrypt(clear_text: str) -> bytes:
+    return bcrypt.hashpw(clear_text.encode('utf-8'), bcrypt.gensalt())
+
+
+def _check_password_with_bcrypt(clear_text: str, hashed: str) -> bool:
+    return bcrypt.hashpw(clear_text.encode('utf-8'), hashed) == hashed
+
+
+def _hash_password_with_md5(clear_text: str) -> bytes:
+    if not IS_DEV:
+        raise RuntimeError("This password hasher should not be used outside tests.")
+    return md5(clear_text.encode('utf-8')).hexdigest().encode('utf-8')
+
+
+def _check_password_with_md5(clear_text: str, hashed: str) -> bool:
+    if not IS_DEV:
+        raise RuntimeError("This password hasher should not be used outside tests.")
+    # non constant-time comparison because it's test-only
+    return _hash_password_with_md5(clear_text) == hashed
+
+
+def hash_password(clear_text: str) -> bytes:
+    hasher = _hash_password_with_md5 if IS_DEV else _hash_password_with_bcrypt
+    return hasher(clear_text)
+
+
+def check_password(clear_text: str, hashed: str) -> bool:
+    checker = _check_password_with_md5 if IS_DEV else _check_password_with_bcrypt
+    return checker(clear_text, hashed)
 
 
 class UserSQLEntity(PcObject,
@@ -98,7 +132,7 @@ class UserSQLEntity(PcObject,
     hasSeenTutorials = Column(Boolean, nullable=True)
 
     def checkPassword(self, passwordToCheck):
-        return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
+        return check_password(passwordToCheck, self.password)
 
     def get_id(self):
         return str(self.id)
@@ -136,7 +170,7 @@ class UserSQLEntity(PcObject,
 
     def setPassword(self, newpass):
         self.clearTextPassword = newpass
-        self.password = bcrypt.hashpw(newpass.encode('utf-8'), bcrypt.gensalt())
+        self.password = hash_password(newpass)
         self.resetPasswordToken = None
         self.resetPasswordTokenValidityLimit = None
 

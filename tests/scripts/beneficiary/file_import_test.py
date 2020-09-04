@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch, ANY
+from unittest.mock import Mock, patch
 
 from models import UserSQLEntity, BookingSQLEntity
 from scripts.beneficiary.file_import import fill_user_from, \
@@ -25,7 +25,7 @@ class FillUserFromTest:
             'super_secure_password'
         ]
 
-    @patch('bcrypt.hashpw')
+    @patch('scripts.beneficiary.file_import.hash_password')
     def test_returns_an_user_with_data_from_csv_row(self, hashpw):
         # when
         user = fill_user_from(self.csv_row, UserSQLEntity())
@@ -39,7 +39,7 @@ class FillUserFromTest:
         assert user.departementCode == '22'
         assert user.postalCode == '22850'
         assert user.dateOfBirth == datetime(1923, 3, 15)
-        hashpw.assert_called_with('super_secure_password'.encode('utf-8'), ANY)
+        hashpw.assert_called_with('super_secure_password')
 
     def test_returns_a_formatted_phone_number(self):
         # given

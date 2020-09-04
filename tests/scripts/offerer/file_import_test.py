@@ -159,8 +159,7 @@ class FillUserFromTest:
             'MyBletcheyCompany'
         ]
 
-    @patch('bcrypt.hashpw')
-    def test_returns_an_user_with_data_from_csv_row(self, hashpw):
+    def test_returns_an_user_with_data_from_csv_row(self):
         # when
         user = fill_user_from(self.csv_row, UserSQLEntity())
 

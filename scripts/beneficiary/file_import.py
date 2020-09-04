@@ -4,13 +4,12 @@ import re
 from datetime import datetime
 from typing import List, Set, Iterable, Callable
 
-import bcrypt
-
 from domain.admin_emails import send_users_activation_report
 from domain.password import generate_reset_token, random_password
 from domain.user_activation import generate_activation_users_csv
 from models import UserSQLEntity, BookingSQLEntity, StockSQLEntity
 from models.booking_sql_entity import ActivationUser
+from models.user_sql_entity import hash_password
 from repository import booking_queries, repository
 from repository.stock_queries import find_online_activation_stock
 from repository.user_queries import find_user_by_email
@@ -201,6 +200,6 @@ def _extract_departement_code(plain_department: str) -> str:
 def _get_password(csv_row: List[List[str]]) -> str:
     has_password_in_csv = len(csv_row) - 1 == PASSWORD_INDEX
     if has_password_in_csv:
-        return bcrypt.hashpw(csv_row[PASSWORD_INDEX].encode('utf-8'), bcrypt.gensalt())
+        return hash_password(csv_row[PASSWORD_INDEX])
     else:
         return random_password()
