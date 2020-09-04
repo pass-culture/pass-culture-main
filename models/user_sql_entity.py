@@ -33,7 +33,7 @@ def _hash_password_with_bcrypt(clear_text: str) -> bytes:
 
 
 def _check_password_with_bcrypt(clear_text: str, hashed: str) -> bool:
-    return bcrypt.hashpw(clear_text.encode('utf-8'), hashed) == hashed
+    return bcrypt.checkpw(clear_text.encode('utf-8'), hashed)
 
 
 def _hash_password_with_md5(clear_text: str) -> bytes:
