@@ -1,6 +1,8 @@
 .input-text {
+  display: flex;
+  flex-direction: column;
+
   .labels {
-    display: flex;
     justify-content: space-between;
   }
 

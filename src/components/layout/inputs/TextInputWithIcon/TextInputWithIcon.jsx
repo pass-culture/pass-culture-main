@@ -30,6 +30,7 @@ const TextInputWithIcon = ({
       <input
         className="it-input-with-icon"
         disabled={disabled}
+        id={name}
         name={name}
         onChange={onChange}
         placeholder={placeholder}
