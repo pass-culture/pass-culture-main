@@ -3,6 +3,10 @@ import { Field } from 'react-final-form'
 import Icon from '../../Icon'
 import TextInputWithIcon from '../../inputs/TextInputWithIcon/TextInputWithIcon'
 
+export const isNotValid = value => {
+  return !value
+}
+
 class PasswordInput extends PureComponent {
   constructor(props) {
     super(props)
@@ -42,7 +46,6 @@ class PasswordInput extends PureComponent {
         onChange={input.onChange}
         onIconClick={this.handleToggleHidden}
         placeholder="Mon mot de passe"
-        required
         type={isPasswordHidden ? 'password' : 'text'}
         value={input.value}
       />
@@ -55,6 +58,7 @@ class PasswordInput extends PureComponent {
         <Field
           component={this.renderPasswordField}
           name="password"
+          validate={isNotValid}
         />
         <Icon
           alt="Caractéristiques obligatoires du mot de passe"
