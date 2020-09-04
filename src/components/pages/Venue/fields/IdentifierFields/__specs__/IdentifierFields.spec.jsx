@@ -432,6 +432,20 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           })
         })
       })
+
+      it('should not validate select field when no venue type have been selected', () => {
+        // given
+        props.readOnly = false
+
+        // when
+        const wrapper = shallow(<IdentifierFields {...props} />)
+
+        // then
+        const selectField = wrapper.find(Field).findWhere(node => node.prop('id') === 'venue-type')
+        expect(selectField.prop('validate')()).toBe('Ce champ est obligatoire')
+        const venueTypeOptions = wrapper.find('option')
+        expect(venueTypeOptions.at(0).text()).toBe('Choisissez un type de lieu dans la liste')
+      })
     })
 
     describe('label of venue field', () => {

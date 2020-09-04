@@ -79,6 +79,13 @@ class IdentifierFields extends PureComponent {
     return ''
   }
 
+  venueTypeSelectValidate = selectValue => {
+    if (selectValue === undefined || selectValue === '') {
+      return 'Ce champ est obligatoire'
+    }
+    return ''
+  }
+
   render() {
     const {
       fieldReadOnlyBecauseFrozenFormSiret,
@@ -156,8 +163,11 @@ class IdentifierFields extends PureComponent {
           >
             <div className="field-label">
               <label htmlFor="venue-type">
-                {'Type de lieu :'}
+                {'Type de lieu : '}
               </label>
+              <span className="field-asterisk">
+                {'*'}
+              </span>
             </div>
 
             <div className="field-control">
@@ -173,6 +183,8 @@ class IdentifierFields extends PureComponent {
                       disabled={readOnly}
                       id="venue-type"
                       name="venueTypeId"
+                      required
+                      validate={this.venueTypeSelectValidate}
                     >
                       <option value="">
                         {'Choisissez un type de lieu dans la liste'}
