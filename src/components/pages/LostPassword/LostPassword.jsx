@@ -84,6 +84,18 @@ class LostPassword extends PureComponent {
     }))
   }
 
+  isResetPasswordRequestSubmitDisabled = () => {
+    const { emailValue } = this.state
+
+    return emailValue === ''
+  }
+
+  isResetPasswordSubmitDisabled = () => {
+    const { newPasswordValue } = this.state
+
+    return newPasswordValue === ''
+  }
+
   render() {
     const {
       emailValue,
@@ -154,7 +166,7 @@ class LostPassword extends PureComponent {
                 </section>
               )}
               {token && (
-                <section className="hero has-text-grey password-reset-request-form">
+                <section className="hero password-reset-request-form">
                   <div className="hero-body">
                     <h1 className="title is-spaced is-1">
                       <span className="has-text-weight-normal">
@@ -182,7 +194,7 @@ class LostPassword extends PureComponent {
                         name="password"
                         onChange={this.handleInputPasswordChange}
                         onIconClick={this.handleToggleHidden}
-                        placeholder="*****"
+                        placeholder="Mon nouveau mot de passe"
                         required
                         sublabel="obligatoire"
                         type={isPasswordHidden ? 'password' : 'text'}
@@ -200,6 +212,7 @@ class LostPassword extends PureComponent {
 
                       <button
                         className="primary-button submit-button"
+                        disabled={this.isResetPasswordSubmitDisabled()}
                         type="submit"
                       >
                         {'Envoyer'}
@@ -209,7 +222,7 @@ class LostPassword extends PureComponent {
                 </section>
               )}
               {!token && !envoye && !change && (
-                <section className="hero has-text-grey password-reset-request">
+                <section className="hero password-reset-request">
                   <div className="hero-body">
                     <h1 className="title is-spaced is-1">
                       <span className="has-text-weight-normal">
@@ -236,7 +249,7 @@ class LostPassword extends PureComponent {
                         label="Adresse e-mail"
                         name="email"
                         onChange={this.handleInputEmailChange}
-                        placeholder="Identifiant (e-mail)"
+                        placeholder="nom@exemple.fr"
                         required
                         sublabel="obligatoire"
                         type="email"
@@ -245,6 +258,7 @@ class LostPassword extends PureComponent {
 
                       <button
                         className="primary-button"
+                        disabled={this.isResetPasswordRequestSubmitDisabled()}
                         type="submit"
                       >
                         {'Envoyer'}
