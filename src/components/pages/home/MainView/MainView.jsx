@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types'
 import { parse } from 'query-string'
 import React, { Component, createRef, Fragment } from 'react'
-import { Link, Route } from 'react-router-dom'
+import { Route } from 'react-router-dom'
 
 import { formatToFrenchDecimal } from '../../../../utils/getDisplayPrice'
 import { fetchHomepage } from '../../../../vendor/contentful/contentful'
 import AnyError from '../../../layout/ErrorBoundaries/ErrorsPage/AnyError/AnyError'
 import CloseLink from '../../../layout/Header/CloseLink/CloseLink'
-import Icon from '../../../layout/Icon/Icon'
 import BusinessModule from './BusinessModule/BusinessModule'
 import { formatPublicName } from './domain/formatPublicName'
 import ExclusivityPane from './domain/ValueObjects/ExclusivityPane'
@@ -64,9 +63,9 @@ class MainView extends Component {
     const modulePaddingBottom = 24
     const hasReachedEndOfPage =
       this.modulesListRef.current.getBoundingClientRect().bottom +
-      navbarHeight -
-      modulePaddingBottom -
-      document.documentElement.clientHeight <=
+        navbarHeight -
+        modulePaddingBottom -
+        document.documentElement.clientHeight <=
       0
     if (hasReachedEndOfPage) {
       this.setState({ haveSeenAllModules: true })
@@ -88,19 +87,15 @@ class MainView extends Component {
       )
     } else {
       if (module instanceof ExclusivityPane) {
-        return (
-          <ExclusivityModule
-            key={`${row}-exclusivity-module`}
-            module={module}
-          />
-        )
-      }
-      return (
-        <BusinessModule
-          key={`${row}-business-module`}
+        return (<ExclusivityModule
+          key={`${row}-exclusivity-module`}
           module={module}
-        />
-      )
+                />)
+      }
+      return (<BusinessModule
+        key={`${row}-business-module`}
+        module={module}
+              />)
     }
   }
 
@@ -120,14 +115,6 @@ class MainView extends Component {
           onScroll={this.checkIfAllModulesHaveBeenSeen}
         >
           <section className="hw-header">
-            <div className="hw-account">
-              <Link to="/accueil/profil">
-                <Icon
-                  className="hw-account-image"
-                  svg="ico-informations-white"
-                />
-              </Link>
-            </div>
             <div className="hw-pseudo">
               {`Bonjour ${formattedPublicName}`}
             </div>

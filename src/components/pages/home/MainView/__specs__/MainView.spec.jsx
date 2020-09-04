@@ -2,11 +2,9 @@ import { mount } from 'enzyme'
 import { parse } from 'query-string'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
-import { Link } from 'react-router-dom'
 
 import { fetchHomepage } from '../../../../../vendor/contentful/contentful'
 import AnyError from '../../../../layout/ErrorBoundaries/ErrorsPage/AnyError/AnyError'
-import Icon from '../../../../layout/Icon/Icon'
 import User from '../../../profile/ValueObjects/User'
 import BusinessModule from '../BusinessModule/BusinessModule'
 import BusinessPane from '../domain/ValueObjects/BusinessPane'
@@ -71,24 +69,6 @@ describe('src | components | MainView', () => {
 
   afterEach(() => {
     fetchHomepage.mockReset()
-  })
-
-  it('should render a Link component with the profil icon', () => {
-    // when
-    const wrapper = mount(
-      <MemoryRouter>
-        <MainView {...props} />
-      </MemoryRouter>
-    )
-
-    // then
-    const link = wrapper.find(Link)
-    expect(link).toHaveLength(1)
-    expect(link.prop('to')).toBe('/accueil/profil')
-
-    const icon = link.find(Icon)
-    expect(icon).toHaveLength(1)
-    expect(icon.prop('svg')).toBe('ico-informations-white')
   })
 
   it('should render a title with the user public name', () => {

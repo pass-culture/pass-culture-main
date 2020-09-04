@@ -12,6 +12,7 @@ describe('nav bar', () => {
   beforeEach(() => {
     props = {
       isFeatureEnabled: jest.fn(),
+      path: '/',
       routes: [
         {
           icon,
@@ -29,15 +30,13 @@ describe('nav bar', () => {
 
   it('should display the first link when feature is enabled for first route only', () => {
     // given
-    props.isFeatureEnabled
-      .mockReturnValueOnce(true)
-      .mockReturnValueOnce(false)
+    props.isFeatureEnabled.mockReturnValueOnce(true).mockReturnValueOnce(false)
 
     // when
     const wrapper = mount(
       <MemoryRouter>
         <NavBar {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
@@ -49,15 +48,13 @@ describe('nav bar', () => {
 
   it('should display the second link when feature is enabled for second route only', () => {
     // given
-    props.isFeatureEnabled
-      .mockReturnValueOnce(false)
-      .mockReturnValueOnce(true)
+    props.isFeatureEnabled.mockReturnValueOnce(false).mockReturnValueOnce(true)
 
     // when
     const wrapper = mount(
       <MemoryRouter>
         <NavBar {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
@@ -69,19 +66,14 @@ describe('nav bar', () => {
 
   it('should display all links when there is no notion of feature flipping', () => {
     // given
-    props.routes = [
-      { icon, to: '/first-path' },
-      { icon, to: '/second-path' },
-    ]
-    props.isFeatureEnabled
-      .mockReturnValueOnce(true)
-      .mockReturnValueOnce(true)
+    props.routes = [{ icon, to: '/first-path' }, { icon, to: '/second-path' }]
+    props.isFeatureEnabled.mockReturnValueOnce(true).mockReturnValueOnce(true)
 
     // when
     const wrapper = mount(
       <MemoryRouter>
         <NavBar {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
@@ -95,19 +87,38 @@ describe('nav bar', () => {
 
   it('should not display any links when feature is disabled for all routes', () => {
     // given
-    props.isFeatureEnabled
-      .mockReturnValueOnce(false)
-      .mockReturnValueOnce(false)
+    props.isFeatureEnabled.mockReturnValueOnce(false).mockReturnValueOnce(false)
 
     // when
     const wrapper = mount(
       <MemoryRouter>
         <NavBar {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
     const allLinks = wrapper.find('nav ul li a')
     expect(allLinks).toHaveLength(0)
+  })
+
+  it('should deactivate link of active page', () => {
+    // Given
+    props.routes = [{ icon, to: '/first-path' }, { icon, to: '/second-path' }]
+    props.isFeatureEnabled.mockReturnValueOnce(true).mockReturnValueOnce(true)
+    props.path = '/second-path'
+
+    // When
+    const wrapper = mount(
+      <MemoryRouter>
+        <NavBar {...props} />
+      </MemoryRouter>
+    )
+
+    // Then
+    const allLinks = wrapper.find('nav ul li')
+    expect(allLinks).toHaveLength(2)
+    expect(allLinks.find('a[href="/first-path"]')).toHaveLength(1)
+    expect(allLinks.find('a[href="/second-path"]')).toHaveLength(0)
+    expect(allLinks.find('span[className="active"]')).toHaveLength(1)
   })
 })

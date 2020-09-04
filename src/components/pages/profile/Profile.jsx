@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Fragment } from 'react'
+import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
@@ -17,51 +17,54 @@ const Profile = ({ history, match, user }) => {
   const department = getDepartment(departmentCode)
 
   return (
-    <Fragment>
-      <MainView
-        historyPush={history.push}
-        user={user}
-      />
-      <Switch>
-        <Route
-          exact
-          path={`${match.path}/mot-de-passe`}
-        >
-          <EditPassword
-            handleSubmit={handleEditPasswordSubmit}
-            historyPush={history.push}
-            pathToProfile={match.path}
-            triggerSuccessSnackbar={toast.success}
-            user={user}
-          />
-        </Route>
-        <Route
-          exact
-          path={`${match.path}/informations`}
-        >
-          <PersonalInformationsContainer
-            department={department}
-            historyPush={history.push}
-            pathToProfile={match.path}
-            triggerSuccessSnackbar={toast.success}
-            user={user}
-          />
-        </Route>
-        <Route
-          exact
-          path={`${match.path}/mentions-legales`}
-        >
-          <LegalNotice
-            historyPush={history.push}
-            pathToProfile={match.path}
-            userEmail={email}
-          />
-        </Route>
-        <Route>
-          <PageNotFoundContainer />
-        </Route>
-      </Switch>
-    </Fragment>
+    <Switch>
+      <Route
+        exact
+        path={`${match.path}/mot-de-passe`}
+      >
+        <EditPassword
+          handleSubmit={handleEditPasswordSubmit}
+          historyPush={history.push}
+          pathToProfile={match.path}
+          triggerSuccessSnackbar={toast.success}
+          user={user}
+        />
+      </Route>
+      <Route
+        exact
+        path={`${match.path}/informations`}
+      >
+        <PersonalInformationsContainer
+          department={department}
+          historyPush={history.push}
+          pathToProfile={match.path}
+          triggerSuccessSnackbar={toast.success}
+          user={user}
+        />
+      </Route>
+      <Route
+        exact
+        path={`${match.path}/mentions-legales`}
+      >
+        <LegalNotice
+          historyPush={history.push}
+          pathToProfile={match.path}
+          userEmail={email}
+        />
+      </Route>
+      <Route
+        exact
+        path={match.path}
+      >
+        <MainView
+          historyPush={history.push}
+          user={user}
+        />
+      </Route>
+      <Route>
+        <PageNotFoundContainer />
+      </Route>
+    </Switch>
   )
 }
 

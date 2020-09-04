@@ -90,6 +90,14 @@ let routes = [
    *
    ---------------------------------------------------  */
   {
+    component: HomeContainer,
+    featureName: 'WEBAPP_HOMEPAGE',
+    icon: IcoNavHome,
+    path: '/accueil',
+    to: '/accueil',
+    title: 'Accueil',
+  },
+  {
     component: DiscoveryContainer,
     icon: IcoNavDiscovery,
     to: '/decouverte',
@@ -102,14 +110,6 @@ let routes = [
     to: '/recherche',
     path: '/recherche',
     title: 'Recherche',
-  },
-  {
-    component: HomeContainer,
-    featureName: 'WEBAPP_HOMEPAGE',
-    icon: IcoNavHome,
-    path: '/accueil',
-    to: '/accueil',
-    title: 'Accueil',
   },
   {
     component: MyBookingsContainer,
