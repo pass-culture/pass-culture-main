@@ -27,6 +27,19 @@ describe('src | components | pages | OffererCreation | siren | formatSiren', () 
     })
   })
 
+  describe('when siren given is a letter', () => {
+    it('should return an empty string', () => {
+      // given
+      const siren = 'a'
+
+      // when
+      const formatedSiren = formatSiren(siren)
+
+      // then
+      expect(formatedSiren).toBe('')
+    })
+  })
+
   describe('when siren given is not a number', () => {
     it('should return a string with only numbers', () => {
       // given
