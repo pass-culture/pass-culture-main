@@ -57,7 +57,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         )
 
         // then
-        const thumbImage = wrapper.find('img')
+        const thumbImage = wrapper.find('img').first()
         expect(thumbImage.prop('src')).toBe('/fake-product-url')
       })
 

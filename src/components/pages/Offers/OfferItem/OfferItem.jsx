@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom'
 
 import Icon from '../../../layout/Icon'
 import Thumb from '../../../layout/Thumb'
+import { mapOfferStatus } from '../domain/mapOfferStatus'
+import { OFFER_STATUS } from '../domain/offerStatus'
 
 class OfferItem extends PureComponent {
   handleOnDeactivateClick = () => {
@@ -36,6 +38,25 @@ class OfferItem extends PureComponent {
     const { name } = offer || {}
     const stockSize = stocks ? stocks.length : null
     const offerIsEditable = offer ? offer.isEditable : null
+    const offerStatus = mapOfferStatus(offer.isActive, stocks)
+    const offerStatusProperties = {
+      [OFFER_STATUS.DEACTIVATED]: {
+        className: 'status-deactivated',
+        icon: 'ico-status-deactived',
+      },
+      [OFFER_STATUS.EXPIRED]: {
+        className: 'status-expired',
+        icon: 'ico-calendar',
+      },
+      [OFFER_STATUS.SOLD_OUT]: {
+        className: 'status-sold-out',
+        icon: 'ico-status-sold-out',
+      },
+      [OFFER_STATUS.ACTIVE]: {
+        className: 'status-active',
+        icon: 'ico-status-validated',
+      },
+    }
 
     return (
       <li className={`offer-item ${!offer.isActive ? 'inactive' : ''} offer-row`}>
@@ -64,6 +85,12 @@ class OfferItem extends PureComponent {
             {availabilityMessage}
           </span>
         )}
+        <span className="status-column">
+          <span className={offerStatusProperties[offerStatus].className}>
+            <Icon svg={offerStatusProperties[offerStatus].icon} />
+            {offerStatus}
+          </span>
+        </span>
         <button
           className="secondary-button"
           onClick={this.handleOnDeactivateClick}
