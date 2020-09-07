@@ -76,7 +76,6 @@ export default function register() {
       const swUrl = `${ROOT_PATH}/service-worker.js`
 
       if (IS_LOCALHOST) {
-        registerValidSW(swUrl)
         // This is running on localhost. Lets check if a service worker still exists or not.
         checkValidServiceWorker(swUrl)
       } else {

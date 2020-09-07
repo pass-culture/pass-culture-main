@@ -83,7 +83,7 @@
     "full-icu": "^1.3.0",
     "html-critical-webpack-plugin": "^2.1.0",
     "html-webpack-plugin": "4.0.0-alpha.2",
-    "husky": "^3.0.9",
+    "husky": "^3.1.0",
     "jest": "23.6.0",
     "jest-canvas-mock": "^2.2.0",
     "jest-environment-jsdom": "^24.9.0",
