@@ -1,5 +1,5 @@
 import logger from '../utils/logger'
-import { IS_PROD, IS_LOCALHOST, ROOT_PATH } from '../utils/config'
+import { IS_LOCALHOST, IS_PROD, ROOT_PATH } from '../utils/config'
 
 // In production, we register a service worker to serve assets from local cache.
 
@@ -13,8 +13,8 @@ import { IS_PROD, IS_LOCALHOST, ROOT_PATH } from '../utils/config'
 
 function registerValidSW(swUrl) {
   navigator.serviceWorker
-  .register(swUrl)
-  .then(registration => {
+    .register(swUrl)
+    .then(registration => {
       registration.onupdatefound = () => {
         const installingWorker = registration.installing
         installingWorker.onstatechange = () => {
@@ -22,7 +22,7 @@ function registerValidSW(swUrl) {
             if (navigator.serviceWorker.controller) {
               window.location.reload()
               window.alert(
-                'Nous avons mis à jour le pass Culture ! L‘application va maintenant se relancer pour appliquer les changements.'
+                'Nous avons mis à jour le pass Culture ! L‘application va maintenant se relancer pour appliquer les changements.',
               )
             } else {
               logger.log('Content is cached for offline use.')
@@ -62,7 +62,7 @@ function checkValidServiceWorker(swUrl) {
 }
 
 export default function register() {
-  if ('serviceWorker' in navigator) {
+  if (IS_PROD && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location)
     if (publicUrl.origin !== window.location.origin) {
@@ -74,8 +74,15 @@ export default function register() {
 
     window.addEventListener('load', () => {
       const swUrl = `${ROOT_PATH}/service-worker.js`
-      checkValidServiceWorker(swUrl)
-      registerValidSW(swUrl)
+
+      if (IS_LOCALHOST) {
+        registerValidSW(swUrl)
+        // This is running on localhost. Lets check if a service worker still exists or not.
+        checkValidServiceWorker(swUrl)
+      } else {
+        // Is not local host. Just register service worker
+        registerValidSW(swUrl)
+      }
     })
   }
 }
