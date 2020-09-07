@@ -6,6 +6,7 @@ import { formatSearchResultDate } from '../../../../../../utils/date/date'
 import { formatResultPrice } from '../../../../../../utils/price'
 import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
 import { PANE_LAYOUT } from '../../domain/layout'
+import { formatToReadableString } from '../../../../../../utils/strings/formatToReadableString'
 
 export const noOp = () => false
 
@@ -49,7 +50,7 @@ const OfferTile = ({ historyPush, hit, isSwitching, layout }) => {
           </div>
         </div>
         <p className="otw-venue">
-          {venue.publicName || venue.name}
+          {venue.publicName || formatToReadableString(venue.name)}
         </p>
         <p className="otw-offer-info">
           <span>

@@ -28,7 +28,7 @@ describe('src | components | OfferTile', () => {
         },
         venue: {
           departementCode: '54',
-          name: 'Librairie Kléber',
+          name: 'Librairie kléber',
           publicName: null
         },
       },
@@ -93,7 +93,7 @@ describe('src | components | OfferTile', () => {
     )
 
     // then
-    const venue = wrapper.find({ children: 'Librairie Kléber' })
+    const venue = wrapper.find({ children: 'Librairie kléber' })
     expect(venue).toHaveLength(1)
   })
 
