@@ -1,0 +1,136 @@
+.pf-container {
+  background-color: $white;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+
+  .header {
+    padding: rem(10px);
+  }
+
+  .header-start {
+    left: 0;
+    padding: rem(5px);
+    position: absolute;
+    top: 0;
+  }
+
+  .pf-section {
+    margin: 0 rem(22px);
+  }
+
+  .pf-form {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .pf-field {
+    display: flex;
+    flex-direction: column;
+    margin: rem(26px) rem(21px);
+  }
+
+  .pf-field-label {
+    color: $black;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pf-input-container {
+    border-radius: 1.375rem;
+    box-shadow: 0 rem(2px) rem(6px) 0 $black-shadow;
+    display: flex;
+    justify-content: space-between;
+    margin-top: rem(8px);
+    overflow: hidden;
+    padding: 0 rem(16px);
+
+    input {
+      box-shadow: none;
+      outline: none;
+    }
+
+    button {
+      outline: none;
+    }
+
+    &:focus-within {
+      border: 2px solid $primary;
+    }
+  }
+
+  .pf-input-error {
+    border: 2px solid $error;
+  }
+
+  .pf-input-disabled {
+    background-color: $grey-light;
+    box-shadow: none;
+  }
+
+  .pf-field-input {
+    border: none;
+    flex: 1 1;
+    font-size: inherit;
+    margin: rem(9px) 0 rem(10px) 0;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:disabled {
+      background-color: $grey-light;
+    }
+
+    &[aria-invalid="true"] {
+      border: none;
+    }
+  }
+
+  .pf-field-error {
+    color: $error;
+    display: flex;
+    font-size: rem(14px);
+    font-weight: 500;
+    margin: rem(7px) 0 0;
+
+    img {
+      height: rem(17px);
+      margin-right: rem(9px);
+      width: rem(17px);
+    }
+
+    pre {
+      font-family: inherit;
+      white-space: pre-wrap;
+    }
+  }
+
+  .pf-form-submit {
+    color: $white;
+    display: flex;
+    justify-content: center;
+    padding-bottom: rem(24px);
+    width: 100%;
+  }
+
+  .pf-button-submit {
+    background-color: $primary;
+    border: 0;
+    border-radius: rem(32px);
+    color: $white;
+    cursor: pointer;
+    font-size: rem(16px);
+    font-weight: 700;
+    height: rem(48px);
+    width: 90%;
+
+    &:disabled {
+      background-color: $primary-disabled;
+      cursor: not-allowed;
+    }
+  }
+}

@@ -1,0 +1,49 @@
+.rc-gauges {
+  display: flex;
+}
+
+.rc-gauges-container {
+  @extend .dotted-bottom-black;
+
+  padding: 0 rem(17px) rem(17px) rem(17px);
+}
+
+.rc-informations-container {
+  background: $grey-light;
+  border-radius: rem(6px);
+  margin: rem(-31px) 0 rem(21px);
+  padding-bottom: rem(24px);
+}
+
+.rc-gauges-title {
+  font-weight: 500;
+  padding-bottom: rem(24px);
+  padding-top: rem(24px);
+}
+
+.rc-read-more {
+  padding: rem(17px) rem(17px) 0 rem(17px);
+}
+
+.rc-read-more-button {
+  @extend .no-decoration;
+
+  color: $black;
+  display: flex;
+  font-size: rem(16px);
+  font-weight: 700;
+  padding-right: rem(28px);
+  text-align: left;
+}
+
+.rc-read-more-drop-down {
+  background: no-repeat right url('/icons/picto-drop-down.svg');
+}
+
+.rc-read-more-drop-down-flipped {
+  background: no-repeat right url('/icons/picto-drop-down-flipped.svg');
+}
+
+.rc-read-more-content {
+  padding-top: rem(8px);
+}
