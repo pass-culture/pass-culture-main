@@ -1,7 +1,7 @@
 import { formatToReadableString } from './formatToReadableString'
 
 describe('src | utils | strings | formatToReadableString', () => {
-  it('should return a string with a first capitalized letter only when no capitalized letter', () => {
+  it('should return a string with a first capitalized letter when no capitalized letter', () => {
     // given
     const input = "avengers"
 
@@ -12,36 +12,14 @@ describe('src | utils | strings | formatToReadableString', () => {
     expect(result).toStrictEqual("Avengers")
   })
 
-  it('should return a string with lowercased letters except the first letter', () => {
+  it('should return given input when null', () => {
     // given
-    const input = "AVENGERS"
+    const input = null
 
     // when
     const result = formatToReadableString(input)
 
     // then
-    expect(result).toStrictEqual("Avengers")
-  })
-
-  it('should return a string with lowercased letters and two words with capitalized letters', () => {
-    // given
-    const input = "AVENGERS L'âge d'ultron"
-
-    // when
-    const result = formatToReadableString(input)
-
-    // then
-    expect(result).toStrictEqual("Avengers l'âge d'ultron")
-  })
-
-  it('should not capitalize coordination words', () => {
-    // given
-    const input = "AVENGERS les supers héros"
-
-    // when
-    const result = formatToReadableString(input)
-
-    // then
-    expect(result).toStrictEqual("Avengers les supers héros")
+    expect(result).toBeNull()
   })
 })
