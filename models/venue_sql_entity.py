@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship
 
 from domain.keywords import create_ts_vector_and_table_args
 from domain.postal_code.postal_code import PostalCode
+from models.venue_type import VenueType
 from models.bank_information import BankInformationStatus
 from models.db import Model
 from models.has_address_mixin import HasAddressMixin
@@ -162,9 +163,12 @@ def create_digital_venue(offerer):
     digital_venue = VenueSQLEntity()
     digital_venue.isVirtual = True
     digital_venue.name = "Offre numérique"
+    digital_venue.venueTypeId = _get_offre_numerique_venue_type_id()
     digital_venue.managingOfferer = offerer
     return digital_venue
 
+def _get_offre_numerique_venue_type_id() -> int:
+    return VenueType.query.filter_by(label="Offre numérique").first().id
 
 ts_indexes = [('idx_venue_fts_name', VenueSQLEntity.name),
               ('idx_venue_fts_publicName', VenueSQLEntity.publicName,),

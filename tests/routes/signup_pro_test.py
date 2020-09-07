@@ -1,9 +1,11 @@
+from unittest.mock import patch
+
 from models.offerer import Offerer
 from models.user_sql_entity import UserSQLEntity
 from models.user_offerer import UserOfferer, RightsType
 from repository import repository
 from tests.conftest import clean_database, TestClient
-from tests.model_creators.generic_creators import create_user, create_user_offerer
+from tests.model_creators.generic_creators import create_user, create_user_offerer, create_venue_type
 
 BASE_DATA_PRO = {
     'email': 'toto_pro@btmx.fr',
@@ -40,6 +42,8 @@ class Post:
                 'dateOfBirth': None
             }
             other_expected_keys = {'id', 'dateCreated'}
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
 
             # When
             response = TestClient(app.test_client()) \
@@ -76,6 +80,8 @@ class Post:
                 'name': 'Crédit Coopératif',
                 'isAdmin': True
             }
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
 
             # When
             response = TestClient(app.test_client()) \
@@ -92,6 +98,8 @@ class Post:
                 self, app):
             # Given
             data_pro = BASE_DATA_PRO.copy()
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
 
             # When
             response = TestClient(app.test_client()) \
@@ -131,11 +139,12 @@ class Post:
                 "postalCode": "75000",
                 "city": "Paris"
             }
+            venue_type = create_venue_type(label="Offre numérique")
             offerer = Offerer(from_dict=json_offerer)
             offerer.generate_validation_token()
             user = create_user(email='bobby@test.com', public_name='bobby')
             user_offerer = create_user_offerer(user, offerer, is_admin=False)
-            repository.save(offerer, user_offerer)
+            repository.save(venue_type, offerer, user_offerer)
 
             data = BASE_DATA_PRO.copy()
 
@@ -252,6 +261,8 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             data['email'] = 'toto'
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
 
             # When
             response = TestClient(app.test_client()) \
@@ -267,6 +278,8 @@ class Post:
         def when_email_is_already_used(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
             TestClient(app.test_client()) \
                 .post('/users/signup/pro',
                       json=data, headers={'origin': 'http://localhost:3000'})
@@ -286,6 +299,8 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             del (data['publicName'])
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
 
             # When
             response = TestClient(app.test_client()) \
@@ -302,6 +317,8 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             data['publicName'] = 't'
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
 
             # When
             response = TestClient(app.test_client()) \
@@ -318,6 +335,8 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             data['publicName'] = 'x' * 300
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
 
             # When
             response = TestClient(app.test_client()) \
@@ -404,6 +423,8 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             del (data['name'])
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
 
             # When
             response = TestClient(app.test_client()) \
@@ -420,6 +441,8 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             del (data['city'])
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
 
             # When
             response = TestClient(app.test_client()) \
@@ -436,6 +459,8 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             del (data['postalCode'])
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
 
             # When
             response = TestClient(app.test_client()) \
@@ -452,6 +477,8 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             data['postalCode'] = '111'
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
 
             # When
             response = TestClient(app.test_client()) \

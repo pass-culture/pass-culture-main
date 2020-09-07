@@ -5,6 +5,7 @@ import pytest
 from freezegun import freeze_time
 
 from models import UserSQLEntity, UserOfferer, Offerer
+from repository import repository
 from scripts.offerer.file_import import fill_user_from, \
     fill_user_offerer_from, \
     create_activated_user_offerer, \
@@ -12,7 +13,7 @@ from scripts.offerer.file_import import fill_user_from, \
     iterate_rows_for_user_offerers, \
     UserNotCreatedException, \
     OffererNotCreatedException
-from tests.model_creators.generic_creators import create_user, create_offerer
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue_type
 from utils.token import random_token
 
 
@@ -71,6 +72,8 @@ class CreateActivatedUserOffererTest:
     def test_returns_created_user_offerer(self, app):
         # given
         blake = create_user(email='fblake@bletchley.co.uk', idx=123)
+        venue_type = create_venue_type(label="Offre numérique")
+        repository.save(venue_type)
         blakes_company = create_offerer(siren='362521879', name='MyBletcheyCompany', idx=234)
         self.find_user_query.side_effect = [blake]
         self.find_offerer_query.side_effect = [blakes_company]
