@@ -1,9 +1,12 @@
-import { shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
 
 import { NON_BREAKING_SPACE } from '../../../../../../utils/specialCharacters'
 import Header from '../Header'
 import User from '../../ValueObjects/User'
+import { Link } from 'react-router-dom'
+import { MemoryRouter } from 'react-router'
+import Icon from '../../../../../layout/Icon/Icon'
 
 describe('profileHeader', () => {
   let props
@@ -20,7 +23,11 @@ describe('profileHeader', () => {
 
   it('should display my pseudo, my wallet balance and my end validity date', () => {
     // When
-    const wrapper = shallow(<Header {...props} />)
+    const wrapper = mount(
+      <MemoryRouter>
+        <Header {...props} />
+      </MemoryRouter>,
+    )
 
     // Then
     const pseudo = wrapper.find({ children: 'Rosa Bonheur' })
@@ -29,5 +36,22 @@ describe('profileHeader', () => {
     expect(pseudo).toHaveLength(1)
     expect(walletBalance).toHaveLength(1)
     expect(endValidityDate).toHaveLength(1)
+  })
+
+  it('should display a back button to homepage', () => {
+    // when
+    const wrapper = mount(
+      <MemoryRouter>
+        <Header {...props} />
+      </MemoryRouter>,
+    )
+
+    // then
+    const link = wrapper.find(Link)
+    expect(link).toHaveLength(1)
+    expect(link.prop('to')).toBe('/accueil')
+    const icon = link.find(Icon)
+    expect(icon).toHaveLength(1)
+    expect(icon.prop('svg')).toBe('ico-arrow-previous')
   })
 })

@@ -4,6 +4,8 @@ import React from 'react'
 import { NON_BREAKING_SPACE } from '../../../../../utils/specialCharacters'
 import { computeEndValidityDate } from '../domain/computeEndValidityDate'
 import User from '../ValueObjects/User'
+import { Link } from 'react-router-dom'
+import Icon from '../../../../layout/Icon/Icon'
 
 const Header = ({ user }) => {
   const { publicName, wallet_date_created: walletDateCreated, wallet_balance: walletBalance } = user
@@ -11,8 +13,15 @@ const Header = ({ user }) => {
 
   return (
     <section className="ph-wrapper">
-      <div className="ph-pseudo">
-        {`${publicName}`}
+      <div>
+        <Link to="/accueil">
+          <Icon
+            svg="ico-arrow-previous"
+          />
+        </Link>
+        <div className="ph-pseudo">
+          {`${publicName}`}
+        </div>
       </div>
       <div className="ph-wallet-balance">
         {`${walletBalance}${NON_BREAKING_SPACE}€`}
