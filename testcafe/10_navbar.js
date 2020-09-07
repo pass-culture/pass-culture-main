@@ -11,12 +11,10 @@ test('quand je me connecte à l’app je peux naviguer sur le site via la navbar
     'webapp_10_menu',
     'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
   )
-  const activeLinkOfNavBar = Selector('nav ul li span')
-  const navBarHome = activeLinkOfNavBar.nth(0)
-
   const linksOfNavBar = Selector('nav ul li a')
   const navBarDiscoveryLink = linksOfNavBar.nth(0)
   const navBarSearchLink = linksOfNavBar.nth(1)
+  const navBarHomeLink = linksOfNavBar.nth(2)
   const navBarBookingsLink = linksOfNavBar.nth(2)
   const navBarFavoritesLink = linksOfNavBar.nth(3)
   const navBarProfileLink = linksOfNavBar.nth(4)
@@ -25,7 +23,7 @@ test('quand je me connecte à l’app je peux naviguer sur le site via la navbar
     .useRole(userRole)
 
     // je peux naviguer vers la page accueil
-    .click(navBarHome)
+    .click(navBarHomeLink)
     .expect(getPageUrl())
     .eql(`${ROOT_PATH}accueil`)
 
