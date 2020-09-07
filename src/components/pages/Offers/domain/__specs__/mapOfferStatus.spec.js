@@ -140,5 +140,18 @@ describe('map offer status', () => {
         expect(status).toBe('épuisée')
       })
     })
+
+    describe('when offer has no stock yet', () => {
+      it('should return "épuisée"', () => {
+        // Given
+        const stocks = []
+
+        // When
+        const status = mapOfferStatus(isOfferActive, stocks)
+
+        // Then
+        expect(status).toBe('épuisée')
+      })
+    })
   })
 })
