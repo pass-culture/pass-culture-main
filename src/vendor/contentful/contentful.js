@@ -63,7 +63,7 @@ const _process = homepage => {
   const { fields: { modules } } = homepage
 
   return modules.map(module => {
-      const { fields } = module
+      const { fields = {} } = module
 
       if (hasAtLeastOneField(fields)) {
         if (matchesContentType(module, CONTENT_TYPES.ALGOLIA)) {

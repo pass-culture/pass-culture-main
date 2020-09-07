@@ -781,4 +781,32 @@ describe('src | vendor | contentful', () => {
     )
     expect(modules).toStrictEqual([exclusivityPane])
   })
+
+  it('should return an empty array when fields of module are missing', async () => {
+    // given
+    const module = {
+      fields: {
+        modules: [
+          {
+            sys: {
+              contentType: {
+                sys: { id: CONTENT_TYPES.EXCLUSIVITY },
+              },
+            },
+          },
+        ],
+      },
+    }
+    createClient.mockReturnValue({
+      getEntries: jest.fn().mockResolvedValue({
+        items: [module],
+      }),
+    })
+
+    // when
+    const modules = await fetchHomepage()
+
+    // then
+    expect(modules).toStrictEqual([])
+  })
 })
