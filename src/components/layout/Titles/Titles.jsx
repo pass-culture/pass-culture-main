@@ -1,21 +1,18 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import Title from './Title'
+import Subtitle from './Subtitle'
 
 const Titles = ({ action, subtitle, title }) => (
   <div className="section hero-section">
     <div className="title-subtitle-link-block">
-      {subtitle &&
-      <h2>
-        {subtitle.toUpperCase()}
-      </h2>}
+      {subtitle && <Subtitle subtitle={subtitle.toUpperCase()} />}
       {action &&
       <div className="title-action-links">
         {action}
       </div>}
     </div>
-    <h1>
-      {title}
-    </h1>
+    <Title title={title} />
   </div>
 )
 

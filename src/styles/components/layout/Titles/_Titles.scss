@@ -25,22 +25,6 @@
     left: -5.3rem;
     overflow: hidden;
   }
-
-  h1 {
-    color: $black;
-    font-style: italic;
-    font-size: $size-1;
-    font-weight: $weight-extrabold;
-    line-height: 38px;
-  }
-
-  h2 {
-    @extend .has-text-weight-semibold;
-    @extend .is-paddingless;
-
-    line-height: 22px;
-    font-size: 1.125rem;
-  }
 }
 
 .title-subtitle-link-block {

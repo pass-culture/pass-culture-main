@@ -6,6 +6,14 @@ const StyleguideAgenda = () => {
       <li>
         <a
           className="tertiary-link"
+          href="#sg-titles"
+        >
+          {'Titres'}
+        </a>
+      </li>
+      <li>
+        <a
+          className="tertiary-link"
           href="#sg-buttons"
         >
           {'Boutons'}

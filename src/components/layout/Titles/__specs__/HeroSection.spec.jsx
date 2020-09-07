@@ -1,4 +1,4 @@
-import { shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
 
 import Titles from '../Titles'
@@ -14,7 +14,7 @@ describe('src | components | layout | Titles', () => {
         }
 
         // when
-        const wrapper = shallow(<Titles {...props} />)
+        const wrapper = mount(<Titles {...props} />)
         const subtitle = wrapper.find('h2')
 
         // then
