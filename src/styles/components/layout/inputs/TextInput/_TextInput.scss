@@ -64,5 +64,9 @@
       color: $grey-dark;
       opacity: 1;
     }
+
+    &.error:not(:focus-within) {
+      border: 2px solid $red-error;
+    }
   }
 }

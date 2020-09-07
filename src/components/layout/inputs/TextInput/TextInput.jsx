@@ -25,7 +25,7 @@ const TextInput = ({
       </span>
     </div>
     <input
-      className="it-input"
+      className={`it-input ${error ? 'error' : ''}`}
       disabled={disabled}
       id={name}
       name={name}

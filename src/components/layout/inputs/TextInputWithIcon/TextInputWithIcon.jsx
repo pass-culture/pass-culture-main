@@ -22,10 +22,12 @@ const TextInputWithIcon = ({
     className="input-text"
     htmlFor={name}
   >
-    {label}
-    <span className="it-sub-label">
-      {sublabel}
-    </span>
+    <div className="labels">
+      {label}
+      <span className="it-sub-label">
+        {sublabel}
+      </span>
+    </div>
     <div className={`it-with-icon-container ${disabled ? 'disabled' : ''} ${error ? 'error' : ''}`}>
       <input
         className="it-input-with-icon"

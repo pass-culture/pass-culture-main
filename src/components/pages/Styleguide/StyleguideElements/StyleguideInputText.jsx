@@ -15,6 +15,18 @@ const StyleguideInputText = () => {
     />
   `
 
+  const inputTextWithError = String.raw`
+    <TextInput
+      error="Ce champs comporte une erreur"
+      label="Intitulé"
+      name="input-text-default"
+      onChange={onChange}
+      placeholder="placeholder"
+      required
+      sublabel="Intitulé secondaire"
+      type="text"
+    />
+  `
   const inputTextDisabled = String.raw`
     <TextInput
       disabled
@@ -117,6 +129,28 @@ const StyleguideInputText = () => {
       </div>
       <hr />
       <h3>
+        {'Champs textuel en erreur'}
+      </h3>
+      <div className="flex-block">
+        <TextInput
+          error="Ce champs comporte une erreur"
+          label="Intitulé"
+          name="input-text-default"
+          onChange={onChange}
+          placeholder="placeholder"
+          required
+          sublabel="Intitulé secondaire"
+          type="text"
+        />
+        <div className="it-description">
+          <pre className="it-icon-snippet">
+            <code>
+              {inputTextWithError}
+            </code>
+          </pre>
+        </div>
+      </div>
+      <h3>
         {'Champs textuel avec icône'}
       </h3>
       <div className="flex-block">
@@ -165,7 +199,7 @@ const StyleguideInputText = () => {
       </div>
       <hr />
       <h3>
-        {'Champs textuel en erreur'}
+        {'Champs avec icône en erreur'}
       </h3>
       <div className="flex-block">
         <div>

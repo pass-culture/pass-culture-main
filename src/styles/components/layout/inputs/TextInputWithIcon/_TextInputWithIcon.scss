@@ -9,6 +9,11 @@
   overflow: hidden;
   width: 100%;
 
+  .labels {
+    display: flex;
+    justify-content: space-between;
+  }
+
   img {
     width: rem(30px);
     height: rem(30px);
