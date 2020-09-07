@@ -12,6 +12,12 @@ if [[ "$STAGED_FILES" = "" ]]; then
     exit 0
 fi
 
+# Prettify all staged .js files
+echo "$STAGED_FILES" | xargs ./node_modules/.bin/prettier-eslint --eslint-config-path ./.eslintrc --config ./.prettierrc --list-different --write
+
+# Add back the modified/prettified files to staging
+echo "$STAGED_FILES" | xargs git add
+
 for FILE in $STAGED_FILES
 do
   eslint --quiet --max-warnings 0 "$FILE"
@@ -22,11 +28,5 @@ do
     exit 1
   fi
 done
-
-# Prettify all staged .js files
-echo "$STAGED_FILES" | xargs ./node_modules/.bin/prettier-eslint --eslint-config-path ./.eslintrc --config ./.prettierrc --list-different --write
-
-# Add back the modified/prettified files to staging
-echo "$STAGED_FILES" | xargs git add
 
 exit 0
