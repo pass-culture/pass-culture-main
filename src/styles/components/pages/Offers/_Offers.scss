@@ -4,18 +4,18 @@
   }
 
   .list-header {
-    display: flex;
+    align-items: center;
     border-bottom: 1px solid;
-    justify-content: space-between;
+    display: flex;
 
     @extend .mb32;
     @extend .pb8;
 
-    align-items: center;
+    justify-content: space-between;
 
     .select {
-      width: auto;
       vertical-align: middle;
+      width: auto;
 
       select {
         @extend .ml8;
@@ -47,11 +47,11 @@
   }
 
   .tag {
-    font-size: 1rem;
+    border-color: transparent;
 
     @extend .mr8;
 
-    border-color: transparent;
+    font-size: 1rem;
 
     img {
       @extend .ml8;
