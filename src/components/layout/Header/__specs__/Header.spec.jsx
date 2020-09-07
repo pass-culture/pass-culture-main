@@ -43,7 +43,7 @@ describe('src | components | Layout | Header', () => {
         const navLinks = wrapper.find('NavLink')
 
         const linkTitle = navLinks
-          .at(4)
+          .at(5)
           .childAt(1)
           .props().children
 
@@ -60,7 +60,7 @@ describe('src | components | Layout | Header', () => {
         const wrapper = shallow(<Header {...props} />)
         const navLinks = wrapper.find('NavLink')
         const linkTitle = navLinks
-          .at(4)
+          .at(5)
           .childAt(1)
           .props().children
 
@@ -80,7 +80,7 @@ describe('src | components | Layout | Header', () => {
           .find('.navbar-menu')
           .find('.navbar-end')
           .find('.navbar-item')
-          .at(2)
+          .at(8)
         expect(helpLink.prop('href')).toBe(
           'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
         )
@@ -96,11 +96,11 @@ describe('src | components | Layout | Header', () => {
           .find('.navbar-menu')
           .find('.navbar-end')
           .find('.navbar-item')
-          .at(2)
+          .at(8)
         const spans = helpLink.find('span')
         const helpIcon = spans.at(0).find(Icon)
         const helpLabel = spans.at(1)
-        expect(helpIcon.prop('svg')).toBe('ico-help-w')
+        expect(helpIcon.prop('svg')).toBe('ico-help')
         expect(helpLabel.text()).toBe('Aide')
       })
     })

@@ -81,19 +81,20 @@ class Header extends PureComponent {
                   </span>
                 </NavLink>
               )}
-              <a
-                className="navbar-item"
-                href={HELP_PAGE_URL}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <span className="icon">
-                  <Icon svg="ico-help-w" />
-                </span>
-                <span>
-                  {'Aide'}
-                </span>
-              </a>
+              {!whiteHeader && (
+                <NavLink
+                  className="navbar-item"
+                  to="/reservations"
+                >
+                  <span className="icon">
+                    <Icon svg="ico-bookings-w" />
+                  </span>
+                  <span>
+                    {'Réservations'}
+                  </span>
+                </NavLink>
+              )}
+
               <div className="navbar-item has-dropdown is-hoverable">
                 <NavLink
                   className="navbar-link"
@@ -129,30 +130,6 @@ class Header extends PureComponent {
                       {offerers.length > 1 ? 'Structures juridiques' : 'Structure juridique'}
                     </span>
                   </NavLink>
-                  {false && (
-                    <NavLink
-                      className="navbar-item"
-                      to="/delegations"
-                    >
-                      <span className="icon">
-                        <Icon svg="ico-delegation-r" />
-                      </span>
-                      <span>
-                        {'Délégations'}
-                      </span>
-                    </NavLink>
-                  )}
-                  <NavLink
-                    className="navbar-item"
-                    to="/reservations"
-                  >
-                    <span className="icon">
-                      <Icon svg="ico-bookings" />
-                    </span>
-                    <span>
-                      {'Réservations'}
-                    </span>
-                  </NavLink>
                   <NavLink
                     className="navbar-item"
                     to="/remboursements"
@@ -164,19 +141,6 @@ class Header extends PureComponent {
                       {'Remboursements'}
                     </span>
                   </NavLink>
-                  {false && (
-                    <NavLink
-                      className="navbar-item"
-                      to="/comptabilite"
-                    >
-                      <span className="icon">
-                        <Icon svg="ico-compta" />
-                      </span>
-                      <span>
-                        {'Comptabilité'}
-                      </span>
-                    </NavLink>
-                  )}
                   {STYLEGUIDE_ACTIVE && (
                     <NavLink
                       className="navbar-item"
@@ -190,6 +154,19 @@ class Header extends PureComponent {
                       </span>
                     </NavLink>
                   )}
+                  <a
+                    className="navbar-item"
+                    href={HELP_PAGE_URL}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <span className="icon">
+                      <Icon svg="ico-help" />
+                    </span>
+                    <span>
+                      {'Aide'}
+                    </span>
+                  </a>
                   <SignoutButton
                     className="navbar-item"
                     handleSuccessRedirect={this.onHandleSuccessRedirect}
