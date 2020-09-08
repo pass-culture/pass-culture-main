@@ -72,7 +72,7 @@ const Profile = ({ history, match, user }) => {
 Profile.propTypes = {
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
-  user: PropTypes.instanceOf(User).isRequired,
+  user: PropTypes.shape(User).isRequired,
 }
 
 export default Profile

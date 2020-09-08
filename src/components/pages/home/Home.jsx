@@ -1,39 +1,26 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Route, Switch } from 'react-router'
 import MainView from './MainView/MainView'
-import Profile from './Profile/Profile'
 import User from './Profile/ValueObjects/User'
 
 const Home = ({
-  geolocation,
-  history,
-  match,
-  trackAllModulesSeen,
-  trackAllTilesSeen,
-  updateCurrentUser,
-  user,
-}) => (
-  <Switch>
-    <Route path={`${match.path}/profil`}>
-      <Profile
-        history={history}
-        match={match}
-        user={user}
-      />
-    </Route>
-    <Route path={match.path}>
-      <MainView
-        geolocation={geolocation}
-        history={history}
-        match={match}
-        trackAllModulesSeen={trackAllModulesSeen}
-        trackAllTilesSeen={trackAllTilesSeen}
-        updateCurrentUser={updateCurrentUser}
-        user={user}
-      />
-    </Route>
-  </Switch>
+                geolocation,
+                history,
+                match,
+                trackAllModulesSeen,
+                trackAllTilesSeen,
+                updateCurrentUser,
+                user,
+              }) => (
+                <MainView
+                  geolocation={geolocation}
+                  history={history}
+                  match={match}
+                  trackAllModulesSeen={trackAllModulesSeen}
+                  trackAllTilesSeen={trackAllTilesSeen}
+                  updateCurrentUser={updateCurrentUser}
+                  user={user}
+                />
 )
 
 Home.propTypes = {

@@ -1,8 +1,6 @@
 import { mount } from 'enzyme'
 import React from 'react'
-import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
-import { getStubStore } from '../../../../utils/stubStore'
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import { fetchHomepage } from '../../../../vendor/contentful/contentful'
 import Home from '../Home'
@@ -50,41 +48,6 @@ describe('src | components | home', () => {
     }
   })
 
-  it('should render a profil page when navigating to /accueil/profil', async () => {
-    // When
-    const mockStore = getStubStore({
-      currentUser: (
-        state = new User({
-          email: 'john.doe@example.fr',
-          expenses: {
-            all: { actual: 287, max: 500 },
-            digital: { actual: 11, max: 200 },
-            physical: { actual: 23, max: 200 },
-          },
-          firstName: 'PC Test Jeune',
-          publicName: 'Iron Man',
-          wallet_balance: 200.1,
-        })
-      ) => state,
-      data: (
-        state = {
-          features: [],
-          readRecommendations: [],
-        }
-      ) => state,
-    })
-    const wrapper = await mount(
-      <Provider store={mockStore}>
-        <MemoryRouter initialEntries={['/accueil/profil']}>
-          <Home {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
-
-    // Then
-    const profile = wrapper.find({ children: 'Informations personnelles' })
-    expect(profile).toHaveLength(1)
-  })
 
   it('should render the main view when navigating to /accueil', async () => {
     // Given

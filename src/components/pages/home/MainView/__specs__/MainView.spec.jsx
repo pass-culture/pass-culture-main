@@ -16,6 +16,8 @@ import MainView from '../MainView'
 import Module from '../Module/Module'
 import { Link } from 'react-router-dom'
 import Icon from '../../../../layout/Icon/Icon'
+import { Provider } from 'react-redux'
+import { getStubStore } from '../../../../../utils/stubStore'
 
 jest.mock('../Module/domain/buildTiles', () => ({
   buildPairedTiles: jest.fn().mockReturnValue([]),
@@ -78,7 +80,7 @@ describe('src | components | MainView', () => {
     const wrapper = mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     // then
@@ -91,7 +93,7 @@ describe('src | components | MainView', () => {
     const wrapper = mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     // then
@@ -104,7 +106,7 @@ describe('src | components | MainView', () => {
     const wrapper = mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     // then
@@ -130,7 +132,7 @@ describe('src | components | MainView', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await wrapper.update()
 
@@ -158,7 +160,7 @@ describe('src | components | MainView', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await wrapper.update()
 
@@ -188,7 +190,7 @@ describe('src | components | MainView', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await wrapper.update()
 
@@ -211,7 +213,7 @@ describe('src | components | MainView', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await wrapper.update()
 
@@ -231,7 +233,7 @@ describe('src | components | MainView', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await wrapper.update()
 
@@ -248,7 +250,7 @@ describe('src | components | MainView', () => {
     const wrapper = mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
     await flushPromises()
     wrapper.update()
@@ -263,7 +265,7 @@ describe('src | components | MainView', () => {
     mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     )
 
     // then
@@ -287,7 +289,7 @@ describe('src | components | MainView', () => {
       const wrapper = await mount(
         <MemoryRouter>
           <MainView {...props} />
-        </MemoryRouter>
+        </MemoryRouter>,
       )
       jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 36)
 
@@ -315,7 +317,7 @@ describe('src | components | MainView', () => {
       const wrapper = await mount(
         <MemoryRouter>
           <MainView {...props} />
-        </MemoryRouter>
+        </MemoryRouter>,
       )
       jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 35)
 
@@ -346,7 +348,7 @@ describe('src | components | MainView', () => {
       await mount(
         <MemoryRouter>
           <MainView {...props} />
-        </MemoryRouter>
+        </MemoryRouter>,
       )
 
       // Then
@@ -372,11 +374,55 @@ describe('src | components | MainView', () => {
       await mount(
         <MemoryRouter>
           <MainView {...props} />
-        </MemoryRouter>
+        </MemoryRouter>,
       )
 
       // Then
       expect(props.trackAllModulesSeen).not.toHaveBeenCalled()
     })
+  })
+
+  it('should render a profil page when navigating to /accueil/profil', async () => {
+    // Given
+    props.match.path = '/accueil'
+    const mockStore = getStubStore({
+      currentUser: (
+        state = new User({
+          email: 'john.doe@example.fr',
+          expenses: {
+            all: { actual: 287, max: 500 },
+            digital: { actual: 11, max: 200 },
+            physical: { actual: 23, max: 200 },
+          },
+          firstName: 'PC Test Jeune',
+          publicName: 'Iron Man',
+          wallet_balance: 200.1,
+        }),
+      ) => state,
+      data: (
+        state = {
+          features: [],
+          readRecommendations: [],
+        },
+      ) => state,
+    })
+    fetchHomepage.mockResolvedValueOnce([
+      new BusinessPane({
+        title: 'my-title-1',
+      }),
+    ])
+
+    // When
+    const wrapper = await mount(
+      <Provider store={mockStore}>
+        <MemoryRouter initialEntries={['/accueil/profil']}>
+          <MainView {...props} />
+        </MemoryRouter>
+      </Provider>,
+    )
+
+    // Then
+    const profile = wrapper.find({ children: 'Informations personnelles' })
+    expect(profile).toHaveLength(1)
   })
 })

@@ -16,6 +16,8 @@ import ExclusivityModule from './ExclusivityModule/ExclusivityModule'
 import Module from './Module/Module'
 import OfferDetailsContainer from './OfferDetails/OfferDetailsContainer'
 import Icon from '../../../layout/Icon/Icon'
+import Profile from '../Profile/Profile'
+import User from '../Profile/ValueObjects/User'
 
 class MainView extends Component {
   constructor(props) {
@@ -102,7 +104,7 @@ class MainView extends Component {
 
   render() {
     const { fetchingError, modules } = this.state
-    const { match, user } = this.props
+    const { history, match, user } = this.props
     const { publicName, wallet_balance } = user
     const formattedPublicName = formatPublicName(publicName)
     const formattedWalletBalance = formatToFrenchDecimal(wallet_balance)
@@ -111,6 +113,13 @@ class MainView extends Component {
       <AnyError />
     ) : (
       <Fragment>
+        <Route path={`${match.path}/profil`}>
+          <Profile
+            history={history}
+            match={match}
+            user={user}
+          />
+        </Route>
         <div
           className="home-wrapper"
           onScroll={this.checkIfAllModulesHaveBeenSeen}
@@ -166,10 +175,7 @@ MainView.propTypes = {
   trackAllModulesSeen: PropTypes.func.isRequired,
   trackAllTilesSeen: PropTypes.func.isRequired,
   updateCurrentUser: PropTypes.func.isRequired,
-  user: PropTypes.shape({
-    publicName: PropTypes.string,
-    wallet_balance: PropTypes.number,
-  }).isRequired,
+  user: PropTypes.shape(User).isRequired,
 }
 
 export default MainView
