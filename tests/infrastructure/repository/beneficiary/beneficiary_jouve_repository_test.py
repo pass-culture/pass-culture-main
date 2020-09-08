@@ -29,7 +29,7 @@ def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     get_application_by_json = beneficiary_jouve_creators.get_application_by_detail_response(
         address='18 avenue des fleurs',
         application_id=application_id,
-        birth_date='09/08/1995',
+        birth_date='08/24/1995',
         city='RENNES',
         email='rennes@example.org',
         first_name='Céline',
@@ -70,7 +70,7 @@ def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     assert beneficiary_pre_subscription.application_id == 5
     assert beneficiary_pre_subscription.city == 'RENNES'
     assert beneficiary_pre_subscription.civility == 'Mme'
-    assert beneficiary_pre_subscription.date_of_birth == datetime(1995, 8, 9)
+    assert beneficiary_pre_subscription.date_of_birth == datetime(1995, 8, 24)
     assert beneficiary_pre_subscription.department_code == '35'
     assert beneficiary_pre_subscription.email == 'rennes@example.org'
     assert beneficiary_pre_subscription.first_name == 'Céline'

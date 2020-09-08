@@ -28,7 +28,8 @@ def to_domain(user_jouve_entity: Dict) -> BeneficiaryPreSubscription:
 
 
 def _convert_date_of_birth(date: str) -> datetime:
-    return datetime.strptime(date, '%d/%m/%Y')
+    return datetime.strptime(date, '%m/%d/%Y')
+    #return datetime.strptime(date, '%d/%m/%Y') #A corriger, Jouve devrait renvoyer ce format la
 
 
 def _convert_civility(raw_civility: str) -> str:
