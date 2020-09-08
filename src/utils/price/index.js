@@ -11,5 +11,5 @@ export const formatResultPrice = (priceMin, priceMax, isDuo) => {
     return `${formatDecimals(priceMin)} ${EURO_SIGN}`
   }
 
-  return `A partir de ${formatDecimals(priceMin)} ${EURO_SIGN}`
+  return `À partir de ${formatDecimals(priceMin)} ${EURO_SIGN}`
 }

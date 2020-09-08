@@ -69,5 +69,5 @@ export const formatSearchResultDate = (departmentCode, dates = []) => {
     return `${capitalizedWeekDay} ${day} ${month} ${hoursWithLeadingZero}:${minutesWithLeadingZero}`
   }
 
-  return `A partir du ${day} ${month}`
+  return `À partir du ${day} ${month}`
 }

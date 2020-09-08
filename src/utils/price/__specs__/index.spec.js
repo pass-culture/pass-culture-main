@@ -15,7 +15,7 @@ describe('formatResultPrice', () => {
       const result = formatResultPrice(1, 1, true)
 
       // then
-      expect(result).toStrictEqual('A partir de 1 €')
+      expect(result).toStrictEqual('À partir de 1 €')
     })
 
     it('should return price range starting from minimum price when minimum and maximum prices are different', () => {
@@ -23,7 +23,7 @@ describe('formatResultPrice', () => {
       const result = formatResultPrice(1, 2, true)
 
       // then
-      expect(result).toStrictEqual('A partir de 1 €')
+      expect(result).toStrictEqual('À partir de 1 €')
     })
 
     it('should return price range starting from minimum price when minimum and maximum prices are different and contain decimals', () => {
@@ -31,7 +31,7 @@ describe('formatResultPrice', () => {
       const result = formatResultPrice(1.1, 2.7, true)
 
       // then
-      expect(result).toStrictEqual('A partir de 1,10 €')
+      expect(result).toStrictEqual('À partir de 1,10 €')
     })
   })
 
@@ -57,7 +57,7 @@ describe('formatResultPrice', () => {
       const result = formatResultPrice(1, 2, false)
 
       // then
-      expect(result).toStrictEqual('A partir de 1 €')
+      expect(result).toStrictEqual('À partir de 1 €')
     })
 
     it('should return the minimum price when minimum and maximum prices are similar and contain decimals', () => {

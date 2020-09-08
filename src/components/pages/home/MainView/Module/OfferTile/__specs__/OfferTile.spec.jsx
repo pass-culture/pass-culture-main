@@ -112,7 +112,7 @@ describe('src | components | OfferTile', () => {
 
   it('should render an offer tile with dates when event', () => {
     // given
-    const mockedDate = 'A partir du 8 juillet'
+    const mockedDate = 'À partir du 8 juillet'
     props.hit.offer.dates = [1594300450]
     props.hit.offer.isEvent = true
     formatSearchResultDate.mockReturnValue(mockedDate)

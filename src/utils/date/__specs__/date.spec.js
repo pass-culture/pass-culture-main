@@ -106,7 +106,7 @@ describe('src | utils | date', () => {
         const result = formatSearchResultDate(departmentCode, dates)
 
         // then
-        expect(result).toBe('A partir du 27 mars')
+        expect(result).toBe('À partir du 27 mars')
       })
     })
 
@@ -144,7 +144,7 @@ describe('src | utils | date', () => {
         const result = formatSearchResultDate(departmentCode, dates)
 
         // then
-        expect(result).toBe('A partir du 28 mars')
+        expect(result).toBe('À partir du 28 mars')
       })
     })
   })
