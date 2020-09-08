@@ -17,7 +17,7 @@ import selectCurrentRecommendation from './selectors/selectCurrentRecommendation
 import { getCoordinatesApiPathQueryString } from './utils/buildApiPathQueryString'
 import {
   checkIfShouldReloadRecommendationsBecauseOfLongTime,
-  isDiscoveryStartupUrl
+  isDiscoveryStartupUrl,
 } from './utils/utils'
 
 export const mapStateToProps = (state, ownProps) => {
@@ -40,6 +40,16 @@ export const mapStateToProps = (state, ownProps) => {
     recommendations,
     seedLastRequestTimestamp,
     shouldReloadRecommendations,
+  }
+}
+
+function getCurrentPosition() {
+  if (navigator.geolocation) {
+    return new Promise((resolve, reject) =>
+      navigator.geolocation.getCurrentPosition(resolve, reject)
+    )
+  } else {
+    return new Promise(resolve => resolve({}))
   }
 }
 
@@ -68,10 +78,6 @@ function getRecommendationsFromAPI(
   )
 }
 
-function isGeolocationGrantedByUser(permissions) {
-  return permissions.status === 'granted'
-}
-
 function areValidCoordinates(coordinates) {
   return coordinates && coordinates.latitude && coordinates.longitude
 }
@@ -90,11 +96,9 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
       (shouldReloadRecommendations && []) ||
       (recommendations && recommendations.map(reco => reco.offerId))
 
-    const permissions = await navigator.permissions.query({ name: 'geolocation' })
-
-    if (!areValidCoordinates(coordinates) && isGeolocationGrantedByUser(permissions)) {
-      navigator.geolocation.getCurrentPosition(
-        function(position) {
+    getCurrentPosition()
+      .then(position => {
+        if (!areValidCoordinates(coordinates)) {
           getRecommendationsFromAPI(
             position.coords,
             dispatch,
@@ -103,10 +107,9 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
             handleFail,
             handleSuccess
           )
-        },
-        function() {
+        } else {
           getRecommendationsFromAPI(
-            null,
+            coordinates,
             dispatch,
             readRecommendations,
             offersSentInLastCall,
@@ -114,17 +117,17 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
             handleSuccess
           )
         }
-      )
-    } else {
-      getRecommendationsFromAPI(
-        coordinates,
-        dispatch,
-        readRecommendations,
-        offersSentInLastCall,
-        handleFail,
-        handleSuccess
-      )
-    }
+      })
+      .catch(() => {
+        getRecommendationsFromAPI(
+          null,
+          dispatch,
+          readRecommendations,
+          offersSentInLastCall,
+          handleFail,
+          handleSuccess
+        )
+      })
   },
   redirectToFirstRecommendationIfNeeded: loadedRecommendations => {
     const { match, history } = prevProps
