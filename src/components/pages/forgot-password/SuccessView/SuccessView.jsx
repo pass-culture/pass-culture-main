@@ -49,7 +49,7 @@ class SuccessView extends PureComponent {
         <div className="is-italic fs22">
           {renderSuccessMessage()}
         </div>
-        <FormFooter internalLinks={token ? [signInLink] : [retryLink, signInLink]} />
+        <FormFooter items={token ? [signInLink] : [retryLink, signInLink]} />
       </div>
     )
   }

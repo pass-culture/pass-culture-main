@@ -76,19 +76,19 @@ class SignIn extends PureComponent {
           </Link>
         </div>
         <FormFooter
-          internalLinks={[
+          items={[
             {
               disabled: false,
               id: 'cancel-link',
               label: 'Annuler',
               url: '/beta',
             },
+            {
+              disabled: !canSubmit,
+              id: 'sign-in-button',
+              label: 'Connexion',
+            },
           ]}
-          submitButton={{
-            disabled: !canSubmit,
-            id: 'sign-in-button',
-            label: 'Connexion',
-          }}
         />
       </form>
     )

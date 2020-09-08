@@ -85,12 +85,14 @@ class PasswordForm extends PureComponent {
           isLoading={isLoading}
         />
         <FormFooter
-          submitButton={{
-            className: 'is-bold is-white-text',
-            disabled: !canSubmit,
-            id: 'password-form-submit',
-            label: 'Enregistrer',
-          }}
+          items={[
+            {
+              className: 'is-bold is-white-text',
+              disabled: !canSubmit,
+              id: 'password-form-submit',
+              label: 'Enregistrer',
+            },
+          ]}
         />
       </form>
     )

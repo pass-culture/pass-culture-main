@@ -13,7 +13,7 @@ describe('components | FormFooter', () => {
         const props = {
           cancel: null,
           className: null,
-          internalLinks: [
+          items: [
             {
               className: 'my-class',
               disabled: false,
@@ -32,11 +32,11 @@ describe('components | FormFooter', () => {
         expect(regularLink).toHaveLength(1)
         expect(regularLink.props()).toStrictEqual({
           children: 'my-label',
-          className: 'flex-1 my-class',
+          className: 'my-class',
           disabled: false,
           id: 'my-id',
-          onClick: expect.any(Function),
-          onKeyPress: expect.any(Function),
+          onClick: undefined,
+          onKeyPress: undefined,
           to: 'my-url',
         })
       })
@@ -47,7 +47,7 @@ describe('components | FormFooter', () => {
         const props = {
           cancel: null,
           className: null,
-          internalLinks: [
+          items: [
             {
               className: 'my-class',
               id: 'my-id',
@@ -68,13 +68,13 @@ describe('components | FormFooter', () => {
         regularLink.invoke('onClick')({})
 
         // then
-        expect(trackerMock).toHaveBeenCalledWith()
+        expect(trackerMock).toHaveBeenCalledTimes(1)
       })
 
       it('should render a cancel link when a cancel url is provided', () => {
         // given
         const props = {
-          internalLinks: [
+          items: [
             {
               className: 'my-class',
               disabled: false,
@@ -84,7 +84,6 @@ describe('components | FormFooter', () => {
             },
           ],
           className: null,
-          submitButton: null,
         }
 
         // when
@@ -95,11 +94,11 @@ describe('components | FormFooter', () => {
         expect(cancelLink).toHaveLength(1)
         expect(cancelLink.props()).toStrictEqual({
           children: 'my-label',
-          className: 'flex-1 my-class',
+          className: 'my-class',
           disabled: false,
           id: 'my-id',
-          onClick: expect.any(Function),
-          onKeyPress: expect.any(Function),
+          onClick: undefined,
+          onKeyPress: undefined,
           to: 'my-url',
         })
       })
@@ -111,12 +110,14 @@ describe('components | FormFooter', () => {
         const props = {
           cancel: null,
           className: null,
-          submitButton: {
-            className: 'my-class',
-            disabled: false,
-            id: 'my-id',
-            label: 'my-label',
-          },
+          items: [
+            {
+              className: 'my-class',
+              disabled: false,
+              id: 'my-id',
+              label: 'my-label',
+            },
+          ],
         }
 
         // when
@@ -127,7 +128,7 @@ describe('components | FormFooter', () => {
         expect(submitButton).toHaveLength(1)
         expect(submitButton.props()).toStrictEqual({
           children: 'my-label',
-          className: 'flex-1 my-class',
+          className: 'my-class',
           disabled: false,
           id: 'my-id',
           type: 'submit',

@@ -1,0 +1,16 @@
+.logout-form-footer {
+  a,
+  button {
+    flex: 1;
+  }
+
+  hr {
+    background-image: linear-gradient(#fff 10%, transparent 0%);
+    background-position: left;
+    background-repeat: repeat-y;
+    background-size: 1px 8px;
+    border: 0;
+    height: 100%;
+    width: 2px;
+  }
+}

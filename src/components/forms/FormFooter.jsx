@@ -1,4 +1,4 @@
-import { arrayOf, bool, shape, string } from 'prop-types'
+import { arrayOf, bool, func, shape, string } from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -8,57 +8,47 @@ class FormFooter extends PureComponent {
     return userAgent.includes('Instagram') && userAgent.includes('iPhone')
   }
 
-  renderSubmitButton = options => {
+  renderSubmitButtonOrInternalLink = (item, index, items) => {
     const attributes = {
-      className: `flex-1 ${options.className || ''}`,
-      disabled: options.disabled,
-      id: options.id,
-      key: options.id,
+      className: `${item.className || ''}`,
+      disabled: item.disabled,
+      id: item.id,
     }
-    return (
-      <button
-        type="submit"
-        {...attributes}
-      >
-        {options.label}
-      </button>
-    )
-  }
+    const renderedItem = item.url
+      ? this.renderLink(item, attributes)
+      : this.renderSubmitButton(item, attributes)
+    const showSeparator = index + 1 !== items.length
 
-  renderLink = (options, index, links) => {
-    const showSeparator = index + 1 !== links.length
-    const attributes = {
-      className: `flex-1 ${options.className || ''}`,
-      disabled: options.disabled,
-      id: options.id,
-      key: options.id,
-      to: options.url,
-    }
     return (
-      <Fragment key={attributes.id}>
-        <Link
-          {...attributes}
-          onClick={this.handleTracking(options)}
-          onKeyPress={this.handleTracking(options)}
-        >
-          {options.label}
-        </Link>
-        {showSeparator && this.renderSeparator()}
+      <Fragment key={item.id}>
+        {renderedItem}
+        {showSeparator && <hr />}
       </Fragment>
     )
   }
 
-  handleTracking = options => () => {
-    if (options.tracker) {
-      options.tracker()
-    }
-  }
+  renderSubmitButton = (item, attributes) => (
+    <button
+      {...attributes}
+      type="submit"
+    >
+      {item.label}
+    </button>
+  )
 
-  renderSeparator = () => <hr className="dotted-left-2x-white flex-0" />
+  renderLink = (item, attributes) => (
+    <Link
+      {...attributes}
+      onClick={item.tracker}
+      onKeyPress={item.tracker}
+      to={item.url}
+    >
+      {item.label}
+    </Link>
+  )
 
   render() {
-    const { internalLinks, submitButton } = this.props
-    const showSeparator = internalLinks.length > 0 && submitButton
+    const { items } = this.props
 
     if (this.isDisplayedOnInstagram()) {
       const arbitraryValueToScrollToTheBottom = 10000
@@ -72,35 +62,27 @@ class FormFooter extends PureComponent {
         }`}
         id="logout-form-footer"
       >
-        {internalLinks.map(this.renderLink)}
-        {showSeparator && this.renderSeparator()}
-        {submitButton && this.renderSubmitButton(submitButton)}
+        {items.map(this.renderSubmitButtonOrInternalLink)}
       </footer>
     )
   }
 }
 
 FormFooter.defaultProps = {
-  internalLinks: [],
-  submitButton: null,
+  items: [],
 }
 
 FormFooter.propTypes = {
-  internalLinks: arrayOf(
+  items: arrayOf(
     shape({
       className: string,
       disabled: bool,
       id: string,
       label: string.isRequired,
-      url: string.isRequired,
+      tracker: func,
+      url: string,
     })
   ),
-  submitButton: shape({
-    className: string,
-    disabled: bool,
-    id: string,
-    label: string.isRequired,
-  }),
 }
 
 export default FormFooter

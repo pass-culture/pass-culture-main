@@ -65,10 +65,7 @@ export const ResetPasswordForm = ({ canSubmit, formErrors, isLoading }) => (
         {formErrors && <FormError customMessage={formErrors} />}
       </div>
     </div>
-    <FormFooter
-      internalLinks={[cancelLink]}
-      submitButton={{ ...submitOptions, disabled: !canSubmit }}
-    />
+    <FormFooter items={[cancelLink, { ...submitOptions, disabled: !canSubmit }]} />
   </Fragment>
 )
 
