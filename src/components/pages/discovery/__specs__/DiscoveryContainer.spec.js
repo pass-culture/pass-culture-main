@@ -2,7 +2,9 @@ import { recommendationNormalizer } from '../../../../utils/normalizers'
 import { mapDispatchToProps, mapStateToProps } from '../DiscoveryContainer'
 
 jest.mock('../../../../utils/fetch-normalize-data/requestData', () => {
-  const { assignData, createDataReducer, deleteData, _requestData } = jest.requireActual('../../../../utils/fetch-normalize-data/reducers/data/actionCreators')
+  const { assignData, createDataReducer, deleteData, _requestData } = jest.requireActual(
+    '../../../../utils/fetch-normalize-data/reducers/data/actionCreators'
+  )
 
   return {
     assignData,
@@ -92,19 +94,10 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         const functions = mapDispatchToProps(dispatch, props)
         const { loadRecommendations } = functions
 
-        Object.defineProperty(navigator, 'permissions', {
-          writable: true,
-          value: {
-            query: jest.fn(() => ({
-              status: 'denied',
-            })),
-          },
-        })
-
         Object.defineProperty(navigator, 'geolocation', {
           writable: true,
           value: {
-            getCurrentPosition: jest.fn(success => success()),
+            getCurrentPosition: jest.fn(reject => reject()),
           },
         })
 
@@ -119,8 +112,6 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         )
 
         // then
-        expect(navigator.permissions.query).toHaveBeenCalledWith({ name: 'geolocation' })
-        expect(navigator.geolocation.getCurrentPosition).not.toHaveBeenCalled()
         expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
             apiPath: `/recommendations?`,
@@ -155,15 +146,6 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           const shouldReloadRecommendations = false
           const functions = mapDispatchToProps(dispatch, props)
           const { loadRecommendations } = functions
-
-          Object.defineProperty(navigator, 'permissions', {
-            writable: true,
-            value: {
-              query: jest.fn(() => ({
-                status: 'denied',
-              })),
-            },
-          })
 
           Object.defineProperty(navigator, 'geolocation', {
             writable: true,
@@ -220,15 +202,6 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         const functions = mapDispatchToProps(dispatch, props)
         const { loadRecommendations } = functions
 
-        Object.defineProperty(navigator, 'permissions', {
-          writable: true,
-          value: {
-            query: jest.fn(() => ({
-              status: 'granted',
-            })),
-          },
-        })
-
         Object.defineProperty(navigator, 'geolocation', {
           writable: true,
           value: {
@@ -284,20 +257,11 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         const functions = mapDispatchToProps(dispatch, props)
         const { loadRecommendations } = functions
 
-        Object.defineProperty(navigator, 'permissions', {
-          writable: true,
-          value: {
-            query: jest.fn(() => ({
-              status: 'granted',
-            })),
-          },
-        })
-
         Object.defineProperty(navigator, 'geolocation', {
           writable: true,
           value: {
-            getCurrentPosition: jest.fn(success =>
-              success({
+            getCurrentPosition: jest.fn(resolve =>
+              resolve({
                 coords: {
                   latitude: 1,
                   longitude: 2,

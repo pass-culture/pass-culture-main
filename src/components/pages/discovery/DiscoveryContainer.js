@@ -43,13 +43,16 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export const getCurrentPosition = () => {
+export const getCurrentPosition = coordinates => {
+  if (areValidCoordinates(coordinates)) {
+    return Promise.resolve({ coords: coordinates })
+  }
   if (navigator.geolocation) {
     return new Promise((resolve, reject) =>
       navigator.geolocation.getCurrentPosition(resolve, reject)
     )
   } else {
-    return new Promise(resolve => resolve({}))
+    return Promise.reject(new Error('Geolocation not supported'))
   }
 }
 
@@ -96,38 +99,21 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
       (shouldReloadRecommendations && []) ||
       (recommendations && recommendations.map(reco => reco.offerId))
 
-    getCurrentPosition()
-      .then(position => {
-        if (!areValidCoordinates(coordinates)) {
-          getRecommendationsFromAPI(
-            position.coords,
-            dispatch,
-            readRecommendations,
-            offersSentInLastCall,
-            handleFail,
-            handleSuccess
-          )
-        } else {
-          getRecommendationsFromAPI(
-            coordinates,
-            dispatch,
-            readRecommendations,
-            offersSentInLastCall,
-            handleFail,
-            handleSuccess
-          )
-        }
-      })
-      .catch(() => {
-        getRecommendationsFromAPI(
-          null,
-          dispatch,
-          readRecommendations,
-          offersSentInLastCall,
-          handleFail,
-          handleSuccess
-        )
-      })
+    let userCoordinates = null
+    try {
+      const currentLocation = await getCurrentPosition(coordinates)
+      userCoordinates = currentLocation.coords
+    } catch (e) {
+      // do nothing
+    }
+    getRecommendationsFromAPI(
+      userCoordinates,
+      dispatch,
+      readRecommendations,
+      offersSentInLastCall,
+      handleFail,
+      handleSuccess
+    )
   },
   redirectToFirstRecommendationIfNeeded: loadedRecommendations => {
     const { match, history } = prevProps
