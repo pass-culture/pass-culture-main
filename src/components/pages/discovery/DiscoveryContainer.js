@@ -43,7 +43,7 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-function getCurrentPosition() {
+export const getCurrentPosition = () => {
   if (navigator.geolocation) {
     return new Promise((resolve, reject) =>
       navigator.geolocation.getCurrentPosition(resolve, reject)
