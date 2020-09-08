@@ -2,7 +2,7 @@ import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { Router } from 'react-router'
+import { MemoryRouter, Router } from 'react-router'
 import { NavLink } from 'react-router-dom'
 
 import * as usersSelectors from '../../../../selectors/data/usersSelectors'
@@ -46,14 +46,107 @@ describe('src | components | pages | Offers | Offers', () => {
   describe('render', () => {
     describe('when arriving on index page', () => {
       it('should list all offers', () => {
+        // given
+        const store = getStubStore({
+          data: (
+            state = {
+              offerers: [],
+              users: [{ publicName: 'User', id: 'EY' }],
+            }
+          ) => state,
+          modal: (
+            state = {
+              config: {},
+            }
+          ) => state,
+        })
+
         // when
-        const wrapper = shallow(<Offers {...props} />)
+        mount(
+          <Provider store={store}>
+            <MemoryRouter>
+              <Offers {...props} />
+            </MemoryRouter>
+          </Provider>
+        )
 
         // then
-        expect(wrapper.state()).toStrictEqual({
-          hasMore: true,
-          isLoading: true,
+        expect(props.loadOffers).toHaveBeenCalledWith({
+          apiPath: '/offers?',
+          handleSuccess: expect.any(Function),
+          handleFail: expect.any(Function),
+          resolve: expect.any(Function),
         })
+      })
+
+      it('should display column names when offers', () => {
+        // Given
+        const store = getStubStore({
+          data: (
+            state = {
+              offerers: [],
+              users: [{ publicName: 'User', id: 'EY' }],
+              venues: [{ id: 'JI', name: 'Venue' }],
+            }
+          ) => state,
+          modal: (
+            state = {
+              config: {},
+            }
+          ) => state,
+        })
+
+        props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
+
+        // When
+        const wrapper = mount(
+          <Provider store={store}>
+            <MemoryRouter>
+              <Offers {...props} />
+            </MemoryRouter>
+          </Provider>
+        )
+
+        // Then
+        const venueColumn = wrapper.find({ children: 'Lieu' })
+        const stockColumn = wrapper.find({ children: 'Stock' })
+        expect(venueColumn).toHaveLength(1)
+        expect(stockColumn).toHaveLength(1)
+      })
+
+      it('should not display column names when no offers', () => {
+        // Given
+        const store = getStubStore({
+          data: (
+            state = {
+              offerers: [],
+              users: [{ publicName: 'User', id: 'EY' }],
+              venues: [{ id: 'JI', name: 'Venue' }],
+            }
+          ) => state,
+          modal: (
+            state = {
+              config: {},
+            }
+          ) => state,
+        })
+
+        props.offers = []
+
+        // When
+        const wrapper = mount(
+          <Provider store={store}>
+            <MemoryRouter>
+              <Offers {...props} />
+            </MemoryRouter>
+          </Provider>
+        )
+
+        // Then
+        const venueColumn = wrapper.find({ children: 'Lieu' })
+        const stockColumn = wrapper.find({ children: 'Stock' })
+        expect(venueColumn).toHaveLength(0)
+        expect(stockColumn).toHaveLength(0)
       })
     })
 

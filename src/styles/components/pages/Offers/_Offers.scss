@@ -81,4 +81,11 @@
   .venue-title {
     grid-column-start: 3;
   }
+
+  hr {
+    background: none;
+    border-top: 1px solid $grey-medium;
+    grid-column: 1/7;
+    margin: rem(16px) 0;
+  }
 }

@@ -1,7 +1,7 @@
 import { Icon, resolveIsNew } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
-import React, { PureComponent } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { Link } from 'react-router-dom'
 
@@ -152,12 +152,10 @@ class Offers extends PureComponent {
     const { isAdmin } = currentUser || {}
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
-    const { keywords, venueId, offererId, orderBy } = apiParams
+    const { keywords, venueId, offererId } = apiParams
     const { hasMore, isLoading } = this.state
 
     const createOfferTo = createLinkToOfferCreation(venueId, offererId)
-
-    const [orderName, orderDirection] = (orderBy || '').split('+')
 
     const actionLink = !isAdmin && (
       <Link
@@ -207,14 +205,6 @@ class Offers extends PureComponent {
               >
                 {'OK'}
               </button>
-              <button
-                className="button is-tertiary"
-                disabled
-                type="button"
-              >
-                &nbsp; &nbsp;
-                <Icon svg="ico-filter" />
-              </button>
             </p>
           </div>
         </form>
@@ -249,42 +239,6 @@ class Offers extends PureComponent {
           )}
         </ul>
         <div className="section">
-          {false && (
-            <div className="list-header">
-              <div>
-                <div className="recently-added" />
-                {'Ajouté récemment'}
-              </div>
-              <div>
-                {'Trier par: '}
-                <span className="select is-rounded is-small">
-                  <select
-                    onBlur={this.handleOnChange}
-                    value={orderName}
-                  >
-                    <option value="sold">
-                      {'Offres écoulées'}
-                    </option>
-                    <option value="createdAt">
-                      {'Date de création'}
-                    </option>
-                  </select>
-                </span>
-              </div>
-              <div>
-                <button
-                  className="button is-tertiary"
-                  onClick={this.handleOnClick}
-                  type="button"
-                >
-                  <Icon
-                    svg={orderDirection === 'asc' ? 'ico-sort-ascending' : 'ico-sort-descending'}
-                  />
-                </button>
-              </div>
-            </div>
-          )}
-
           {offers && venue && (
             <div className="offers-list-actions">
               <button
@@ -305,30 +259,34 @@ class Offers extends PureComponent {
             </div>
           )}
 
-          <div className="offer-row">
-            <span className="venue-title">
-              {'Lieu'}
-            </span>
-            <span className="stock-title">
-              {'Stock'}
-            </span>
-          </div>
-          <LoadingInfiniteScroll
-            className="offers-list"
-            element="ul"
-            handlePageChange={this.onPageChange}
-            handlePageReset={this.onPageReset}
-            hasMore={hasMore}
-            isLoading={isLoading}
-            loader={<Spinner key="spinner" />}
-          >
-            {offers.map(offer => (
-              <OfferItemContainer
-                key={offer.id}
-                offer={offer}
-              />
-            ))}
-          </LoadingInfiniteScroll>
+          {offers.length > 0 && (
+            <Fragment>
+              <div className="offer-row">
+                <span className="venue-title">
+                  {'Lieu'}
+                </span>
+                <span className="stock-title">
+                  {'Stock'}
+                </span>
+              </div>
+              <LoadingInfiniteScroll
+                className="offers-list"
+                element="ul"
+                handlePageChange={this.onPageChange}
+                handlePageReset={this.onPageReset}
+                hasMore={hasMore}
+                isLoading={isLoading}
+                loader={<Spinner key="spinner" />}
+              >
+                {offers.map(offer => (
+                  <Fragment key={offer.id}>
+                    <OfferItemContainer offer={offer} />
+                    <hr />
+                  </Fragment>
+                ))}
+              </LoadingInfiniteScroll>
+            </Fragment>
+          )}
           {hasMore === false && 'Fin des résultats'}
         </div>
       </Main>
@@ -349,7 +307,9 @@ Offers.propTypes = {
   loadTypes: PropTypes.func.isRequired,
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   resetLoadedOffers: PropTypes.func.isRequired,
-  venue: PropTypes.arrayOf(),
+  venue: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+  }),
 }
 
 export default Offers

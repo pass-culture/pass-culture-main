@@ -59,9 +59,11 @@ class OfferItem extends PureComponent {
         <span>
           {(venue && venue.publicName) || venue.name}
         </span>
-        {availabilityMessage && <span>
-          {availabilityMessage}
-                                </span>}
+        {availabilityMessage && (
+          <span>
+            {availabilityMessage}
+          </span>
+        )}
         <button
           className="secondary-button"
           onClick={this.handleOnDeactivateClick}
@@ -72,12 +74,11 @@ class OfferItem extends PureComponent {
         {offerIsEditable && (
           <Link
             className="secondary-link"
-            to={`/offres/${offer.id}`}
+            to={`/offres/${offer.id}/edition`}
           >
             <Icon svg="ico-pen-r" />
           </Link>
         )}
-        <hr />
       </li>
     )
   }

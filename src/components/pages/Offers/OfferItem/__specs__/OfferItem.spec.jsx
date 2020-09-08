@@ -123,7 +123,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
           // then
           const editOfferLink = wrapper.find(
-            `a[href="/offres/${activeOfferWithActiveMediation.id}"]`
+            `a[href="/offres/${activeOfferWithActiveMediation.id}/edition"]`
           )
           expect(editOfferLink).toHaveLength(1)
         })
