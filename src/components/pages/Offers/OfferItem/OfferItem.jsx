@@ -38,7 +38,7 @@ class OfferItem extends PureComponent {
     const { name } = offer || {}
     const stockSize = stocks ? stocks.length : null
     const offerIsEditable = offer ? offer.isEditable : null
-    const offerStatus = mapOfferStatus(offer.isActive, stocks)
+    const offerStatus = mapOfferStatus(offer, stocks)
     const offerStatusProperties = {
       [OFFER_STATUS.DEACTIVATED]: {
         className: 'status-deactivated',
@@ -80,11 +80,9 @@ class OfferItem extends PureComponent {
         <span>
           {(venue && venue.publicName) || venue.name}
         </span>
-        {availabilityMessage && (
-          <span>
-            {availabilityMessage}
-          </span>
-        )}
+        {availabilityMessage && <span>
+          {availabilityMessage}
+                                </span>}
         <span className="status-column">
           <span className={offerStatusProperties[offerStatus].className}>
             <Icon svg={offerStatusProperties[offerStatus].icon} />
