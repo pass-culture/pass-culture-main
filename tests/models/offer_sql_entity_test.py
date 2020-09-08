@@ -630,6 +630,17 @@ class IsFullyBookedTest:
 
 
 class hasBookingLimitDatetimesPassedTest:
+    def test_returns_false_when_no_active_stock_has_future_booking_limit_datetime(self):
+        # given
+        now = datetime.utcnow()
+        offer = OfferSQLEntity()
+        stock1 = create_stock(booking_limit_datetime=now - timedelta(weeks=3))
+        stock2 = create_stock(booking_limit_datetime=now + timedelta(weeks=2), is_soft_deleted=True)
+        offer.stocks = [stock1, stock2]
+
+        # then
+        assert offer.hasBookingLimitDatetimesPassed
+
     def test_returns_true_when_all_stocks_have_passed_booking_limit_datetime(self):
         # given
         now = datetime.utcnow()

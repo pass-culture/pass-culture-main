@@ -150,7 +150,9 @@ class OfferSQLEntity(PcObject,
 
     @property
     def hasBookingLimitDatetimesPassed(self) -> bool:
-        return all(map(lambda stock: stock.hasBookingLimitDatetimePassed, self.stocks))
+        if self.activeStocks:
+            return all(map(lambda stock: stock.hasBookingLimitDatetimePassed, self.activeStocks))
+        return False
 
     @property
     def isFullyBooked(self) -> bool:
