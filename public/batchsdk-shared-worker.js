@@ -8,4 +8,3 @@ eventsList.forEach(eventName => {
     event.waitUntil(self.handleBatchSDKEvent(eventName, event))
   })
 })
-
