@@ -8,6 +8,8 @@ import Icon from '../../layout/Icon'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
 import GenericError from '../../layout/errors/GenericError'
+import Title from '../../layout/Titles/Title'
+import Subtitle from '../../layout/Titles/Subtitle'
 
 class LostPassword extends PureComponent {
   constructor(props) {
@@ -123,17 +125,10 @@ class LostPassword extends PureComponent {
           <div className="columns">
             <div className="column is-offset-6 is-two-fifths sign-page-form">
               {change && (
-                <section className="hero has-text-grey">
+                <section className="hero password-reset">
                   <div className="hero-body">
-                    <h1 className="title is-spaced is-1">
-                      <span className="has-text-weight-normal">
-                        {'Mot de passe changé !'}
-                      </span>
-                    </h1>
-                    <h2 className="subtitle is-2">
-                      {'Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe'}
-                    </h2>
-
+                    <Title title="Mot de passe changé !" />
+                    <Subtitle subtitle="Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe" />
                     <Link
                       className="primary-link"
                       to="/connexion"
@@ -144,19 +139,10 @@ class LostPassword extends PureComponent {
                 </section>
               )}
               {envoye && (
-                <section className="hero has-text-grey">
+                <section className="hero mail-sent">
                   <div className="hero-body">
-                    <h1 className="title is-spaced is-1">
-                      <span className="has-text-weight-normal">
-                        {'Merci !'}
-                      </span>
-                    </h1>
-                    <h2 className="subtitle is-2">
-                      {
-                        'Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe.'
-                      }
-                    </h2>
-
+                    <Title title="Merci !" />
+                    <Subtitle subtitle="Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe." />
                     <Link
                       className="primary-link"
                       to="/accueil"
@@ -169,14 +155,9 @@ class LostPassword extends PureComponent {
               {token && (
                 <section className="hero password-reset-request-form">
                   <div className="hero-body">
-                    <h1 className="title is-spaced is-1">
-                      <span className="has-text-weight-normal">
-                        {'Créer un nouveau mot de passe'}
-                      </span>
-                    </h1>
-                    <h2 className="subtitle is-2">
-                      {'Saisissez le nouveau mot de passe'}
-                    </h2>
+                    <Title title="Créer un nouveau mot de passe" />
+                    <Subtitle subtitle="Saisissez le nouveau mot de passe" />
+
                     {hasPasswordResetErrorMessage && (
                       <GenericError
                         message={"Une erreur s'est produite, veuillez réessayer ultérieurement."}
@@ -225,16 +206,8 @@ class LostPassword extends PureComponent {
               {!token && !envoye && !change && (
                 <section className="hero password-reset-request">
                   <div className="hero-body">
-                    <h1 className="title is-spaced is-1">
-                      <span className="has-text-weight-normal">
-                        {'Mot de passe égaré ?'}
-                      </span>
-                    </h1>
-                    <h2 className="subtitle is-2">
-                      {
-                        'Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre compte.'
-                      }
-                    </h2>
+                    <Title title="Mot de passe égaré ?" />
+                    <Subtitle subtitle="Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre compte." />
 
                     {hasPasswordResetRequestErrorMessage && (
                       <GenericError
