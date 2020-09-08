@@ -1,0 +1,25 @@
+.it-errors {
+  @include caption();
+
+  align-items: center;
+  color: $red-error;
+  display: flex;
+  line-height: rem(16px);
+  margin-top: rem(8px);
+  text-align: left;
+
+  img {
+    margin-right: rem(5px);
+    height: rem(15px);
+    width: rem(15px);
+  }
+
+  pre {
+    background: none;
+    color: $red-error;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0;
+    white-space: pre-wrap;
+  }
+}

@@ -14,32 +14,6 @@
     margin-left: rem(5px);
   }
 
-  .it-errors {
-    @include caption();
-
-    align-items: center;
-    color: $primary;
-    display: flex;
-    line-height: rem(32px);
-    margin-top: rem(8px);
-    text-align: left;
-
-    img {
-      margin-right: rem(5px);
-      height: rem(15px);
-      width: rem(15px);
-    }
-
-    pre {
-      background: none;
-      color: $primary;
-      font-family: inherit;
-      font-size: inherit;
-      padding: 0;
-      white-space: pre-wrap;
-    }
-  }
-
   .it-input {
     @include body();
 
