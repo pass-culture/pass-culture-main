@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
-import Icon from '../../layout/Icon'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
 import GenericError from '../../layout/errors/GenericError'
@@ -180,6 +179,7 @@ class LostPassword extends PureComponent {
                       onSubmit={this.submitResetPassword}
                     >
                       <TextInputWithIcon
+                        error={newPasswordErrorMessage ? newPasswordErrorMessage : null}
                         icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
                         iconAlt={
                           isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'
@@ -194,15 +194,6 @@ class LostPassword extends PureComponent {
                         type={isPasswordHidden ? 'password' : 'text'}
                         value={newPasswordValue}
                       />
-
-                      {newPasswordErrorMessage && (
-                        <div className="password-error-message">
-                          <Icon svg="picto-warning" />
-                          <pre>
-                            {newPasswordErrorMessage}
-                          </pre>
-                        </div>
-                      )}
 
                       <button
                         className="primary-button submit-button"

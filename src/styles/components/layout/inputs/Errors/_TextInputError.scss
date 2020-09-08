@@ -1,7 +1,6 @@
 .it-errors {
   @include caption();
 
-  align-items: center;
   color: $red-error;
   display: flex;
   line-height: rem(16px);
