@@ -8,6 +8,8 @@ import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
 import GenericError from '../../layout/errors/GenericError'
+import Title from '../../layout/Titles/Title'
+import Subtitle from '../../layout/Titles/Subtitle'
 
 class Signin extends PureComponent {
   constructor(props) {
@@ -83,20 +85,8 @@ class Signin extends PureComponent {
             <div className="column is-offset-6 is-two-fifths sign-page-form">
               <section>
                 <div className="text-container">
-                  <h1 className="title is-spaced is-1">
-                    <span className="has-text-weight-bold ">
-                      {'Bienvenue '}
-                    </span>
-                    <span className="has-text-weight-semibold">
-                      {'dans la version bêta '}
-                    </span>
-                    <span className="has-text-weight-normal">
-                      {'du pass Culture pro.'}
-                    </span>
-                  </h1>
-                  <h2 className="subtitle is-2">
-                    {'Et merci de votre participation pour nous aider à l’améliorer !'}
-                  </h2>
+                  <Title title="Bienvenue dans la version bêta du pass Culture pro." />
+                  <Subtitle subtitle="Et merci de votre participation pour nous aider à l’améliorer !" />
                   <span className="has-text-grey">
                     {'Tous les champs sont obligatoires'}
                   </span>
@@ -104,7 +94,7 @@ class Signin extends PureComponent {
                     <GenericError message="Identifiant ou mot de passe incorrect." />
                   )}
                   <form onSubmit={this.handleOnSubmit}>
-                    <div className="field-group">
+                    <div className="signin-form">
                       <TextInput
                         label="Adresse e-mail"
                         name="identifier"
@@ -128,14 +118,14 @@ class Signin extends PureComponent {
                         type={isPasswordHidden ? 'password' : 'text'}
                         value={passwordValue}
                       />
+                      <Link
+                        className="tertiary-link"
+                        id="lostPasswordLink"
+                        to="/mot-de-passe-perdu"
+                      >
+                        {'Mot de passe égaré ?'}
+                      </Link>
                     </div>
-                    <Link
-                      className="tertiary-link"
-                      id="lostPasswordLink"
-                      to="/mot-de-passe-perdu"
-                    >
-                      {'Mot de passe égaré ?'}
-                    </Link>
                     <div className="field buttons-field">
                       <Link
                         className="secondary-link"
