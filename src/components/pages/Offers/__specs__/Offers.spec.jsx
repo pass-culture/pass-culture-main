@@ -1,5 +1,5 @@
 import { mount, shallow } from 'enzyme'
-import { createBrowserHistory } from 'history'
+import { createMemoryHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Router } from 'react-router'
@@ -79,7 +79,7 @@ describe('src | components | pages | Offers | Offers', () => {
         })
       })
 
-      it('should display column names when offers', () => {
+      it('should display column titles when offers are returned', () => {
         // Given
         const store = getStubStore({
           data: (
@@ -114,7 +114,7 @@ describe('src | components | pages | Offers | Offers', () => {
         expect(stockColumn).toHaveLength(1)
       })
 
-      it('should not display column names when no offers', () => {
+      it('should not display column titles when no offers are returned', () => {
         // Given
         const store = getStubStore({
           data: (
@@ -289,7 +289,7 @@ describe('src | components | pages | Offers | Offers', () => {
               }
             ) => state,
           })
-          const history = createBrowserHistory()
+          const history = createMemoryHistory()
           jest
             .spyOn(usersSelectors, 'selectCurrentUser')
             .mockReturnValue({ currentUser: props.currentUser })
@@ -327,7 +327,7 @@ describe('src | components | pages | Offers | Offers', () => {
               }
             ) => state,
           })
-          const history = createBrowserHistory()
+          const history = createMemoryHistory()
           jest
             .spyOn(usersSelectors, 'selectCurrentUser')
             .mockReturnValue({ currentUser: props.currentUser })
@@ -365,7 +365,7 @@ describe('src | components | pages | Offers | Offers', () => {
               }
             ) => state,
           })
-          const history = createBrowserHistory()
+          const history = createMemoryHistory()
           jest
             .spyOn(usersSelectors, 'selectCurrentUser')
             .mockReturnValue({ currentUser: props.currentUser })
