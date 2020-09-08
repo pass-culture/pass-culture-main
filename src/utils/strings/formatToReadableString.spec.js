@@ -22,4 +22,15 @@ describe('src | utils | strings | formatToReadableString', () => {
     // then
     expect(result).toBeNull()
   })
+
+  it('should return a string with a first capitalized letter when multiple capitalized letters', () => {
+    // given
+    const input = "AveNgers La liGue dEs SuperS héRos"
+
+    // when
+    const result = formatToReadableString(input)
+
+    // then
+    expect(result).toStrictEqual("Avengers la ligue des supers héros")
+  })
 })
