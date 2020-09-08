@@ -8,7 +8,7 @@ class FormFooter extends PureComponent {
     return userAgent.includes('Instagram') && userAgent.includes('iPhone')
   }
 
-  renderSubmitButtonOrInternalLink = (item, index, items) => {
+  renderFooterItem = (item, index, items) => {
     const attributes = {
       className: `${item.className || ''}`,
       disabled: item.disabled,
@@ -17,12 +17,12 @@ class FormFooter extends PureComponent {
     const renderedItem = item.url
       ? this.renderLink(item, attributes)
       : this.renderSubmitButton(item, attributes)
-    const showSeparator = index + 1 !== items.length
+    const isLastItem = index + 1 === items.length
 
     return (
       <Fragment key={item.id}>
         {renderedItem}
-        {showSeparator && <hr />}
+        {!isLastItem && <hr />}
       </Fragment>
     )
   }
@@ -62,7 +62,7 @@ class FormFooter extends PureComponent {
         }`}
         id="logout-form-footer"
       >
-        {items.map(this.renderSubmitButtonOrInternalLink)}
+        {items.map(this.renderFooterItem)}
       </footer>
     )
   }
