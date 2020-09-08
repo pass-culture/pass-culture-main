@@ -286,7 +286,7 @@ class ReimbursementRateByVenueAbove100000Test:
         reimbursed_amount = ReimbursementRules.ABOVE_100000_EUROS.value.apply(booking)
 
         # then
-        assert reimbursed_amount == Decimal(0.65) * 40 * 3
+        assert reimbursed_amount == Decimal(0.7) * 40 * 3
 
     def test_is_relevant_for_booking_on_physical_things_with_cumulative_value_above_100000(self):
         # given

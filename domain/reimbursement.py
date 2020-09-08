@@ -112,8 +112,8 @@ class ReimbursementRateByVenueBetween40000And100000(ReimbursementRule):
 
 
 class ReimbursementRateByVenueAbove100000(ReimbursementRule):
-    rate = Decimal(0.65)
-    description = 'Remboursement à 65% au dessus de 100 000 € par lieu'
+    rate = Decimal(0.7)
+    description = 'Remboursement à 70% au dessus de 100 000 € par lieu'
     valid_from = None
     valid_until = None
 
