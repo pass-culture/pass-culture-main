@@ -1,17 +1,17 @@
 #!/bin/bash
 
 function start_backend {
-    RUN='cd $ROOT_PATH && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml pull flask && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml up'
+    RUN='cd "$ROOT_PATH" && docker-compose pull flask && docker-compose up'
 }
 
 function restart_backend {
-    RUN='sudo rm -rf "$ROOT_PATH"/api/static/object_store_data;
-    docker-compose -f "$ROOT_PATH"/docker-compose-app.yml down --volumes;
-    cd "$ROOT_PATH" && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml pull && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml up --force-recreate'
+    RUN='cd "$ROOT_PATH" && sudo rm -rf api/static/object_store_data;
+    docker-compose down --volumes;
+    docker-compose pull && docker-compose up --force-recreate'
 }
 
 function rebuild_backend {
-    RUN='docker-compose -f "$ROOT_PATH"/docker-compose-app.yml build --no-cache;
-    sudo rm -rf $ROOT_PATH/api/static/object_store_data;
-    docker-compose -f "$ROOT_PATH"/docker-compose-app.yml down --volumes'
+    RUN='cd "$ROOT_PATH" && docker-compose build --no-cache;
+    sudo rm -rf api/static/object_store_data;
+    docker-compose down --volumes'
 }
