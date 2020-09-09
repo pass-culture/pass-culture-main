@@ -37,8 +37,8 @@
 
     img {
       flex-shrink: 0;
-      height: rem(16px);
-      width: rem(16px);
+      max-height: rem(16px);
+      max-width: rem(16px);
     }
   }
 }
