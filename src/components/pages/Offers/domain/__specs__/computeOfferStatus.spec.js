@@ -1,59 +1,15 @@
 import { computeOfferStatus } from '../computeOfferStatus'
 
-describe('map offer status', () => {
+describe('compute offer status', () => {
   describe('when offer is deactivated', () => {
-    let offer
-
-    beforeEach(() => {
-      offer = {
+    it('should be "désactivée" prior to any other status', () => {
+      // Given
+      const offer = {
         isActive: false,
-        hasBookingLimitDatetimesPassed: false,
-        isFullyBooked: false,
+        hasBookingLimitDatetimesPassed: true,
+        isFullyBooked: true,
       }
-    })
-
-    it('should return "désactivée"', () => {
-      // Given
-      const stocks = [
-        {
-          remainingQuantity: 1,
-          bookingLimitDatetime: null,
-        },
-      ]
-
-      // When
-      const status = computeOfferStatus(offer, stocks)
-
-      // Then
-      expect(status).toBe('désactivée')
-    })
-
-    it('should return "désactivée" even when offer is expired', () => {
-      // Given
-      const stocks = [
-        {
-          remainingQuantity: 5,
-          bookingLimitDatetime: '2002-09-18T18:30:00Z',
-        },
-      ]
-      offer.hasBookingLimitDatetimesPassed = true
-
-      // When
-      const status = computeOfferStatus(offer, stocks)
-
-      // Then
-      expect(status).toBe('désactivée')
-    })
-
-    it('should return "désactivée" even when offer is sold out', () => {
-      // Given
-      const stocks = [
-        {
-          remainingQuantity: 0,
-          bookingLimitDatetime: null,
-        },
-      ]
-      offer.isFullyBooked = true
+      const stocks = []
 
       // When
       const status = computeOfferStatus(offer, stocks)
@@ -74,19 +30,17 @@ describe('map offer status', () => {
       }
     })
 
-    it('should return "active"', () => {
+    it('should be "active" when offer is not expired nor sold out', () => {
       // Given
       const septemberSeventh2020 = 1599483337
       jest.spyOn(Date, 'now').mockImplementationOnce(() => septemberSeventh2020)
 
       const stocks = [
         {
-          remainingQuantity: 'unlimited',
-          bookingLimitDatetime: '2020-10-18T18:30:00Z',
+          id: 1,
         },
         {
-          remainingQuantity: 0,
-          bookingLimitDatetime: '2020-07-18T18:30:00Z',
+          id: 2,
         },
       ]
 
@@ -98,29 +52,14 @@ describe('map offer status', () => {
     })
 
     describe('when offer is expired', () => {
-      let stocks
-
-      beforeEach(() => {
-        stocks = [
+      it('should be "expirée" even when offer is sold out', () => {
+        // Given
+        const stocks = [
           {
-            remainingQuantity: 1,
-            bookingLimitDatetime: '2002-09-18T18:30:00Z',
+            id: 1,
           },
         ]
         offer.hasBookingLimitDatetimesPassed = true
-      })
-
-      it('should return "expirée"', () => {
-        // When
-        const status = computeOfferStatus(offer, stocks)
-
-        // Then
-        expect(status).toBe('expirée')
-      })
-
-      it('should return "expirée" even when offer is sold out', () => {
-        // Given
-        stocks[0].remainingQuantity = 0
         offer.isFullyBooked = true
 
         // When
@@ -131,7 +70,7 @@ describe('map offer status', () => {
       })
     })
 
-    describe('when offer is sold out', () => {
+    describe('when offer is sold out but has not expired', () => {
       let offer
 
       beforeEach(() => {
@@ -142,16 +81,11 @@ describe('map offer status', () => {
         }
       })
 
-      it('should return "épuisée"', () => {
+      it('should be "épuisée"', () => {
         // Given
         const stocks = [
           {
-            bookingLimitDatetime: null,
-            remainingQuantity: 0,
-          },
-          {
-            bookingLimitDatetime: null,
-            remainingQuantity: 0,
+            id: 1,
           },
         ]
 
@@ -164,9 +98,10 @@ describe('map offer status', () => {
     })
 
     describe('when offer has no stock yet', () => {
-      it('should return "épuisée"', () => {
+      it('should be "épuisée" even when offer is expired', () => {
         // Given
         const stocks = []
+        offer.hasBookingLimitDatetimesPassed = true
 
         // When
         const status = computeOfferStatus(offer, stocks)

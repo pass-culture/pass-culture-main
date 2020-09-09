@@ -42,11 +42,11 @@ class OfferItem extends PureComponent {
     const offerStatusProperties = {
       [OFFER_STATUS.DEACTIVATED]: {
         className: 'status-deactivated',
-        icon: 'ico-status-deactived',
+        icon: 'ico-status-deactivated',
       },
       [OFFER_STATUS.EXPIRED]: {
         className: 'status-expired',
-        icon: 'ico-calendar',
+        icon: 'ico-status-expired',
       },
       [OFFER_STATUS.SOLD_OUT]: {
         className: 'status-sold-out',
@@ -80,9 +80,11 @@ class OfferItem extends PureComponent {
         <span>
           {(venue && venue.publicName) || venue.name}
         </span>
-        {availabilityMessage && <span>
-          {availabilityMessage}
-                                </span>}
+        {availabilityMessage && (
+          <span>
+            {availabilityMessage}
+          </span>
+        )}
         <span className="status-column">
           <span className={offerStatusProperties[offerStatus].className}>
             <Icon svg={offerStatusProperties[offerStatus].icon} />
