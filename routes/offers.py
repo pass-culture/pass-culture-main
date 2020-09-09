@@ -59,7 +59,8 @@ def list_offers() -> (str, int):
     )
     paginated_offers = list_offers_for_pro_user.execute(offers_request_parameters)
 
-    response = jsonify(paginated_offers.offers)
+    serialized_offers = [as_dict(offer, includes=OFFER_INCLUDES) for offer in paginated_offers.offers]
+    response = jsonify(serialized_offers)
     response.headers['Total-Data-Count'] = paginated_offers.total
     response.headers['Access-Control-Expose-Headers'] = 'Total-Data-Count'
 

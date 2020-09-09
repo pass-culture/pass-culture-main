@@ -1,8 +1,13 @@
 from typing import Optional
 
+from sqlalchemy import desc, func
+from sqlalchemy.orm import Query, aliased
+
+from domain.keywords import create_get_filter_matching_ts_query_in_any_model, create_filter_matching_all_keywords_in_any_model
 from domain.pro_offers.paginated_offers import PaginatedOffers
 from domain.pro_offers.paginated_offers_repository import PaginatedOffersRepository
-from repository.offer_queries import build_find_offers_with_filter_parameters
+from models import OfferSQLEntity, VenueSQLEntity, Offerer, UserOfferer
+from models.db import Model
 
 
 class PaginatedOffersSQLRepository(PaginatedOffersRepository):
@@ -14,15 +19,59 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
                                                             offerer_id: Optional[int] = None,
                                                             venue_id: Optional[int] = None,
                                                             keywords: Optional[str] = None) -> PaginatedOffers:
-        query = build_find_offers_with_filter_parameters(
-            user_id=user_id,
-            user_is_admin=user_is_admin,
-            offerer_id=offerer_id,
-            venue_id=venue_id,
-            keywords_string=keywords,
-        )
+        query = OfferSQLEntity.query
+        if venue_id is not None:
+            query = query.filter(OfferSQLEntity.venueId == venue_id)
+        if offerer_id is not None:
+            query = query \
+                .join(VenueSQLEntity) \
+                .filter(VenueSQLEntity.managingOffererId == offerer_id)
+        if not user_is_admin:
+            query = query \
+                .join(VenueSQLEntity) \
+                .join(Offerer) \
+                .join(UserOfferer) \
+                .filter(UserOfferer.userId == user_id) \
+                .filter(UserOfferer.validationToken == None)
+        if keywords is not None:
+            query = _filter_offers_with_keywords_string(
+                    query,
+                    keywords
+            )
+        else:
+            query = query.order_by(OfferSQLEntity.id.desc())
+
         query = query.paginate(page, per_page=int(pagination_limit), error_out=False)
         results = query.items
         total = query.total
 
         return PaginatedOffers(results, total)
+
+
+def _filter_offers_with_keywords_string(query: Query, keywords_string: str) -> Query:
+    query_on_offer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, OfferSQLEntity)
+    query_on_offer_using_keywords = _order_by_offer_name_containing_keyword_string(keywords_string,
+                                                                                   query_on_offer_using_keywords)
+    return query_on_offer_using_keywords
+
+
+def _build_query_using_keywords_on_model(keywords_string: str, query: Query, model: Model) -> Query:
+    text_search_filters_on_model = create_get_filter_matching_ts_query_in_any_model(model)
+    model_keywords_filter = create_filter_matching_all_keywords_in_any_model(
+            text_search_filters_on_model, keywords_string
+    )
+    return query.filter(model_keywords_filter)
+
+
+def _order_by_offer_name_containing_keyword_string(keywords_string: str, query: Query) -> Query:
+    offer_alias = aliased(OfferSQLEntity)
+    return query.order_by(
+            desc(
+                    OfferSQLEntity.query
+                        .filter(OfferSQLEntity.id == offer_alias.id)
+                        .filter(OfferSQLEntity.name.op('@@')(func.plainto_tsquery(keywords_string)))
+                        .order_by(offer_alias.name)
+                        .exists()
+            ),
+            desc(OfferSQLEntity.id)
+    )

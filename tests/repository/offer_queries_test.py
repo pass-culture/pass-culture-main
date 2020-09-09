@@ -8,7 +8,6 @@ from models.offer_type import EventType, ThingType
 from repository import repository
 from repository.offer_queries import department_or_national_offers, \
     find_activation_offers, \
-    build_find_offers_with_filter_parameters, \
     get_offers_by_venue_id, \
     get_paginated_active_offer_ids, \
     get_paginated_offer_ids_by_venue_id_and_last_provider_id, \
@@ -18,7 +17,7 @@ from repository.offer_queries import department_or_national_offers, \
     _build_bookings_quantity_subquery
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, \
-    create_venue, create_user_offerer, create_provider
+    create_venue, create_provider
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product, \
     create_product_with_event_type, create_offer_with_event_product, create_event_occurrence, \
     create_stock_from_event_occurrence, create_stock_from_offer
@@ -227,72 +226,6 @@ class FindActivationOffersTest:
 
 
 class FindOffersTest:
-    @clean_database
-    def test_returns_offers_sorted_by_id_desc(self, app):
-        # Given
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        offer1 = create_offer_with_thing_product(venue)
-        offer2 = create_offer_with_thing_product(venue)
-        repository.save(user_offerer, offer1, offer2)
-
-        # When
-        offers = build_find_offers_with_filter_parameters(
-            user_id=user.id,
-            user_is_admin=user.isAdmin,
-        ).all()
-
-        # Then
-        assert offers[0].id > offers[1].id
-
-    @clean_database
-    def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_venue(self, app):
-        user = create_user()
-        offerer1 = create_offerer(siren='123456789')
-        offerer2 = create_offerer(siren='987654321')
-        ko_offerer3 = create_offerer(siren='123456780')
-        user_offerer1 = create_user_offerer(user=user, offerer=offerer1)
-        user_offerer2 = create_user_offerer(user=user, offerer=offerer2)
-
-        ok_product_event = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
-        ok_product_thing = create_product_with_thing_type(thing_name='Rencontrez Jacques Chirac')
-        event_product2 = create_product_with_event_type(event_name='Concert de contrebasse')
-        thing1_product = create_product_with_thing_type(thing_name='Jacques la fripouille')
-        thing2_product = create_product_with_thing_type(thing_name='Belle du Seigneur')
-        offerer = create_offerer(siren='123456789')
-        venue1 = create_venue(offerer=offerer1, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
-        venue2 = create_venue(offerer=offerer2, name='Librairie la Rencontre', city='Saint Denis',
-                              siret=offerer.siren + '54321')
-        ko_venue3 = create_venue(ko_offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis',
-                                 siret=ko_offerer3.siren + '54321')
-        ok_offer1 = create_offer_with_event_product(venue=venue1, product=ok_product_event)
-        ok_offer2 = create_offer_with_thing_product(venue=venue1, product=ok_product_thing)
-        ko_offer2 = create_offer_with_event_product(venue=venue1, product=event_product2)
-        ko_offer3 = create_offer_with_thing_product(venue=ko_venue3, product=thing1_product)
-        ko_offer4 = create_offer_with_thing_product(venue=venue2, product=thing2_product)
-        repository.save(
-            user_offerer1, user_offerer2, ko_offerer3,
-            ok_offer1, ko_offer2, ko_offer3, ko_offer4
-        )
-
-        # when
-        offers = build_find_offers_with_filter_parameters(
-            user_id=user.id,
-            user_is_admin=user.isAdmin,
-            venue_id=venue1.id,
-            keywords_string='Jacq Rencon'
-        ).all()
-
-        # then
-        offers_id = [offer.id for offer in offers]
-        assert ok_offer1.id in offers_id
-        assert ok_offer2.id in offers_id
-        assert ko_offer2.id not in offers_id
-        assert ko_offer3.id not in offers_id
-        assert ko_offer4.id not in offers_id
-
     @clean_database
     def test_get_offers_by_venue_id_returns_offers_matching_venue_id(self, app):
         # Given

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 
 from flask_sqlalchemy import BaseQuery
-from sqlalchemy import desc, func, nullsfirst, or_
+from sqlalchemy import func, nullsfirst, or_
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import selectable
@@ -13,7 +13,7 @@ from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
 from models import BookingSQLEntity, DiscoveryView, DiscoveryViewV3, \
     EventType, FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Offerer, SeenOffer, StockSQLEntity, ThingType, \
-    UserOfferer, UserSQLEntity, VenueSQLEntity
+    UserSQLEntity, VenueSQLEntity
 from models.db import Model
 from models.feature import FeatureToggle
 from repository import feature_queries
@@ -220,33 +220,12 @@ def filter_offers_with_keywords_string_on_offer_only(query: BaseQuery, keywords_
     return _build_query_using_keywords_on_model(keywords_string, query, OfferSQLEntity)
 
 
-def filter_offers_with_keywords_string(query: Query, keywords_string: str) -> Query:
-    query_on_offer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, OfferSQLEntity)
-    query_on_offer_using_keywords = _order_by_offer_name_containing_keyword_string(keywords_string,
-                                                                                   query_on_offer_using_keywords)
-    return query_on_offer_using_keywords
-
-
 def _build_query_using_keywords_on_model(keywords_string: str, query: Query, model: Model) -> Query:
     text_search_filters_on_model = create_get_filter_matching_ts_query_in_any_model(model)
     model_keywords_filter = create_filter_matching_all_keywords_in_any_model(
         text_search_filters_on_model, keywords_string
     )
     return query.filter(model_keywords_filter)
-
-
-def _order_by_offer_name_containing_keyword_string(keywords_string: str, query: Query) -> Query:
-    offer_alias = aliased(OfferSQLEntity)
-    return query.order_by(
-        desc(
-            OfferSQLEntity.query
-                .filter(OfferSQLEntity.id == offer_alias.id)
-                .filter(OfferSQLEntity.name.op('@@')(func.plainto_tsquery(keywords_string)))
-                .order_by(offer_alias.name)
-                .exists()
-        ),
-        desc(OfferSQLEntity.id)
-    )
 
 
 def _offer_has_stocks_compatible_with_days_intervals(days_intervals):
@@ -259,42 +238,6 @@ def _offer_has_stocks_compatible_with_days_intervals(days_intervals):
         event_beginningdate_in_interval_filter |
         stock_has_no_beginning_date_time
     ).exists()
-
-
-def build_find_offers_with_filter_parameters(
-        user_id: int,
-        user_is_admin: bool,
-        offerer_id: int = None,
-        venue_id: int = None,
-        keywords_string: str = None
-) -> Query:
-    query = OfferSQLEntity.query
-
-    if venue_id is not None:
-        query = query.filter(OfferSQLEntity.venueId == venue_id)
-
-    if offerer_id is not None:
-        query = query \
-            .join(VenueSQLEntity) \
-            .filter(VenueSQLEntity.managingOffererId == offerer_id)
-
-    if not user_is_admin:
-        query = query \
-            .join(VenueSQLEntity) \
-            .join(Offerer) \
-            .join(UserOfferer) \
-            .filter(UserOfferer.userId == user_id) \
-            .filter(UserOfferer.validationToken == None)
-
-    if keywords_string is not None:
-        query = filter_offers_with_keywords_string(
-            query,
-            keywords_string
-        )
-    else:
-        query = query.order_by(OfferSQLEntity.id.desc())
-
-    return query
 
 
 def find_searchable_offer(offer_id):
