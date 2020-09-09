@@ -10,6 +10,7 @@ from models import OfferSQLEntity, RightsType, VenueSQLEntity
 from models.api_errors import ResourceNotFoundError
 from repository import offer_queries, repository, venue_queries, user_offerer_queries
 from routes.serialization import as_dict
+from routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from routes.serialization.offers_serialize import serialize_offer
 from use_cases.list_offers_for_pro_user import OffersRequestParameters
 from use_cases.update_an_offer import update_an_offer
@@ -59,7 +60,7 @@ def list_offers() -> (str, int):
     )
     paginated_offers = list_offers_for_pro_user.execute(offers_request_parameters)
 
-    serialized_offers = [as_dict(offer, includes=OFFER_INCLUDES) for offer in paginated_offers.offers]
+    serialized_offers = serialize_offers_recap_paginated(paginated_offers)
     response = jsonify(serialized_offers)
     response.headers['Total-Data-Count'] = paginated_offers.total
     response.headers['Access-Control-Expose-Headers'] = 'Total-Data-Count'
