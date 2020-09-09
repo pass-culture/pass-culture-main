@@ -210,17 +210,14 @@
 
     /* Initiate Batch SDK opt-in UI configuration (native prompt) */
     var batchSDKUIConfig = {
-      native: {}
-    };
-
-    /* Use a specific configuration for the Firefox web browser (custom prompt) */
-    if (navigator.userAgent.toLowerCase().indexOf("firefox") !== -1) {
-      batchSDKUIConfig = {
-        alert: {
-          icon: 'favicon.ico'
-        }
+      banner: {
+        btnSub: 'Activer les notifications',
+        btnUnsub: 'Désactiver les notifications',
+        btnBackgroundColor: '#eb0055',
+        icon: 'favicon.ico',
+        text: 'Ne ratez aucune nouvelle!'
       }
-    }
+    };
 
     /* Finalize the Batch SDK setup */
     batchSDK('setup', {
