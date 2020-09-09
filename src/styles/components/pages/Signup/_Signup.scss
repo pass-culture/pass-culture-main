@@ -139,10 +139,6 @@
     justify-content: space-between;
   }
 
-  .field-password .it-errors img {
-    align-self: center;
-  }
-
   .field-password > label {
     width: 90%;
   }
@@ -151,11 +147,6 @@
     position: absolute;
     right: rem(16px);
     top: rem(37px);
-  }
-
-  .field-password pre {
-    line-height: rem(18px);
-    padding: 0 0 0 rem(4px);
   }
 
   .sign-up-infos-before-signup {
