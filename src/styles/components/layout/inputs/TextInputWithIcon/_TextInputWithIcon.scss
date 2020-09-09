@@ -46,7 +46,7 @@
     color: $black;
     flex: 1;
     height: 100%;
-    padding: 10px 16px;
+    padding: rem(10px) rem(16px);
     outline: none;
 
     &:focus {
