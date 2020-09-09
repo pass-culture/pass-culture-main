@@ -4,14 +4,12 @@ import Icon from '../../../layout/Icon'
 const StyleguideButtons = () => {
   const primaryButton = (
     <div className="flex-block">
-      <a
-        className="primary-button"
-        href="/"
-        rel="noopener noreferrer"
-        target="_blank"
+      <button
+        className="primary-link"
+        type="button"
       >
         {'Primary Button'}
-      </a>
+      </button>
       <div>
         {'classe'}
         <span className="class-name">
@@ -28,14 +26,12 @@ const StyleguideButtons = () => {
 
   const secondaryButton = (
     <div className="flex-block">
-      <a
+      <button
         className="secondary-button"
-        href="/"
-        rel="noopener noreferrer"
-        target="_blank"
+        type="button"
       >
         {'Secondary Button'}
-      </a>
+      </button>
       <div>
         {'classe'}
         <span className="class-name">
