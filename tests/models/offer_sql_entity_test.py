@@ -567,7 +567,19 @@ def test_event_offer_offerType_returns_None_when_type_does_not_match_EventType_e
 
 
 class IsFullyBookedTest:
-    def test_returns_true_when_all_available_stocks_are_booked_after_last_update(self):
+    def test_should_be_fully_booked_when_all_active_stocks_are_booked(self):
+        # given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+        stock1 = create_stock(date_modified=datetime(2019, 1, 1), quantity=None, is_soft_deleted=True)
+        stock2 = create_stock(date_modified=datetime(2019, 1, 1), quantity=0,)
+        offer.stocks = [stock1, stock2]
+
+        # then
+        assert offer.isFullyBooked is True
+
+    def test_should_be_fully_booked_when_all_available_stocks_are_booked_after_last_update(self):
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -583,7 +595,7 @@ class IsFullyBookedTest:
         # then
         assert offer.isFullyBooked is True
 
-    def test_returns_true_ignoring_cancelled_bookings(self):
+    def test_should_not_be_fully_booked_ignoring_cancelled_bookings(self):
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)

@@ -151,12 +151,12 @@ class OfferSQLEntity(PcObject,
     @property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         if self.activeStocks:
-            return all(map(lambda stock: stock.hasBookingLimitDatetimePassed, self.activeStocks))
+            return all([stock.hasBookingLimitDatetimePassed for stock in self.activeStocks])
         return False
 
     @property
     def isFullyBooked(self) -> bool:
-        has_unlimited_stock = any(map(lambda stock: stock.quantity is None, self.stocks))
+        has_unlimited_stock = any([stock.quantity is None for stock in self.activeStocks])
         if has_unlimited_stock:
             return False
 
