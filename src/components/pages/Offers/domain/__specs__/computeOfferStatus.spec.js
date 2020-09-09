@@ -1,4 +1,4 @@
-import { mapOfferStatus } from '../mapOfferStatus'
+import { computeOfferStatus } from '../computeOfferStatus'
 
 describe('map offer status', () => {
   describe('when offer is deactivated', () => {
@@ -22,7 +22,7 @@ describe('map offer status', () => {
       ]
 
       // When
-      const status = mapOfferStatus(offer, stocks)
+      const status = computeOfferStatus(offer, stocks)
 
       // Then
       expect(status).toBe('désactivée')
@@ -39,7 +39,7 @@ describe('map offer status', () => {
       offer.hasBookingLimitDatetimesPassed = true
 
       // When
-      const status = mapOfferStatus(offer, stocks)
+      const status = computeOfferStatus(offer, stocks)
 
       // Then
       expect(status).toBe('désactivée')
@@ -56,7 +56,7 @@ describe('map offer status', () => {
       offer.isFullyBooked = true
 
       // When
-      const status = mapOfferStatus(offer, stocks)
+      const status = computeOfferStatus(offer, stocks)
 
       // Then
       expect(status).toBe('désactivée')
@@ -91,7 +91,7 @@ describe('map offer status', () => {
       ]
 
       // When
-      const status = mapOfferStatus(offer, stocks)
+      const status = computeOfferStatus(offer, stocks)
 
       // Then
       expect(status).toBe('active')
@@ -112,7 +112,7 @@ describe('map offer status', () => {
 
       it('should return "expirée"', () => {
         // When
-        const status = mapOfferStatus(offer, stocks)
+        const status = computeOfferStatus(offer, stocks)
 
         // Then
         expect(status).toBe('expirée')
@@ -124,7 +124,7 @@ describe('map offer status', () => {
         offer.isFullyBooked = true
 
         // When
-        const status = mapOfferStatus(offer, stocks)
+        const status = computeOfferStatus(offer, stocks)
 
         // Then
         expect(status).toBe('expirée')
@@ -156,7 +156,7 @@ describe('map offer status', () => {
         ]
 
         // When
-        const status = mapOfferStatus(offer, stocks)
+        const status = computeOfferStatus(offer, stocks)
 
         // Then
         expect(status).toBe('épuisée')
@@ -169,7 +169,7 @@ describe('map offer status', () => {
         const stocks = []
 
         // When
-        const status = mapOfferStatus(offer, stocks)
+        const status = computeOfferStatus(offer, stocks)
 
         // Then
         expect(status).toBe('épuisée')

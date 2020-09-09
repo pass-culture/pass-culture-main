@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 
 import Icon from '../../../layout/Icon'
 import Thumb from '../../../layout/Thumb'
-import { mapOfferStatus } from '../domain/mapOfferStatus'
+import { computeOfferStatus } from '../domain/computeOfferStatus'
 import { OFFER_STATUS } from '../domain/offerStatus'
 
 class OfferItem extends PureComponent {
@@ -38,7 +38,7 @@ class OfferItem extends PureComponent {
     const { name } = offer || {}
     const stockSize = stocks ? stocks.length : null
     const offerIsEditable = offer ? offer.isEditable : null
-    const offerStatus = mapOfferStatus(offer, stocks)
+    const offerStatus = computeOfferStatus(offer, stocks)
     const offerStatusProperties = {
       [OFFER_STATUS.DEACTIVATED]: {
         className: 'status-deactivated',

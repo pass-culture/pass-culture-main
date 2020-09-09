@@ -1,6 +1,6 @@
 import { OFFER_STATUS } from './offerStatus'
 
-export const mapOfferStatus = (offer, stocks) => {
+export const computeOfferStatus = (offer, stocks) => {
   if (!offer.isActive) return OFFER_STATUS.DEACTIVATED
 
   const hasNoStockYet = stocks.length === 0
