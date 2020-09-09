@@ -202,11 +202,9 @@
   </script>
   <noscript>pass Culture a besoin de JavaScript pour fonctionner.</noscript>
   <div id="root"></div>
-  <script type="module">
+  <script type="text/javascript">
     /* Load remote Batch SDK JavaScript code */
-    import { BATCH_API_KEY, BATCH_AUTH_KEY, BATCH_SUBDOMAIN, BATCH_VAPID_PUBLIC_KEY } from '../src/utils/config'
-
-    (function(b, a, t, c, h, e, r){h='batchSDK';b[h]=b[h]||function() {
+    (function(b,a,t,c,h,e,r){h='batchSDK';b[h]=b[h]||function() {
       (b[h].q=b[h].q||[]).push(arguments)};e=a.createElement(t),r=a.getElementsByTagName(t)[0];
       e.async=1;e.src=c;r.parentNode.insertBefore(e,r);})(window,document,'script','https://via.batch.com/v2/bootstrap.min.js');
 
@@ -215,25 +213,24 @@
       native: {}
     };
 
-    var icon = 'favicon.ico'
     /* Use a specific configuration for the Firefox web browser (custom prompt) */
-    if (navigator.userAgent.indexOf("Firefox") !== -1) {
+    if (navigator.userAgent.toLowerCase().indexOf("Firefox") !== -1) {
       batchSDKUIConfig = {
         alert: {
-          icon: icon
+          icon: 'favicon.ico'
         }
       }
     }
 
     /* Finalize the Batch SDK setup */
     batchSDK('setup', {
-      apiKey: BATCH_API_KEY,
-      authKey: BATCH_AUTH_KEY,
-      defaultIcon: icon,
-      smallIcon: icon,
-      subdomain: BATCH_SUBDOMAIN,
+      apiKey: '%BATCH_API_KEY%',
+      subdomain: '%BATCH_SUBDOMAIN%',
+      authKey: '%BATCH_AUTH_KEY%',
+      vapidPublicKey: '%BATCH_VAPID_PUBLIC_KEY%',
       ui: batchSDKUIConfig,
-      vapidPublicKey: BATCH_VAPID_PUBLIC_KEY,
+      defaultIcon: 'favicon.ico', // for Chrome desktop
+      smallIcon: 'favicon.ico', // for Chrome Android
     });
   </script>
 </body>
