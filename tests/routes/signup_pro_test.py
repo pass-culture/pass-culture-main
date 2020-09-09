@@ -120,6 +120,7 @@ class Post:
             assert offerer.validationToken is not None
             assert len(offerer.managedVenues) == 1
             assert offerer.managedVenues[0].isVirtual
+            assert offerer.managedVenues[0].venueTypeId == venue_type.id
             user_offerer = UserOfferer.query \
                 .filter_by(user=user,
                            offerer=offerer) \

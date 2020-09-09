@@ -5,6 +5,7 @@ from models import Offerer, RightsType, UserOfferer
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue_type
+from utils.human_ids import humanize
 
 api_entreprise_json_mock = {"unite_legale": {
     "etablissement_siege": {},
@@ -44,6 +45,8 @@ class Post:
             virtual_venues = list(filter(lambda v: v['isVirtual'],
                                          response.json['managedVenues']))
             assert len(virtual_venues) == 1
+            assert virtual_venues[0]["venueTypeId"] == humanize(venue_type.id)
+
 
         @patch('connectors.api_entreprises.requests.get')
         @clean_database
