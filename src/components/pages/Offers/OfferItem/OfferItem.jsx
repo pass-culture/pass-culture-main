@@ -76,7 +76,7 @@ class OfferItem extends PureComponent {
             className="secondary-link"
             to={`/offres/${offer.id}/edition`}
           >
-            <Icon svg="ico-pen-r" />
+            <Icon svg="ico-pen" />
           </Link>
         )}
       </li>

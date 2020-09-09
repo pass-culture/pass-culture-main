@@ -7,13 +7,10 @@
     margin-bottom: rem(4px);
   }
 
-  .offer-thumb {
+  .offer-thumb,
+  .default-thumb {
     height: rem(84px);
     width: 100%;
-  }
-
-  .default-thumb {
-    height: 84px;
   }
 
   &.inactive {

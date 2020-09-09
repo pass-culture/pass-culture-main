@@ -89,7 +89,7 @@ class EditAndDeleteControl extends PureComponent {
             <span className="icon">
               <Icon
                 alt="Modifier"
-                svg="ico-pen-r"
+                svg="ico-pen"
               />
             </span>
           </button>
