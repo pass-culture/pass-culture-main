@@ -8,8 +8,6 @@ import Icon from '../../layout/Icon'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
 import GenericError from '../../layout/errors/GenericError'
-import Title from '../../layout/Titles/Title'
-import Subtitle from '../../layout/Titles/Subtitle'
 
 class LostPassword extends PureComponent {
   constructor(props) {
@@ -127,8 +125,12 @@ class LostPassword extends PureComponent {
               {change && (
                 <section className="hero password-reset">
                   <div className="hero-body">
-                    <Title title="Mot de passe changé !" />
-                    <Subtitle subtitle="Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe" />
+                    <h1>
+                      {'Mot de passe changé !'}
+                    </h1>
+                    <h2>
+                      {'Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe'}
+                    </h2>
                     <Link
                       className="primary-link"
                       to="/connexion"
@@ -141,8 +143,14 @@ class LostPassword extends PureComponent {
               {envoye && (
                 <section className="hero mail-sent">
                   <div className="hero-body">
-                    <Title title="Merci !" />
-                    <Subtitle subtitle="Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe." />
+                    <h1>
+                      {'Merci !'}
+                    </h1>
+                    <h2>
+                      {
+                        'Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe.'
+                      }
+                    </h2>
                     <Link
                       className="primary-link"
                       to="/accueil"
@@ -155,8 +163,12 @@ class LostPassword extends PureComponent {
               {token && (
                 <section className="hero password-reset-request-form">
                   <div className="hero-body">
-                    <Title title="Créer un nouveau mot de passe" />
-                    <Subtitle subtitle="Saisissez le nouveau mot de passe" />
+                    <h1>
+                      {'Créer un nouveau mot de passe'}
+                    </h1>
+                    <h2>
+                      {'Saisissez le nouveau mot de passe'}
+                    </h2>
 
                     {hasPasswordResetErrorMessage && (
                       <GenericError
@@ -206,8 +218,14 @@ class LostPassword extends PureComponent {
               {!token && !envoye && !change && (
                 <section className="hero password-reset-request">
                   <div className="hero-body">
-                    <Title title="Mot de passe égaré ?" />
-                    <Subtitle subtitle="Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre compte." />
+                    <h1>
+                      {'Mot de passe égaré ?'}
+                    </h1>
+                    <h2>
+                      {
+                        'Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre compte.'
+                      }
+                    </h2>
 
                     {hasPasswordResetRequestErrorMessage && (
                       <GenericError

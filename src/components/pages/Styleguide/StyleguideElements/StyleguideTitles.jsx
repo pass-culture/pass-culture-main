@@ -1,24 +1,20 @@
 import React from 'react'
-import Title from '../../../layout/Titles/Title'
-import Subtitle from '../../../layout/Titles/Subtitle'
 
 const StyleguideTitles = () => {
   const title = String.raw`
-    <Title
-      title="Ceci est un titre"
-    />
+    <h1>{"Ceci est un titre"}</h1>
   `
 
   const subtitle = String.raw`
-    <Subtitle
-      subtitle="Ceci est un sous-titre"
-    />
+    <h2>{"Ceci est un sous-titre"}</h2>
   `
 
   return (
     <div>
       <div className="flex-block">
-        <Title title="Ceci est un titre" />
+        <h1>
+          {'Ceci est un titre'}
+        </h1>
         <div className="it-description">
           <pre className="it-icon-snippet">
             <code>
@@ -30,7 +26,9 @@ const StyleguideTitles = () => {
       <br />
 
       <div className="flex-block">
-        <Subtitle subtitle="Ceci est un sous-titre" />
+        <h2>
+          {'Ceci est un sous-titre'}
+        </h2>
         <div className="it-description">
           <pre className="it-icon-snippet">
             <code>

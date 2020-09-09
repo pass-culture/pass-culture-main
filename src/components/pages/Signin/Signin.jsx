@@ -8,8 +8,6 @@ import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
 import GenericError from '../../layout/errors/GenericError'
-import Title from '../../layout/Titles/Title'
-import Subtitle from '../../layout/Titles/Subtitle'
 
 class Signin extends PureComponent {
   constructor(props) {
@@ -85,8 +83,12 @@ class Signin extends PureComponent {
             <div className="column is-offset-6 is-two-fifths sign-page-form">
               <section>
                 <div className="text-container">
-                  <Title title="Bienvenue dans la version bêta du pass Culture pro." />
-                  <Subtitle subtitle="Et merci de votre participation pour nous aider à l’améliorer !" />
+                  <h1>
+                    {'Bienvenue dans la version bêta du pass Culture pro.'}
+                  </h1>
+                  <h2>
+                    {'Et merci de votre participation pour nous aider à l’améliorer !'}
+                  </h2>
                   <span className="has-text-grey">
                     {'Tous les champs sont obligatoires'}
                   </span>
