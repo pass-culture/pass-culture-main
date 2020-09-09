@@ -95,7 +95,10 @@ class Signin extends PureComponent {
                   {hasErrorMessage && (
                     <GenericError message="Identifiant ou mot de passe incorrect." />
                   )}
-                  <form onSubmit={this.handleOnSubmit}>
+                  <form
+                    noValidate
+                    onSubmit={this.handleOnSubmit}
+                  >
                     <div className="signin-form">
                       <TextInput
                         label="Adresse e-mail"

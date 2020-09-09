@@ -176,6 +176,7 @@ class LostPassword extends PureComponent {
                     )}
                     <form
                       className="new-password-form"
+                      noValidate
                       onSubmit={this.submitResetPassword}
                     >
                       <TextInputWithIcon
@@ -224,7 +225,10 @@ class LostPassword extends PureComponent {
                       />
                     )}
 
-                    <form onSubmit={this.submitResetPasswordRequest}>
+                    <form
+                      noValidate
+                      onSubmit={this.submitResetPasswordRequest}
+                    >
                       <TextInput
                         label="Adresse e-mail"
                         name="email"
