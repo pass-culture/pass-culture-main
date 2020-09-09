@@ -47,6 +47,7 @@ function getClientEnvironment(publicUrl) {
         ALGOLIA_SEARCH_API_KEY: process.env.ALGOLIA_SEARCH_API_KEY,
         API_URL: process.env.API_URL,
         BATCH_API_KEY: process.env.BATCH_API_KEY,
+        BATCH_IS_ENABLED: process.env.BATCH_IS_ENABLED,
         BATCH_AUTH_KEY: process.env.BATCH_AUTH_KEY,
         BATCH_SUBDOMAIN: process.env.BATCH_SUBDOMAIN,
         BATCH_VAPID_PUBLIC_KEY: process.env.BATCH_VAPID_PUBLIC_KEY,
