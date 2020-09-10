@@ -1,6 +1,6 @@
 from unittest.mock import patch, call
 
-from local_providers.libraires_stocks import LibrairesStocks
+from local_providers.libraires.libraires_stocks import LibrairesStocks
 from models import OfferSQLEntity, StockSQLEntity
 from repository import repository
 from tests.conftest import clean_database
@@ -13,7 +13,7 @@ from tests.model_creators.specific_creators import create_product_with_thing_typ
 class LibrairesStocksTest:
     class NextTest:
         @clean_database
-        @patch('local_providers.libraires_stocks.get_libraires_stock_information')
+        @patch('local_providers.libraires.libraires_stocks.get_libraires_stock_information')
         def test_should_return_providable_infos_with_correct_data(self, mock_libraires_api_response, app):
             # Given
             mock_libraires_api_response.return_value = iter([
@@ -51,7 +51,7 @@ class LibrairesStocksTest:
 
     class UpdateObjectsTest:
         @clean_database
-        @patch('local_providers.libraires_stocks.get_libraires_stock_information')
+        @patch('local_providers.libraires.libraires_stocks.get_libraires_stock_information')
         def test_libraires_stock_provider_create_one_stock_and_one_offer_with_wanted_attributes(self,
                                                                                                 mock_libraires_api_response,
                                                                                                 app):
@@ -91,7 +91,7 @@ class LibrairesStocksTest:
             assert stock.bookingLimitDatetime is None
 
         @clean_database
-        @patch('local_providers.libraires_stocks.get_libraires_stock_information')
+        @patch('local_providers.libraires.libraires_stocks.get_libraires_stock_information')
         def test_libraires_stock_provider_update_one_stock_and_update_matching_offer(self, mock_libraires_api_response,
                                                                                      app):
             # Given
@@ -124,7 +124,7 @@ class LibrairesStocksTest:
             assert OfferSQLEntity.query.count() == 1
 
         @clean_database
-        @patch('local_providers.libraires_stocks.get_libraires_stock_information')
+        @patch('local_providers.libraires.libraires_stocks.get_libraires_stock_information')
         def test_libraires_stocks_create_2_stocks_and_2_offers_even_if_existing_offer_on_same_product(self,
                                                                                                       mock_libraires_api_response,
                                                                                                       app):
@@ -162,7 +162,7 @@ class LibrairesStocksTest:
             assert libraires_stocks.last_processed_isbn == '1550199555555'
 
         @clean_database
-        @patch('local_providers.libraires_stocks.get_libraires_stock_information')
+        @patch('local_providers.libraires.libraires_stocks.get_libraires_stock_information')
         def test_libraires_stock_provider_available_stock_is_sum_of_updated_available_and_bookings(self,
                                                                                                    mock_libraires_api_response,
                                                                                                    app):
@@ -214,7 +214,7 @@ class LibrairesStocksTest:
 
     class WhenSynchronizedTwiceTest:
         @clean_database
-        @patch('local_providers.libraires_stocks.get_libraires_stock_information')
+        @patch('local_providers.libraires.libraires_stocks.get_libraires_stock_information')
         def test_libraires_stock_provider_iterates_over_pagination(self, mock_libraires_api_response, app):
             # Given
             mock_libraires_api_response.side_effect = [

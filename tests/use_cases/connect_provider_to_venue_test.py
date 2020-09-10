@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 from unittest.mock import patch
 
-from local_providers import AllocineStocks, LibrairesStocks, TiteLiveStocks
+from local_providers import AllocineStocks, LibrairesStocks, TiteLiveStocks, FnacStocks
 from models import VenueProvider, AllocineVenueProviderPriceRule, AllocineVenueProvider, ApiErrors
 from repository import repository
 from tests.conftest import clean_database
@@ -201,6 +201,83 @@ class UseCaseTest:
 
                 # then
                 assert error.value.errors['provider'] == ['L’importation d’offres avec Titelive n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.']
+
+        class WhenProviderIsFnac:
+            @clean_database
+            @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_fnac')
+            def test_should_connect_venue_to_fnac_provider(self, stubbed_can_by_synchronized, app):
+                # Given
+                offerer = create_offerer()
+                venue = create_venue(offerer)
+                provider = activate_provider('FnacStocks')
+
+                repository.save(venue)
+
+                provider_type = FnacStocks
+
+                venue_provider_payload = {
+                    'providerId': humanize(provider.id),
+                    'venueId': humanize(venue.id),
+                }
+
+                stubbed_can_by_synchronized.return_value = True
+
+                # When
+                connect_provider_to_venue(provider_type, venue_provider_payload)
+
+                # Then
+                fnac_venue_provider = VenueProvider.query.one()
+                assert fnac_venue_provider.venue == venue
+
+
+            @clean_database
+            @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_fnac')
+            def test_should_not_connect_venue_to_fnac_provider_if_not_interfaced(self, stubbed_can_by_synchronized, app):
+                # Given
+                offerer = create_offerer()
+                venue = create_venue(offerer, siret='12345678912345')
+                provider = activate_provider('FnacStocks')
+
+                repository.save(venue)
+
+                provider_type = FnacStocks
+
+                venue_provider_payload = {
+                    'providerId': humanize(provider.id),
+                    'venueId': humanize(venue.id),
+                }
+
+                stubbed_can_by_synchronized.return_value = False
+
+                # when
+                with pytest.raises(ApiErrors) as error:
+                    connect_provider_to_venue(provider_type, venue_provider_payload)
+
+                # then
+                assert error.value.errors['provider'] == ['L’importation d’offres avec FNAC n’est pas disponible pour le SIRET 12345678912345']
+
+            @clean_database
+            def test_should_not_connect_venue_to_fnac_provider_if_venue_has_no_siret(self, app):
+                # Given
+                offerer = create_offerer()
+                venue = create_venue(offerer, siret=None, is_virtual=True)
+                provider = activate_provider('FnacStocks')
+
+                repository.save(venue)
+
+                provider_type = FnacStocks
+
+                venue_provider_payload = {
+                    'providerId': humanize(provider.id),
+                    'venueId': humanize(venue.id),
+                }
+
+                # when
+                with pytest.raises(ApiErrors) as error:
+                    connect_provider_to_venue(provider_type, venue_provider_payload)
+
+                # then
+                assert error.value.errors['provider'] == ['L’importation d’offres avec FNAC n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.']
 
 
         class WhenProviderIsSomethingElse:

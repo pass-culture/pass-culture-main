@@ -1,9 +1,10 @@
 from decimal import Decimal
 from typing import Dict, Optional
 
+from domain.fnac import can_be_synchronized_with_fnac
 from domain.libraires import can_be_synchronized_with_libraires
 from domain.titelive import can_be_synchronized_with_titelive
-from local_providers import AllocineStocks, LibrairesStocks, TiteLiveStocks
+from local_providers import AllocineStocks, LibrairesStocks, TiteLiveStocks, FnacStocks
 from local_providers.local_provider import LocalProvider
 from local_providers.price_rule import PriceRule
 from models import AllocineVenueProvider, VenueSQLEntity, VenueProvider, AllocineVenueProviderPriceRule, ApiErrors
@@ -20,12 +21,9 @@ def connect_provider_to_venue(provider_class: LocalProvider, venue_provider_payl
     check_existing_venue(venue)
     if provider_class == AllocineStocks:
         new_venue_provider = _connect_allocine_to_venue(venue, venue_provider_payload)
-    elif provider_class == LibrairesStocks:
-        check_venue_can_be_synchronized_with_libraires(venue)
-        new_venue_provider = _connect_titelive_or_libraires_to_venue(venue, venue_provider_payload)
-    elif provider_class == TiteLiveStocks:
-        check_venue_can_be_synchronized_with_titelive(venue)
-        new_venue_provider = _connect_titelive_or_libraires_to_venue(venue, venue_provider_payload)
+    elif provider_class == LibrairesStocks or provider_class == TiteLiveStocks or provider_class == FnacStocks:
+        _check_venue_can_be_synchronized_with_provider(venue, provider_class)
+        new_venue_provider = _connect_titelive_fnac_or_libraires_to_venue(venue, venue_provider_payload)
     else:
         errors = ApiErrors()
         errors.status_code = 400
@@ -45,7 +43,15 @@ def _connect_allocine_to_venue(venue: VenueSQLEntity, payload: Dict) -> Allocine
     return allocine_venue_provider
 
 
-def _connect_titelive_or_libraires_to_venue(venue: VenueSQLEntity, payload: Dict) -> VenueProvider:
+def _check_venue_can_be_synchronized_with_provider(venue: VenueSQLEntity, provider_class):
+    if provider_class == LibrairesStocks:
+        check_venue_can_be_synchronized_with_libraires(venue)
+    elif provider_class == TiteLiveStocks:
+        check_venue_can_be_synchronized_with_titelive(venue)
+    elif provider_class == FnacStocks:
+        check_venue_can_be_synchronized_with_fnac(venue)
+
+def _connect_titelive_fnac_or_libraires_to_venue(venue: VenueSQLEntity, payload: Dict) -> VenueProvider:
     venue_provider = VenueProvider()
     venue_provider.venue = venue
     venue_provider.providerId = dehumanize(payload['providerId'])
@@ -87,6 +93,13 @@ def check_venue_can_be_synchronized_with_titelive(venue: VenueSQLEntity):
         errors = ApiErrors()
         errors.status_code = 422
         errors.add_error('provider', _get_synchronization_error_message('Titelive', venue.siret))
+        raise errors
+
+def check_venue_can_be_synchronized_with_fnac(venue: VenueSQLEntity):
+    if not venue.siret or not can_be_synchronized_with_fnac(venue.siret):
+        errors = ApiErrors()
+        errors.status_code = 422
+        errors.add_error('provider', _get_synchronization_error_message('FNAC', venue.siret))
         raise errors
 
 def _get_synchronization_error_message(provider_name: str, siret: Optional[str]) -> str:

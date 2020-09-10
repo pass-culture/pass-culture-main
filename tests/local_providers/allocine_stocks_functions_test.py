@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from local_providers.allocine_stocks import _parse_movie_duration, retrieve_movie_information, \
+from local_providers.allocine.allocine_stocks import _parse_movie_duration, retrieve_movie_information, \
     retrieve_showtime_information, _format_poster_url, \
     _format_date_from_local_timezone_to_utc, _filter_only_digital_and_non_experience_showtimes, \
     _get_showtimes_uuid_by_idAtProvider, _find_showtime_by_showtime_uuid

@@ -6,7 +6,7 @@ from unittest.mock import patch
 from zipfile import ZipFile
 
 from local_providers import TiteLiveThingThumbs
-from local_providers.titelive_thing_thumbs import extract_thumb_index
+from local_providers.titelive.titelive_thing_thumbs import extract_thumb_index
 from models import Product
 from repository import repository
 from tests.conftest import clean_database
@@ -37,8 +37,8 @@ class TiteliveThingThumbsTest:
             assert thumb_index == 4
 
     @clean_database
-    @patch('local_providers.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_thing_thumbs.get_zip_file_from_ftp')
+    @patch('local_providers.titelive.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp')
+    @patch('local_providers.titelive.titelive_thing_thumbs.get_zip_file_from_ftp')
     def test_compute_first_thumb_dominant_color_even_if_not_first_file(self,
                                                                        get_thumbs_zip_file_from_ftp,
                                                                        get_ordered_thumbs_zip_files,
@@ -67,8 +67,8 @@ class TiteliveThingThumbsTest:
                       )
 
     @clean_database
-    @patch('local_providers.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_thing_thumbs.get_zip_file_from_ftp')
+    @patch('local_providers.titelive.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp')
+    @patch('local_providers.titelive.titelive_thing_thumbs.get_zip_file_from_ftp')
     def test_updates_thumb_count_for_product_when_new_thumbs_added(self,
                                                                    get_thumbs_zip_file_from_ftp,
                                                                    get_ordered_thumbs_zip_files,
