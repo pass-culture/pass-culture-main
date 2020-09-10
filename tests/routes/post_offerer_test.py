@@ -11,6 +11,7 @@ api_entreprise_json_mock = {"unite_legale": {
     "etablissement_siege": {},
     "etablissements": []
 }}
+DEFAULT_DIGITAL_VENUE_LABEL = "Offre numérique"
 
 class Post:
     class Returns201:
@@ -23,8 +24,8 @@ class Post:
                                                          json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
             user = create_user()
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(user, venue_type)
+            digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
+            repository.save(user, digital_venue_type)
             body = {
                 'name': 'Test Offerer',
                 'siren': '418166096',
@@ -45,7 +46,7 @@ class Post:
             virtual_venues = list(filter(lambda v: v['isVirtual'],
                                          response.json['managedVenues']))
             assert len(virtual_venues) == 1
-            assert virtual_venues[0]["venueTypeId"] == humanize(venue_type.id)
+            assert virtual_venues[0]["venueTypeId"] == humanize(digital_venue_type.id)
 
 
         @patch('connectors.api_entreprises.requests.get')
@@ -57,8 +58,8 @@ class Post:
                                                          json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
             user = create_user()
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(user, venue_type)
+            digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
+            repository.save(user, digital_venue_type)
             body = {
                 'name': 'Test Offerer',
                 'siren': '418166096',
@@ -84,9 +85,9 @@ class Post:
                                                          text='',
                                                          json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
-            venue_type = create_venue_type(label = "Offre numérique")
             user = create_user(can_book_free_offers=False, is_admin=True)
-            repository.save(user, venue_type)
+            digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
+            repository.save(user, digital_venue_type)
             body = {
                 'name': 'Test Offerer',
                 'siren': '418166096',
@@ -111,9 +112,9 @@ class Post:
                                                          text='',
                                                          json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
-            venue_type = create_venue_type(label = "Offre numérique")
             user = create_user(can_book_free_offers=False, is_admin=False)
-            repository.save(user, venue_type)
+            digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
+            repository.save(user, digital_venue_type)
             body = {
                 'name': 'Test Offerer',
                 'siren': '418166096',
@@ -145,12 +146,12 @@ class Post:
                                                          text='',
                                                          json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
-            venue_type = create_venue_type(label = "Offre numérique")
             user = create_user(can_book_free_offers=False, is_admin=False)
             user_2 = create_user(email="other_offerer@mail.com", is_admin=False)
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_2, offerer, validation_token=None)
-            repository.save(user, user_2, offerer, user_offerer, venue_type)
+            digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
+            repository.save(user, user_2, offerer, user_offerer, digital_venue_type)
             body = {
                 'name': 'Test Offerer',
                 'siren': '123456789',
@@ -186,9 +187,9 @@ class Post:
                                                          text='',
                                                          json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
-            venue_type = create_venue_type(label= "Offre numérique")
             user = create_user(can_book_free_offers=False, is_admin=False)
-            repository.save(user, venue_type)
+            digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
+            repository.save(user, digital_venue_type)
             body = {
                 'name': 'Test Offerer',
                 'siren': '418166096',
@@ -371,10 +372,9 @@ class Post:
                                                      text='',
                                                      json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
-        venue_type = create_venue_type(label="Offre numérique")
         user = create_user(can_book_free_offers=False, is_admin=False)
-
-        repository.save(user, venue_type)
+        digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
+        repository.save(user, digital_venue_type)
         body = {
             'name': 'Test Offerer',
             'siren': '123456789',

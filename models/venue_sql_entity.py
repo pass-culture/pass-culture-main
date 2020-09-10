@@ -163,11 +163,11 @@ def create_digital_venue(offerer):
     digital_venue = VenueSQLEntity()
     digital_venue.isVirtual = True
     digital_venue.name = "Offre numérique"
-    digital_venue.venueTypeId = _get_offre_numerique_venue_type_id()
+    digital_venue.venueTypeId = _get_digital_venue_type_id()
     digital_venue.managingOfferer = offerer
     return digital_venue
 
-def _get_offre_numerique_venue_type_id() -> int:
+def _get_digital_venue_type_id() -> int:
     return VenueType.query.filter_by(label="Offre numérique").first().id
 
 ts_indexes = [('idx_venue_fts_name', VenueSQLEntity.name),
