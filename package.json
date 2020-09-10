@@ -113,6 +113,7 @@
     "jest-environment-jsdom-global": "^1.2.0",
     "jest-fetch-mock": "^2.1.2",
     "license-reporter": "^1.2.2",
+    "lint-staged": "^10.3.0",
     "prettier-eslint-cli": "^5.0.0",
     "stylelint": "^13.6.1",
     "stylelint-a11y": "^1.2.3",
@@ -123,7 +124,6 @@
   "scripts": {
     "build": "node scripts/build.js && ./scripts/build_redirects.sh",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
-    "format:js": "prettier-eslint --write '{src,testcafe}/**/*.{js,jsx}'",
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
     "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx}'",
     "lint:js:fix": "yarn lint:js --fix",
@@ -136,7 +136,13 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "./scripts/precommit.sh"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.{js,jsx,md,css,scss,html}": [
+      "prettier --write",
+      "eslint --max-warnings=0"
+    ]
   }
 }
