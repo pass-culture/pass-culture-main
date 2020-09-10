@@ -5,7 +5,7 @@
   display: flex;
   height: rem(40px);
   justify-content: space-between;
-  margin-top: rem(9px);
+  margin-top: $spacing-xs;
   overflow: hidden;
   width: 100%;
 
@@ -27,7 +27,13 @@
 
   &.disabled {
     background-color: $grey-light;
+    box-shadow: 0 0 0 1px $grey-light inset;
     border: none;
+
+    .it-icon {
+      background-color: $grey-light;
+      box-shadow: 0 0 0 1px $grey-light inset;
+    }
 
     img {
       filter: opacity(0.5);
