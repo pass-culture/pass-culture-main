@@ -31,7 +31,7 @@ const SirenField = props => {
     >
       {({ input, meta }) => {
         return (
-          <div>
+          <div className="siren-field">
             <TextInput
               {...input}
               error={meta.modified && meta.error ? meta.error : null}
@@ -41,14 +41,10 @@ const SirenField = props => {
               placeholder="123 456 789"
             />
 
-            {props.value && (
+            {props.value &&
               <span className="field-siren-value">
-                {props.value &&
-                <span className="field-siren-value">
-                  {props.value}
-                </span>}
-              </span>
-            )}
+                {props.value}
+              </span>}
           </div>
         )
       }}
