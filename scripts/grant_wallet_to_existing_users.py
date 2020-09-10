@@ -10,6 +10,5 @@ def grant_wallet_to_existing_users(user_ids: List[int]):
     maximum_wallet_balance = 500
     for user in users:
         user.canBookFreeOffers = True
-        if not user.wallet_balance:
-            deposit = create_deposit(user, amount=maximum_wallet_balance)
-            repository.save(user, deposit)
+        deposit = create_deposit(user, amount=maximum_wallet_balance)
+        repository.save(user, deposit)
