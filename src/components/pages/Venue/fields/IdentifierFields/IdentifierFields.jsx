@@ -79,8 +79,8 @@ class IdentifierFields extends PureComponent {
     return ''
   }
 
-  venueTypeSelectValidate = selectValue => {
-    if (selectValue === undefined || selectValue === '') {
+  venueTypeValidate = venueType => {
+    if (venueType === undefined || venueType === '') {
       return 'Ce champ est obligatoire'
     }
     return ''
@@ -184,7 +184,7 @@ class IdentifierFields extends PureComponent {
                       id="venue-type"
                       name="venueTypeId"
                       required
-                      validate={this.venueTypeSelectValidate}
+                      validate={this.venueTypeValidate}
                     >
                       <option value="">
                         {'Choisissez un type de lieu dans la liste'}
