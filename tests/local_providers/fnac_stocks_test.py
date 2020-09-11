@@ -26,7 +26,7 @@ class FnacStocksTest:
             offerer = create_offerer()
             venue = create_venue(offerer, siret='12345678912345')
             fnac_provider = activate_provider('FnacStocks')
-            venue_provider = create_venue_provider(venue, fnac_provider)
+            venue_provider = create_venue_provider(venue, fnac_provider, venue_id_at_offer_provider=venue.siret)
             product = create_product_with_thing_type(id_at_providers='9780199536986')
 
             repository.save(venue_provider, product)

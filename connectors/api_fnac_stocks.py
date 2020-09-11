@@ -3,8 +3,8 @@ import os
 import requests
 from typing import Dict
 
-FNAC_API_RESULTS_LIMIT = 1000 # todo : quid du cas FNAC ?
-FNAC_API_URL = 'https://passculture-fr.ws.fnac.com/api/v1/pass-culture/stocks/'
+FNAC_API_RESULTS_LIMIT = 1000
+FNAC_API_URL = 'https://passculture-fr.ws.fnac.com/api/v1/pass-culture/stocks'
 
 
 class ApiFnacException(Exception):
@@ -42,7 +42,7 @@ def _build_fnac_url(siret: str) -> str:
 def _build_fnac_params(last_processed_isbn: str, modified_since: str, limit: int) -> Dict:
     params = {'limit': str(limit)}
     if last_processed_isbn:
-        params['after'] = last_processed_isbn  # todo: même fonctionnement pour la FNAC ?
+        params['after'] = last_processed_isbn
     if modified_since:
         params['modifiedSince'] = modified_since
 

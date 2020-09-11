@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import List
 
 from sqlalchemy import Sequence
+from typing import List
 
 from domain.fnac import get_fnac_stock_information, read_last_modified_date
 from local_providers.local_provider import LocalProvider
@@ -31,8 +31,8 @@ class FnacStocks(LocalProvider):
             self.fnac_stock = next(self.fnac_data)
         except StopIteration:
             self.fnac_data = get_fnac_stock_information(self.venue_provider.venueIdAtOfferProvider,
-                                               self.last_processed_isbn,
-                                               self.modified_since)
+                                                        self.last_processed_isbn,
+                                                        self.modified_since)
             self.fnac_stock = next(self.fnac_data)
 
         self.last_processed_isbn = str(self.fnac_stock['ref'])
@@ -40,9 +40,11 @@ class FnacStocks(LocalProvider):
         if not self.product:
             return []
 
-        providable_info_offer = self.create_providable_info(OfferSQLEntity, f"{self.fnac_stock['ref']}@{self.venue.siret}",
+        providable_info_offer = self.create_providable_info(OfferSQLEntity,
+                                                            f"{self.fnac_stock['ref']}@{self.venue.siret}",
                                                             datetime.utcnow())
-        providable_info_stock = self.create_providable_info(StockSQLEntity, f"{self.fnac_stock['ref']}@{self.venue.siret}",
+        providable_info_stock = self.create_providable_info(StockSQLEntity,
+                                                            f"{self.fnac_stock['ref']}@{self.venue.siret}",
                                                             datetime.utcnow())
         return [providable_info_offer, providable_info_stock]
 
