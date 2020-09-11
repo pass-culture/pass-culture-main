@@ -20,16 +20,16 @@ Voici la liste des informations disponibles dans ces fichiers :
 | 3           | titre_court        | oui           | Variable/max 250	Obligatoire	inutile pour exploitation sur un site marchand |
 | 4           | code_csr        | oui           | Il s'agit des codes RAYON (voir table de correspondance) |
 | 5           | code_dispo        | oui           | cf. partie Code de disponibilité plus bas dans le document |
-| 6           | collection        | -           | Variable/max 160	Oui si collection	En minuscules accentuées | 
-| 7           | num_in_collection        | non           | Variable/max 5	facultatif ( vide )	Numéro du titre au sein de la collection (pour le poche et les revues) | 
-| 9           | prix        | oui           | décimal / 2 chiffres après la virgule	Obligatoire	Prix public éditeur (TTC) | 
-| 10          | editeur        | oui           | Variable /max 40	Obligatoire	En capitales sans accent | 
-| 11          | distributeur        | oui           | En capitales sans accent | 
-| 12          | date_parution        | oui           | jj/mm/aaaa	Obligatoire	01/01/2070 si inconnue | 
-| 13          | code_support        | oui           | Variable/max 2 caractères  voir table de correspondance SUPPORT (par exemple, poche). Le support TL correspond au format par défaut (c'est-à-dire sans indication précise de l'éditeur) | 
-| 14          | code_tva        | oui           | entier sur un chiffre	Obligatoire	voir table de correspondance TVA | 
-| 15          | n_pages        | non           | entier ( par défaut 0 ) | 
-| 15          | n_pages        | non           | entier ( par défaut 0 ) | 
+| 6           | collection        | -           | Variable/max 160	Oui si collection	En minuscules accentuées |
+| 7           | num_in_collection        | non           | Variable/max 5	facultatif ( vide )	Numéro du titre au sein de la collection (pour le poche et les revues) |
+| 9           | prix        | oui           | décimal / 2 chiffres après la virgule	Obligatoire	Prix public éditeur (TTC) |
+| 10          | editeur        | oui           | Variable /max 40	Obligatoire	En capitales sans accent |
+| 11          | distributeur        | oui           | En capitales sans accent |
+| 12          | date_parution        | oui           | jj/mm/aaaa	Obligatoire	01/01/2070 si inconnue |
+| 13          | code_support        | oui           | Variable/max 2 caractères  voir table de correspondance SUPPORT (par exemple, poche). Le support TL correspond au format par défaut (c'est-à-dire sans indication précise de l'éditeur) |
+| 14          | code_tva        | oui           | entier sur un chiffre	Obligatoire	voir table de correspondance TVA |
+| 15          | n_pages        | non           | entier ( par défaut 0 ) |
+| 15          | n_pages        | non           | entier ( par défaut 0 ) |
 | 16          | longueur       | non |  décimal / 1 chiffre après la virgule	Facultatif ( par défaut 0 )	en centimètres |
 | 17          | largeur        | non |  décimal / 1 chiffre après la virgule	Facultatif ( par défaut 0 )	en centimètres |
 | 18          | epaisseur      | non |  décimal / 1 chiffre après la virgule	Facultatif ( par défaut 0 )	en centimètres |
@@ -54,8 +54,8 @@ Voici la liste des informations disponibles dans ces fichiers :
 | 42          | id_auteur      | non |  Entier	Facultatif ( par défaut vide )	permet de faire le lien entre l'auteur et sa biographie |
 | 43          | indice_dewey       | non |  Facultatif ( par défaut vide ) |
 | 44          | code_regroupement      | oui |  Entier	Obligatoire	permet de faire le lien entre les mêmes œuvres ; 0 si non regroupé |
-    
-    
+
+
 ### Code de disponibilité
 + 2: Pas encore paru donc à paraître
 + 3: Réimpression en cours en revanche nous ne disposons pas d’info sur la date de réimpression

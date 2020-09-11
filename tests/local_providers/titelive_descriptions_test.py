@@ -11,7 +11,7 @@ from tests.conftest import clean_database
 
 class TiteLiveThingDescriptionsTest:
     class InitTest:
-        @patch('local_providers.titelive.titelive_thing_descriptions.get_files_to_process_from_titelive_ftp')
+        @patch('local_providers.titelive_thing_descriptions.titelive_thing_descriptions.get_files_to_process_from_titelive_ftp')
         @clean_database
         def test_should_call_titelive_ftp_to_get_files_list(self, mock_get_files_to_process_from_titelive, app):
             # Given
@@ -28,9 +28,9 @@ class TiteLiveThingDescriptionsTest:
             titelive_description_provider.zips = ['Resume191012.zip', 'Resume201012.zip']
 
     class NextTest:
-        @patch('local_providers.titelive.titelive_thing_descriptions.get_files_to_process_from_titelive_ftp')
-        @patch('local_providers.titelive.titelive_thing_descriptions.get_zip_file_from_ftp')
-        @patch('local_providers.titelive.titelive_thing_descriptions.get_date_from_filename')
+        @patch('local_providers.titelive_thing_descriptions.titelive_thing_descriptions.get_files_to_process_from_titelive_ftp')
+        @patch('local_providers.titelive_thing_descriptions.titelive_thing_descriptions.get_zip_file_from_ftp')
+        @patch('local_providers.titelive_thing_descriptions.titelive_thing_descriptions.get_date_from_filename')
         @clean_database
         def test_should_iterate_over_2_zip_files(self, mock_get_date_from_filename, mock_get_zip_file_from_ftp,
                                                  mock_get_files_to_process_from_titelive):

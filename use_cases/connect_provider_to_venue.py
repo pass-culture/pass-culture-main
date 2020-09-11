@@ -48,24 +48,13 @@ def _connect_allocine_to_venue(venue: VenueSQLEntity, payload: Dict) -> Allocine
     return allocine_venue_provider
 
 
-def _check_venue_can_be_synchronized_with_provider(venue: VenueSQLEntity, provider_class: LocalProvider):
-    errors = ApiErrors()
-    if not venue.siret:
-        errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
-        errors.add_error('provider', _get_synchronization_error_message(provider_class.name, venue.siret))
-    elif provider_class == LibrairesStocks and not can_be_synchronized_with_libraires(venue.siret):
-        errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
-        errors.add_error('provider', _get_synchronization_error_message('Libraires', venue.siret))
-    elif provider_class == TiteLiveStocks and not check_venue_can_be_synchronized_with_titelive(venue):
-        errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
-        errors.add_error('provider', _get_synchronization_error_message('Titelive', venue.siret))
-    elif provider_class == FnacStocks and not check_venue_can_be_synchronized_with_fnac(venue):
-        errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
-        errors.add_error('provider', _get_synchronization_error_message('Fnac', venue.siret))
-
-    print(errors.errors)
-    if len(errors.errors) > 1:
-        raise errors
+def _check_venue_can_be_synchronized_with_provider(venue: VenueSQLEntity, provider_class: LocalProvider) -> None:
+    if provider_class == LibrairesStocks:
+        check_venue_can_be_synchronized_with_libraires(venue)
+    elif provider_class == TiteLiveStocks:
+        check_venue_can_be_synchronized_with_titelive(venue)
+    elif provider_class == FnacStocks:
+        check_venue_can_be_synchronized_with_fnac(venue)
 
 
 def _connect_standardized_providers_to_venue(venue: VenueSQLEntity, payload: Dict) -> VenueProvider:
@@ -100,7 +89,7 @@ def _create_allocine_venue_provider(allocine_theater_id: str, payload: Dict,
     return allocine_venue_provider
 
 
-def check_venue_can_be_synchronized_with_libraires(venue: VenueSQLEntity):
+def check_venue_can_be_synchronized_with_libraires(venue: VenueSQLEntity) -> None:
     if not venue.siret or not can_be_synchronized_with_libraires(venue.siret):
         errors = ApiErrors()
         errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
@@ -108,7 +97,7 @@ def check_venue_can_be_synchronized_with_libraires(venue: VenueSQLEntity):
         raise errors
 
 
-def check_venue_can_be_synchronized_with_titelive(venue: VenueSQLEntity):
+def check_venue_can_be_synchronized_with_titelive(venue: VenueSQLEntity) -> None:
     if not venue.siret or not can_be_synchronized_with_titelive(venue.siret):
         errors = ApiErrors()
         errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
@@ -116,7 +105,7 @@ def check_venue_can_be_synchronized_with_titelive(venue: VenueSQLEntity):
         raise errors
 
 
-def check_venue_can_be_synchronized_with_fnac(venue: VenueSQLEntity):
+def check_venue_can_be_synchronized_with_fnac(venue: VenueSQLEntity) -> None:
     if not venue.siret or not can_be_synchronized_with_fnac(venue.siret):
         errors = ApiErrors()
         errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
