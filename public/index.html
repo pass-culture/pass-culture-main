@@ -233,7 +233,8 @@
         ui: batchSDKUIConfig,
         defaultIcon: 'favicon.ico', // for Chrome desktop
         smallIcon: 'favicon.ico', // for Chrome Android
-        useExistingServiceWorker: true,
+        sameOrigin: '%BATCH_API_KEY%' === 'true',
+        useExistingWorker: true
       });
     }
   </script>
