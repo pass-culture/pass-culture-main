@@ -35,16 +35,16 @@ class FnacStocks(LocalProvider):
                                                         self.modified_since)
             self.fnac_stock = next(self.fnac_data)
 
-        self.last_processed_isbn = str(self.fnac_stock['ref'])
-        self.product = product_queries.find_active_book_product_by_isbn(self.fnac_stock['ref'])
+        self.last_processed_isbn = str(self.fnac_stock['Ref'])
+        self.product = product_queries.find_active_book_product_by_isbn(self.fnac_stock['Ref'])
         if not self.product:
             return []
 
         providable_info_offer = self.create_providable_info(OfferSQLEntity,
-                                                            f"{self.fnac_stock['ref']}@{self.venue.siret}",
+                                                            f"{self.fnac_stock['Ref']}@{self.venue.siret}",
                                                             datetime.utcnow())
         providable_info_stock = self.create_providable_info(StockSQLEntity,
-                                                            f"{self.fnac_stock['ref']}@{self.venue.siret}",
+                                                            f"{self.fnac_stock['Ref']}@{self.venue.siret}",
                                                             datetime.utcnow())
         return [providable_info_offer, providable_info_stock]
 
@@ -72,10 +72,10 @@ class FnacStocks(LocalProvider):
 
     def fill_stock_attributes(self, stock: StockSQLEntity):
         bookings_quantity = count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
-        stock.quantity = self.fnac_stock['available'] + bookings_quantity
+        stock.quantity = self.fnac_stock['Available'] + bookings_quantity
         stock.bookingLimitDatetime = None
         stock.offerId = self.offer_id
-        stock.price = self.fnac_stock['price']
+        stock.price = self.fnac_stock['Price']
 
     def get_next_offer_id_from_sequence(self):
         sequence = Sequence('offer_id_seq')

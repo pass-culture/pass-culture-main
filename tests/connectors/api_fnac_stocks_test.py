@@ -57,7 +57,6 @@ class GetStocksFromFNACApiTest:
                 'after': last_processed_isbn
             })
 
-
     @patch.dict('os.environ', {"PROVIDER_FNAC_BASICAUTH_TOKEN": '6666'})
     @patch('connectors.api_fnac_stocks.requests.get')
     def test_should_call_fnac_api_with_given_siret_and_last_modification_date(self, mock_requests_get):
@@ -103,6 +102,7 @@ class GetStocksFromFNACApiTest:
 
 
 class IsSiretRegisteredTest:
+    @patch.dict('os.environ', {"PROVIDER_FNAC_BASICAUTH_TOKEN": '6666'})
     @patch('connectors.api_fnac_stocks.requests.get')
     def test_should_call_fnac_api_with_given_siret(self, mock_requests_get):
         # Given
@@ -114,7 +114,8 @@ class IsSiretRegisteredTest:
 
         # Then
         mock_requests_get.assert_called_once_with(
-            'https://passculture-fr.ws.fnac.com/api/v1/pass-culture/stocks/12345678912345'
+            'https://passculture-fr.ws.fnac.com/api/v1/pass-culture/stocks/12345678912345',
+            headers={'Authorization': f'Basic 6666'},
         )
 
     @patch('connectors.api_fnac_stocks.requests.get')
@@ -127,7 +128,7 @@ class IsSiretRegisteredTest:
         output = is_siret_registered(siret)
 
         # Then
-        assert output == True
+        assert output is True
 
     @patch('connectors.api_fnac_stocks.requests.get')
     def test_should_returns_false_when_fnac_api_request_fails(self, mock_requests_get):
@@ -139,4 +140,4 @@ class IsSiretRegisteredTest:
         output = is_siret_registered(siret)
 
         # Then
-        assert output == False
+        assert output is False

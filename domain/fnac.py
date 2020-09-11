@@ -10,7 +10,7 @@ FNAC_STOCK_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 def get_fnac_stock_information(siret: str, last_processed_isbn: str = '', modified_since: str = '',
                                     get_fnac_stocks: Callable = get_stocks_from_fnac_api) -> iter:
     api_response = get_fnac_stocks(siret, last_processed_isbn, modified_since)
-    return iter(api_response['stocks'])
+    return iter(api_response['Stocks'])
 
 
 def can_be_synchronized_with_fnac(siret: str) -> bool:

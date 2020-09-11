@@ -1,7 +1,7 @@
 import os
+from typing import Dict
 
 import requests
-from typing import Dict
 
 FNAC_API_RESULTS_LIMIT = 1000
 FNAC_API_URL = 'https://passculture-fr.ws.fnac.com/api/v1/pass-culture/stocks'
@@ -30,7 +30,8 @@ def get_stocks_from_fnac_api(siret: str, last_processed_isbn: str = '', modified
 
 def is_siret_registered(siret: str) -> bool:
     api_url = _build_fnac_url(siret)
-    fnac_response = requests.get(api_url)
+    fnac_api_basicauth_token = os.environ.get('PROVIDER_FNAC_BASICAUTH_TOKEN')
+    fnac_response = requests.get(api_url, headers={'Authorization': f'Basic {fnac_api_basicauth_token}'})
 
     return fnac_response.status_code == 200
 
