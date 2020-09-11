@@ -35,7 +35,7 @@ class OfferItem extends PureComponent {
     isActive ? trackDeactivateOffer(id) : trackActivateOffer(id)
   }
 
-  buildProductNavLinkLabel = (offer, stockSize) => {
+  buildStocksDetail = (offer, stockSize) => {
     if (offer.isThing) {
       return `${stockSize} prix`
     }
@@ -76,7 +76,7 @@ class OfferItem extends PureComponent {
             title="Afficher le détail des stocks"
             to={`/offres/${offer.id}?gestion`}
           >
-            {this.buildProductNavLinkLabel(offer, stockSize)}
+            {this.buildStocksDetail(offer, stockSize)}
           </Link>
         </div>
         <span>

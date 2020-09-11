@@ -4,7 +4,7 @@ const isTiteLiveOffer = (offer = null) => {
   }
 
   const { lastProvider } = offer
-  if (lastProvider === null) {
+  if (!lastProvider) {
     return false
   }
 
