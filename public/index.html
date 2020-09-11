@@ -213,14 +213,15 @@
         (b[h].q=b[h].q||[]).push(arguments)};e=a.createElement(t),r=a.getElementsByTagName(t)[0];
         e.async=1;e.src=c;r.parentNode.insertBefore(e,r);})(window,document,'script','https://via.batch.com/v2/bootstrap.min.js');
 
-      /* Initiate Batch SDK opt-in UI configuration (native prompt) */
       var batchSDKUIConfig = {
-        banner: {
-          btnSub: 'Activer les notifications',
-          btnUnsub: 'Désactiver les notifications',
-          btnBackgroundColor: '#eb0055',
+        alert: {
+          attach: 'top center',
+          btnWidth: '200',
+          positiveSubBtnLabel: 'Activer les notifications',
+          negativeBtnLabel: 'Plus tard',
+          positiveBtnStyle: {backgroundColor:'#eb0055', hoverBackgroundColor: '#c10046'},
           icon: 'favicon.ico',
-          text: 'Ne ratez aucune nouvelle!'
+          text: 'Découvre les nouvelles offres en exclusivité sur ton pass en activant les notifications !'
         }
       };
 
