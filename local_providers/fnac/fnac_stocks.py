@@ -1,12 +1,12 @@
 from datetime import datetime
+from typing import List
 
 from sqlalchemy import Sequence
-from typing import List
 
 from domain.fnac import get_fnac_stock_information, read_last_modified_date
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
-from models import VenueProvider, StockSQLEntity, OfferSQLEntity
+from models import OfferSQLEntity, StockSQLEntity, VenueProvider
 from models.db import Model, db
 from repository import product_queries
 from repository.booking_queries import count_not_cancelled_bookings_quantity_by_stock_id

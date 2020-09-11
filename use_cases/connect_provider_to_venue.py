@@ -4,10 +4,10 @@ from typing import Dict, Optional
 from domain.fnac import can_be_synchronized_with_fnac
 from domain.libraires import can_be_synchronized_with_libraires
 from domain.titelive import can_be_synchronized_with_titelive
-from local_providers import AllocineStocks, LibrairesStocks, TiteLiveStocks, FnacStocks
+from local_providers import AllocineStocks, FnacStocks, LibrairesStocks, TiteLiveStocks
 from local_providers.local_provider import LocalProvider
 from local_providers.price_rule import PriceRule
-from models import AllocineVenueProvider, VenueSQLEntity, VenueProvider, AllocineVenueProviderPriceRule, ApiErrors
+from models import AllocineVenueProvider, AllocineVenueProviderPriceRule, ApiErrors, VenueProvider, VenueSQLEntity
 from repository import repository
 from repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
 from repository.venue_queries import find_by_id

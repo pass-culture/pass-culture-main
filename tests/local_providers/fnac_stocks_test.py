@@ -17,9 +17,9 @@ class FnacStocksTest:
             # Given
             mock_fnac_api_response.return_value = iter([
                 {
-                    "ref": "9780199536986",
-                    "available": 1,
-                    "price": 6.36
+                    "Ref": "9780199536986",
+                    "Available": 1,
+                    "Price": 6.36
                 }
             ])
 
