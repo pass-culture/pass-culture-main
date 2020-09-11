@@ -1,5 +1,5 @@
-from domain.pro_offers.paginated_offers import PaginatedOffers
-from infrastructure.repository.pro_offers.paginated_offer_sql_repository import PaginatedOffersSQLRepository
+from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue
@@ -28,10 +28,10 @@ class PaginatedOfferSQLRepositoryTest:
         )
 
         # Then
-        assert isinstance(paginated_offers, PaginatedOffers)
+        assert isinstance(paginated_offers, PaginatedOffersRecap)
         assert paginated_offers.total == 2
         assert len(paginated_offers.offers) == 1
-        assert paginated_offers.offers[0].id == offer1.id
+        assert paginated_offers.offers[0].identifier == offer1.id
 
     @clean_database
     def test_returns_offers_sorted_by_id_desc(self, app):
@@ -53,7 +53,7 @@ class PaginatedOfferSQLRepositoryTest:
         )
 
         # Then
-        assert paginated_offers.offers[0].id > paginated_offers.offers[1].id
+        assert paginated_offers.offers[0].identifier > paginated_offers.offers[1].identifier
 
     @clean_database
     def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_venue(self, app):
@@ -96,7 +96,7 @@ class PaginatedOfferSQLRepositoryTest:
         )
 
         # then
-        offers_id = [offer.id for offer in paginated_offers.offers]
+        offers_id = [offer.identifier for offer in paginated_offers.offers]
         assert ok_offer1.id in offers_id
         assert ok_offer2.id in offers_id
         assert ko_offer2.id not in offers_id

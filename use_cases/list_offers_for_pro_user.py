@@ -1,7 +1,7 @@
 from typing import Optional
 
-from domain.pro_offers.paginated_offers import PaginatedOffers
-from domain.pro_offers.paginated_offers_repository import PaginatedOffersRepository
+from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from domain.pro_offers.paginated_offers_recap_repository import PaginatedOffersRepository
 
 
 class OffersRequestParameters(object):
@@ -26,7 +26,7 @@ class ListOffersForProUser:
     def __init__(self, paginated_offer_repository: PaginatedOffersRepository):
         self.paginated_offer_repository = paginated_offer_repository
 
-    def execute(self, offers_request_parameters: OffersRequestParameters) -> PaginatedOffers:
+    def execute(self, offers_request_parameters: OffersRequestParameters) -> PaginatedOffersRecap:
         return self.paginated_offer_repository.get_paginated_offers_for_offerer_venue_and_keywords(
             user_id=offers_request_parameters.user_id,
             user_is_admin=offers_request_parameters.user_is_admin,

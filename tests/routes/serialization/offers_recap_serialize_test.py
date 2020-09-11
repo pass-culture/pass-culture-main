@@ -1,31 +1,40 @@
-import json
-
-from domain.pro_offers.paginated_offers import PaginatedOffers
+from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap, Venue, Stock
 from routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
-from tests.model_creators.generic_creators import create_venue, create_offerer
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
 from utils.human_ids import humanize
 
 
 def test_should_return_offers_dict_with_relevant_informations():
     # given
-    offerId = 1
-    stockId = 2
-    venueId = 3
-    venue = create_venue(offerer=create_offerer(), idx=venueId)
-    offer = create_offer_with_thing_product(venue, idx=offerId)
-    stock = create_stock_from_offer(offer, idx=stockId)
-    stock.offerId = offer.id
-    paginated_offers = PaginatedOffers([offer], 1)
+    offer_id = 1
+    stock_id = 2
+    venue_id = 3
+    venue = Venue(identifier=venue_id, is_virtual=False, name="La petite librairie", public_name="Petite librairie")
+    stock = Stock(identifier=stock_id, is_event_expired=False, remaining_quantity=10, offer_id=offer_id)
+    offer = OfferRecap(
+        identifier=offer_id,
+        availability_message="Encore 10 stocks restants",
+        has_booking_limit_datetimes_passed=False,
+        is_active=True,
+        is_editable=True,
+        is_fully_booked=False,
+        is_event=False,
+        is_thing=True,
+        name="Test Book",
+        stocks=[stock],
+        thumb_url="/thumb/url",
+        offer_type="ThingType.AUDIOVISUEL",
+        venue=venue
+    )
+    paginated_offers_recap = PaginatedOffersRecap([offer], 1)
 
     # when
-    serialized_offers = serialize_offers_recap_paginated(paginated_offers)
+    serialized_offers = serialize_offers_recap_paginated(paginated_offers_recap)
 
     # then
-    assert json.loads(json.dumps(serialized_offers[0])) == {
+    assert serialized_offers[0] == {
         "availabilityMessage": "Encore 10 stocks restants",
         "hasBookingLimitDatetimesPassed": False,
-        "id": humanize(offerId),
+        "id": humanize(offer_id),
         "isActive": True,
         "isEditable": True,
         "isEvent": False,
@@ -33,18 +42,18 @@ def test_should_return_offers_dict_with_relevant_informations():
         "isThing": True,
         "name": "Test Book",
         "stocks": [{
-            "id": humanize(stockId),
+            "id": humanize(stock_id),
             "isEventExpired": False,
-            "offerId": humanize(offerId),
+            "offerId": humanize(offer_id),
             "remainingQuantity": 10
         }],
-        "thumbUrl": None,
+        "thumbUrl": "/thumb/url",
         "type": "ThingType.AUDIOVISUEL",
         "venue": {
-            "id": humanize(venueId),
+            "id": humanize(venue_id),
             "isVirtual": False,
             "name": "La petite librairie",
-            "publicName": None,
+            "publicName": "Petite librairie",
         },
-        "venueId": None,
+        "venueId": humanize(venue_id),
     }

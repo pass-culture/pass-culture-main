@@ -1,7 +1,8 @@
 import secrets
 from unittest.mock import patch
 
-from domain.pro_offers.paginated_offers import PaginatedOffers
+from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
@@ -38,7 +39,7 @@ class Get:
             offer1 = create_offer_with_thing_product(venue)
             offer2 = create_offer_with_thing_product(venue)
             repository.save(user_offerer, offer1, offer2)
-            list_offers_mock.return_value = PaginatedOffers(offers=[offer1], total=2)
+            list_offers_mock.return_value = to_domain([offer1], 2)
 
             # when
             response = TestClient(app.test_client()) \
@@ -60,7 +61,7 @@ class Get:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
             repository.save(user_offerer, offer)
-            list_offers_mock.return_value = PaginatedOffers(offers=[], total=0)
+            list_offers_mock.return_value = to_domain(offer_sql_entities=[],  total_offers=0)
 
             # when
             response = TestClient(app.test_client()).with_auth(email=user.email).get('/offers')

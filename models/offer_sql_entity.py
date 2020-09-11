@@ -1,19 +1,16 @@
 from datetime import datetime
 from typing import List, Optional
 
+from sqlalchemy import ARRAY, Boolean, CheckConstraint, false, Integer, Text, TEXT
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String
-from sqlalchemy import and_, ARRAY, Boolean, CheckConstraint, false, Integer, Text, TEXT
-from sqlalchemy.orm import column_property, relationship
-from sqlalchemy.sql import select, func
+from sqlalchemy.orm import relationship
 
 from domain.bookings import filter_bookings_to_compute_remaining_stock
 from domain.keywords import create_ts_vector_and_table_args
-from models.criterion import Criterion
 from models.db import db, Model
 from models.deactivable_mixin import DeactivableMixin
 from models.extra_data_mixin import ExtraDataMixin
 from models.mediation_sql_entity import MediationSQLEntity
-from models.offer_criterion import OfferCriterion
 from models.offer_type import ThingType, EventType, ProductType, Category
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin

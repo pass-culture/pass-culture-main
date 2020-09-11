@@ -4,8 +4,9 @@ from sqlalchemy import desc, func
 from sqlalchemy.orm import Query, aliased
 
 from domain.keywords import create_get_filter_matching_ts_query_in_any_model, create_filter_matching_all_keywords_in_any_model
-from domain.pro_offers.paginated_offers import PaginatedOffers
-from domain.pro_offers.paginated_offers_repository import PaginatedOffersRepository
+from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from domain.pro_offers.paginated_offers_recap_repository import PaginatedOffersRepository
+from infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
 from models import OfferSQLEntity, VenueSQLEntity, Offerer, UserOfferer
 from models.db import Model
 
@@ -18,7 +19,7 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
                                                             pagination_limit: int,
                                                             offerer_id: Optional[int] = None,
                                                             venue_id: Optional[int] = None,
-                                                            keywords: Optional[str] = None) -> PaginatedOffers:
+                                                            keywords: Optional[str] = None) -> PaginatedOffersRecap:
         query = OfferSQLEntity.query
         if venue_id is not None:
             query = query.filter(OfferSQLEntity.venueId == venue_id)
@@ -45,7 +46,7 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
         results = query.items
         total = query.total
 
-        return PaginatedOffers(results, total)
+        return to_domain(results, total)
 
 
 def _filter_offers_with_keywords_string(query: Query, keywords_string: str) -> Query:

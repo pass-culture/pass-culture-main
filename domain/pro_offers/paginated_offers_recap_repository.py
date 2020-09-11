@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from domain.pro_offers.paginated_offers import PaginatedOffers
+from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 
 
 class PaginatedOffersRepository(ABC):
@@ -13,5 +13,5 @@ class PaginatedOffersRepository(ABC):
                                                             pagination_limit: int,
                                                             offerer_id: Optional[int] = None,
                                                             venue_id: Optional[int] = None,
-                                                            keywords: Optional[str] = None) -> PaginatedOffers:
+                                                            keywords: Optional[str] = None) -> PaginatedOffersRecap:
         pass

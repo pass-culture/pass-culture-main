@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from infrastructure.repository.pro_offers.paginated_offer_sql_repository import PaginatedOffersSQLRepository
+from infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
 from use_cases.list_offers_for_pro_user import ListOffersForProUser, OffersRequestParameters
 
 
