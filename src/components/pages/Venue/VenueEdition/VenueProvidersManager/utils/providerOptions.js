@@ -17,3 +17,8 @@ export const TITELIVE_PROVIDER_OPTION = {
   id: 'titelive',
   name: 'TiteLive Stocks (Epagine / Place des libraires.com)',
 }
+
+export const FNAC_PROVIDER_OPTION = {
+  id: 'fanc',
+  name: 'FNAC',
+}

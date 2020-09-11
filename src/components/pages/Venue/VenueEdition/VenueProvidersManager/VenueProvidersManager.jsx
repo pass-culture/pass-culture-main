@@ -5,9 +5,11 @@ import ReactTooltip from 'react-tooltip'
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
 import LibrairesProviderForm from './LibrairesProviderForm/LibrairesProviderFormContainer'
 import TiteliveProviderForm from './TiteliveProviderForm/TiteliveProviderFormContainer'
+import FnacProviderForm from './FnacProviderForm/FnacProviderFormContainer'
 import {
   ALLOCINE_PROVIDER_OPTION,
   DEFAULT_PROVIDER_OPTION,
+  FNAC_PROVIDER_OPTION,
   LIBRAIRES_PROVIDER_OPTION,
   TITELIVE_PROVIDER_OPTION,
 } from './utils/providerOptions'
@@ -22,6 +24,7 @@ class VenueProvidersManager extends PureComponent {
       providerSelectedIsAllocine: false,
       providerSelectedIsTitelive: false,
       providerSelectedIsLibraires: false,
+      providerSelectedIsFnac: false,
       venueIdAtOfferProviderIsRequired: true,
     }
   }
@@ -56,6 +59,7 @@ class VenueProvidersManager extends PureComponent {
       providerSelectedIsAllocine: false,
       providerSelectedIsTitelive: false,
       providerSelectedIsLibraires: false,
+      providerSelectedIsFnac: false,
     })
 
     if (valueParsed && valueParsed.name === ALLOCINE_PROVIDER_OPTION.name) {
@@ -71,6 +75,10 @@ class VenueProvidersManager extends PureComponent {
       this.setState({
         providerSelectedIsLibraires: true,
       })
+    } else if (valueParsed && valueParsed.name === FNAC_PROVIDER_OPTION.name) {
+      this.setState({
+        providerSelectedIsFnac: true,
+      })
     }
 
     this.setState({
@@ -83,6 +91,7 @@ class VenueProvidersManager extends PureComponent {
     this.setState({
       providerSelectedIsTitelive: false,
       providerSelectedIsLibraires: false,
+      providerSelectedIsFnac: false,
       providerId: null,
     })
   }
@@ -95,6 +104,7 @@ class VenueProvidersManager extends PureComponent {
       providerSelectedIsAllocine,
       providerSelectedIsTitelive,
       providerSelectedIsLibraires,
+      providerSelectedIsFnac,
       venueIdAtOfferProviderIsRequired,
     } = this.state
     const hasAtLeastOneProvider = providers.length > 0
@@ -168,6 +178,16 @@ class VenueProvidersManager extends PureComponent {
 
                 {providerSelectedIsLibraires && (
                   <LibrairesProviderForm
+                    cancelProviderSelection={this.cancelProviderSelection}
+                    offererId={match.params.offererId}
+                    providerId={providerId}
+                    venueId={match.params.venueId}
+                    venueSiret={venueSiret}
+                  />
+                )}
+
+                {providerSelectedIsFnac && (
+                  <FnacProviderForm
                     cancelProviderSelection={this.cancelProviderSelection}
                     offererId={match.params.offererId}
                     providerId={providerId}
