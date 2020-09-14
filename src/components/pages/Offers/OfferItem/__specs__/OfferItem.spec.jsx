@@ -247,6 +247,100 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const stockLink = wrapper.find(`a[href="/offres/${props.offer.id}?gestion"]`)
         expect(stockLink.text()).toBe('2 dates')
       })
+
+      it('should not display a warning when no stocks are sold out', () => {
+        // given
+        props.product = {
+          offerType: { label: 'Conférence — Débat — Dédicace' },
+        }
+        props.stocks = [{ remainingQuantity: 'unlimited' }, { remainingQuantity: 13 }]
+        props.offer = activeOfferWithActiveMediation
+
+        // when
+        const wrapper = mount(
+          <MemoryRouter>
+            <OfferItem {...props} />
+          </MemoryRouter>
+        )
+
+        // then
+        const numberOfStocksDescription = wrapper
+          .find(`a[href="/offres/${props.offer.id}?gestion"]`)
+          .parent()
+        expect(numberOfStocksDescription.find('img')).toHaveLength(0)
+      })
+
+      it('should not display a warning when all stocks are sold out', () => {
+        // given
+        props.product = {
+          offerType: { label: 'Conférence — Débat — Dédicace' },
+        }
+        props.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 0 }]
+        props.offer = activeOfferWithActiveMediation
+
+        // when
+        const wrapper = mount(
+          <MemoryRouter>
+            <OfferItem {...props} />
+          </MemoryRouter>
+        )
+
+        // then
+        const numberOfStocksDescription = wrapper
+          .find(`a[href="/offres/${props.offer.id}?gestion"]`)
+          .parent()
+        expect(numberOfStocksDescription.find('img')).toHaveLength(0)
+      })
+
+      it('should display a warning with number of stocks sold out when at least one stock is sold out', () => {
+        // given
+        props.product = {
+          offerType: { label: 'Conférence — Débat — Dédicace' },
+        }
+        props.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 'unlimited' }]
+        props.offer = activeOfferWithActiveMediation
+
+        // when
+        const wrapper = mount(
+          <MemoryRouter>
+            <OfferItem {...props} />
+          </MemoryRouter>
+        )
+
+        // then
+        const numberOfStocksDescription = wrapper
+          .find(`a[href="/offres/${props.offer.id}?gestion"]`)
+          .parent()
+        expect(numberOfStocksDescription.find('img')).toHaveLength(1)
+        expect(numberOfStocksDescription.find({ children: '1 date épuisée' })).toHaveLength(1)
+      })
+
+      it('should pluralize number of stocks sold out when at least two stocks are sold out', () => {
+        // given
+        props.product = {
+          offerType: { label: 'Conférence — Débat — Dédicace' },
+        }
+        props.stocks = [
+          { remainingQuantity: 0 },
+          { remainingQuantity: 0 },
+          { remainingQuantity: 12 },
+        ]
+        props.offer = activeOfferWithActiveMediation
+
+        // when
+        const wrapper = mount(
+          <MemoryRouter>
+            <OfferItem {...props} />
+          </MemoryRouter>
+        )
+
+        // then
+        const numberOfStocksDescription = wrapper
+          .find(`a[href="/offres/${props.offer.id}?gestion"]`)
+          .parent()
+        expect(numberOfStocksDescription.find('img')).toHaveLength(1)
+        expect(numberOfStocksDescription.find({ children: '2 dates épuisées' })).toHaveLength(1)
+      })
     })
 
     describe('when offer is a thing product', () => {
