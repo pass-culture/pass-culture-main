@@ -37,7 +37,8 @@ class OfferItem extends PureComponent {
 
     const { name } = offer || {}
     const stockSize = stocks ? stocks.length : null
-    const offerIsEditable = offer ? offer.isEditable : null
+    const isOfferEditable = offer ? offer.isEditable : null
+    const isOfferInactiveOrExpired = !offer.isActive || offer.hasBookingLimitDatetimesPassed
     const offerStatus = computeOfferStatus(offer, stocks)
     const offerStatusProperties = {
       [OFFER_STATUS.DEACTIVATED]: {
@@ -59,7 +60,7 @@ class OfferItem extends PureComponent {
     }
 
     return (
-      <li className={`offer-item ${!offer.isActive ? 'inactive' : ''} offer-row`}>
+      <li className={`offer-item ${isOfferInactiveOrExpired ? 'inactive' : ''} offer-row`}>
         <Thumb url={offer.thumbUrl} />
         <div className="title-container">
           <Link
@@ -98,7 +99,7 @@ class OfferItem extends PureComponent {
         >
           {offer.isActive ? 'Désactiver' : 'Activer'}
         </button>
-        {offerIsEditable && (
+        {isOfferEditable && (
           <Link
             className="secondary-link"
             to={`/offres/${offer.id}/edition`}
