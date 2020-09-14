@@ -8,6 +8,25 @@ import Thumb from '../../../layout/Thumb'
 import { computeOfferStatus } from '../domain/computeOfferStatus'
 import { OFFER_STATUS } from '../domain/offerStatus'
 
+const OFFER_STATUS_PROPERTIES = {
+  [OFFER_STATUS.INACTIVE]: {
+    className: 'status-inactive',
+    icon: 'ico-status-inactive',
+  },
+  [OFFER_STATUS.EXPIRED]: {
+    className: 'status-expired',
+    icon: 'ico-status-expired',
+  },
+  [OFFER_STATUS.SOLD_OUT]: {
+    className: 'status-sold-out',
+    icon: 'ico-status-sold-out',
+  },
+  [OFFER_STATUS.ACTIVE]: {
+    className: 'status-active',
+    icon: 'ico-status-validated',
+  },
+}
+
 class OfferItem extends PureComponent {
   handleOnDeactivateClick = () => {
     const { offer, updateOffer, trackActivateOffer, trackDeactivateOffer } = this.props
@@ -40,24 +59,6 @@ class OfferItem extends PureComponent {
     const isOfferEditable = offer ? offer.isEditable : null
     const isOfferInactiveOrExpired = !offer.isActive || offer.hasBookingLimitDatetimesPassed
     const offerStatus = computeOfferStatus(offer, stocks)
-    const offerStatusProperties = {
-      [OFFER_STATUS.INACTIVE]: {
-        className: 'status-deactivated',
-        icon: 'ico-status-deactivated',
-      },
-      [OFFER_STATUS.EXPIRED]: {
-        className: 'status-expired',
-        icon: 'ico-status-expired',
-      },
-      [OFFER_STATUS.SOLD_OUT]: {
-        className: 'status-sold-out',
-        icon: 'ico-status-sold-out',
-      },
-      [OFFER_STATUS.ACTIVE]: {
-        className: 'status-active',
-        icon: 'ico-status-validated',
-      },
-    }
 
     return (
       <li className={`offer-item ${isOfferInactiveOrExpired ? 'inactive' : ''} offer-row`}>
@@ -87,8 +88,8 @@ class OfferItem extends PureComponent {
           </span>
         )}
         <span className="status-column">
-          <span className={offerStatusProperties[offerStatus].className}>
-            <Icon svg={offerStatusProperties[offerStatus].icon} />
+          <span className={OFFER_STATUS_PROPERTIES[offerStatus].className}>
+            <Icon svg={OFFER_STATUS_PROPERTIES[offerStatus].icon} />
             {offerStatus}
           </span>
         </span>

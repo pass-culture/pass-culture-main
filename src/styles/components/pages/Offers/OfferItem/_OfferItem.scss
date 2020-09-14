@@ -50,7 +50,7 @@
   }
 
   .status- {
-    &deactivated,
+    &inactive,
     &expired {
       background-color: $grey-dark;
     }
