@@ -2,6 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import AllocineProviderFormContainer from '../AllocineProviderForm/AllocineProviderFormContainer'
+import FnacProviderForm from '../FnacProviderForm/FnacProviderFormContainer'
 import LibrairesProviderForm from '../LibrairesProviderForm/LibrairesProviderFormContainer'
 import TiteliveProviderFormContainer from '../TiteliveProviderForm/TiteliveProviderFormContainer'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
@@ -44,6 +45,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       isCreationMode: false,
       providerId: null,
       providerSelectedIsAllocine: false,
+      providerSelectedIsFnac: false,
       providerSelectedIsTitelive: false,
       providerSelectedIsLibraires: false,
       venueIdAtOfferProviderIsRequired: true,
@@ -241,6 +243,28 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       // then
       const librairesProviderForm = wrapper.find(LibrairesProviderForm)
       expect(librairesProviderForm).toHaveLength(1)
+    })
+
+    it('should display the Fnac form when the user choose Fnac', () => {
+      // given
+      props.providers = [
+        { id: 'EM', name: 'FNAC' },
+        { id: 'EM', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
+      ]
+      const chooseFnacEvent = {
+        target: {
+          value: '{"id":"EM","name":"FNAC"}',
+        },
+      }
+      const wrapper = shallow(<VenueProvidersManager {...props} />)
+
+      // when
+      wrapper.find('#add-venue-provider-btn').simulate('click')
+      wrapper.find('#provider-options').simulate('blur', chooseFnacEvent)
+
+      // then
+      const fnacProviderForm = wrapper.find(FnacProviderForm)
+      expect(fnacProviderForm).toHaveLength(1)
     })
 
     it('should update state values when selected option is valid and different from default value', () => {

@@ -1,6 +1,6 @@
-import { Icon } from 'pass-culture-shared'
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
+import Icon from '../../../../../layout/Icon'
 import { PROVIDER_ICONS } from '../../../../../utils/providers'
 import { pluralize } from '../../../../../../utils/pluralize'
 

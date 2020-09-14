@@ -1,7 +1,6 @@
 import { shallow } from 'enzyme'
-import { Icon } from 'pass-culture-shared'
 import React from 'react'
-
+import Icon from '../../../../../../layout/Icon'
 import VenueProviderItem from '../VenueProviderItem'
 
 describe('src | components | pages | Venue | VenueProvidersManager | VenueProviderItem', () => {

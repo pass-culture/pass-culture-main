@@ -19,6 +19,6 @@ export const TITELIVE_PROVIDER_OPTION = {
 }
 
 export const FNAC_PROVIDER_OPTION = {
-  id: 'fanc',
+  id: 'fnac',
   name: 'FNAC',
 }
