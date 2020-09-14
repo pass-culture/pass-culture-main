@@ -45,8 +45,16 @@ class OfferItem extends PureComponent {
     }
   }
 
-  hasSoldOutStocks = (stocks) => {
-    return stocks.some((stock) => stock.remainingQuantity === 0)
+  computeNumberOfSoldOutStocks = stocks => {
+    let numberOfSoldOutStocks = 0
+
+    stocks.forEach(stock => {
+      if (stock.remainingQuantity === 0) {
+        numberOfSoldOutStocks += 1
+      }
+    })
+
+    return numberOfSoldOutStocks
   }
 
   render() {
@@ -61,7 +69,8 @@ class OfferItem extends PureComponent {
     const stockSize = stocks ? stocks.length : null
     const isOfferEditable = offer ? offer.isEditable : null
     const isOfferInactiveOrExpired = !offer.isActive || offer.hasBookingLimitDatetimesPassed
-    const shouldShowSoldOutWarning = this.hasSoldOutStocks(stocks) && !offer.isFullyBooked
+    const shouldShowSoldOutWarning =
+      this.computeNumberOfSoldOutStocks(stocks) > 0 && !offer.isFullyBooked
     const offerStatus = computeOfferStatus(offer, stocks)
 
     return (
@@ -83,8 +92,14 @@ class OfferItem extends PureComponent {
             >
             {this.buildStocksDetail(offer, stockSize)}
             </Link>
-            { shouldShowSoldOutWarning && (
-              <Icon svg="ico-warning-stocks"/>
+            {shouldShowSoldOutWarning && (
+              <div>
+                <Icon svg="ico-warning-stocks" />
+                <span className="sold-out-dates">
+                  <Icon svg="ico-warning-stocks" />
+                  {pluralize(this.computeNumberOfSoldOutStocks(stocks), 'date épuisée')}
+                </span>
+              </div>
             )}
           </span>
         </div>

@@ -308,11 +308,17 @@ describe('src | components | pages | Offers | OfferItem', () => {
         )
 
         // then
-        const numberOfStocksDescription = wrapper
+        const numberOfStocksWrapper = wrapper
           .find(`a[href="/offres/${props.offer.id}?gestion"]`)
-          .parent()
-        expect(numberOfStocksDescription.find('img')).toHaveLength(1)
-        expect(numberOfStocksDescription.find({ children: '1 date épuisée' })).toHaveLength(1)
+          .parents()
+          .at(1)
+
+        const numberOfStocksDescription = numberOfStocksWrapper
+          .findWhere(node => node.text() === '1 date épuisée')
+          .first()
+
+        expect(numberOfStocksWrapper.find('img')).toHaveLength(2)
+        expect(numberOfStocksDescription).toHaveLength(1)
       })
 
       it('should pluralize number of stocks sold out when at least two stocks are sold out', () => {
@@ -336,10 +342,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         // then
         const numberOfStocksDescription = wrapper
-          .find(`a[href="/offres/${props.offer.id}?gestion"]`)
-          .parent()
-        expect(numberOfStocksDescription.find('img')).toHaveLength(1)
-        expect(numberOfStocksDescription.find({ children: '2 dates épuisées' })).toHaveLength(1)
+          .findWhere(node => node.text() === '2 dates épuisées')
+          .first()
+
+        expect(numberOfStocksDescription).toHaveLength(1)
       })
     })
 
