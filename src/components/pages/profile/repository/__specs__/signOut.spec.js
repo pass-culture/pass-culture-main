@@ -4,9 +4,29 @@ jest.mock('../../../../../utils/config', () => ({
   API_URL: 'my-localhost',
 }))
 
-describe('when response from API', () => {
-  it('should call fetch properly', async () => {
+
+
+describe('signOut', () => {
+  it('should call batchSDK', async () => {
     // Given
+    jest.spyOn(global, 'fetch').mockImplementation(() =>
+      Promise.resolve({
+        json: () => Promise.resolve({}),
+      })
+    )
+    window.batchSDK = jest.fn()
+
+    // when
+    await signOut()
+
+    // Then
+    expect(window.batchSDK).toHaveBeenCalledWith(expect.any(Function))
+  })
+
+  it('should call fetch', async () => {
+    // Given
+    window.batchSDK = jest.fn()
+
     jest.spyOn(global, 'fetch').mockImplementation(() =>
       Promise.resolve({
         json: () => Promise.resolve({}),
@@ -20,38 +40,5 @@ describe('when response from API', () => {
     expect(global.fetch).toHaveBeenCalledWith('my-localhost/users/signout', {
       credentials: 'include',
     })
-  })
-})
-
-describe('when status is other that 200', () => {
-  it('should stop the app', async () => {
-    // Given
-    jest.spyOn(global, 'fetch').mockImplementation(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({}),
-        ok: false,
-        status: 582,
-        statusText: 'Error',
-      })
-    )
-
-    // When
-    const expected = signOut()
-
-    // When Then
-    await expect(expected).rejects.toThrow('Status: 582, Status text: Error')
-  })
-})
-
-describe('when no response from API', () => {
-  it('should stop the app', async () => {
-    // Given
-    jest.spyOn(global, 'fetch').mockImplementation(() => Promise.reject('API is down'))
-
-    // when
-    const expected = signOut()
-
-    // Then
-    await expect(expected).rejects.toThrow('API is down')
   })
 })

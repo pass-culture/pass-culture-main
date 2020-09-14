@@ -1,15 +1,7 @@
-import { API_URL } from '../../../../../utils/config'
+import unSetCustomUserId from '../../../../../notifications/unSetCustomUserId'
+import apiSignOut from './apiSignOut'
 
 export const signOut = async () => {
-  try {
-    const response = await fetch(`${API_URL}/users/signout`, {
-      credentials: 'include',
-    })
-
-    if (response.ok === false) {
-      throw Error(`Status: ${response.status}, Status text: ${response.statusText}`)
-    }
-  } catch (error) {
-    throw new Error(error)
-  }
+  await apiSignOut()
+  unSetCustomUserId()
 }
