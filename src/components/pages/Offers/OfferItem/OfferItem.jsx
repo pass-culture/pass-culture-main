@@ -45,6 +45,10 @@ class OfferItem extends PureComponent {
     }
   }
 
+  hasSoldOutStocks = (stocks) => {
+    return stocks.some((stock) => stock.remainingQuantity === 0)
+  }
+
   render() {
     const {
       availabilityMessage,
@@ -54,10 +58,10 @@ class OfferItem extends PureComponent {
       venue,
     } = this.props
 
-    const { name } = offer || {}
     const stockSize = stocks ? stocks.length : null
     const isOfferEditable = offer ? offer.isEditable : null
     const isOfferInactiveOrExpired = !offer.isActive || offer.hasBookingLimitDatetimesPassed
+    const shouldShowSoldOutWarning = this.hasSoldOutStocks(stocks) && !offer.isFullyBooked
     const offerStatus = computeOfferStatus(offer, stocks)
 
     return (
@@ -69,15 +73,20 @@ class OfferItem extends PureComponent {
             title="Afficher le détail de l'offre"
             to={`/offres/${offer.id}${search}`}
           >
-            {name}
+            {offer.name}
           </Link>
-          <Link
-            className="stocks quaternary-link"
-            title="Afficher le détail des stocks"
-            to={`/offres/${offer.id}?gestion`}
-          >
+          <span className="stocks">
+            <Link
+              className="quaternary-link"
+              title="Afficher le détail des stocks"
+              to={`/offres/${offer.id}?gestion`}
+            >
             {this.buildStocksDetail(offer, stockSize)}
-          </Link>
+            </Link>
+            { shouldShowSoldOutWarning && (
+              <Icon svg="ico-warning-stocks"/>
+            )}
+          </span>
         </div>
         <span>
           {(venue && venue.publicName) || venue.name}

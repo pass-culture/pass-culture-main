@@ -26,7 +26,16 @@
   }
 
   .stocks {
-    color: $primary;
+    display: flex;
+
+    a {
+      color: $primary;
+    }
+
+    img {
+      margin-left: rem(8px);
+      width: rem(20px);
+    }
   }
 
   .status-column {
