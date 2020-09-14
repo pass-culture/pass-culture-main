@@ -2,9 +2,8 @@ from typing import List, Dict
 
 
 class OfferRecapStock:
-    def __init__(self, identifier: int, is_event_expired: bool, remaining_quantity: int):
+    def __init__(self, identifier: int, remaining_quantity: int):
         self.identifier = identifier
-        self.is_event_expired = is_event_expired
         self.remaining_quantity = remaining_quantity
 
 
@@ -49,7 +48,7 @@ class OfferRecap:
         self.thumb_url = thumb_url
         self.offer_type = offer_type
         self.venue = OfferRecapVenue(venue_identifier, venue_is_virtual, venue_managing_offerer_id, venue_name, venue_public_name)
-        self.stocks = [OfferRecapStock(stock["identifier"], stock["is_event_expired"], stock["remaining_quantity"]) for stock in stocks]
+        self.stocks = [OfferRecapStock(stock["identifier"], stock["remaining_quantity"]) for stock in stocks]
 
 
 class PaginatedOffersRecap:

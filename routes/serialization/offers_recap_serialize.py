@@ -32,7 +32,6 @@ def _serialize_offer_paginated(offer: OfferRecap) -> Dict:
 def _serialize_stock(offer_identifier: int, stock: OfferRecapStock) -> Dict:
     return {
         "id": humanize(stock.identifier),
-        "isEventExpired": stock.is_event_expired,
         "offerId": humanize(offer_identifier),
         "remainingQuantity": stock.remaining_quantity
     }

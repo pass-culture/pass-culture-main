@@ -47,7 +47,6 @@ def test_should_return_offers_dict_with_relevant_informations():
         "name": "Test Book",
         "stocks": [{
             "id": humanize(stock_id),
-            "isEventExpired": False,
             "offerId": humanize(offer_id),
             "remainingQuantity": 10
         }],
