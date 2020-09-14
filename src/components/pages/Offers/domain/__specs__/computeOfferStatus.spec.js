@@ -1,8 +1,8 @@
 import { computeOfferStatus } from '../computeOfferStatus'
 
 describe('compute offer status', () => {
-  describe('when offer is deactivated', () => {
-    it('should be "désactivée" prior to any other status', () => {
+  describe('when offer is inactive', () => {
+    it('should be "inactive" prior to any other status', () => {
       // Given
       const offer = {
         isActive: false,
@@ -15,7 +15,7 @@ describe('compute offer status', () => {
       const status = computeOfferStatus(offer, stocks)
 
       // Then
-      expect(status).toBe('désactivée')
+      expect(status).toBe('inactive')
     })
   })
 

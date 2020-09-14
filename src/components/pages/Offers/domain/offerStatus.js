@@ -1,5 +1,5 @@
 export const OFFER_STATUS = {
-  DEACTIVATED: 'désactivée',
+  INACTIVE: 'inactive',
   EXPIRED: 'expirée',
   SOLD_OUT: 'épuisée',
   ACTIVE: 'active',

@@ -41,7 +41,7 @@ class OfferItem extends PureComponent {
     const isOfferInactiveOrExpired = !offer.isActive || offer.hasBookingLimitDatetimesPassed
     const offerStatus = computeOfferStatus(offer, stocks)
     const offerStatusProperties = {
-      [OFFER_STATUS.DEACTIVATED]: {
+      [OFFER_STATUS.INACTIVE]: {
         className: 'status-deactivated',
         icon: 'ico-status-deactivated',
       },
