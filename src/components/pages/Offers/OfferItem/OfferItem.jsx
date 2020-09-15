@@ -1,4 +1,3 @@
-import { pluralize } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
@@ -6,6 +5,7 @@ import { Link } from 'react-router-dom'
 import Icon from '../../../layout/Icon'
 import Thumb from '../../../layout/Thumb'
 import { computeOfferStatus } from '../domain/computeOfferStatus'
+import { pluralize } from '../../../../utils/pluralize'
 import { OFFER_STATUS } from '../domain/offerStatus'
 
 const OFFER_STATUS_PROPERTIES = {
