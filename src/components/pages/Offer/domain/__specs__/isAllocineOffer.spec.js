@@ -1,4 +1,4 @@
-import isAllocineOffer from '../isAllocineOffer'
+import { isAllocineOffer } from '../localProvider'
 
 describe('src | components | pages | Offer | utils | isAllocineOffer', () => {
   it('should return true if last provider name is Allociné', () => {
@@ -31,5 +31,32 @@ describe('src | components | pages | Offer | utils | isAllocineOffer', () => {
 
     // then
     expect(isOfferAllocineGenerated).toBe(false)
+  })
+
+  it('should return false if last provider is null', () => {
+    // given
+    const offer = {
+      id: 'AZER',
+      lastProvider: null,
+    }
+
+    // when
+    const isOfferLibrairesGenerated = isAllocineOffer(offer)
+
+    // then
+    expect(isOfferLibrairesGenerated).toBe(false)
+  })
+
+  it('should return false if last provider is undefined', () => {
+    // given
+    const offer = {
+      id: 'AZER',
+    }
+
+    // when
+    const isOfferLibrairesGenerated = isAllocineOffer(offer)
+
+    // then
+    expect(isOfferLibrairesGenerated).toBe(false)
   })
 })

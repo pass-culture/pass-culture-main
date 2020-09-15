@@ -30,9 +30,8 @@ import offerIsRefundable from '../domain/offerIsRefundable'
 import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
 import { OffererName } from './OffererName'
 import { getDurationInHours, getDurationInMinutes } from '../utils/duration'
-import isAllocineOffer from '../utils/isAllocineOffer'
-import isTiteLiveOffer from '../utils/isTiteLiveOffer'
 import { VenueName } from './VenueName'
+import { isAllocineOffer, isTiteLiveOffer } from '../domain/localProvider'
 
 const DURATION_LIMIT_TIME = 100
 

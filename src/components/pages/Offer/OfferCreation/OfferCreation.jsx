@@ -27,15 +27,13 @@ import { OFFERERS_API_PATH } from '../../../../config/apiPaths'
 import { CGU_URL } from '../../../../utils/config'
 
 import { getDurationInHours, getDurationInMinutes } from '../utils/duration'
-import isAllocineOffer from '../utils/isAllocineOffer'
-import isLibrairesOffer from './utils/isLibrairesOffer'
-import isTiteLiveOffer from '../utils/isTiteLiveOffer'
 import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
 import { buildWebappDiscoveryUrl } from '../../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
 import OfferPreviewLink from '../../../layout/OfferPreviewLink/OfferPreviewLink'
 import Insert from '../../../layout/Insert/Insert'
 
 import offerIsRefundable from '../domain/offerIsRefundable'
+import { isAllocineOffer, isLibrairesOffer, isTiteLiveOffer } from '../domain/localProvider'
 
 const DURATION_LIMIT_TIME = 100
 

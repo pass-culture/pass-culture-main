@@ -1,4 +1,4 @@
-import isLibrairesOffer from '../isLibrairesOffer'
+import { isLibrairesOffer } from '../localProvider'
 
 describe('src | isLibrairesOffer', () => {
   it('should return true if last provider name contains libraires', () => {
@@ -33,13 +33,24 @@ describe('src | isLibrairesOffer', () => {
     expect(isOfferLibrairesGenerated).toBe(false)
   })
 
-  it('should return false if last provider name is "TiteLive Stocks (Epagine / Place des libraires.com)"', () => {
+  it('should return false if last provider is null', () => {
     // given
     const offer = {
       id: 'AZER',
-      lastProvider: {
-        name: 'TiteLive Stocks (Epagine / Place des libraires.com)',
-      },
+      lastProvider: null,
+    }
+
+    // when
+    const isOfferLibrairesGenerated = isLibrairesOffer(offer)
+
+    // then
+    expect(isOfferLibrairesGenerated).toBe(false)
+  })
+
+  it('should return false if last provider is undefined', () => {
+    // given
+    const offer = {
+      id: 'AZER',
     }
 
     // when
