@@ -58,6 +58,13 @@ def synchronize_libraires_stocks(app) -> None:
 
 @log_cron
 @cron_context
+def synchronize_fnac_stocks(app) -> None:
+    fnac_stocks_provider_id = get_provider_by_local_class("FnacStocks").id
+    synchronize_venue_providers_for_provider(fnac_stocks_provider_id)
+
+
+@log_cron
+@cron_context
 @cron_require_feature(FeatureToggle.BENEFICIARIES_IMPORT)
 def pc_old_remote_import_beneficiaries(app) -> None:
     procedure_id = int(DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID)
@@ -135,6 +142,10 @@ if __name__ == '__main__':
     scheduler.add_job(synchronize_libraires_stocks, 'cron',
                       [app],
                       day='*', hour='22')
+
+    scheduler.add_job(synchronize_fnac_stocks, 'cron',
+                      [app],
+                      day='*', hour='1')
 
     scheduler.add_job(pc_old_remote_import_beneficiaries, 'cron',
                       [app],
