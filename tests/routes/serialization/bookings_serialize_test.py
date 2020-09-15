@@ -40,6 +40,7 @@ class SerializeBookingTest:
             'formula': 'PLACE',
             'isUsed': False,
             'offerId': offer.id,
+            'publicOfferId': humanize(offer.id),
             'offerName': 'Event Name',
             'offerType': 'EVENEMENT',
             'phoneNumber': '',
@@ -50,6 +51,25 @@ class SerializeBookingTest:
             'venueDepartementCode': '93',
             'venueName': 'Venue name',
         }
+
+    @freeze_time('2019-11-26 18:29:20.891028')
+    def test_should_humanize_ids(self):
+        # Given
+        user = create_user(email='user@example.com', public_name='John Doe')
+        offerer = create_offerer()
+        venue = create_venue(offerer, name='Venue name', address='Venue address')
+        offer = create_offer_with_event_product(venue=venue, event_name='Event Name', event_type=EventType.CINEMA, idx=999)
+        event_occurrence = create_event_occurrence(offer, beginning_datetime=datetime.utcnow())
+        stock = create_stock_from_event_occurrence(event_occurrence, price=12)
+        booking = create_booking(user=user, quantity=3, stock=stock, venue=venue)
+
+        # When
+        response = serialize_booking(booking)
+
+        # Then
+        assert response['bookingId'] == humanize(booking.id)
+        assert response['offerId'] == offer.id
+        assert response['publicOfferId'] == humanize(offer.id)
 
     def test_should_return_dict_when_offer_is_a_subscription_cinema(self):
         # Given
@@ -75,6 +95,7 @@ class SerializeBookingTest:
             'formula': 'ABO',
             'isUsed': False,
             'offerId': 999,
+            'publicOfferId': 'APTQ',
             'offerName': 'Event Name',
             'offerType': 'BIEN',
             'phoneNumber': '',

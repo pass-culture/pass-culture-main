@@ -44,6 +44,7 @@ def serialize_booking(booking: BookingSQLEntity) -> Dict:
         'formula': offer_formula,
         'isUsed': is_used,
         'offerId': offer_id,
+        'publicOfferId': humanize(offer_id),
         'offerName': offer_name,
         'offerType': offer_type,
         'phoneNumber': phone_number,
