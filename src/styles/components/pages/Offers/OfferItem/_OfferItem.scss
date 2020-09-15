@@ -33,13 +33,13 @@
     }
 
     .sold-out-dates {
-      box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.3);
+      background-color: $white;
       border-radius: 4px;
+      box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.3);
       display: none;
-      position: absolute;
       margin-left: rem(8px);
       padding: rem(16px);
-      background-color: $white;
+      position: absolute;
 
       img {
         margin-left: 0;
@@ -47,7 +47,7 @@
       }
     }
 
-    img {
+    .sold-out-icon {
       margin-left: rem(8px);
       position: relative;
       width: rem(20px);

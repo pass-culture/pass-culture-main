@@ -46,15 +46,7 @@ class OfferItem extends PureComponent {
   }
 
   computeNumberOfSoldOutStocks = stocks => {
-    let numberOfSoldOutStocks = 0
-
-    stocks.forEach(stock => {
-      if (stock.remainingQuantity === 0) {
-        numberOfSoldOutStocks += 1
-      }
-    })
-
-    return numberOfSoldOutStocks
+    return stocks.filter(stock => stock.remainingQuantity === 0).length
   }
 
   render() {
@@ -94,7 +86,11 @@ class OfferItem extends PureComponent {
             </Link>
             {shouldShowSoldOutWarning && (
               <div>
-                <Icon svg="ico-warning-stocks" />
+                <Icon
+                  className="sold-out-icon"
+                  svg="ico-warning-stocks"
+                  tabindex={0}
+                />
                 <span className="sold-out-dates">
                   <Icon svg="ico-warning-stocks" />
                   {pluralize(this.computeNumberOfSoldOutStocks(stocks), 'date épuisée')}
