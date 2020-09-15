@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap, Stock, Venue
+from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap, OfferRecapStock, OfferRecapVenue
 from utils.human_ids import humanize
 
 
@@ -9,7 +9,7 @@ def serialize_offers_recap_paginated(paginated_offers: PaginatedOffersRecap) -> 
 
 
 def _serialize_offer_paginated(offer: OfferRecap) -> Dict:
-    serialized_stocks = [_serialize_stock(stock) for stock in offer.stocks]
+    serialized_stocks = [_serialize_stock(offer.identifier, stock) for stock in offer.stocks]
 
     return {
         "availabilityMessage": offer.availability_message,
@@ -29,19 +29,20 @@ def _serialize_offer_paginated(offer: OfferRecap) -> Dict:
     }
 
 
-def _serialize_stock(stock: Stock) -> Dict:
+def _serialize_stock(offer_identifier: int, stock: OfferRecapStock) -> Dict:
     return {
         "id": humanize(stock.identifier),
         "isEventExpired": stock.is_event_expired,
-        "offerId": humanize(stock.offer_id),
+        "offerId": humanize(offer_identifier),
         "remainingQuantity": stock.remaining_quantity
     }
 
 
-def _serialize_venue(venue: Venue) -> Dict:
+def _serialize_venue(venue: OfferRecapVenue) -> Dict:
     return {
         "id": humanize(venue.identifier),
         "isVirtual": venue.is_virtual,
+        "managingOffererId": humanize(venue.managing_offerer_id),
         "name": venue.name,
         "publicName": venue.public_name,
     }
