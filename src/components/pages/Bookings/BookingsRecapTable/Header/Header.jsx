@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { pluralizeWord } from './utils/pluralizeWord'
 import { CSVLink } from 'react-csv'
 import generateBookingsCsvFile from '../utils/generateBookingsCsvFile'
 import Icon from '../../../../layout/Icon'
+import { pluralize } from '../../../../../utils/pluralize'
 
 const Header = ({ bookingsRecapFiltered, isLoading }) => {
   if (isLoading) {
@@ -16,10 +16,7 @@ const Header = ({ bookingsRecapFiltered, isLoading }) => {
     return (
       <div className="bookings-header">
         <span className="bookings-header-number">
-          {`${bookingsRecapFiltered.length} ${pluralizeWord(
-            bookingsRecapFiltered.length,
-            'réservation'
-          )}`}
+          {pluralize(bookingsRecapFiltered.length, 'réservation')}
         </span>
         <span className="bookings-header-csv-download">
           <CSVLink

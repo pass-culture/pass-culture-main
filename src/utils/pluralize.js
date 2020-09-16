@@ -20,9 +20,5 @@ const pluralizeString = (string, number, pluralizeWith) => {
 }
 
 export const pluralize = (number, string, pluralizeWith) => {
-  if (typeof number === 'string' && typeof string === 'number') {
-    // arguments are in the other way round, don't write number
-    return pluralizeString(number, string, pluralizeWith)
-  }
   return `${number} ${pluralizeString(string, number, pluralizeWith)}`
 }

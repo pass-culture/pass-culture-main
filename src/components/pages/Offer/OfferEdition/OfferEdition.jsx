@@ -4,7 +4,6 @@ import {
   Form,
   Icon,
   mergeForm,
-  pluralize,
   resetForm,
   showModal,
   SubmitButton,
@@ -32,6 +31,7 @@ import { OffererName } from './OffererName'
 import { getDurationInHours, getDurationInMinutes } from '../utils/duration'
 import { VenueName } from './VenueName'
 import { isAllocineOffer, isTiteLiveOffer } from '../domain/localProvider'
+import { pluralize } from '../../../../utils/pluralize'
 
 const DURATION_LIMIT_TIME = 100
 

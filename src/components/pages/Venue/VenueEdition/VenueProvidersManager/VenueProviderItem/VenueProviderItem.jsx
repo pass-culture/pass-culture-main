@@ -1,7 +1,8 @@
-import { Icon, pluralize } from 'pass-culture-shared'
+import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { PROVIDER_ICONS } from '../../../../../utils/providers'
+import { pluralize } from '../../../../../../utils/pluralize'
 
 const VenueProviderItem = ({ venueProvider }) => {
   const { lastSyncDate, nOffers, provider, venueIdAtOfferProvider } = venueProvider

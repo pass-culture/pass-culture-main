@@ -1,7 +1,8 @@
-import { Icon, pluralize } from 'pass-culture-shared'
+import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
+import { pluralize } from '../../../../../../utils/pluralize'
 
 const buildLinkIdFromVenue = ({ publicName, name }) => {
   const nameToFormat = publicName || name

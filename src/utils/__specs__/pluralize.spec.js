@@ -1,43 +1,73 @@
 import { pluralize } from '../pluralize'
 
 describe('pluralize', () => {
-  const wordToPluralize = 'offre'
+  describe('standard words', () => {
+    it('should pluralize word if many offers', () => {
+      // given
+      const wordToPluralize = 'offre'
 
-  it('should not return number when word is given as first argument', () => {
-    // when
-    const pluralizedWord = pluralize(wordToPluralize, 3)
+      // when
+      const pluralizedWord = pluralize(5, wordToPluralize)
 
-    // then
-    expect(pluralizedWord).toEqual('offres')
+      // then
+      expect(pluralizedWord).toStrictEqual('5 offres')
+    })
+
+    it('should singularize word if 0 offer', () => {
+      // given
+      const wordToSingularize = 'offres'
+
+      // when
+      const singularizedWord = pluralize(0, wordToSingularize)
+
+      // then
+      expect(singularizedWord).toStrictEqual('0 offre')
+    })
+
+    it('should singularize word if 1 offer', () => {
+      // given
+      const wordToSingularize = 'offres'
+
+      // when
+      const singularizedWord = pluralize(1, wordToSingularize)
+
+      // then
+      expect(singularizedWord).toStrictEqual('1 offre')
+    })
   })
 
-  it('should return string with plural if many offers', () => {
-    // when
-    const pluralizedWord = pluralize(5, wordToPluralize)
+  describe('words with "x" plural', () => {
+    it('should pluralize word if many bijoux with required ending', () => {
+      // given
+      const wordToPluralize = 'bijou'
 
-    // then
-    expect(pluralizedWord).toEqual('5 offres')
-  })
+      // when
+      const pluralizedWord = pluralize(5, wordToPluralize, 'x')
 
-  it('should return string with singular if 0 offer', () => {
-    // given
-    const wordToSingularize = 'offres'
+      // then
+      expect(pluralizedWord).toStrictEqual('5 bijoux')
+    })
 
-    // when
-    const singularizedWord = pluralize(0, wordToSingularize)
+    it('should singularize word if 0 offer', () => {
+      // given
+      const wordToSingularize = 'bijoux'
 
-    // then
-    expect(singularizedWord).toEqual('0 offre')
-  })
+      // when
+      const singularizedWord = pluralize(0, wordToSingularize)
 
-  it('should return string with singular if 1 offer', () => {
-    // given
-    const wordToSingularize = 'offres'
+      // then
+      expect(singularizedWord).toStrictEqual('0 bijou')
+    })
 
-    // when
-    const singularizedWord = pluralize(1, wordToSingularize)
+    it('should singularize word if 1 offer', () => {
+      // given
+      const wordToSingularize = 'bijoux'
 
-    // then
-    expect(singularizedWord).toEqual('1 offre')
+      // when
+      const singularizedWord = pluralize(1, wordToSingularize)
+
+      // then
+      expect(singularizedWord).toStrictEqual('1 bijou')
+    })
   })
 })
