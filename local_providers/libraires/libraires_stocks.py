@@ -31,7 +31,8 @@ class LibrairesStocks(LocalProvider):
             self.libraires_stock = next(self.libraires_stock_data)
 
         except StopIteration:
-            self.libraires_stock_data = get_libraires_stock_information(self.siret, self.last_processed_isbn,
+            self.libraires_stock_data = get_libraires_stock_information(self.siret,
+                                                                        self.last_processed_isbn,
                                                                         self.modified_since)
             self.libraires_stock = next(self.libraires_stock_data)
 

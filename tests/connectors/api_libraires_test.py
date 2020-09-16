@@ -1,126 +1,128 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 
 import pytest
+import requests
 
-from connectors.api_libraires import ApiLibrairesException, get_stocks_from_libraires_api, is_siret_registered
+from connectors.api_libraires import ApiLibrairesStocks
+from connectors.api_local_provider import ApiLocalProviderException
 
 
 class GetStocksFromLibrairesApiTest:
-    @patch('connectors.api_libraires.requests.get')
-    def test_should_raise_error_when_libraires_api_request_fails(self, mock_requests_get):
+    def setup_method(self):
+        requests.get = MagicMock()
+        self.api = ApiLibrairesStocks(api_url='https://passculture.leslibraires.fr/stocks', name='Libraires')
+
+    def should_raise_error_when_libraires_api_request_fails(self):
         # Given
         siret = '12345678912345'
-        mock_requests_get.return_value = MagicMock(status_code=400)
+        requests.get.return_value = MagicMock(status_code=400)
 
         # When
-        with pytest.raises(ApiLibrairesException) as exception:
-            get_stocks_from_libraires_api(siret)
+        with pytest.raises(ApiLocalProviderException) as exception:
+            self.api.get_stocks_from_local_provider_api(siret)
 
         # Then
         assert str(exception.value) == 'Error 400 when getting Libraires stocks for SIRET: 12345678912345'
 
-    @patch('connectors.api_libraires.requests.get')
-    def test_should_call_libraires_api_with_given_siret(self, mock_requests_get):
+    def should_call_libraires_api_with_given_siret(self):
         # Given
         siret = '12345678912345'
-        mock_requests_get.return_value = MagicMock(status_code=200)
+        requests.get.return_value = MagicMock(status_code=200)
 
         # When
-        get_stocks_from_libraires_api(siret)
+        self.api.get_stocks_from_local_provider_api(siret)
 
         # Then
-        mock_requests_get.assert_called_once_with(
+        requests.get.assert_called_once_with(
             'https://passculture.leslibraires.fr/stocks/12345678912345', params={'limit': '1000'})
 
-    @patch('connectors.api_libraires.requests.get')
-    def test_should_call_libraires_api_with_given_siret_and_last_processed_isbn(self, mock_requests_get):
+    def should_call_libraires_api_with_given_siret_and_last_processed_isbn(self):
         # Given
         siret = '12345678912345'
         last_processed_isbn = '9780199536986'
         modified_since = ''
-        mock_requests_get.return_value = MagicMock(status_code=200)
+        requests.get.return_value = MagicMock(status_code=200)
 
         # When
-        get_stocks_from_libraires_api(siret, last_processed_isbn, modified_since)
+        self.api.get_stocks_from_local_provider_api(siret, last_processed_isbn, modified_since)
 
         # Then
-        mock_requests_get.assert_called_once_with('https://passculture.leslibraires.fr/stocks/12345678912345',
-            params={
-                'limit': '1000',
-                'after': last_processed_isbn
-            })
+        requests.get.assert_called_once_with('https://passculture.leslibraires.fr/stocks/12345678912345',
+                                             params={
+                                                 'limit': '1000',
+                                                 'after': last_processed_isbn
+                                             })
 
-    @patch('connectors.api_libraires.requests.get')
-    def test_should_call_libraires_api_with_given_siret_and_last_modification_date(self, mock_requests_get):
+    def should_call_libraires_api_with_given_siret_and_last_modification_date(self):
         # Given
         siret = '12345678912345'
         last_processed_isbn = ''
         modified_since = '2019-12-16T00:00:00'
-        mock_requests_get.return_value = MagicMock(status_code=200)
+        requests.get.return_value = MagicMock(status_code=200)
 
         # When
-        get_stocks_from_libraires_api(siret, last_processed_isbn, modified_since)
+        self.api.get_stocks_from_local_provider_api(siret, last_processed_isbn, modified_since)
 
         # Then
-        mock_requests_get.assert_called_once_with('https://passculture.leslibraires.fr/stocks/12345678912345',
-            params={
-                'limit': '1000',
-                'modifiedSince': modified_since
-            })
+        requests.get.assert_called_once_with('https://passculture.leslibraires.fr/stocks/12345678912345',
+                                             params={
+                                                 'limit': '1000',
+                                                 'modifiedSince': modified_since
+                                             })
 
-    @patch('connectors.api_libraires.requests.get')
-    def test_should_call_libraires_api_with_given_all_parameters(self, mock_requests_get):
+    def should_call_libraires_api_with_given_all_parameters(self):
         # Given
         siret = '12345678912345'
         last_processed_isbn = '9780199536986'
         modified_since = '2019-12-16T00:00:00'
-        mock_requests_get.return_value = MagicMock(status_code=200)
+        requests.get.return_value = MagicMock(status_code=200)
 
         # When
-        get_stocks_from_libraires_api(siret, last_processed_isbn, modified_since)
+        self.api.get_stocks_from_local_provider_api(siret, last_processed_isbn, modified_since)
 
         # Then
-        mock_requests_get.assert_called_once_with('https://passculture.leslibraires.fr/stocks/12345678912345',
-            params={
-                'limit': '1000',
-                'after': last_processed_isbn,
-                'modifiedSince': modified_since
-            })
+        requests.get.assert_called_once_with('https://passculture.leslibraires.fr/stocks/12345678912345',
+                                             params={
+                                                 'limit': '1000',
+                                                 'after': last_processed_isbn,
+                                                 'modifiedSince': modified_since
+                                             })
 
-class  IsSiretRegisteredTest:
-    @patch('connectors.api_libraires.requests.get')
-    def test_should_call_libraires_api_with_given_siret(self, mock_requests_get):
+
+class IsSiretRegisteredTest:
+    def setup_method(self):
+        requests.get = MagicMock()
+        self.api = ApiLibrairesStocks(api_url='https://passculture.leslibraires.fr/stocks', name='Libraires')
+
+    def should_call_libraires_api_with_given_siret(self):
         # Given
         siret = '12345678912345'
-        mock_requests_get.return_value = MagicMock(status_code=200)
+        requests.get.return_value = MagicMock(status_code=200)
 
         # When
-        is_siret_registered(siret)
+        self.api.is_siret_registered(siret)
 
         # Then
-        mock_requests_get.assert_called_once_with(
-            'https://passculture.leslibraires.fr/stocks/12345678912345')
+        requests.get.assert_called_once_with('https://passculture.leslibraires.fr/stocks/12345678912345')
 
-    @patch('connectors.api_libraires.requests.get')
-    def test_should_returns_true_if_api_returns_200(self, mock_requests_get):
+    def should_returns_true_if_api_returns_200(self):
         # Given
         siret = '12345678912345'
-        mock_requests_get.return_value = MagicMock(status_code=200)
+        requests.get.return_value = MagicMock(status_code=200)
 
         # When
-        output = is_siret_registered(siret)
+        output = self.api.is_siret_registered(siret)
 
         # Then
-        assert output == True
+        assert output is True
 
-    @patch('connectors.api_libraires.requests.get')
-    def test_should_returns_false_when_libraires_api_request_fails(self, mock_requests_get):
+    def should_returns_false_when_libraires_api_request_fails(self):
         # Given
         siret = '12345678912345'
-        mock_requests_get.return_value = MagicMock(status_code=400)
+        requests.get.return_value = MagicMock(status_code=400)
 
         # When
-        output = is_siret_registered(siret)
+        output = self.api.is_siret_registered(siret)
 
         # Then
-        assert output == False
+        assert output is False

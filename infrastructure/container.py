@@ -22,7 +22,7 @@ from use_cases.list_favorites_of_beneficiary import ListFavoritesOfBeneficiary
 from use_cases.list_offerers_for_pro_user import ListOfferersForProUser
 from use_cases.list_offers_for_pro_user import ListOffersForProUser
 
-# Repositories
+# Repositories => data depuis base SQL
 beneficiary_bookings_repository = BeneficiaryBookingsSQLRepository()
 booking_repository = BookingSQLRepository()
 favorite_repository = FavoriteSQLRepository()
@@ -34,6 +34,10 @@ venue_label_repository = VenueLabelSQLRepository()
 venue_identifier_repository = VenueWithBasicInformationSQLRepository()
 venue_with_offerer_informations_repository = VenueWithOffererNameSQLRepository()
 paginated_offerers_repository = PaginatedOfferersSQLRepository()
+
+# Repositories => data depuis API externe
+api_libraires_stocks = ApiLibrairesStocks()
+api_fnac_stocks =
 
 # Usecases
 book_an_offer = BookAnOffer(booking_repository=booking_repository,
