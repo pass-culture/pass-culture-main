@@ -1,6 +1,4 @@
-function doesLastProviderExists(offer) {
-  return offer !== null && offer.lastProvider
-}
+const doesLastProviderExists = offer => offer !== null && offer.lastProvider
 
 const isTiteLiveOffer = (offer = null) => {
   return doesLastProviderExists(offer)
