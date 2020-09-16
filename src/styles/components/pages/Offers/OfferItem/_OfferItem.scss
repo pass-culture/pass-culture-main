@@ -44,12 +44,12 @@
       img {
         margin-left: 0;
         margin-right: rem(9px);
+        width: rem(20px);
       }
     }
 
     .sold-out-icon {
       margin-left: rem(8px);
-      position: relative;
       width: rem(20px);
 
       &:hover, &:focus {
