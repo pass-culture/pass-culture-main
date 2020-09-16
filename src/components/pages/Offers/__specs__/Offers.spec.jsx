@@ -9,7 +9,6 @@ import * as usersSelectors from '../../../../selectors/data/usersSelectors'
 import { getStubStore } from '../../../../utils/stubStore'
 import OfferItem from '../OfferItem/OfferItemContainer'
 import Offers, { createLinkToOfferCreation } from '../Offers'
-import mockedOffers from './offersMock'
 
 describe('src | components | pages | Offers | Offers', () => {
   let change
@@ -245,14 +244,37 @@ describe('src | components | pages | Offers | Offers', () => {
     describe('offerItem', () => {
       it('should render items corresponding to offers', () => {
         // given
-        props.offers = mockedOffers
+        props.offers = [
+          {
+            id: 'M4',
+            isActive: true,
+            isEditable: true,
+            isFullyBooked: false,
+            isEvent: true,
+            isThing: false,
+            hasBookingLimitDatetimesPassed: false,
+            name: 'My little offer',
+            thumbUrl: '/my-fake-thumb',
+          },
+          {
+            id: 'AE3',
+            isActive: true,
+            isEditable: true,
+            isFullyBooked: true,
+            isEvent: false,
+            isThing: true,
+            hasBookingLimitDatetimesPassed: false,
+            name: 'My other offer',
+            thumbUrl: '/my-other-fake-thumb',
+          },
+        ]
 
         // when
         const wrapper = shallow(<Offers {...props} />)
         const offerItem = wrapper.find(OfferItem)
 
         // then
-        expect(offerItem).toHaveLength(mockedOffers.length)
+        expect(offerItem).toHaveLength(props.offers.length)
       })
     })
 
