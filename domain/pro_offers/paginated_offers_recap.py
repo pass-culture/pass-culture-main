@@ -37,7 +37,6 @@ class OfferRecap:
                  venue_public_name: str,
                  stocks: [Dict],
                  ):
-        [print(stock) for stock in stocks]
         self.identifier = identifier
         self.availability_message = availability_message
         self.has_booking_limit_datetimes_passed = has_booking_limit_datetimes_passed

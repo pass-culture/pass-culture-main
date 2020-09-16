@@ -35,6 +35,8 @@ def _offer_recap_to_domain(offer_sql_entity: OfferSQLEntity) -> OfferRecap:
 
 
 def _stock_serializer(stock: StockSQLEntity) -> Dict:
-    return {"identifier": stock.id,
-            "is_event_expired": stock.isEventExpired,
-            "remaining_quantity": stock.remainingQuantity}
+    return {
+        "identifier": stock.id,
+        "is_event_expired": stock.isEventExpired,
+        "remaining_quantity": stock.remainingQuantity
+    }
