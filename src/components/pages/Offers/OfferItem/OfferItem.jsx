@@ -73,9 +73,11 @@ const OfferItem = ({
   const offerStatus = computeOfferStatus(offer, stocks)
 
   return (
-    <li className={`offer-item ${isOfferInactiveOrExpired ? 'inactive' : ''} offer-row`}>
-      <Thumb url={offer.thumbUrl} />
-      <div className="title-container">
+    <tr className={`offer-item ${isOfferInactiveOrExpired ? 'inactive' : ''} offer-row`}>
+      <td className="thumb-column">
+        <Thumb url={offer.thumbUrl} />
+      </td>
+      <td className="title-column">
         <Link
           className="name"
           title="Afficher le détail de l'offre"
@@ -105,35 +107,39 @@ const OfferItem = ({
             </div>
           )}
         </span>
-      </div>
-      <span>
+      </td>
+      <td className="venue-column">
         {(venue && venue.publicName) || venue.name}
-      </span>
-      <span>
+      </td>
+      <td className="stock-column">
         {computeRemainingStockValue(stocks)}
-      </span>
-      <span className="status-column">
+      </td>
+      <td className="status-column">
         <span className={OFFER_STATUS_PROPERTIES[offerStatus].className}>
           <Icon svg={OFFER_STATUS_PROPERTIES[offerStatus].icon} />
           {offerStatus}
         </span>
-      </span>
-      <button
-        className="secondary-button"
-        onClick={handleOnDeactivateClick}
-        type="button"
-      >
-        {offer.isActive ? 'Désactiver' : 'Activer'}
-      </button>
-      {isOfferEditable && (
-        <Link
-          className="secondary-link"
-          to={`/offres/${offer.id}/edition`}
+      </td>
+      <td className="switch-column">
+        <button
+          className="secondary-button"
+          onClick={handleOnDeactivateClick}
+          type="button"
         >
-          <Icon svg="ico-pen" />
-        </Link>
-      )}
-    </li>
+          {offer.isActive ? 'Désactiver' : 'Activer'}
+        </button>
+      </td>
+      <td className="edit-column">
+        {isOfferEditable && (
+          <Link
+            className="secondary-link"
+            to={`/offres/${offer.id}/edition`}
+          >
+            <Icon svg="ico-pen" />
+          </Link>
+        )}
+      </td>
+    </tr>
   )
 }
 

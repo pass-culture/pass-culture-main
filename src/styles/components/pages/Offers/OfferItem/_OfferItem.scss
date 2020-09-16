@@ -10,7 +10,7 @@
   .offer-thumb,
   .default-thumb {
     height: rem(84px);
-    width: 100%;
+    width: rem(82px);
   }
 
   &.inactive {
@@ -106,6 +106,36 @@
       flex-shrink: 0;
       max-height: rem(16px);
       max-width: rem(16px);
+    }
+  }
+
+  .thumb-column {
+    width: rem(82px);
+  }
+
+  .title-column {
+    width: rem(185px);
+  }
+
+  .venue-column {
+    width: rem(135px);
+  }
+
+  .status-column {
+    width: rem(155px);
+  }
+
+  .switch-column {
+    width: 6rem;
+    button {
+      width: rem(96px);
+    }
+  }
+
+  .edit-column {
+    width: rem(40px);
+    a {
+      width: rem(40px);
     }
   }
 }

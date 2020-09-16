@@ -1,7 +1,7 @@
 import { Icon, resolveIsNew } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
-import React, { Fragment, PureComponent } from 'react'
+import React, { PureComponent } from 'react'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { Link } from 'react-router-dom'
 
@@ -260,21 +260,35 @@ class Offers extends PureComponent {
           )}
 
           {offers.length > 0 && (
-            <Fragment>
-              <div className="offer-row">
-                <span className="venue-title">
-                  {'Lieu'}
-                </span>
-                <span className="stock-title">
-                  {'Stock'}
-                </span>
-                <span className="status-title">
-                  {'Statut'}
-                </span>
-              </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>
+&nbsp;
+                  </th>
+                  <th>
+&nbsp;
+                  </th>
+                  <th>
+                    {'Lieu'}
+                  </th>
+                  <th>
+                    {'Stock'}
+                  </th>
+                  <th>
+                    {'Statut'}
+                  </th>
+                  <th>
+&nbsp;
+                  </th>
+                  <th>
+&nbsp;
+                  </th>
+                </tr>
+              </thead>
               <LoadingInfiniteScroll
                 className="offers-list"
-                element="ul"
+                element="tbody"
                 handlePageChange={this.onPageChange}
                 handlePageReset={this.onPageReset}
                 hasMore={hasMore}
@@ -282,13 +296,13 @@ class Offers extends PureComponent {
                 loader={<Spinner key="spinner" />}
               >
                 {offers.map(offer => (
-                  <Fragment key={offer.id}>
-                    <OfferItemContainer offer={offer} />
-                    <hr />
-                  </Fragment>
+                  <OfferItemContainer
+                    key={offer.id}
+                    offer={offer}
+                  />
                 ))}
               </LoadingInfiniteScroll>
-            </Fragment>
+            </table>
           )}
           {hasMore === false && 'Fin des résultats'}
         </div>

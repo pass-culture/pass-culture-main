@@ -66,27 +66,39 @@
     }
   }
 
-  .offer-row {
-    align-items: center;
-    display: grid;
-    grid-column-gap: rem(16px);
-    grid-template-columns: rem(82px) 4fr 3fr rem(70px) rem(110px) rem(96px) rem(40px);
-  }
+  table {
+    width: 100%;
 
-  .venue-title,
-  .stock-title,
-  .status-title {
-    @include caption();
-  }
+    th {
+      @include caption();
+      padding: 0 rem(8px);
+    }
 
-  .venue-title {
-    grid-column-start: 3;
-  }
+    tbody > tr {
+      border-bottom: 1px solid $grey-medium;
 
-  hr {
-    background: none;
-    border-top: 1px solid $grey-medium;
-    grid-column: 1/7;
-    margin: rem(16px) 0;
+      td {
+        padding: rem(16px) rem(8px);
+        vertical-align: middle;
+      }
+
+      td:last-child {
+        padding-right: 0;
+      }
+
+      td:first-child {
+        padding-left: 0;
+      }
+
+      &:first-child {
+        td {
+          padding-top: 0;
+        }
+      }
+
+      &:last-child {
+        border: none;
+      }
+    }
   }
 }
