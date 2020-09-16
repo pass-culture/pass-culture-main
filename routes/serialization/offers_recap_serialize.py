@@ -12,7 +12,6 @@ def _serialize_offer_paginated(offer: OfferRecap) -> Dict:
     serialized_stocks = [_serialize_stock(offer.identifier, stock) for stock in offer.stocks]
 
     return {
-        "availabilityMessage": offer.availability_message,
         "hasBookingLimitDatetimesPassed": offer.has_booking_limit_datetimes_passed,
         "id": humanize(offer.identifier),
         "isActive": offer.is_active,

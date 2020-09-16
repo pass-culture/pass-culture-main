@@ -1,10 +1,10 @@
-from typing import Dict
+from typing import Dict, List
 
-from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap, OfferRecapVenue, OfferRecapStock
-from models import OfferSQLEntity, VenueSQLEntity, StockSQLEntity
+from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap
+from models import OfferSQLEntity, StockSQLEntity
 
 
-def to_domain(offer_sql_entities: [OfferSQLEntity], total_offers: int) -> PaginatedOffersRecap:
+def to_domain(offer_sql_entities: List[OfferSQLEntity], total_offers: int) -> PaginatedOffersRecap:
     offers_recap = [_offer_recap_to_domain(offer_sql_entity) for offer_sql_entity in offer_sql_entities]
 
     return PaginatedOffersRecap(offers_recap, total_offers)
@@ -15,7 +15,6 @@ def _offer_recap_to_domain(offer_sql_entity: OfferSQLEntity) -> OfferRecap:
 
     return OfferRecap(
             identifier=offer_sql_entity.id,
-            availability_message=offer_sql_entity.availabilityMessage,
             has_booking_limit_datetimes_passed=offer_sql_entity.hasBookingLimitDatetimesPassed,
             is_active=offer_sql_entity.isActive,
             is_editable=offer_sql_entity.isEditable,

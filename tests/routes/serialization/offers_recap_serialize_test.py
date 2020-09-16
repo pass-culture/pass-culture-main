@@ -12,7 +12,6 @@ def test_should_return_offers_dict_with_relevant_informations():
     stock = {"identifier": stock_id, "is_event_expired": False, "remaining_quantity": 10}
     offer = OfferRecap(
             identifier=offer_id,
-            availability_message="Encore 10 stocks restants",
             has_booking_limit_datetimes_passed=False,
             is_active=True,
             is_editable=True,
@@ -36,7 +35,6 @@ def test_should_return_offers_dict_with_relevant_informations():
 
     # then
     assert serialized_offers[0] == {
-        "availabilityMessage": "Encore 10 stocks restants",
         "hasBookingLimitDatetimesPassed": False,
         "id": humanize(offer_id),
         "isActive": True,

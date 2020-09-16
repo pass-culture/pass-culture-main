@@ -45,7 +45,6 @@ OFFER_INCLUDES = [
     "isThing",
     "lastProvider",
     "offerType",
-    "availabilityMessage",
     "thumbUrl",
     {
         "key": "activeMediation",

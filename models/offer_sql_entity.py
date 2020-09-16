@@ -17,7 +17,6 @@ from models.providable_mixin import ProvidableMixin
 from models.stock_sql_entity import StockSQLEntity
 from models.versioned_mixin import VersionedMixin
 from utils.date import DateTimes
-from utils.string_processing import pluralize
 
 
 class OfferSQLEntity(PcObject,
@@ -97,7 +96,7 @@ class OfferSQLEntity(PcObject,
                             backref=db.backref('criteria', lazy='dynamic'),
                             secondary='offer_criterion')
 
-    def update_with_product_data(self, product_dict: dict):
+    def update_with_product_data(self, product_dict: dict) -> None:
         owning_offerer = self.product.owningOfferer
         if owning_offerer and owning_offerer == self.venue.managingOfferer:
             self.product.populate_from_dict(product_dict)
@@ -185,37 +184,6 @@ class OfferSQLEntity(PcObject,
                 return category.name
 
     @property
-    def availabilityMessage(self) -> str:
-        if not self.activeStocks:
-            return 'Pas encore de stock'
-
-        incoming_stocks = list(filter(lambda stock: not stock.hasBookingLimitDatetimePassed, self.activeStocks))
-        if not incoming_stocks:
-            return 'Stock expiré'
-
-        count_stocks_with_no_remaining_quantity = len(
-            list(filter(lambda stock: stock.quantity is not None and stock.remainingQuantity == 0, incoming_stocks)))
-        has_at_least_one_stock_with_remaining_quantity = count_stocks_with_no_remaining_quantity != len(incoming_stocks)
-
-        if has_at_least_one_stock_with_remaining_quantity and count_stocks_with_no_remaining_quantity > 0:
-            return f"Plus de stock restant pour" \
-                   f" {count_stocks_with_no_remaining_quantity}" \
-                   f" {pluralize(count_stocks_with_no_remaining_quantity, 'date')}"
-
-        if count_stocks_with_no_remaining_quantity == len(incoming_stocks):
-            return 'Plus de stock restant'
-
-        offer_has_at_least_one_unlimited_stock = any(map(lambda stock: stock.quantity is None, incoming_stocks))
-        if offer_has_at_least_one_unlimited_stock:
-            return 'Stock restant illimité'
-
-        stocks_remaining_quantity = sum(map(lambda stock: stock.remainingQuantity, incoming_stocks))
-
-        return f"Encore {stocks_remaining_quantity}" \
-               f" {pluralize(stocks_remaining_quantity, 'stock')}" \
-               f" {pluralize(stocks_remaining_quantity, 'restant')}"
-
-    @property
     def thumbUrl(self) -> str:
         offer_has_active_mediation = any(map(lambda mediation: mediation.isActive, self.mediations))
         if offer_has_active_mediation:
@@ -231,7 +199,7 @@ class OfferSQLEntity(PcObject,
 
         return len(list(offline_thing)) == 1
 
-    def _is_same_type(self, thing_type):
+    def _is_same_type(self, thing_type) -> bool:
         return str(thing_type) == self.type
 
     def _is_offline_type_only(self, thing_type):

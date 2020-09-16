@@ -19,7 +19,6 @@ class OfferRecapVenue:
 class OfferRecap:
     def __init__(self,
                  identifier: int,
-                 availability_message: str,
                  has_booking_limit_datetimes_passed: bool,
                  is_active: bool,
                  is_editable: bool,
@@ -34,10 +33,9 @@ class OfferRecap:
                  venue_managing_offerer_id: int,
                  venue_name: str,
                  venue_public_name: str,
-                 stocks: [Dict],
+                 stocks: List[Dict],
                  ):
         self.identifier = identifier
-        self.availability_message = availability_message
         self.has_booking_limit_datetimes_passed = has_booking_limit_datetimes_passed
         self.is_active = is_active
         self.is_editable = is_editable

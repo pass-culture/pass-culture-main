@@ -119,31 +119,6 @@ class Put:
             assert offers[0].isActive == True
             assert offers[1].isActive == True
 
-        @clean_database
-        def when_activating_all_venue_offers_returns_an_availability_message(self, app):
-            # Given
-            user = create_user(email='test@example.net')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-            stock = create_stock_from_offer(offer, quantity=22)
-            offer.isActive = False
-            repository.save(
-                stock, user_offerer, venue
-            )
-
-            api_url = API_URL + humanize(venue.id) + '/offers/activate'
-
-            # When
-            response = TestClient(app.test_client()) \
-                .with_auth('test@example.net') \
-                .put(api_url)
-
-            # Then
-            assert response.status_code == 200
-            assert response.json[0]['availabilityMessage'] == 'Encore 22 stocks restants'
-
         @patch('routes.venues.feature_queries.is_active', return_value=True)
         @patch('routes.venues.redis.add_venue_id')
         @clean_database
@@ -201,27 +176,6 @@ class Put:
             offers = OfferSQLEntity.query.all()
             assert not offers[0].isActive
             assert not offers[1].isActive
-
-        @clean_database
-        def when_deactivating_all_venue_offers_returns_an_availability_message(self, app):
-            # Given
-            user = create_user(email='test@example.net')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-            stock = create_stock_from_offer(offer, quantity=0)
-            repository.save(stock, user_offerer)
-
-            api_url = API_URL + humanize(venue.id) + '/offers/deactivate'
-
-            # When
-            response = TestClient(app.test_client()).with_auth('test@example.net') \
-                .put(api_url)
-
-            # Then
-            assert response.status_code == 200
-            assert response.json[0]['availabilityMessage'] == 'Plus de stock restant'
 
         @patch('routes.venues.feature_queries.is_active', return_value=True)
         @patch('routes.venues.redis.add_venue_id')

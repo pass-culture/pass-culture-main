@@ -159,7 +159,3 @@ def remove_single_letters_for_search(array_of_keywords):
 
 def format_decimal(dec):
     return babel_format_decimal(dec, locale='fr_FR')
-
-
-def pluralize(number_of_occurence: int, word: str) -> str:
-    return f'{word}s' if number_of_occurence > 1 else word

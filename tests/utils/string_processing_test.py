@@ -3,7 +3,7 @@ from utils.string_processing import get_matched_string_index, \
     format_decimal, \
     get_price_value, \
     remove_single_letters_for_search, \
-    tokenize_for_search, pluralize, get_model_plural_name
+    tokenize_for_search, get_model_plural_name
 
 
 def test_get_matched_string_index():
@@ -36,30 +36,6 @@ def test_tokenize_url():
 
 def test_format_decimal():
     assert format_decimal(1.22) == '1,22'
-
-
-class PluralizeTest:
-    def test_should_return_word_when_only_one_occurence(self):
-        # Given
-        number_of_occurence = 1
-        word = 'stock'
-
-        # When
-        message = pluralize(number_of_occurence, word)
-
-        # Then
-        assert message == 'stock'
-
-    def test_should_return_words_when_more_than_one_occurence(self):
-        # Given
-        number_of_occurence = 5
-        word = 'stock'
-
-        # When
-        message = pluralize(number_of_occurence, word)
-
-        # Then
-        assert message == 'stocks'
 
 
 class GetModelPluralNameTest:
