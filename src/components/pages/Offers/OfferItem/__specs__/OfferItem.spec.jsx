@@ -398,10 +398,14 @@ describe('src | components | pages | Offers | OfferItem', () => {
       // given
       props.offer = activeThingOfferWithActiveMediation
 
-      const wrapper = shallow(<OfferItem {...props} />)
-
+      const wrapper = mount(
+        <MemoryRouter>
+          <OfferItem {...props} />
+        </MemoryRouter>
+      )
       // when
-      wrapper.instance().handleOnDeactivateClick()
+      const deactivateOfferButton = wrapper.find({ children: 'Désactiver' })
+      deactivateOfferButton.invoke('onClick')()
 
       // then
       expect(props.trackDeactivateOffer).toHaveBeenCalledWith(
@@ -412,10 +416,15 @@ describe('src | components | pages | Offers | OfferItem', () => {
     it('should track activate offer when offer is inactive', () => {
       // given
       props.offer = deactivedOfferWithActiveMediation
-      const wrapper = shallow(<OfferItem {...props} />)
 
+      const wrapper = mount(
+        <MemoryRouter>
+          <OfferItem {...props} />
+        </MemoryRouter>
+      )
       // when
-      wrapper.instance().handleOnDeactivateClick()
+      const activateOfferButton = wrapper.find({ children: 'Activer' })
+      activateOfferButton.invoke('onClick')()
 
       // then
       expect(props.trackActivateOffer).toHaveBeenCalledWith(deactivedOfferWithActiveMediation.id)
