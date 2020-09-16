@@ -52,7 +52,8 @@
       margin-left: rem(8px);
       width: rem(20px);
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         & ~ .sold-out-dates {
           display: flex;
         }

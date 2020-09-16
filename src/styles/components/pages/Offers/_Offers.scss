@@ -70,13 +70,12 @@
     align-items: center;
     display: grid;
     grid-column-gap: rem(16px);
-    grid-template-columns: rem(82px) 1fr 1fr 1fr 1fr rem(96px) rem(40px);
+    grid-template-columns: rem(82px) 4fr 3fr rem(70px) rem(110px) rem(96px) rem(40px);
   }
 
   .venue-title,
   .stock-title,
-  .status-title,
-  {
+  .status-title {
     @include caption();
   }
 
