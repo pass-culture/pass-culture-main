@@ -32,11 +32,8 @@ export const mapStateToProps = (state, ownProps) => {
   const { id: offerId, venueId } = offer
   const venue = selectVenueById(state, venueId)
 
-  const availabilityMessage = offer.availabilityMessage
-
   return {
     stocks: selectStocksByOfferId(state, offerId),
-    availabilityMessage,
     venue,
   }
 }

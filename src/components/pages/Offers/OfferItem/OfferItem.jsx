@@ -28,7 +28,6 @@ const OFFER_STATUS_PROPERTIES = {
 }
 
 const OfferItem = ({
-  availabilityMessage,
   location,
   offer,
   stocks,
@@ -57,6 +56,18 @@ const OfferItem = ({
     return stocks.filter(stock => stock.remainingQuantity === 0).length
   }
 
+  function computeRemainingStockValue(stocks) {
+    let totalRemainingStock = 0
+    for (const stock of stocks) {
+      if (stock.remainingQuantity === 'unlimited') {
+        return 'Illimité'
+      }
+      totalRemainingStock += stock.remainingQuantity
+    }
+
+    return totalRemainingStock
+  }
+
   const stockSize = stocks ? stocks.length : null
   const isOfferEditable = offer ? offer.isEditable : null
   const isOfferInactiveOrExpired = !offer.isActive || offer.hasBookingLimitDatetimesPassed
@@ -80,7 +91,7 @@ const OfferItem = ({
             title="Afficher le détail des stocks"
             to={`/offres/${offer.id}?gestion`}
           >
-              {buildStocksDetail(offer, stockSize)}
+            {buildStocksDetail(offer, stockSize)}
           </Link>
           {shouldShowSoldOutWarning && (
             <div>
@@ -100,11 +111,9 @@ const OfferItem = ({
       <span>
         {(venue && venue.publicName) || venue.name}
       </span>
-      {availabilityMessage && (
-        <span>
-          {availabilityMessage}
-        </span>
-      )}
+      <span>
+        {computeRemainingStockValue(stocks)}
+      </span>
       <span className="status-column">
         <span className={OFFER_STATUS_PROPERTIES[offerStatus].className}>
           <Icon svg={OFFER_STATUS_PROPERTIES[offerStatus].icon} />
@@ -131,7 +140,6 @@ const OfferItem = ({
 }
 
 OfferItem.propTypes = {
-  availabilityMessage: PropTypes.string.isRequired,
   location: PropTypes.shape({
     search: PropTypes.string.isRequired,
   }).isRequired,

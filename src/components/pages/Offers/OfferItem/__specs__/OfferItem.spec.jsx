@@ -2,35 +2,33 @@ import React from 'react'
 import { mount, shallow } from 'enzyme'
 import { MemoryRouter } from 'react-router'
 import OfferItem from '../OfferItem'
-import offersMock from '../../__specs__/offersMock'
 
 describe('src | components | pages | Offers | OfferItem', () => {
   let props
   let dispatch = jest.fn()
   let updateOffer = jest.fn()
 
-  const activeOfferWithActiveMediation = offersMock[0]
-  const activeOfferWithOutActiveMediation = offersMock[1]
-  const deactivedOfferWithActiveMediation = offersMock[2]
-  const activeOfferWithActiveMediationAndNotEditable = offersMock[3]
-  const activeThingOfferWithActiveMediation = offersMock[4]
+  let eventOffer
 
   beforeEach(() => {
+    eventOffer = {
+      id: 'M4',
+      isActive: true,
+      isEditable: true,
+      isFullyBooked: false,
+      isEvent: true,
+      isThing: false,
+      hasBookingLimitDatetimesPassed: false,
+      name: 'My little offer',
+      thumbUrl: '/my-fake-thumb',
+    }
+
     props = {
-      aggregatedStock: {},
       dispatch,
-      offer: activeOfferWithActiveMediation,
+      offer: eventOffer,
       location: {
         search: '?orderBy=offer.id+desc',
       },
-      maxDate: {
-        format: jest.fn(),
-      },
-      mediations: [{ id: 'HA', isActive: true, thumbUrl: 'https://url.to/thumb' }],
-      offerTypeLabel: 'fake label',
-      offerer: {},
-      product: {},
-      availabilityMessage: 'Encore 7 stocks restant',
       stocks: [],
       venue: {
         name: 'Paris',
@@ -44,11 +42,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
   describe('render', () => {
     describe('thumb Component', () => {
       it('should render an image with url from offer when offer has a thumb url', () => {
-        // given
-        props.offer = activeOfferWithOutActiveMediation
-        props.offer.thumbUrl = '/fake-product-url'
-        props.mediations = []
-
         // when
         const wrapper = mount(
           <MemoryRouter>
@@ -58,14 +51,12 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         // then
         const thumbImage = wrapper.find('img').first()
-        expect(thumbImage.prop('src')).toBe('/fake-product-url')
+        expect(thumbImage.prop('src')).toBe(eventOffer.thumbUrl)
       })
 
       it('should render an image with an empty url when offer does not have a thumb url', () => {
         // given
-        props.offer = activeOfferWithOutActiveMediation
-        props.offer.thumbUrl = null
-        props.mediations = []
+        eventOffer.thumbUrl = null
 
         const wrapper = mount(
           <MemoryRouter>
@@ -84,36 +75,32 @@ describe('src | components | pages | Offers | OfferItem', () => {
       describe('switch activate', () => {
         it('should deactivate when offer is active', () => {
           // given
-          props.offer = activeOfferWithActiveMediation
           const wrapper = shallow(<OfferItem {...props} />)
           const disableButton = wrapper.find('button')
 
           // when
-          disableButton.simulate('click')
+          disableButton.invoke('onClick')()
 
           // then
-          expect(updateOffer).toHaveBeenCalledWith(activeOfferWithActiveMediation.id, false)
+          expect(updateOffer).toHaveBeenCalledWith(eventOffer.id, false)
         })
 
         it('should activate when offer is not active', () => {
           // given
-          props.offer = deactivedOfferWithActiveMediation
+          eventOffer.isActive = false
           const wrapper = shallow(<OfferItem {...props} />)
           const disableButton = wrapper.find('button')
 
           // when
-          disableButton.simulate('click')
+          disableButton.invoke('onClick')()
 
           // then
-          expect(updateOffer).toHaveBeenCalledWith(deactivedOfferWithActiveMediation.id, true)
+          expect(updateOffer).toHaveBeenCalledWith(eventOffer.id, true)
         })
       })
 
       describe('edit offer link', () => {
         it('should be displayed when offer is editable', () => {
-          // given
-          props.offer = activeOfferWithActiveMediation
-
           // when
           const wrapper = mount(
             <MemoryRouter>
@@ -122,16 +109,11 @@ describe('src | components | pages | Offers | OfferItem', () => {
           )
 
           // then
-          const editOfferLink = wrapper.find(
-            `a[href="/offres/${activeOfferWithActiveMediation.id}/edition"]`
-          )
+          const editOfferLink = wrapper.find(`a[href="/offres/${eventOffer.id}/edition"]`)
           expect(editOfferLink).toHaveLength(1)
         })
 
         it('should not be displayed when offer is no editable', () => {
-          // given
-          props.offer = activeOfferWithActiveMediationAndNotEditable
-
           // when
           const wrapper = mount(
             <MemoryRouter>
@@ -140,9 +122,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           )
 
           // then
-          const editOfferLink = wrapper.find(
-            `a[href="/offres/${activeOfferWithActiveMediationAndNotEditable.id}"]`
-          )
+          const editOfferLink = wrapper.find(`a[href="/offres/${eventOffer.id}"]`)
           expect(editOfferLink).toHaveLength(0)
         })
       })
@@ -150,10 +130,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     describe('offer title', () => {
       it('should contain a link with the offer name and details link', () => {
-        // given
-        props.offer.name = 'Harry Potter vol.1'
-        props.stocks = []
-
         // when
         const wrapper = mount(
           <MemoryRouter>
@@ -165,7 +141,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const titleLink = wrapper.find(`a[href="/offres/${props.offer.id}?orderBy=offer.id+desc"]`)
         expect(titleLink).toHaveLength(1)
         expect(titleLink.prop('title')).toBe("Afficher le détail de l'offre")
-        expect(titleLink.text()).toBe('Harry Potter vol.1')
+        expect(titleLink.text()).toBe(eventOffer.name)
       })
     })
 
@@ -206,15 +182,27 @@ describe('src | components | pages | Offers | OfferItem', () => {
       expect(venueName).toHaveLength(1)
     })
 
-    describe('when offer is an event product ', () => {
-      it('should display the availability message', () => {
+    describe('offer remaining quantity', () => {
+      it('should be 0 when offer has no stock', () => {
+        // when
+        const wrapper = mount(
+          <MemoryRouter>
+            <OfferItem {...props} />
+          </MemoryRouter>
+        )
+
+        // then
+        const remainingQuantity = wrapper.find({ children: 0 })
+        expect(remainingQuantity).toHaveLength(1)
+      })
+
+      it('should be the sum of offer stocks remaining quantity', () => {
         // given
-        props.product = {
-          offerType: { label: 'Conférence — Débat — Dédicace' },
-        }
-        props.stocks = []
-        props.availabilityMessage = 'Plus de stock restant'
-        props.offer = activeOfferWithActiveMediation
+        props.stocks = [
+          { remainingQuantity: 0 },
+          { remainingQuantity: 2 },
+          { remainingQuantity: 3 },
+        ]
 
         // when
         const wrapper = mount(
@@ -224,17 +212,31 @@ describe('src | components | pages | Offers | OfferItem', () => {
         )
 
         // then
-        const venueName = wrapper.find({ children: 'Plus de stock restant' })
-        expect(venueName).toHaveLength(1)
+        const remainingQuantity = wrapper.find({ children: 5 })
+        expect(remainingQuantity).toHaveLength(1)
       })
 
+      it('should be "illimité" when at least one stock is unlimited', () => {
+        // given
+        props.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 'unlimited' }]
+
+        // when
+        const wrapper = mount(
+          <MemoryRouter>
+            <OfferItem {...props} />
+          </MemoryRouter>
+        )
+
+        // then
+        const remainingQuantity = wrapper.find({ children: 'Illimité' })
+        expect(remainingQuantity).toHaveLength(1)
+      })
+    })
+
+    describe('when offer is an event product ', () => {
       it('should display the correct text "2 dates" on the link redirecting to the offer management', () => {
         // given
-        props.product = {
-          offerType: { label: 'Conférence — Débat — Dédicace' },
-        }
-        props.stocks = [{}, {}]
-        props.offer = activeOfferWithActiveMediation
+        props.stocks = [{remainingQuantity: 'unlimited'}, {remainingQuantity: 'unlimited'}]
 
         // when
         const wrapper = mount(
@@ -250,11 +252,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should not display a warning when no stocks are sold out', () => {
         // given
-        props.product = {
-          offerType: { label: 'Conférence — Débat — Dédicace' },
-        }
         props.stocks = [{ remainingQuantity: 'unlimited' }, { remainingQuantity: 13 }]
-        props.offer = activeOfferWithActiveMediation
 
         // when
         const wrapper = mount(
@@ -272,11 +270,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should not display a warning when all stocks are sold out', () => {
         // given
-        props.product = {
-          offerType: { label: 'Conférence — Débat — Dédicace' },
-        }
         props.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 0 }]
-        props.offer = activeOfferWithActiveMediation
 
         // when
         const wrapper = mount(
@@ -294,11 +288,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should display a warning with number of stocks sold out when at least one stock is sold out', () => {
         // given
-        props.product = {
-          offerType: { label: 'Conférence — Débat — Dédicace' },
-        }
         props.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 'unlimited' }]
-        props.offer = activeOfferWithActiveMediation
 
         // when
         const wrapper = mount(
@@ -323,15 +313,11 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should pluralize number of stocks sold out when at least two stocks are sold out', () => {
         // given
-        props.product = {
-          offerType: { label: 'Conférence — Débat — Dédicace' },
-        }
         props.stocks = [
           { remainingQuantity: 0 },
           { remainingQuantity: 0 },
           { remainingQuantity: 12 },
         ]
-        props.offer = activeOfferWithActiveMediation
 
         // when
         const wrapper = mount(
@@ -350,34 +336,15 @@ describe('src | components | pages | Offers | OfferItem', () => {
     })
 
     describe('when offer is a thing product', () => {
-      it('should display the availability message', () => {
-        // given
-        props.product = {
-          offerType: { label: 'Une place de cinéma' },
-        }
-        props.stocks = []
-        props.availabilityMessage = 'Plus de stock restant'
-        props.offer = activeThingOfferWithActiveMediation
-
-        // when
-        const wrapper = mount(
-          <MemoryRouter>
-            <OfferItem {...props} />
-          </MemoryRouter>
-        )
-
-        // then
-        const venueName = wrapper.find({ children: 'Plus de stock restant' })
-        expect(venueName).toHaveLength(1)
+      let thingOffer
+      beforeEach(() => {
+        thingOffer = Object.assign(eventOffer, { isThing: true, isOffer: false })
+        props.offer = thingOffer
       })
 
       it('should display the correct text "1 prix" on the link redirecting to the offer management', () => {
         // given
-        props.product = {
-          offerType: { label: 'Une place de cinéma' },
-        }
-        props.stocks = [{}]
-        props.offer = activeThingOfferWithActiveMediation
+        props.stocks = [{remainingQuantity: 'unlimited'}]
 
         // when
         const wrapper = mount(
@@ -396,8 +363,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
   describe('event tracking', () => {
     it('should track deactivate offer when offer is active', () => {
       // given
-      props.offer = activeThingOfferWithActiveMediation
-
       const wrapper = mount(
         <MemoryRouter>
           <OfferItem {...props} />
@@ -408,14 +373,12 @@ describe('src | components | pages | Offers | OfferItem', () => {
       deactivateOfferButton.invoke('onClick')()
 
       // then
-      expect(props.trackDeactivateOffer).toHaveBeenCalledWith(
-        activeThingOfferWithActiveMediation.id
-      )
+      expect(props.trackDeactivateOffer).toHaveBeenCalledWith(eventOffer.id)
     })
 
     it('should track activate offer when offer is inactive', () => {
       // given
-      props.offer = deactivedOfferWithActiveMediation
+      eventOffer.isActive = false
 
       const wrapper = mount(
         <MemoryRouter>
@@ -427,7 +390,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       activateOfferButton.invoke('onClick')()
 
       // then
-      expect(props.trackActivateOffer).toHaveBeenCalledWith(deactivedOfferWithActiveMediation.id)
+      expect(props.trackActivateOffer).toHaveBeenCalledWith(eventOffer.id)
     })
   })
 })
