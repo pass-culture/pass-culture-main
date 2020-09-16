@@ -44,8 +44,8 @@ class TiteliveProviderForm extends PureComponent {
     const { isLoadingMode } = this.state
     return (
       <form onSubmit={props.handleSubmit}>
-        <div className="titelive-provider-form">
-          <div className="compte-section">
+        <div className="provider-form">
+          <div className="account-section">
             <div className="account-label">
               {'Compte'}
             </div>
@@ -57,7 +57,7 @@ class TiteliveProviderForm extends PureComponent {
           {!isLoadingMode && (
             <div className="provider-import-button-container">
               <button
-                className="button is-intermediate provider-import-button"
+                className="secondary-button"
                 type="submit"
               >
                 {'Importer'}

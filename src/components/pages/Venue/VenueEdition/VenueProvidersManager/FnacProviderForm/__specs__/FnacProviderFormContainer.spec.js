@@ -1,6 +1,6 @@
 import { mapDispatchToProps } from '../FnacProviderFormContainer'
 
-describe('src | components | pages | Venue | VenueProviderManager | form | ProviderForm', () => {
+describe('src | ProviderForm', () => {
   describe('mapDispatchToProps', () => {
     let dispatch
     let props

@@ -1,10 +1,10 @@
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
 
 import LibrairesProviderForm from '../LibrairesProviderForm'
 
-describe('src | components | pages | Venue | VenueProvidersManager | form | LibrairesProviderForm', () => {
+describe('src | LibrairesProviderForm', () => {
   let cancelProviderSelection
   let createVenueProvider
   let props
@@ -31,29 +31,15 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Libr
     }
   })
 
-  it('should initialize LibrairesProviderForm component with default state', () => {
-    // when
-    const wrapper = shallow(<LibrairesProviderForm {...props} />)
-
-    // then
-    expect(wrapper.state()).toStrictEqual({
-      isLoadingMode: false,
-    })
-  })
-
   describe('when not in loading mode', () => {
     it('should display an import button', () => {
       // when
       const wrapper = mount(<LibrairesProviderForm {...props} />)
 
       // then
-      const importButtonContainer = wrapper.find('.provider-import-button-container')
-      expect(importButtonContainer).toHaveLength(1)
-      const importButton = importButtonContainer.find('button')
+      const importButton = wrapper.find({ children: 'Importer' })
       expect(importButton).toHaveLength(1)
-      expect(importButton.prop('className')).toBe('button is-intermediate provider-import-button')
       expect(importButton.prop('type')).toBe('submit')
-      expect(importButton.text()).toBe('Importer')
     })
 
     it('should render the title of the section compte', () => {
@@ -63,8 +49,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Libr
       // then
       const form = wrapper.find(Form)
       expect(form).toHaveLength(1)
-      const label = form.find('.account-label')
-      expect(label.text()).toBe('Compte')
+      const label = form.find({ children: 'Compte' })
+      expect(label).toHaveLength(1)
     })
 
     it('should display the venue siret as provider identifier', () => {
@@ -74,25 +60,20 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Libr
       // then
       const form = wrapper.find(Form)
       expect(form).toHaveLength(1)
-      const textField = form.find('.account-value')
+      const textField = form.find({ children: '12345678912345' })
       expect(textField).toHaveLength(1)
-      expect(textField.text()).toBe('12345678912345')
     })
   })
 
   describe('handleSubmit', () => {
     it('should update venue provider using API', () => {
       // given
-      const formValues = {
-        preventDefault: jest.fn(),
-      }
-      const wrapper = shallow(<LibrairesProviderForm {...props} />)
+      const wrapper = mount(<LibrairesProviderForm {...props} />)
 
       // when
-      wrapper.instance().handleFormSubmit(formValues, {})
+      wrapper.find(Form).invoke('onSubmit')()
 
       // then
-      expect(wrapper.state('isLoadingMode')).toBe(true)
       expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function))
     })
   })
@@ -100,10 +81,11 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Libr
   describe('handleSuccess', () => {
     it('should update current url when action was handled successfully', () => {
       // given
-      const wrapper = shallow(<LibrairesProviderForm {...props} />)
+      const wrapper = mount(<LibrairesProviderForm {...props} />)
+      createVenueProvider.mockImplementation((fail, success) => success())
 
       // when
-      wrapper.instance().handleSuccess()
+      wrapper.find(Form).invoke('onSubmit')()
 
       // then
       expect(history.push).toHaveBeenCalledWith('/structures/CC/lieux/AA')
@@ -113,7 +95,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Libr
   describe('handleFail', () => {
     it('should display a notification with the proper informations', () => {
       // given
-      const wrapper = shallow(<LibrairesProviderForm {...props} />)
+      const wrapper = mount(<LibrairesProviderForm {...props} />)
       const action = {
         payload: {
           errors: [
@@ -123,9 +105,10 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Libr
           ],
         },
       }
+      createVenueProvider.mockImplementation(fail => fail(null, action))
 
       // when
-      wrapper.instance().handleFail({}, action)
+      wrapper.find(Form).invoke('onSubmit')()
 
       // then
       expect(notify).toHaveBeenCalledWith([{ error: 'fake error' }])

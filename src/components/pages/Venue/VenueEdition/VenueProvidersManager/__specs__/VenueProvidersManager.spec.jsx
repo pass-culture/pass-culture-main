@@ -1,4 +1,4 @@
-import { shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
 
 import AllocineProviderFormContainer from '../AllocineProviderForm/AllocineProviderFormContainer'
@@ -7,11 +7,15 @@ import LibrairesProviderForm from '../LibrairesProviderForm/LibrairesProviderFor
 import TiteliveProviderFormContainer from '../TiteliveProviderForm/TiteliveProviderFormContainer'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 import VenueProvidersManager from '../VenueProvidersManager'
+import { Provider } from 'react-redux'
+import { getStubStore } from '../../../../../../utils/stubStore'
+import { MemoryRouter } from 'react-router'
 
-describe('src | components | pages | Venue | VenueProvidersManager', () => {
+describe('src | VenueProvidersManager', () => {
   let props
   let loadProvidersAndVenueProviders
   let history
+  let store
 
   beforeEach(() => {
     history = {
@@ -34,11 +38,14 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       venueProviders: [],
       venueSiret: '12345678901234',
     }
+    store = getStubStore({
+      data: (state = {}) => state,
+    })
   })
 
   it('should initialize VenueProvidersManager component with default state', () => {
     // when
-    const wrapper = shallow(<VenueProvidersManager {...props} />)
+    const wrapper = mount(<VenueProvidersManager {...props} />)
 
     // then
     expect(wrapper.state()).toStrictEqual({
@@ -55,22 +62,23 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
   describe('render', () => {
     it('should display a list of VenueProviderItem', () => {
       // given
-      props.venueProviders = [{ id: 'AA' }]
+      props.venueProviders = [{ id: 'AD', provider: { name: 'AA' } }]
 
       // when
-      const wrapper = shallow(<VenueProvidersManager {...props} />)
+      const wrapper = mount(<VenueProvidersManager {...props} />)
 
       // then
       const venueProviderItem = wrapper.find(VenueProviderItem)
       expect(venueProviderItem).toHaveLength(1)
       expect(venueProviderItem.at(0).prop('venueProvider')).toStrictEqual({
-        id: 'AA',
+        id: 'AD',
+        provider: { name: 'AA' },
       })
     })
 
     it('should retrieve providers and venue providers when component is mounted', () => {
       // when
-      shallow(<VenueProvidersManager {...props} />)
+      mount(<VenueProvidersManager {...props} />)
 
       // then
       expect(loadProvidersAndVenueProviders).toHaveBeenCalledWith()
@@ -79,14 +87,12 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     describe('the import button', () => {
       it('is displayed when at least one provider is given and no venueProviders is given', () => {
         // when
-        const wrapper = shallow(<VenueProvidersManager {...props} />)
+        const wrapper = mount(<VenueProvidersManager {...props} />)
 
         // then
-        const importButton = wrapper.find('#add-venue-provider-btn')
+        const importButton = wrapper.find({ children: '+ Importer des offres' })
         expect(importButton).toHaveLength(1)
-        expect(importButton.prop('className')).toBe('button is-tertiary')
         expect(importButton.prop('id')).toBe('add-venue-provider-btn')
-        expect(importButton.prop('onClick')).toStrictEqual(expect.any(Function))
         expect(importButton.prop('type')).toBe('button')
       })
 
@@ -95,22 +101,22 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         props.providers = []
 
         // when
-        const wrapper = shallow(<VenueProvidersManager {...props} />)
+        const wrapper = mount(<VenueProvidersManager {...props} />)
 
         // then
-        const importButton = wrapper.find('#add-venue-provider-btn')
+        const importButton = wrapper.find({ children: '+ Importer des offres' })
         expect(importButton).toHaveLength(0)
       })
 
       it('is hidden when provider and a venue provider are given', () => {
         // Given
-        props.venueProviders = [{ id: 'AA' }]
+        props.venueProviders = [{ id: 'AD', provider: { name: 'AA' } }]
 
         // when
-        const wrapper = shallow(<VenueProvidersManager {...props} />)
+        const wrapper = mount(<VenueProvidersManager {...props} />)
 
         // then
-        const importButton = wrapper.find('#add-venue-provider-btn')
+        const importButton = wrapper.find({ children: '+ Importer des offres' })
         expect(importButton).toHaveLength(0)
       })
     })
@@ -118,8 +124,8 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     describe('when selecting the import button', () => {
       it('should display a select input to choose a provider', () => {
         // given
-        const wrapper = shallow(<VenueProvidersManager {...props} />)
-        const addOfferBtn = wrapper.find('#add-venue-provider-btn')
+        const wrapper = mount(<VenueProvidersManager {...props} />)
+        const addOfferBtn = wrapper.find({ children: '+ Importer des offres' })
 
         // when
         addOfferBtn.simulate('click')
@@ -127,7 +133,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         // then
         const selectButton = wrapper.find('.select-source')
         expect(selectButton).toHaveLength(1)
-        const selectButtonOptions = wrapper.find('#provider-options option')
+        const selectButtonOptions = wrapper.find('select').find('option')
         expect(selectButtonOptions).toHaveLength(3)
         expect(selectButtonOptions.at(0).text()).toStrictEqual('Choix de la source')
         expect(selectButtonOptions.at(1).text()).toStrictEqual('Cinema provider')
@@ -139,43 +145,44 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       it('is not possible to select another venue provider', () => {
         // given
         props.venueProviders = []
-        const wrapper = shallow(<VenueProvidersManager {...props} />)
+        const store = getStubStore({})
+        const wrapper = mount(
+          <Provider store={store}>
+            <VenueProvidersManager {...props} />
+          </Provider>
+        )
         wrapper.setState({ isCreationMode: true })
 
         // when
-        wrapper.setProps({ venueProviders: [{ id: 'AD' }] })
+        wrapper.setProps({ venueProviders: [{ id: 'AD', provider: { name: 'AA' } }] })
 
         // then
-        const addProviderForm = wrapper.find('.add-provider-form')
+        const addProviderForm = wrapper.find('li')
         expect(addProviderForm).toHaveLength(0)
       })
     })
   })
 
   describe('handleChange', () => {
-    let input
-    let onChange
-
-    beforeEach(() => {
-      onChange = jest.fn()
-      input = {
-        onChange,
-      }
-    })
-
     it('should display the allocine form when the user choose Allocine onChange', () => {
       // given
-      props.providers = [{ id: 'EM', name: 'Allociné' }]
+      props.providers = [{ id: 'EM', name: 'Allociné', lastSyncDate: '2020-01-01' }]
       const chooseAllocineEvent = {
         target: {
           value: '{"id":"EM","name":"Allociné"}',
         },
       }
-      const wrapper = shallow(<VenueProvidersManager {...props} />)
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <VenueProvidersManager {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
 
       // when
-      wrapper.find('#add-venue-provider-btn').simulate('click')
-      wrapper.find('#provider-options').simulate('change', chooseAllocineEvent)
+      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find('select').invoke('onChange')(chooseAllocineEvent)
 
       // then
       const allocineProviderForm = wrapper.find(AllocineProviderFormContainer)
@@ -184,17 +191,23 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
     it('should display the allocine form when the user choose Allocine onBlur', () => {
       // given
-      props.providers = [{ id: 'EM', name: 'Allociné' }]
+      props.providers = [{ id: 'EM', name: 'Allociné', lastSyncDate: '2020-01-01' }]
       const chooseAllocineEvent = {
         target: {
           value: '{"id":"EM","name":"Allociné"}',
         },
       }
-      const wrapper = shallow(<VenueProvidersManager {...props} />)
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <VenueProvidersManager {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
 
       // when
-      wrapper.find('#add-venue-provider-btn').simulate('click')
-      wrapper.find('#provider-options').simulate('blur', chooseAllocineEvent)
+      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find('select').invoke('onBlur')(chooseAllocineEvent)
 
       // then
       const allocineProviderForm = wrapper.find(AllocineProviderFormContainer)
@@ -212,11 +225,17 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
           value: '{"id":"EM","name":"TiteLive Stocks (Epagine / Place des libraires.com)"}',
         },
       }
-      const wrapper = shallow(<VenueProvidersManager {...props} />)
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <VenueProvidersManager {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
 
       // when
-      wrapper.find('#add-venue-provider-btn').simulate('click')
-      wrapper.find('#provider-options').simulate('blur', chooseTiteliveEvent)
+      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find('select').invoke('onBlur')(chooseTiteliveEvent)
 
       // then
       const titeliveProviderForm = wrapper.find(TiteliveProviderFormContainer)
@@ -234,11 +253,17 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
           value: '{"id":"EM","name":"Leslibraires.fr"}',
         },
       }
-      const wrapper = shallow(<VenueProvidersManager {...props} />)
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <VenueProvidersManager {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
 
       // when
-      wrapper.find('#add-venue-provider-btn').simulate('click')
-      wrapper.find('#provider-options').simulate('blur', chooseLibrairesEvent)
+      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find('select').invoke('onBlur')(chooseLibrairesEvent)
 
       // then
       const librairesProviderForm = wrapper.find(LibrairesProviderForm)
@@ -256,11 +281,17 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
           value: '{"id":"EM","name":"FNAC"}',
         },
       }
-      const wrapper = shallow(<VenueProvidersManager {...props} />)
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <VenueProvidersManager {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
 
       // when
-      wrapper.find('#add-venue-provider-btn').simulate('click')
-      wrapper.find('#provider-options').simulate('blur', chooseFnacEvent)
+      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find('select').invoke('onBlur')(chooseFnacEvent)
 
       // then
       const fnacProviderForm = wrapper.find(FnacProviderForm)
@@ -274,29 +305,14 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
           value: '{"id":"AE", "requireProviderIdentifier": true}',
         },
       }
-      const wrapper = shallow(<VenueProvidersManager {...props} />)
+      const wrapper = mount(<VenueProvidersManager {...props} />)
 
       // when
-      wrapper.instance().handleChange(event, input)
+      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find('select').invoke('onBlur')(event)
 
       // then
       expect(wrapper.state('venueIdAtOfferProviderIsRequired')).toBe(true)
-    })
-
-    it('should update providerSelectedIsAllocine values when Allocine is selected', () => {
-      // given
-      const event = {
-        target: {
-          value: '{"id":"EM","name":"Allociné"}',
-        },
-      }
-      const wrapper = shallow(<VenueProvidersManager {...props} />)
-
-      // when
-      wrapper.instance().handleChange(event, input)
-
-      // then
-      expect(wrapper.state('providerSelectedIsAllocine')).toBe(true)
     })
   })
 })

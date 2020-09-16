@@ -3,33 +3,52 @@
     width: 100%;
   }
 
-  .provider-list {
-    .add-provider-form {
-      .select-provider-section {
-        .provider-picto {
-          align-items: center;
-          width: 30px;
+  .provider-form {
+    display: flex;
+    flex-direction: row;
+  }
 
-          img {
-            line-height: 30px;
-          }
-        }
+  .account-section {
+    flex-direction: column;
+    max-width: 250px;
+    margin-right: 25px;
+  }
 
-        .select-source {
-          label {
-            display: block;
-          }
+  .account-label {
+    margin-top: 6px;
+    margin-bottom: 15px;
+  }
 
-          .field-select {
-            background-image: url('/icons/dropdown-disclosure-down-s-w.svg');
-            border: 2px solid $grey-medium;
-            border-radius: 17px;
-            margin-top: 8px;
-            width: 100%;
-          }
-        }
-      }
+  .account-value {
+    font-size: 1.2rem;
+    font-weight: 500;
+    height: 36px;
+  }
+
+  .secondary-button {
+    margin-top: rem(6px);
+  }
+
+
+  .provider-picto {
+    align-items: center;
+    width: 30px;
+
+    img {
+      line-height: 30px;
     }
+  }
+
+  .select-source label {
+    display: block;
+  }
+
+  .select-source .field-select {
+    background-image: url('/icons/dropdown-disclosure-down-s-w.svg');
+    border: 2px solid $grey-medium;
+    border-radius: 17px;
+    margin-top: 8px;
+    width: 100%;
   }
 
   .venue-id-at-offer-provider-container {
@@ -40,18 +59,9 @@
       margin-left: 0;
     }
 
-    .tooltip {
-      &.tooltip-info {
-        margin-left: 70px;
-        padding: 4px;
-      }
-    }
-  }
-
-  .provider-import-button-container {
-    .provider-import-button {
-      height: 28px;
-      width: 91px;
+    .tooltip .tooltip-info {
+      margin-left: 70px;
+      padding: 4px;
     }
   }
 }
