@@ -11,7 +11,7 @@ tags:
 schemes:
   - https
 paths:
-  'bookings/token/{token}':
+  '/bookings/token/{token}':
     get:
       tags:
         - Version 1 (will be deprecated in 2020)
@@ -73,7 +73,7 @@ paths:
         '410':
           description: La contremarque n’est plus valide car elle a déjà été validée ou a été annulée
       security:
-        - api_key: []
+        - UrlAuthentication: []
     patch:
       tags:
         - Version 1 (will be deprecated in 2020)
@@ -112,8 +112,8 @@ paths:
         '410':
           description: La contremarque n’est plus valide car elle a déjà été validée ou a été annulée
       security:
-        - api_key: []
-  'v2/bookings/token/{token}':
+        - UrlAuthentication: []
+  '/v2/bookings/token/{token}':
     get:
       tags:
         - Version 2
@@ -158,6 +158,8 @@ paths:
                 type: string
               price:
                 type: number
+              publicOfferId:
+                type: string
               quantity:
                 type: integer
               userName:
@@ -224,8 +226,8 @@ paths:
             }
             ```
       security:
-        - api_key: []
-  'v2/bookings/use/token/{token}':
+        - BearerAuthentication: []
+  '/v2/bookings/use/token/{token}':
     patch:
       tags:
         - Version 2
@@ -303,8 +305,8 @@ paths:
                 example:
                   - Cette réservation a été annulée
       security:
-        - api_key: []
-  'v2/bookings/keep/token/{token}':
+        - BearerAuthentication: []
+  '/v2/bookings/keep/token/{token}':
     patch:
       tags:
         - Version 2
@@ -381,8 +383,8 @@ paths:
                  example:
                    - Cette réservation a été validée
       security:
-        - api_key: []
-  'v2/bookings/cancel/token/{token}':
+        - BearerAuthentication: []
+  '/v2/bookings/cancel/token/{token}':
     patch:
       tags:
         - Version 2
@@ -448,4 +450,14 @@ paths:
                 example:
                   - Cette contremarque a déjà été annulée
       security:
-        - api_key: []
+        - BearerAuthentication: []
+securityDefinitions:
+  BearerAuthentication:
+    type: apiKey
+    in: header
+    name: Authorisation
+    description: L'authentification auprès de l'API se fait au moyen d'une entête "Authorization" avec pour valeur votre token d'API précédé de la valeur "Bearer" (RFC 6750)
+  UrlAuthentication:
+    type: apiKey
+    in: query
+    name: token
