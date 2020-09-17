@@ -88,10 +88,11 @@ class TextField extends PureComponent {
               <span>
                 {label}
               </span>
-              {required && !readOnly &&
+              {required && !readOnly && (
                 <span className="field-asterisk">
                   {'*'}
-                </span>}
+                </span>
+              )}
             </span>
           </label>
         )}
@@ -153,8 +154,12 @@ TextField.defaultProps = {
   parse: null,
   placeholder: '',
   readOnly: false,
-  renderInner: () => null,
-  renderValue: () => null,
+  renderInner: function() {
+    return null
+  },
+  renderValue: function() {
+    return null
+  },
   required: false,
   title: '',
   type: 'text',

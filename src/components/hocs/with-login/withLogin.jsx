@@ -81,10 +81,12 @@ export default (config = {}) => WrappedComponent => {
         return null
       }
 
-      return (<WrappedComponent
-        {...this.props}
-        currentUser={currentUser}
-              />)
+      return (
+        <WrappedComponent
+          {...this.props}
+          currentUser={currentUser}
+        />
+      )
     }
   }
 

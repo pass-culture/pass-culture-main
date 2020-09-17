@@ -415,13 +415,13 @@ class OfferCreation extends PureComponent {
           }
         </p>
         <Form
+          Tag={null}
           action={formApiPath}
           handleSuccess={this.onHandleFormSuccess}
           method={method}
           name="offer"
           patch={formInitialValues}
           readOnly={readOnly}
-          Tag={null}
         >
           <div className="field-group offer-form">
             <Field
@@ -438,8 +438,8 @@ class OfferCreation extends PureComponent {
               label="Type"
               name="type"
               optionLabel="proLabel"
-              options={types}
               optionValue="value"
+              options={types}
               placeholder={
                 get(formInitialValues, 'type') && !selectedOfferType
                   ? get(formInitialValues, 'offerTypeValue')
@@ -456,8 +456,8 @@ class OfferCreation extends PureComponent {
                   label="Genre musical"
                   name="musicType"
                   optionLabel="label"
-                  options={musicOptions}
                   optionValue="code"
+                  options={musicOptions}
                   setKey="extraData"
                   type="select"
                 />
@@ -467,8 +467,8 @@ class OfferCreation extends PureComponent {
                     label="Sous genre"
                     name="musicSubType"
                     optionLabel="label"
-                    options={musicSubOptions}
                     optionValue="code"
+                    options={musicSubOptions}
                     setKey="extraData"
                     type="select"
                   />
@@ -482,8 +482,8 @@ class OfferCreation extends PureComponent {
                   label="Type de spectacle"
                   name="showType"
                   optionLabel="label"
-                  options={showOptions}
                   optionValue="code"
+                  options={showOptions}
                   setKey="extraData"
                   type="select"
                 />
@@ -493,8 +493,8 @@ class OfferCreation extends PureComponent {
                     label="Sous type"
                     name="showSubType"
                     optionLabel="label"
-                    options={showSubOptions}
                     optionValue="code"
+                    options={showSubOptions}
                     setKey="extraData"
                     type="select"
                   />

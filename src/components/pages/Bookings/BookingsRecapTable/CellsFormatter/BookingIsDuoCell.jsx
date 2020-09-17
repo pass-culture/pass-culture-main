@@ -5,10 +5,12 @@ import Icon from '../../../../layout/Icon'
 const BookingIsDuoCell = ({ isDuo }) => {
   return (
     <span className="bookings-duo-icon">
-      {isDuo && <Icon
-        alt="Réservation DUO"
-        svg="ico-duo"
-                />}
+      {isDuo && (
+        <Icon
+          alt="Réservation DUO"
+          svg="ico-duo"
+        />
+      )}
     </span>
   )
 }

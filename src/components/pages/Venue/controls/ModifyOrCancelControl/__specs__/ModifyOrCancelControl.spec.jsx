@@ -10,8 +10,8 @@ const history = {
 
 describe('src | components | pages | Venue | controls | ModifyOrCancelControl ', () => {
   describe('mount', () => {
-    it('should redirect to offerer page and reset form when click on cancel creation form', () => {
-      return new Promise(done => {
+    it('should redirect to offerer page and reset form when click on cancel creation form', async() => {
+      await new Promise(done => {
         // given
         const props = {
           isCreatedEntity: true,
@@ -26,10 +26,12 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
               <Fragment>
                 <Field
                   name="foo"
-                  render={({ input }) => (<input
-                    name="foo"
-                    {...input}
-                                          />)}
+                  render={({ input }) => (
+                    <input
+                      name="foo"
+                      {...input}
+                    />
+                  )}
                 />
                 <ModifyOrCancelControl
                   form={form}
@@ -82,10 +84,12 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
             <Fragment>
               <Field
                 name="foo"
-                render={({ input }) => (<input
-                  name="foo"
-                  {...input}
-                                        />)}
+                render={({ input }) => (
+                  <input
+                    name="foo"
+                    {...input}
+                  />
+                )}
               />
               <ModifyOrCancelControl
                 form={form}

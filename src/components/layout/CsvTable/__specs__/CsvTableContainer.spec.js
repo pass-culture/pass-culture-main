@@ -55,12 +55,9 @@ describe('src | components | layout | CsvTable | CsvTableContainer', () => {
         const { downloadFileOrNotifyAnError } = functions
 
         // when
-        try {
-          await downloadFileOrNotifyAnError()
-        } catch (e) {
-          // then
-          expect(e.message).toBe('Erreur lors du téléchargement des données.')
-        }
+        await expect(downloadFileOrNotifyAnError())
+          .rejects
+          .toThrow('Erreur lors du téléchargement des données.')
       })
     })
   })

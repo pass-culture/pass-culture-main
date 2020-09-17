@@ -41,10 +41,11 @@ const SirenField = props => {
               placeholder="123 456 789"
             />
 
-            {props.value &&
+            {props.value && (
               <span className="field-siren-value">
                 {props.value}
-              </span>}
+              </span>
+            )}
           </div>
         )
       }}

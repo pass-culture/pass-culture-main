@@ -5,8 +5,8 @@ import DownloadButton from '../DownloadButton'
 
 describe('src | components | Layout | DownloadButton', () => {
   describe('render', () => {
-    it('should set loading and disabled during onClick', () => {
-      return new Promise(done => {
+    it('should set loading and disabled during onClick', async() => {
+      await new Promise(resolve => {
         // given
         const props = {
           children: 'Fake title',
@@ -35,7 +35,7 @@ describe('src | components | Layout | DownloadButton', () => {
           buttonProps = wrapper.find('button[download]').props()
           expect(buttonProps.disabled).toStrictEqual(false)
           expect(buttonProps.className).not.toContain('is-loading')
-          done()
+          resolve()
         })
       })
     })

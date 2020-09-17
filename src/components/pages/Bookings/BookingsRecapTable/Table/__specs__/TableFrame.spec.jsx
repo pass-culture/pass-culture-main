@@ -8,7 +8,8 @@ import * as reactTable from 'react-table'
 const CellMock = ({ offer: { offer_name: offerName } }) => (
   <span>
     {offerName}
-  </span>)
+  </span>
+)
 
 describe('components | TableFrame', () => {
   it('should render a Head component with the right props', () => {
@@ -51,7 +52,8 @@ describe('components | TableFrame', () => {
               render: jest.fn(() => (
                 <span>
                   {'Offres'}
-                </span>)),
+                </span>
+              )),
               getHeaderProps: jest.fn(),
               getSortByToggleProps: jest.fn(),
             },
@@ -61,7 +63,8 @@ describe('components | TableFrame', () => {
               render: jest.fn(() => (
                 <span>
                   {'Beneficiaires'}
-                </span>)),
+                </span>
+              )),
               getHeaderProps: jest.fn(),
               getSortByToggleProps: jest.fn(),
             },
@@ -100,7 +103,9 @@ describe('components | TableFrame', () => {
           headerTitle: 'Stock',
           accessor: 'stock',
           // eslint-disable-next-line react/display-name, react/no-multi-comp
-          Cell: ({ value }) => <CellMock offer={value} />,
+          Cell: function({ value }) {
+            return <CellMock offer={value} />
+          },
           getHeaderProps: jest.fn(),
           getSortByToggleProps: jest.fn(),
         },
@@ -109,7 +114,9 @@ describe('components | TableFrame', () => {
           headerTitle: 'Beneficiaire',
           accessor: 'beneficiary',
           // eslint-disable-next-line react/display-name, react/no-multi-comp
-          Cell: ({ value }) => <CellMock offer={value} />,
+          Cell: function({ value }) {
+            return <CellMock offer={value} />
+          },
           getHeaderProps: jest.fn(),
           getSortByToggleProps: jest.fn(),
         },
@@ -164,7 +171,9 @@ describe('components | TableFrame', () => {
             headerTitle: 'Stock',
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
-            Cell: ({ value }) => <CellMock offer={value} />,
+            Cell: function({ value }) {
+              return <CellMock offer={value} />
+            },
             getHeaderProps: jest.fn(),
             getSortByToggleProps: jest.fn(),
           },
@@ -208,7 +217,9 @@ describe('components | TableFrame', () => {
             headerTitle: 'Stock',
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
-            Cell: ({ value }) => <CellMock offer={value} />,
+            Cell: function({ value }) {
+              return <CellMock offer={value} />
+            },
             getHeaderProps: jest.fn(),
             getSortByToggleProps: jest.fn(),
           },
@@ -249,7 +260,9 @@ describe('components | TableFrame', () => {
             headerTitle: 'Stock',
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
-            Cell: ({ value }) => <CellMock offer={value} />,
+            Cell: function({ value }) {
+              return <CellMock offer={value} />
+            },
             getHeaderProps: jest.fn(),
             getSortByToggleProps: jest.fn(),
           },
@@ -291,7 +304,9 @@ describe('components | TableFrame', () => {
             headerTitle: 'Stock',
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
-            Cell: ({ value }) => <CellMock offer={value} />,
+            Cell: function({ value }) {
+              return <CellMock offer={value} />
+            },
             getHeaderProps: jest.fn(),
             getSortByToggleProps: jest.fn(),
           },

@@ -7,7 +7,7 @@ const Insert = ({ icon, children, className }) => (
   <div className={className}>
     {
       icon &&
-      <Icon png="picto-info-solid-black" />
+        <Icon png="picto-info-solid-black" />
     }
     <span>
       {children}

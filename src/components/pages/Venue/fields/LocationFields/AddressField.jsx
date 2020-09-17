@@ -20,7 +20,7 @@ const updateLocationFields = (form, { isLocationFrozen }) => location => {
   })
 }
 
-export const AddressFieldRender = ({
+export const addressFieldRender = ({
   className,
   disabled,
   form,
@@ -32,59 +32,62 @@ export const AddressFieldRender = ({
   readOnly,
   required,
   addressProps,
-}) => ({ input, meta }) => (
-  <div
-    className={classnames('field text-field', className, {
-      'is-label-aligned': label,
-      'is-read-only': readOnly,
-    })}
-    id={id}
-  >
-    <label
-      className={classnames('field-label', { empty: !label })}
-      htmlFor={name}
+}) => function({ input, meta }) {
+  return (
+    <div
+      className={classnames('field text-field', className, {
+        'is-label-aligned': label,
+        'is-read-only': readOnly,
+      })}
+      id={id}
     >
-      {label && (
-        <span>
+      <label
+        className={classnames('field-label', { empty: !label })}
+        htmlFor={name}
+      >
+        {label && (
           <span>
-            {label}
+            <span>
+              {label}
+            </span>
+            {required && !readOnly && (
+              <span className="field-asterisk">
+                {'*'}
+              </span>
+            )}
           </span>
-          {required && !readOnly &&
-          <span className="field-asterisk">
-            {'*'}
-          </span>}
-        </span>
-      )}
-    </label>
-    <div className="field-control">
-      <div className="field-value flex-columns items-center">
-        <div className={classnames('field-inner flex-columns items-center', innerClassName)}>
-          <LocationViewer
-            {...input}
-            {...addressProps}
-            className="field-input field-address"
-            disabled={disabled || readOnly}
-            name={name}
-            onMarkerDragend={updateLocationFields(form, {
-              isLocationFrozen: false,
-            })}
-            onSuggestionSelect={updateLocationFields(form, {
-              isLocationFrozen: true,
-            })}
-            onTextChange={updateLocationFields(form, {
-              isLocationFrozen: false,
-            })}
-            placeholder={readOnly ? '' : placeholder}
-            readOnly={readOnly}
-            required={!!required}
-          />
+        )}
+      </label>
+      <div className="field-control">
+        <div className="field-value flex-columns items-center">
+          <div className={classnames('field-inner flex-columns items-center', innerClassName)}>
+            <LocationViewer
+              {...input}
+              {...addressProps}
+              className="field-input field-address"
+              disabled={disabled || readOnly}
+              name={name}
+              onMarkerDragend={updateLocationFields(form, {
+                isLocationFrozen: false,
+              })}
+              onSuggestionSelect={updateLocationFields(form, {
+                isLocationFrozen: true,
+              })}
+              onTextChange={updateLocationFields(form, {
+                isLocationFrozen: false,
+              })}
+              placeholder={readOnly ? '' : placeholder}
+              readOnly={readOnly}
+              required={!!required}
+            />
+          </div>
         </div>
+        <FieldErrors meta={meta} />
       </div>
-      <FieldErrors meta={meta} />
+      <div />
     </div>
-    <div />
-  </div>
-)
+  )
+}
 
 export const AddressField = ({
   className,
@@ -104,7 +107,7 @@ export const AddressField = ({
   <Field
     format={format}
     name={name}
-    render={AddressFieldRender({
+    render={addressFieldRender({
       className,
       disabled,
       form,

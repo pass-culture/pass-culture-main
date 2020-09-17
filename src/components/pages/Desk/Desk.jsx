@@ -173,11 +173,13 @@ class Desk extends React.PureComponent {
   renderChildComponent = () => {
     const { status } = this.state
     const { booking, level, message } = this.getValuesFromStatus(status)
-    return (<DeskState
-      booking={booking}
-      level={level}
-      message={message}
-            />)
+    return (
+      <DeskState
+        booking={booking}
+        level={level}
+        message={message}
+      />
+    )
   }
 
   render() {

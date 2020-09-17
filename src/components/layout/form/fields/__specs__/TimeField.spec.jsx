@@ -5,8 +5,8 @@ import { Form } from 'react-final-form'
 import TimeField from '../TimeField'
 
 describe('src | components | layout | form | TimeField', () => {
-  it('should submit a form with a time', () => {
-    return new Promise(done => {
+  it('should submit a form with a time', async() => {
+    await new Promise(done => {
       // given
       const wrapper = mount(
         <Form

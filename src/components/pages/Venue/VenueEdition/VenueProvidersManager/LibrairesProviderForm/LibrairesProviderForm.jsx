@@ -63,10 +63,12 @@ class LibrairesProviderForm extends PureComponent {
   }
 
   render() {
-    return (<Form
-      onSubmit={this.handleFormSubmit}
-      render={this.renderForm}
-            />)
+    return (
+      <Form
+        onSubmit={this.handleFormSubmit}
+        render={this.renderForm}
+      />
+    )
   }
 }
 

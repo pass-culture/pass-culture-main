@@ -6,8 +6,8 @@ import TextField from '../TextField'
 
 
 describe('src | components | layout | form | TextField', () => {
-  it('should submit a form with a title text field', () => {
-    return new Promise(done => {
+  it('should submit a form with a title text field', async() => {
+    await new Promise(done => {
       // given
       const initialValues = {
         text: 'Ca parle de canapés.',

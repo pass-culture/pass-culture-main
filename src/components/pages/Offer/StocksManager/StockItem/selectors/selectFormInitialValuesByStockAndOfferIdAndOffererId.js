@@ -36,11 +36,11 @@ const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCachedSelecto
       beginningDatetime = lastStock
         ? getDatetimeOneDayAfter(lastStock.beginningDatetime)
         : getDatetimeAtSpecificHoursAndMinutes(
-            getDatetimeOneDayAfter(moment()),
-            DEFAULT_BEGINNING_DATE_TIME_HOURS,
-            DEFAULT_BEGINNING_DATE_TIME_MINUTES,
-            timezone
-          )
+          getDatetimeOneDayAfter(moment()),
+          DEFAULT_BEGINNING_DATE_TIME_HOURS,
+          DEFAULT_BEGINNING_DATE_TIME_MINUTES,
+          timezone
+        )
     }
 
     if (offer.isEvent && bookingLimitDatetime == null) {

@@ -26,10 +26,11 @@ class OffererCreationForm extends Component {
       <span>
         {'Désignation : '}
       </span>
-      {values.name &&
-      <span>
-        {values.name}
-      </span>}
+      {values.name && (
+        <span>
+          {values.name}
+        </span>
+      )}
     </div>
   )
 

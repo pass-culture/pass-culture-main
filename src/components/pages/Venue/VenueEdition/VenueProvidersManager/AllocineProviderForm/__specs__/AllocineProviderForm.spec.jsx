@@ -163,10 +163,12 @@ describe('components | AllocineProviderForm', () => {
       )
     }
 
-    const wrapper = mount(<Form
-      onSubmit={handleOnSubmit}
-      render={formWithCheckboxField}
-                          />)
+    const wrapper = mount(
+      <Form
+        onSubmit={handleOnSubmit}
+        render={formWithCheckboxField}
+      />
+    )
 
     // when
     wrapper.find('input').simulate('change', { target: { value: true } })

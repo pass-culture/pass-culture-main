@@ -26,11 +26,13 @@ const Root = () => {
                 {routes.map(route => {
                   const isExact = typeof route.exact !== 'undefined' ? route.exact : true
                   // first props, last overrides
-                  return (<FeaturedRouteContainer
-                    {...route}
-                    exact={isExact}
-                    key={route.path}
-                          />)
+                  return (
+                    <FeaturedRouteContainer
+                      {...route}
+                      exact={isExact}
+                      key={route.path}
+                    />
+                  )
                 })}
                 <Route component={NoMatchPage} />
               </Switch>

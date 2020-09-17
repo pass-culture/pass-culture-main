@@ -91,10 +91,12 @@ class Main extends PureComponent {
 
     return (
       <Fragment>
-        {!fullscreen && <HeaderContainer
-          whiteHeader={whiteHeader}
-          {...header}
-                        />}
+        {!fullscreen && (
+          <HeaderContainer
+            whiteHeader={whiteHeader}
+            {...header}
+          />
+        )}
         <ReactTooltip
           className="flex-center items-center"
           delayHide={500}

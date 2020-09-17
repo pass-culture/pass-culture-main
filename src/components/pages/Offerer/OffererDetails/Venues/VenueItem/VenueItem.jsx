@@ -9,7 +9,7 @@ const buildLinkIdFromVenue = ({ publicName, name }) => {
   return nameToFormat ? nameToFormat.toLowerCase().replace(/\s/g, '-') : ''
 }
 
-function VenueItem({ venue }) {
+let VenueItem = ({ venue }) => {
   const { address, city, id, managingOffererId, name, postalCode, publicName } = venue || {}
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
 

@@ -331,12 +331,12 @@ class OfferEdition extends PureComponent {
           }
         </p>
         <Form
+          Tag={null}
           action={formApiPath}
           handleSuccess={this.onHandleFormSuccess}
           method="PATCH"
           name="offer"
           patch={formInitialValues}
-          Tag={null}
         >
           <div className="field-group offer-form">
             <Field
@@ -354,8 +354,8 @@ class OfferEdition extends PureComponent {
               label="Type"
               name="type"
               optionLabel="proLabel"
-              options={types}
               optionValue="value"
+              options={types}
               placeholder={
                 get(formInitialValues, 'type') && !selectedOfferType
                   ? get(formInitialValues, 'offerTypeValue')
@@ -372,8 +372,8 @@ class OfferEdition extends PureComponent {
                   label="Genre musical"
                   name="musicType"
                   optionLabel="label"
-                  options={musicOptions}
                   optionValue="code"
+                  options={musicOptions}
                   setKey="extraData"
                   type="select"
                 />
@@ -383,8 +383,8 @@ class OfferEdition extends PureComponent {
                     label="Sous genre"
                     name="musicSubType"
                     optionLabel="label"
-                    options={musicSubOptions}
                     optionValue="code"
+                    options={musicSubOptions}
                     setKey="extraData"
                     type="select"
                   />
@@ -398,8 +398,8 @@ class OfferEdition extends PureComponent {
                   label="Type de spectacle"
                   name="showType"
                   optionLabel="label"
-                  options={showOptions}
                   optionValue="code"
+                  options={showOptions}
                   setKey="extraData"
                   type="select"
                 />
@@ -409,8 +409,8 @@ class OfferEdition extends PureComponent {
                     label="Sous type"
                     name="showSubType"
                     optionLabel="label"
-                    options={showSubOptions}
                     optionValue="code"
+                    options={showSubOptions}
                     setKey="extraData"
                     type="select"
                   />
@@ -528,9 +528,7 @@ class OfferEdition extends PureComponent {
                     name="url"
                     readOnly={offerFromLocalProvider}
                     required
-                    sublabel={
-                      'Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre'
-                    }
+                    sublabel="Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre"
                     type="text"
                   />
                 )}

@@ -6,8 +6,8 @@ import NumberField from '../NumberField'
 
 
 describe('src | components | layout | form | NumberField', () => {
-  it('should submit a form with number field when number is a decimal with a dot', () => {
-    return new Promise(done => {
+  it('should submit a form with number field when number is a decimal with a dot', async() => {
+    await new Promise(done => {
       // given
       const initialValues = {
         bar: '3',
@@ -49,8 +49,8 @@ describe('src | components | layout | form | NumberField', () => {
     })
   })
 
-  it('should submit a form with number field when number is a decimal with a comma', () => {
-    return new Promise(done => {
+  it('should submit a form with number field when number is a decimal with a comma', async() => {
+    await new Promise(done => {
       // given
       const initialValues = {
         bar: '3',

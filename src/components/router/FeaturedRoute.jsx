@@ -24,10 +24,12 @@ class FeaturedRoute extends PureComponent {
     }
 
     if (isRouteDisabled) {
-      return (<Route
-        component={NotMatch}
-        path={path}
-              />)
+      return (
+        <Route
+          component={NotMatch}
+          path={path}
+        />
+      )
     }
 
     return <Route {...routeProps} />

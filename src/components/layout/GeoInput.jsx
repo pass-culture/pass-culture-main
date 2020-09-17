@@ -19,8 +19,6 @@ const customIcon = new L.Icon({
 })
 
 class GeoInput extends Component {
-  static extraFormPatch = ['latitude', 'longitude']
-
   constructor(props) {
     super(props)
     this.state = {
@@ -174,13 +172,15 @@ class GeoInput extends Component {
   )
 
   renderAutocompleteMenu = children => (
-    <div className={classnames('menu', { empty: children.length === 0 })}>{children}</div>
+    <div className={classnames('menu', { empty: children.length === 0 })}>
+      {children}
+    </div>
   )
 
   render() {
-    const { className, id, placeholder, readOnly, required, size, withMap } = this.props
+    const { className, id, placeholder, readOnly, required, size, value:propsValue, withMap } = this.props
 
-    const { isLoading, marker, position, suggestions, value } = this.state
+    const { isLoading, marker, position, suggestions, value:stateValue } = this.state
 
     const $input = readOnly ? (
       <BasicInput {...this.props} />
@@ -202,7 +202,7 @@ class GeoInput extends Component {
           readOnly={readOnly}
           renderItem={this.renderAutocomplete}
           renderMenu={this.renderAutocompleteMenu}
-          value={this.props.value || value}
+          value={propsValue || stateValue}
           wrapperProps={{ className: 'input-wrapper' }}
         />
         <button

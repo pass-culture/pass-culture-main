@@ -23,10 +23,12 @@ const BankInformation = ({ venue, offerer }) => {
         />
       ) : (
         <div>
-          {offererHasBankInformation && <BicIbanFields
-            bic={offerer.bic}
-            iban={offerer.iban}
-                                        />}
+          {offererHasBankInformation && (
+            <BicIbanFields
+              bic={offerer.bic}
+              iban={offerer.iban}
+            />
+          )}
           {venueHasApplicationId && (
             <ApplicationBanner applicationId={venue.demarchesSimplifieesApplicationId} />
           )}

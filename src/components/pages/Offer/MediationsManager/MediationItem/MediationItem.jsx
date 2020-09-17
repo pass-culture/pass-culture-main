@@ -6,12 +6,12 @@ const MediationItem = ({ mediation }) => {
   const { id, isActive, thumbUrl } = mediation || {}
   return (
     <Form
+      Tag="li"
       action={`/mediations/${id}`}
       handleSuccessNotification={null}
       isAutoSubmit
       name={`mediation-${id}`}
       patch={mediation}
-      Tag="li"
     >
       <img
         alt={`accroche-${id}`}
@@ -37,9 +37,9 @@ MediationItem.defaultProps = {
 MediationItem.propTypes = {
   mediation: PropTypes.shape(
     {
-     id: PropTypes.string.isRequired,
-     isActive: PropTypes.bool.isRequired,
-     thumbUrl: PropTypes.string
+      id: PropTypes.string.isRequired,
+      isActive: PropTypes.bool.isRequired,
+      thumbUrl: PropTypes.string
     }
   ),
 }

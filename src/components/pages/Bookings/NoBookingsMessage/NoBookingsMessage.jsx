@@ -1,7 +1,7 @@
 import React from 'react'
 import { Icon } from 'pass-culture-shared'
 
-function NoBookingsMessage() {
+let NoBookingsMessage = () => {
   return (
     <div className="no-bookings">
       <Icon

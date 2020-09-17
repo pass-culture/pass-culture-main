@@ -21,18 +21,18 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
   })
 
   describe('functions', () => {
-    it('should redirect to offerers when already authenticated and not hasOffers', () => {return new Promise(done => {
+    it('should redirect to offerers when already authenticated and not hasOffers', async() => {await new Promise((resolve, reject) => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
       const store = configureTestStore()
       configureFetchCurrentUserWithLoginSuccess()
       function onFailMountCallback() {
-        done('Should have been redirected to /structures')
+        reject('Should have been redirected to /structures')
       }
       function onSuccessMountCallback() {
         expect(history.location.pathname).toStrictEqual("/structures")
-        done()
+        resolve()
       }
 
       // when
@@ -55,18 +55,18 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       )
     })})
 
-    it('should redirect to offers when already authenticated and hasOffers', () => {return new Promise(done => {
+    it('should redirect to offers when already authenticated and hasOffers', async() => {await new Promise((resolve, reject) => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
       const store = configureTestStore()
       configureFetchCurrentUserWithLoginSuccessAndOffers()
       function onFailMountCallback() {
-        done('Should have been redirected to /offres')
+        reject('Should have been redirected to /offres')
       }
       function onSuccessMountCallback() {
         expect(history.location.pathname).toStrictEqual("/offres")
-        done()
+        resolve()
       }
 
       // when

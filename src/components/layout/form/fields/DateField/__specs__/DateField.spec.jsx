@@ -6,8 +6,8 @@ import { Form } from 'react-final-form'
 import DateField from '../DateField'
 
 describe('src | components | layout | form | DateField', () => {
-  it('should submit a form with a date', () => {
-    return new Promise(done => {
+  it('should submit a form with a date', async() => {
+    await new Promise(done => {
       // given
       const initialValues = {
         myDate: '2019-04-27T20:00:00Z',
@@ -87,8 +87,8 @@ describe('src | components | layout | form | DateField', () => {
     ).toStrictEqual('26/04/2019')
   })
 
-  it('should delete date when delete is pressed', () => {
-    return new Promise(done => {
+  it('should delete date when delete is pressed', async() => {
+    await new Promise(done => {
       // given
       const initialValues = {
         myDate: '2019-04-27T20:00:00Z',

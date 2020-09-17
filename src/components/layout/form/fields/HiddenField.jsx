@@ -20,11 +20,13 @@ class HiddenField extends PureComponent {
   render() {
     const { name, validator } = this.props
 
-    return (<Field
-      name={name}
-      render={this.renderField}
-      validate={validator}
-            />)
+    return (
+      <Field
+        name={name}
+        render={this.renderField}
+        validate={validator}
+      />
+    )
   }
 }
 

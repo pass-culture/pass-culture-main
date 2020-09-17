@@ -1,4 +1,4 @@
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -20,7 +20,7 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin', () 
   })
 
   describe('functions', () => {
-    it('should redirect to signin when not authenticated', () => {return new Promise(done => {
+    it('should redirect to signin when not authenticated', async() => {await new Promise((resolve, reject) => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
@@ -28,7 +28,7 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin', () 
       configureFetchCurrentUserWithLoginFail()
       function onSuccessMountCallback() {
         expect(history.location.pathname).toStrictEqual("/connexion")
-        done()
+        resolve()
       }
 
       // when
@@ -47,7 +47,7 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin', () 
         </Provider>
       )
 
-      setTimeout(() => done('Should have been redirected to /connexion'))
+      setTimeout(() => reject('Should have been redirected to /connexion'))
     })})
   })
 })

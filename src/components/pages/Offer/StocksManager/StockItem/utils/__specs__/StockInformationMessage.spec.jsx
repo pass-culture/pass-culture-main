@@ -4,11 +4,11 @@ import { shallow } from 'enzyme'
 
 describe('src | components | pages | StocksManager | utils | StockInformationMessage', () => {
   it('should return correct message when provider is Allociné', () => {
-     // given
+    // given
     const providerName = 'Allociné'
 
     // when
-    const stockInformationMessage = shallow(<StockInformationMessage providerName={providerName}/>)
+    const stockInformationMessage = shallow(<StockInformationMessage providerName={providerName} />)
 
     // then
     expect(stockInformationMessage.text()).toBe('Il n’est pas possible d’ajouter d’horaires pour cet événement Allociné')
@@ -19,7 +19,7 @@ describe('src | components | pages | StocksManager | utils | StockInformationMe
     const providerName = 'Libraires'
 
     // when
-    const stockInformationMessage = shallow(<StockInformationMessage providerName={providerName}/>)
+    const stockInformationMessage = shallow(<StockInformationMessage providerName={providerName} />)
 
     // then
     expect(stockInformationMessage.text()).toBe('Il n’est pas possible d’ajouter ni de supprimer d’horaires pour cet événement Libraires')

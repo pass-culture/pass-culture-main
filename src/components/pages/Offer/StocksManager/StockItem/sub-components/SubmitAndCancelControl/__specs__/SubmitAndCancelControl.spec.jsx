@@ -33,10 +33,12 @@ describe('src | components | pages | Offer | StocksManagerContainer | StockItem 
       const stockId = 'AE'
 
       const onSubmitMock = () => jest.fn()
-      const renderField = ({ input }) => (<input
-        name="foo"
-        {...input}
-                                          />)
+      const renderField = ({ input }) => (
+        <input
+          name="foo"
+          {...input}
+        />
+      )
 
       const renderForm = ({ form, handleSubmit }) => (
         <Fragment>

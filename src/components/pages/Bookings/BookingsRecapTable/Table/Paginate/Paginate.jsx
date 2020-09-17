@@ -3,11 +3,11 @@ import PropTypes from 'prop-types'
 import Icon from '../../../../../layout/Icon'
 
 const Paginate = ({ canNextPage,
-                    canPreviousPage,
-                    currentPage,
-                    previousPage,
-                    nbPages,
-                    nextPage
+  canPreviousPage,
+  currentPage,
+  previousPage,
+  nbPages,
+  nextPage
 }) => (
   <div className='paginate-wrapper'>
     <button

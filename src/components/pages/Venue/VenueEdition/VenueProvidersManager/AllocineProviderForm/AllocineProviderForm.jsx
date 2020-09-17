@@ -145,10 +145,12 @@ class AllocineProviderForm extends PureComponent {
   }
 
   render() {
-    return (<Form
-      onSubmit={this.handleSubmit}
-      render={this.renderForm}
-            />)
+    return (
+      <Form
+        onSubmit={this.handleSubmit}
+        render={this.renderForm}
+      />
+    )
   }
 }
 

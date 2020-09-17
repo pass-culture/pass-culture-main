@@ -1,18 +1,10 @@
 import { shallow } from 'enzyme'
 
 import FieldErrors from '../../../../../layout/form/FieldErrors'
-import { AddressFieldRender } from '../AddressField'
+import { addressFieldRender } from '../AddressField'
 import LocationViewer from '../LocationViewer'
 
 describe('src | components | pages | Venue | fields | AddressField', () => {
-  let props
-
-  beforeEach(() => {
-    props = {
-      name: 'fake name',
-      form: {},
-    }
-  })
 
   describe('addressFieldRender', () => {
     let props
@@ -39,7 +31,7 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
 
     it('should display a div with the right props', () => {
       // when
-      const wrapper = shallow(AddressFieldRender({ ...props })({ input, meta }))
+      const wrapper = shallow(addressFieldRender({ ...props })({ input, meta }))
 
       // then
       const mainDiv = wrapper.find('div').first()
@@ -54,7 +46,7 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
       props.readOnly = false
 
       // when
-      const wrapper = shallow(AddressFieldRender({ ...props })({ input, meta }))
+      const wrapper = shallow(addressFieldRender({ ...props })({ input, meta }))
 
       // then
       const label = wrapper.find('label')
@@ -69,7 +61,7 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
 
     it('should display a LocationViewer component with the right props when disabled, read only mode, required', () => {
       // when
-      const wrapper = shallow(AddressFieldRender({ ...props })({ input, meta }))
+      const wrapper = shallow(addressFieldRender({ ...props })({ input, meta }))
 
       // then
       const locationViewer = wrapper.find(LocationViewer)
@@ -92,7 +84,7 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
       props.required = false
 
       // when
-      const wrapper = shallow(AddressFieldRender({ ...props })({ input, meta }))
+      const wrapper = shallow(addressFieldRender({ ...props })({ input, meta }))
 
       // then
       const locationViewer = wrapper.find(LocationViewer)
@@ -110,7 +102,7 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
 
     it('should display a FieldErrors component with the right props', () => {
       // when
-      const wrapper = shallow(AddressFieldRender({ ...props })({ input, meta }))
+      const wrapper = shallow(addressFieldRender({ ...props })({ input, meta }))
 
       // then
       const fieldErrors = wrapper.find(FieldErrors)

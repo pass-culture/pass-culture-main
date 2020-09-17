@@ -168,9 +168,9 @@ class Header extends PureComponent {
                     </span>
                   </a>
                   <SignoutButton
+                    Tag="a"
                     className="navbar-item"
                     handleSuccessRedirect={this.onHandleSuccessRedirect}
-                    Tag="a"
                   >
                     <span className="icon">
                       <Icon svg="ico-deconnect" />

@@ -224,12 +224,14 @@ class LocationViewer extends PureComponent {
     const { inputValue, isLoading, suggestions } = this.state
 
     if (readOnly) {
-      return (<input
-        className={className}
-        name={name}
-        readOnly={readOnly}
-        value={inputValue}
-              />)
+      return (
+        <input
+          className={className}
+          name={name}
+          readOnly={readOnly}
+          value={inputValue}
+        />
+      )
     }
 
     return (

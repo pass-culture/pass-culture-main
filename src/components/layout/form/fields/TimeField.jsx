@@ -39,10 +39,11 @@ class TimeField extends PureComponent {
               <span>
                 {label}
               </span>
-              {required && !readOnly &&
+              {required && !readOnly && (
                 <span className="field-asterisk">
                   {'*'}
-                </span>}
+                </span>
+              )}
             </span>
           )}
         </label>
@@ -95,7 +96,9 @@ TimeField.defaultProps = {
   locale: 'fr',
   placeholder: 'Please enter a value',
   readOnly: false,
-  renderValue: () => null,
+  renderValue: function() {
+    return null
+  },
   required: false,
   validate: null,
 }

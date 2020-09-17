@@ -103,10 +103,11 @@ class DateField extends PureComponent {
               <span>
                 {label}
               </span>
-              {required && !readOnly &&
+              {required && !readOnly && (
                 <span className="field-asterisk">
                   {'*'}
-                </span>}
+                </span>
+              )}
             </span>
           )}
         </label>
@@ -155,7 +156,9 @@ DateField.defaultProps = {
   locale: 'fr',
   placeholder: 'Please enter a value',
   readOnly: false,
-  renderValue: () => null,
+  renderValue: function() {
+    return null
+  },
   required: false,
   timezone: null,
   validate: null,
