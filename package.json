@@ -114,7 +114,6 @@
     "jest-fetch-mock": "^2.1.2",
     "license-reporter": "^1.2.2",
     "lint-staged": "^10.3.0",
-    "prettier-eslint-cli": "^5.0.0",
     "stylelint": "^13.6.1",
     "stylelint-a11y": "^1.2.3",
     "stylelint-config-standard": "^20.0.0",
