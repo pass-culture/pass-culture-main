@@ -6,6 +6,7 @@ import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 
 fixture('Profil,')
+const mockBatchSDK = 'window.batchSDK = function () { };'
 
 test('je peux changer mes informations', async t => {
   const { user } = await fetchSandbox(
@@ -33,6 +34,8 @@ test('je peux changer mes informations', async t => {
     .click(personalInformationsLink)
     .expect(getPageUrl())
     .contains(personalInformationsPath)
+
+  await t
     .click(nicknameInput)
     .pressKey(emptyField)
     .typeText(nicknameInput, newNickname)
@@ -136,4 +139,4 @@ test('je peux changer mes informations', async t => {
     .click(signInButton)
     .expect(getPageUrl())
     .contains(homePath)
-})
+}).clientScripts({ content: mockBatchSDK })

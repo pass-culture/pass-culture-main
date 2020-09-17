@@ -1,29 +1,13 @@
-export default userId => {
+export default function setupBatchSDK(userId) {
   const config = {
     batchIsEnabled: process.env.BATCH_IS_ENABLED,
   }
-
   if (config.batchIsEnabled === 'true') {
-    /* Load remote Batch SDK JavaScript code */
-    /* eslint-disable-next-line */
-    ;(function(b, a, t, c, h, e, r) {
-      h = 'batchSDK'
-      b[h] =
-        b[h] ||
-        function() {
-          /* eslint-disable-next-line */
-          ;(b[h].q = b[h].q || []).push(arguments)
-        }
-      ;(e = a.createElement(t)), (r = a.getElementsByTagName(t)[0])
-      /* eslint-disable-next-line */
-      e.async = 1
-      e.src = c
-      r.parentNode.insertBefore(e, r)
-    })(window, document, 'script', 'https://via.batch.com/v2/bootstrap.min.js')
-
+    getBatchSDK()
     const batchSDKUIConfig = {
       alert: {
         attach: 'top center',
+        autoShow: false,
         btnWidth: '200',
         positiveSubBtnLabel: 'Activer les notifications',
         negativeBtnLabel: 'Plus tard',
@@ -49,8 +33,32 @@ export default userId => {
     })
 
     /* eslint-disable-next-line */
+    window.batchSDK(api => {
+      api.ui.show('alert')
+    })
+
+    /* eslint-disable-next-line */
     window.batchSDK(function(api) {
       api.setCustomUserID(userId)
     })
   }
+}
+
+export const getBatchSDK = () => {
+  /* Load remote Batch SDK JavaScript code */
+  /* eslint-disable-next-line */
+  ;(function(b, a, t, c, h, e, r) {
+    h = 'batchSDK'
+    b[h] =
+      b[h] ||
+      function() {
+        /* eslint-disable-next-line */
+        ;(b[h].q = b[h].q || []).push(arguments)
+      }
+    ;(e = a.createElement(t)), (r = a.getElementsByTagName(t)[0])
+    /* eslint-disable-next-line */
+    e.async = 1
+    e.src = c
+    r.parentNode.insertBefore(e, r)
+  })(window, document, 'script', 'https://via.batch.com/v2/bootstrap.min.js')
 }

@@ -13,6 +13,7 @@ jest.mock('../../../../vendor/contentful/contentful', () => ({
 jest.mock('../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
 }))
+jest.mock('../../../../notifications/setUpBatchSDK', () => jest.fn())
 
 describe('src | components | home', () => {
   let props
@@ -47,7 +48,6 @@ describe('src | components | home', () => {
       }),
     }
   })
-
 
   it('should render the main view when navigating to /accueil', async () => {
     // Given

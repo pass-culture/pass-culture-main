@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom'
 import Icon from '../../../../layout/Icon/Icon'
 import { Provider } from 'react-redux'
 import { getStubStore } from '../../../../../utils/stubStore'
+import setupBatchSDK from '../../../../../notifications/setUpBatchSDK'
 
 jest.mock('../Module/domain/buildTiles', () => ({
   buildPairedTiles: jest.fn().mockReturnValue([]),
@@ -35,6 +36,7 @@ jest.mock('../../../../../vendor/algolia/algolia', () => ({
 jest.mock('../domain/parseAlgoliaParameters', () => ({
   parseAlgoliaParameters: jest.fn().mockReturnValue({}),
 }))
+jest.mock('../../../../../notifications/setUpBatchSDK', () => jest.fn())
 
 describe('src | components | MainView', () => {
   let props
@@ -80,7 +82,7 @@ describe('src | components | MainView', () => {
     const wrapper = mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
@@ -93,7 +95,7 @@ describe('src | components | MainView', () => {
     const wrapper = mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
@@ -106,7 +108,7 @@ describe('src | components | MainView', () => {
     const wrapper = mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
@@ -132,7 +134,7 @@ describe('src | components | MainView', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -160,7 +162,7 @@ describe('src | components | MainView', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -190,7 +192,7 @@ describe('src | components | MainView', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -213,7 +215,7 @@ describe('src | components | MainView', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -233,7 +235,7 @@ describe('src | components | MainView', () => {
     const wrapper = await mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await wrapper.update()
 
@@ -250,7 +252,7 @@ describe('src | components | MainView', () => {
     const wrapper = mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     await flushPromises()
     wrapper.update()
@@ -265,11 +267,37 @@ describe('src | components | MainView', () => {
     mount(
       <MemoryRouter>
         <MainView {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
     expect(props.updateCurrentUser).toHaveBeenCalledTimes(1)
+  })
+
+  it('should have called batchSDK setup with userId to enable notifications', () => {
+    // given
+    props.user = new User({
+      email: 'john.doe@example.fr',
+      expenses: {
+        all: { actual: 287, max: 500 },
+        digital: { actual: 11, max: 200 },
+        physical: { actual: 23, max: 200 },
+      },
+      firstName: 'PC Test Jeune',
+      publicName: 'Iron Man',
+      wallet_balance: 200.1,
+      id: 'myID',
+    })
+
+    // when
+    mount(
+      <MemoryRouter>
+        <MainView {...props} />
+      </MemoryRouter>
+    )
+
+    // then
+    expect(setupBatchSDK).toHaveBeenCalledWith('myID')
   })
 
   describe('modules tracking', () => {
@@ -289,7 +317,7 @@ describe('src | components | MainView', () => {
       const wrapper = await mount(
         <MemoryRouter>
           <MainView {...props} />
-        </MemoryRouter>,
+        </MemoryRouter>
       )
       jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 36)
 
@@ -317,7 +345,7 @@ describe('src | components | MainView', () => {
       const wrapper = await mount(
         <MemoryRouter>
           <MainView {...props} />
-        </MemoryRouter>,
+        </MemoryRouter>
       )
       jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 35)
 
@@ -348,7 +376,7 @@ describe('src | components | MainView', () => {
       await mount(
         <MemoryRouter>
           <MainView {...props} />
-        </MemoryRouter>,
+        </MemoryRouter>
       )
 
       // Then
@@ -374,7 +402,7 @@ describe('src | components | MainView', () => {
       await mount(
         <MemoryRouter>
           <MainView {...props} />
-        </MemoryRouter>,
+        </MemoryRouter>
       )
 
       // Then
@@ -397,13 +425,13 @@ describe('src | components | MainView', () => {
           firstName: 'PC Test Jeune',
           publicName: 'Iron Man',
           wallet_balance: 200.1,
-        }),
+        })
       ) => state,
       data: (
         state = {
           features: [],
           readRecommendations: [],
-        },
+        }
       ) => state,
     })
     fetchHomepage.mockResolvedValueOnce([
@@ -418,7 +446,7 @@ describe('src | components | MainView', () => {
         <MemoryRouter initialEntries={['/accueil/profil']}>
           <MainView {...props} />
         </MemoryRouter>
-      </Provider>,
+      </Provider>
     )
 
     // Then

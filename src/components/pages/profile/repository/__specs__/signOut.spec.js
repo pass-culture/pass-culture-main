@@ -4,7 +4,9 @@ jest.mock('../../../../../utils/config', () => ({
   API_URL: 'my-localhost',
 }))
 
-
+jest.mock('../../../../../notifications/setUpBatchSDK', () => ({
+  getBatchSDK: jest.fn()
+}))
 
 describe('signOut', () => {
   it('should call batchSDK', async () => {
