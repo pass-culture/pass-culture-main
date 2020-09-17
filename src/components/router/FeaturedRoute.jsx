@@ -25,10 +25,12 @@ class FeaturedRoute extends PureComponent {
     }
 
     if (isRouteDisabled) {
-      return (<Route
-        component={PageNotFoundContainer}
-        path={path}
-              />)
+      return (
+        <Route
+          component={PageNotFoundContainer}
+          path={path}
+        />
+      )
     }
 
     return (

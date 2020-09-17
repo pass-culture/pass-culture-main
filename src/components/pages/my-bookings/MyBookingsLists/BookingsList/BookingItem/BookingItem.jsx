@@ -73,10 +73,12 @@ const BookingItem = ({
             svg="ico-next-pink"
           />
         </div>
-        {ribbon && <Ribbon
-          label={label}
-          type={type}
-                   />}
+        {ribbon && (
+          <Ribbon
+            label={label}
+            type={type}
+          />
+        )}
       </Link>
       {shouldDisplayToken && (
         <div className="mb-token-container">

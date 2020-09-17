@@ -90,15 +90,19 @@ class MainView extends Component {
       )
     } else {
       if (module instanceof ExclusivityPane) {
-        return (<ExclusivityModule
-          key={`${row}-exclusivity-module`}
-          module={module}
-                />)
+        return (
+          <ExclusivityModule
+            key={`${row}-exclusivity-module`}
+            module={module}
+          />
+        )
       }
-      return (<BusinessModule
-        key={`${row}-business-module`}
-        module={module}
-              />)
+      return (
+        <BusinessModule
+          key={`${row}-business-module`}
+          module={module}
+        />
+      )
     }
   }
 

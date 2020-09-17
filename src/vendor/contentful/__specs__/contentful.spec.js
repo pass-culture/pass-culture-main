@@ -171,11 +171,11 @@ describe('src | vendor | contentful', () => {
 
     // then
     const business = new BusinessPane({
-        firstLine: 'my first line',
-        image: 'https://my-image-url',
-        secondLine: 'my second line',
-        url: 'my-url',
-      },
+      firstLine: 'my first line',
+      image: 'https://my-image-url',
+      secondLine: 'my second line',
+      url: 'my-url',
+    },
     )
     expect(modules).toStrictEqual([business])
   })
@@ -218,9 +218,9 @@ describe('src | vendor | contentful', () => {
 
     // then
     const informationPane = new Offers({
-        algolia: { isDuo: true },
-        display: { layout: 'one-item-medium' },
-      },
+      algolia: { isDuo: true },
+      display: { layout: 'one-item-medium' },
+    },
     )
     expect(modules).toStrictEqual([informationPane])
   })
@@ -274,10 +274,10 @@ describe('src | vendor | contentful', () => {
 
     // then
     const offersWithCover = new OffersWithCover({
-        algolia: { isDuo: true },
-        cover: 'https://my-cover-url',
-        display: { layout: 'one-item-medium' },
-      },
+      algolia: { isDuo: true },
+      cover: 'https://my-cover-url',
+      display: { layout: 'one-item-medium' },
+    },
     )
     expect(modules).toStrictEqual([offersWithCover])
   })
@@ -320,10 +320,10 @@ describe('src | vendor | contentful', () => {
 
     // then
     const exclusivityPane = new ExclusivityPane({
-        alt: 'my alt text',
-        image: 'https://my-image-url',
-        offerId: 'AE',
-      },
+      alt: 'my alt text',
+      image: 'https://my-image-url',
+      offerId: 'AE',
+    },
     )
     expect(modules).toStrictEqual([exclusivityPane])
   })
@@ -731,11 +731,11 @@ describe('src | vendor | contentful', () => {
 
     // then
     const business = new BusinessPane({
-        firstLine: null,
-        image: null,
-        secondLine: null,
-        url: null,
-      },
+      firstLine: null,
+      image: null,
+      secondLine: null,
+      url: null,
+    },
     )
     expect(modules).toStrictEqual([business])
   })
@@ -774,10 +774,10 @@ describe('src | vendor | contentful', () => {
 
     // then
     const exclusivityPane = new ExclusivityPane({
-        alt: 'my alt text',
-        image: null,
-        offerId: 'AE',
-      },
+      alt: 'my alt text',
+      image: null,
+      offerId: 'AE',
+    },
     )
     expect(modules).toStrictEqual([exclusivityPane])
   })

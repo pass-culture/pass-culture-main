@@ -16,9 +16,11 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
         </span>
         <span className="is-block mb36">
           {isEvent && 'Ta réservation '}
-          {isEvent && isDuo && <i>
-            {'duo '}
-          </i>}
+          {isEvent && isDuo && (
+            <i>
+              {'duo '}
+            </i>
+          )}
           {isEvent && 'est validée.'}
           {!isEvent && (
             <Fragment>
@@ -37,9 +39,11 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
           {getDisplayPrice(price * quantity)}
           {' ont été déduits de ton pass.'}
         </span>
-        {!offerUrl && <span className="is-block">
-          {'Présente le code suivant sur place :'}
-        </span>}
+        {!offerUrl && (
+          <span className="is-block">
+            {'Présente le code suivant sur place :'}
+          </span>
+        )}
       </p>
       <p className="my28">
         {!offerUrl && (

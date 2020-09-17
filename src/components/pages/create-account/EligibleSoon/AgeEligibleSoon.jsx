@@ -10,10 +10,12 @@ export const AgeEligibleSoon = ({ birthDate, postalCode }) => (
     body="Pour profiter du pass Culture, tu dois avoir 18 ans. Entre ton adresse email : nous t’avertirons dès que tu seras éligible."
     postalCode={postalCode}
     title="C’est pour bientôt !"
-    visual={<Animation
-      name="ineligible-under-eighteen-animation"
-      speed={0.7}
-            />}
+    visual={(
+      <Animation
+        name="ineligible-under-eighteen-animation"
+        speed={0.7}
+      />
+    )}
   />
 )
 

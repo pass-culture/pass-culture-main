@@ -36,10 +36,12 @@ export const App = ({ children, location, isMaintenanceActivated, isUserConnecte
           </title>
         </Helmet>
         <StatusBarHelmet pathname={location.pathname} />
-        {isNavbarDisplayed && <NavBarContainer
-          path={location.pathname}
-          routes={routes}
-                              />}
+        {isNavbarDisplayed && (
+          <NavBarContainer
+            path={location.pathname}
+            routes={routes}
+          />
+        )}
         <ErrorCatcher>
           {children}
           <OverlayContainer />

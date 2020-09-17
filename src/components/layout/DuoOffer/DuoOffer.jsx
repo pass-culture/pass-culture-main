@@ -7,9 +7,11 @@ const DuoOffer = ({ isDuoOffer, label }) =>
       <span className="duo-logo">
         {'duo'}
       </span>
-      {label && <span className="duo-label">
-        {label}
-      </span>}
+      {label && (
+        <span className="duo-label">
+          {label}
+        </span>
+      )}
     </div>
   )
 
@@ -21,7 +23,6 @@ DuoOffer.defaultProps = {
 DuoOffer.propTypes = {
   isDuoOffer: PropTypes.bool,
   label: PropTypes.string,
-  offerId: PropTypes.string.isRequired,
 }
 
 export default DuoOffer

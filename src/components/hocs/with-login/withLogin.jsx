@@ -9,10 +9,10 @@ import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisab
 import { FEATURES } from '../../router/selectors/features'
 
 export default ({
-                  isRequired,
-                  handleSuccess = () => null,
-                  handleFail = () => null,
-                }) => WrappedComponent => {
+  isRequired,
+  handleSuccess = () => null,
+  handleFail = () => null,
+}) => WrappedComponent => {
   const _withLogin = props => {
     const { dispatchFetchCurrentUser, history, isHomepageDisabled, location } = props
     const [loading, setLoading] = useState(true)

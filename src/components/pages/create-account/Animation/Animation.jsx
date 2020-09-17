@@ -19,10 +19,12 @@ export const Animation = ({ name, loop, speed }) => {
       .setSpeed(speed)
   }, [])
 
-  return (<div
-    className="animation"
-    ref={animationContainer}
-          />)
+  return (
+    <div
+      className="animation"
+      ref={animationContainer}
+    />
+  )
 }
 
 Animation.defaultProps = {

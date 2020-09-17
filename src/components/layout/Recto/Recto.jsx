@@ -5,10 +5,12 @@ import Thumb from './Thumb'
 
 const Recto = ({ areDetailsVisible, thumbUrl }) => (
   <div className="recto">
-    {thumbUrl && <Thumb
-      src={thumbUrl}
-      translated={areDetailsVisible}
-                 />}
+    {thumbUrl && (
+      <Thumb
+        src={thumbUrl}
+        translated={areDetailsVisible}
+      />
+    )}
   </div>
 )
 

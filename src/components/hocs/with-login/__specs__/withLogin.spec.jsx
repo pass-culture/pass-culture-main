@@ -27,9 +27,11 @@ describe('src | components | withLogin', () => {
         ) => state,
       })
       let dispatch = jest.fn()
-      const wrappedComponent = () => (<h1>
-        {'Hello World !'}
-      </h1>)
+      const wrappedComponent = () => (
+        <h1>
+          {'Hello World !'}
+        </h1>
+      )
       const config = {}
       const history = createBrowserHistory()
 

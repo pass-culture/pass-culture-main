@@ -10,11 +10,13 @@ const OneItem = ({ historyPush, isSwitching, layout, moduleName, parsedParameter
   const tileIsASeeMoreItem = typeof tile === 'boolean'
 
   if (tileIsACoverItem) {
-    return (<Cover
-      img={tile}
-      key={`${row}-cover`}
-      layout={layout}
-            />)
+    return (
+      <Cover
+        img={tile}
+        key={`${row}-cover`}
+        layout={layout}
+      />
+    )
   } else {
     return tileIsASeeMoreItem ? (
       <SeeMoreContainer

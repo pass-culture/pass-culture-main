@@ -54,11 +54,13 @@ class InputField extends PureComponent {
         ? required
         : (required && validateRequiredField) || undefined
 
-    return (<Field
-      name={name}
-      render={this.renderField}
-      validate={validateFunc || undefined}
-            />)
+    return (
+      <Field
+        name={name}
+        render={this.renderField}
+        validate={validateFunc || undefined}
+      />
+    )
   }
 }
 

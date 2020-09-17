@@ -3,6 +3,6 @@ export const formatPublicName = (publicName = '') => {
   const PUBLIC_NAME_MAX_CHARACTERS = 15
 
   return publicName.includes(SPACE_CHARACTER) && publicName.length > PUBLIC_NAME_MAX_CHARACTERS ?
-    publicName.split(SPACE_CHARACTER)[0]
+      publicName.split(SPACE_CHARACTER)[0]
     : publicName
 }

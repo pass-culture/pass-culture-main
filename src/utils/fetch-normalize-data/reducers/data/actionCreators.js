@@ -41,7 +41,9 @@ export const mergeData = (patch, config = {}) => ({
 export const purgeData = key => ({
   key,
   type: 'persist/PURGE',
-  result: () => null,
+  result: function() {
+    return null
+  },
 })
 
 export const _requestData = (config = {}) => {

@@ -36,9 +36,11 @@ class Teaser extends PureComponent {
           <div className="teaser-sub-title">
             {offerTypeLabel}
           </div>
-          {date && <div className="teaser-date">
-            {date}
-          </div>}
+          {date && (
+            <div className="teaser-date">
+              {date}
+            </div>
+          )}
           <div className="teaser-infos">
             {statuses.length > 0 &&
               statuses.map(status => (

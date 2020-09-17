@@ -110,7 +110,8 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         <PopinButton
           action={handleClosePopinAction}
           label="Non"
-        />)
+        />
+      )
       const options = {
         buttons: [
           yesButton,

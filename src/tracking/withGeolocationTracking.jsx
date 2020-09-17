@@ -3,9 +3,11 @@ import trackGeolocation from './trackGeolocation'
 
 export default WrappedComponent => {
   return function withGeolocationTracking(props) {
-    return (<WrappedComponent
-      trackGeolocation={trackGeolocation}
-      {...props}
-            />)
+    return (
+      <WrappedComponent
+        trackGeolocation={trackGeolocation}
+        {...props}
+      />
+    )
   }
 }

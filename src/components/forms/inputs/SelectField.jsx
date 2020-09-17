@@ -47,10 +47,12 @@ class SelectField extends PureComponent {
               </option>
             ))}
         </select>
-        {!readOnly && <Icon
-          alt="Horaires"
-          svg="ico-hour-list"
-                      />}
+        {!readOnly && (
+          <Icon
+            alt="Horaires"
+            svg="ico-hour-list"
+          />
+        )}
       </div>
     )
   }
@@ -65,10 +67,12 @@ class SelectField extends PureComponent {
           className="label-datepicker-inner"
           htmlFor={inputName}
         >
-          {label && <InputLabel
-            label={label}
-            required={required}
-                    />}
+          {label && (
+            <InputLabel
+              label={label}
+              required={required}
+            />
+          )}
           <Field
             name={name}
             render={this.renderSelect}

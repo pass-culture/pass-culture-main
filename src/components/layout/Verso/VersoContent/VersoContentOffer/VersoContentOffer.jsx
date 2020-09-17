@@ -55,29 +55,43 @@ class VersoContentOffer extends PureComponent {
           >
             {appLabel}
           </span>
-          {durationMinutes && <span>
-            {` - Durée ${duration}`}
-          </span>}
+          {durationMinutes && (
+            <span>
+              {` - Durée ${duration}`}
+            </span>
+          )}
         </div>
-        {style && <div>
-          {`Genre : ${style}`}
-        </div>}
-        {author && <div>
-          {`Auteur : ${author}`}
-        </div>}
-        {performer && <div>
-          {`Interprète : ${performer}`}
-        </div>}
-        {speaker && <div>
-          {`Intervenant : ${speaker}`}
-        </div>}
-        {stageDirector && <div>
-          {`Metteur en scène : ${stageDirector}`}
-        </div>}
-        {offer.id && <DuoOfferContainer
-          label="Tu peux réserver deux places."
-          offerId={offer.id}
-                     />}
+        {style && (
+          <div>
+            {`Genre : ${style}`}
+          </div>
+        )}
+        {author && (
+          <div>
+            {`Auteur : ${author}`}
+          </div>
+        )}
+        {performer && (
+          <div>
+            {`Interprète : ${performer}`}
+          </div>
+        )}
+        {speaker && (
+          <div>
+            {`Intervenant : ${speaker}`}
+          </div>
+        )}
+        {stageDirector && (
+          <div>
+            {`Metteur en scène : ${stageDirector}`}
+          </div>
+        )}
+        {offer.id && (
+          <DuoOfferContainer
+            label="Tu peux réserver deux places."
+            offerId={offer.id}
+          />
+        )}
       </div>
     )
   }
@@ -97,9 +111,11 @@ class VersoContentOffer extends PureComponent {
               ' (réservé)'}
           </li>
         ))}
-        {hasMoreBookables && <li>
-          {'Cliquez sur "j’y vais" pour voir plus de dates.'}
-        </li>}
+        {hasMoreBookables && (
+          <li>
+            {'Cliquez sur "j’y vais" pour voir plus de dates.'}
+          </li>
+        )}
       </Fragment>
     )
   }
@@ -109,9 +125,11 @@ class VersoContentOffer extends PureComponent {
     const atLeastOneBookable = bookables.length > 0
     const limitDatetime = atLeastOneBookable ? bookables[0].bookinglimitDatetime : null
 
-    return (<li>
-      {`Dès maintenant${limitDatetime ? ` et jusqu’au ${limitDatetime}` : ''}`}
-    </li>)
+    return (
+      <li>
+        {`Dès maintenant${limitDatetime ? ` et jusqu’au ${limitDatetime}` : ''}`}
+      </li>
+    )
   }
 
   renderOfferWhen() {
@@ -128,9 +146,11 @@ class VersoContentOffer extends PureComponent {
           {'Quand ?'}
         </h3>
         <ul className="dates-info">
-          {!isBookable ? <li>
-            {'L’offre n’est plus disponible.'}
-          </li> : offerDateInfos}
+          {!isBookable ? (
+            <li>
+              {'L’offre n’est plus disponible.'}
+            </li>
+          ) : offerDateInfos}
         </ul>
       </div>
     )

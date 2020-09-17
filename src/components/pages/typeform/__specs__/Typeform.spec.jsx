@@ -17,7 +17,9 @@ describe('src | components | pages | typeform | Typeform', () => {
       // given
       const props = {
         history: {
-          push: () => null,
+          push: function() {
+            return null
+          },
         },
         updateCurrentUser: jest.fn(),
       }
@@ -42,7 +44,9 @@ describe('src | components | pages | typeform | Typeform', () => {
         history: {
           push: jest.fn(),
         },
-        updateCurrentUser: () => null,
+        updateCurrentUser: function() {
+          return null
+        },
       }
 
       const wrapper = mount(<Typeform {...props} />)

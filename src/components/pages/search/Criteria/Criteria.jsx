@@ -27,10 +27,12 @@ export const Criteria = props => {
               <span className={`criteria-item-label ${isActive && 'criteria-active-label'}`}>
                 {label}
               </span>
-              {isActive && <Icon
-                className="criteria-item-icon-check"
-                svg="ico-check-pink"
-                           />}
+              {isActive && (
+                <Icon
+                  className="criteria-item-icon-check"
+                  svg="ico-check-pink"
+                />
+              )}
             </button>
           </li>
         )

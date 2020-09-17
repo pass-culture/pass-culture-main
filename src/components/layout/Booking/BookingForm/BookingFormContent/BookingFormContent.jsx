@@ -64,10 +64,12 @@ class BookingFormContent extends PureComponent {
   renderIsDuo = () => {
     const { offerId } = this.props
 
-    return (<DuoOfferContainer
-      label="Réserver 2 places"
-      offerId={offerId}
-            />)
+    return (
+      <DuoOfferContainer
+        label="Réserver 2 places"
+        offerId={offerId}
+      />
+    )
   }
 
   render() {

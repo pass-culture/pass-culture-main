@@ -70,9 +70,11 @@ const Result = ({ result, geolocation, search }) => {
               {formattedDate}
             </p>
           )}
-          {canDisplayPrice && <p className="result-price">
-            {formattedPrice}
-          </p>}
+          {canDisplayPrice && (
+            <p className="result-price">
+              {formattedPrice}
+            </p>
+          )}
         </div>
       </div>
     </Link>

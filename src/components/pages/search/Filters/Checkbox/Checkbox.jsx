@@ -16,11 +16,12 @@ const Checkbox = ({ checked, className, id, label, name, onChange }) => {
         className={className}
         htmlFor={id}
       >
-        {checked &&
-        <Icon
-          className="fc-icon-check"
-          svg="ico-check-pink"
-        />}
+        {checked && (
+          <Icon
+            className="fc-icon-check"
+            svg="ico-check-pink"
+          />
+        )}
         {label}
       </label>
     </div>

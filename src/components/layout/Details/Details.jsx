@@ -54,10 +54,12 @@ class Details extends PureComponent {
 
   renderBooking = route => {
     const { withHeader } = this.props
-    return (<BookingContainer
-      extraClassName={`${withHeader ? 'with-header' : ''}`}
-      {...route}
-            />)
+    return (
+      <BookingContainer
+        extraClassName={`${withHeader ? 'with-header' : ''}`}
+        {...route}
+      />
+    )
   }
 
   render() {

@@ -18,11 +18,13 @@ const TwoItems = ({
   const offersArePaired = tile.length === 2
 
   if (firstTileIsACoverItem) {
-    return (<Cover
-      img={tile[0]}
-      key={`${row}-cover`}
-      layout={layout}
-            />)
+    return (
+      <Cover
+        img={tile[0]}
+        key={`${row}-cover`}
+        layout={layout}
+      />
+    )
   } else if (firstTileIsASeeMoreItem) {
     return (
       <SeeMoreContainer
