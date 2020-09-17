@@ -1,4 +1,4 @@
-from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap, OfferRecapVenue, OfferRecapStock
+from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap
 from routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from utils.human_ids import humanize
 
@@ -15,7 +15,6 @@ def test_should_return_offers_dict_with_relevant_informations():
             has_booking_limit_datetimes_passed=False,
             is_active=True,
             is_editable=True,
-            is_fully_booked=False,
             is_event=False,
             is_thing=True,
             name="Test Book",
@@ -40,7 +39,6 @@ def test_should_return_offers_dict_with_relevant_informations():
         "isActive": True,
         "isEditable": True,
         "isEvent": False,
-        "isFullyBooked": False,
         "isThing": True,
         "name": "Test Book",
         "stocks": [{

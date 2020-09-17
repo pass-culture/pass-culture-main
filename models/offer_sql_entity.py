@@ -151,22 +151,6 @@ class OfferSQLEntity(PcObject,
         return False
 
     @property
-    def isFullyBooked(self) -> bool:
-        has_unlimited_stock = any([stock.quantity is None for stock in self.activeStocks])
-        if has_unlimited_stock:
-            return False
-
-        bookable_stocks = list(filter(lambda stock: stock.isBookable, self.stocks))
-        total_booked_quantity = 0
-
-        for stock in bookable_stocks:
-            bookings = filter_bookings_to_compute_remaining_stock(stock)
-            total_booked_quantity += sum(map(lambda booking: booking.quantity, bookings))
-
-        available_stocks = sum(map(lambda stock: stock.quantity, bookable_stocks))
-        return total_booked_quantity >= available_stocks
-
-    @property
     def activeStocks(self) -> List[StockSQLEntity]:
         return [stock for stock in self.stocks if not stock.isSoftDeleted]
 

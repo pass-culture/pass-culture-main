@@ -16,7 +16,6 @@ def _serialize_offer_paginated(offer: OfferRecap) -> Dict:
         "id": humanize(offer.identifier),
         "isActive": offer.is_active,
         "isEditable": offer.is_editable,
-        "isFullyBooked": offer.is_fully_booked,
         "isEvent": offer.is_event,
         "isThing": offer.is_thing,
         "name": offer.name,

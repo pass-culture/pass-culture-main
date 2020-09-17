@@ -39,7 +39,6 @@ OFFER_INCLUDES = [
     "isDigital",
     "isEditable",
     "isEvent",
-    'isFullyBooked',
     'hasBookingLimitDatetimesPassed',
     'isBookable',
     "isThing",
@@ -144,7 +143,6 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                     'isBookable',
                     'isDigital',
                     'isEvent',
-                    "isFullyBooked",
                     "offerType",
                     {
                         "key": "stocks",
@@ -185,7 +183,6 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
                     "favorites",
                     "isEvent",
                     'hasBookingLimitDatetimesPassed',
-                    "isFullyBooked",
                     "isThing",
                     "offerType",
                     "thumbUrl",

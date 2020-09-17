@@ -18,7 +18,6 @@ def _offer_recap_to_domain(offer_sql_entity: OfferSQLEntity) -> OfferRecap:
             has_booking_limit_datetimes_passed=offer_sql_entity.hasBookingLimitDatetimesPassed,
             is_active=offer_sql_entity.isActive,
             is_editable=offer_sql_entity.isEditable,
-            is_fully_booked=offer_sql_entity.isFullyBooked,
             is_event=offer_sql_entity.isEvent,
             is_thing=offer_sql_entity.isThing,
             name=offer_sql_entity.name,

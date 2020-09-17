@@ -22,7 +22,6 @@ class OfferRecap:
                  has_booking_limit_datetimes_passed: bool,
                  is_active: bool,
                  is_editable: bool,
-                 is_fully_booked: bool,
                  is_event: bool,
                  is_thing: bool,
                  name: str,
@@ -39,7 +38,6 @@ class OfferRecap:
         self.has_booking_limit_datetimes_passed = has_booking_limit_datetimes_passed
         self.is_active = is_active
         self.is_editable = is_editable
-        self.is_fully_booked = is_fully_booked
         self.is_event = is_event
         self.is_thing = is_thing
         self.name = name
