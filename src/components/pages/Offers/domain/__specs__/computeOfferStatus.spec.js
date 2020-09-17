@@ -86,6 +86,7 @@ describe('compute offer status', () => {
         const stocks = [
           {
             id: 1,
+            remainingQuantity: 0,
           },
         ]
 

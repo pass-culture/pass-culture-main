@@ -7,6 +7,7 @@ import Thumb from '../../../layout/Thumb'
 import { computeOfferStatus } from '../domain/computeOfferStatus'
 import { pluralize } from '../../../../utils/pluralize'
 import { OFFER_STATUS } from '../domain/offerStatus'
+import { isOfferFullyBooked } from '../domain/isOfferFullyBooked'
 
 const OFFER_STATUS_PROPERTIES = {
   [OFFER_STATUS.INACTIVE]: {
@@ -69,7 +70,7 @@ const OfferItem = ({
   const stockSize = stocks ? stocks.length : null
   const isOfferEditable = offer ? offer.isEditable : null
   const isOfferInactiveOrExpired = !offer.isActive || offer.hasBookingLimitDatetimesPassed
-  const shouldShowSoldOutWarning = computeNumberOfSoldOutStocks(stocks) > 0 && !offer.isFullyBooked
+  const shouldShowSoldOutWarning = computeNumberOfSoldOutStocks(stocks) > 0 && !isOfferFullyBooked(stocks)
   const offerStatus = computeOfferStatus(offer, stocks)
 
   return (
