@@ -95,7 +95,6 @@
     "node-sass": "^4.13.1",
     "postcss-flexbugs-fixes": "^4.1.0",
     "postcss-loader": "^3.0.0",
-    "prettier-eslint-cli": "^5.0.0",
     "promise": "^8.0.3",
     "raf": "^3.4.1",
     "sass-loader": "^8.0.0",
