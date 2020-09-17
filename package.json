@@ -134,9 +134,12 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,md,css,scss,html}": [
+    "*.{js,jsx}": [
       "prettier --write",
       "eslint --max-warnings=0 --fix"
+    ],
+    "*.svg": [
+      "svgo --disable=removeViewBox"
     ]
   }
 }
