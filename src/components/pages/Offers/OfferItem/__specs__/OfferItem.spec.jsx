@@ -1,5 +1,5 @@
 import React from 'react'
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import { MemoryRouter } from 'react-router'
 import OfferItem from '../OfferItem'
 
@@ -75,7 +75,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
       describe('switch activate', () => {
         it('should deactivate when offer is active', () => {
           // given
-          const wrapper = shallow(<OfferItem {...props} />)
+          const wrapper = mount(
+            <MemoryRouter>
+              <OfferItem {...props} />
+            </MemoryRouter>)
           const disableButton = wrapper.find('button')
 
           // when
@@ -88,7 +91,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         it('should activate when offer is not active', () => {
           // given
           eventOffer.isActive = false
-          const wrapper = shallow(<OfferItem {...props} />)
+          const wrapper = mount(
+            <MemoryRouter>
+              <OfferItem {...props} />
+            </MemoryRouter>)
           const disableButton = wrapper.find('button')
 
           // when
