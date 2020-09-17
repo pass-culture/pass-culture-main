@@ -38,7 +38,13 @@
     "jsx-a11y/label-has-for": "off",
     "no-var": "error",
     "react/forbid-component-props": "off",
-    "react/function-component-definition":  [2, { "namedComponents": "arrow-function" }],
+    "react/function-component-definition":  [
+      2,
+      {
+        "namedComponents": "arrow-function",
+        "unnamedComponents": "arrow-function"
+      }
+    ],
     "react/jsx-curly-brace-presence": [2, { "props": "never", "children": "ignore" }],
     "react/jsx-fragments": "off",
     "react/jsx-indent": [2, 2, {"indentLogicalExpressions": true}],

@@ -17,9 +17,7 @@ describe('src | components | pages | typeform | Typeform', () => {
       // given
       const props = {
         history: {
-          push: function() {
-            return null
-          },
+          push: () => null,
         },
         updateCurrentUser: jest.fn(),
       }
@@ -44,7 +42,7 @@ describe('src | components | pages | typeform | Typeform', () => {
         history: {
           push: jest.fn(),
         },
-        updateCurrentUser: function() {
+        updateCurrentUser: () => {
           return null
         },
       }
