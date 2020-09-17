@@ -1,10 +1,10 @@
-from domain.pro_offers.paginated_offers import PaginatedOffers
-from infrastructure.repository.pro_offers.paginated_offer_sql_repository import PaginatedOffersSQLRepository
-from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product
-from tests.model_creators.specific_creators import create_product_with_event_type, create_product_with_thing_type, create_offer_with_event_product
+from tests.model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
+from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_product_with_event_type, create_product_with_thing_type
+
+from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
+from repository import repository
 
 
 class PaginatedOfferSQLRepositoryTest:
@@ -21,17 +21,17 @@ class PaginatedOfferSQLRepositoryTest:
 
         # When
         paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=user.id,
-                user_is_admin=user.isAdmin,
-                pagination_limit=1,
-                page=2
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
+            pagination_limit=1,
+            page=2
         )
 
         # Then
-        assert isinstance(paginated_offers, PaginatedOffers)
+        assert isinstance(paginated_offers, PaginatedOffersRecap)
         assert paginated_offers.total == 2
         assert len(paginated_offers.offers) == 1
-        assert paginated_offers.offers[0].id == offer1.id
+        assert paginated_offers.offers[0].identifier == offer1.id
 
     @clean_database
     def test_return_offers_sorted_by_id_desc(self, app):
@@ -46,14 +46,14 @@ class PaginatedOfferSQLRepositoryTest:
 
         # When
         paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=user.id,
-                user_is_admin=user.isAdmin,
-                page=1,
-                pagination_limit=10
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
+            page=1,
+            pagination_limit=10
         )
 
         # Then
-        assert paginated_offers.offers[0].id > paginated_offers.offers[1].id
+        assert paginated_offers.offers[0].identifier > paginated_offers.offers[1].identifier
 
     @clean_database
     def test_return_offers_of_given_venue(self, app):

@@ -1,19 +1,21 @@
-from unittest.mock import patch, call
+from datetime import datetime
+from typing import Any
+from unittest.mock import Mock, call, patch
+
+from tests.conftest import clean_database
+from tests.model_creators.generic_creators import create_booking, create_offerer, create_stock, create_user, create_venue, create_venue_provider
+from tests.model_creators.provider_creators import activate_provider
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 
 from local_providers.libraires.libraires_stocks import LibrairesStocks
 from models import OfferSQLEntity, StockSQLEntity
 from repository import repository
-from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_stock, \
-    create_booking, create_user
-from tests.model_creators.provider_creators import activate_provider
-from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 class LibrairesStocksTest:
     class NextTest:
         @clean_database
-        @patch('local_providers.libraires.libraires_stocks.get_libraires_stock_information')
+        @patch('local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
         def test_should_return_providable_infos_with_correct_data(self, mock_libraires_api_response, app):
             # Given
             mock_libraires_api_response.return_value = iter([
@@ -32,13 +34,17 @@ class LibrairesStocksTest:
 
             repository.save(venue_provider, product)
 
-            libraires_stocks_provider = LibrairesStocks(venue_provider)
+            read_last_modified_date = Mock()
+            read_last_modified_date.return_value = datetime(2020, 2, 4)
+            libraires_stocks_provider = LibrairesStocks(venue_provider, read_last_modified_date)
 
             # When
             libraires_providable_infos = next(libraires_stocks_provider)
 
             # Then
-            assert mock_libraires_api_response.call_args_list == [call('12345678912345', '', '')]
+            assert mock_libraires_api_response.call_args_list == [
+                call('12345678912345', '', datetime(2020, 2, 4))
+            ]
             assert len(libraires_providable_infos) == 2
 
             offer_providable_info = libraires_providable_infos[0]
@@ -51,8 +57,8 @@ class LibrairesStocksTest:
 
     class UpdateObjectsTest:
         @clean_database
-        @patch('local_providers.libraires.libraires_stocks.get_libraires_stock_information')
-        def test_libraires_stock_provider_create_one_stock_and_one_offer_with_wanted_attributes(self,
+        @patch('local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
+        def test_stock_provider_libraires_create_one_stock_and_one_offer_with_wanted_attributes(self,
                                                                                                 mock_libraires_api_response,
                                                                                                 app):
             # Given
@@ -71,10 +77,11 @@ class LibrairesStocksTest:
             product = create_product_with_thing_type(id_at_providers='9780199536986')
             repository.save(product, venue_provider)
 
-            libraires_stocks = LibrairesStocks(venue_provider)
+            read_last_modified_date = Mock()
+            libraires_stocks_provider = LibrairesStocks(venue_provider, read_last_modified_date)
 
             # When
-            libraires_stocks.updateObjects()
+            libraires_stocks_provider.updateObjects()
 
             # Then
             offer = OfferSQLEntity.query.first()
@@ -91,8 +98,8 @@ class LibrairesStocksTest:
             assert stock.bookingLimitDatetime is None
 
         @clean_database
-        @patch('local_providers.libraires.libraires_stocks.get_libraires_stock_information')
-        def test_libraires_stock_provider_update_one_stock_and_update_matching_offer(self, mock_libraires_api_response,
+        @patch('local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
+        def test_stock_provider_libraires_update_one_stock_and_update_matching_offer(self, mock_libraires_api_response,
                                                                                      app):
             # Given
             mock_libraires_api_response.return_value = iter([{
@@ -113,10 +120,11 @@ class LibrairesStocksTest:
             stock = create_stock(id_at_providers='9780199536986@12345678912345', offer=offer, quantity=20)
 
             repository.save(product, offer, stock)
-            libraires_stocks = LibrairesStocks(venue_provider)
+            read_last_modified_date = Mock()
+            libraires_stocks_provider = LibrairesStocks(venue_provider, read_last_modified_date)
 
             # When
-            libraires_stocks.updateObjects()
+            libraires_stocks_provider.updateObjects()
 
             # Then
             stock = StockSQLEntity.query.one()
@@ -124,7 +132,7 @@ class LibrairesStocksTest:
             assert OfferSQLEntity.query.count() == 1
 
         @clean_database
-        @patch('local_providers.libraires.libraires_stocks.get_libraires_stock_information')
+        @patch('local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
         def test_libraires_stocks_create_2_stocks_and_2_offers_even_if_existing_offer_on_same_product(self,
                                                                                                       mock_libraires_api_response,
                                                                                                       app):
@@ -151,19 +159,20 @@ class LibrairesStocksTest:
 
             repository.save(offer, product_1, product_2, venue_provider)
 
-            libraires_stocks = LibrairesStocks(venue_provider)
+            read_last_modified_date = Mock()
+            libraires_stocks_local_provider = LibrairesStocks(venue_provider, read_last_modified_date)
 
             # When
-            libraires_stocks.updateObjects()
+            libraires_stocks_local_provider.updateObjects()
 
             # Then
             assert StockSQLEntity.query.count() == 2
             assert OfferSQLEntity.query.filter_by(lastProviderId=libraires_stocks_provider.id).count() == 2
-            assert libraires_stocks.last_processed_isbn == '1550199555555'
+            assert libraires_stocks_local_provider.last_processed_isbn == '1550199555555'
 
         @clean_database
-        @patch('local_providers.libraires.libraires_stocks.get_libraires_stock_information')
-        def test_libraires_stock_provider_available_stock_is_sum_of_updated_available_and_bookings(self,
+        @patch('local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
+        def test_stock_provider_libraires_available_stock_is_sum_of_updated_available_and_bookings(self,
                                                                                                    mock_libraires_api_response,
                                                                                                    app):
             # Given
@@ -203,10 +212,11 @@ class LibrairesStocksTest:
                 "price": 0
             }])
 
-            libraires_stocks = LibrairesStocks(venue_provider)
+            read_last_modified_date = Mock()
+            libraires_stocks_provider = LibrairesStocks(venue_provider, read_last_modified_date)
 
             # When
-            libraires_stocks.updateObjects()
+            libraires_stocks_provider.updateObjects()
 
             # Then
             stock = StockSQLEntity.query.one()
@@ -214,8 +224,8 @@ class LibrairesStocksTest:
 
     class WhenSynchronizedTwiceTest:
         @clean_database
-        @patch('local_providers.libraires.libraires_stocks.get_libraires_stock_information')
-        def test_libraires_stock_provider_iterates_over_pagination(self, mock_libraires_api_response, app):
+        @patch('local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
+        def test_stock_provider_libraires_iterates_over_pagination(self, mock_libraires_api_response, app):
             # Given
             mock_libraires_api_response.side_effect = [
                 iter([{
@@ -240,16 +250,18 @@ class LibrairesStocksTest:
             product_2 = create_product_with_thing_type(id_at_providers='1550199555555')
 
             repository.save(product_1, product_2, venue_provider)
-            libraires_stocks = LibrairesStocks(venue_provider)
+            read_last_modified_date = Mock()
+            read_last_modified_date.return_value = datetime(2020, 2, 4)
+            libraires_stocks_provider = LibrairesStocks(venue_provider, read_last_modified_date)
 
             # When
-            libraires_stocks.updateObjects()
+            libraires_stocks_provider.updateObjects()
 
             # Then
             offers = OfferSQLEntity.query.all()
             stocks = StockSQLEntity.query.all()
             assert len(stocks) == 2
             assert len(offers) == 2
-            assert mock_libraires_api_response.call_args_list == [call('12345678912345', '', ''),
-                                                                  call('12345678912345', '9780199536986', ''),
-                                                                  call('12345678912345', '1550199555555', '')]
+            assert mock_libraires_api_response.call_args_list == [call('12345678912345', '', datetime(2020, 2, 4)),
+                                                                  call('12345678912345', '9780199536986', datetime(2020, 2, 4)),
+                                                                  call('12345678912345', '1550199555555', datetime(2020, 2, 4))]

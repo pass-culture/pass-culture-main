@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Enum, BigInteger, ForeignKey, Numeric, CheckConstraint, UniqueConstraint
 from sqlalchemy.orm import relationship
 
-from local_providers.price_rule import PriceRule
+from domain.price_rule import PriceRule
 from models.pc_object import PcObject
 from models.db import Model
 

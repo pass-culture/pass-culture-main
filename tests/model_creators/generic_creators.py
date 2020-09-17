@@ -8,7 +8,7 @@ from geoalchemy2.shape import from_shape
 from shapely.geometry import Polygon
 
 from domain.payments import PaymentDetails
-from local_providers.price_rule import PriceRule
+from domain.price_rule import PriceRule
 from models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
     BankInformation, BeneficiaryImport, BeneficiaryImportSources, BeneficiaryImportStatus, BookingSQLEntity, \
     Criterion, Deposit, Email, FavoriteSQLEntity, ImportStatus, IrisFrance, IrisVenues, \

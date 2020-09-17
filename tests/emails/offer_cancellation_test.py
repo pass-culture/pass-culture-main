@@ -1,16 +1,14 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 from bs4 import BeautifulSoup
-
-from emails.beneficiary_offer_cancellation import retrieve_offerer_booking_recap_email_data_after_user_cancellation, \
-    _is_offer_active_for_recap
-from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
-from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
-    create_product_with_thing_type, create_offer_with_thing_product, create_offer_with_event_product, \
-    create_event_occurrence
+from tests.model_creators.generic_creators import create_booking, create_offerer, create_user, create_venue
+from tests.model_creators.specific_creators import create_event_occurrence, create_offer_with_event_product, create_offer_with_thing_product, create_product_with_thing_type, \
+    create_stock_from_event_occurrence, create_stock_from_offer
+
+from emails.beneficiary_offer_cancellation import _is_offer_active_for_recap, retrieve_offerer_booking_recap_email_data_after_user_cancellation
+from repository import repository
 from utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 
 
@@ -32,7 +30,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         booking = create_booking(user=user, stock=stock)
 
         # When
-        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[]):
+        with patch('utils.mailing.find_ongoing_bookings_by_stock', return_value=[]):
             email = make_offerer_driven_cancellation_email_for_offerer(booking)
 
         # Then
@@ -51,7 +49,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert '93100' in html_recap
         assert 'Aucune réservation' in html_no_recal
         assert email[
-                   'Subject'] == 'Confirmation de votre annulation de réservation pour Le théâtre des ombres, proposé par Le petit théâtre'
+            'Subject'] == 'Confirmation de votre annulation de réservation pour Le théâtre des ombres, proposé par Le petit théâtre'
 
     @clean_database
     def test_make_offerer_driven_cancellation_email_for_offerer_event_when_other_booking(self, app):
@@ -70,7 +68,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         booking2 = create_booking(user=user2, stock=stock, token='12345')
 
         # When
-        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking2]):
+        with patch('utils.mailing.find_ongoing_bookings_by_stock', return_value=[booking2]):
             email = make_offerer_driven_cancellation_email_for_offerer(booking1)
 
         # Then
@@ -102,7 +100,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         ongoing_bookings = [booking2]
 
         # When
-        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=ongoing_bookings):
+        with patch('utils.mailing.find_ongoing_bookings_by_stock', return_value=ongoing_bookings):
             email = make_offerer_driven_cancellation_email_for_offerer(booking)
 
         # Then
@@ -123,7 +121,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert '12346' not in html_recap_table
         assert '12345' not in html_recap_table
         assert email[
-                   'Subject'] == 'Confirmation de votre annulation de réservation pour Le récit de voyage, proposé par La petite librairie'
+            'Subject'] == 'Confirmation de votre annulation de réservation pour Le récit de voyage, proposé par La petite librairie'
 
 
 class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:

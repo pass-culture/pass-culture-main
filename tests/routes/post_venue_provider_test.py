@@ -1,19 +1,20 @@
 from unittest.mock import patch
 
+from tests.conftest import TestClient, clean_database
+from tests.model_creators.generic_creators import create_offerer, create_user, create_venue, create_venue_provider
+from tests.model_creators.provider_creators import activate_provider
+
 from models import ApiErrors, VenueProvider
 from repository import repository
-from tests.conftest import clean_database, TestClient
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_venue_provider
-from tests.model_creators.provider_creators import activate_provider
 from utils.config import API_ROOT_PATH
-from utils.human_ids import humanize, dehumanize
+from utils.human_ids import dehumanize, humanize
 
 
 class Post:
     class Returns201:
         @clean_database
         @patch('routes.venue_providers.subprocess.Popen')
-        @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_titelive')
+        @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
         def when_venue_provider_is_successfully_created(self, stubbed_check, mock_subprocess, app):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
@@ -137,7 +138,7 @@ class Post:
             assert ['error received'] == response.json['errors']
 
         @clean_database
-        @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_libraires')
+        @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
         def when_trying_to_add_existing_provider(self, stubbed_check, app):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
@@ -256,7 +257,7 @@ class Post:
 
     class Returns422:
         @clean_database
-        @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_titelive')
+        @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
         def when_provider_api_not_available(self, stubbed_check, app):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
@@ -274,7 +275,11 @@ class Post:
             auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
 
-            stubbed_check.return_value = False
+            errors = ApiErrors()
+            errors.status_code = 422
+            errors.add_error('provider', "L’importation d’offres avec Titelive n’est pas disponible "
+                                         "pour le SIRET 12345678912345")
+            stubbed_check.side_effect = [errors]
 
             # When
             response = auth_request.post('/venueProviders',
@@ -282,5 +287,6 @@ class Post:
 
             # Then
             assert response.status_code == 422
-            assert response.json['provider'] == ["L’importation d’offres avec Titelive n’est pas disponible pour le SIRET 12345678912345"]
+            assert response.json['provider'] == ["L’importation d’offres avec Titelive n’est pas disponible "
+                                                 "pour le SIRET 12345678912345"]
             assert VenueProvider.query.count() == 0

@@ -1,12 +1,9 @@
 from decimal import Decimal
-from typing import Dict, Optional
+from typing import Callable, Dict, Optional
 
-from domain.fnac import can_be_synchronized_with_fnac
-from domain.libraires import can_be_synchronized_with_libraires
-from domain.titelive import can_be_synchronized_with_titelive
+from domain.price_rule import PriceRule
+from domain.stock_provider.stock_provider_repository import StockProviderRepository
 from local_providers import AllocineStocks, FnacStocks, LibrairesStocks, TiteLiveStocks
-from local_providers.local_provider import LocalProvider
-from local_providers.price_rule import PriceRule
 from models import AllocineVenueProvider, AllocineVenueProviderPriceRule, ApiErrors, VenueProvider, VenueSQLEntity
 from repository import repository
 from repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
@@ -14,53 +11,46 @@ from repository.venue_queries import find_by_id
 from utils.human_ids import dehumanize
 from validation.routes.venues import check_existing_venue
 
-STANDARDIZED_PROVIDERS = [LibrairesStocks, TiteLiveStocks, FnacStocks]
+STOCK_PROVIDERS = [LibrairesStocks, TiteLiveStocks, FnacStocks]
 ERROR_CODE_PROVIDER_NOT_SUPPORTED = 400
 ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 
 
-def connect_provider_to_venue(provider_class: LocalProvider, venue_provider_payload: Dict) -> VenueProvider:
+def connect_provider_to_venue(provider_class,
+                              stock_provider_repository: StockProviderRepository,
+                              venue_provider_payload: Dict) -> VenueProvider:
     venue_id = dehumanize(venue_provider_payload['venueId'])
     venue = find_by_id(venue_id)
     check_existing_venue(venue)
     if provider_class == AllocineStocks:
         new_venue_provider = _connect_allocine_to_venue(venue, venue_provider_payload)
-    elif provider_class in STANDARDIZED_PROVIDERS:
-        _check_venue_can_be_synchronized_with_provider(venue, provider_class)
-        new_venue_provider = _connect_standardized_providers_to_venue(venue, venue_provider_payload)
+    elif provider_class in STOCK_PROVIDERS:
+        _check_venue_can_be_synchronized_with_provider(venue.siret, stock_provider_repository.can_be_synchronized, provider_class.name)
+        new_venue_provider = _connect_stock_providers_to_venue(venue, venue_provider_payload)
     else:
-        errors = ApiErrors()
-        errors.status_code = ERROR_CODE_PROVIDER_NOT_SUPPORTED
-        errors.add_error('provider', 'Provider non pris en charge')
-        raise errors
+        api_errors = ApiErrors()
+        api_errors.status_code = ERROR_CODE_PROVIDER_NOT_SUPPORTED
+        api_errors.add_error('provider', 'Provider non pris en charge')
+        raise api_errors
 
     return new_venue_provider
 
 
-def _connect_allocine_to_venue(venue: VenueSQLEntity, payload: Dict) -> AllocineVenueProvider:
+def _connect_allocine_to_venue(venue: VenueSQLEntity, venue_provider_payload: Dict) -> AllocineVenueProvider:
     allocine_theater_id = get_allocine_theaterId_for_venue(venue)
-    allocine_venue_provider = _create_allocine_venue_provider(allocine_theater_id, payload, venue)
+    allocine_venue_provider = _create_allocine_venue_provider(allocine_theater_id, venue_provider_payload, venue)
     allocine_venue_provider_price_rule = _create_allocine_venue_provider_price_rule(allocine_venue_provider,
-                                                                                    payload.get('price'))
+                                                                                    venue_provider_payload.get('price'))
 
     repository.save(allocine_venue_provider_price_rule)
 
     return allocine_venue_provider
 
 
-def _check_venue_can_be_synchronized_with_provider(venue: VenueSQLEntity, provider_class: LocalProvider) -> None:
-    if provider_class == LibrairesStocks:
-        check_venue_can_be_synchronized_with_libraires(venue)
-    elif provider_class == TiteLiveStocks:
-        check_venue_can_be_synchronized_with_titelive(venue)
-    elif provider_class == FnacStocks:
-        check_venue_can_be_synchronized_with_fnac(venue)
-
-
-def _connect_standardized_providers_to_venue(venue: VenueSQLEntity, payload: Dict) -> VenueProvider:
+def _connect_stock_providers_to_venue(venue: VenueSQLEntity, venue_provider_payload: Dict) -> VenueProvider:
     venue_provider = VenueProvider()
     venue_provider.venue = venue
-    venue_provider.providerId = dehumanize(payload['providerId'])
+    venue_provider.providerId = dehumanize(venue_provider_payload['providerId'])
     venue_provider.venueIdAtOfferProvider = venue.siret
 
     repository.save(venue_provider)
@@ -77,40 +67,26 @@ def _create_allocine_venue_provider_price_rule(allocine_venue_provider: VenuePro
     return venue_provider_price_rule
 
 
-def _create_allocine_venue_provider(allocine_theater_id: str, payload: Dict,
+def _create_allocine_venue_provider(allocine_theater_id: str, venue_provider_payload: Dict,
                                     venue: VenueSQLEntity) -> AllocineVenueProvider:
     allocine_venue_provider = AllocineVenueProvider()
     allocine_venue_provider.venue = venue
-    allocine_venue_provider.providerId = dehumanize(payload['providerId'])
+    allocine_venue_provider.providerId = dehumanize(venue_provider_payload['providerId'])
     allocine_venue_provider.venueIdAtOfferProvider = allocine_theater_id
-    allocine_venue_provider.isDuo = payload.get('isDuo')
-    allocine_venue_provider.quantity = payload.get('quantity')
+    allocine_venue_provider.isDuo = venue_provider_payload.get('isDuo')
+    allocine_venue_provider.quantity = venue_provider_payload.get('quantity')
 
     return allocine_venue_provider
 
 
-def check_venue_can_be_synchronized_with_libraires(venue: VenueSQLEntity) -> None:
-    if not venue.siret or not can_be_synchronized_with_libraires(venue.siret):
-        errors = ApiErrors()
-        errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
-        errors.add_error('provider', _get_synchronization_error_message('LesLibraires', venue.siret))
-        raise errors
-
-
-def check_venue_can_be_synchronized_with_titelive(venue: VenueSQLEntity) -> None:
-    if not venue.siret or not can_be_synchronized_with_titelive(venue.siret):
-        errors = ApiErrors()
-        errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
-        errors.add_error('provider', _get_synchronization_error_message('Titelive', venue.siret))
-        raise errors
-
-
-def check_venue_can_be_synchronized_with_fnac(venue: VenueSQLEntity) -> None:
-    if not venue.siret or not can_be_synchronized_with_fnac(venue.siret):
-        errors = ApiErrors()
-        errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
-        errors.add_error('provider', _get_synchronization_error_message('FNAC', venue.siret))
-        raise errors
+def _check_venue_can_be_synchronized_with_provider(siret: str,
+                                                   can_be_synchronized: Callable,
+                                                   provider_name: str) -> None:
+    if not siret or not can_be_synchronized(siret):
+        api_errors = ApiErrors()
+        api_errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
+        api_errors.add_error('provider', _get_synchronization_error_message(provider_name, siret))
+        raise api_errors
 
 
 def _get_synchronization_error_message(provider_name: str, siret: Optional[str]) -> str:

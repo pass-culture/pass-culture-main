@@ -10,7 +10,7 @@ from alembic import op
 # revision identifiers, used by Alembic.
 from sqlalchemy import ForeignKey
 
-from local_providers.price_rule import PriceRule
+from domain.price_rule import PriceRule
 
 revision = '75f2ccf2be82'
 down_revision = '21ef2b9af5e6'

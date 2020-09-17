@@ -1,6 +1,6 @@
 import pytest
 
-from local_providers.price_rule import PriceRule
+from domain.price_rule import PriceRule
 from models import ApiErrors, AllocineVenueProviderPriceRule
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class

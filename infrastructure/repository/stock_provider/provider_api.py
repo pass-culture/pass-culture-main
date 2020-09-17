@@ -3,26 +3,23 @@ from typing import Dict
 import requests
 
 
-class ApiLocalProviderException(Exception):
+class ProviderAPIException(Exception):
     pass
 
 
-class ApiLocalProvider:
+class ProviderAPI:
     def __init__(self, api_url, name):
         self.api_url = api_url
         self.name = name
 
-    def get_stocks_from_local_provider_api(self, siret: str,
-                                           last_processed_isbn: str = '',
-                                           modified_since: str = '',
-                                           limit: int = 1000) -> Dict:
+    def stocks(self, siret: str, last_processed_reference: str = '', modified_since: str = '', limit: int = 1000) -> Dict:
         api_url = self._build_local_provider_url(siret)
-        params = self._build_local_provider_params(last_processed_isbn, modified_since, limit)
+        params = self._build_local_provider_params(last_processed_reference, modified_since, limit)
 
         response = requests.get(api_url, params=params)
 
         if response.status_code != 200:
-            raise ApiLocalProviderException(
+            raise ProviderAPIException(
                 f'Error {response.status_code} when getting {self.name} stocks for SIRET: {siret}')
 
         return response.json()

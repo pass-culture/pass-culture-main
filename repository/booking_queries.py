@@ -1,11 +1,10 @@
-import math
-from collections import namedtuple
 from datetime import datetime
-from typing import List, Optional, Set, Union
 
+import math
 from dateutil import tz
 from sqlalchemy import desc, func, text
 from sqlalchemy.orm import Query, selectinload
+from typing import List, Optional, Set, Union
 
 from domain.booking_recap.booking_recap import BookBookingRecap, BookingRecap, EventBookingRecap, ThingBookingRecap
 from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
@@ -22,7 +21,6 @@ from models.payment_status import TransactionStatus
 from models.recommendation import Recommendation
 from models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY, StockSQLEntity
 from models.user_sql_entity import UserSQLEntity
-from repository import offer_queries
 from utils.date import get_department_timezone
 
 DUO_QUANTITY = 2
@@ -78,34 +76,6 @@ def _query_cancelled_bookings_on_non_activation_offers() -> Query:
         .filter(BookingSQLEntity.isCancelled == True)
 
 
-def find_all_bookings_info(offerer_id: int,
-                           venue_id: int = None,
-                           offer_id: int = None,
-                           date_from: Union[datetime, str] = None,
-                           date_to: Union[datetime, str] = None,
-                           only_digital_venues: bool = False) -> List[namedtuple]:
-    query = _filter_bookings_by_offerer_id(offerer_id)
-
-    if offer_id:
-        query = query.filter(OfferSQLEntity.id == offer_id)
-        offer = offer_queries.get_offer_by_id(offer_id)
-        if offer and offer.isEvent and date_from:
-            query = query.filter(StockSQLEntity.beginningDatetime == date_from)
-
-        if offer and offer.isThing:
-            query = _filter_bookings_by_dates(query, date_from, date_to)
-
-    if only_digital_venues:
-        query = query.filter(VenueSQLEntity.isVirtual == True)
-        query = _filter_bookings_by_dates(query, date_from, date_to)
-
-    if venue_id:
-        query = query.filter(VenueSQLEntity.id == venue_id)
-
-    query = _select_only_needed_fields_for_bookings_info(query)
-    return query.all()
-
-
 def _filter_bookings_by_dates(query: Query, date_from: Union[datetime, str] = None,
                               date_to: Union[datetime, str] = None) -> Query:
     if date_from:
@@ -137,12 +107,12 @@ def find_from_recommendation(recommendation: Recommendation, user_id: int) -> Li
 
 def is_offer_already_booked_by_user(user_id: int, offer: OfferSQLEntity) -> bool:
     return BookingSQLEntity.query \
-        .filter_by(userId=user_id) \
-        .filter_by(isCancelled=False) \
-        .join(StockSQLEntity) \
-        .join(OfferSQLEntity) \
-        .filter(OfferSQLEntity.id == offer.id) \
-        .count() > 0
+               .filter_by(userId=user_id) \
+               .filter_by(isCancelled=False) \
+               .join(StockSQLEntity) \
+               .join(OfferSQLEntity) \
+               .filter(OfferSQLEntity.id == offer.id) \
+               .count() > 0
 
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> BookingSQLEntity:
@@ -214,31 +184,31 @@ def _build_bookings_recap_query(user_id: int) -> Query:
         .filter(UserOfferer.userId == user_id) \
         .filter(UserOfferer.validationToken == None) \
         .with_entities(
-            BookingSQLEntity.token.label("bookingToken"),
-            BookingSQLEntity.dateCreated.label("bookingDate"),
-            BookingSQLEntity.isCancelled.label("isCancelled"),
-            BookingSQLEntity.isUsed.label("isUsed"),
-            BookingSQLEntity.quantity.label("quantity"),
-            BookingSQLEntity.amount.label("bookingAmount"),
-            BookingSQLEntity.dateUsed.label("dateUsed"),
-            BookingSQLEntity.cancellationDate.label("cancellationDate"),
-            OfferSQLEntity.name.label("offerName"),
-            OfferSQLEntity.id.label("offerId"),
-            OfferSQLEntity.extraData.label("offerExtraData"),
-            Payment.currentStatus.label("paymentStatus"),
-            Payment.lastProcessedDate.label("paymentDate"),
-            UserSQLEntity.firstName.label("beneficiaryFirstname"),
-            UserSQLEntity.lastName.label("beneficiaryLastname"),
-            UserSQLEntity.email.label("beneficiaryEmail"),
-            StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
-            VenueSQLEntity.departementCode.label('venueDepartementCode'),
-            Offerer.name.label('offererName'),
-            Offerer.postalCode.label('offererPostalCode'),
-            VenueSQLEntity.id.label('venueId'),
-            VenueSQLEntity.name.label('venueName'),
-            VenueSQLEntity.publicName.label('venuePublicName'),
-            VenueSQLEntity.isVirtual.label('venueIsVirtual'),
-        )
+        BookingSQLEntity.token.label("bookingToken"),
+        BookingSQLEntity.dateCreated.label("bookingDate"),
+        BookingSQLEntity.isCancelled.label("isCancelled"),
+        BookingSQLEntity.isUsed.label("isUsed"),
+        BookingSQLEntity.quantity.label("quantity"),
+        BookingSQLEntity.amount.label("bookingAmount"),
+        BookingSQLEntity.dateUsed.label("dateUsed"),
+        BookingSQLEntity.cancellationDate.label("cancellationDate"),
+        OfferSQLEntity.name.label("offerName"),
+        OfferSQLEntity.id.label("offerId"),
+        OfferSQLEntity.extraData.label("offerExtraData"),
+        Payment.currentStatus.label("paymentStatus"),
+        Payment.lastProcessedDate.label("paymentDate"),
+        UserSQLEntity.firstName.label("beneficiaryFirstname"),
+        UserSQLEntity.lastName.label("beneficiaryLastname"),
+        UserSQLEntity.email.label("beneficiaryEmail"),
+        StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
+        VenueSQLEntity.departementCode.label('venueDepartementCode'),
+        Offerer.name.label('offererName'),
+        Offerer.postalCode.label('offererPostalCode'),
+        VenueSQLEntity.id.label('venueId'),
+        VenueSQLEntity.name.label('venueName'),
+        VenueSQLEntity.publicName.label('venuePublicName'),
+        VenueSQLEntity.isVirtual.label('venueIsVirtual'),
+    )
 
 
 def _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings: List[object],
@@ -393,7 +363,7 @@ def find_date_used(booking: BookingSQLEntity) -> datetime:
 
 def find_user_activation_booking(user: UserSQLEntity) -> BookingSQLEntity:
     is_activation_offer = (OfferSQLEntity.type == str(ThingType.ACTIVATION)) | (
-        OfferSQLEntity.type == str(EventType.ACTIVATION))
+            OfferSQLEntity.type == str(EventType.ACTIVATION))
 
     return BookingSQLEntity.query \
         .join(UserSQLEntity) \
@@ -496,5 +466,5 @@ def _build_find_ordered_user_bookings(user_id: int) -> Query:
         .filter(BookingSQLEntity.userId == user_id) \
         .order_by(BookingSQLEntity.stockId, BookingSQLEntity.isCancelled, BookingSQLEntity.dateCreated.desc()) \
         .options(
-            selectinload(BookingSQLEntity.stock)
-        )
+        selectinload(BookingSQLEntity.stock)
+    )

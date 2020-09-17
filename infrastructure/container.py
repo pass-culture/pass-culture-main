@@ -1,16 +1,14 @@
 from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
-from infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import \
-    BeneficiaryBookingsSQLRepository
+from infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import BeneficiaryBookingsSQLRepository
 from infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
 from infrastructure.repository.favorite.favorite_sql_repository import FavoriteSQLRepository
 from infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import PaginatedOfferersSQLRepository
 from infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
 from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
+from infrastructure.repository.stock_provider.stock_provider_libraires import StockProviderLibrairesRepository
 from infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
-from infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import \
-    VenueWithBasicInformationSQLRepository
-from infrastructure.repository.venue.venue_with_offerer_name.venue_with_offerer_name_sql_repository import \
-    VenueWithOffererNameSQLRepository
+from infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import VenueWithBasicInformationSQLRepository
+from infrastructure.repository.venue.venue_with_offerer_name.venue_with_offerer_name_sql_repository import VenueWithOffererNameSQLRepository
 from infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from use_cases.add_contact_in_eligiblity_list import AddContactInEligibilityList
 from use_cases.book_an_offer import BookAnOffer
@@ -36,8 +34,7 @@ venue_with_offerer_informations_repository = VenueWithOffererNameSQLRepository()
 paginated_offerers_repository = PaginatedOfferersSQLRepository()
 
 # Repositories => data depuis API externe
-api_libraires_stocks = ApiLibrairesStocks()
-api_fnac_stocks =
+api_libraires_stocks = StockProviderLibrairesRepository()
 
 # Usecases
 book_an_offer = BookAnOffer(booking_repository=booking_repository,

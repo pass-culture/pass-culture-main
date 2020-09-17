@@ -1,6 +1,6 @@
 import os
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, List, Optional, Union
 
 from dateutil import tz
@@ -9,7 +9,7 @@ from sqlalchemy import Sequence
 
 from domain.allocine import get_movie_poster, get_movies_showtimes
 from local_providers.local_provider import LocalProvider
-from local_providers.price_rule import AllocineStocksPriceRule
+from domain.price_rule import AllocineStocksPriceRule
 from local_providers.providable_info import ProvidableInfo
 from models import AllocineVenueProvider, EventType, OfferSQLEntity, Product, StockSQLEntity, \
     VenueSQLEntity

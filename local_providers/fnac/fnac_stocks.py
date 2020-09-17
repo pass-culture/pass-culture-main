@@ -12,11 +12,11 @@ from repository import product_queries
 from repository.booking_queries import count_not_cancelled_bookings_quantity_by_stock_id
 
 
-class FnacStocks(GenericStocks):
-    def __init__(self, venue_provider, **options):
-        get_provider_stock_information = api_fnac_stocks.get_provider_stock_information
-        read_last_sync_date = api_fnac_stocks.read_last_sync_date
-        super().__init__(venue_provider, get_provider_stock_information, read_last_sync_date, **options)
+# class FnacStocks(GenericStocks):
+#     def __init__(self, venue_provider, **options):
+#         get_provider_stock_information = api_fnac_stocks.get_provider_stock_information
+#         read_last_sync_date = api_fnac_stocks.read_last_sync_date
+#         super().__init__(venue_provider, get_provider_stock_information, read_last_sync_date, **options)
 
 
 class FnacStocks(LocalProvider):

@@ -11,8 +11,8 @@ from connectors import api_entreprises
 from domain.postal_code.postal_code import PostalCode
 from models import BookingSQLEntity, OfferSQLEntity, Offerer, StockSQLEntity, UserSQLEntity, UserOfferer, VenueSQLEntity
 from models.email import EmailStatus
-from repository import booking_queries
-from repository import email_queries
+from repository.booking_queries import find_ongoing_bookings_by_stock
+from repository.email_queries import save
 from repository.feature_queries import feature_send_mail_to_users_enabled
 from utils import logger
 from utils.config import API_URL, PRO_URL, ENV, IS_PROD
@@ -36,7 +36,7 @@ def send_raw_email(data: Dict) -> bool:
         response = app.mailjet_client.send.create(data=data)
         successfully_sent_email = response.status_code == 200
         status = EmailStatus.SENT if successfully_sent_email else EmailStatus.ERROR
-        email_queries.save(data, status)
+        save(data, status)
         if not successfully_sent_email:
             logger.logger.warning(
                 f'[EMAIL] Trying to send email failed with status code {response.status_code}')
@@ -155,7 +155,7 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: BookingSQLEntity
     user_email = booking.user.email
     email_subject = 'Confirmation de votre annulation de réservation pour {}, proposé par {}'.format(stock_name,
                                                                                                      venue.name)
-    ongoing_stock_bookings = booking_queries.find_ongoing_bookings_by_stock(
+    ongoing_stock_bookings = find_ongoing_bookings_by_stock(
         booking.stock.id)
     stock_date_time = None
     booking_is_on_event = booking.stock.beginningDatetime is not None
