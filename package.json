@@ -71,11 +71,11 @@
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.2",
     "es5-shim": "^4.5.13",
-    "eslint": "^6.6.0",
-    "eslint-loader": "^3.0.2",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jest": "^23.0.2",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint": "^7.9.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jest": "^24.0.1",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-react-hooks": "^4.1.0",
     "file-loader": "^4.2.0",
@@ -90,6 +90,7 @@
     "jest-fetch-mock": "^2.1.2",
     "la-sass-vy": "1.0.1",
     "license-reporter": "^1.2.2",
+    "lint-staged": "^10.4.0",
     "mini-css-extract-plugin": "^0.8.0",
     "node-sass": "^4.13.1",
     "postcss-flexbugs-fixes": "^4.1.0",
@@ -118,7 +119,6 @@
   "scripts": {
     "build": "node scripts/build.js && ./scripts/build_redirects.sh",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
-    "format:js": "prettier-eslint --write '{src,testcafe}/**/*.{js,jsx}'",
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
     "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx}'",
     "lint:js:fix": "yarn lint:js --fix",
@@ -130,7 +130,13 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "./scripts/hooks/precommit.sh"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.{js,jsx,md,css,scss,html}": [
+      "prettier --write",
+      "eslint --max-warnings=0"
+    ]
   }
 }
