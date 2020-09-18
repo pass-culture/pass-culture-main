@@ -263,12 +263,8 @@ class Offers extends PureComponent {
             <table>
               <thead>
                 <tr>
-                  <th>
-&nbsp;
-                  </th>
-                  <th>
-&nbsp;
-                  </th>
+                  <th>&nbsp;</th>
+                  <th>&nbsp;</th>
                   <th>
                     {'Lieu'}
                   </th>
@@ -278,12 +274,8 @@ class Offers extends PureComponent {
                   <th>
                     {'Statut'}
                   </th>
-                  <th>
-&nbsp;
-                  </th>
-                  <th>
-&nbsp;
-                  </th>
+                  <th>&nbsp;</th>
+                  <th>&nbsp;</th>
                 </tr>
               </thead>
               <LoadingInfiniteScroll

@@ -24,7 +24,7 @@ test('j’ai accès à l’ensemble de mes offres', async t => {
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_visible_activated_offer'
   )
-  const offerItem = Selector('li.offer-item')
+  const offerItem = Selector('.offer-item')
   await navigateToOffersAs(user)(t)
 
   await t
