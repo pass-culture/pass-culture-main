@@ -54,7 +54,7 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
           {'J’ai lu et accepte les '}
           <a
             className="logout-form-link"
-            href="https://pass.culture.fr/assets/docs/cgu-j.html"
+            href="https://pass.culture.fr/cgu/"
             id="accept-cgu-link"
             rel="noopener noreferrer"
             target="_blank"
