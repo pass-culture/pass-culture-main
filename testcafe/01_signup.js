@@ -18,10 +18,10 @@ const acceptCookieButton = Selector('#hs-eu-confirmation-button')
 fixture('Création d’un compte utilisateur·trice,').page(`${ROOT_PATH}inscription`)
 
 test('je peux créer un compte avec un SIREN non existant en base de données, et je suis redirigé·e vers la page de confirmation de l’inscription', async t => {
+  await acceptCookieButton()
+
   await t
     .addRequestHooks(getSirenRequestMockWithDefaultValues())
-    .expect(acceptCookieButton.exists)
-    .ok()
     .click(acceptCookieButton)
     .typeText(emailInput, 'pctest0.pro93.cafe0@btmx.fr')
     .typeText(passwordInput, 'user@AZERTY123')
@@ -39,11 +39,10 @@ test('je peux créer un compte avec un SIREN non existant en base de données, e
 
 test('je peux créer un compte avec un SIREN déjà existant en base de données, et je suis redirigé·e vers la page de confirmation de l’inscription', async t => {
   const { offerer } = await fetchSandbox('pro_01_signup', 'get_existing_pro_user_with_offerer')
+  await acceptCookieButton()
 
   await t
     .addRequestHooks(getSirenRequestMockWithDefaultValues())
-    .expect(acceptCookieButton.exists)
-    .ok()
     .click(acceptCookieButton)
     .typeText(emailInput, 'pctest0.pro93.cafe1@btmx.fr')
     .typeText(passwordInput, 'user@AZERTY123')
