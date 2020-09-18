@@ -1,12 +1,7 @@
-# coding=utf-8
 import re
 from datetime import datetime, timedelta
-from operator import itemgetter
 
-from babel.numbers import format_decimal as babel_format_decimal
 from dateparser import parse
-from nltk import edit_distance
-from psycopg2.extras import DateTimeRange
 
 from utils.inflect_engine import inflect_engine
 
@@ -81,70 +76,6 @@ def trim_with_elipsis(string, length):
     return string[:length_wo_elipsis] + (string[length_wo_elipsis:] and '…')
 
 
-def get_date_time_range(date_string, schedule_string, duration_string):
-    # DETERMINE DAY MONTH YEAR
-    match = re.match(from_to_regex, date_string)
-    if match is not None:
-        matches = match.group(1, 2, 3, 4)
-        if all(matches):
-            month = matches[2]
-            year = matches[3]
-            day_strings = [
-                year + '-' + parse_datetime(month, date_formats=['%B']).strftime('%m') + '-' + str(day) for day in
-                range(
-                    int(matches[0]), int(matches[1])
-                )
-            ]
-    else:
-        day_string = parse_datetime(date_string, date_formats=['%E %dd %B %Y'])
-        if day_string is not None:
-            day_strings = [
-                day_string.strftime(DAY_FORMAT)
-            ]
-    # DETERMINE START AND END SCHEDULE
-    end_hour_string = None
-    if 'et' in schedule_string:
-        return [DateTimeRange()]
-    if '-' in schedule_string:
-        (start_hour_string, end_hour_string) = schedule_string.split('-')
-        format_end_hour_string = get_format_timedelta_string(end_hour_string)
-    else:
-        start_hour_string = schedule_string
-    format_start_hour_string = get_format_timedelta_string(start_hour_string)
-    # DETERMINE DURATION
-    duration = parse_timedelta(duration_string)
-    # CONCAT
-    date_time_ranges = [None] * (len(day_strings))
-    for (index, day_string) in list(enumerate(day_strings)):
-        start_date_string = day_string + 'T' + format_start_hour_string + 'Z'
-        start_date = read_date(start_date_string)
-        if end_hour_string is not None:
-            end_date_string = day_string + 'T' + format_end_hour_string + 'Z'
-            end_date = read_date(end_date_string)
-        else:
-            end_date = start_date + duration
-        date_time_ranges[index] = DateTimeRange(start_date, end_date)
-    # RETURN
-    return date_time_ranges
-
-
-def get_matched_string_index(target_string, strings):
-    distances = map(lambda string: edit_distance(string, target_string), strings)
-    return min(enumerate(distances), key=itemgetter(1))[0]
-
-
-def get_price_value(price_string):
-    if isinstance(price_string, int):
-        return price_string
-    value_string = price_string
-    if '€' in value_string:
-        value_string = price_string.split('€')[0]
-    if value_string.isdigit():
-        return int(value_string)
-    else:
-        return 0
-
-
 def get_camel_string(string):
     return ''.join(word.capitalize() for word in string.split('_'))
 
@@ -155,7 +86,3 @@ def tokenize_for_search(string):
 
 def remove_single_letters_for_search(array_of_keywords):
     return list(filter(lambda k: len(k) > 1, array_of_keywords))
-
-
-def format_decimal(dec):
-    return babel_format_decimal(dec, locale='fr_FR')
