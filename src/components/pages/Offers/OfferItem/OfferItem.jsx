@@ -42,7 +42,7 @@ const OfferItem = ({
     isActive ? trackDeactivateOffer(id) : trackActivateOffer(id)
   }
 
-  function buildStocksDetail(offer, stockSize) {
+  const buildStocksDetail = (offer, stockSize) => {
     if (offer.isThing) {
       return `${stockSize} prix`
     }
@@ -52,11 +52,9 @@ const OfferItem = ({
     }
   }
 
-  function computeNumberOfSoldOutStocks() {
-    return stocks.filter(stock => stock.remainingQuantity === 0).length
-  }
+  const computeNumberOfSoldOutStocks = () => stocks.filter(stock => stock.remainingQuantity === 0).length
 
-  function computeRemainingStockValue(stocks) {
+  const computeRemainingStockValue = stocks => {
     let totalRemainingStock = 0
     for (const stock of stocks) {
       if (stock.remainingQuantity === 'unlimited') {
