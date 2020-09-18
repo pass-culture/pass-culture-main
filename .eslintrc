@@ -4,7 +4,8 @@
     "plugin:react/all",
     "plugin:jsx-a11y/strict",
     "plugin:import/errors",
-    "plugin:jest/all"
+    "plugin:jest/all",
+    "plugin:react-hooks/recommended"
   ],
   "env": {
     "browser": true,
@@ -17,6 +18,27 @@
   },
   "parser": "babel-eslint",
   "rules": {
+    "indent": ["error", 2, {"ignoredNodes": ["JSXElement"],  "offsetTernaryExpressions": true, "SwitchCase": 1 }],
+    "jest/no-hooks": "off",
+    "jest/prefer-expect-assertions": "off",
+    "jest/prefer-inline-snapshots": "off",
+    "jsx-a11y/label-has-for": "off",
+    "no-var": "error",
+    "react/forbid-component-props": "off",
+    "react/function-component-definition":  [
+      2,
+      {
+        "namedComponents": "arrow-function",
+        "unnamedComponents": "arrow-function"
+      }
+    ],
+    "react/jsx-curly-brace-presence": [2, { "props": "never", "children": "ignore" }],
+    "react/jsx-fragments": "off",
+    "react/jsx-indent": [2, 2, {"indentLogicalExpressions": true}],
+    "react/jsx-indent-props": [2, 2],
+    "react/jsx-handler-names": "off",
+    "react/jsx-max-depth": "off",
+    "react/jsx-props-no-spreading": "off",
     "react/jsx-wrap-multilines": [
       "error",
       {
@@ -25,24 +47,10 @@
         "return": "parens-new-line",
         "arrow": "parens-new-line",
         "condition": "parens-new-line",
-        "logical": "parens-new-line"
+        "logical": "parens-new-line",
+        "prop": "parens-new-line"
       }
     ],
-    "indent": ["error", 2, {"ignoredNodes": ["JSXElement"],  "offsetTernaryExpressions": true, "SwitchCase": 1 }],
-    "jest/no-hooks": "off",
-    "jest/prefer-expect-assertions": "off",
-    "jest/prefer-inline-snapshots": "off",
-    "jsx-a11y/label-has-for": "off",
-    "no-var": "error",
-    "react/forbid-component-props": "off",
-    "react/function-component-definition":  [2, { "namedComponents": "arrow-function" }],
-    "react/jsx-curly-brace-presence": [2, { "props": "never", "children": "ignore" }],
-    "react/jsx-fragments": "off",
-    "react/jsx-indent": [2, 2, {"indentLogicalExpressions": true}],
-    "react/jsx-indent-props": [2, 2],
-    "react/jsx-handler-names": "off",
-    "react/jsx-max-depth": "off",
-    "react/jsx-props-no-spreading": "off",
     "react/no-set-state": "off",
     "react/prop-types": "off",
     "react/require-optimization": "off",
