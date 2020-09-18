@@ -78,7 +78,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
           const wrapper = mount(
             <MemoryRouter>
               <OfferItem {...props} />
-            </MemoryRouter>)
+            </MemoryRouter>
+          )
           const disableButton = wrapper.find('button')
 
           // when
@@ -94,7 +95,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
           const wrapper = mount(
             <MemoryRouter>
               <OfferItem {...props} />
-            </MemoryRouter>)
+            </MemoryRouter>
+          )
           const disableButton = wrapper.find('button')
 
           // when
@@ -242,7 +244,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('when offer is an event product ', () => {
       it('should display the correct text "2 dates" on the link redirecting to the offer management', () => {
         // given
-        props.stocks = [{remainingQuantity: 'unlimited'}, {remainingQuantity: 'unlimited'}]
+        props.stocks = [{ remainingQuantity: 'unlimited' }, { remainingQuantity: 'unlimited' }]
 
         // when
         const wrapper = mount(
@@ -350,7 +352,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should display the correct text "1 prix" on the link redirecting to the offer management', () => {
         // given
-        props.stocks = [{remainingQuantity: 'unlimited'}]
+        props.stocks = [{ remainingQuantity: 'unlimited' }]
 
         // when
         const wrapper = mount(
@@ -363,6 +365,22 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const stockLink = wrapper.find(`a[href="/offres/${props.offer.id}?gestion"]`)
         expect(stockLink.text()).toBe('1 prix')
       })
+    })
+
+    it('should display the offer status based on offer and stocks props', () => {
+      // given
+      props.stocks = [{ remainingQuantity: 0 }]
+
+      // when
+      const wrapper = mount(
+        <MemoryRouter>
+          <OfferItem {...props} />
+        </MemoryRouter>
+      )
+
+      // then
+      const soldOutOfferStatus = wrapper.findWhere(node => node.text() === 'épuisée').first()
+      expect(soldOutOfferStatus).toHaveLength(1)
     })
   })
 

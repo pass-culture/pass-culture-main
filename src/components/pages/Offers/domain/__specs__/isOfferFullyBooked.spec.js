@@ -1,7 +1,7 @@
 import { isOfferFullyBooked } from '../isOfferFullyBooked'
 
 describe('isOfferFullyBooked', () => {
-  it('should return true when offer has no stocks yet', () => {
+  it('should be fully booked when offer has no stocks yet', () => {
     // given
     const stocks = []
 
@@ -12,7 +12,7 @@ describe('isOfferFullyBooked', () => {
     expect(isFullyBooked).toBe(true)
   })
 
-  it('should return true when every stock has 0 remainingQuantity', () => {
+  it('should be fully booked when every stock has 0 remaining quantity', () => {
     // given
     const stocks = [
       {
@@ -30,7 +30,7 @@ describe('isOfferFullyBooked', () => {
     expect(isFullyBooked).toBe(true)
   })
 
-  it('should return false when at least 1 stock has some remainingQuantity', () => {
+  it('should not be fully booked when at least 1 stock has some remaining quantity', () => {
     // given
     const stocks = [
       {
@@ -48,7 +48,7 @@ describe('isOfferFullyBooked', () => {
     expect(isFullyBooked).toBe(false)
   })
 
-  it('should return false when at least 1 stock has unlimited remainingQuantity', () => {
+  it('should not be fully booked when at least 1 stock has unlimited remaining quantity', () => {
     // given
     const stocks = [
       {
