@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import TextInputError from '../Errors/TextInputError'
 
 const TextInput = ({
+  defaultValue,
   disabled,
   error,
   label,
@@ -26,6 +27,7 @@ const TextInput = ({
     </div>
     <input
       className={`it-input ${error ? 'error' : ''}`}
+      defaultValue={defaultValue}
       disabled={disabled}
       id={name}
       name={name}
@@ -40,6 +42,7 @@ const TextInput = ({
 )
 
 TextInput.defaultProps = {
+  defaultValue: null,
   disabled: false,
   error: null,
   onChange: null,
@@ -49,6 +52,7 @@ TextInput.defaultProps = {
 }
 
 TextInput.propTypes = {
+  defaultValue: PropTypes.string,
   disabled: PropTypes.bool,
   error: PropTypes.string,
   label: PropTypes.string.isRequired,
