@@ -116,7 +116,7 @@ class Offers extends PureComponent {
       page: null,
     })
 
-    if (queryParams[mapApiToBrowser.keywords] !== value) resetLoadedOffers()
+    if (value && queryParams[mapApiToBrowser.keywords] !== value) resetLoadedOffers()
   }
 
   handleOnVenueClick = query => () => {
