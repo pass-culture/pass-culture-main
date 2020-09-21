@@ -295,7 +295,7 @@ describe('src | components | pages | Offers | Offers', () => {
         })
       })
 
-      describe('when user is not admin ', () => {
+      describe('when user is not admin', () => {
         it('should display a link to create an offer', () => {
           // given
           props.currentUser.isAdmin = false
@@ -541,23 +541,37 @@ describe('src | components | pages | Offers | Offers', () => {
 
     describe('should render search offers form', () => {
       describe('when keywords is not an empty string', () => {
-        const event = Object.assign(jest.fn(), {
-          preventDefault: () => {},
-          target: {
-            elements: {
-              search: {
-                value: 'AnyWord',
-              },
-            },
-          },
-        })
-
         it('should change query', () => {
           // given
-          const wrapper = shallow(<Offers {...props} />)
+          const store = getStubStore({
+            data: (
+              state = {
+                offerers: [],
+                users: [{ publicName: 'User', id: 'EY' }],
+              }
+            ) => state,
+            modal: (
+              state = {
+                config: {},
+              }
+            ) => state,
+          })
+
+          const wrapper = mount(
+            <Provider store={store}>
+              <MemoryRouter>
+                <Offers {...props} />
+              </MemoryRouter>
+            </Provider>
+          )
 
           // when
-          wrapper.instance().handleOnSubmit(event)
+          const searchInput = wrapper.find(
+            'input[placeholder="Saisissez un ou plusieurs mots complets"]'
+          )
+          const launchSearchButton = wrapper.find('form')
+          searchInput.invoke('onChange')({ target: { value: 'AnyWord' } })
+          launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
 
           // then
           expect(change.mock.calls[0][0]).toStrictEqual({
