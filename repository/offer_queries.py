@@ -9,8 +9,6 @@ from sqlalchemy.sql import selectable
 from sqlalchemy.sql.elements import BinaryExpression
 
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
-from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
-    create_get_filter_matching_ts_query_in_any_model
 from models import BookingSQLEntity, DiscoveryView, DiscoveryViewV3, \
     EventType, FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Offerer, SeenOffer, StockSQLEntity, ThingType, \
     UserSQLEntity, VenueSQLEntity
@@ -214,18 +212,6 @@ def _build_has_active_mediation_predicate():
 def _date_interval_to_filter(date_interval):
     return ((StockSQLEntity.beginningDatetime >= date_interval[0]) &
             (StockSQLEntity.beginningDatetime <= date_interval[1]))
-
-
-def filter_offers_with_keywords_string_on_offer_only(query: BaseQuery, keywords_string: str) -> Query:
-    return _build_query_using_keywords_on_model(keywords_string, query, OfferSQLEntity)
-
-
-def _build_query_using_keywords_on_model(keywords_string: str, query: Query, model: Model) -> Query:
-    text_search_filters_on_model = create_get_filter_matching_ts_query_in_any_model(model)
-    model_keywords_filter = create_filter_matching_all_keywords_in_any_model(
-        text_search_filters_on_model, keywords_string
-    )
-    return query.filter(model_keywords_filter)
 
 
 def _offer_has_stocks_compatible_with_days_intervals(days_intervals):

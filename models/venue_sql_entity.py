@@ -6,7 +6,7 @@ from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 
-from domain.keywords import create_ts_vector_and_table_args
+from domain.ts_vector import create_ts_vector_and_table_args
 from domain.postal_code.postal_code import PostalCode
 from models.venue_type import VenueType
 from models.bank_information import BankInformationStatus

@@ -5,7 +5,7 @@ from sqlalchemy import ARRAY, Boolean, CheckConstraint, false, Integer, Text, TE
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String
 from sqlalchemy.orm import relationship
 
-from domain.keywords import create_ts_vector_and_table_args
+from domain.ts_vector import create_ts_vector_and_table_args
 from models.db import db, Model
 from models.deactivable_mixin import DeactivableMixin
 from models.extra_data_mixin import ExtraDataMixin

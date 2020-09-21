@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy import desc, func
 from sqlalchemy.orm import Query, aliased
 
-from domain.keywords import create_get_filter_matching_ts_query_in_any_model, create_filter_matching_all_keywords_in_any_model
+from domain.ts_vector import create_get_filter_matching_ts_query_in_any_model, create_filter_matching_all_keywords_in_any_model
 from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from domain.pro_offers.paginated_offers_recap_repository import PaginatedOffersRepository
 from infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain

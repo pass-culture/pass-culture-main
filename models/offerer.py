@@ -7,7 +7,7 @@ from sqlalchemy import BigInteger, \
     String
 from sqlalchemy.orm import relationship
 
-from domain.keywords import create_ts_vector_and_table_args
+from domain.ts_vector import create_ts_vector_and_table_args
 from models.bank_information import BankInformationStatus
 from models.db import Model
 from models.deactivable_mixin import DeactivableMixin

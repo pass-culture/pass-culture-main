@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import or_
 
-from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
+from domain.ts_vector import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
 from models import Offerer, VenueSQLEntity, OfferSQLEntity, UserOfferer, UserSQLEntity, StockSQLEntity, ThingType, \
     EventType
