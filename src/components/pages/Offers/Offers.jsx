@@ -32,10 +32,12 @@ class Offers extends PureComponent {
   constructor(props) {
     super(props)
 
+    const queryKeywords = translateQueryParamsToApiParams(props.query.parse()).keywords
+
     this.state = {
       hasMore: false,
       isLoading: false,
-      searchInputValue: '',
+      nameSearchValue: queryKeywords || '',
     }
   }
 
@@ -104,9 +106,10 @@ class Offers extends PureComponent {
 
   handleOnSubmit = event => {
     event.preventDefault()
+    const { nameSearchValue } = this.state
     const { query, resetLoadedOffers } = this.props
     const queryParams = query.parse()
-    const value = event.target.elements.search.value
+    const value = nameSearchValue
 
     query.change({
       [mapApiToBrowser.keywords]: value === '' ? null : value,
@@ -140,8 +143,8 @@ class Offers extends PureComponent {
     query.change({ page: null })
   }
 
-  handleInputSearchOnChange = event => {
-    this.setState({ searchInputValue: event.target.value })
+  storeNameSearchValue = event => {
+    this.setState({ nameSearchValue: event.target.value })
   }
 
   render() {
@@ -158,12 +161,12 @@ class Offers extends PureComponent {
     const { isAdmin } = currentUser || {}
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
-    const { keywords, venueId, offererId } = apiParams
-    const { hasMore, isLoading, searchInputValue } = this.state
+    const { venueId, offererId } = apiParams
+    const { hasMore, isLoading, nameSearchValue } = this.state
 
     const createOfferTo = createLinkToOfferCreation(venueId, offererId)
 
-    const actionLink = !isAdmin && (
+    const actionLink = !isAdmin ? (
       <Link
         className="cta button is-primary"
         to={createOfferTo}
@@ -175,7 +178,7 @@ class Offers extends PureComponent {
           {'Créer une offre'}
         </span>
       </Link>
-    )
+    ) : null
 
     return (
       <Main
@@ -191,14 +194,13 @@ class Offers extends PureComponent {
           onSubmit={this.handleOnSubmit}
         >
           <TextInput
-            defaultValue={keywords}
-            label="Rechercher une offre :"
+            label="Rechercher une offre&nbsp;:"
             name="search"
-            onChange={this.handleInputSearchOnChange}
+            onChange={this.storeNameSearchValue}
             placeholder="Saisissez un ou plusieurs mots complets"
-            value={searchInputValue}
+            value={nameSearchValue}
           />
-          <div className="search-button">
+          <div className="search-separator">
             <div className="separator" />
             <button
               className="primary-button"
@@ -264,12 +266,8 @@ class Offers extends PureComponent {
             <table>
               <thead>
                 <tr>
-                  <th>
-&nbsp;
-                  </th>
-                  <th>
-&nbsp;
-                  </th>
+                  <th />
+                  <th />
                   <th>
                     {'Lieu'}
                   </th>
@@ -279,12 +277,8 @@ class Offers extends PureComponent {
                   <th>
                     {'Statut'}
                   </th>
-                  <th>
-&nbsp;
-                  </th>
-                  <th>
-&nbsp;
-                  </th>
+                  <th />
+                  <th />
                 </tr>
               </thead>
               <LoadingInfiniteScroll
