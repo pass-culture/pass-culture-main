@@ -7,8 +7,6 @@ import qrcode
 import qrcode.image.svg
 from PIL import Image
 
-from models.booking_sql_entity import BookingSQLEntity
-from models.stock_sql_entity import StockSQLEntity
 
 BOOKING_CANCELLATION_DELAY = timedelta(hours=72)
 QR_CODE_PASS_CULTURE_VERSION = 'v2'
@@ -26,15 +24,6 @@ CSV_HEADER = [
     "Tarif pass Culture",
     "Statut",
 ]
-
-
-def filter_bookings_to_compute_remaining_stock(stock: StockSQLEntity) -> Iterator:
-    return filter(lambda b: not b.isCancelled
-                            and not b.isUsed
-                            or (b.isUsed
-                                and b.dateUsed
-                                and b.dateUsed >= stock.dateModified),
-                  stock.bookings)
 
 
 def generate_qr_code(booking_token: str, offer_extra_data: Dict) -> str:
