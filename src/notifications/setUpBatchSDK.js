@@ -28,7 +28,7 @@ export default function setupBatchSDK(userId) {
       ui: batchSDKUIConfig,
       defaultIcon: 'favicon.ico', // for Chrome desktop
       smallIcon: 'favicon.ico', // for Chrome Android
-      sameOrigin: process.env.BATCH_API_KEY === 'true',
+      sameOrigin: process.env.BATCH_SAME_ORIGIN === 'true',
       useExistingWorker: true,
     })
 
