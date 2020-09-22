@@ -1,15 +1,14 @@
 from datetime import datetime
-from typing import Any
 from unittest.mock import Mock, call, patch
-
-from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_offerer, create_stock, create_user, create_venue, create_venue_provider
-from tests.model_creators.provider_creators import activate_provider
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 
 from local_providers.libraires.libraires_stocks import LibrairesStocks
 from models import OfferSQLEntity, StockSQLEntity
 from repository import repository
+from tests.conftest import clean_database
+from tests.model_creators.generic_creators import create_booking, create_offerer, create_stock, create_user, \
+    create_venue, create_venue_provider
+from tests.model_creators.provider_creators import activate_provider
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 
 
 class LibrairesStocksTest:
@@ -263,5 +262,7 @@ class LibrairesStocksTest:
             assert len(stocks) == 2
             assert len(offers) == 2
             assert mock_libraires_api_response.call_args_list == [call('12345678912345', '', datetime(2020, 2, 4)),
-                                                                  call('12345678912345', '9780199536986', datetime(2020, 2, 4)),
-                                                                  call('12345678912345', '1550199555555', datetime(2020, 2, 4))]
+                                                                  call('12345678912345', '9780199536986',
+                                                                       datetime(2020, 2, 4)),
+                                                                  call('12345678912345', '1550199555555',
+                                                                       datetime(2020, 2, 4))]

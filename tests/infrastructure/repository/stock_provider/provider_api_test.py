@@ -36,7 +36,7 @@ class ProviderAPITest:
 
             # Then
             requests.get.assert_called_once_with(
-                'http://example.com/stocks/12345678912345', params={'limit': '1000'})
+                url='http://example.com/stocks/12345678912345', params={'limit': '1000'})
 
         def should_call_provider_api_with_given_siret_and_last_processed_isbn(self):
             # Given
@@ -49,7 +49,7 @@ class ProviderAPITest:
             self.provider_api.stocks(siret, last_processed_isbn, modified_since)
 
             # Then
-            requests.get.assert_called_once_with('http://example.com/stocks/12345678912345',
+            requests.get.assert_called_once_with(url='http://example.com/stocks/12345678912345',
                                                  params={
                                                      'limit': '1000',
                                                      'after': last_processed_isbn
@@ -66,7 +66,7 @@ class ProviderAPITest:
             self.provider_api.stocks(siret, last_processed_isbn, modified_since)
 
             # Then
-            requests.get.assert_called_once_with('http://example.com/stocks/12345678912345',
+            requests.get.assert_called_once_with(url='http://example.com/stocks/12345678912345',
                                                  params={
                                                      'limit': '1000',
                                                      'modifiedSince': modified_since
@@ -83,12 +83,34 @@ class ProviderAPITest:
             self.provider_api.stocks(siret, last_processed_isbn, modified_since)
 
             # Then
-            requests.get.assert_called_once_with('http://example.com/stocks/12345678912345',
+            requests.get.assert_called_once_with(url='http://example.com/stocks/12345678912345',
                                                  params={
                                                      'limit': '1000',
                                                      'after': last_processed_isbn,
                                                      'modifiedSince': modified_since
                                                  })
+
+        def should_call_api_with_authentication_token_if_given(self):
+            # Given
+            siret = '12345678912345'
+            last_processed_isbn = '9780199536986'
+            modified_since = '2019-12-16T00:00:00'
+            requests.get.return_value = MagicMock(status_code=200)
+            self.provider_api = ProviderAPI(api_url='http://example.com/stocks',
+                                            name='ProviderAPI',
+                                            authentication_token="744563534")
+
+            # When
+            self.provider_api.stocks(siret, last_processed_isbn, modified_since)
+
+            # Then
+            requests.get.assert_called_once_with(url='http://example.com/stocks/12345678912345',
+                                                 params={
+                                                     'limit': '1000',
+                                                     'after': last_processed_isbn,
+                                                     'modifiedSince': modified_since
+                                                 },
+                                                 headers={'Authorization': 'Basic 744563534'})
 
     class IsSiretRegisteredTest:
         def setup_method(self):
@@ -104,7 +126,7 @@ class ProviderAPITest:
             self.provider_api.is_siret_registered(siret)
 
             # Then
-            requests.get.assert_called_once_with('http://example.com/stocks/12345678912345')
+            requests.get.assert_called_once_with(url='http://example.com/stocks/12345678912345')
 
         def should_returns_true_if_api_returns_200(self):
             # Given
@@ -127,3 +149,16 @@ class ProviderAPITest:
 
             # Then
             assert output is False
+
+        def should_call_api_with_authentication_token_if_given(self):
+            # Given
+            siret = '12345678912345'
+            self.provider_api = ProviderAPI(api_url='http://example.com/stocks', name='ProviderAPI',
+                                            authentication_token="744563534")
+
+            # When
+            self.provider_api.is_siret_registered(siret)
+
+            # Then
+            requests.get.assert_called_once_with(url='http://example.com/stocks/12345678912345',
+                                                 headers={'Authorization': 'Basic 744563534'})

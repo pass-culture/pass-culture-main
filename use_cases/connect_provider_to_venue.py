@@ -3,6 +3,7 @@ from typing import Callable, Dict, Optional
 
 from domain.price_rule import PriceRule
 from domain.stock_provider.stock_provider_repository import StockProviderRepository
+from domain.titelive import can_be_synchronized_with_titelive
 from local_providers import AllocineStocks, FnacStocks, LibrairesStocks, TiteLiveStocks
 from models import AllocineVenueProvider, AllocineVenueProviderPriceRule, ApiErrors, VenueProvider, VenueSQLEntity
 from repository import repository
@@ -11,7 +12,13 @@ from repository.venue_queries import find_by_id
 from utils.human_ids import dehumanize
 from validation.routes.venues import check_existing_venue
 
-STOCK_PROVIDERS = [LibrairesStocks, TiteLiveStocks, FnacStocks]
+SUPPORTED_STOCK_PROVIDERS = {
+    LibrairesStocks: 'LesLibraires',
+    FnacStocks: 'FNAC'
+}
+UNSUPPORTED_STOCK_PROVIDERS = {
+    TiteLiveStocks: 'TiteLive'
+}
 ERROR_CODE_PROVIDER_NOT_SUPPORTED = 400
 ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 
@@ -24,8 +31,14 @@ def connect_provider_to_venue(provider_class,
     check_existing_venue(venue)
     if provider_class == AllocineStocks:
         new_venue_provider = _connect_allocine_to_venue(venue, venue_provider_payload)
-    elif provider_class in STOCK_PROVIDERS:
-        _check_venue_can_be_synchronized_with_provider(venue.siret, stock_provider_repository.can_be_synchronized, provider_class.name)
+    elif provider_class in UNSUPPORTED_STOCK_PROVIDERS:
+        _check_venue_can_be_synchronized_with_titelive(venue.siret,
+                                                       UNSUPPORTED_STOCK_PROVIDERS[provider_class])
+        new_venue_provider = _connect_stock_providers_to_venue(venue, venue_provider_payload)
+    elif provider_class in SUPPORTED_STOCK_PROVIDERS:
+        _check_venue_can_be_synchronized_with_provider(venue.siret,
+                                                       stock_provider_repository.can_be_synchronized,
+                                                       SUPPORTED_STOCK_PROVIDERS[provider_class])
         new_venue_provider = _connect_stock_providers_to_venue(venue, venue_provider_payload)
     else:
         api_errors = ApiErrors()
@@ -77,6 +90,15 @@ def _create_allocine_venue_provider(allocine_theater_id: str, venue_provider_pay
     allocine_venue_provider.quantity = venue_provider_payload.get('quantity')
 
     return allocine_venue_provider
+
+
+def _check_venue_can_be_synchronized_with_titelive(siret: str,
+                                                   provider_name: str) -> None:
+    if not siret or not can_be_synchronized_with_titelive(siret):
+        api_errors = ApiErrors()
+        api_errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
+        api_errors.add_error('provider', _get_synchronization_error_message(provider_name, siret))
+        raise api_errors
 
 
 def _check_venue_can_be_synchronized_with_provider(siret: str,

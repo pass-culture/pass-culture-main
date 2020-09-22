@@ -1,4 +1,5 @@
-from unittest.mock import patch, call
+from datetime import datetime
+from unittest.mock import patch, call, Mock
 
 from local_providers.fnac.fnac_stocks import FnacStocks
 from models import OfferSQLEntity, StockSQLEntity
@@ -13,7 +14,7 @@ from tests.model_creators.specific_creators import create_product_with_thing_typ
 class FnacStocksTest:
     class NextTest:
         @clean_database
-        @patch('local_providers.fnac.fnac_stocks.get_fnac_stock_information')
+        @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_should_return_providable_infos_with_correct_data(self, mock_fnac_api_response, app):
             # Given
             mock_fnac_api_response.return_value = iter([
@@ -32,13 +33,17 @@ class FnacStocksTest:
 
             repository.save(venue_provider, product)
 
-            fnac_stocks_provider = FnacStocks(venue_provider)
+            read_last_modified_date = Mock()
+            read_last_modified_date.return_value = datetime(2020, 2, 4)
+            fnac_stocks_provider = FnacStocks(venue_provider, read_last_modified_date)
 
             # When
             fnac_providable_infos = next(fnac_stocks_provider)
 
             # Then
-            assert mock_fnac_api_response.call_args_list == [call('12345678912345', '', '')]
+            assert mock_fnac_api_response.call_args_list == [
+                call('12345678912345', '', datetime(2020, 2, 4))
+            ]
             assert len(fnac_providable_infos) == 2
 
             offer_providable_info = fnac_providable_infos[0]
@@ -51,7 +56,7 @@ class FnacStocksTest:
 
     class UpdateObjectsTest:
         @clean_database
-        @patch('local_providers.fnac.fnac_stocks.get_fnac_stock_information')
+        @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_fnac_stock_provider_create_one_stock_and_one_offer_with_wanted_attributes(self,
                                                                                            mock_fnac_api_response,
                                                                                            app):
@@ -71,7 +76,9 @@ class FnacStocksTest:
             product = create_product_with_thing_type(id_at_providers='9780199536986')
             repository.save(product, venue_provider)
 
-            fnac_stocks = FnacStocks(venue_provider)
+            read_last_modified_date = Mock()
+            read_last_modified_date.return_value = datetime(2020, 2, 4)
+            fnac_stocks = FnacStocks(venue_provider, read_last_modified_date)
 
             # When
             fnac_stocks.updateObjects()
@@ -91,7 +98,7 @@ class FnacStocksTest:
             assert stock.bookingLimitDatetime is None
 
         @clean_database
-        @patch('local_providers.fnac.fnac_stocks.get_fnac_stock_information')
+        @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_fnac_stock_provider_update_one_stock_and_update_matching_offer(self, mock_fnac_api_response,
                                                                                 app):
             # Given
@@ -113,7 +120,10 @@ class FnacStocksTest:
             stock = create_stock(id_at_providers='9780199536986@12345678912345', offer=offer, quantity=20)
 
             repository.save(product, offer, stock)
-            fnac_stocks = FnacStocks(venue_provider)
+
+            read_last_modified_date = Mock()
+            read_last_modified_date.return_value = datetime(2020, 2, 4)
+            fnac_stocks = FnacStocks(venue_provider, read_last_modified_date)
 
             # When
             fnac_stocks.updateObjects()
@@ -124,7 +134,7 @@ class FnacStocksTest:
             assert OfferSQLEntity.query.count() == 1
 
         @clean_database
-        @patch('local_providers.fnac.fnac_stocks.get_fnac_stock_information')
+        @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_fnac_stocks_create_2_stocks_and_2_offers_even_if_existing_offer_on_same_product(self,
                                                                                                  mock_fnac_api_response,
                                                                                                  app):
@@ -151,7 +161,9 @@ class FnacStocksTest:
 
             repository.save(offer, product_1, product_2, venue_provider)
 
-            fnac_stocks = FnacStocks(venue_provider)
+            read_last_modified_date = Mock()
+            read_last_modified_date.return_value = datetime(2020, 2, 4)
+            fnac_stocks = FnacStocks(venue_provider, read_last_modified_date)
 
             # When
             fnac_stocks.updateObjects()
@@ -162,7 +174,7 @@ class FnacStocksTest:
             assert fnac_stocks.last_processed_isbn == '1550199555555'
 
         @clean_database
-        @patch('local_providers.fnac.fnac_stocks.get_fnac_stock_information')
+        @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_fnac_stock_provider_available_stock_is_sum_of_updated_available_and_bookings(self,
                                                                                               mock_fnac_api_response,
                                                                                               app):
@@ -203,7 +215,9 @@ class FnacStocksTest:
                 "price": 0
             }])
 
-            fnac_stocks = FnacStocks(venue_provider)
+            read_last_modified_date = Mock()
+            read_last_modified_date.return_value = datetime(2020, 2, 4)
+            fnac_stocks = FnacStocks(venue_provider, read_last_modified_date)
 
             # When
             fnac_stocks.updateObjects()
@@ -215,7 +229,7 @@ class FnacStocksTest:
 
 class WhenSynchronizedTwiceTest:
     @clean_database
-    @patch('local_providers.fnac.fnac_stocks.get_fnac_stock_information')
+    @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
     def test_fnac_stock_provider_iterates_over_pagination(self, mock_fnac_api_response, app):
         # Given
         mock_fnac_api_response.side_effect = [
@@ -241,7 +255,9 @@ class WhenSynchronizedTwiceTest:
         product_2 = create_product_with_thing_type(id_at_providers='1550199555555')
 
         repository.save(product_1, product_2, venue_provider)
-        fnac_stocks = FnacStocks(venue_provider)
+        read_last_modified_date = Mock()
+        read_last_modified_date.return_value = datetime(2020, 2, 4)
+        fnac_stocks = FnacStocks(venue_provider, read_last_modified_date)
 
         # When
         fnac_stocks.updateObjects()
@@ -251,6 +267,6 @@ class WhenSynchronizedTwiceTest:
         stocks = StockSQLEntity.query.all()
         assert len(stocks) == 2
         assert len(offers) == 2
-        assert mock_fnac_api_response.call_args_list == [call('12345678912345', '', ''),
-                                                         call('12345678912345', '9780199536986', ''),
-                                                         call('12345678912345', '1550199555555', '')]
+        assert mock_fnac_api_response.call_args_list == [call('12345678912345', '', datetime(2020, 2, 4)),
+                                                         call('12345678912345', '9780199536986', datetime(2020, 2, 4)),
+                                                         call('12345678912345', '1550199555555', datetime(2020, 2, 4))]

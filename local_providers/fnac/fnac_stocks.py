@@ -3,7 +3,7 @@ from typing import List
 
 from sqlalchemy import Sequence
 
-from domain.fnac import get_fnac_stock_information, read_last_modified_date
+from infrastructure.container import api_fnac_stocks
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
 from models import OfferSQLEntity, StockSQLEntity, VenueProvider
@@ -12,35 +12,28 @@ from repository import product_queries
 from repository.booking_queries import count_not_cancelled_bookings_quantity_by_stock_id
 
 
-# class FnacStocks(GenericStocks):
-#     def __init__(self, venue_provider, **options):
-#         get_provider_stock_information = api_fnac_stocks.get_provider_stock_information
-#         read_last_sync_date = api_fnac_stocks.read_last_sync_date
-#         super().__init__(venue_provider, get_provider_stock_information, read_last_sync_date, **options)
-
-
 class FnacStocks(LocalProvider):
     name = 'FNAC'
     can_create = True
 
     def __init__(self, venue_provider: VenueProvider, **options):
         super().__init__(venue_provider, **options)
-        self.venue = self.venue_provider.venue
+        self.venue = venue_provider.venue
         self.siret = self.venue.siret
         self.last_processed_isbn = ''
-        self.fnac_data = iter([])
-        self.modified_since = read_last_modified_date(venue_provider.lastSyncDate)
+        self.fnac_stock_data = iter([])
+        self.modified_since = venue_provider.lastSyncDate
         self.product = None
         self.offer_id = None
 
     def __next__(self) -> List[ProvidableInfo]:
         try:
-            self.fnac_stock = next(self.fnac_data)
+            self.fnac_stock = next(self.fnac_stock_data)
         except StopIteration:
-            self.fnac_data = get_fnac_stock_information(self.venue_provider.venueIdAtOfferProvider,
-                                                        self.last_processed_isbn,
-                                                        self.modified_since)
-            self.fnac_stock = next(self.fnac_data)
+            self.fnac_stock_data = api_fnac_stocks.stocks_information(self.siret,
+                                                                      self.last_processed_isbn,
+                                                                      self.modified_since)
+            self.fnac_stock = next(self.fnac_stock_data)
 
         self.last_processed_isbn = str(self.fnac_stock['ref'])
         self.product = product_queries.find_active_book_product_by_isbn(self.fnac_stock['ref'])

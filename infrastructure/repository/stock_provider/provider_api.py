@@ -8,15 +8,21 @@ class ProviderAPIException(Exception):
 
 
 class ProviderAPI:
-    def __init__(self, api_url, name):
+    def __init__(self, api_url: str, name: str, authentication_token: str = None):
         self.api_url = api_url
         self.name = name
+        self.authentication_token = authentication_token
 
-    def stocks(self, siret: str, last_processed_reference: str = '', modified_since: str = '', limit: int = 1000) -> Dict:
+    def stocks(self, siret: str, last_processed_reference: str = '', modified_since: str = '',
+               limit: int = 1000) -> Dict:
         api_url = self._build_local_provider_url(siret)
         params = self._build_local_provider_params(last_processed_reference, modified_since, limit)
 
-        response = requests.get(api_url, params=params)
+        if self.authentication_token is not None:
+            response = requests.get(url=api_url, params=params,
+                                    headers={'Authorization': f'Basic {self.authentication_token}'})
+        else:
+            response = requests.get(url=api_url, params=params)
 
         if response.status_code != 200:
             raise ProviderAPIException(
@@ -26,7 +32,10 @@ class ProviderAPI:
 
     def is_siret_registered(self, siret: str) -> bool:
         api_url = self._build_local_provider_url(siret)
-        response = requests.get(api_url)
+        if self.authentication_token is not None:
+            response = requests.get(url=api_url, headers={'Authorization': f'Basic {self.authentication_token}'})
+        else:
+            response = requests.get(url=api_url)
 
         return response.status_code == 200
 

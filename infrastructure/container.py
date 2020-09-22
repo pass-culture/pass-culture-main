@@ -5,6 +5,7 @@ from infrastructure.repository.favorite.favorite_sql_repository import FavoriteS
 from infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import PaginatedOfferersSQLRepository
 from infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
 from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
+from infrastructure.repository.stock_provider.stock_provider_fnac import StockProviderFnacRepository
 from infrastructure.repository.stock_provider.stock_provider_libraires import StockProviderLibrairesRepository
 from infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
 from infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import VenueWithBasicInformationSQLRepository
@@ -35,6 +36,7 @@ paginated_offerers_repository = PaginatedOfferersSQLRepository()
 
 # Repositories => data depuis API externe
 api_libraires_stocks = StockProviderLibrairesRepository()
+api_fnac_stocks = StockProviderFnacRepository()
 
 # Usecases
 book_an_offer = BookAnOffer(booking_repository=booking_repository,

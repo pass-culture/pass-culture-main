@@ -22,7 +22,7 @@ class Post:
             venue = create_venue(offerer, siret='12345678912345')
             repository.save(venue, user)
 
-            provider = activate_provider('TiteLiveStocks')
+            provider = activate_provider('LibrairesStocks')
 
             venue_provider_data = {
                 'providerId': humanize(provider.id),
@@ -238,7 +238,7 @@ class Post:
             venue = create_venue(offerer)
             repository.save(venue, user)
 
-            provider = activate_provider('TiteLiveStocks')
+            provider = activate_provider('LibrairesStocks')
 
             venue_provider_data = {
                 'providerId': humanize(provider.id),
@@ -265,7 +265,7 @@ class Post:
             venue = create_venue(offerer, siret='12345678912345')
             repository.save(venue, user)
 
-            provider = activate_provider('TiteLiveStocks')
+            provider = activate_provider('LibrairesStocks')
 
             venue_provider_data = {
                 'providerId': humanize(provider.id),
@@ -277,7 +277,7 @@ class Post:
 
             errors = ApiErrors()
             errors.status_code = 422
-            errors.add_error('provider', "L’importation d’offres avec Titelive n’est pas disponible "
+            errors.add_error('provider', "L’importation d’offres avec LesLibraires n’est pas disponible "
                                          "pour le SIRET 12345678912345")
             stubbed_check.side_effect = [errors]
 
@@ -287,6 +287,6 @@ class Post:
 
             # Then
             assert response.status_code == 422
-            assert response.json['provider'] == ["L’importation d’offres avec Titelive n’est pas disponible "
+            assert response.json['provider'] == ["L’importation d’offres avec LesLibraires n’est pas disponible "
                                                  "pour le SIRET 12345678912345"]
             assert VenueProvider.query.count() == 0
