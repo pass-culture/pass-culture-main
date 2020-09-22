@@ -20,11 +20,6 @@ def get_stocks_from_fnac_api(siret: str, last_processed_isbn: str = '', modified
                                  params=params,
                                  headers={'Authorization': f'Basic {basic_authentication_token}'})
 
-    if fnac_response.status_code == 204:
-        return {
-            'Stocks': []
-        }
-
     if fnac_response.status_code != 200:
         raise ApiFnacException(f'Error {fnac_response.status_code} when getting Fnac stocks for SIRET: {siret}')
 

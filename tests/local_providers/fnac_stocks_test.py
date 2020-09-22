@@ -18,9 +18,9 @@ class FnacStocksTest:
             # Given
             mock_fnac_api_response.return_value = iter([
                 {
-                    "Ref": "9780199536986",
-                    "Available": 1,
-                    "Price": 6.36
+                    "ref": "9780199536986",
+                    "available": 1,
+                    "price": 6.36
                 }
             ])
 
@@ -57,9 +57,9 @@ class FnacStocksTest:
                                                                                            app):
             # Given
             mock_fnac_api_response.return_value = iter([{
-                "Ref": "9780199536986",
-                "Available": 10,
-                "Price": 16.5
+                "ref": "9780199536986",
+                "available": 10,
+                "price": 16.5
             }])
 
             offerer = create_offerer()
@@ -96,9 +96,9 @@ class FnacStocksTest:
                                                                                 app):
             # Given
             mock_fnac_api_response.return_value = iter([{
-                "Ref": "9780199536986",
-                "Available": 10,
-                "Price": 16
+                "ref": "9780199536986",
+                "available": 10,
+                "price": 16
             }])
 
             offerer = create_offerer()
@@ -130,12 +130,12 @@ class FnacStocksTest:
                                                                                                  app):
             # Given
             mock_fnac_api_response.return_value = iter([{
-                "Ref": "9780199536986",
-                "Available": 5,
-                "Price": 16
-            }, {"Ref": "1550199555555",
-                "Available": 4,
-                "Price": 18
+                "ref": "9780199536986",
+                "available": 5,
+                "price": 16
+            }, {"ref": "1550199555555",
+                "available": 4,
+                "price": 18
                 }])
 
             offerer = create_offerer()
@@ -163,14 +163,14 @@ class FnacStocksTest:
 
         @clean_database
         @patch('local_providers.fnac.fnac_stocks.get_fnac_stock_information')
-        def test_fnac_stock_provider_Available_stock_is_sum_of_updated_Available_and_bookings(self,
+        def test_fnac_stock_provider_available_stock_is_sum_of_updated_available_and_bookings(self,
                                                                                               mock_fnac_api_response,
                                                                                               app):
             # Given
             mock_fnac_api_response.return_value = iter([{
-                "Ref": "9780199536986",
-                "Available": 5,
-                "Price": 0
+                "ref": "9780199536986",
+                "available": 5,
+                "price": 0
             }])
 
             offerer = create_offerer()
@@ -198,9 +198,9 @@ class FnacStocksTest:
             repository.save(venue_provider, booking)
 
             mock_fnac_api_response.return_value = iter([{
-                "Ref": "9780199536986",
-                "Available": 66,
-                "Price": 0
+                "ref": "9780199536986",
+                "available": 66,
+                "price": 0
             }])
 
             fnac_stocks = FnacStocks(venue_provider)
@@ -220,14 +220,14 @@ class WhenSynchronizedTwiceTest:
         # Given
         mock_fnac_api_response.side_effect = [
             iter([{
-                "Ref": "9780199536986",
-                "Available": 4,
-                "Price": 16
+                "ref": "9780199536986",
+                "available": 4,
+                "price": 16
             }]),
             iter([{
-                "Ref": "1550199555555",
-                "Available": 5,
-                "Price": 14
+                "ref": "1550199555555",
+                "available": 5,
+                "price": 14
             }])
         ]
 

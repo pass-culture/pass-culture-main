@@ -1,8 +1,7 @@
-from unittest.mock import Mock
-
 from datetime import datetime
+from unittest.mock import Mock, patch
 
-from domain.fnac import get_fnac_stock_information, read_last_modified_date
+from domain.fnac import get_fnac_stock_information, read_last_modified_date, can_be_synchronized_with_fnac
 
 
 class GetFnacStockInformationTest:
@@ -10,59 +9,67 @@ class GetFnacStockInformationTest:
         self.siret = '12345678912345'
         self.mock_fnac_stocks = Mock()
 
+    def test_should_call_get_fnac_stock_infos_with_correct_params(self):
+        # Given
+        last_processed_isbn = ''
+        modified_since = ''
+        self.mock_fnac_stocks.return_value = {
+            "stocks": []
+        }
+
+        # When
+        get_fnac_stock_information(siret=self.siret, last_processed_isbn=last_processed_isbn,
+                                   modified_since=modified_since,
+                                   get_fnac_stocks=self.mock_fnac_stocks)
+
+        # Then
+        self.mock_fnac_stocks.assert_called_once_with(siret=self.siret, last_processed_isbn=last_processed_isbn,
+                                                      modified_since=modified_since)
+
     def test_should_return_no_stock_information_when_fnac_api_returns_no_result(self):
         # Given
         last_processed_isbn = ''
         modified_since = ''
         self.mock_fnac_stocks.return_value = {
-            "total": 2,
-            "limit": 20,
-            "offset": 0,
-            "Stocks": []
+            "stocks": []
         }
 
         # When
-        fnac_stock_information = get_fnac_stock_information(self.siret, last_processed_isbn, modified_since,
+        fnac_stock_information = get_fnac_stock_information(siret=self.siret, last_processed_isbn=last_processed_isbn,
+                                                            modified_since=modified_since,
                                                             get_fnac_stocks=self.mock_fnac_stocks)
 
         # Then
-        self.mock_fnac_stocks.assert_called_once_with(self.siret, last_processed_isbn, modified_since)
+        assert len(list(fnac_stock_information)) == 0
+
+    def test_should_return_no_stock_information_when_fnac_api_returns_empty_body_result(self):
+        # Given
+        last_processed_isbn = ''
+        modified_since = ''
+        self.mock_fnac_stocks.return_value = {}
+
+        # When
+        fnac_stock_information = get_fnac_stock_information(siret=self.siret, last_processed_isbn=last_processed_isbn,
+                                                            modified_since=modified_since,
+                                                            get_fnac_stocks=self.mock_fnac_stocks)
+
+        # Then
         assert len(list(fnac_stock_information)) == 0
 
     def test_should_return_correct_stock_information_when_fnac_api_returns_two_stocks(self):
         # Given
         last_processed_isbn = ''
         modified_since = ''
-        self.mock_fnac_stocks.return_value = {
-            "Total": 2,
-            "Limit": 20,
-            "Offset": 0,
-            "Stocks": [
-                {
-                    "Ref": "9780199536986",
-                    "Available": 1,
-                    "Price": 6.36
-                },
-                {
-                    "Ref": "0000191524088",
-                    "Available": 1,
-                    "Price": 9.15
-                }
-            ]
-        }
+        self.mock_fnac_stocks.return_value = {"stocks": [{"price": 6.36}, {"price": 9.15}]}
 
         # When
-        fnac_stock_information = get_fnac_stock_information(self.siret,
-                                                            last_processed_isbn,
-                                                            modified_since,
+        fnac_stock_information = get_fnac_stock_information(siret=self.siret, last_processed_isbn=last_processed_isbn,
+                                                            modified_since=modified_since,
                                                             get_fnac_stocks=self.mock_fnac_stocks)
 
         # Then
-        self.mock_fnac_stocks.assert_called_once_with(self.siret, last_processed_isbn, modified_since)
         fnac_stocks_data = list(fnac_stock_information)
         assert len(fnac_stocks_data) == 2
-        assert fnac_stocks_data[0] == {'Available': 1, 'Price': 6.36, 'Ref': '9780199536986'}
-        assert fnac_stocks_data[1] == {'Available': 1, 'Price': 9.15, 'Ref': '0000191524088'}
 
 
 class ReadLastModifiedDateTest:
@@ -81,7 +88,20 @@ class ReadLastModifiedDateTest:
         date = datetime(2020, 2, 2, 20, 20)
 
         # When
-        modified_since = read_last_modified_date(date)
+        modified_since = read_last_modified_date(date=date)
 
         # Then
         assert modified_since == '2020-02-02T20:20:00Z'
+
+
+class CanBeSynchronizedTest:
+    @patch('domain.fnac.is_siret_registered')
+    def test_should_call_can_be_synchronized_with_fnac_with_correct_param(self, mock_is_siret_registered):
+        # Given
+        siret = '12345678912345'
+
+        # When
+        can_be_synchronized_with_fnac(siret=siret)
+
+        # Then
+        mock_is_siret_registered.assert_called_once_with(siret=siret)

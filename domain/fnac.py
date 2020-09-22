@@ -6,12 +6,13 @@ from connectors.api_fnac_stocks import get_stocks_from_fnac_api, is_siret_regist
 
 def get_fnac_stock_information(siret: str, last_processed_isbn: str = '', modified_since: str = '',
                                get_fnac_stocks: Callable = get_stocks_from_fnac_api) -> iter:
-    api_response = get_fnac_stocks(siret, last_processed_isbn, modified_since)
-    return iter(api_response['Stocks'])
+    api_response = get_fnac_stocks(siret=siret, last_processed_isbn=last_processed_isbn, modified_since=modified_since)
+
+    return iter(api_response.get('stocks', []))
 
 
 def can_be_synchronized_with_fnac(siret: str) -> bool:
-    return is_siret_registered(siret)
+    return is_siret_registered(siret=siret)
 
 
 def read_last_modified_date(date: datetime) -> str:

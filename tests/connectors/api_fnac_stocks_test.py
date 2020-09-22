@@ -100,23 +100,6 @@ class GetStocksFromFNACApiTest:
                 'modifiedSince': modified_since
             })
 
-    @patch.dict('os.environ', {"PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN": '6666'})
-    @patch('connectors.api_fnac_stocks.requests.get')
-    def test_should_return_payload_when_status_code_equals_204(self, mock_requests_get):
-        # Given
-        siret = '12345678912345'
-        last_processed_isbn = '9780199536986'
-        modified_since = '2019-12-16T00:00:00'
-        mock_requests_get.return_value = MagicMock(status_code=204)
-
-        # When
-        result = get_stocks_from_fnac_api(siret, last_processed_isbn, modified_since)
-
-        # Then
-        assert result == {
-            'Stocks': []
-        }
-
 
 class IsSiretRegisteredTest:
     @patch.dict('os.environ', {"PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN": '6666'})
