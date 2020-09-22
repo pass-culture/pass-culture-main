@@ -41,7 +41,7 @@ const VenueItem = ({ venue }) => {
             <li>
               <Link
                 className="has-text-primary"
-                to={`/offres?lieu=${id}&structure=${managingOffererId}`}
+                to={`/offres?lieu=${id}`}
               >
                 <Icon svg="ico-offres-r" />
                 {pluralize(venue.nOffers, 'offres')}

@@ -177,7 +177,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
     })
 
     describe('display offers total number', () => {
-      it('should display total and link to offers page', () => {
+      it('should display offers total number', () => {
         // given
         props.offerer.nOffers = 42
         props.venues = [
@@ -197,15 +197,14 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
             <OffererItem {...props} />
           </Router>
         )
-        const actions = wrapper.find('.count-offers-action')
-        const navLink = actions.find(Link)
+
+        const offersCount = wrapper.find({ children: '42 offres' })
 
         // then
-        expect(navLink.text()).toBe('42 offres')
-        expect(navLink.at(0).prop('to')).toBe('/offres?structure=AE')
+        expect(offersCount).toHaveLength(1)
       })
 
-      it('should display 0 offer and no link to offers page', () => {
+      it('should display 0 offer when offerer has no offers', () => {
         // given
         props.offerer.nOffers = 0
         props.venues = [
@@ -225,11 +224,11 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
             <OffererItem {...props} />
           </Router>
         )
-        const actions = wrapper.find('.count-offers-action')
-        const textDisplayed = actions.find('li')
+
+        const offersCount = wrapper.find({ children: '0 offre' })
 
         // then
-        expect(textDisplayed.text()).toBe('0 offre')
+        expect(offersCount).toHaveLength(1)
       })
     })
 

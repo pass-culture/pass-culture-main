@@ -126,13 +126,6 @@ class Offers extends PureComponent {
     })
   }
 
-  handleOnOffererClick = query => () => {
-    query.change({
-      [mapApiToBrowser.offererId]: null,
-      page: null,
-    })
-  }
-
   onPageChange = page => {
     const { query } = this.props
     query.change({ page }, { historyMethod: 'replace' })
@@ -153,7 +146,6 @@ class Offers extends PureComponent {
       handleOnDeactivateAllVenueOffersClick,
       handleOnActivateAllVenueOffersClick,
       offers,
-      offerer,
       query,
       venue,
     } = this.props
@@ -213,20 +205,6 @@ class Offers extends PureComponent {
         </form>
 
         <ul className="section">
-          {offerer && (
-            <button
-              className="offerer-filter tag is-rounded is-medium"
-              onClick={this.handleOnOffererClick(query)}
-              type="button"
-            >
-              {'Structure :'}
-              <span className="name">
-                &nbsp;
-                {offerer.name}
-              </span>
-              <Icon svg="ico-close-r" />
-            </button>
-          )}
           {venue && (
             <button
               className="venue-filter tag is-rounded is-medium"

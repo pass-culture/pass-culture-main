@@ -38,7 +38,7 @@ describe('src | components | pages | Offers | Offers', () => {
       },
       resetLoadedOffers: jest.fn(),
       types: [],
-      venue: {},
+      venue: { name: 'Ma Venue' },
     }
   })
 
@@ -146,52 +146,6 @@ describe('src | components | pages | Offers | Offers', () => {
         const stockColumn = wrapper.find({ children: 'Stock' })
         expect(venueColumn).toHaveLength(0)
         expect(stockColumn).toHaveLength(0)
-      })
-    })
-
-    describe('offerer filter button', () => {
-      it('should be displayed when offerer is given', () => {
-        // given
-        props.offerer = {
-          name: 'Scope La Brique',
-        }
-
-        // when
-        const wrapper = shallow(<Offers {...props} />)
-        const offererButton = wrapper.find('button.offerer-filter')
-        // then
-        expect(offererButton).toHaveLength(1)
-        expect(offererButton.text()).toBe('Structure : Scope La Brique<Icon />')
-      })
-
-      it('should not be displayed when offerer is given', () => {
-        // given
-        props.offerer = null
-
-        // when
-        const wrapper = shallow(<Offers {...props} />)
-        const offererButton = wrapper.find('button.offerer-filter')
-
-        // then
-        expect(offererButton).toHaveLength(0)
-      })
-
-      it('should update url and remove offerer filter', () => {
-        // given
-        props.offerer = {
-          name: 'Scope La Brique',
-        }
-
-        // when
-        const wrapper = shallow(<Offers {...props} />)
-        const offererButton = wrapper.find('button.offerer-filter')
-        offererButton.simulate('click')
-
-        // then
-        expect(props.query.change).toHaveBeenCalledWith({
-          page: null,
-          structure: null,
-        })
       })
     })
 
