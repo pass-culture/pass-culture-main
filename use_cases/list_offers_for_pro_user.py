@@ -11,14 +11,14 @@ class OffersRequestParameters(object):
                  offerer_id: Optional[int],
                  venue_id: Optional[int],
                  pagination_limit: str = '10',
-                 keywords: Optional[str] = None,
+                 name_keywords: Optional[str] = None,
                  page: str = '0'):
         self.user_id = user_id
         self.user_is_admin = user_is_admin
         self.offerer_id = offerer_id
         self.venue_id = venue_id
         self.pagination_limit = int(pagination_limit)
-        self.keywords = keywords
+        self.name_keywords = name_keywords
         self.page = int(page)
 
 
@@ -33,6 +33,6 @@ class ListOffersForProUser:
             offerer_id=offers_request_parameters.offerer_id,
             pagination_limit=offers_request_parameters.pagination_limit,
             venue_id=offers_request_parameters.venue_id,
-            keywords=offers_request_parameters.keywords,
+            name_keywords=offers_request_parameters.name_keywords,
             page=offers_request_parameters.page,
         )

@@ -15,7 +15,7 @@ class OffersRequestParametersTest:
         )
 
         # Then
-        assert offers_request_parameters.keywords is None
+        assert offers_request_parameters.name_keywords is None
         assert offers_request_parameters.page == 0
         assert offers_request_parameters.pagination_limit == 10
 
@@ -26,13 +26,13 @@ class OffersRequestParametersTest:
             user_is_admin=False,
             offerer_id=12,
             venue_id=None,
-            keywords='Toto bateau',
+            name_keywords='Toto bateau',
             page='12',
             pagination_limit='3',
         )
 
         # Then
-        assert offers_request_parameters.keywords == 'Toto bateau'
+        assert offers_request_parameters.name_keywords == 'Toto bateau'
         assert offers_request_parameters.offerer_id == 12
         assert offers_request_parameters.page == 12
         assert offers_request_parameters.pagination_limit == 3
@@ -55,7 +55,7 @@ class ListOffersForProUserTest:
             offerer_id=43,
             venue_id=36,
             pagination_limit='12',
-            keywords='Offre Label',
+            name_keywords='Offre Label',
             page='12',
         )
 
@@ -64,7 +64,7 @@ class ListOffersForProUserTest:
 
         # Then
         self.paginated_offers_repository.get_paginated_offers_for_offerer_venue_and_keywords.assert_called_once_with(
-            keywords='Offre Label',
+            name_keywords='Offre Label',
             offerer_id=43,
             page=12,
             pagination_limit=12,

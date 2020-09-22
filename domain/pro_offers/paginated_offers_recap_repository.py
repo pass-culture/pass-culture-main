@@ -13,5 +13,5 @@ class PaginatedOffersRepository(ABC):
                                                             pagination_limit: int,
                                                             offerer_id: Optional[int] = None,
                                                             venue_id: Optional[int] = None,
-                                                            keywords: Optional[str] = None) -> PaginatedOffersRecap:
+                                                            name_keywords: Optional[str] = None) -> PaginatedOffersRecap:
         pass

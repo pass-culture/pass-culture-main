@@ -55,7 +55,7 @@ def list_offers() -> (str, int):
         offerer_id=offerer_id,
         venue_id=venue_id,
         pagination_limit=request.args.get('paginate', '10'),
-        keywords=request.args.get('keywords'),
+        name_keywords=request.args.get('name'),
         page=request.args.get('page', '0'),
     )
     paginated_offers = list_offers_for_pro_user.execute(offers_request_parameters)

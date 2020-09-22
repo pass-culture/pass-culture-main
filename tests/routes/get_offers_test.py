@@ -1,7 +1,6 @@
 import secrets
 from unittest.mock import patch
 
-from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
 from repository import repository
 from tests.conftest import clean_database, TestClient
@@ -61,7 +60,7 @@ class Get:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
             repository.save(user_offerer, offer)
-            list_offers_mock.return_value = to_domain(offer_sql_entities=[],  total_offers=0)
+            list_offers_mock.return_value = to_domain(offer_sql_entities=[], total_offers=0)
 
             # when
             response = TestClient(app.test_client()).with_auth(email=user.email).get('/offers')
@@ -91,10 +90,10 @@ class Get:
             assert isinstance(expected_parameter, OffersRequestParameters)
             assert expected_parameter.user_id == user.id
             assert expected_parameter.user_is_admin == user.isAdmin
-            assert expected_parameter.offerer_id == None
+            assert expected_parameter.offerer_id is None
             assert expected_parameter.venue_id == venue.id
             assert expected_parameter.pagination_limit == 10
-            assert expected_parameter.keywords == None
+            assert expected_parameter.name_keywords is None
             assert expected_parameter.page == 0
 
     class Returns404:
