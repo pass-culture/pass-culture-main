@@ -3,12 +3,11 @@ from typing import Optional
 from sqlalchemy import desc, func
 from sqlalchemy.orm import Query, aliased
 
-from domain.ts_vector import create_get_filter_matching_ts_query_in_any_model, create_filter_matching_all_keywords_in_any_model
 from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from domain.pro_offers.paginated_offers_recap_repository import PaginatedOffersRepository
+from domain.ts_vector import create_filter_on_ts_vector_matching_all_keywords
 from infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
 from models import OfferSQLEntity, VenueSQLEntity, Offerer, UserOfferer
-from models.db import Model
 
 
 class PaginatedOffersSQLRepository(PaginatedOffersRepository):
@@ -50,18 +49,15 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
 
 
 def _filter_offers_with_keywords_string(query: Query, keywords_string: str) -> Query:
-    query_on_offer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, OfferSQLEntity)
+    query_on_offer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query)
     query_on_offer_using_keywords = _order_by_offer_name_containing_keyword_string(keywords_string,
                                                                                    query_on_offer_using_keywords)
     return query_on_offer_using_keywords
 
 
-def _build_query_using_keywords_on_model(keywords_string: str, query: Query, model: Model) -> Query:
-    text_search_filters_on_model = create_get_filter_matching_ts_query_in_any_model(model)
-    model_keywords_filter = create_filter_matching_all_keywords_in_any_model(
-            text_search_filters_on_model, keywords_string
-    )
-    return query.filter(model_keywords_filter)
+def _build_query_using_keywords_on_model(keywords_string: str, query: Query) -> Query:
+    keywords_filter = create_filter_on_ts_vector_matching_all_keywords(OfferSQLEntity.__name_ts_vector__, keywords_string)
+    return query.filter(keywords_filter)
 
 
 def _order_by_offer_name_containing_keyword_string(keywords_string: str, query: Query) -> Query:

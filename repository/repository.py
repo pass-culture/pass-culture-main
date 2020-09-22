@@ -13,7 +13,7 @@ def delete(*models: List[Model]) -> None:
     db.session.commit()
 
 
-def save(*models: List[Model]) -> None:
+def save(*models: Model) -> None:
     if not models:
         return None
 

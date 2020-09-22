@@ -23,14 +23,14 @@ def create_ts_vector_and_table_args(ts_indexes):
     table_args = []
 
     for ts_index in ts_indexes:
-        ts_vector = create_tsvector(ts_index[1])
+        ts_vector = create_ts_vector(ts_index[1])
         ts_vectors.append(ts_vector)
         table_args.append(create_fts_index(ts_index[0], ts_vector))
 
     return ts_vectors, tuple(table_args)
 
 
-def create_tsvector(*args):
+def create_ts_vector(*args):
     exp = args[0]
     for e in args[1:]:
         exp += ' ' + e
@@ -40,14 +40,14 @@ def create_tsvector(*args):
 def create_get_filter_matching_ts_query_in_any_model(*models):
     def get_filter_matching_ts_query_in_any_model(ts_query):
         return or_(
-            *[
-                ts_vector.match(
-                    ts_query,
-                    postgresql_regconfig=LANGUAGE + '_unaccent'
-                )
-                for model in models
-                for ts_vector in model.__ts_vectors__
-            ]
+                *[
+                    ts_vector.match(
+                            ts_query,
+                            postgresql_regconfig=LANGUAGE + '_unaccent'
+                    )
+                    for model in models
+                    for ts_vector in model.__ts_vectors__
+                ]
         )
 
     return get_filter_matching_ts_query_in_any_model
@@ -60,6 +60,21 @@ def create_filter_matching_all_keywords_in_any_model(
     ts_queries = _get_ts_queries_from_keywords_string(keywords_string)
     ts_filters = [
         get_filter_matching_ts_query_in_any_model(ts_query)
+        for ts_query in ts_queries
+    ]
+    return and_(*ts_filters)
+
+
+def create_filter_on_ts_vector_matching_all_keywords(
+        ts_vector,
+        keywords_string: str
+):
+    ts_queries = _get_ts_queries_from_keywords_string(keywords_string)
+    ts_filters = [
+        ts_vector.match(
+                ts_query,
+                postgresql_regconfig=LANGUAGE + '_unaccent'
+        )
         for ts_query in ts_queries
     ]
     return and_(*ts_filters)

@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import ARRAY, Boolean, CheckConstraint, false, Integer, Text, TEXT
+from sqlalchemy import ARRAY, Boolean, CheckConstraint, false, Integer, Text
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String
 from sqlalchemy.orm import relationship
 
-from domain.ts_vector import create_ts_vector_and_table_args
+from domain.ts_vector import create_ts_vector, create_fts_index
 from models.db import db, Model
 from models.deactivable_mixin import DeactivableMixin
 from models.extra_data_mixin import ExtraDataMixin
@@ -57,7 +57,7 @@ class OfferSQLEntity(PcObject,
 
     name = Column(String(140), nullable=False)
 
-    description = Column(Text, nullable=True )
+    description = Column(Text, nullable=True)
 
     withdrawalDetails = Column(Text, nullable=True)
 
@@ -193,6 +193,5 @@ class OfferSQLEntity(PcObject,
         return matching_type_thing.value['proLabel']
 
 
-ts_indexes = [('idx_offer_fts_name', OfferSQLEntity.name)]
-
-(OfferSQLEntity.__ts_vectors__, OfferSQLEntity.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
+OfferSQLEntity.__name_ts_vector__ = create_ts_vector(OfferSQLEntity.name)
+OfferSQLEntity.__table_args__ = [create_fts_index('idx_offer_fts_name', OfferSQLEntity.__name_ts_vector__)]

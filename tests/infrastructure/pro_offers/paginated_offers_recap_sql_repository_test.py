@@ -34,7 +34,7 @@ class PaginatedOfferSQLRepositoryTest:
         assert paginated_offers.offers[0].identifier == offer1.id
 
     @clean_database
-    def test_returns_offers_sorted_by_id_desc(self, app):
+    def test_return_offers_sorted_by_id_desc(self, app):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -56,49 +56,61 @@ class PaginatedOfferSQLRepositoryTest:
         assert paginated_offers.offers[0].identifier > paginated_offers.offers[1].identifier
 
     @clean_database
-    def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_venue(self, app):
+    def test_return_offers_of_given_venue(self, app):
         user = create_user()
-        offerer1 = create_offerer(siren='123456789')
-        offerer2 = create_offerer(siren='987654321')
-        ko_offerer3 = create_offerer(siren='123456780')
-        user_offerer1 = create_user_offerer(user=user, offerer=offerer1)
-        user_offerer2 = create_user_offerer(user=user, offerer=offerer2)
-
-        ok_product_event = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
-        ok_product_thing = create_product_with_thing_type(thing_name='Rencontrez Jacques Chirac')
-        event_product2 = create_product_with_event_type(event_name='Concert de contrebasse')
-        thing1_product = create_product_with_thing_type(thing_name='Jacques la fripouille')
-        thing2_product = create_product_with_thing_type(thing_name='Belle du Seigneur')
         offerer = create_offerer(siren='123456789')
-        venue1 = create_venue(offerer=offerer1, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
-        venue2 = create_venue(offerer=offerer2, name='Librairie la Rencontre', city='Saint Denis',
-                              siret=offerer.siren + '54321')
-        ko_venue3 = create_venue(ko_offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis',
-                                 siret=ko_offerer3.siren + '54321')
-        ok_offer1 = create_offer_with_event_product(venue=venue1, product=ok_product_event)
-        ok_offer2 = create_offer_with_thing_product(venue=venue1, product=ok_product_thing)
-        ko_offer2 = create_offer_with_event_product(venue=venue1, product=event_product2)
-        ko_offer3 = create_offer_with_thing_product(venue=ko_venue3, product=thing1_product)
-        ko_offer4 = create_offer_with_thing_product(venue=venue2, product=thing2_product)
+        user_offerer = create_user_offerer(user=user, offerer=offerer)
+
+        product_event = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
+        product_thing = create_product_with_thing_type(thing_name='Belle du Seigneur')
+        requested_venue = create_venue(offerer=offerer, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
+        other_venue = create_venue(offerer=offerer, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
+        offer_on_requested_venue = create_offer_with_event_product(venue=requested_venue, product=product_event)
+        offer_on_other_venue = create_offer_with_thing_product(venue=other_venue, product=product_thing)
         repository.save(
-                user_offerer1, user_offerer2, ko_offerer3,
-                ok_offer1, ko_offer2, ko_offer3, ko_offer4
+                user_offerer, offer_on_requested_venue, offer_on_other_venue
         )
 
         # when
         paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
                 user_id=user.id,
                 user_is_admin=user.isAdmin,
-                venue_id=venue1.id,
-                keywords='Jacq Rencon',
+                venue_id=requested_venue.id,
                 page=1,
                 pagination_limit=10
         )
 
         # then
         offers_id = [offer.identifier for offer in paginated_offers.offers]
-        assert ok_offer1.id in offers_id
-        assert ok_offer2.id in offers_id
-        assert ko_offer2.id not in offers_id
-        assert ko_offer3.id not in offers_id
-        assert ko_offer4.id not in offers_id
+        assert offer_on_requested_venue.id in offers_id
+        assert offer_on_other_venue.id not in offers_id
+
+    @clean_database
+    def test_return_offers_matching_searched_name(self, app):
+        user = create_user()
+        offerer = create_offerer(siren='123456789')
+        user_offerer = create_user_offerer(user=user, offerer=offerer)
+
+        product_event = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
+        product_thing = create_product_with_thing_type(thing_name='Belle du Seigneur', author_name='Jacqueline Rencon')
+        requested_venue = create_venue(offerer=offerer, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
+        other_venue = create_venue(offerer=offerer, name='Librairie la Rencontre des jachères', city='Saint Denis', siret=offerer.siren + '54321')
+        offer_matching_requested_name = create_offer_with_event_product(venue=requested_venue, product=product_event)
+        offer_not_matching_requested_name = create_offer_with_thing_product(venue=other_venue, product=product_thing)
+        repository.save(
+                user_offerer, offer_matching_requested_name, offer_not_matching_requested_name
+        )
+
+        # when
+        paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=user.id,
+                user_is_admin=user.isAdmin,
+                keywords='Jac rencon',
+                page=1,
+                pagination_limit=10
+        )
+
+        # then
+        offers_id = [offer.identifier for offer in paginated_offers.offers]
+        assert offer_matching_requested_name.id in offers_id
+        assert offer_not_matching_requested_name.id not in offers_id

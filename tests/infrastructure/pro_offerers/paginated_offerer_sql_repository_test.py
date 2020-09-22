@@ -3,7 +3,6 @@ from infrastructure.repository.pro_offerers.paginated_offerers_sql_repository im
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue
-from utils.human_ids import humanize
 
 
 class PaginatedOffererSQLRepositoryTest:
