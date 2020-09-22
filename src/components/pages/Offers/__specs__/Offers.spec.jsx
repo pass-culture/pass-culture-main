@@ -79,7 +79,6 @@ describe('src | components | pages | Offers | Offers', () => {
           apiPath: '/offers?',
           handleSuccess: expect.any(Function),
           handleFail: expect.any(Function),
-          resolve: expect.any(Function),
         })
       })
 
@@ -493,7 +492,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
           // then
           expect(change.mock.calls[0][0]).toStrictEqual({
-            'mots-cles': 'AnyWord',
+            nom: 'AnyWord',
             page: null,
           })
           change.mockClear()
@@ -521,7 +520,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
           // then
           expect(change.mock.calls[0][0]).toStrictEqual({
-            'mots-cles': null,
+            nom: null,
             page: null,
           })
           change.mockClear()

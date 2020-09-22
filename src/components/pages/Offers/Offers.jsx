@@ -1,4 +1,4 @@
-import { Icon, resolveIsNew } from 'pass-culture-shared'
+import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
 import React, { PureComponent } from 'react'
@@ -32,12 +32,12 @@ class Offers extends PureComponent {
   constructor(props) {
     super(props)
 
-    const queryKeywords = translateQueryParamsToApiParams(props.query.parse()).keywords
+    const { name: nameKeywords } = translateQueryParamsToApiParams(props.query.parse())
 
     this.state = {
       hasMore: false,
       isLoading: false,
-      nameSearchValue: queryKeywords || '',
+      nameSearchValue: nameKeywords || '',
     }
   }
 
@@ -68,7 +68,7 @@ class Offers extends PureComponent {
   }
 
   handleRequestData = () => {
-    const { comparedTo, loadTypes, loadOffers, query, types } = this.props
+    const { loadTypes, loadOffers, query, types } = this.props
 
     types.length === 0 && loadTypes()
 
@@ -97,10 +97,8 @@ class Offers extends PureComponent {
         isLoading: false,
       })
 
-    const resolve = datum => resolveIsNew(datum, 'dateCreated', comparedTo)
-
     this.setState({ hasMore: true, isLoading: true }, () =>
-      loadOffers({ apiPath, handleSuccess, handleFail, resolve })
+      loadOffers({ apiPath, handleSuccess, handleFail })
     )
   }
 
@@ -112,11 +110,11 @@ class Offers extends PureComponent {
     const value = nameSearchValue
 
     query.change({
-      [mapApiToBrowser.keywords]: value === '' ? null : value,
+      [mapApiToBrowser.name]: value === '' ? null : value,
       page: null,
     })
 
-    if (value && queryParams[mapApiToBrowser.keywords] !== value) resetLoadedOffers()
+    if (value && queryParams[mapApiToBrowser.name] !== value) resetLoadedOffers()
   }
 
   handleOnVenueClick = query => () => {
