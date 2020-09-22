@@ -193,9 +193,6 @@ class OfferSQLEntity(PcObject,
         return matching_type_thing.value['proLabel']
 
 
-ts_indexes = [('idx_offer_fts_name', OfferSQLEntity.name),
-              ('idx_offer_fts_author', OfferSQLEntity.extraData['author'].cast(TEXT)),
-              ('idx_offer_fts_byArtist', OfferSQLEntity.extraData['byArtist'].cast(TEXT)),
-              ('idx_offer_fts_description', OfferSQLEntity.description)]
+ts_indexes = [('idx_offer_fts_name', OfferSQLEntity.name)]
 
 (OfferSQLEntity.__ts_vectors__, OfferSQLEntity.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
