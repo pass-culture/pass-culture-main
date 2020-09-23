@@ -1,6 +1,5 @@
 import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
-import { stringify } from 'query-string'
 import React, { PureComponent } from 'react'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { Link } from 'react-router-dom'
@@ -32,12 +31,13 @@ class Offers extends PureComponent {
   constructor(props) {
     super(props)
 
-    const { name: nameKeywords } = translateQueryParamsToApiParams(props.query.parse())
+    const { name: nameKeywords, venueId } = translateQueryParamsToApiParams(props.query.parse())
 
     this.state = {
       hasMore: false,
       isLoading: false,
       nameSearchValue: nameKeywords || '',
+      venueId: venueId,
     }
   }
 
@@ -67,15 +67,33 @@ class Offers extends PureComponent {
     }
   }
 
+  buildQueryParams = (nameSearchValue, venueId, page) => {
+    const queryParams = []
+
+    if (nameSearchValue !== '') {
+      queryParams.push('name=' + nameSearchValue)
+    }
+
+    if (venueId) {
+      queryParams.push('venueId=' + venueId)
+    }
+
+    if (page) {
+      queryParams.push('page=' + page)
+    }
+
+    return queryParams.join('&')
+  }
+
   handleRequestData = () => {
     const { loadTypes, loadOffers, query, types } = this.props
+    const { nameSearchValue, venueId } = this.state
+    const { page } = translateQueryParamsToApiParams(query.parse())
 
     types.length === 0 && loadTypes()
 
     const queryParams = query.parse()
-    const apiParams = translateQueryParamsToApiParams(queryParams)
-    const apiParamsString = stringify(apiParams)
-    const apiPath = `/offers?${apiParamsString}`
+    const apiPath = `/offers?${this.buildQueryParams(nameSearchValue, venueId, page)}`
 
     const handleSuccess = (state, action) => {
       const { payload } = action
