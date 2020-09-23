@@ -11,7 +11,6 @@ from utils.logger import logger
 
 now = datetime.utcnow()
 three_days = timedelta(days=3)
-two_hours = timedelta(hours=2)
 
 
 def save_users_with_deposits():
