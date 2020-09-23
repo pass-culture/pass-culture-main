@@ -51,20 +51,6 @@ def check_booking_token_is_keepable(booking: BookingSQLEntity) -> None:
         raise resource_gone_error
 
 
-def check_booking_is_cancellable_by_user(booking: BookingSQLEntity, is_user_cancellation: bool) -> None:
-    api_errors = ApiErrors()
-
-    if booking.isUsed:
-        api_errors.add_error('booking', "Impossible d'annuler une réservation consommée")
-        raise api_errors
-
-    if is_user_cancellation:
-        if not booking.isUserCancellable:
-            api_errors.add_error('booking',
-                                 "Impossible d'annuler une réservation moins de 72h avant le début de l'évènement")
-            raise api_errors
-
-
 def check_is_not_activation_booking(booking: BookingSQLEntity) -> None:
     if is_activation_booking(booking):
         error = ForbiddenError()

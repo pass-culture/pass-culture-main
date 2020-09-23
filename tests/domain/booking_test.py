@@ -24,7 +24,6 @@ from tests.model_creators.specific_creators import create_stock_from_offer, \
     create_product_with_thing_type, create_product_with_event_type, create_offer_with_thing_product, \
     create_offer_with_event_product
 from validation.routes.bookings import \
-    check_booking_is_cancellable_by_user, \
     check_booking_is_not_already_cancelled, \
     check_booking_is_not_used, \
     check_booking_token_is_usable, \
@@ -114,75 +113,6 @@ class CheckExpenseLimitsTest:
         # then
         assert error.value.errors['insufficientFunds'] == ['Le solde de votre pass est insuffisant'
                                                            ' pour réserver cette offre.']
-
-
-class CheckBookingIsCancellableTest:
-    def test_raises_api_error_when_offerer_cancellation_and_used_booking(self):
-        # Given
-        booking = BookingSQLEntity()
-        booking.isUsed = True
-
-        # When
-        with pytest.raises(ApiErrors) as e:
-            check_booking_is_cancellable_by_user(booking, is_user_cancellation=False)
-
-        # Then
-        assert e.value.errors['booking'] == ["Impossible d\'annuler une réservation consommée"]
-
-    def test_raises_api_error_when_user_cancellation_and_event_in_less_than_72h(self):
-        # Given
-        booking = BookingSQLEntity()
-        booking.isUsed = False
-        booking.stock = StockSQLEntity()
-        booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
-
-        # When
-        with pytest.raises(ApiErrors) as e:
-            check_booking_is_cancellable_by_user(booking, is_user_cancellation=True)
-
-        # Then
-        assert e.value.errors['booking'] == [
-            "Impossible d\'annuler une réservation moins de 72h avant le début de l'évènement"]
-
-    def test_does_not_raise_api_error_when_user_cancellation_and_event_in_more_than_72h(self):
-        # Given
-        booking = BookingSQLEntity()
-        booking.isUsed = False
-        booking.stock = StockSQLEntity()
-        booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=73)
-
-        # When
-        check_output = check_booking_is_cancellable_by_user(booking, is_user_cancellation=False)
-
-        # Then
-        assert check_output is None
-
-    def test_does_not_raise_api_error_when_offerer_cancellation_and_event_in_less_than_72h(self):
-        # Given
-        booking = BookingSQLEntity()
-        booking.isUsed = False
-        booking.stock = StockSQLEntity()
-        booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
-
-        # When
-        check_output = check_booking_is_cancellable_by_user(booking, is_user_cancellation=False)
-
-        # Then
-        assert check_output is None
-
-    def test_does_not_raise_api_error_when_offerer_cancellation_not_used_and_thing(self):
-        # Given
-        booking = BookingSQLEntity()
-        booking.isUsed = False
-        booking.stock = StockSQLEntity()
-        booking.stock.offer = OfferSQLEntity()
-        booking.stock.offer.product = create_product_with_thing_type()
-
-        # When
-        check_output = check_booking_is_cancellable_by_user(booking, is_user_cancellation=False)
-
-        # Then
-        assert check_output is None
 
 
 class CheckBookingIsUsableTest:
