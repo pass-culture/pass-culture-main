@@ -307,7 +307,6 @@ def _filter_by_offer_status(query, offer_status):
 
     elif offer_status == "VALID" or offer_status == "EXPIRED":
         query = query.join(OfferSQLEntity)
-        can_still_be_booked_event = StockSQLEntity.bookingLimitDatetime >= datetime.utcnow()
         is_not_soft_deleted_thing = StockSQLEntity.isSoftDeleted == False
         can_still_be_booked_thing = ((StockSQLEntity.bookingLimitDatetime == None)
                                      | (StockSQLEntity.bookingLimitDatetime >= datetime.utcnow()))
@@ -371,13 +370,6 @@ def keep_offerers_with_at_least_one_physical_venue(query):
 def keep_offerers_with_no_physical_venue(query):
     is_not_virtual = VenueSQLEntity.isVirtual == False
     return query.filter(~Offerer.managedVenues.any(is_not_virtual))
-
-
-def keep_offerers_with_no_validated_users(query):
-    query = query.join(UserOfferer) \
-        .join(UserSQLEntity) \
-        .filter(~Offerer.UserOfferers.any(UserSQLEntity.validationToken == None))
-    return query
 
 
 def _query_offerers_with_user_offerer():

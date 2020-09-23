@@ -1,10 +1,10 @@
 from datetime import datetime
-
 import math
+from typing import List, Optional, Set
+
 from dateutil import tz
 from sqlalchemy import desc, func, text
 from sqlalchemy.orm import Query, selectinload
-from typing import List, Optional, Set, Union
 
 from domain.booking_recap.booking_recap import BookBookingRecap, BookingRecap, EventBookingRecap, ThingBookingRecap
 from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
@@ -19,7 +19,7 @@ from models.offerer import Offerer
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 from models.recommendation import Recommendation
-from models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY, StockSQLEntity
+from models.stock_sql_entity import StockSQLEntity
 from models.user_sql_entity import UserSQLEntity
 from utils.date import get_department_timezone
 
@@ -74,29 +74,6 @@ def count_cancelled_by_departement(departement_code: str) -> int:
 def _query_cancelled_bookings_on_non_activation_offers() -> Query:
     return _query_keep_on_non_activation_offers() \
         .filter(BookingSQLEntity.isCancelled == True)
-
-
-def _filter_bookings_by_dates(query: Query, date_from: Union[datetime, str] = None,
-                              date_to: Union[datetime, str] = None) -> Query:
-    if date_from:
-        query = query.filter(BookingSQLEntity.dateCreated >= date_from)
-    if date_to:
-        query = query.filter(BookingSQLEntity.dateCreated <= date_to)
-    return query
-
-
-def _select_only_needed_fields_for_bookings_info(query: Query) -> Query:
-    return query.with_entities(BookingSQLEntity.id.label('id'),
-                               BookingSQLEntity.dateCreated.label('date_created'),
-                               BookingSQLEntity.quantity.label('quantity'),
-                               BookingSQLEntity.amount.label('amount'),
-                               BookingSQLEntity.isCancelled.label('isCancelled'),
-                               BookingSQLEntity.isUsed.label('isUsed'),
-                               VenueSQLEntity.name.label('venue_name'),
-                               OfferSQLEntity.name.label('offer_name'),
-                               UserSQLEntity.lastName.label('user_lastname'),
-                               UserSQLEntity.firstName.label('user_firstname'),
-                               UserSQLEntity.email.label('user_email'))
 
 
 def find_from_recommendation(recommendation: Recommendation, user_id: int) -> List[BookingSQLEntity]:
@@ -378,16 +355,6 @@ def find_existing_tokens() -> Set[str]:
     return set(map(lambda t: t[0], db.session.query(BookingSQLEntity.token).all()))
 
 
-def _filter_bookings_by_offerer_id(offerer_id: int) -> Query:
-    return BookingSQLEntity.query \
-        .join(StockSQLEntity) \
-        .join(OfferSQLEntity) \
-        .join(VenueSQLEntity) \
-        .join(UserSQLEntity) \
-        .filter(VenueSQLEntity.managingOffererId == offerer_id) \
-        .reset_joinpoint()
-
-
 def _query_non_cancelled_non_activation_bookings() -> Query:
     return _query_keep_on_non_activation_offers() \
         .filter(BookingSQLEntity.isCancelled == False)
@@ -420,16 +387,6 @@ def get_only_offer_ids_from_bookings(user: UserSQLEntity) -> List[int]:
         .with_entities(OfferSQLEntity.id) \
         .all()
     return [offer.id for offer in offers_booked]
-
-
-def find_not_used_and_not_cancelled_bookings_associated_to_outdated_stock() -> List[BookingSQLEntity]:
-    booking_on_event_that_should_have_been_refunded = StockSQLEntity.beginningDatetime + EVENT_AUTOMATIC_REFUND_DELAY
-    return BookingSQLEntity.query \
-        .join(StockSQLEntity) \
-        .filter(BookingSQLEntity.isUsed == False) \
-        .filter(BookingSQLEntity.isCancelled == False) \
-        .filter(booking_on_event_that_should_have_been_refunded < datetime.utcnow()) \
-        .all()
 
 
 def find_used_by_token(token: str) -> BookingSQLEntity:

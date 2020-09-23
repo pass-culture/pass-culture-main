@@ -129,15 +129,6 @@ def keep_only_offers_in_venues_or_national(query: BaseQuery, venue_ids: selectab
         .filter(or_(DiscoveryView.venueId.in_(venue_ids), DiscoveryView.isNational == True))
 
 
-def _get_paginated_active_offers(limit, page, query):
-    if page:
-        query = query \
-            .offset((int(page) - 1) * limit)
-    query = query \
-        .limit(limit)
-    return query
-
-
 def get_active_offers_ids_query(user, departement_codes=[ALL_DEPARTMENTS_CODE], offer_id=None):
     active_offers_query = OfferSQLEntity.query.distinct(OfferSQLEntity.id)
 
@@ -178,12 +169,6 @@ def _exclude_booked_and_favorite(active_offers_query, user):
     return active_offers_query
 
 
-def _round_robin_by_type_onlineness_and_criteria(order_by: List):
-    return func.row_number() \
-        .over(partition_by=[OfferSQLEntity.type, OfferSQLEntity.url == None],
-              order_by=order_by())
-
-
 def _with_image(offer_query):
     has_image_predicate = _build_has_active_mediation_predicate()
     return offer_query.filter(has_image_predicate)
@@ -194,36 +179,10 @@ def _with_validated_venue(offer_query):
         .filter(VenueSQLEntity.validationToken == None)
 
 
-def _build_occurs_soon_or_is_thing_predicate():
-    return StockSQLEntity.query.filter((StockSQLEntity.offerId == OfferSQLEntity.id)
-                                       & ((StockSQLEntity.beginningDatetime == None)
-                                          | ((StockSQLEntity.beginningDatetime > datetime.utcnow())
-                                             & (StockSQLEntity.beginningDatetime < (
-                            datetime.utcnow() + timedelta(days=10)))))) \
-        .exists()
-
-
 def _build_has_active_mediation_predicate():
     return MediationSQLEntity.query.filter((MediationSQLEntity.offerId == OfferSQLEntity.id)
                                            & MediationSQLEntity.isActive) \
         .exists()
-
-
-def _date_interval_to_filter(date_interval):
-    return ((StockSQLEntity.beginningDatetime >= date_interval[0]) &
-            (StockSQLEntity.beginningDatetime <= date_interval[1]))
-
-
-def _offer_has_stocks_compatible_with_days_intervals(days_intervals):
-    event_beginningdate_in_interval_filter = or_(*map(
-        _date_interval_to_filter, days_intervals))
-    stock_has_no_beginning_date_time = StockSQLEntity.beginningDatetime == None
-    return StockSQLEntity.query \
-        .filter(StockSQLEntity.offerId == OfferSQLEntity.id) \
-        .filter(
-        event_beginningdate_in_interval_filter |
-        stock_has_no_beginning_date_time
-    ).exists()
 
 
 def find_searchable_offer(offer_id):
@@ -306,22 +265,6 @@ def _filter_bookable_stocks_for_discovery(stocks_query):
                    | has_no_booking_limit_date_predicate)
                 & has_remaining_stock)
     return stocks_query
-
-
-def count_offers_for_things_only_by_venue_id(venue_id):
-    offer_count = OfferSQLEntity.query \
-        .filter_by(venueId=venue_id) \
-        .filter(OfferSQLEntity.thing is not None) \
-        .count()
-    return offer_count
-
-
-def find_offer_for_venue_id_and_specific_thing(venue_id, thing):
-    offer = OfferSQLEntity.query \
-        .filter_by(venueId=venue_id) \
-        .filter_by(thing=thing) \
-        .one_or_none()
-    return offer
 
 
 def get_offer_by_id(offer_id: int):

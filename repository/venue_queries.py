@@ -14,13 +14,6 @@ def find_by_id(venue_id: int) -> VenueSQLEntity:
     return VenueSQLEntity.query.filter_by(id=venue_id).first()
 
 
-def find_by_offer_id(offer_id):
-    return VenueSQLEntity.query \
-        .join(OfferSQLEntity) \
-        .filter(OfferSQLEntity.id == offer_id) \
-        .first()
-
-
 def find_by_siret(siret):
     return VenueSQLEntity.query.filter_by(siret=siret).first()
 

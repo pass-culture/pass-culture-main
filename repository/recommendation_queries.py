@@ -2,9 +2,9 @@ from datetime import datetime, timedelta
 from typing import List
 
 from sqlalchemy import and_
-from sqlalchemy.sql.expression import literal, select
+from sqlalchemy.sql.expression import select
 
-from models import BookingSQLEntity, FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Recommendation, UserSQLEntity
+from models import BookingSQLEntity, FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Recommendation
 from models.api_errors import ResourceNotFoundError
 from models.db import db
 from repository import mediation_queries
@@ -13,16 +13,6 @@ from utils.human_ids import dehumanize
 from utils.logger import logger
 
 EIGHT_DAYS_AGO = datetime.utcnow() - timedelta(days=8)
-
-
-def count_read_recommendations_for_user(user: UserSQLEntity, limit: int = None) -> int:
-    query = Recommendation.query.filter((Recommendation.user == user)
-                                        & (Recommendation.dateRead is not None))
-    if limit:
-        query = query.with_entities(literal(1)) \
-            .limit(limit) \
-            .from_self()
-    return query.count()
 
 
 def update_read_recommendations(read_recommendations: List) -> None:

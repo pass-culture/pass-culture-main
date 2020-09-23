@@ -6,10 +6,6 @@ from models.feature import FeatureToggle
 from utils.config import IS_PROD, IS_INTEGRATION
 
 
-def feature_paid_offers_enabled() -> bool:
-    return True
-
-
 def find_all():
     return Feature.query.all()
 
