@@ -1,10 +1,7 @@
 """ credentials """
-from flask import session
-
 from models.api_errors import ApiErrors
 from models.db import auto_close_db_transaction
 from models.user_sql_entity import UserSQLEntity
-from repository import repository
 from repository.user_queries import find_user_by_email
 
 
@@ -27,11 +24,3 @@ def get_user_with_credentials(identifier: str, password: str) -> UserSQLEntity:
         raise errors
 
     return user
-
-
-def change_password(user, password):
-    if type(user) != UserSQLEntity:
-        user = UserSQLEntity.query.filter_by(email=user).one()
-    user.setPassword(password)
-    user = session.merge(user)
-    repository.save(user)

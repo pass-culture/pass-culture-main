@@ -170,60 +170,6 @@ WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = copy.deepcopy(
     WEBAPP_GET_BOOKING_INCLUDES)
 WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES.append("qrCode")
 
-WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
-    "completedUrl",
-    "isUserCancellable",
-    {
-        "key": "recommendation",
-        "includes": [
-            {
-                "key": "offer",
-                "includes": [
-                    "dateRange",
-                    "favorites",
-                    "isEvent",
-                    'hasBookingLimitDatetimesPassed',
-                    "isThing",
-                    "offerType",
-                    "thumbUrl",
-                    {
-                        "key": "product",
-                        "includes": ["thumbUrl"]
-                    },
-                    {
-                        "key": "stocks",
-                        "includes": [
-                            'isBookable',
-                            'remainingQuantity'
-                        ]
-                    },
-                    {
-                        "key": "venue",
-                        "includes": ['-validationToken']
-                    }
-                ]
-            },
-            {
-                "key": "mediation",
-                "includes": ["thumbUrl"]
-            },
-            "thumbUrl"
-        ]
-    },
-    {
-        "key": "stock",
-        "includes": [
-            'isBookable',
-            'remainingQuantity'
-        ]
-    },
-    "thumbUrl",
-    {
-        "key": "user",
-        "includes": BENEFICIARY_INCLUDES
-    }
-]
-
 VENUE_INCLUDES = [
     'isValidated',
     'bic',

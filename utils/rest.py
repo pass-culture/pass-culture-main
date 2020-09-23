@@ -11,11 +11,9 @@ from sqlalchemy.sql.elements import UnaryExpression
 from sqlalchemy.sql.functions import random
 
 from models.api_errors import ApiErrors
-from models.db import db
 from models.soft_deletable_mixin import SoftDeletableMixin
 from routes.serialization import as_dict
-from utils.human_ids import dehumanize, humanize
-from utils.string_processing import dashify
+from utils.human_ids import dehumanize
 
 
 def get_provider_from_api_key():
@@ -45,12 +43,6 @@ def expect_json_data(f):
         return f(*args, **kwds)
 
     return wrapper
-
-
-def add_table_if_missing(sql_identifier, modelClass):
-    if sql_identifier.find('.') == -1:
-        return '"' + dashify(modelClass.__name__) + '".' + sql_identifier
-    return sql_identifier
 
 
 def query_with_order_by(query, order_by):
@@ -148,12 +140,6 @@ def handle_rest_get_list(modelClass, query=None, refine=None, order_by=None, inc
     return response, 200
 
 
-def ensure_provider_can_update(obj):
-    if request.provider \
-            and obj.lastProvider != request.provider:
-        return "API key or login required", 403
-
-
 def ensure_current_user_has_rights(rights, offerer_id, user=current_user):
     if not user.hasRights(rights, offerer_id):
         errors = ApiErrors()
@@ -163,18 +149,6 @@ def ensure_current_user_has_rights(rights, offerer_id, user=current_user):
         )
         errors.status_code = 403
         raise errors
-
-
-def feed(entity, json, keys):
-    for key in keys:
-        if key in json:
-            entity.__setattr__(key, json[key])
-
-
-def delete(entity):
-    db.session.delete(entity)
-    db.session.commit()
-    return jsonify({"id": humanize(entity.id)}), 200
 
 
 def load_or_404(obj_class, human_id):
