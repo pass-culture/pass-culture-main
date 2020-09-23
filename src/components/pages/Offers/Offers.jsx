@@ -202,10 +202,10 @@ class Offers extends PureComponent {
           onSubmit={this.handleOnSubmit}
         >
           <TextInput
-            label="Rechercher une offre&nbsp;:"
+            label="Nom de l’offre"
             name="search"
             onChange={this.storeNameSearchValue}
-            placeholder="Saisissez un ou plusieurs mots complets"
+            placeholder="Rechercher par nom d’offre"
             value={nameSearchValue}
           />
           <div className="search-separator">

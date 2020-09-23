@@ -483,9 +483,7 @@ describe('src | components | pages | Offers | Offers', () => {
           )
 
           // when
-          const searchInput = wrapper.find(
-            'input[placeholder="Saisissez un ou plusieurs mots complets"]'
-          )
+          const searchInput = wrapper.find('input[placeholder="Rechercher par nom d’offre"]')
           const launchSearchButton = wrapper.find('form')
           searchInput.invoke('onChange')({ target: { value: 'AnyWord' } })
           launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
@@ -511,9 +509,7 @@ describe('src | components | pages | Offers | Offers', () => {
           )
 
           // when
-          const searchInput = wrapper.find(
-            'input[placeholder="Saisissez un ou plusieurs mots complets"]'
-          )
+          const searchInput = wrapper.find('input[placeholder="Rechercher par nom d’offre"]')
           const launchSearchButton = wrapper.find('form')
           searchInput.invoke('onChange')({ target: { value: '' } })
           launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
