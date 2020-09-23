@@ -6,8 +6,9 @@ from flask_login import login_required
 
 import local_providers
 from domain.stock_provider.stock_provider_repository import StockProviderRepository
-from infrastructure.container import api_libraires_stocks, api_fnac_stocks
-from local_providers import LibrairesStocks, FnacStocks
+from infrastructure.container import api_fnac_stocks, api_libraires_stocks, api_titelive_stocks
+from local_providers import FnacStocks, LibrairesStocks
+from local_providers.titelive_stocks.titelive_stocks import TiteLiveStocks
 from models.api_errors import ApiErrors
 from models.venue_provider import VenueProvider
 from repository.provider_queries import get_provider_enabled_for_pro_by_id
@@ -70,6 +71,8 @@ def _get_stock_provider_repository(provider_class) -> StockProviderRepository:
         return api_libraires_stocks
     elif provider_class == FnacStocks:
         return api_fnac_stocks
+    elif provider_class == TiteLiveStocks:
+        return api_titelive_stocks
     return None
 
 

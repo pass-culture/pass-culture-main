@@ -1,16 +1,16 @@
 from decimal import Decimal
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
+from tests.conftest import clean_database
+from tests.local_providers.provider_test_utils import TestLocalProvider
+from tests.model_creators.generic_creators import create_offerer, create_provider, create_venue
+from tests.model_creators.provider_creators import activate_provider
 
 from infrastructure.repository.stock_provider.stock_provider_libraires import StockProviderLibrairesRepository
 from local_providers import AllocineStocks, FnacStocks, LibrairesStocks, TiteLiveStocks
 from models import AllocineVenueProvider, AllocineVenueProviderPriceRule, ApiErrors, VenueProvider
 from repository import repository
-from tests.conftest import clean_database
-from tests.local_providers.provider_test_utils import TestLocalProvider
-from tests.model_creators.generic_creators import create_offerer, create_provider, create_venue
-from tests.model_creators.provider_creators import activate_provider
 from use_cases.connect_provider_to_venue import connect_provider_to_venue
 from utils.human_ids import humanize
 
@@ -19,7 +19,7 @@ class UseCaseTest:
     class ConnectProviderToVenueTest:
         class WhenProviderIsAllocine:
             @clean_database
-            def test_should_connect_venue_to_allocine_provider(self, app):
+            def should_connect_venue_to_allocine_provider(self, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer)
@@ -52,7 +52,7 @@ class UseCaseTest:
 
         class WhenProviderIsLibraires:
             @clean_database
-            def test_should_connect_venue_to_libraires_provider(self, app):
+            def should_connect_venue_when_synchronization_is_allowed(self, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer)
@@ -77,7 +77,7 @@ class UseCaseTest:
                 assert libraires_venue_provider.venue == venue
 
             @clean_database
-            def test_should_not_connect_venue_to_libraires_provider_if_not_interfaced(self, app):
+            def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer, siret='12345678912345')
@@ -103,7 +103,7 @@ class UseCaseTest:
                     'L’importation d’offres avec LesLibraires n’est pas disponible pour le SIRET 12345678912345']
 
             @clean_database
-            def test_should_not_connect_venue_to_libraires_provider_if_venue_has_no_siret(self, app):
+            def should_not_connect_venue_when_venue_has_no_siret(self, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer, siret=None, is_virtual=True)
@@ -130,8 +130,7 @@ class UseCaseTest:
 
         class WhenProviderIsTiteLive:
             @clean_database
-            @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_titelive')
-            def test_should_connect_venue_to_titelive_provider(self, stubbed_can_by_synchronized, app):
+            def should_connect_venue_when_synchronization_is_allowed(self, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer)
@@ -140,8 +139,8 @@ class UseCaseTest:
                 repository.save(venue)
 
                 provider_type = TiteLiveStocks
-                stock_repository = None
-                stubbed_can_by_synchronized.return_value = True
+                stock_repository = MagicMock()
+                stock_repository.can_be_synchronized.return_value = True
 
                 venue_provider_payload = {
                     'providerId': humanize(provider.id),
@@ -156,9 +155,7 @@ class UseCaseTest:
                 assert titelive_venue_provider.venue == venue
 
             @clean_database
-            @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_titelive')
-            def test_should_not_connect_venue_to_titelive_provider_if_not_interfaced(self, stubbed_can_by_synchronized,
-                                                                                     app):
+            def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer, siret='12345678912345')
@@ -166,10 +163,9 @@ class UseCaseTest:
 
                 repository.save(venue)
 
-                stock_repository = None
                 provider_type = TiteLiveStocks
-
-                stubbed_can_by_synchronized.return_value = False
+                stock_repository = MagicMock()
+                stock_repository.can_be_synchronized.return_value = False
                 venue_provider_payload = {
                     'providerId': humanize(provider.id),
                     'venueId': humanize(venue.id),
@@ -185,7 +181,7 @@ class UseCaseTest:
                     ' n’est pas disponible pour le SIRET 12345678912345']
 
             @clean_database
-            def test_should_not_connect_venue_to_titelive_provider_if_venue_has_no_siret(self, app):
+            def should_not_connect_venue_when_venue_has_no_siret(self, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer, siret=None, is_virtual=True)
@@ -213,7 +209,7 @@ class UseCaseTest:
 
         class WhenProviderIsFnac:
             @clean_database
-            def test_should_connect_venue_to_fnac_provider(self, app):
+            def should_connect_venue_when_synchronization_is_allowed(self, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer)
@@ -238,7 +234,7 @@ class UseCaseTest:
                 assert fnac_venue_provider.venue == venue
 
             @clean_database
-            def test_should_not_connect_venue_to_fnac_provider_if_not_interfaced(self, app):
+            def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer, siret='12345678912345')
@@ -264,7 +260,7 @@ class UseCaseTest:
                     'L’importation d’offres avec FNAC n’est pas disponible pour le SIRET 12345678912345']
 
             @clean_database
-            def test_should_not_connect_venue_to_fnac_provider_if_venue_has_no_siret(self, app):
+            def should_not_connect_venue_when_venue_has_no_siret(self, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer, siret=None, is_virtual=True)
@@ -290,7 +286,7 @@ class UseCaseTest:
 
         class WhenProviderIsSomethingElse:
             @clean_database
-            def test_should_raise_an_error(self, app):
+            def should_raise_an_error(self, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer)

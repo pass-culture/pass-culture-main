@@ -1,22 +1,21 @@
-from datetime import datetime, date, timedelta
-from unittest.mock import patch, call
+from datetime import date, datetime, timedelta
+from unittest.mock import call, patch
 
 from freezegun import freeze_time
+from tests.conftest import clean_database
+from tests.model_creators.generic_creators import create_booking, create_offerer, create_stock, create_user, create_venue, create_venue_provider
+from tests.model_creators.provider_creators import activate_provider
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 
 from local_providers import TiteLiveStocks
 from models import OfferSQLEntity, StockSQLEntity
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
-from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue, create_venue_provider, \
-    create_booking, create_user
-from tests.model_creators.provider_creators import activate_provider
-from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=False)
-@patch('local_providers.titelive_stocks.titelive_stocks.get_stocks_information')
+@patch('local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
 def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attributes(stub_get_stocks_information,
                                                                                    stub_feature_queries,
                                                                                    app):
@@ -60,7 +59,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attribut
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=False)
-@patch('local_providers.titelive_stocks.titelive_stocks.get_stocks_information')
+@patch('local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
 def test_titelive_stock_provider_update_1_stock_and_1_offer(stub_get_stocks_information, stub_feature_queries, app):
     # Given
     stub_get_stocks_information.return_value = iter([{
@@ -97,7 +96,7 @@ def test_titelive_stock_provider_update_1_stock_and_1_offer(stub_get_stocks_info
 @freeze_time('2019-01-03 12:00:00')
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=False)
-@patch('local_providers.titelive_stocks.titelive_stocks.get_stocks_information')
+@patch('local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
 def test_titelive_stock_provider_always_update_the_stock_modification_date(stub_get_stocks_information,
                                                                            stub_feature_queries, app):
     # Given
@@ -135,7 +134,7 @@ def test_titelive_stock_provider_always_update_the_stock_modification_date(stub_
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.titelive_stocks.titelive_stocks.get_stocks_information')
+@patch('local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
 def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(stub_get_stocks_information,
                                                                             stub_feature_queries,
                                                                             app):
@@ -171,7 +170,7 @@ def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(stub
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.titelive_stocks.titelive_stocks.get_stocks_information')
+@patch('local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
 def test_titelive_stock_provider_create_2_stocks_and_2_offers_even_if_existing_offer_on_same_product(
         stub_get_stocks_information, stub_feature_queries, app):
     # Given
@@ -214,7 +213,7 @@ def test_titelive_stock_provider_create_2_stocks_and_2_offers_even_if_existing_o
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.titelive_stocks.titelive_stocks.get_stocks_information')
+@patch('local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
 def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_results(stub_get_stocks_information,
                                                                                    stub_feature_queries,
                                                                                    app):
@@ -245,7 +244,7 @@ def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_resul
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.titelive_stocks.titelive_stocks.get_stocks_information')
+@patch('local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
 def test_titelive_stock_provider_iterates_over_pagination(stub_get_stocks_information, stub_feature_queries, app):
     # Given
     stub_get_stocks_information.side_effect = [
@@ -290,7 +289,7 @@ def test_titelive_stock_provider_iterates_over_pagination(stub_get_stocks_inform
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.titelive_stocks.titelive_stocks.get_stocks_information')
+@patch('local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
 def should_call_api_with_venue_siret_and_last_sync_date(stub_get_stocks_information, stub_feature_queries, app):
     # Given
     stub_get_stocks_information.side_effect = [
@@ -326,7 +325,7 @@ def should_call_api_with_venue_siret_and_last_sync_date(stub_get_stocks_informat
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.titelive_stocks.titelive_stocks.get_stocks_information')
+@patch('local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
 def test_titelive_stock_provider_return_last_elements_as_last_seen_isbn(stub_get_stocks_information,
                                                                         stub_feature_queries,
                                                                         app):
@@ -363,7 +362,7 @@ def test_titelive_stock_provider_return_last_elements_as_last_seen_isbn(stub_get
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=False)
-@patch('local_providers.titelive_stocks.titelive_stocks.get_stocks_information')
+@patch('local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
 def test_should_not_create_offer_when_product_is_not_gcu_compatible(stub_get_stocks_information, stub_feature_queries,
                                                                     app):
     # Given
@@ -396,7 +395,7 @@ def test_should_not_create_offer_when_product_is_not_gcu_compatible(stub_get_sto
 
 
 @clean_database
-@patch('local_providers.titelive_stocks.titelive_stocks.get_stocks_information')
+@patch('local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
 def test_titelive_stock_provider_available_stock_is_sum_of_updated_available_and_bookings(stub_get_stocks_information,
                                                                                           app):
     # Given

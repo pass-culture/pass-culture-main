@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import Union, List
+from typing import List, Union
 
 from sqlalchemy import Sequence
 
-from domain.titelive import get_stocks_information
+from infrastructure.container import api_titelive_stocks
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
 from models import OfferSQLEntity, VenueProvider
@@ -33,9 +33,9 @@ class TiteLiveStocks(LocalProvider):
         try:
             self.titelive_stock = next(self.data)
         except StopIteration:
-            self.data = get_stocks_information(self.venue_provider.venueIdAtOfferProvider,
-                                               self.last_seen_isbn,
-                                               self.last_sync_date)
+            self.data = api_titelive_stocks.stocks_information(self.venue_provider.venueIdAtOfferProvider,
+                                                               self.last_seen_isbn,
+                                                               self.last_sync_date)
             self.titelive_stock = next(self.data)
 
         self.last_seen_isbn = str(self.titelive_stock['ref'])

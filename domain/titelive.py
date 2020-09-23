@@ -1,25 +1,10 @@
 from datetime import datetime
-from typing import Callable, Pattern
+from typing import Pattern
 from zipfile import ZipFile
-
-from connectors.api_titelive_stocks import get_titelive_stocks, is_siret_registered
 
 TITELIVE_THINGS_DATE_FORMAT = "%d/%m/%Y"
 TITELIVE_DESCRIPTION_DATE_FORMAT = "%y%m%d"
 TITELIVE_STOCK_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-
-
-def get_stocks_information(siret: str,
-                           last_processed_isbn: str,
-                           last_sync_date: datetime,
-                           get_titelive_stocks_from_api: Callable = get_titelive_stocks) -> iter:
-    formatted_last_sync_date = last_sync_date.strftime(TITELIVE_STOCK_DATETIME_FORMAT) if last_sync_date else None
-    api_response = get_titelive_stocks_from_api(siret, last_processed_isbn, formatted_last_sync_date)
-    return iter(api_response['stocks'])
-
-
-def can_be_synchronized_with_titelive(siret: str) -> bool:
-    return is_siret_registered(siret)
 
 
 def read_description_date(date):

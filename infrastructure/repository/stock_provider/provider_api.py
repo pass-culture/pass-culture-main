@@ -1,6 +1,7 @@
 from typing import Dict
 
 import requests
+from simplejson import JSONDecodeError
 
 
 class ProviderAPIException(Exception):
@@ -28,7 +29,11 @@ class ProviderAPI:
             raise ProviderAPIException(
                 f'Error {response.status_code} when getting {self.name} stocks for SIRET: {siret}')
 
-        return response.json()
+        try:
+            return response.json()
+        except JSONDecodeError:
+            return {}
+
 
     def is_siret_registered(self, siret: str) -> bool:
         api_url = self._build_local_provider_url(siret)
