@@ -11,13 +11,12 @@ from domain.payments import PaymentDetails
 from domain.price_rule import PriceRule
 from models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
     BankInformation, BeneficiaryImport, BeneficiaryImportSources, BeneficiaryImportStatus, BookingSQLEntity, \
-    Criterion, Deposit, Email, FavoriteSQLEntity, ImportStatus, IrisFrance, IrisVenues, \
+    Criterion, Deposit, FavoriteSQLEntity, ImportStatus, IrisFrance, IrisVenues, \
     MediationSQLEntity, OfferSQLEntity, Offerer, Payment, PaymentMessage, PaymentStatus, \
     Provider, Recommendation, RightsType, StockSQLEntity, ThingType, UserSQLEntity, UserOfferer, \
     VenueSQLEntity, VenueProvider, SeenOffer
 from models.allocine_venue_provider import AllocineVenueProvider
 from models.bank_information import BankInformationStatus
-from models.email import EmailStatus
 from models.payment_status import TransactionStatus
 from models.venue_label_sql_entity import VenueLabelSQLEntity
 from models.venue_type import VenueType
@@ -161,19 +160,6 @@ def create_deposit(user: UserSQLEntity,
     deposit.user = user
 
     return deposit
-
-
-def create_email(content: str,
-                 idx: int = None,
-                 status: EmailStatus = EmailStatus.ERROR,
-                 time: datetime = datetime.utcnow()) -> Email:
-    email = Email()
-    email.content = content
-    email.datetime = time
-    email.id = idx
-    email.status = status
-
-    return email
 
 
 def create_favorite(idx: int = None,

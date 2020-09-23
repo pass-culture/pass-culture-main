@@ -14,8 +14,6 @@ from tests.model_creators.specific_creators import create_stock_from_offer, \
     create_stock_with_thing_offer, create_product_with_thing_type, \
     create_offer_with_thing_product, create_offer_with_event_product
 
-REFERENCE_DATE = '2017-10-15 09:21:34'
-
 
 class GetOfferForRecommendationsTest:
     class FiltersTest:

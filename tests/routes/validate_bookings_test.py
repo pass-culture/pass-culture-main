@@ -16,7 +16,6 @@ class Patch:
     @classmethod
     def setup_class(cls):
         cls.tomorrow = datetime.utcnow() + timedelta(days=1)
-        cls.tomorrow_plus_one_hour = cls.tomorrow + timedelta(hours=1)
         cls.tomorrow_minus_one_hour = cls.tomorrow - timedelta(hours=1)
 
     class Returns204:

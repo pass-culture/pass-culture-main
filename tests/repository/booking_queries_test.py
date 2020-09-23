@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 import pytest
 from dateutil import tz
-from freezegun import freeze_time
 from pytest import fixture
 from tests.conftest import clean_database
 from tests.model_creators.activity_creators import create_booking_activity, save_all_activities
@@ -19,7 +18,6 @@ from repository import booking_queries, repository
 from repository.booking_queries import find_by_pro_user_id, find_first_matching_from_offer_by_user
 
 NOW = datetime.utcnow()
-ONE_DAY_AGO = NOW - timedelta(days=1)
 TWO_DAYS_AGO = NOW - timedelta(days=2)
 THREE_DAYS_AGO = NOW - timedelta(days=3)
 FOUR_DAYS_AGO = NOW - timedelta(days=4)

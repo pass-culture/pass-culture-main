@@ -3,25 +3,6 @@ from datetime import datetime
 from models.db import db, versioning_manager
 
 
-def create_user_activity(user, table_name, verb, issued_at=datetime.utcnow):
-    Activity = versioning_manager.activity_cls
-    activity = Activity()
-    activity.issued_at = issued_at
-    activity.table_name = table_name
-    activity.verb = verb
-    variables = {
-        'email': user.email,
-        'publicName': user.publicName,
-        'offerers': user.offerers,
-        'departementCode': user.departementCode,
-        'canBookFreeOffers': user.canBookFreeOffers,
-        'isAdmin': user.isAdmin
-    }
-    activity.changed_data = variables
-
-    return activity
-
-
 def create_venue_activity(venue, verb, issued_at=datetime.utcnow):
     Activity = versioning_manager.activity_cls
     activity = Activity()

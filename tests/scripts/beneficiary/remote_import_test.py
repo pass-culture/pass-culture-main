@@ -14,10 +14,6 @@ from tests.scripts.beneficiary.fixture import \
     make_new_beneficiary_application_details
 
 NOW = datetime.utcnow()
-DATETIME_PATTERN = '%Y-%m-%dT%H:%M:%S.%fZ'
-EIGHT_HOURS_AGO = (NOW - timedelta(hours=8)).strftime(DATETIME_PATTERN)
-FOUR_HOURS_AGO = (NOW - timedelta(hours=4)).strftime(DATETIME_PATTERN)
-TWO_DAYS_AGO = (NOW - timedelta(hours=48)).strftime(DATETIME_PATTERN)
 ONE_WEEK_AGO = NOW - timedelta(days=7)
 
 

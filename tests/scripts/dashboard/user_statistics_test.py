@@ -526,20 +526,6 @@ class GetNonCancelledBookingsFilteredByUserDepartementTest:
         assert bookings_by_departement.eq(expected_table).all().all()
 
 
-def _create_departement_booking_for_users(departement_code, user_email, booking_count, siren):
-    user_having_booked = create_user(departement_code=departement_code, email=user_email)
-
-    offerer = create_offerer(siren=siren)
-    venue = create_venue(offerer, siret=siren + '12345')
-    offer = create_offer_with_thing_product(venue)
-    stock = create_stock(offer=offer, price=0)
-
-    for i in range(booking_count):
-        create_booking(user=user_having_booked, stock=stock, is_cancelled=False)
-
-    repository.save(stock)
-
-
 def _create_bookings_for_departement(bookings_by_departement):
     bookings = []
 

@@ -337,7 +337,6 @@ class Get:
         def when_booking_is_on_stock_with_beginning_datetime_in_more_than_72_hours(self, app):
             # Given
             in_73_hours = datetime.utcnow() + timedelta(hours=73)
-            in_74_hours = datetime.utcnow() + timedelta(hours=74)
             in_72_hours = datetime.utcnow() + timedelta(hours=72)
             user = create_user(email='user@example.com')
             admin_user = create_user(email='admin@example.com')

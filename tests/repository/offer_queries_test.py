@@ -22,8 +22,6 @@ from tests.model_creators.specific_creators import create_product_with_thing_typ
     create_product_with_event_type, create_offer_with_event_product, create_event_occurrence, \
     create_stock_from_event_occurrence, create_stock_from_offer
 
-REFERENCE_DATE = '2017-10-15 09:21:34'
-
 
 class DepartmentOrNationalOffersTest:
     @clean_database
