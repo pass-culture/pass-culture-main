@@ -29,7 +29,7 @@ class Get:
                 .with_auth(email=admin.email).get(f'/offers?venueId={Identifier(requested_venue.id).scrambled}')
 
             # then
-            offers = response.json
+            offers = response.json['offers']
             assert response.status_code == 200
             assert len(offers) == 1
 
@@ -50,13 +50,13 @@ class Get:
                 .with_auth(email=pro.email).get(f'/offers?venueId={Identifier(requested_venue.id).scrambled}')
 
             # then
-            offers = response.json
+            offers = response.json['offers']
             assert response.status_code == 200
             assert len(offers) == 1
 
         @clean_database
         @patch('routes.offers.list_offers_for_pro_user.execute')
-        def test_results_are_paginated_with_count_in_headers(self, list_offers_mock, app):
+        def test_results_are_paginated_with_pagination_details_in_body(self, list_offers_mock, app):
             # Given
             user = create_user()
             offerer = create_offerer()
@@ -65,17 +65,19 @@ class Get:
             offer1 = create_offer_with_thing_product(venue)
             offer2 = create_offer_with_thing_product(venue)
             repository.save(user_offerer, offer1, offer2)
-            list_offers_mock.return_value = to_domain([offer1], 2)
+            list_offers_mock.return_value = to_domain(offer_sql_entities=[offer1], current_page=1, total_pages=1, total_offers=2)
 
             # when
             response = TestClient(app.test_client()) \
                 .with_auth(email=user.email).get('/offers?paginate=1')
 
             # then
-            offers = response.json
+            offers = response.json['offers']
             assert response.status_code == 200
             assert len(offers) == 1
-            assert response.headers['Total-Data-Count'] == "2"
+            assert response.json['page'] == 1
+            assert response.json['page_count'] == 1
+            assert response.json['total_count'] == 2
 
         @clean_database
         @patch('routes.offers.list_offers_for_pro_user.execute')
@@ -87,14 +89,14 @@ class Get:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
             repository.save(user_offerer, offer)
-            list_offers_mock.return_value = to_domain(offer_sql_entities=[], total_offers=0)
+            list_offers_mock.return_value = to_domain(offer_sql_entities=[], current_page=0, total_pages=0, total_offers=0)
 
             # when
             response = TestClient(app.test_client()).with_auth(email=user.email).get('/offers')
 
             # then
             assert response.status_code == 200
-            assert response.json == []
+            assert response.json == {'offers': [], 'page': 0, 'page_count': 0, 'total_count': 0}
 
         @clean_database
         @patch('routes.offers.list_offers_for_pro_user.execute')
@@ -119,9 +121,9 @@ class Get:
             assert expected_parameter.user_is_admin == user.isAdmin
             assert expected_parameter.offerer_id is None
             assert expected_parameter.venue_id == Identifier(venue.id)
-            assert expected_parameter.pagination_limit == 10
+            assert expected_parameter.offers_per_page == 20
             assert expected_parameter.name_keywords is None
-            assert expected_parameter.page == 0
+            assert expected_parameter.page == 1
 
     class Returns404:
         @clean_database

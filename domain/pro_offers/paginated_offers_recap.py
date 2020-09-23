@@ -3,6 +3,7 @@ from typing import Dict, List
 from domain.identifier.identifier import Identifier
 
 
+
 class OfferRecapStock:
     def __init__(self, identifier: int, remaining_quantity: int):
         self.identifier = Identifier(identifier)
@@ -50,6 +51,8 @@ class OfferRecap:
 
 
 class PaginatedOffersRecap:
-    def __init__(self, offers_recap: List[OfferRecap], total: int):
+    def __init__(self, offers_recap: List[OfferRecap], current_page: int, total_pages: int, total_offers: int):
         self.offers = offers_recap
-        self.total = total
+        self.current_page = current_page
+        self.total_pages = total_pages
+        self.total_offers = total_offers

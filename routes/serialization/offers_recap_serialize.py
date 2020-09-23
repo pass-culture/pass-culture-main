@@ -1,11 +1,16 @@
-from typing import Dict, List
+from typing import Dict, List, Any
 
 from domain.identifier.identifier import Identifier
 from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap, OfferRecapStock, OfferRecapVenue
 
 
-def serialize_offers_recap_paginated(paginated_offers: PaginatedOffersRecap) -> List[Dict]:
-    return [_serialize_offer_paginated(offer) for offer in paginated_offers.offers]
+def serialize_offers_recap_paginated(paginated_offers: PaginatedOffersRecap) -> Dict[str, Any]:
+    return {
+        'offers': [_serialize_offer_paginated(offer) for offer in paginated_offers.offers],
+        'page': paginated_offers.current_page,
+        'page_count': paginated_offers.total_pages,
+        'total_count': paginated_offers.total_offers
+    }
 
 
 def _serialize_offer_paginated(offer: OfferRecap) -> Dict:

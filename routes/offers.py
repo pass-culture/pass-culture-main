@@ -50,18 +50,13 @@ def list_offers() -> (str, int):
         user_is_admin=current_user.isAdmin,
         offerer_id=offerer_identifier,
         venue_id=venue_identifier,
-        pagination_limit=request.args.get('paginate', '10'),
+        offers_per_page=request.args.get('paginate'),
         name_keywords=request.args.get('name'),
-        page=request.args.get('page', '0'),
+        page=request.args.get('page'),
     )
     paginated_offers = list_offers_for_pro_user.execute(offers_request_parameters)
 
-    serialized_offers = serialize_offers_recap_paginated(paginated_offers)
-    response = jsonify(serialized_offers)
-    response.headers['Total-Data-Count'] = paginated_offers.total
-    response.headers['Access-Control-Expose-Headers'] = 'Total-Data-Count'
-
-    return response, 200
+    return serialize_offers_recap_paginated(paginated_offers), 200
 
 
 @app.route('/offers/<offer_id>', methods=['GET'])

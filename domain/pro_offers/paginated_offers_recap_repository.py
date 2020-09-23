@@ -12,7 +12,7 @@ class PaginatedOffersRepository(ABC):
                                                             user_id: int,
                                                             user_is_admin: bool,
                                                             page: Optional[int],
-                                                            pagination_limit: int,
+                                                            offers_per_page: int,
                                                             offerer_id: Optional[Identifier] = None,
                                                             venue_id: Optional[Identifier] = None,
                                                             name_keywords: Optional[str] = None) -> PaginatedOffersRecap:

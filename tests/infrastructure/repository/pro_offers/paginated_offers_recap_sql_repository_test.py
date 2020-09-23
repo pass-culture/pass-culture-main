@@ -10,7 +10,7 @@ from repository import repository
 
 class PaginatedOfferSQLRepositoryTest:
     @clean_database
-    def test_should_return_paginated_offers_with_total_number_of_offers_and_offers_of_requested_page(self, app):
+    def test_should_return_paginated_offers_with_details_of_pagination_and_offers_of_requested_page(self, app):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -19,20 +19,50 @@ class PaginatedOfferSQLRepositoryTest:
         offer1 = create_offer_with_thing_product(venue)
         offer2 = create_offer_with_thing_product(venue)
         repository.save(user_offerer, offer1, offer2)
+        requested_page = 2
+        requested_offers_per_page = 1
 
         # When
         paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
-            user_id=user.id,
-            user_is_admin=user.isAdmin,
-            pagination_limit=1,
-            page=2
+                user_id=user.id,
+                user_is_admin=user.isAdmin,
+                offers_per_page=requested_offers_per_page,
+                page=requested_page
         )
 
         # Then
         assert isinstance(paginated_offers, PaginatedOffersRecap)
-        assert paginated_offers.total == 2
+        assert paginated_offers.total_offers == 2
+        assert paginated_offers.current_page == requested_page
+        assert paginated_offers.total_pages == 2
         assert len(paginated_offers.offers) == 1
         assert paginated_offers.offers[0].identifier == Identifier(offer1.id)
+
+    @clean_database
+    def test_should_return_a_number_of_page_as_an_integer(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        offer2 = create_offer_with_thing_product(venue)
+        offer3 = create_offer_with_thing_product(venue)
+        repository.save(user_offerer, offer1, offer2, offer3)
+        requested_page = 1
+        requested_offers_per_page = 2
+
+        # When
+        paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=user.id,
+                user_is_admin=user.isAdmin,
+                offers_per_page=requested_offers_per_page,
+                page=requested_page
+        )
+
+        # Then
+        assert isinstance(paginated_offers, PaginatedOffersRecap)
+        assert paginated_offers.total_pages == 2
 
     @clean_database
     def test_return_offers_sorted_by_id_desc(self, app):
@@ -47,10 +77,10 @@ class PaginatedOfferSQLRepositoryTest:
 
         # When
         paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
-            user_id=user.id,
-            user_is_admin=user.isAdmin,
-            page=1,
-            pagination_limit=10
+                user_id=user.id,
+                user_is_admin=user.isAdmin,
+                page=1,
+                offers_per_page=10
         )
 
         # Then
@@ -78,7 +108,7 @@ class PaginatedOfferSQLRepositoryTest:
             user_is_admin=user.isAdmin,
             venue_id=Identifier(requested_venue.id),
             page=1,
-            pagination_limit=10
+            offers_per_page=10
         )
 
         # then
@@ -108,7 +138,7 @@ class PaginatedOfferSQLRepositoryTest:
             user_is_admin=user.isAdmin,
             name_keywords='Jac rencon',
             page=1,
-            pagination_limit=10
+            offers_per_page=10
         )
 
         # then

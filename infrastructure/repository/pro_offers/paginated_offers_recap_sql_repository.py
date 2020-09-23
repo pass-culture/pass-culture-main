@@ -1,3 +1,4 @@
+import math
 from typing import Optional
 
 from domain.identifier.identifier import Identifier
@@ -14,7 +15,7 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
                                                             user_id: int,
                                                             user_is_admin: bool,
                                                             page: Optional[int],
-                                                            pagination_limit: int,
+                                                            offers_per_page: int,
                                                             offerer_id: Optional[Identifier] = None,
                                                             venue_id: Optional[Identifier] = None,
                                                             name_keywords: Optional[str] = None) -> PaginatedOffersRecap:
@@ -38,8 +39,9 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
 
         query = query.order_by(OfferSQLEntity.id.desc())
 
-        query = query.paginate(page, per_page=int(pagination_limit), error_out=False)
-        results = query.items
-        total = query.total
+        query = query.paginate(page, per_page=offers_per_page, error_out=False)
 
-        return to_domain(results, total)
+        total_offers = query.total
+        total_pages = math.ceil(total_offers / offers_per_page)
+
+        return to_domain(offer_sql_entities=query.items, current_page=page, total_pages=total_pages, total_offers=total_offers)
