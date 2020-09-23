@@ -11,8 +11,6 @@ from repository.offer_queries import find_searchable_offer, get_offers_for_recom
 from repository.recommendation_queries import find_recommendation_already_created_on_discovery
 from utils.logger import logger
 
-MAX_OF_MAX_DISTANCE = "20000"
-
 
 # TODO remove this function and its tests once v3 is the only route
 def give_requested_recommendation_to_user(user, offer_id, mediation_id):
