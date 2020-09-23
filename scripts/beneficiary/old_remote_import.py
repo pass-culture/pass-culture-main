@@ -1,7 +1,7 @@
 import os
 import re
 from datetime import datetime
-from typing import Callable, Dict, List, Set
+from typing import Callable, Dict, List
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.demarches_simplifiees import \
@@ -19,7 +19,6 @@ from utils.logger import logger
 from utils.mailing import MailServiceException, send_raw_email
 
 TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
-VALIDATED_APPLICATION = 'closed'
 
 
 def run(
@@ -175,17 +174,3 @@ def _process_error(error_messages: List[str], application_id: int, procedure_id:
     error_messages.append(error)
     save_beneficiary_import_with_status(
         ImportStatus.ERROR, application_id, source=BeneficiaryImportSources.demarches_simplifiees, source_id=procedure_id, detail=error)
-
-
-def _find_application_ids_to_process(applications: Dict, process_applications_updated_after: datetime) -> Set:
-    processable_applications = filter(
-        lambda a: a['state'] == 'closed', applications['dossiers'])
-    recent_applications = filter(
-        lambda a: _parse_application_date(
-            a) > process_applications_updated_after,
-        processable_applications)
-    return {application['id'] for application in recent_applications}
-
-
-def _parse_application_date(application: Dict) -> datetime:
-    return datetime.strptime(application['updated_at'], '%Y-%m-%dT%H:%M:%S.%fZ')

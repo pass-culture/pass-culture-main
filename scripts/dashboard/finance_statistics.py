@@ -95,18 +95,6 @@ def _query_get_top_20_offers_by_number_of_bookings(departement_code: str = None)
     return db.engine.execute(query).fetchall()
 
 
-def _query_non_cancelled_bookings_by_departement() -> List[Tuple[str, int]]:
-    return db.engine.execute(
-        """
-        SELECT "departementCode", COUNT(*) as "nb_bookings" 
-        FROM booking
-        JOIN "user" ON "user".id = booking."userId"
-        WHERE booking."isCancelled" IS FALSE
-        GROUP BY "user"."departementCode"
-        ORDER BY "user"."departementCode";
-        """).fetchall()
-
-
 def _query_get_top_20_offerers_by_number_of_bookings(departement_code: str = None) -> List[Tuple[str, int, float]]:
     if departement_code:
         query = text("""
