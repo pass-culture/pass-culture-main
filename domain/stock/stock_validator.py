@@ -6,13 +6,6 @@ from domain.booking.booking_exceptions import StockIsNotBookable, UserHasInsuffi
     PhysicalExpenseLimitHasBeenReached, DigitalExpenseLimitHasBeenReached, CannotBookFreeOffers
 from domain.expenses import is_eligible_to_physical_offers_capping, is_eligible_to_digital_offers_capping
 from domain.stock.stock import Stock
-from domain.stock.stock_exceptions import StockDoesntExist
-
-
-def check_existing_stock(stock: Stock) -> None:
-    if stock is None:
-        stock_id_doesnt_exist = StockDoesntExist()
-        raise stock_id_doesnt_exist
 
 
 def check_stock_is_bookable(stock: Stock):

@@ -6,6 +6,7 @@ from sqlalchemy.sql.expression import or_
 
 from utils.string_processing import remove_single_letters_for_search, tokenize_for_search
 
+
 LANGUAGE = 'french'
 CUSTOM_STOPWORDS = ['où']
 STOP_WORDS = set(stopwords.words(LANGUAGE))

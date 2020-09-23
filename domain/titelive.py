@@ -15,10 +15,6 @@ def read_things_date(date):
     return datetime.strptime(date, TITELIVE_THINGS_DATE_FORMAT) if date else None
 
 
-def read_stock_datetime(date):
-    return datetime.strptime(date, TITELIVE_STOCK_DATETIME_FORMAT) if date else None
-
-
 def put_today_file_at_end_of_list(ordered_files_list, date_regexp):
     today = datetime.utcnow().day
     files_after_today = list(filter(lambda f: get_date_from_filename(f, date_regexp) > today,

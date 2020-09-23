@@ -17,10 +17,6 @@ class ThumbUrl:
     def for_mediation(identifier: int):
         return ThumbUrl(identifier, 'mediations')
 
-    @staticmethod
-    def storage_base_url():
-        return get_storage_base_url()
-
     def url(self) -> Optional[str]:
         base_url = get_storage_base_url()
         thumb_url = base_url + "/thumbs"

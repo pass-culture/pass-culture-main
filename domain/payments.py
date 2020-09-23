@@ -23,10 +23,6 @@ from utils.human_ids import humanize
 XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
 
 
-class InvalidTransactionXML(Exception):
-    pass
-
-
 class UnmatchedPayments(Exception):
     def __init__(self, payment_ids: Set[int]):
         self.payment_ids = payment_ids

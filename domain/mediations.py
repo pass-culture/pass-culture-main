@@ -7,7 +7,6 @@ from PIL.Image import Image
 MAX_THUMB_WIDTH = 750
 CONVERSION_QUALITY = 90
 DO_NOT_CROP = [0, 0, 1]
-BLACK = b'\x00\x00\x00'
 
 
 def standardize_image(image: bytes, crop_params: List) -> bytes:
