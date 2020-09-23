@@ -11,8 +11,6 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
 
-from models.api_errors import ApiErrors
-
 
 class ProvidableMixin:
 
@@ -41,12 +39,3 @@ class ProvidableMixin:
     fieldsUpdated = Column(ARRAY(String(100)),
                            nullable=False,
                            default=[])
-
-    def ensure_can_be_updated(self):
-        if self.lastProvider:
-            errors = ApiErrors()
-            errors.add_error(
-                'global',
-                'not allowed because data come from provider ' + element.lastProvider.name
-            )
-            raise errors

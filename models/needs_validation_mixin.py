@@ -13,9 +13,5 @@ class NeedsValidationMixin(object):
         self.validationToken = secrets.token_urlsafe(20)
 
     @property
-    def queryValidated(self):
-        return self.query.filter(NeedsValidationMixin.validationToken == None)
-
-    @property
     def isValidated(self):
         return self.validationToken is None
