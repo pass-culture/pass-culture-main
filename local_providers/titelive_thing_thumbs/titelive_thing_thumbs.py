@@ -46,7 +46,6 @@ class TiteLiveThingThumbs(LocalProvider):
         product_providable_info = self.create_providable_info(Product,
                                                               file_identifier,
                                                               file_date)
-        self.thingId = product_providable_info.id_at_providers
 
         return [product_providable_info]
 

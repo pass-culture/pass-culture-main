@@ -35,15 +35,11 @@ class LocalProvider(Iterator):
         self.checkedThumbs = 0
         self.erroredThumbs = 0
         self.provider = get_provider_by_local_class(self.__class__.__name__)
-        self.providables = []
 
     @property
     @abstractmethod
     def can_create(self):
         pass
-
-    def getDeactivatedObjectIds(self):
-        return []
 
     @abstractmethod
     def fill_object_attributes(self, obj):

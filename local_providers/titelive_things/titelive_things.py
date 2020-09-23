@@ -16,8 +16,6 @@ from utils.string_processing import trim_with_elipsis
 DATE_REGEXP = re.compile('([a-zA-Z]+)(\d+).tit')
 THINGS_FOLDER_NAME_TITELIVE = 'livre3_11'
 NUMBER_OF_ELEMENTS_PER_LINE = 46  # (45 elements from line + \n)
-OLD_ISBN_FORMAT_LENGTH = 10
-NEW_ISBN_FORMAT_LENGTH = 13
 PAPER_PRESS_TVA = '2,10'
 PAPER_PRESS_SUPPORT_CODE = 'R'
 SCHOOL_RELATED_CSR_CODE = [

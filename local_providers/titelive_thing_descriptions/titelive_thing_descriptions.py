@@ -44,7 +44,6 @@ class TiteLiveThingDescriptions(LocalProvider):
         product_providable_info = self.create_providable_info(Product,
                                                               date_from_filename,
                                                               self.date_modified)
-        self.thingId = product_providable_info.id_at_providers
         return [product_providable_info]
 
     def fill_object_attributes(self, product: Product):
