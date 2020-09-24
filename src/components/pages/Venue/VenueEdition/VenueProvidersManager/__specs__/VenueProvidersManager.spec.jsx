@@ -296,6 +296,34 @@ describe('src | VenueProvidersManager', () => {
       expect(fnacProviderForm).toHaveLength(1)
     })
 
+    it('should display the Praxiel form when the user choose Praxiel', () => {
+      // given
+      props.providers = [
+        { id: 'FC', name: 'FNAC' },
+        { id: 'PI', name: 'Praxiel/Inférence' },
+      ]
+      const choosePraxielEvent = {
+        target: {
+          value: '{"id":"PI","name":"Praxiel/Inférence"}',
+        },
+      }
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <VenueProvidersManager {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
+
+      // when
+      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find('select').invoke('onBlur')(choosePraxielEvent)
+
+      // then
+      const providerForm = wrapper.find(StocksProviderForm)
+      expect(providerForm).toHaveLength(1)
+    })
+
     it('should update state values when selected option is valid and different from default value', () => {
       // given
       const event = {

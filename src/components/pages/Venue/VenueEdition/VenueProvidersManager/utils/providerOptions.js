@@ -22,3 +22,8 @@ export const FNAC_PROVIDER_OPTION = {
   id: 'fnac',
   name: 'FNAC',
 }
+
+export const PRAXIEL_PROVIDER_OPTION = {
+  id: 'praxiel',
+  name: 'Praxiel/Inférence',
+}

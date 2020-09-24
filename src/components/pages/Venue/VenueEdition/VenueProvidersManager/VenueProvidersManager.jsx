@@ -10,6 +10,7 @@ import {
   DEFAULT_PROVIDER_OPTION,
   FNAC_PROVIDER_OPTION,
   LIBRAIRES_PROVIDER_OPTION,
+  PRAXIEL_PROVIDER_OPTION,
   TITELIVE_PROVIDER_OPTION,
 } from './utils/providerOptions'
 import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
@@ -23,7 +24,7 @@ class VenueProvidersManager extends PureComponent {
       providerSelectedIsAllocine: false,
       providerSelectedIsTitelive: false,
       providerSelectedIsLibraires: false,
-      providerSelectedIsFnac: false,
+      providerSelectedIsPraxiel: false,
       venueIdAtOfferProviderIsRequired: true,
     }
   }
@@ -59,6 +60,7 @@ class VenueProvidersManager extends PureComponent {
       providerSelectedIsTitelive: false,
       providerSelectedIsLibraires: false,
       providerSelectedIsFnac: false,
+      providerSelectedIsPraxiel: false,
     })
 
     if (valueParsed && valueParsed.name === ALLOCINE_PROVIDER_OPTION.name) {
@@ -78,6 +80,10 @@ class VenueProvidersManager extends PureComponent {
       this.setState({
         providerSelectedIsFnac: true,
       })
+    } else if (valueParsed && valueParsed.name === PRAXIEL_PROVIDER_OPTION.name) {
+      this.setState({
+        providerSelectedIsPraxiel: true,
+      })
     }
 
     this.setState({
@@ -91,6 +97,7 @@ class VenueProvidersManager extends PureComponent {
       providerSelectedIsTitelive: false,
       providerSelectedIsLibraires: false,
       providerSelectedIsFnac: false,
+      providerSelectedIsPraxiel: false,
       providerId: null,
     })
   }
@@ -104,6 +111,7 @@ class VenueProvidersManager extends PureComponent {
       providerSelectedIsTitelive,
       providerSelectedIsLibraires,
       providerSelectedIsFnac,
+      providerSelectedIsPraxiel,
       venueIdAtOfferProviderIsRequired,
     } = this.state
     const hasAtLeastOneProvider = providers.length > 0
@@ -167,7 +175,8 @@ class VenueProvidersManager extends PureComponent {
 
                 {(providerSelectedIsTitelive ||
                   providerSelectedIsLibraires ||
-                  providerSelectedIsFnac) && (
+                  providerSelectedIsFnac ||
+                  providerSelectedIsPraxiel) && (
                     <StocksProviderForm
                       cancelProviderSelection={this.cancelProviderSelection}
                       offererId={match.params.offererId}
@@ -181,9 +190,6 @@ class VenueProvidersManager extends PureComponent {
           )}
         </ul>
 
-        {console.log('hasAtLeastOneProvider ', hasAtLeastOneProvider)}
-        {console.log('hasNoVenueProvider ', hasNoVenueProvider)}
-        {console.log('!isCreationMode ', !isCreationMode)}
         {hasAtLeastOneProvider && hasNoVenueProvider && !isCreationMode && (
           <div className="has-text-centered">
             <button
