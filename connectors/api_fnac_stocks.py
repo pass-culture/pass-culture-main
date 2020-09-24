@@ -2,6 +2,7 @@ import os
 from typing import Dict
 
 import requests
+from simplejson import JSONDecodeError
 
 FNAC_API_URL = 'https://passculture-fr.ws.fnac.com/api/v1/pass-culture/stocks'
 
@@ -23,7 +24,10 @@ def get_stocks_from_fnac_api(siret: str, last_processed_isbn: str = '', modified
     if fnac_response.status_code != 200:
         raise ApiFnacException(f'Error {fnac_response.status_code} when getting Fnac stocks for SIRET: {siret}')
 
-    return fnac_response.json()
+    try:
+        return fnac_response.json()
+    except JSONDecodeError:
+        return {}
 
 
 def is_siret_registered(siret: str) -> bool:
