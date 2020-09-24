@@ -3,7 +3,7 @@ from typing import Callable, Dict, Optional
 
 from domain.price_rule import PriceRule
 from domain.stock_provider.stock_provider_repository import StockProviderRepository
-from local_providers import AllocineStocks, FnacStocks, LibrairesStocks, TiteLiveStocks
+from local_providers import AllocineStocks, FnacStocks, LibrairesStocks, PraxielStocks, TiteLiveStocks
 from models import AllocineVenueProvider, AllocineVenueProviderPriceRule, ApiErrors, VenueProvider, VenueSQLEntity
 from repository import repository
 from repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
@@ -14,7 +14,8 @@ from validation.routes.venues import check_existing_venue
 STANDARD_STOCK_PROVIDERS = {
     FnacStocks: 'FNAC',
     LibrairesStocks: 'LesLibraires',
-    TiteLiveStocks: 'TiteLive'
+    PraxielStocks: 'Praxiel/Inférence',
+    TiteLiveStocks: 'TiteLive',
 }
 ERROR_CODE_PROVIDER_NOT_SUPPORTED = 400
 ERROR_CODE_SIRET_NOT_SUPPORTED = 422

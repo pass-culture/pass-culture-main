@@ -5,6 +5,7 @@ from local_providers.titelive_thing_descriptions.titelive_thing_descriptions imp
 from local_providers.titelive_thing_thumbs.titelive_thing_thumbs import TiteLiveThingThumbs
 from local_providers.titelive_things.titelive_things import TiteLiveThings
 from local_providers.fnac.fnac_stocks import FnacStocks
+from local_providers.praxiel.praxiel_stocks import PraxielStocks
 
 __all__ = (
     'TiteLiveStocks',
@@ -13,5 +14,6 @@ __all__ = (
     'TiteLiveThingThumbs',
     'AllocineStocks',
     'LibrairesStocks',
-    'FnacStocks'
+    'FnacStocks',
+    'PraxielStocks'
 )

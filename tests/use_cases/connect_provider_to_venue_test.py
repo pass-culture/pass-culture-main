@@ -7,8 +7,7 @@ from tests.local_providers.provider_test_utils import TestLocalProvider
 from tests.model_creators.generic_creators import create_offerer, create_provider, create_venue
 from tests.model_creators.provider_creators import activate_provider
 
-from infrastructure.repository.stock_provider.stock_provider_libraires import StockProviderLibrairesRepository
-from local_providers import AllocineStocks, FnacStocks, LibrairesStocks, TiteLiveStocks
+from local_providers import AllocineStocks, FnacStocks, LibrairesStocks, PraxielStocks, TiteLiveStocks
 from models import AllocineVenueProvider, AllocineVenueProviderPriceRule, ApiErrors, VenueProvider
 from repository import repository
 from use_cases.connect_provider_to_venue import connect_provider_to_venue
@@ -108,7 +107,6 @@ class UseCaseTest:
                 offerer = create_offerer()
                 venue = create_venue(offerer, siret=None, is_virtual=True)
                 provider = activate_provider('LibrairesStocks')
-                stock_repository = MagicMock(StockProviderLibrairesRepository)
 
                 repository.save(venue)
 
@@ -204,8 +202,7 @@ class UseCaseTest:
 
                 # then
                 assert error.value.errors['provider'] == [
-                    'L’importation d’offres avec TiteLive n’est '
-                    'pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.']
+                    'L’importation d’offres avec TiteLive n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.']
 
         class WhenProviderIsFnac:
             @clean_database
@@ -283,6 +280,83 @@ class UseCaseTest:
                 # then
                 assert error.value.errors['provider'] == [
                     'L’importation d’offres avec FNAC n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.']
+
+        class WhenProviderIsPraxiel:
+            @clean_database
+            def should_connect_venue_when_synchronization_is_allowed(self, app):
+                # Given
+                offerer = create_offerer()
+                venue = create_venue(offerer)
+                provider = activate_provider('PraxielStocks')
+
+                repository.save(venue)
+
+                stock_repository = MagicMock()
+                stock_repository.can_be_synchronized.return_value = True
+                provider_type = PraxielStocks
+
+                venue_provider_payload = {
+                    'providerId': humanize(provider.id),
+                    'venueId': humanize(venue.id),
+                }
+
+                # When
+                connect_provider_to_venue(provider_type, stock_repository, venue_provider_payload)
+
+                # Then
+                praxiel_venue_provider = VenueProvider.query.one()
+                assert praxiel_venue_provider.venue == venue
+
+            @clean_database
+            def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):
+                # Given
+                offerer = create_offerer()
+                venue = create_venue(offerer, siret='12345678912345')
+                provider = activate_provider('PraxielStocks')
+
+                repository.save(venue)
+
+                stock_repository = MagicMock()
+                stock_repository.can_be_synchronized.return_value = False
+                provider_type = PraxielStocks
+
+                venue_provider_payload = {
+                    'providerId': humanize(provider.id),
+                    'venueId': humanize(venue.id),
+                }
+
+                # when
+                with pytest.raises(ApiErrors) as error:
+                    connect_provider_to_venue(provider_type, stock_repository, venue_provider_payload)
+
+                # then
+                assert error.value.errors['provider'] == [
+                    'L’importation d’offres avec Praxiel/Inférence n’est pas disponible pour le SIRET 12345678912345']
+
+            @clean_database
+            def should_not_connect_venue_when_venue_has_no_siret(self, app):
+                # Given
+                offerer = create_offerer()
+                venue = create_venue(offerer, siret=None, is_virtual=True)
+                provider = activate_provider('PraxielStocks')
+
+                repository.save(venue)
+
+                stock_repository = MagicMock()
+                provider_type = PraxielStocks
+
+                venue_provider_payload = {
+                    'providerId': humanize(provider.id),
+                    'venueId': humanize(venue.id),
+                }
+
+                # when
+                with pytest.raises(ApiErrors) as error:
+                    connect_provider_to_venue(provider_type, stock_repository, venue_provider_payload)
+
+                # then
+                assert error.value.errors['provider'] == [
+                    'L’importation d’offres avec Praxiel/Inférence n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.']
 
         class WhenProviderIsSomethingElse:
             @clean_database

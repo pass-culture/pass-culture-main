@@ -7,6 +7,7 @@ from infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository 
 from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
 from infrastructure.repository.stock_provider.stock_provider_fnac import StockProviderFnacRepository
 from infrastructure.repository.stock_provider.stock_provider_libraires import StockProviderLibrairesRepository
+from infrastructure.repository.stock_provider.stock_provider_praxiel import StockProviderPraxielRepository
 from infrastructure.repository.stock_provider.stock_provider_titelive import StockProviderTiteLiveRepository
 from infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
 from infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import VenueWithBasicInformationSQLRepository
@@ -37,6 +38,7 @@ paginated_offerers_repository = PaginatedOfferersSQLRepository()
 api_libraires_stocks = StockProviderLibrairesRepository()
 api_fnac_stocks = StockProviderFnacRepository()
 api_titelive_stocks = StockProviderTiteLiveRepository()
+api_praxiel_stocks = StockProviderPraxielRepository()
 
 # Usecases
 book_an_offer = BookAnOffer(booking_repository=booking_repository,

@@ -4,6 +4,8 @@ from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_offerer, create_user, create_venue, create_venue_provider
 from tests.model_creators.provider_creators import activate_provider
 
+from infrastructure.container import api_libraires_stocks
+from local_providers import AllocineStocks, LibrairesStocks
 from models import ApiErrors, VenueProvider
 from repository import repository
 from utils.config import API_ROOT_PATH
@@ -290,3 +292,71 @@ class Post:
             assert response.json['provider'] == ["L’importation d’offres avec LesLibraires n’est pas disponible "
                                                  "pour le SIRET 12345678912345"]
             assert VenueProvider.query.count() == 0
+
+    class ConnectProviderToVenueTest:
+        @clean_database
+        @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
+        @patch('routes.venue_providers.connect_provider_to_venue')
+        def should_inject_the_appropriate_repository_to_the_usecase(self, mocked_connect_provider_to_venue,
+                                                                    stubbed_check, app):
+            # Given
+            user = create_user(is_admin=True, can_book_free_offers=False)
+            offerer = create_offerer()
+            venue = create_venue(offerer, siret='12345678912345')
+            repository.save(venue, user)
+
+            provider = activate_provider('LibrairesStocks')
+
+            venue_provider_data = {
+                'providerId': humanize(provider.id),
+                'venueId': humanize(venue.id),
+            }
+
+            auth_request = TestClient(app.test_client()) \
+                .with_auth(email=user.email)
+            stubbed_check.return_value = True
+
+            # When
+            auth_request.post('/venueProviders', json=venue_provider_data)
+
+            # Then
+            mocked_connect_provider_to_venue.assert_called_once_with(LibrairesStocks,
+                                                                     api_libraires_stocks,
+                                                                     {
+                                                                         'providerId': humanize(provider.id),
+                                                                         'venueId': humanize(venue.id)
+                                                                     })
+
+        @clean_database
+        @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
+        @patch('routes.venue_providers.connect_provider_to_venue')
+        def should_inject_no_repository_to_the_usecase_when_provider_is_not_concerned(self,
+                                                                                      mocked_connect_provider_to_venue,
+                                                                                      stubbed_check, app):
+            # Given
+            user = create_user(is_admin=True, can_book_free_offers=False)
+            offerer = create_offerer()
+            venue = create_venue(offerer, siret='12345678912345')
+            repository.save(venue, user)
+
+            provider = activate_provider('AllocineStocks')
+
+            venue_provider_data = {
+                'providerId': humanize(provider.id),
+                'venueId': humanize(venue.id),
+            }
+
+            auth_request = TestClient(app.test_client()) \
+                .with_auth(email=user.email)
+            stubbed_check.return_value = True
+
+            # When
+            auth_request.post('/venueProviders', json=venue_provider_data)
+
+            # Then
+            mocked_connect_provider_to_venue.assert_called_once_with(AllocineStocks,
+                                                                     None,
+                                                                     {
+                                                                         'providerId': humanize(provider.id),
+                                                                         'venueId': humanize(venue.id)
+                                                                     })
