@@ -1,4 +1,6 @@
-from typing import List, Dict
+from typing import Dict, List
+
+from domain.identifier.identifier import Identifier
 
 
 class OfferRecapStock:
@@ -34,7 +36,7 @@ class OfferRecap:
                  venue_public_name: str,
                  stocks: List[Dict],
                  ):
-        self.identifier = identifier
+        self.identifier = Identifier(identifier)
         self.has_booking_limit_datetimes_passed = has_booking_limit_datetimes_passed
         self.is_active = is_active
         self.is_editable = is_editable
