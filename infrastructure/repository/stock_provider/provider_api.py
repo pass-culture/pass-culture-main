@@ -1,7 +1,6 @@
 from typing import Dict
 
 import requests
-from simplejson import JSONDecodeError
 
 
 class ProviderAPIException(Exception):
@@ -31,9 +30,8 @@ class ProviderAPI:
 
         try:
             return response.json()
-        except JSONDecodeError:
+        except ValueError:
             return {}
-
 
     def is_siret_registered(self, siret: str) -> bool:
         api_url = self._build_local_provider_url(siret)

@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, Mock
 
 import pytest
 import requests
@@ -23,6 +23,21 @@ class ProviderAPITest:
 
             # Then
             assert str(exception.value) == 'Error 400 when getting ProviderAPI stocks for SIRET: 12345678912345'
+
+            requests.get = MagicMock()
+
+        def should_return_empty_json_body_when_provider_returns_200_with_no_body(self):
+            # Given
+            siret = '12345678912345'
+            mock_response = MagicMock()
+            mock_response.side_effect = ValueError
+            requests.get.return_value = MagicMock(status_code=200, json=mock_response)
+
+            # When
+            response = self.provider_api.stocks(siret)
+
+            # Then
+            assert response == {}
 
             requests.get = MagicMock()
 
