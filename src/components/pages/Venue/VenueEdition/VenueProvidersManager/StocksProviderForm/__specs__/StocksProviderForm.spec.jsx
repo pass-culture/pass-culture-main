@@ -1,10 +1,9 @@
 import { mount } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
+import StocksProviderForm from '../StocksProviderForm'
 
-import TiteliveProviderForm from '../TiteliveProviderForm'
-
-describe('src | TiteliveProviderForm', () => {
+describe('src | StocksProviderForm', () => {
   let cancelProviderSelection
   let createVenueProvider
   let props
@@ -34,7 +33,7 @@ describe('src | TiteliveProviderForm', () => {
   describe('when not in loading mode', () => {
     it('should display an import button', () => {
       // when
-      const wrapper = mount(<TiteliveProviderForm {...props} />)
+      const wrapper = mount(<StocksProviderForm {...props} />)
 
       // then
       const importButton = wrapper.find({ children: 'Importer' })
@@ -44,7 +43,7 @@ describe('src | TiteliveProviderForm', () => {
 
     it('should render the title of the section compte', () => {
       // when
-      const wrapper = mount(<TiteliveProviderForm {...props} />)
+      const wrapper = mount(<StocksProviderForm {...props} />)
 
       // then
       const form = wrapper.find(Form)
@@ -55,7 +54,7 @@ describe('src | TiteliveProviderForm', () => {
 
     it('should display the venue siret as provider identifier', () => {
       // when
-      const wrapper = mount(<TiteliveProviderForm {...props} />)
+      const wrapper = mount(<StocksProviderForm {...props} />)
 
       // then
       const form = wrapper.find(Form)
@@ -68,7 +67,7 @@ describe('src | TiteliveProviderForm', () => {
   describe('handleSubmit', () => {
     it('should update venue provider using API', () => {
       // given
-      const wrapper = mount(<TiteliveProviderForm {...props} />)
+      const wrapper = mount(<StocksProviderForm {...props} />)
       const payload = { providerId: 'CC', venueId: 'AA', venueIdAtOfferProvider: '12345678901234' }
 
       // when
@@ -86,7 +85,7 @@ describe('src | TiteliveProviderForm', () => {
   describe('handleSuccess', () => {
     it('should update current url when action was handled successfully', () => {
       // given
-      const wrapper = mount(<TiteliveProviderForm {...props} />)
+      const wrapper = mount(<StocksProviderForm {...props} />)
       createVenueProvider.mockImplementation((fail, success) => success())
 
       // when
@@ -100,7 +99,7 @@ describe('src | TiteliveProviderForm', () => {
   describe('handleFail', () => {
     it('should display a notification with the proper informations', () => {
       // given
-      const wrapper = mount(<TiteliveProviderForm {...props} />)
+      const wrapper = mount(<StocksProviderForm {...props} />)
       const action = {
         payload: {
           errors: [

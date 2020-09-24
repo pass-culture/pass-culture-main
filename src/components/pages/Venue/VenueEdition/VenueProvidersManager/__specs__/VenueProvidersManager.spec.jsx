@@ -1,15 +1,13 @@
 import { mount } from 'enzyme'
 import React from 'react'
 
-import AllocineProviderFormContainer from '../AllocineProviderForm/AllocineProviderFormContainer'
-import FnacProviderForm from '../FnacProviderForm/FnacProviderFormContainer'
-import LibrairesProviderForm from '../LibrairesProviderForm/LibrairesProviderFormContainer'
-import TiteliveProviderFormContainer from '../TiteliveProviderForm/TiteliveProviderFormContainer'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 import VenueProvidersManager from '../VenueProvidersManager'
 import { Provider } from 'react-redux'
 import { getStubStore } from '../../../../../../utils/stubStore'
 import { MemoryRouter } from 'react-router'
+import StocksProviderForm from '../StocksProviderForm/StocksProviderForm'
+import AllocineProviderFormContainer from '../AllocineProviderForm/AllocineProviderFormContainer'
 
 describe('src | VenueProvidersManager', () => {
   let props
@@ -217,12 +215,12 @@ describe('src | VenueProvidersManager', () => {
     it('should display the titelive form when the user choose Titelive', () => {
       // given
       props.providers = [
-        { id: 'EM', name: 'Allociné' },
-        { id: 'EM', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
+        { id: 'AM', name: 'Allociné' },
+        { id: 'TS', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
       ]
       const chooseTiteliveEvent = {
         target: {
-          value: '{"id":"EM","name":"TiteLive Stocks (Epagine / Place des libraires.com)"}',
+          value: '{"id":"TS","name":"TiteLive Stocks (Epagine / Place des libraires.com)"}',
         },
       }
       const wrapper = mount(
@@ -238,19 +236,19 @@ describe('src | VenueProvidersManager', () => {
       wrapper.find('select').invoke('onBlur')(chooseTiteliveEvent)
 
       // then
-      const titeliveProviderForm = wrapper.find(TiteliveProviderFormContainer)
-      expect(titeliveProviderForm).toHaveLength(1)
+      const librairesProviderForm = wrapper.find(StocksProviderForm)
+      expect(librairesProviderForm).toHaveLength(1)
     })
 
     it('should display the libraires form when the user choose Libraires', () => {
       // given
       props.providers = [
-        { id: 'EM', name: 'Leslibraires.fr' },
-        { id: 'EM', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
+        { id: 'LL', name: 'Leslibraires.fr' },
+        { id: 'TS', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
       ]
       const chooseLibrairesEvent = {
         target: {
-          value: '{"id":"EM","name":"Leslibraires.fr"}',
+          value: '{"id":"LL","name":"Leslibraires.fr"}',
         },
       }
       const wrapper = mount(
@@ -266,19 +264,19 @@ describe('src | VenueProvidersManager', () => {
       wrapper.find('select').invoke('onBlur')(chooseLibrairesEvent)
 
       // then
-      const librairesProviderForm = wrapper.find(LibrairesProviderForm)
+      const librairesProviderForm = wrapper.find(StocksProviderForm)
       expect(librairesProviderForm).toHaveLength(1)
     })
 
     it('should display the Fnac form when the user choose Fnac', () => {
       // given
       props.providers = [
-        { id: 'EM', name: 'FNAC' },
-        { id: 'EM', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
+        { id: 'FC', name: 'FNAC' },
+        { id: 'TS', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
       ]
       const chooseFnacEvent = {
         target: {
-          value: '{"id":"EM","name":"FNAC"}',
+          value: '{"id":"FC","name":"FNAC"}',
         },
       }
       const wrapper = mount(
@@ -294,7 +292,7 @@ describe('src | VenueProvidersManager', () => {
       wrapper.find('select').invoke('onBlur')(chooseFnacEvent)
 
       // then
-      const fnacProviderForm = wrapper.find(FnacProviderForm)
+      const fnacProviderForm = wrapper.find(StocksProviderForm)
       expect(fnacProviderForm).toHaveLength(1)
     })
 

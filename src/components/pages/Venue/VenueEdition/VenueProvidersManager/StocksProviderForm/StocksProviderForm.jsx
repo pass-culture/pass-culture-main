@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
+import PropTypes from 'prop-types'
 
-class FnacProviderForm extends PureComponent {
+class StocksProviderForm extends PureComponent {
   constructor() {
     super()
     this.state = {
@@ -14,7 +14,15 @@ class FnacProviderForm extends PureComponent {
     this.setState({ isLoadingMode: true })
 
     const { createVenueProvider } = this.props
-    return createVenueProvider(this.handleFail, this.handleSuccess)
+    const { providerId, venueId, venueSiret } = this.props
+
+    const payload = {
+      providerId: providerId,
+      venueIdAtOfferProvider: venueSiret,
+      venueId: venueId,
+    }
+
+    return createVenueProvider(this.handleFail, this.handleSuccess, payload)
   }
 
   handleSuccess = () => {
@@ -34,7 +42,6 @@ class FnacProviderForm extends PureComponent {
   renderForm = props => {
     const { venueSiret } = this.props
     const { isLoadingMode } = this.state
-
     return (
       <form onSubmit={props.handleSubmit}>
         <div className="provider-form">
@@ -63,20 +70,23 @@ class FnacProviderForm extends PureComponent {
   }
 
   render() {
-    return (<Form
-      onSubmit={this.handleFormSubmit}
-      render={this.renderForm}
-            />)
+    return (
+      <Form
+        onSubmit={this.handleFormSubmit}
+        render={this.renderForm}
+      />
+    )
   }
 }
 
-FnacProviderForm.propTypes = {
+StocksProviderForm.propTypes = {
   cancelProviderSelection: PropTypes.func.isRequired,
   createVenueProvider: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   notify: PropTypes.func.isRequired,
+  providerId: PropTypes.string.isRequired,
   venueId: PropTypes.string.isRequired,
   venueSiret: PropTypes.string.isRequired,
 }
 
-export default FnacProviderForm
+export default StocksProviderForm

@@ -3,8 +3,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
-
-import TiteliveProviderForm from './TiteliveProviderForm'
+import StocksProviderForm from './StocksProviderForm'
 
 export const mapDispatchToProps = dispatch => {
   return {
@@ -30,10 +29,4 @@ export const mapDispatchToProps = dispatch => {
   }
 }
 
-export default compose(
-  withRouter,
-  connect(
-    null,
-    mapDispatchToProps
-  )
-)(TiteliveProviderForm)
+export default compose(withRouter, connect(null, mapDispatchToProps))(StocksProviderForm)

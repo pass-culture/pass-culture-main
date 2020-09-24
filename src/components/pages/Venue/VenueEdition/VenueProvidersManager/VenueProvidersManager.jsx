@@ -3,9 +3,8 @@ import React, { PureComponent } from 'react'
 import ReactTooltip from 'react-tooltip'
 
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
-import LibrairesProviderForm from './LibrairesProviderForm/LibrairesProviderFormContainer'
-import TiteliveProviderForm from './TiteliveProviderForm/TiteliveProviderFormContainer'
-import FnacProviderForm from './FnacProviderForm/FnacProviderFormContainer'
+import StocksProviderForm from './StocksProviderForm/StocksProviderFormContainer'
+
 import {
   ALLOCINE_PROVIDER_OPTION,
   DEFAULT_PROVIDER_OPTION,
@@ -166,40 +165,25 @@ class VenueProvidersManager extends PureComponent {
                   />
                 )}
 
-                {providerSelectedIsTitelive && (
-                  <TiteliveProviderForm
-                    cancelProviderSelection={this.cancelProviderSelection}
-                    offererId={match.params.offererId}
-                    providerId={providerId}
-                    venueId={match.params.venueId}
-                    venueSiret={venueSiret}
-                  />
-                )}
-
-                {providerSelectedIsLibraires && (
-                  <LibrairesProviderForm
-                    cancelProviderSelection={this.cancelProviderSelection}
-                    offererId={match.params.offererId}
-                    providerId={providerId}
-                    venueId={match.params.venueId}
-                    venueSiret={venueSiret}
-                  />
-                )}
-
-                {providerSelectedIsFnac && (
-                  <FnacProviderForm
-                    cancelProviderSelection={this.cancelProviderSelection}
-                    offererId={match.params.offererId}
-                    providerId={providerId}
-                    venueId={match.params.venueId}
-                    venueSiret={venueSiret}
-                  />
+                {(providerSelectedIsTitelive ||
+                  providerSelectedIsLibraires ||
+                  providerSelectedIsFnac) && (
+                    <StocksProviderForm
+                      cancelProviderSelection={this.cancelProviderSelection}
+                      offererId={match.params.offererId}
+                      providerId={providerId}
+                      venueId={match.params.venueId}
+                      venueSiret={venueSiret}
+                    />
                 )}
               </div>
             </li>
           )}
         </ul>
 
+        {console.log('hasAtLeastOneProvider ', hasAtLeastOneProvider)}
+        {console.log('hasNoVenueProvider ', hasNoVenueProvider)}
+        {console.log('!isCreationMode ', !isCreationMode)}
         {hasAtLeastOneProvider && hasNoVenueProvider && !isCreationMode && (
           <div className="has-text-centered">
             <button
