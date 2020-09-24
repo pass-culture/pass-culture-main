@@ -425,7 +425,7 @@ class Put:
 
             @patch('routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
-            def when_offers_have_no_thumb_count_for_event_and_no_mediation(
+            def when_offers_have_no_thumb_count_for_event_and_have_mediation(
                     self, mock_geolocation_feature, app):
                 # given
                 now = datetime.utcnow()
