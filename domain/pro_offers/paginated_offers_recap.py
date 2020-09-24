@@ -5,15 +5,15 @@ from domain.identifier.identifier import Identifier
 
 class OfferRecapStock:
     def __init__(self, identifier: int, remaining_quantity: int):
-        self.identifier = identifier
+        self.identifier = Identifier(identifier)
         self.remaining_quantity = remaining_quantity
 
 
 class OfferRecapVenue:
     def __init__(self, identifier: int, is_virtual: bool, managing_offerer_id: int, name: str, public_name: str):
-        self.identifier = identifier
+        self.identifier = Identifier(identifier)
         self.is_virtual = is_virtual
-        self.managing_offerer_id = managing_offerer_id
+        self.managing_offerer_id = Identifier(managing_offerer_id)
         self.name = name
         self.public_name = public_name
 

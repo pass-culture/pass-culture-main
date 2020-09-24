@@ -1,6 +1,5 @@
 from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap
 from routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
-from utils.human_ids import humanize
 
 
 def test_should_return_offers_dict_with_relevant_informations():
@@ -42,18 +41,18 @@ def test_should_return_offers_dict_with_relevant_informations():
         "isThing": True,
         "name": "Test Book",
         "stocks": [{
-            "id": humanize(stock_id),
+            "id": offer.stocks[0].identifier.humanize(),
             "offerId": offer.identifier.humanize(),
             "remainingQuantity": 10
         }],
         "thumbUrl": "/thumb/url",
         "type": "ThingType.AUDIOVISUEL",
         "venue": {
-            "id": humanize(venue_id),
+            "id": offer.venue.identifier.humanize(),
             "isVirtual": False,
-            "managingOffererId": humanize(offerer_id),
+            "managingOffererId": offer.venue.managing_offerer_id.humanize(),
             "name": "La petite librairie",
             "publicName": "Petite librairie",
         },
-        "venueId": humanize(venue_id),
+        "venueId": offer.venue.identifier.humanize(),
     }

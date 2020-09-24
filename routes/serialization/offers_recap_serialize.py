@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+from domain.identifier.identifier import Identifier
 from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap, OfferRecapStock, OfferRecapVenue
 from utils.human_ids import humanize
 
@@ -23,13 +24,13 @@ def _serialize_offer_paginated(offer: OfferRecap) -> Dict:
         "thumbUrl": offer.thumb_url,
         "type": offer.offer_type,
         "venue": _serialize_venue(offer.venue),
-        "venueId": humanize(offer.venue.identifier),
+        "venueId": offer.venue.identifier.humanize(),
     }
 
 
-def _serialize_stock(offer_identifier: int, stock: OfferRecapStock) -> Dict:
+def _serialize_stock(offer_identifier: Identifier, stock: OfferRecapStock) -> Dict:
     return {
-        "id": humanize(stock.identifier),
+        "id": stock.identifier.humanize(),
         "offerId": offer_identifier.humanize(),
         "remainingQuantity": stock.remaining_quantity
     }
@@ -37,9 +38,9 @@ def _serialize_stock(offer_identifier: int, stock: OfferRecapStock) -> Dict:
 
 def _serialize_venue(venue: OfferRecapVenue) -> Dict:
     return {
-        "id": humanize(venue.identifier),
+        "id": venue.identifier.humanize(),
         "isVirtual": venue.is_virtual,
-        "managingOffererId": humanize(venue.managing_offerer_id),
+        "managingOffererId": venue.managing_offerer_id.humanize(),
         "name": venue.name,
         "publicName": venue.public_name,
     }
