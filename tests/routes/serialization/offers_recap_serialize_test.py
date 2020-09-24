@@ -35,7 +35,7 @@ def test_should_return_offers_dict_with_relevant_informations():
     # then
     assert serialized_offers[0] == {
         "hasBookingLimitDatetimesPassed": False,
-        "id": humanize(offer_id),
+        "id": offer.identifier.humanize(),
         "isActive": True,
         "isEditable": True,
         "isEvent": False,
@@ -43,7 +43,7 @@ def test_should_return_offers_dict_with_relevant_informations():
         "name": "Test Book",
         "stocks": [{
             "id": humanize(stock_id),
-            "offerId": humanize(offer_id),
+            "offerId": offer.identifier.humanize(),
             "remainingQuantity": 10
         }],
         "thumbUrl": "/thumb/url",
