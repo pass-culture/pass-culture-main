@@ -76,7 +76,7 @@ class PaginatedOfferSQLRepositoryTest:
         paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
             user_id=user.id,
             user_is_admin=user.isAdmin,
-            venue_id=requested_venue.id,
+            venue_id=Identifier(requested_venue.id),
             page=1,
             pagination_limit=10
         )

@@ -1,10 +1,12 @@
 from typing import Optional
 
+from domain.identifier.identifier import Identifier
+
 from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from domain.pro_offers.paginated_offers_recap_repository import PaginatedOffersRepository
 from domain.ts_vector import create_filter_on_ts_vector_matching_all_keywords
 from infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
-from models import OfferSQLEntity, VenueSQLEntity, Offerer, UserOfferer
+from models import Offerer, OfferSQLEntity, UserOfferer, VenueSQLEntity
 
 
 class PaginatedOffersSQLRepository(PaginatedOffersRepository):
@@ -13,16 +15,16 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
                                                             user_is_admin: bool,
                                                             page: Optional[int],
                                                             pagination_limit: int,
-                                                            offerer_id: Optional[int] = None,
-                                                            venue_id: Optional[int] = None,
+                                                            offerer_id: Optional[Identifier] = None,
+                                                            venue_id: Optional[Identifier] = None,
                                                             name_keywords: Optional[str] = None) -> PaginatedOffersRecap:
         query = OfferSQLEntity.query
         if venue_id is not None:
-            query = query.filter(OfferSQLEntity.venueId == venue_id)
+            query = query.filter(OfferSQLEntity.venueId == venue_id.identifier)
         if offerer_id is not None:
             query = query \
                 .join(VenueSQLEntity) \
-                .filter(VenueSQLEntity.managingOffererId == offerer_id)
+                .filter(VenueSQLEntity.managingOffererId == offerer_id.identifier)
         if not user_is_admin:
             query = query \
                 .join(VenueSQLEntity) \

@@ -2,13 +2,13 @@ from flask import current_app as app
 from flask import jsonify, request
 from flask_login import current_user, login_required
 
-from domain.admin_emails import \
-    send_offer_creation_notification_to_administration
+from domain.admin_emails import send_offer_creation_notification_to_administration
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
+from domain.identifier.identifier import Identifier
 from infrastructure.container import list_offers_for_pro_user
 from models import OfferSQLEntity, RightsType, VenueSQLEntity
 from models.api_errors import ResourceNotFoundError
-from repository import offer_queries, repository, venue_queries, user_offerer_queries
+from repository import offer_queries, repository, user_offerer_queries, venue_queries
 from routes.serialization import as_dict
 from routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from routes.serialization.offers_serialize import serialize_offer
@@ -18,42 +18,40 @@ from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
 from utils.mailing import send_raw_email
-from utils.rest import ensure_current_user_has_rights, expect_json_data, \
-    load_or_404, load_or_raise_error, \
-    login_or_api_key_required
-from validation.routes.offers import check_has_venue_id, \
-    check_offer_name_length_is_valid, check_offer_type_is_valid, \
-    check_valid_edition, \
-    check_venue_exists_when_requested, check_user_has_rights_on_offerer
+from utils.rest import ensure_current_user_has_rights, expect_json_data, load_or_404, load_or_raise_error, login_or_api_key_required
+from validation.routes.offers import check_has_venue_id, check_offer_name_length_is_valid, check_offer_type_is_valid, check_user_has_rights_on_offerer, check_valid_edition, \
+    check_venue_exists_when_requested
 
 
 @app.route('/offers', methods=['GET'])
 @login_required
 def list_offers() -> (str, int):
-    offerer_id = dehumanize(request.args.get('offererId'))
-    venue_id = dehumanize(request.args.get('venueId'))
+    offerer_humanized_id = request.args.get('offererId')
+    venue_humanized_id = request.args.get('venueId')
+    offerer_identifier = Identifier.from_humanized_id(offerer_humanized_id) if offerer_humanized_id else None
+    venue_identifier = Identifier.from_humanized_id(venue_humanized_id) if venue_humanized_id else None
 
     if not current_user.isAdmin:
-        if venue_id:
-            venue = venue_queries.find_by_id(venue_id)
-            check_venue_exists_when_requested(venue, venue_id)
+        if venue_identifier:
+            venue = venue_queries.find_by_id(venue_identifier.identifier)
+            check_venue_exists_when_requested(venue, venue_identifier)
             user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
                 user_id=current_user.id,
                 offerer_id=venue.managingOffererId
             )
             check_user_has_rights_on_offerer(user_offerer)
-        if offerer_id:
+        if offerer_identifier:
             user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
                 user_id=current_user.id,
-                offerer_id=offerer_id
+                offerer_id=offerer_identifier.identifier
             )
             check_user_has_rights_on_offerer(user_offerer)
 
     offers_request_parameters = OffersRequestParameters(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
-        offerer_id=offerer_id,
-        venue_id=venue_id,
+        offerer_id=offerer_identifier,
+        venue_id=venue_identifier,
         pagination_limit=request.args.get('paginate', '10'),
         name_keywords=request.args.get('name'),
         page=request.args.get('page', '0'),

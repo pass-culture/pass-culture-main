@@ -1,9 +1,15 @@
 from base64 import b32encode
 
+from utils.human_ids import dehumanize
+
 
 class Identifier:
     def __init__(self, identifier: int):
         self.identifier: int = identifier
+
+    @staticmethod
+    def from_humanized_id(humanized_identifier: str):
+        return Identifier(dehumanize(humanized_identifier))
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Identifier):

@@ -1,31 +1,58 @@
 import secrets
 from unittest.mock import patch
 
+from tests.conftest import TestClient, clean_database
+from tests.model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
+from tests.model_creators.specific_creators import create_offer_with_thing_product
+
+from domain.identifier.identifier import Identifier
 from infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
 from repository import repository
-from tests.conftest import clean_database, TestClient
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
-from tests.model_creators.specific_creators import create_offer_with_thing_product
 from use_cases.list_offers_for_pro_user import OffersRequestParameters
-from utils.human_ids import humanize
 
 
 class Get:
     class Returns200:
         @clean_database
-        def when_user_is_admin_and_request_specific_venue(self, app):
+        def should_filter_by_venue_when_user_is_admin_and_request_specific_venue_with_no_rights_on_it(self, app):
             # Given
             admin = create_user(is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
-            venue = create_venue(offerer)
-            repository.save(admin, venue)
+            requested_venue = create_venue(offerer, siret='12345678912345')
+            other_venue = create_venue(offerer, siret='54321987654321')
+            offer_on_requested_venue = create_offer_with_thing_product(requested_venue)
+            offer_on_other_venue = create_offer_with_thing_product(other_venue)
+            repository.save(admin, offer_on_requested_venue, offer_on_other_venue)
 
             # when
             response = TestClient(app.test_client()) \
-                .with_auth(email=admin.email).get(f'/offers?venueId={humanize(venue.id)}')
+                .with_auth(email=admin.email).get(f'/offers?venueId={Identifier(requested_venue.id).humanize()}')
 
             # then
+            offers = response.json
             assert response.status_code == 200
+            assert len(offers) == 1
+
+        @clean_database
+        def should_filter_by_venue_when_user_is_not_admin_and_request_specific_venue_with_rights_on_it(self, app):
+            # Given
+            pro = create_user(is_admin=False, can_book_free_offers=False)
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(pro, offerer)
+            requested_venue = create_venue(offerer, siret='12345678912345')
+            other_venue = create_venue(offerer, siret='54321987654321')
+            offer_on_requested_venue = create_offer_with_thing_product(requested_venue)
+            offer_on_other_venue = create_offer_with_thing_product(other_venue)
+            repository.save(pro, user_offerer, offer_on_requested_venue, offer_on_other_venue)
+
+            # when
+            response = TestClient(app.test_client()) \
+                .with_auth(email=pro.email).get(f'/offers?venueId={Identifier(requested_venue.id).humanize()}')
+
+            # then
+            offers = response.json
+            assert response.status_code == 200
+            assert len(offers) == 1
 
         @clean_database
         @patch('routes.offers.list_offers_for_pro_user.execute')
@@ -81,7 +108,7 @@ class Get:
 
             # when
             response = TestClient(app.test_client()) \
-                .with_auth(email=user.email).get('/offers?venueId=' + humanize(venue.id))
+                .with_auth(email=user.email).get('/offers?venueId=' + Identifier(venue.id).humanize())
 
             # then
             assert response.status_code == 200
@@ -91,7 +118,7 @@ class Get:
             assert expected_parameter.user_id == user.id
             assert expected_parameter.user_is_admin == user.isAdmin
             assert expected_parameter.offerer_id is None
-            assert expected_parameter.venue_id == venue.id
+            assert expected_parameter.venue_id == Identifier(venue.id)
             assert expected_parameter.pagination_limit == 10
             assert expected_parameter.name_keywords is None
             assert expected_parameter.page == 0
@@ -122,7 +149,7 @@ class Get:
 
             # when
             response = TestClient(app.test_client()) \
-                .with_auth(email=user.email).get(f'/offers?venueId={humanize(venue.id)}')
+                .with_auth(email=user.email).get(f'/offers?venueId={Identifier(venue.id).humanize()}')
 
             # then
             assert response.status_code == 403
