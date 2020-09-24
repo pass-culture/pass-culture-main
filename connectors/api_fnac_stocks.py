@@ -26,7 +26,7 @@ def get_stocks_from_fnac_api(siret: str, last_processed_isbn: str = '', modified
 
     try:
         return fnac_response.json()
-    except JSONDecodeError:
+    except ValueError:
         return {}
 
 

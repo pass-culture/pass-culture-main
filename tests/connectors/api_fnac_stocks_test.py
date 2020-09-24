@@ -1,6 +1,7 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, Mock
 
 import pytest
+from simplejson import JSONDecodeError
 
 from connectors.api_fnac_stocks import ApiFnacException, get_stocks_from_fnac_api, is_siret_registered
 
@@ -18,6 +19,20 @@ class GetStocksFromFNACApiTest:
 
         # Then
         assert str(exception.value) == 'Error 400 when getting Fnac stocks for SIRET: 12345678912345'
+
+    @patch('connectors.api_fnac_stocks.requests.get')
+    def test_should_return_empty_json_response_when_fnac_api_returns_200_with_no_body(self, mock_requests_get):
+        # Given
+        siret = '12345678912345'
+        mock_response = MagicMock()
+        mock_response.side_effect = ValueError
+        mock_requests_get.return_value = MagicMock(status_code=200, json=mock_response)
+
+        # When
+        response = get_stocks_from_fnac_api(siret)
+
+        # Then
+        assert response == {}
 
     @patch.dict('os.environ', {"PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN": '6666'})
     @patch('connectors.api_fnac_stocks.requests.get')
