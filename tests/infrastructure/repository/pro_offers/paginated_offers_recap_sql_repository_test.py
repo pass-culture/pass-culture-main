@@ -111,6 +111,6 @@ class PaginatedOfferSQLRepositoryTest:
         )
 
         # then
-        offers_id = [offer.id for offer in paginated_offers.offers]
+        offers_id = [offer.identifier for offer in paginated_offers.offers]
         assert offer_matching_requested_name.id in offers_id
         assert offer_not_matching_requested_name.id not in offers_id

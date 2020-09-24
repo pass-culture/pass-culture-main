@@ -1,5 +1,5 @@
 from datetime import datetime
-from unittest.mock import patch, call, Mock
+from unittest.mock import patch, call
 
 from local_providers.fnac.fnac_stocks import FnacStocks
 from models import OfferSQLEntity, StockSQLEntity
@@ -28,14 +28,13 @@ class FnacStocksTest:
             offerer = create_offerer()
             venue = create_venue(offerer, siret='12345678912345')
             fnac_provider = activate_provider('FnacStocks')
-            venue_provider = create_venue_provider(venue, fnac_provider, venue_id_at_offer_provider=venue.siret)
+            venue_provider = create_venue_provider(venue, fnac_provider, venue_id_at_offer_provider=venue.siret,
+                                                   last_sync_date=datetime(2020, 2, 4))
             product = create_product_with_thing_type(id_at_providers='9780199536986')
 
             repository.save(venue_provider, product)
 
-            read_last_modified_date = Mock()
-            read_last_modified_date.return_value = datetime(2020, 2, 4)
-            fnac_stocks_provider = FnacStocks(venue_provider, read_last_modified_date)
+            fnac_stocks_provider = FnacStocks(venue_provider)
 
             # When
             fnac_providable_infos = next(fnac_stocks_provider)
@@ -76,9 +75,7 @@ class FnacStocksTest:
             product = create_product_with_thing_type(id_at_providers='9780199536986')
             repository.save(product, venue_provider)
 
-            read_last_modified_date = Mock()
-            read_last_modified_date.return_value = datetime(2020, 2, 4)
-            fnac_stocks = FnacStocks(venue_provider, read_last_modified_date)
+            fnac_stocks = FnacStocks(venue_provider)
 
             # When
             fnac_stocks.updateObjects()
@@ -121,9 +118,7 @@ class FnacStocksTest:
 
             repository.save(product, offer, stock)
 
-            read_last_modified_date = Mock()
-            read_last_modified_date.return_value = datetime(2020, 2, 4)
-            fnac_stocks = FnacStocks(venue_provider, read_last_modified_date)
+            fnac_stocks = FnacStocks(venue_provider)
 
             # When
             fnac_stocks.updateObjects()
@@ -161,9 +156,7 @@ class FnacStocksTest:
 
             repository.save(offer, product_1, product_2, venue_provider)
 
-            read_last_modified_date = Mock()
-            read_last_modified_date.return_value = datetime(2020, 2, 4)
-            fnac_stocks = FnacStocks(venue_provider, read_last_modified_date)
+            fnac_stocks = FnacStocks(venue_provider)
 
             # When
             fnac_stocks.updateObjects()
@@ -215,9 +208,7 @@ class FnacStocksTest:
                 "price": 0
             }])
 
-            read_last_modified_date = Mock()
-            read_last_modified_date.return_value = datetime(2020, 2, 4)
-            fnac_stocks = FnacStocks(venue_provider, read_last_modified_date)
+            fnac_stocks = FnacStocks(venue_provider)
 
             # When
             fnac_stocks.updateObjects()
@@ -250,14 +241,13 @@ class WhenSynchronizedTwiceTest:
 
         fnac_stocks_provider = activate_provider('FnacStocks')
         venue_provider = create_venue_provider(venue, fnac_stocks_provider, is_active=True,
-                                               venue_id_at_offer_provider='12345678912345')
+                                               venue_id_at_offer_provider='12345678912345',
+                                               last_sync_date=datetime(2020, 2, 4))
         product_1 = create_product_with_thing_type(id_at_providers='9780199536986')
         product_2 = create_product_with_thing_type(id_at_providers='1550199555555')
 
         repository.save(product_1, product_2, venue_provider)
-        read_last_modified_date = Mock()
-        read_last_modified_date.return_value = datetime(2020, 2, 4)
-        fnac_stocks = FnacStocks(venue_provider, read_last_modified_date)
+        fnac_stocks = FnacStocks(venue_provider)
 
         # When
         fnac_stocks.updateObjects()

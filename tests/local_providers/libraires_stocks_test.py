@@ -28,14 +28,12 @@ class LibrairesStocksTest:
             offerer = create_offerer()
             venue = create_venue(offerer, siret='12345678912345')
             libraires_provider = activate_provider('LibrairesStocks')
-            venue_provider = create_venue_provider(venue, libraires_provider)
+            venue_provider = create_venue_provider(venue, libraires_provider, last_sync_date=datetime(2020, 2, 4))
             product = create_product_with_thing_type(id_at_providers='9780199536986')
 
             repository.save(venue_provider, product)
 
-            read_last_modified_date = Mock()
-            read_last_modified_date.return_value = datetime(2020, 2, 4)
-            libraires_stocks_provider = LibrairesStocks(venue_provider, read_last_modified_date)
+            libraires_stocks_provider = LibrairesStocks(venue_provider)
 
             # When
             libraires_providable_infos = next(libraires_stocks_provider)
@@ -76,8 +74,7 @@ class LibrairesStocksTest:
             product = create_product_with_thing_type(id_at_providers='9780199536986')
             repository.save(product, venue_provider)
 
-            read_last_modified_date = Mock()
-            libraires_stocks_provider = LibrairesStocks(venue_provider, read_last_modified_date)
+            libraires_stocks_provider = LibrairesStocks(venue_provider)
 
             # When
             libraires_stocks_provider.updateObjects()
@@ -119,8 +116,7 @@ class LibrairesStocksTest:
             stock = create_stock(id_at_providers='9780199536986@12345678912345', offer=offer, quantity=20)
 
             repository.save(product, offer, stock)
-            read_last_modified_date = Mock()
-            libraires_stocks_provider = LibrairesStocks(venue_provider, read_last_modified_date)
+            libraires_stocks_provider = LibrairesStocks(venue_provider)
 
             # When
             libraires_stocks_provider.updateObjects()
@@ -158,8 +154,7 @@ class LibrairesStocksTest:
 
             repository.save(offer, product_1, product_2, venue_provider)
 
-            read_last_modified_date = Mock()
-            libraires_stocks_local_provider = LibrairesStocks(venue_provider, read_last_modified_date)
+            libraires_stocks_local_provider = LibrairesStocks(venue_provider)
 
             # When
             libraires_stocks_local_provider.updateObjects()
@@ -211,8 +206,7 @@ class LibrairesStocksTest:
                 "price": 0
             }])
 
-            read_last_modified_date = Mock()
-            libraires_stocks_provider = LibrairesStocks(venue_provider, read_last_modified_date)
+            libraires_stocks_provider = LibrairesStocks(venue_provider)
 
             # When
             libraires_stocks_provider.updateObjects()
@@ -244,14 +238,13 @@ class LibrairesStocksTest:
 
             libraires_stocks_provider = activate_provider('LibrairesStocks')
             venue_provider = create_venue_provider(venue, libraires_stocks_provider, is_active=True,
-                                                   venue_id_at_offer_provider='12345678912345')
+                                                   venue_id_at_offer_provider='12345678912345',
+                                                   last_sync_date=datetime(2020, 2, 4))
             product_1 = create_product_with_thing_type(id_at_providers='9780199536986')
             product_2 = create_product_with_thing_type(id_at_providers='1550199555555')
 
             repository.save(product_1, product_2, venue_provider)
-            read_last_modified_date = Mock()
-            read_last_modified_date.return_value = datetime(2020, 2, 4)
-            libraires_stocks_provider = LibrairesStocks(venue_provider, read_last_modified_date)
+            libraires_stocks_provider = LibrairesStocks(venue_provider)
 
             # When
             libraires_stocks_provider.updateObjects()
