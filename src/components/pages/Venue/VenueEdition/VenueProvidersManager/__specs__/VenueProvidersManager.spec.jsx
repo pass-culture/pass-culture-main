@@ -51,8 +51,9 @@ describe('src | VenueProvidersManager', () => {
       providerId: null,
       providerSelectedIsAllocine: false,
       providerSelectedIsFnac: false,
-      providerSelectedIsTitelive: false,
       providerSelectedIsLibraires: false,
+      providerSelectedIsPraxiel: false,
+      providerSelectedIsTitelive: false,
       venueIdAtOfferProviderIsRequired: true,
     })
   })

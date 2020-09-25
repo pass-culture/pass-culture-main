@@ -22,9 +22,10 @@ class VenueProvidersManager extends PureComponent {
       isCreationMode: false,
       providerId: null,
       providerSelectedIsAllocine: false,
-      providerSelectedIsTitelive: false,
+      providerSelectedIsFnac: false,
       providerSelectedIsLibraires: false,
       providerSelectedIsPraxiel: false,
+      providerSelectedIsTitelive: false,
       venueIdAtOfferProviderIsRequired: true,
     }
   }
@@ -57,10 +58,10 @@ class VenueProvidersManager extends PureComponent {
     const valueParsed = JSON.parse(valueFromSelectInput)
     this.setState({
       providerSelectedIsAllocine: false,
-      providerSelectedIsTitelive: false,
-      providerSelectedIsLibraires: false,
       providerSelectedIsFnac: false,
+      providerSelectedIsLibraires: false,
       providerSelectedIsPraxiel: false,
+      providerSelectedIsTitelive: false,
     })
 
     if (valueParsed && valueParsed.name === ALLOCINE_PROVIDER_OPTION.name) {
@@ -94,10 +95,10 @@ class VenueProvidersManager extends PureComponent {
   cancelProviderSelection = () => {
     this.toggleOffCreationMode()
     this.setState({
-      providerSelectedIsTitelive: false,
-      providerSelectedIsLibraires: false,
       providerSelectedIsFnac: false,
+      providerSelectedIsLibraires: false,
       providerSelectedIsPraxiel: false,
+      providerSelectedIsTitelive: false,
       providerId: null,
     })
   }
@@ -108,10 +109,10 @@ class VenueProvidersManager extends PureComponent {
       isCreationMode,
       providerId,
       providerSelectedIsAllocine,
-      providerSelectedIsTitelive,
-      providerSelectedIsLibraires,
       providerSelectedIsFnac,
+      providerSelectedIsLibraires,
       providerSelectedIsPraxiel,
+      providerSelectedIsTitelive,
       venueIdAtOfferProviderIsRequired,
     } = this.state
     const hasAtLeastOneProvider = providers.length > 0
