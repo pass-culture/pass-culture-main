@@ -17,12 +17,12 @@ class ProviderAPI:
                limit: int = 1000) -> Dict:
         api_url = self._build_local_provider_url(siret)
         params = self._build_local_provider_params(last_processed_reference, modified_since, limit)
+        headers = {}
 
         if self.authentication_token is not None:
-            response = requests.get(url=api_url, params=params,
-                                    headers={'Authorization': f'Basic {self.authentication_token}'})
-        else:
-            response = requests.get(url=api_url, params=params)
+            headers = {'Authorization': f'Basic {self.authentication_token}'}
+
+        response = requests.get(url=api_url, params=params, headers=headers)
 
         if response.status_code != 200:
             raise ProviderAPIException(
@@ -35,10 +35,12 @@ class ProviderAPI:
 
     def is_siret_registered(self, siret: str) -> bool:
         api_url = self._build_local_provider_url(siret)
+        headers = {}
+
         if self.authentication_token is not None:
-            response = requests.get(url=api_url, headers={'Authorization': f'Basic {self.authentication_token}'})
-        else:
-            response = requests.get(url=api_url)
+            headers = {'Authorization': f'Basic {self.authentication_token}'}
+
+        response = requests.get(url=api_url, headers=headers)
 
         return response.status_code == 200
 

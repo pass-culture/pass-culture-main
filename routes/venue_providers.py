@@ -66,7 +66,7 @@ def create_venue_provider():
     return jsonify(as_dict(new_venue_provider, includes=VENUE_PROVIDER_INCLUDES)), 201
 
 
-def _get_stock_provider_repository(provider_class) -> StockProviderRepository:
+def _get_stock_provider_repository(provider_class: object) -> StockProviderRepository:
     if provider_class == LibrairesStocks:
         return api_libraires_stocks
     elif provider_class == FnacStocks:

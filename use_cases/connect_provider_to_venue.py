@@ -11,7 +11,7 @@ from repository.venue_queries import find_by_id
 from utils.human_ids import dehumanize
 from validation.routes.venues import check_existing_venue
 
-STOCK_PROVIDERS = {
+STANDARD_STOCK_PROVIDERS = {
     FnacStocks: 'FNAC',
     LibrairesStocks: 'LesLibraires',
     TiteLiveStocks: 'TiteLive'
@@ -20,7 +20,7 @@ ERROR_CODE_PROVIDER_NOT_SUPPORTED = 400
 ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 
 
-def connect_provider_to_venue(provider_class,
+def connect_provider_to_venue(provider_class: object,
                               stock_provider_repository: StockProviderRepository,
                               venue_provider_payload: Dict) -> VenueProvider:
     venue_id = dehumanize(venue_provider_payload['venueId'])
@@ -28,10 +28,10 @@ def connect_provider_to_venue(provider_class,
     check_existing_venue(venue)
     if provider_class == AllocineStocks:
         new_venue_provider = _connect_allocine_to_venue(venue, venue_provider_payload)
-    elif provider_class in STOCK_PROVIDERS:
+    elif provider_class in STANDARD_STOCK_PROVIDERS:
         _check_venue_can_be_synchronized_with_provider(venue.siret,
                                                        stock_provider_repository.can_be_synchronized,
-                                                       STOCK_PROVIDERS[provider_class])
+                                                       STANDARD_STOCK_PROVIDERS[provider_class])
         new_venue_provider = _connect_stock_providers_to_venue(venue, venue_provider_payload)
     else:
         api_errors = ApiErrors()

@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock
 
 import pytest
 import requests
@@ -51,7 +51,7 @@ class ProviderAPITest:
 
             # Then
             requests.get.assert_called_once_with(
-                url='http://example.com/stocks/12345678912345', params={'limit': '1000'})
+                url='http://example.com/stocks/12345678912345', params={'limit': '1000'}, headers={})
 
         def should_call_provider_api_with_given_siret_and_last_processed_isbn(self):
             # Given
@@ -68,7 +68,8 @@ class ProviderAPITest:
                                                  params={
                                                      'limit': '1000',
                                                      'after': last_processed_isbn
-                                                 })
+                                                 },
+                                                 headers={})
 
         def should_call_provider_api_with_given_siret_and_last_modification_date(self):
             # Given
@@ -85,7 +86,8 @@ class ProviderAPITest:
                                                  params={
                                                      'limit': '1000',
                                                      'modifiedSince': modified_since
-                                                 })
+                                                 },
+                                                 headers={})
 
         def should_call_provider_api_with_given_all_parameters(self):
             # Given
@@ -103,7 +105,8 @@ class ProviderAPITest:
                                                      'limit': '1000',
                                                      'after': last_processed_isbn,
                                                      'modifiedSince': modified_since
-                                                 })
+                                                 },
+                                                 headers={})
 
         def should_call_api_with_authentication_token_if_given(self):
             # Given
@@ -141,7 +144,7 @@ class ProviderAPITest:
             self.provider_api.is_siret_registered(siret)
 
             # Then
-            requests.get.assert_called_once_with(url='http://example.com/stocks/12345678912345')
+            requests.get.assert_called_once_with(url='http://example.com/stocks/12345678912345', headers={})
 
         def should_returns_true_if_api_returns_200(self):
             # Given
