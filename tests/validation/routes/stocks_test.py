@@ -314,6 +314,26 @@ class CheckStockIsUpdatableTest:
         ]
 
     @clean_database
+    def test_fail_when_offer_is_from_fnacprovider(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        provider = get_provider_by_local_class('FnacStocks')
+        offer = create_offer_with_thing_product(venue, last_provider_id=provider.id, last_provider=provider)
+        stock = create_stock(id_at_providers='test', offer=offer, quantity=10)
+
+        repository.save(stock)
+
+        # When
+        with pytest.raises(ApiErrors) as error:
+            check_stock_is_updatable(stock)
+
+        # Then
+        assert error.value.errors['global'] == [
+            'Les offres importées ne sont pas modifiables'
+        ]
+
+    @clean_database
     def test_raise_an_error_when_event_is_expired(self, app):
         # Given
         offerer = create_offerer()

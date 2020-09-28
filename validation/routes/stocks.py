@@ -3,7 +3,7 @@ from typing import Dict, List
 from models import ApiErrors, OfferSQLEntity, StockSQLEntity
 
 
-def check_stocks_are_editable_for_offer(offer: OfferSQLEntity):
+def check_stocks_are_editable_for_offer(offer: OfferSQLEntity) -> None:
     if offer.isFromProvider:
         api_errors = ApiErrors()
         api_errors.add_error('global', 'Les offres importées ne sont pas modifiables')
@@ -14,8 +14,9 @@ def check_stock_is_updatable(stock: StockSQLEntity) -> None:
     local_class = stock.offer.lastProvider.localClass if stock.offer.lastProvider else ''
     is_titelive_generated_offer = stock.offer.isFromProvider is True and 'TiteLive' in local_class
     is_libraires_generated_offer = stock.offer.isFromProvider is True and 'Libraires' in local_class
+    is_fnac_generated_offer = stock.offer.isFromProvider is True and 'Fnac' in local_class
 
-    if is_titelive_generated_offer or is_libraires_generated_offer:
+    if is_titelive_generated_offer or is_libraires_generated_offer or is_fnac_generated_offer:
         api_errors = ApiErrors()
         api_errors.add_error('global', 'Les offres importées ne sont pas modifiables')
         raise api_errors
@@ -26,12 +27,12 @@ def check_stock_is_updatable(stock: StockSQLEntity) -> None:
         raise api_errors
 
 
-def check_request_has_offer_id(request_data: dict):
+def check_request_has_offer_id(request_data: dict) -> None:
     if 'offerId' not in request_data:
         raise ApiErrors({'offerId': ['Ce paramètre est obligatoire']})
 
 
-def check_dates_are_allowed_on_new_stock(request_data: dict, offer: OfferSQLEntity):
+def check_dates_are_allowed_on_new_stock(request_data: dict, offer: OfferSQLEntity) -> None:
     if offer.isThing:
         _forbid_dates_on_stock_for_thing_offer(request_data)
     else:
@@ -42,7 +43,7 @@ def check_dates_are_allowed_on_new_stock(request_data: dict, offer: OfferSQLEnti
             raise ApiErrors({'bookingLimitDatetime': ['Ce paramètre est obligatoire']})
 
 
-def check_dates_are_allowed_on_existing_stock(request_data: dict, offer: OfferSQLEntity):
+def check_dates_are_allowed_on_existing_stock(request_data: dict, offer: OfferSQLEntity) -> None:
     if offer.isThing:
         _forbid_dates_on_stock_for_thing_offer(request_data)
     else:
@@ -52,7 +53,8 @@ def check_dates_are_allowed_on_existing_stock(request_data: dict, offer: OfferSQ
         if 'bookingLimitDatetime' in request_data and request_data['bookingLimitDatetime'] is None:
             raise ApiErrors({'bookingLimitDatetime': ['Ce paramètre est obligatoire']})
 
-def _forbid_dates_on_stock_for_thing_offer(request_data):
+
+def _forbid_dates_on_stock_for_thing_offer(request_data: dict) -> None:
     if 'beginningDatetime' in request_data:
         raise ApiErrors(
             {'global': [
