@@ -62,6 +62,12 @@ def synchronize_fnac_stocks(app) -> None:
     fnac_stocks_provider_id = get_provider_by_local_class("FnacStocks").id
     synchronize_venue_providers_for_provider(fnac_stocks_provider_id)
 
+@log_cron
+@cron_context
+def synchronize_praxiel_stocks(app) -> None:
+    praxiel_stocks_provider_id = get_provider_by_local_class("PraxielStocks").id
+    synchronize_venue_providers_for_provider(praxiel_stocks_provider_id)
+
 
 @log_cron
 @cron_context
@@ -146,6 +152,10 @@ if __name__ == '__main__':
     scheduler.add_job(synchronize_fnac_stocks, 'cron',
                       [app],
                       day='*', hour='1')
+
+    scheduler.add_job(synchronize_praxiel_stocks, 'cron',
+                      [app],
+                      day='*', hour='0')
 
     scheduler.add_job(pc_old_remote_import_beneficiaries, 'cron',
                       [app],
