@@ -30,7 +30,12 @@ import LocalProviderInformation from '../LocalProviderInformation/LocalProviderI
 import { OffererName } from './OffererName'
 import { getDurationInHours, getDurationInMinutes } from '../utils/duration'
 import { VenueName } from './VenueName'
-import { isAllocineOffer, isTiteLiveOffer } from '../domain/localProvider'
+import {
+  isAllocineOffer,
+  isFnacOffer,
+  isLibrairesOffer,
+  isTiteLiveOffer,
+} from '../domain/localProvider'
 import { pluralize } from '../../../../utils/pluralize'
 
 const DURATION_LIMIT_TIME = 100
@@ -97,7 +102,7 @@ class OfferEdition extends PureComponent {
       )
     }
 
-    if (!formVenueId && (!venue && prevProps.venue)) {
+    if (!formVenueId && !venue && prevProps.venue) {
       dispatch(
         mergeForm('offer', {
           venueId: null,
@@ -280,7 +285,12 @@ class OfferEdition extends PureComponent {
 
     const offerFromTiteLive = isTiteLiveOffer(offer)
     const offerFromAllocine = isAllocineOffer(offer)
-    const offerFromLocalProvider = offerFromTiteLive || offerFromAllocine
+    const offerFromLibraires = isLibrairesOffer(offer)
+    const offerFromFnac = isFnacOffer(offer)
+    const offerFromLocalProvider =
+      offerFromTiteLive || offerFromAllocine || offerFromLibraires || offerFromFnac
+    const areStocksImportedFromProviderWhichCannotBeUpdated =
+      offerFromTiteLive || offerFromLibraires || offerFromFnac
 
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
     const offererId = get(offerer, 'id')
@@ -442,7 +452,11 @@ class OfferEdition extends PureComponent {
                     </span>
                     <button
                       className="button is-primary is-outlined is-small manage-stock"
-                      disabled={!offerFromLocalProvider || offerFromAllocine ? '' : 'disabled'}
+                      disabled={
+                        !areStocksImportedFromProviderWhichCannotBeUpdated || offerFromAllocine
+                          ? ''
+                          : 'disabled'
+                      }
                       id="manage-stocks"
                       onClick={this.handleOnClick(query)}
                       type="button"
@@ -462,6 +476,8 @@ class OfferEdition extends PureComponent {
           {offerFromLocalProvider && (
             <LocalProviderInformation
               isAllocine={offerFromAllocine}
+              isFnac={offerFromFnac}
+              isLibraires={offerFromLibraires}
               isTiteLive={offerFromTiteLive}
               offererId={offererId}
             />

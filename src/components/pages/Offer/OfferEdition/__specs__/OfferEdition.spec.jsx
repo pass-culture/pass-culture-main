@@ -10,7 +10,7 @@ import { VenueName } from '../VenueName'
 import { OffererName } from '../OffererName'
 import StocksManagerContainer from '../../StocksManager/StocksManagerContainer'
 
-describe('components | OfferEdition ', () => {
+describe('components | OfferEdition', () => {
   let dispatch
   let props
   let history
@@ -274,6 +274,132 @@ describe('components | OfferEdition ', () => {
             isThing: false,
             lastProvider: {
               name: 'Titelive',
+            },
+            activeMediation: {
+              id: 'MED',
+              isActive: true,
+            },
+            mediationsIds: ['MED'],
+          }
+        })
+
+        it('should not allow to edit title', () => {
+          // given
+          props.match.params = {
+            offerId: 'VAG',
+          }
+          props.selectedOfferType = {
+            type: 'Event',
+          }
+
+          // when
+          const wrapper = shallow(<OfferEdition {...props} />)
+
+          // then
+          const form_fields = wrapper.find(Field)
+          expect(form_fields.find("[label='Titre de l’offre']").prop('readOnly')).toBe(true)
+        })
+
+        it('should not allow to edit description nor withdrawalDetails', () => {
+          // given
+          props.match.params = {
+            offerId: 'VAG',
+          }
+          props.selectedOfferType = {
+            type: 'Event',
+          }
+
+          // when
+          const wrapper = shallow(<OfferEdition {...props} />)
+
+          // then
+          const form_fields = wrapper.find(Field)
+          expect(form_fields.find("[label='Description']").prop('readOnly')).toBe(true)
+          expect(form_fields.find("[label='Informations de retrait']").prop('readOnly')).toBe(true)
+        })
+
+        it('should not be possible to manage stocks', () => {
+          // when
+          const wrapper = shallow(<OfferEdition {...props} />)
+
+          // then
+          const manageStockButton = wrapper.find('#manage-stocks')
+          expect(manageStockButton.prop('disabled')).toStrictEqual('disabled')
+        })
+      })
+
+      describe('when the offer is imported from Fnac', () => {
+        beforeEach(() => {
+          props.offer = {
+            id: 'VAG',
+            productId: '6GD',
+            isEvent: true,
+            isThing: false,
+            lastProvider: {
+              name: 'Fnac',
+            },
+            activeMediation: {
+              id: 'MED',
+              isActive: true,
+            },
+            mediationsIds: ['MED'],
+          }
+        })
+
+        it('should not allow to edit title', () => {
+          // given
+          props.match.params = {
+            offerId: 'VAG',
+          }
+          props.selectedOfferType = {
+            type: 'Event',
+          }
+
+          // when
+          const wrapper = shallow(<OfferEdition {...props} />)
+
+          // then
+          const form_fields = wrapper.find(Field)
+          expect(form_fields.find("[label='Titre de l’offre']").prop('readOnly')).toBe(true)
+        })
+
+        it('should not allow to edit description nor withdrawalDetails', () => {
+          // given
+          props.match.params = {
+            offerId: 'VAG',
+          }
+          props.selectedOfferType = {
+            type: 'Event',
+          }
+
+          // when
+          const wrapper = shallow(<OfferEdition {...props} />)
+
+          // then
+          const form_fields = wrapper.find(Field)
+          expect(form_fields.find("[label='Description']").prop('readOnly')).toBe(true)
+          expect(form_fields.find("[label='Informations de retrait']").prop('readOnly')).toBe(true)
+        })
+
+        it('should not be possible to manage stocks', () => {
+          // when
+          const wrapper = shallow(<OfferEdition {...props} />)
+
+          // then
+          const manageStockButton = wrapper.find('#manage-stocks')
+          expect(manageStockButton.prop('disabled')).toStrictEqual('disabled')
+        })
+      })
+
+      describe('when the offer is imported from LesLibraires', () => {
+        beforeEach(() => {
+          props.offer = {
+            id: 'VAG',
+            productId: '6GD',
+            isEvent: true,
+            isThing: false,
+            lastProvider: {
+              name: 'Leslibraires.fr',
             },
             activeMediation: {
               id: 'MED',

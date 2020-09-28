@@ -55,4 +55,23 @@ describe('src | getProviderInfo', () => {
       })
     })
   })
+
+  describe('when offer came from Fnac', () => {
+    it('should compute a provider info object accordingly', () => {
+      // given
+      const isAllocine = false
+      const isLibraires = false
+      const isTiteLive = false
+      const isFnac = true
+
+      // when
+      const providerInfo = getProviderInfo(isTiteLive, isAllocine, isLibraires, isFnac)
+
+      // then
+      expect(providerInfo).toStrictEqual({
+        icon: PROVIDER_ICONS['FnacStocks'],
+        name: 'Fnac',
+      })
+    })
+  })
 })

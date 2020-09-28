@@ -14,12 +14,13 @@ export const mapStateToProps = (state, ownProps) => {
     isAllocine,
     isLibraires,
     isTitelive,
+    isFnac,
     offererId,
   } = ownProps
 
   const offer = selectOfferById(state, offerId)
   const { name: offerName, venueId, thumbUrl } = offer
-  const providerInfo = getProviderInfo(isTitelive, isAllocine, isLibraires)
+  const providerInfo = getProviderInfo(isTitelive, isAllocine, isLibraires, isFnac)
 
   return {
     offererId,
@@ -30,7 +31,4 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export default compose(
-  withFrenchQueryRouter,
-  connect(mapStateToProps)
-)(LocalProviderInformation)
+export default compose(withFrenchQueryRouter, connect(mapStateToProps))(LocalProviderInformation)

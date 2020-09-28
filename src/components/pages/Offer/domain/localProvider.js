@@ -14,4 +14,8 @@ const isAllocineOffer = (offer = null) => {
   return doesLastProviderExists(offer) ? offer.lastProvider.name === 'Allociné' : false
 }
 
-export { isAllocineOffer, isLibrairesOffer, isTiteLiveOffer }
+const isFnacOffer = (offer = null) => {
+  return doesLastProviderExists(offer) ? offer.lastProvider.name === 'Fnac' : false
+}
+
+export { isAllocineOffer, isLibrairesOffer, isTiteLiveOffer, isFnacOffer }
