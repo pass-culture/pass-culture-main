@@ -14,6 +14,12 @@ from mailjet_rest import Client
 from requests import Response
 from requests.auth import _basic_auth_str
 
+# We want to load the env variables BEFORE importing anything
+# because some env variables will get evaluated as soon as the
+# module is imported (utils.mailing for example)
+from load_environment_variables import load_environment_variables
+load_environment_variables()
+
 from install_database_extensions import install_database_extensions
 from local_providers.install import install_local_providers
 from models.db import db

@@ -82,7 +82,7 @@ class DeleteOfferIdsTest:
         delete_offer_ids(client=client)
 
         # Then
-        client.ltrim.assert_called_once_with('offer_ids', 1000, -1)
+        client.ltrim.assert_called_once_with('offer_ids', 10000, -1)
 
 
 class AddVenueIdTest:
@@ -108,7 +108,7 @@ class GetVenueIdsTest:
         get_venue_ids(client=client)
 
         # Then
-        client.lrange.assert_called_once_with('venue_ids', 0, 1000)
+        client.lrange.assert_called_once_with('venue_ids', 0, 1)
 
     def test_should_return_empty_array_when_exception(self):
         # Given
@@ -133,7 +133,7 @@ class DeleteVenueIdsTest:
         delete_venue_ids(client=client)
 
         # Then
-        client.ltrim.assert_called_once_with('venue_ids', 1000, -1)
+        client.ltrim.assert_called_once_with('venue_ids', 1, -1)
 
 
 class AddVenueProviderTest:
@@ -446,7 +446,7 @@ class GetOfferIdsInErrorTest:
         get_offer_ids_in_error(client=client)
 
         # Then
-        client.lrange.assert_called_once_with('offer_ids_in_error', 0, 1000)
+        client.lrange.assert_called_once_with('offer_ids_in_error', 0, 10000)
 
     def test_should_return_empty_array_when_exception(self):
         # Given
@@ -471,4 +471,4 @@ class DeleteOfferIdsInErrorTest:
         delete_offer_ids_in_error(client=client)
 
         # Then
-        client.ltrim.assert_called_once_with('offer_ids_in_error', 1000, -1)
+        client.ltrim.assert_called_once_with('offer_ids_in_error', 10000, -1)
