@@ -1,10 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import ReactTooltip from 'react-tooltip'
-
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
 import StocksProviderForm from './StocksProviderForm/StocksProviderFormContainer'
-
 import {
   ALLOCINE_PROVIDER_OPTION,
   DEFAULT_PROVIDER_OPTION,
@@ -117,6 +115,11 @@ class VenueProvidersManager extends PureComponent {
     } = this.state
     const hasAtLeastOneProvider = providers.length > 0
     const hasNoVenueProvider = venueProviders.length === 0
+    const isStocksProvider =
+      providerSelectedIsTitelive ||
+      providerSelectedIsLibraires ||
+      providerSelectedIsFnac ||
+      providerSelectedIsPraxiel
 
     return (
       <div className="venue-providers-manager section">
@@ -174,17 +177,14 @@ class VenueProvidersManager extends PureComponent {
                   />
                 )}
 
-                {(providerSelectedIsTitelive ||
-                  providerSelectedIsLibraires ||
-                  providerSelectedIsFnac ||
-                  providerSelectedIsPraxiel) && (
-                    <StocksProviderForm
-                      cancelProviderSelection={this.cancelProviderSelection}
-                      offererId={match.params.offererId}
-                      providerId={providerId}
-                      venueId={match.params.venueId}
-                      venueSiret={venueSiret}
-                    />
+                {isStocksProvider && (
+                  <StocksProviderForm
+                    cancelProviderSelection={this.cancelProviderSelection}
+                    offererId={match.params.offererId}
+                    providerId={providerId}
+                    venueId={match.params.venueId}
+                    venueSiret={venueSiret}
+                  />
                 )}
               </div>
             </li>

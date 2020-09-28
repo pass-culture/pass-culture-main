@@ -1,8 +1,8 @@
-import React, { PureComponent } from 'react'
-import { Form } from 'react-final-form'
 import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import { Form } from 'react-final-form'
 
-class StocksProviderForm extends PureComponent {
+class StocksProviderForm extends Component {
   constructor() {
     super()
     this.state = {

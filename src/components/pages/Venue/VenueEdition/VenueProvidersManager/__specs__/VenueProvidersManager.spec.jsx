@@ -1,13 +1,12 @@
 import { mount } from 'enzyme'
 import React from 'react'
-
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+import { getStubStore } from '../../../../../../utils/stubStore'
+import AllocineProviderFormContainer from '../AllocineProviderForm/AllocineProviderFormContainer'
+import StocksProviderForm from '../StocksProviderForm/StocksProviderForm'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 import VenueProvidersManager from '../VenueProvidersManager'
-import { Provider } from 'react-redux'
-import { getStubStore } from '../../../../../../utils/stubStore'
-import { MemoryRouter } from 'react-router'
-import StocksProviderForm from '../StocksProviderForm/StocksProviderForm'
-import AllocineProviderFormContainer from '../AllocineProviderForm/AllocineProviderFormContainer'
 
 describe('src | VenueProvidersManager', () => {
   let props
@@ -165,10 +164,10 @@ describe('src | VenueProvidersManager', () => {
   describe('handleChange', () => {
     it('should display the allocine form when the user choose Allocine onChange', () => {
       // given
-      props.providers = [{ id: 'EM', name: 'Allociné', lastSyncDate: '2020-01-01' }]
+      props.providers = [{ id: 'fake-allocine', name: 'Allociné', lastSyncDate: '2020-01-01' }]
       const chooseAllocineEvent = {
         target: {
-          value: '{"id":"EM","name":"Allociné"}',
+          value: '{"id":"fake-allocine","name":"Allociné"}',
         },
       }
       const wrapper = mount(
@@ -190,10 +189,10 @@ describe('src | VenueProvidersManager', () => {
 
     it('should display the allocine form when the user choose Allocine onBlur', () => {
       // given
-      props.providers = [{ id: 'EM', name: 'Allociné', lastSyncDate: '2020-01-01' }]
+      props.providers = [{ id: 'fake-allocine', name: 'Allociné', lastSyncDate: '2020-01-01' }]
       const chooseAllocineEvent = {
         target: {
-          value: '{"id":"EM","name":"Allociné"}',
+          value: '{"id":"fake-allocine","name":"Allociné"}',
         },
       }
       const wrapper = mount(
@@ -216,12 +215,13 @@ describe('src | VenueProvidersManager', () => {
     it('should display the titelive form when the user choose Titelive', () => {
       // given
       props.providers = [
-        { id: 'AM', name: 'Allociné' },
-        { id: 'TS', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
+        { id: 'fake-allocine', name: 'Allociné' },
+        { id: 'fake-titelive', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
       ]
       const chooseTiteliveEvent = {
         target: {
-          value: '{"id":"TS","name":"TiteLive Stocks (Epagine / Place des libraires.com)"}',
+          value:
+            '{"id":"fake-titelive","name":"TiteLive Stocks (Epagine / Place des libraires.com)"}',
         },
       }
       const wrapper = mount(
@@ -244,12 +244,12 @@ describe('src | VenueProvidersManager', () => {
     it('should display the libraires form when the user choose Libraires', () => {
       // given
       props.providers = [
-        { id: 'LL', name: 'Leslibraires.fr' },
-        { id: 'TS', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
+        { id: 'fake-libraires', name: 'Leslibraires.fr' },
+        { id: 'fake-titelive', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
       ]
       const chooseLibrairesEvent = {
         target: {
-          value: '{"id":"LL","name":"Leslibraires.fr"}',
+          value: '{"id":"fake-libraires","name":"Leslibraires.fr"}',
         },
       }
       const wrapper = mount(
@@ -272,12 +272,12 @@ describe('src | VenueProvidersManager', () => {
     it('should display the Fnac form when the user choose Fnac', () => {
       // given
       props.providers = [
-        { id: 'FC', name: 'FNAC' },
-        { id: 'TS', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
+        { id: 'fake-fnac', name: 'FNAC' },
+        { id: 'fake-titelive', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
       ]
       const chooseFnacEvent = {
         target: {
-          value: '{"id":"FC","name":"FNAC"}',
+          value: '{"id":"fake-fnac","name":"FNAC"}',
         },
       }
       const wrapper = mount(
@@ -300,12 +300,12 @@ describe('src | VenueProvidersManager', () => {
     it('should display the Praxiel form when the user choose Praxiel', () => {
       // given
       props.providers = [
-        { id: 'FC', name: 'FNAC' },
-        { id: 'PI', name: 'Praxiel/Inférence' },
+        { id: 'fake-fnac', name: 'FNAC' },
+        { id: 'fake-praxiel', name: 'Praxiel/Inférence' },
       ]
       const choosePraxielEvent = {
         target: {
-          value: '{"id":"PI","name":"Praxiel/Inférence"}',
+          value: '{"id":"fake-praxiel","name":"Praxiel/Inférence"}',
         },
       }
       const wrapper = mount(
@@ -329,7 +329,7 @@ describe('src | VenueProvidersManager', () => {
       // given
       const event = {
         target: {
-          value: '{"id":"AE", "requireProviderIdentifier": true}',
+          value: '{"id":"fake-allocine", "requireProviderIdentifier": true}',
         },
       }
       const wrapper = mount(<VenueProvidersManager {...props} />)
