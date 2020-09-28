@@ -75,7 +75,7 @@ class DoSyncVenueProviderTest:
         venue1 = create_venue(offerer)
         venue_provider = create_venue_provider(venue1, titelive_provider)
         repository.save(venue_provider)
-        update_venue_provider_command = f"PYTHONPATH=. python scripts/pc.py update_providables" \
+        update_venue_provider_command = f"python scripts/pc.py update_providables" \
                                         f" --venue-provider-id {venue_provider.id}"
 
         # When

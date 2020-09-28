@@ -79,8 +79,7 @@ class RunIndexingTest:
             'providerId': '2',
             'venueId': 3
         }
-        run_algolia_venue_provider_command = f"PYTHONPATH=. " \
-                                             f"python scripts/pc.py process_venue_provider_offers_for_algolia " \
+        run_algolia_venue_provider_command = f"python scripts/pc.py process_venue_provider_offers_for_algolia " \
                                              f"--provider-id {venue_provider['providerId']} " \
                                              f"--venue-provider-id {venue_provider['id']} " \
                                              f"--venue-id {venue_provider['venueId']}"

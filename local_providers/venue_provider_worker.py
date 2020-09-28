@@ -26,7 +26,7 @@ def update_venues_for_specific_provider(provider_id: int):
 
 
 def do_sync_venue_provider(venue_provider: VenueProvider):
-    update_venue_provider_command = f"PYTHONPATH=. python scripts/pc.py update_providables" \
+    update_venue_provider_command = f"python scripts/pc.py update_providables" \
                                     f" --venue-provider-id {venue_provider.id}"
     try:
         container_id = run_process_in_one_off_container(update_venue_provider_command)

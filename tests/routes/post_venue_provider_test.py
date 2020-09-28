@@ -54,7 +54,7 @@ class Post:
             assert venue_provider.venueIdAtOfferProvider == '12345678912345'
             assert 'id' in response.json
             venue_provider_id = response.json['id']
-            mock_subprocess.assert_called_once_with('PYTHONPATH="." python scripts/pc.py update_providables'
+            mock_subprocess.assert_called_once_with('python scripts/pc.py update_providables'
                                                     + f' --venue-provider-id {dehumanize(venue_provider_id)}',
                                                     cwd=API_ROOT_PATH,
                                                     shell=True)

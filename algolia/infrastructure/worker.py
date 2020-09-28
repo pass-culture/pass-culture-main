@@ -38,8 +38,7 @@ def _run_indexing(client: Redis, venue_provider: Dict):
     provider_id = venue_provider['providerId']
     venue_id = venue_provider['venueId']
 
-    run_algolia_venue_provider_command = f"PYTHONPATH=. " \
-                                         f"python scripts/pc.py process_venue_provider_offers_for_algolia " \
+    run_algolia_venue_provider_command = f"python scripts/pc.py process_venue_provider_offers_for_algolia " \
                                          f"--provider-id {provider_id} " \
                                          f"--venue-provider-id {venue_provider_id} " \
                                          f"--venue-id {venue_id}"
