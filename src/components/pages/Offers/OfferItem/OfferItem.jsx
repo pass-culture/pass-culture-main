@@ -53,7 +53,8 @@ const OfferItem = ({
     }
   }
 
-  const computeNumberOfSoldOutStocks = () => stocks.filter(stock => stock.remainingQuantity === 0).length
+  const computeNumberOfSoldOutStocks = () =>
+    stocks.filter(stock => stock.remainingQuantity === 0).length
 
   const computeRemainingStockValue = stocks => {
     let totalRemainingStock = 0
@@ -70,7 +71,8 @@ const OfferItem = ({
   const stockSize = stocks ? stocks.length : null
   const isOfferEditable = offer ? offer.isEditable : null
   const isOfferInactiveOrExpired = !offer.isActive || offer.hasBookingLimitDatetimesPassed
-  const shouldShowSoldOutWarning = computeNumberOfSoldOutStocks(stocks) > 0 && !isOfferFullyBooked(stocks)
+  const shouldShowSoldOutWarning =
+    computeNumberOfSoldOutStocks(stocks) > 0 && !isOfferFullyBooked(stocks)
   const offerStatus = computeOfferStatus(offer, stocks)
 
   return (
@@ -110,7 +112,7 @@ const OfferItem = ({
         </span>
       </td>
       <td className="venue-column">
-        {(venue && venue.publicName) || venue.name}
+        {venue && (venue.publicName || venue.name)}
       </td>
       <td className="stock-column">
         {computeRemainingStockValue(stocks)}

@@ -10,7 +10,6 @@ import Main from '../../layout/Main'
 
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
-import { selectOffersByOffererIdAndVenueId } from '../../../selectors/data/offersSelectors'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 
 export const createLinkToOfferCreation = (venueId, offererId) => {
@@ -67,24 +66,6 @@ class Offers extends PureComponent {
     }
   }
 
-  buildQueryParams = (nameSearchValue, venueId, page) => {
-    const queryParams = []
-
-    if (nameSearchValue !== '') {
-      queryParams.push('name=' + nameSearchValue)
-    }
-
-    if (venueId) {
-      queryParams.push('venueId=' + venueId)
-    }
-
-    if (page) {
-      queryParams.push('page=' + page)
-    }
-
-    return queryParams.join('&')
-  }
-
   handleRequestData = () => {
     const { loadTypes, loadOffers, query, types } = this.props
     const { nameSearchValue, venueId } = this.state
@@ -92,20 +73,9 @@ class Offers extends PureComponent {
 
     types.length === 0 && loadTypes()
 
-    const queryParams = query.parse()
-    const apiPath = `/offers?${this.buildQueryParams(nameSearchValue, venueId, page)}`
-
-    const handleSuccess = (state, action) => {
-      const { payload } = action
-      const { headers } = payload
-      const apiQueryParams = translateQueryParamsToApiParams(queryParams)
-      const { offererId, venueId } = apiQueryParams
-      const nextOffers = selectOffersByOffererIdAndVenueId(state, offererId, venueId)
-      const totalOffersCount = parseInt(headers['total-data-count'], 10)
-      const currentOffersCount = nextOffers.length
-
+    const handleSuccess = (page, pageCount) => {
       this.setState({
-        hasMore: currentOffersCount < totalOffersCount,
+        hasMore: page < pageCount,
         isLoading: false,
       })
     }
@@ -116,7 +86,7 @@ class Offers extends PureComponent {
       })
 
     this.setState({ hasMore: true, isLoading: true }, () =>
-      loadOffers({ apiPath, handleSuccess, handleFail })
+      loadOffers({ nameSearchValue, venueId, page }, handleSuccess, handleFail)
     )
   }
 
@@ -171,7 +141,6 @@ class Offers extends PureComponent {
     const apiParams = translateQueryParamsToApiParams(queryParams)
     const { venueId, offererId } = apiParams
     const { hasMore, isLoading, nameSearchValue } = this.state
-
     const createOfferTo = createLinkToOfferCreation(venueId, offererId)
 
     const actionLink = !isAdmin ? (

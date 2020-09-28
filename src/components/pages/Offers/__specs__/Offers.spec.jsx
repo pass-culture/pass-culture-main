@@ -75,11 +75,15 @@ describe('src | components | pages | Offers | Offers', () => {
         )
 
         // then
-        expect(props.loadOffers).toHaveBeenCalledWith({
-          apiPath: '/offers?',
-          handleSuccess: expect.any(Function),
-          handleFail: expect.any(Function),
-        })
+        expect(props.loadOffers).toHaveBeenCalledWith(
+          {
+            nameSearchValue: '',
+            page: undefined,
+            venueId: undefined,
+          },
+          expect.any(Function),
+          expect.any(Function)
+        )
       })
 
       it('should display column titles when offers are returned', () => {

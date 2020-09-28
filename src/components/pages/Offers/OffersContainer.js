@@ -7,9 +7,9 @@ import Offers from './Offers'
 import { withRequiredLogin } from '../../hocs'
 import { selectOffererById } from '../../../selectors/data/offerersSelectors'
 import { selectVenueById } from '../../../selectors/data/venuesSelectors'
-import { offerNormalizer } from '../../../utils/normalizers'
 import { translateQueryParamsToApiParams } from '../../../utils/translate'
 import { selectOffersByOffererIdAndVenueId } from '../../../selectors/data/offersSelectors'
+import { fetchFromApiWithCredentials } from '../../../utils/fetch'
 
 export const mapStateToProps = (state, ownProps) => {
   const { query } = ownProps
@@ -25,6 +25,24 @@ export const mapStateToProps = (state, ownProps) => {
     types: state.data.types,
     venue: selectVenueById(state, venueId),
   }
+}
+
+const buildQueryParams = ({ nameSearchValue, venueId, page }) => {
+  const queryParams = []
+
+  if (nameSearchValue !== '') {
+    queryParams.push('name=' + nameSearchValue)
+  }
+
+  if (venueId) {
+    queryParams.push('venueId=' + venueId)
+  }
+
+  if (page) {
+    queryParams.push('page=' + page)
+  }
+
+  return queryParams.join('&')
 }
 
 export const mapDispatchToProps = dispatch => {
@@ -66,13 +84,20 @@ export const mapDispatchToProps = dispatch => {
       )
     },
 
-    loadOffers: config =>
-      dispatch(
-        requestData({
-          ...config,
-          normalizer: offerNormalizer,
+    loadOffers: (filters, handleSuccess, handleFail) => {
+      fetchFromApiWithCredentials(`/offers?${buildQueryParams(filters)}`)
+        .then(({ offers, page, page_count: pageCount }) => {
+          dispatch({
+            type: 'GET_PAGINATED_OFFERS',
+            payload: offers,
+          })
+
+          handleSuccess(page, pageCount)
         })
-      ),
+        .catch(() => {
+          handleFail()
+        })
+    },
 
     loadTypes: () => dispatch(requestData({ apiPath: '/types' })),
 
@@ -80,10 +105,4 @@ export const mapDispatchToProps = dispatch => {
   }
 }
 
-export default compose(
-  withRequiredLogin,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(Offers)
+export default compose(withRequiredLogin, connect(mapStateToProps, mapDispatchToProps))(Offers)
