@@ -289,7 +289,7 @@ class OfferEdition extends PureComponent {
     const offerFromFnac = isFnacOffer(offer)
     const offerFromLocalProvider =
       offerFromTiteLive || offerFromAllocine || offerFromLibraires || offerFromFnac
-    const areStocksImportedFromProviderWhichCannotBeUpdated =
+    const offerFromNonEditableLocalProvider =
       offerFromTiteLive || offerFromLibraires || offerFromFnac
 
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
@@ -453,9 +453,7 @@ class OfferEdition extends PureComponent {
                     <button
                       className="button is-primary is-outlined is-small manage-stock"
                       disabled={
-                        !areStocksImportedFromProviderWhichCannotBeUpdated || offerFromAllocine
-                          ? ''
-                          : 'disabled'
+                        !offerFromNonEditableLocalProvider || offerFromAllocine ? '' : 'disabled'
                       }
                       id="manage-stocks"
                       onClick={this.handleOnClick(query)}
@@ -475,11 +473,8 @@ class OfferEdition extends PureComponent {
           </div>
           {offerFromLocalProvider && (
             <LocalProviderInformation
-              isAllocine={offerFromAllocine}
-              isFnac={offerFromFnac}
-              isLibraires={offerFromLibraires}
-              isTiteLive={offerFromTiteLive}
               offererId={offererId}
+              providerName={offer.lastProvider.name.toLowerCase()}
             />
           )}
           {offer && <MediationsManager />}

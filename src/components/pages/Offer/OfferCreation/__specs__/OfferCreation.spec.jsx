@@ -8,7 +8,7 @@ import MediationsManager from '../../MediationsManager/MediationsManagerContaine
 import StocksManagerContainer from '../../StocksManager/StocksManagerContainer'
 import OfferCreation from '../OfferCreation'
 
-describe('src  OfferCreation ', () => {
+describe('src | OfferCreation', () => {
   let dispatch
   let props
 
@@ -638,9 +638,8 @@ describe('src  OfferCreation ', () => {
         // then
         const localProviderInformationComponent = wrapper.find(LocalProviderInformation)
         expect(localProviderInformationComponent).toHaveLength(1)
+        expect(localProviderInformationComponent.prop('providerName')).toBe('titelive stocks')
         expect(localProviderInformationComponent.prop('offererId')).toBe('AZERT')
-        expect(localProviderInformationComponent.prop('isTiteLive')).toBe(true)
-        expect(localProviderInformationComponent.prop('isAllocine')).toBe(false)
       })
     })
 

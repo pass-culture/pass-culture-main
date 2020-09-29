@@ -32,7 +32,12 @@ import OfferPreviewLink from '../../../layout/OfferPreviewLink/OfferPreviewLink'
 import Insert from '../../../layout/Insert/Insert'
 
 import offerIsRefundable from '../domain/offerIsRefundable'
-import { isAllocineOffer, isLibrairesOffer, isTiteLiveOffer } from '../domain/localProvider'
+import {
+  isAllocineOffer,
+  isFnacOffer,
+  isLibrairesOffer,
+  isTiteLiveOffer,
+} from '../domain/localProvider'
 import { pluralize } from '../../../../utils/pluralize'
 
 const DURATION_LIMIT_TIME = 100
@@ -101,7 +106,7 @@ class OfferCreation extends PureComponent {
       )
     }
 
-    if (!formVenueId && (!venue && prevProps.venue)) {
+    if (!formVenueId && !venue && prevProps.venue) {
       dispatch(
         mergeForm('offer', {
           venueId: null,
@@ -345,7 +350,11 @@ class OfferCreation extends PureComponent {
     const offerFromAllocine = isAllocineOffer(offer)
     const offerFromLibraires = isLibrairesOffer(offer)
     const offerFromTiteLive = isTiteLiveOffer(offer)
-    const offerFromLocalProvider = offerFromTiteLive || offerFromAllocine || offerFromLibraires
+    const offerFromFnac = isFnacOffer(offer)
+    const offerFromLocalProvider =
+      offerFromTiteLive || offerFromAllocine || offerFromLibraires || offerFromFnac
+    const offerFromNonEditableLocalProvider =
+      offerFromTiteLive || offerFromLibraires || offerFromFnac
 
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
     const offererId = get(offerer, 'id')
@@ -526,7 +535,7 @@ class OfferCreation extends PureComponent {
                     </span>
                     <button
                       className="button is-primary is-outlined is-small manage-stock"
-                      disabled={offerFromTiteLive || offerFromLibraires ? 'disabled' : ''}
+                      disabled={offerFromNonEditableLocalProvider ? 'disabled' : ''}
                       id="manage-stocks"
                       onClick={this.handleOnClick(query)}
                       type="button"
@@ -545,10 +554,8 @@ class OfferCreation extends PureComponent {
           </div>
           {offerFromLocalProvider && (
             <LocalProviderInformation
-              isAllocine={offerFromAllocine}
-              isLibraires={offerFromLibraires}
-              isTiteLive={offerFromTiteLive}
               offererId={offererId}
+              providerName={offer.lastProvider.name.toLowerCase()}
             />
           )}
           {!isCreatedEntity && offer && <MediationsManager />}

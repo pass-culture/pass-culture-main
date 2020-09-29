@@ -3,17 +3,16 @@ import { PROVIDER_ICONS } from '../../../../utils/providers'
 
 describe('src | getProviderInfo', () => {
   describe('when offer came from Tite live', () => {
-    it('should compute a provider info object accordingly', () => {
+    it('should return its icon and label', () => {
       // given
-      const isAllocine = false
-      const isLibraires = false
-      const isTiteLive = true
+      const titeliveId = 'titelive stocks'
 
       // when
-      const providerInfo = getProviderInfo(isTiteLive, isAllocine, isLibraires)
+      const providerInfo = getProviderInfo(titeliveId)
 
       // then
       expect(providerInfo).toStrictEqual({
+        id: 'titelive',
         icon: PROVIDER_ICONS['TiteLiveStocks'],
         name: 'Tite Live',
       })
@@ -21,17 +20,16 @@ describe('src | getProviderInfo', () => {
   })
 
   describe('when offer came from Allociné', () => {
-    it('should compute a provider info object accordingly', () => {
+    it('should return its icon and label', () => {
       // given
-      const isAllocine = true
-      const isLibraires = false
-      const isTiteLive = false
+      const allocineId = 'allociné'
 
       // when
-      const providerInfo = getProviderInfo(isTiteLive, isAllocine, isLibraires)
+      const providerInfo = getProviderInfo(allocineId)
 
       // then
       expect(providerInfo).toStrictEqual({
+        id: 'allociné',
         icon: PROVIDER_ICONS['AllocineStocks'],
         name: 'Allociné',
       })
@@ -39,17 +37,16 @@ describe('src | getProviderInfo', () => {
   })
 
   describe('when offer came from Libraires', () => {
-    it('should compute a provider info object accordingly', () => {
+    it('should return its icon and label', () => {
       // given
-      const isAllocine = false
-      const isLibraires = true
-      const isTiteLive = false
+      const leslibrairesId = 'leslibraires.fr'
 
       // when
-      const providerInfo = getProviderInfo(isTiteLive, isAllocine, isLibraires)
+      const providerInfo = getProviderInfo(leslibrairesId)
 
       // then
       expect(providerInfo).toStrictEqual({
+        id: 'leslibraires.fr',
         icon: PROVIDER_ICONS['LibrairesStocks'],
         name: 'Leslibraires.fr',
       })
@@ -57,18 +54,16 @@ describe('src | getProviderInfo', () => {
   })
 
   describe('when offer came from Fnac', () => {
-    it('should compute a provider info object accordingly', () => {
+    it('should return its icon and label', () => {
       // given
-      const isAllocine = false
-      const isLibraires = false
-      const isTiteLive = false
-      const isFnac = true
+      const fnacId = 'fnac'
 
       // when
-      const providerInfo = getProviderInfo(isTiteLive, isAllocine, isLibraires, isFnac)
+      const providerInfo = getProviderInfo(fnacId)
 
       // then
       expect(providerInfo).toStrictEqual({
+        id: 'fnac',
         icon: PROVIDER_ICONS['FnacStocks'],
         name: 'Fnac',
       })

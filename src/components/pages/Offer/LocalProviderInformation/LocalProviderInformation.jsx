@@ -1,10 +1,10 @@
-import React, { PureComponent } from 'react'
-import Thumb from '../../../layout/Thumb'
-import Icon from '../../../layout/Icon'
-import ReactTooltip from 'react-tooltip'
 import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import ReactTooltip from 'react-tooltip'
+import Icon from '../../../layout/Icon'
+import Thumb from '../../../layout/Thumb'
 
-class LocalProviderInformation extends PureComponent {
+class LocalProviderInformation extends Component {
   componentDidMount() {
     ReactTooltip.rebuild()
   }
@@ -12,17 +12,12 @@ class LocalProviderInformation extends PureComponent {
   render() {
     const { offererId, providerInfo, thumbUrl, venueId } = this.props
 
-    const tooltip =
-      '<div>' +
-      '<p>Vous pouvez modifier vos choix de synchronisation sur' +
-      " <a href='/structures/" +
-      offererId +
-      '/lieux/' +
-      venueId +
-      "'>la page du lieu</a>" +
-      '  qui présente cette offre, dans la section "Importation d’offres".' +
-      '</p>' +
-      '</div>'
+    const tooltip = `<div>
+        <p>Vous pouvez modifier vos choix de synchronisation sur
+          <a href="/structures/${offererId}/lieux/${venueId}">la page du lieu</a>
+          qui présente cette offre, dans la section "Importation d’offres".
+        </p>
+      </div>`
 
     return (
       <div className="provider-information">
@@ -50,12 +45,9 @@ class LocalProviderInformation extends PureComponent {
               </span>
             </div>
           </div>
-          <div className="provider-explanation">
-            <p>
-              {'Le visuel par défaut, les informations et le stock de cette offre sont synchronisés' +
-                ` avec les données ${providerInfo.name} tous les soirs.`}
-            </p>
-          </div>
+          <p className="provider-explanation">
+            {`Le visuel par défaut, les informations et le stock de cette offre sont synchronisés avec les données ${providerInfo.name} tous les soirs.`}
+          </p>
         </div>
       </div>
     )

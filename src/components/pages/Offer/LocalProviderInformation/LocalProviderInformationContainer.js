@@ -11,16 +11,13 @@ export const mapStateToProps = (state, ownProps) => {
     match: {
       params: { offerId },
     },
-    isAllocine,
-    isLibraires,
-    isTitelive,
-    isFnac,
+    providerName,
     offererId,
   } = ownProps
 
   const offer = selectOfferById(state, offerId)
   const { name: offerName, venueId, thumbUrl } = offer
-  const providerInfo = getProviderInfo(isTitelive, isAllocine, isLibraires, isFnac)
+  const providerInfo = getProviderInfo(providerName)
 
   return {
     offererId,

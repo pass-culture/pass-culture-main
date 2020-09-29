@@ -661,29 +661,8 @@ describe('components | OfferEdition', () => {
       // then
       const localProviderInformationComponent = wrapper.find(LocalProviderInformation)
       expect(localProviderInformationComponent).toHaveLength(1)
+      expect(localProviderInformationComponent.prop('providerName')).toBe('titelive stocks')
       expect(localProviderInformationComponent.prop('offererId')).toBe('AZERT')
-      expect(localProviderInformationComponent.prop('isTiteLive')).toBe(true)
-      expect(localProviderInformationComponent.prop('isAllocine')).toBe(false)
-    })
-
-    describe('when offer is editable', () => {
-      beforeEach(() => {
-        props.query.context = () => ({
-          isCreatedEntity: false,
-          isModifiedEntity: false,
-          readOnly: true,
-        })
-        props.isEditableOffer = true
-      })
-
-      it('should be possible to manage stocks', () => {
-        // when
-        const wrapper = shallow(<OfferEdition {...props} />)
-
-        // then
-        const manageStockButton = wrapper.find('#manage-stocks')
-        expect(manageStockButton.prop('disabled')).toStrictEqual('')
-      })
     })
 
     describe('stock management button', () => {

@@ -7,15 +7,19 @@ const isTiteLiveOffer = (offer = null) => {
 }
 
 const isLibrairesOffer = (offer = null) => {
-  return doesLastProviderExists(offer) ? offer.lastProvider.name === 'Leslibraires.fr' : false
+  return doesLastProviderExists(offer)
+    ? offer.lastProvider.name.toLowerCase() === 'leslibraires.fr'
+    : false
 }
 
 const isAllocineOffer = (offer = null) => {
-  return doesLastProviderExists(offer) ? offer.lastProvider.name === 'Allociné' : false
+  return doesLastProviderExists(offer)
+    ? offer.lastProvider.name.toLowerCase() === 'allociné'
+    : false
 }
 
 const isFnacOffer = (offer = null) => {
-  return doesLastProviderExists(offer) ? offer.lastProvider.name === 'Fnac' : false
+  return doesLastProviderExists(offer) ? offer.lastProvider.name.toLowerCase() === 'fnac' : false
 }
 
 export { isAllocineOffer, isLibrairesOffer, isTiteLiveOffer, isFnacOffer }

@@ -1,7 +1,7 @@
-import { shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
-
 import Thumb from '../../../../layout/Thumb'
+import Icon from '../../../../layout/Icon'
 import LocalProviderInformation from '../LocalProviderInformation'
 
 describe('src | LocalProviderInformationContainer', () => {
@@ -12,34 +12,47 @@ describe('src | LocalProviderInformationContainer', () => {
       offererId: 'ABCD',
       offerName: 'Super Livre',
       providerInfo: {
-        icon: 'TiteliveStocks',
-        name: 'Tite live',
+        icon: 'localProviderStocks',
+        name: 'localProvider',
       },
       thumbUrl: 'http://localhost/storage/thumbs/products/AERTR',
       venueId: 'EARZ',
     }
   })
 
-  describe('render', () => {
-    it('should render a link to venue page', () => {
-      // when
-      const wrapper = shallow(<LocalProviderInformation {...props} />)
+  it('should display an offer image', () => {
+    // when
+    const wrapper = mount(<LocalProviderInformation {...props} />)
 
-      // then
-      const link = wrapper.find('span')
-      expect(link).toHaveLength(1)
-      expect(link.prop('className')).toBe('button')
-      expect(link.prop('data-tip')).toContain("<a href='/structures/ABCD/lieux/EARZ'>")
+    // then
+    const thumb = wrapper.find(Thumb)
+    expect(thumb.prop('url')).toBe('http://localhost/storage/thumbs/products/AERTR')
+  })
+
+  it('should display a link to venue page', () => {
+    // when
+    const wrapper = mount(<LocalProviderInformation {...props} />)
+
+    // then
+    const tooltip = wrapper.find('span')
+    expect(tooltip.prop('data-tip')).toContain('<a href="/structures/ABCD/lieux/EARZ">')
+  })
+
+  it('should display provider information', () => {
+    // Given
+    const wrapper = mount(<LocalProviderInformation {...props} />)
+
+    // When
+    const title = wrapper.find({ children: 'Offre synchronisée avec localProvider' })
+    const paragraphe = wrapper.find({
+      children:
+        'Le visuel par défaut, les informations et le stock de cette offre sont synchronisés avec les données localProvider tous les soirs.',
     })
+    const logo = wrapper.find(Icon)
 
-    it('should render thumb alternate description with product name', () => {
-      // when
-      const wrapper = shallow(<LocalProviderInformation {...props} />)
-
-      // then
-      const thumb = wrapper.find(Thumb)
-      expect(thumb).toHaveLength(1)
-      expect(thumb.prop('url')).toBe('http://localhost/storage/thumbs/products/AERTR')
-    })
+    // Then
+    expect(title).toHaveLength(1)
+    expect(logo.at(0).prop('svg')).toBe('localProviderStocks')
+    expect(paragraphe).toHaveLength(1)
   })
 })

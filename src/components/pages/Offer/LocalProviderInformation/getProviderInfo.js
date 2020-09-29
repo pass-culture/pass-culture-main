@@ -1,31 +1,28 @@
 import { PROVIDER_ICONS } from '../../../utils/providers'
 
-export const getProviderInfo = (isTitelive, isAllocine, isLibraires, isFnac) => {
-  switch (true) {
-    case isAllocine:
-      return {
-        icon: PROVIDER_ICONS['AllocineStocks'],
-        name: 'Allociné',
-      }
-    case isLibraires:
-      return {
-        icon: PROVIDER_ICONS['LibrairesStocks'],
-        name: 'Leslibraires.fr',
-      }
-    case isTitelive:
-      return {
-        icon: PROVIDER_ICONS['TiteLiveStocks'],
-        name: 'Tite Live',
-      }
-    case isFnac:
-      return {
-        icon: PROVIDER_ICONS['FnacStocks'],
-        name: 'Fnac',
-      }
-    default:
-      return {
-        icon: PROVIDER_ICONS['TiteLiveStocks'],
-        name: 'Tite Live',
-      }
-  }
+export const getProviderInfo = providerName => {
+  const providers = [
+    {
+      id: 'allociné',
+      icon: PROVIDER_ICONS['AllocineStocks'],
+      name: 'Allociné',
+    },
+    {
+      id: 'leslibraires.fr',
+      icon: PROVIDER_ICONS['LibrairesStocks'],
+      name: 'Leslibraires.fr',
+    },
+    {
+      id: 'titelive',
+      icon: PROVIDER_ICONS['TiteLiveStocks'],
+      name: 'Tite Live',
+    },
+    {
+      id: 'fnac',
+      icon: PROVIDER_ICONS['FnacStocks'],
+      name: 'Fnac',
+    },
+  ]
+
+  return providers.find(providerInfo => providerName.startsWith(providerInfo.id))
 }
