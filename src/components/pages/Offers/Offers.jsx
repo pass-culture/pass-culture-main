@@ -1,11 +1,9 @@
 import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { Link } from 'react-router-dom'
 
 import Titles from '../../layout/Titles/Titles'
-import Spinner from '../../layout/Spinner'
 import Main from '../../layout/Main'
 
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
@@ -30,33 +28,19 @@ class Offers extends PureComponent {
   constructor(props) {
     super(props)
 
-    const { name: nameKeywords, venueId } = translateQueryParamsToApiParams(props.query.parse())
+    const { name: nameKeywords, page, venueId } = translateQueryParamsToApiParams(props.query.parse())
 
     this.state = {
-      hasMore: false,
       isLoading: false,
       nameSearchValue: nameKeywords || '',
+      page: page || 1,
+      pageCount: null,
       venueId: venueId,
     }
   }
 
   componentDidMount() {
-    const { query } = this.props
-    const queryParams = query.parse()
-
-    if (queryParams.page) {
-      query.change({ page: null })
-    } else {
-      this.handleRequestData()
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    const { location } = this.props
-
-    if (location.search !== prevProps.location.search) {
-      this.handleRequestData()
-    }
+    this.getPaginatedOffersWithFilters()
   }
 
   componentWillUnmount() {
@@ -66,17 +50,29 @@ class Offers extends PureComponent {
     }
   }
 
-  handleRequestData = () => {
-    const { loadTypes, loadOffers, query, types } = this.props
-    const { nameSearchValue, venueId } = this.state
-    const { page } = translateQueryParamsToApiParams(query.parse())
+  updateUrlMatchingState = () => {
+    const { query } = this.props
+    const { page, nameSearchValue, venueId } = this.state
 
+    query.change({
+      page: page,
+      [mapApiToBrowser.name]: nameSearchValue === '' ? null : nameSearchValue,
+      [mapApiToBrowser.venueId]: venueId ? venueId : null
+    })
+  }
+
+  getPaginatedOffersWithFilters = () => {
+    const { loadTypes, loadOffers, types } = this.props
+    const { nameSearchValue, venueId, page } = this.state
     types.length === 0 && loadTypes()
 
     const handleSuccess = (page, pageCount) => {
       this.setState({
-        hasMore: page < pageCount,
         isLoading: false,
+        page,
+        pageCount,
+      }, () => {
+        this.updateUrlMatchingState()
       })
     }
 
@@ -85,41 +81,28 @@ class Offers extends PureComponent {
         isLoading: false,
       })
 
-    this.setState({ hasMore: true, isLoading: true }, () =>
+    this.setState({isLoading: true }, () => {
       loadOffers({ nameSearchValue, venueId, page }, handleSuccess, handleFail)
-    )
+    })
   }
 
   handleOnSubmit = event => {
     event.preventDefault()
-    const { nameSearchValue } = this.state
-    const { query, resetLoadedOffers } = this.props
-    const queryParams = query.parse()
-    const value = nameSearchValue
 
-    query.change({
-      [mapApiToBrowser.name]: value === '' ? null : value,
-      page: null,
-    })
-
-    if (value && queryParams[mapApiToBrowser.name] !== value) resetLoadedOffers()
-  }
-
-  handleOnVenueClick = query => () => {
-    query.change({
-      [mapApiToBrowser.venueId]: null,
-      page: null,
+    this.setState({
+      page: 1
+    }, () => {
+      this.getPaginatedOffersWithFilters()
     })
   }
 
-  onPageChange = page => {
-    const { query } = this.props
-    query.change({ page }, { historyMethod: 'replace' })
-  }
-
-  onPageReset = () => {
-    const { query } = this.props
-    query.change({ page: null })
+  handleOnVenueClick = () => {
+    this.setState({
+      venueId: undefined,
+      page: 1
+    }, () => {
+      this.getPaginatedOffersWithFilters()
+    })
   }
 
   storeNameSearchValue = event => {
@@ -140,7 +123,7 @@ class Offers extends PureComponent {
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
     const { venueId, offererId } = apiParams
-    const { hasMore, isLoading, nameSearchValue } = this.state
+    const { nameSearchValue, page, pageCount } = this.state
     const createOfferTo = createLinkToOfferCreation(venueId, offererId)
 
     const actionLink = !isAdmin ? (
@@ -193,7 +176,7 @@ class Offers extends PureComponent {
           {venue && (
             <button
               className="venue-filter tag is-rounded is-medium"
-              onClick={this.handleOnVenueClick(query)}
+              onClick={this.handleOnVenueClick}
               type="button"
             >
               {'Lieu : '}
@@ -244,25 +227,17 @@ class Offers extends PureComponent {
                   <th />
                 </tr>
               </thead>
-              <LoadingInfiniteScroll
-                className="offers-list"
-                element="tbody"
-                handlePageChange={this.onPageChange}
-                handlePageReset={this.onPageReset}
-                hasMore={hasMore}
-                isLoading={isLoading}
-                loader={<Spinner key="spinner" />}
-              >
+              <tbody className="offers-list">
                 {offers.map(offer => (
                   <OfferItemContainer
                     key={offer.id}
                     offer={offer}
                   />
                 ))}
-              </LoadingInfiniteScroll>
+              </tbody>
             </table>
           )}
-          {hasMore === false && 'Fin des résultats'}
+          {`Page ${page}/${pageCount}`}
         </div>
       </Main>
     )
@@ -281,7 +256,6 @@ Offers.propTypes = {
   loadOffers: PropTypes.func.isRequired,
   loadTypes: PropTypes.func.isRequired,
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  resetLoadedOffers: PropTypes.func.isRequired,
   venue: PropTypes.shape({
     name: PropTypes.string.isRequired,
   }),

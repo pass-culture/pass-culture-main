@@ -8,7 +8,7 @@ import { withRequiredLogin } from '../../hocs'
 import { selectOffererById } from '../../../selectors/data/offerersSelectors'
 import { selectVenueById } from '../../../selectors/data/venuesSelectors'
 import { translateQueryParamsToApiParams } from '../../../utils/translate'
-import { selectOffersByOffererIdAndVenueId } from '../../../selectors/data/offersSelectors'
+import { selectOffers } from '../../../selectors/data/offersSelectors'
 import { fetchFromApiWithCredentials } from '../../../utils/fetch'
 
 export const mapStateToProps = (state, ownProps) => {
@@ -20,7 +20,7 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     lastTrackerMoment: lastTrackerMoment(state, 'offers'),
     notification: state.notification,
-    offers: selectOffersByOffererIdAndVenueId(state, offererId, venueId),
+    offers: selectOffers(state),
     offerer: selectOffererById(state, offererId),
     types: state.data.types,
     venue: selectVenueById(state, venueId),

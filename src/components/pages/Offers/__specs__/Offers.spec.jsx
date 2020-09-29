@@ -78,7 +78,7 @@ describe('src | components | pages | Offers | Offers', () => {
         expect(props.loadOffers).toHaveBeenCalledWith(
           {
             nameSearchValue: '',
-            page: undefined,
+            page: 1,
             venueId: undefined,
           },
           expect.any(Function),
@@ -168,7 +168,7 @@ describe('src | components | pages | Offers | Offers', () => {
         expect(venueFilter).toHaveLength(0)
       })
 
-      it('should update url and remove venue filter when clicking on it', () => {
+      it('should remove venue filter when clicking on it', () => {
         // given
         props.venue = {
           name: 'La verbeuse',
@@ -191,10 +191,7 @@ describe('src | components | pages | Offers | Offers', () => {
         venueFilter.invoke('onClick')()
 
         // then
-        expect(props.query.change).toHaveBeenCalledWith({
-          page: null,
-          lieu: null,
-        })
+        expect(props.loadOffers).toHaveBeenCalledWith({"nameSearchValue": "", "page": 1, "venueId": undefined}, expect.any(Function), expect.any(Function))
       })
     })
 
@@ -475,9 +472,10 @@ describe('src | components | pages | Offers | Offers', () => {
     })
 
     describe('should render search offers form', () => {
-      describe('when keywords is not an empty string', () => {
+      describe('when name search value is not an empty string', () => {
         it('should change query', () => {
           // given
+          props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess())
           const wrapper = mount(
             <Provider store={store}>
               <MemoryRouter>
@@ -486,6 +484,7 @@ describe('src | components | pages | Offers | Offers', () => {
             </Provider>
           )
 
+
           // when
           const searchInput = wrapper.find('input[placeholder="Rechercher par nom d’offre"]')
           const launchSearchButton = wrapper.find('form')
@@ -493,17 +492,18 @@ describe('src | components | pages | Offers | Offers', () => {
           launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
 
           // then
-          expect(change.mock.calls[0][0]).toStrictEqual({
+          expect(props.query.change).toHaveBeenCalledWith({
+            lieu: null,
             nom: 'AnyWord',
-            page: null,
+            page: undefined,
           })
-          change.mockClear()
         })
       })
 
-      describe('when keywords is an empty string', () => {
+      describe('when name search value is an empty string', () => {
         it('should change query with mots-clés set to null on form submit', () => {
           // given
+          props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess())
           const wrapper = mount(
             <Provider store={store}>
               <MemoryRouter>
@@ -519,11 +519,11 @@ describe('src | components | pages | Offers | Offers', () => {
           launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
 
           // then
-          expect(change.mock.calls[0][0]).toStrictEqual({
+          expect(props.query.change).toHaveBeenCalledWith({
+            lieu: null,
             nom: null,
-            page: null,
+            page: undefined,
           })
-          change.mockClear()
         })
       })
     })
