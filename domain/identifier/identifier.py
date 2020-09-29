@@ -15,8 +15,8 @@ class Identifier:
         self.identifier: int = identifier
 
     @staticmethod
-    def from_humanized_id(humanized_identifier: str):
-        return Identifier(dehumanize(humanized_identifier))
+    def from_scrambled_id(scrambled_identifier: str):
+        return Identifier(dehumanize(scrambled_identifier))
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Identifier):
@@ -24,7 +24,7 @@ class Identifier:
 
         return self.identifier == other.identifier
 
-    def humanize(self) -> str:
+    def scrambled(self) -> str:
         identifier_in_bytes = self.identifier.to_bytes((self.identifier.bit_length() + 7) // 8, 'big')
         identifier_in_base32 = b32encode(identifier_in_bytes)
 

@@ -1,3 +1,5 @@
+import re
+
 import pytest
 
 from domain.identifier.identifier import Identifier
@@ -47,13 +49,43 @@ class IdentifierTest:
         assert equality is True
 
 
-class HumanizeTest:
-    def should_return_identifier_as_string(self):
+class ScrambledTest:
+    def should_scramble_identifier(self):
+        # Given
+        persisted_identifier = 42
+        identifier = Identifier(persisted_identifier)
+
+        # When
+        scrambled_identifier = identifier.scrambled()
+
+        # Then
+        assert scrambled_identifier != persisted_identifier
+
+    def should_be_a_mix_of_uppercase_letters_and_digits(self):
+        # Given
+
+        # When
+        scrambled_identifier = Identifier(12452).scrambled()
+
+        # Then
+        assert re.match('[A-Z0-9]*', scrambled_identifier)
+
+    def should_be_unique_for_a_given_persisted_identifier(self):
+        # When
+        scrambled_identifier = Identifier(42).scrambled()
+
+        # Then
+        assert scrambled_identifier != Identifier(43).scrambled()
+        assert scrambled_identifier != Identifier(84).scrambled()
+        assert scrambled_identifier != Identifier(142).scrambled()
+
+    def should_be_equal_to_original_identifier_when_initialized_from_scrambled_identifier(self):
         # Given
         identifier = Identifier(42)
 
         # When
-        humanized_identifier = identifier.humanize()
+        scrambled_identifier = identifier.scrambled()
 
         # Then
-        assert humanized_identifier == 'F9'
+        identifier_from_scrambled = Identifier.from_scrambled_id(scrambled_identifier)
+        assert identifier == identifier_from_scrambled

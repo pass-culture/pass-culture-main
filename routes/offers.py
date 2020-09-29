@@ -26,10 +26,10 @@ from validation.routes.offers import check_has_venue_id, check_offer_name_length
 @app.route('/offers', methods=['GET'])
 @login_required
 def list_offers() -> (str, int):
-    offerer_humanized_id = request.args.get('offererId')
-    venue_humanized_id = request.args.get('venueId')
-    offerer_identifier = Identifier.from_humanized_id(offerer_humanized_id) if offerer_humanized_id else None
-    venue_identifier = Identifier.from_humanized_id(venue_humanized_id) if venue_humanized_id else None
+    offerer_scrambled_id = request.args.get('offererId')
+    venue_scrambled_id = request.args.get('venueId')
+    offerer_identifier = Identifier.from_scrambled_id(offerer_scrambled_id) if offerer_scrambled_id else None
+    venue_identifier = Identifier.from_scrambled_id(venue_scrambled_id) if venue_scrambled_id else None
 
     if not current_user.isAdmin:
         if venue_identifier:
