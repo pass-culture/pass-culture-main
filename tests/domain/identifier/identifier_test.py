@@ -55,7 +55,7 @@ class PersistedTest:
         expected_identifier = 42
 
         # When
-        persisted_identifier = Identifier(expected_identifier).persisted()
+        persisted_identifier = Identifier(expected_identifier).persisted
 
         # Then
         assert persisted_identifier == expected_identifier
@@ -68,35 +68,31 @@ class ScrambledTest:
         identifier = Identifier(persisted_identifier)
 
         # When
-        scrambled_identifier = identifier.scrambled()
+        scrambled_identifier = identifier.scrambled
 
         # Then
         assert scrambled_identifier != persisted_identifier
 
     def should_be_a_mix_of_uppercase_letters_and_digits(self):
-        # Given
-
         # When
-        scrambled_identifier = Identifier(12452).scrambled()
+        scrambled_identifier = Identifier(12452).scrambled
 
         # Then
         assert re.match('[A-Z0-9]*', scrambled_identifier)
 
     def should_be_unique_for_a_given_persisted_identifier(self):
         # When
-        scrambled_identifier = Identifier(42).scrambled()
+        scrambled_identifier = Identifier(42).scrambled
 
         # Then
-        assert scrambled_identifier != Identifier(43).scrambled()
-        assert scrambled_identifier != Identifier(84).scrambled()
-        assert scrambled_identifier != Identifier(142).scrambled()
+        assert scrambled_identifier != Identifier(43).scrambled
 
     def should_be_equal_to_original_identifier_when_initialized_from_scrambled_identifier(self):
         # Given
         identifier = Identifier(42)
 
         # When
-        scrambled_identifier = identifier.scrambled()
+        scrambled_identifier = identifier.scrambled
 
         # Then
         identifier_from_scrambled = Identifier.from_scrambled_id(scrambled_identifier)
@@ -111,7 +107,7 @@ class FromScrambledIdTest:
         # Then
         assert identifier is None
 
-    def should_not_unscramble_unscrambable_ids(self):
+    def should_not_unscramble_unproperly_formatted_ids(self):
         # When
         with pytest.raises(NonProperlyFormattedScrambledId) as exception:
             Identifier.from_scrambled_id("#4%^&")

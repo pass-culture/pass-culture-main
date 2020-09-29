@@ -34,25 +34,25 @@ def test_should_return_offers_dict_with_relevant_informations():
     # then
     assert serialized_offers[0] == {
         "hasBookingLimitDatetimesPassed": False,
-        "id": offer.identifier.scrambled(),
+        "id": offer.identifier.scrambled,
         "isActive": True,
         "isEditable": True,
         "isEvent": False,
         "isThing": True,
         "name": "Test Book",
         "stocks": [{
-            "id": offer.stocks[0].identifier.scrambled(),
-            "offerId": offer.identifier.scrambled(),
+            "id": offer.stocks[0].identifier.scrambled,
+            "offerId": offer.identifier.scrambled,
             "remainingQuantity": 10
         }],
         "thumbUrl": "/thumb/url",
         "type": "ThingType.AUDIOVISUEL",
         "venue": {
-            "id": offer.venue.identifier.scrambled(),
+            "id": offer.venue.identifier.scrambled,
             "isVirtual": False,
-            "managingOffererId": offer.venue.managing_offerer_id.scrambled(),
+            "managingOffererId": offer.venue.managing_offerer_id.scrambled,
             "name": "La petite librairie",
             "publicName": "Petite librairie",
         },
-        "venueId": offer.venue.identifier.scrambled(),
+        "venueId": offer.venue.identifier.scrambled,
     }

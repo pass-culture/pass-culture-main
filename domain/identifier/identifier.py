@@ -37,9 +37,11 @@ class Identifier:
 
         return self._identifier == other._identifier
 
+    @property
     def persisted(self) -> int:
         return self._identifier
 
+    @property
     def scrambled(self) -> str:
         identifier_in_bytes = self._identifier.to_bytes((self._identifier.bit_length() + 7) // 8, 'big')
         identifier_in_base32 = b32encode(identifier_in_bytes)

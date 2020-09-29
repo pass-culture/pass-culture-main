@@ -26,7 +26,7 @@ class Get:
 
             # when
             response = TestClient(app.test_client()) \
-                .with_auth(email=admin.email).get(f'/offers?venueId={Identifier(requested_venue.id).scrambled()}')
+                .with_auth(email=admin.email).get(f'/offers?venueId={Identifier(requested_venue.id).scrambled}')
 
             # then
             offers = response.json
@@ -47,7 +47,7 @@ class Get:
 
             # when
             response = TestClient(app.test_client()) \
-                .with_auth(email=pro.email).get(f'/offers?venueId={Identifier(requested_venue.id).scrambled()}')
+                .with_auth(email=pro.email).get(f'/offers?venueId={Identifier(requested_venue.id).scrambled}')
 
             # then
             offers = response.json
@@ -108,7 +108,7 @@ class Get:
 
             # when
             response = TestClient(app.test_client()) \
-                .with_auth(email=user.email).get('/offers?venueId=' + Identifier(venue.id).scrambled())
+                .with_auth(email=user.email).get('/offers?venueId=' + Identifier(venue.id).scrambled)
 
             # then
             assert response.status_code == 200
@@ -149,7 +149,7 @@ class Get:
 
             # when
             response = TestClient(app.test_client()) \
-                .with_auth(email=user.email).get(f'/offers?venueId={Identifier(venue.id).scrambled()}')
+                .with_auth(email=user.email).get(f'/offers?venueId={Identifier(venue.id).scrambled}')
 
             # then
             assert response.status_code == 403
