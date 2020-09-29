@@ -3,8 +3,15 @@ from base64 import b32encode
 from utils.human_ids import dehumanize
 
 
+class NonStricltyPositiveIdentifierException(Exception):
+    def __init__(self):
+        super().__init__('Identifier should be a strictly positive number')
+
+
 class Identifier:
     def __init__(self, identifier: int):
+        if identifier <= 0:
+            raise NonStricltyPositiveIdentifierException()
         self.identifier: int = identifier
 
     @staticmethod

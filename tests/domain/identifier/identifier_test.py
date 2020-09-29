@@ -1,42 +1,54 @@
+import pytest
+
 from domain.identifier.identifier import Identifier
 
 
 class IdentifierTest:
-    def test_identifier_should_not_be_equal_with_another_object(self):
-        # Given
+    def should_be_a_positive_number(self):
+        # When
+        with pytest.raises(Exception) as exception:
+            Identifier(0)
+
+        # Then
+        assert str(exception.value) == 'Identifier should be a strictly positive number'
+
+    def should_be_a_strictly_positive_number(self):
+        # When
+        with pytest.raises(Exception) as exception:
+            Identifier(-1)
+
+        # Then
+        assert str(exception.value) == 'Identifier should be a strictly positive number'
+
+    def should_not_be_equal_with_another_object(self):
+        # When
         identifier = Identifier(42)
-        other_object = 42
-
-        # When
-        equality = identifier == other_object
 
         # Then
-        assert equality is False
+        assert identifier != 42
+        assert identifier != "42"
+        assert identifier != {"identifier": 42}
 
-    def test_identifiers_should_not_be_equals_if_identifiers_are_differents(self):
-        # Given
-        identifier_a = Identifier(42)
-        identifier_b = Identifier(84)
-
+    def should_not_be_equals_if_identifiers_are_differents(self):
         # When
-        equality = identifier_a == identifier_b
+        identifier = Identifier(42)
 
         # Then
-        assert equality is False
+        assert identifier != Identifier(84)
 
-    def test_identifiers_should_be_equals_if_identifier_is_equal(self):
+    def should_be_equals_if_identifier_is_equal(self):
         # Given
         identifier_value = 84
-        identifier_a = Identifier(identifier_value)
-        identifier_b = Identifier(identifier_value)
 
         # When
-        equality = identifier_a == identifier_b
+        equality = Identifier(identifier_value) == Identifier(identifier_value)
 
         # Then
         assert equality is True
 
-    def test_humanize_should_return_identifier_as_string(self):
+
+class HumanizeTest:
+    def should_return_identifier_as_string(self):
         # Given
         identifier = Identifier(42)
 
