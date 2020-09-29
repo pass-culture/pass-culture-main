@@ -97,6 +97,7 @@
     "with-query-router": "3.2.1"
   },
   "devDependencies": {
+    "@testing-library/react": "^11.0.4",
     "@types/jest": "^26.0.3",
     "babel-eslint": "^10.1.0",
     "coveralls": "^3.0.6",
