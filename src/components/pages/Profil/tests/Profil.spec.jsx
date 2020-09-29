@@ -1,11 +1,11 @@
-import { shallow, mount } from 'enzyme'
+import { shallow } from 'enzyme'
 import React from 'react'
 
-import Titles from '../../../layout/Titles/Titles'
 import Profil from '../Profil'
 import { MemoryRouter } from 'react-router'
 import configureStore from '../../../../utils/store'
 import { Provider } from 'react-redux'
+import { render, screen, fireEvent } from '@testing-library/react'
 
 describe('src | components | pages | Profil', () => {
   let dispatch
@@ -31,17 +31,21 @@ describe('src | components | pages | Profil', () => {
 
   it('should render a Titles component with right properties', () => {
     // when
-    const wrapper = shallow(<Profil {...props} />)
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Profil {...props} />
+        </MemoryRouter>
+      </Provider>
+    )
 
     // then
-    const titlesComponent = wrapper.find(Titles)
-    expect(titlesComponent).toHaveLength(1)
-    expect(titlesComponent.prop('title')).toBe('Profil')
+    expect(screen.getByRole('heading', { name: 'Profil' })).not.toBeNull()
   })
 
   it('should render two inputs for name and email address', () => {
     // when
-    const wrapper = mount(
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <Profil {...props} />
@@ -50,25 +54,23 @@ describe('src | components | pages | Profil', () => {
     )
 
     // then
-    const inputName = wrapper.findWhere(node => node.text() === 'Nom :').first()
-    const inputEmail = wrapper.findWhere(node => node.text() === 'E-mail :').first()
-    expect(inputName).toHaveLength(1)
-    expect(inputEmail).toHaveLength(1)
+    expect(screen.getByLabelText('Nom :')).not.toBeNull()
+    expect(screen.getByLabelText('E-mail :')).not.toBeNull()
   })
 
   it('should update user informations successfully when submitting form', () => {
     // given
-    const wrapper = mount(
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <Profil {...props} />
         </MemoryRouter>
       </Provider>
     )
-    const submitButton = wrapper.find('form')
 
     // when
-    submitButton.invoke('onSubmit')({ preventDefault: jest.fn() })
+    const submitButton = screen.getByText('Enregistrer')
+    fireEvent.click(submitButton)
 
     // then
     expect(dispatch.mock.calls[0][0]).toStrictEqual({
@@ -90,58 +92,55 @@ describe('src | components | pages | Profil', () => {
   it('should disable submit button when email input value is empty', () => {
     // given
     props.currentUser.email = ''
-    const wrapper = mount(
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <Profil {...props} />
         </MemoryRouter>
       </Provider>
     )
-    const submitButton = wrapper.find({ children: 'Enregistrer' })
+    fireEvent.click(screen.getByText('Enregistrer'))
 
     // then
-    expect(submitButton.prop('disabled')).toBe(true)
+    expect(dispatch).not.toHaveBeenCalled()
   })
 
   it('should disable submit button when name input value is under 3 characters', () => {
     // given
-    const wrapper = mount(
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <Profil {...props} />
         </MemoryRouter>
       </Provider>
     )
-    const inputName = wrapper.findWhere(node => node.text() === 'Nom :').first()
+    const input = screen.getByLabelText('Nom :')
+    fireEvent.change(input, { target: { value: 'AA' } })
 
     // when
-    inputName.invoke('onChange')({ target: { value: 'AA' } })
-    const submitButton = wrapper.find({ children: 'Enregistrer' })
+    fireEvent.click(screen.getByText('Enregistrer'))
 
     // then
-    expect(submitButton.prop('disabled')).toBe(true)
+    expect(dispatch).not.toHaveBeenCalled()
   })
 
   it('should display an error message on submit if email format is not valid', () => {
     // given
-    const wrapper = mount(
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <Profil {...props} />
         </MemoryRouter>
       </Provider>
     )
-    const inputEmail = wrapper.findWhere(node => node.text() === 'E-mail :').first()
+    const inputEmail = screen.getByLabelText('E-mail :')
+    fireEvent.change(inputEmail, { target: { value: 'fake@email' } })
 
     // when
-    inputEmail.invoke('onChange')({ target: { value: 'fake@email' } })
-    wrapper.find('form').invoke('onSubmit')({ preventDefault: jest.fn() })
-    const errorMessage = wrapper
-      .findWhere(node => node.text() === 'Le format de l’email est incorrect.')
-      .first()
+    fireEvent.click(screen.getByText('Enregistrer'))
 
     // then
-    expect(errorMessage).toHaveLength(1)
+    expect(screen.getByText('Le format de l’email est incorrect.')).not.toBeNull()
   })
 
   describe('functions', () => {
