@@ -15,8 +15,8 @@ class OffersRequestParameters(object):
                  user_is_admin: bool,
                  offerer_id: Optional[Identifier],
                  venue_id: Optional[Identifier],
-                 offers_per_page: int,
-                 page: int,
+                 offers_per_page: Optional[int],
+                 page: Optional[int],
                  name_keywords: Optional[str] = None):
         self.user_id = user_id
         self.user_is_admin = user_is_admin

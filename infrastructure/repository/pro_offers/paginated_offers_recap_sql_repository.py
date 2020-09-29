@@ -44,4 +44,4 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
         total_offers = query.total
         total_pages = math.ceil(total_offers / offers_per_page)
 
-        return to_domain(offer_sql_entities=query.items, current_page=page, total_pages=total_pages, total_offers=total_offers)
+        return to_domain(offer_sql_entities=query.items, current_page=query.page, total_pages=total_pages, total_offers=total_offers)

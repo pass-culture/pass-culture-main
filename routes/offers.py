@@ -50,9 +50,9 @@ def list_offers() -> (str, int):
         user_is_admin=current_user.isAdmin,
         offerer_id=offerer_identifier,
         venue_id=venue_identifier,
-        offers_per_page=request.args.get('paginate'),
+        offers_per_page=int(request.args.get('paginate')) if request.args.get('paginate') else None,
         name_keywords=request.args.get('name'),
-        page=request.args.get('page'),
+        page=int(request.args.get('page')) if request.args.get('page') else None,
     )
     paginated_offers = list_offers_for_pro_user.execute(offers_request_parameters)
 
