@@ -2,13 +2,13 @@ import re
 
 import pytest
 
-from domain.identifier.identifier import Identifier
+from domain.identifier.identifier import Identifier, NonProperlyFormattedScrambledId, NonStricltyPositiveIdentifierException
 
 
 class IdentifierTest:
     def should_be_a_positive_number(self):
         # When
-        with pytest.raises(Exception) as exception:
+        with pytest.raises(NonStricltyPositiveIdentifierException) as exception:
             Identifier(0)
 
         # Then
@@ -16,7 +16,7 @@ class IdentifierTest:
 
     def should_be_a_strictly_positive_number(self):
         # When
-        with pytest.raises(Exception) as exception:
+        with pytest.raises(NonStricltyPositiveIdentifierException) as exception:
             Identifier(-1)
 
         # Then
@@ -101,3 +101,20 @@ class ScrambledTest:
         # Then
         identifier_from_scrambled = Identifier.from_scrambled_id(scrambled_identifier)
         assert identifier == identifier_from_scrambled
+
+
+class FromScrambledIdTest:
+    def should_not_initialize_id_when_given_scrambled_id_is_none(self):
+        # When
+        identifier = Identifier.from_scrambled_id(None)
+
+        # Then
+        assert identifier is None
+
+    def should_not_unscramble_unscrambable_ids(self):
+        # When
+        with pytest.raises(NonProperlyFormattedScrambledId) as exception:
+            Identifier.from_scrambled_id("#4%^&")
+
+        # Then
+        assert str(exception.value) == 'Scrambled identifier "#4%^&===" is not properly formatted'

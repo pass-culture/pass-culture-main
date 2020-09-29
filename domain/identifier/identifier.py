@@ -1,11 +1,15 @@
-from base64 import b32encode
-
-from utils.human_ids import dehumanize
+import binascii
+from base64 import b32encode, b32decode
 
 
 class NonStricltyPositiveIdentifierException(Exception):
     def __init__(self):
         super().__init__('Identifier should be a strictly positive number')
+
+
+class NonProperlyFormattedScrambledId(Exception):
+    def __init__(self, faulty_id):
+        super().__init__(f'Scrambled identifier "{faulty_id}" is not properly formatted')
 
 
 class Identifier:
@@ -16,7 +20,16 @@ class Identifier:
 
     @staticmethod
     def from_scrambled_id(scrambled_identifier: str):
-        return Identifier(dehumanize(scrambled_identifier))
+        if scrambled_identifier is None:
+            return None
+        missing_padding = len(scrambled_identifier) % 8
+        if missing_padding != 0:
+            scrambled_identifier += '=' * (8 - missing_padding)
+        try:
+            xbytes = b32decode(scrambled_identifier.replace('8', 'O').replace('9', 'I'))
+            return Identifier(int.from_bytes(xbytes, 'big'))
+        except binascii.Error:
+            raise NonProperlyFormattedScrambledId(scrambled_identifier)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Identifier):

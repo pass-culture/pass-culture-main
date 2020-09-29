@@ -5,6 +5,7 @@ import simplejson as json
 from flask import current_app as app, jsonify, request
 from werkzeug.exceptions import NotFound, MethodNotAllowed
 
+from domain.identifier.identifier import NonStricltyPositiveIdentifierException, NonProperlyFormattedScrambledId
 from domain.stocks import TooLateToDeleteError
 from domain.user_activation import AlreadyActivatedException
 from models.api_errors import ApiErrors, ResourceGoneError, ResourceNotFoundError, ForbiddenError, DecimalCastError, \
@@ -71,6 +72,7 @@ def method_not_allowed(error: MethodNotAllowed) -> Tuple[Dict, int]:
     return jsonify(api_errors.errors), 405
 
 
+@app.errorhandler(NonProperlyFormattedScrambledId)
 @app.errorhandler(NonDehumanizableId)
 def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> Tuple[Dict, int]:
     api_errors = ApiErrors()
