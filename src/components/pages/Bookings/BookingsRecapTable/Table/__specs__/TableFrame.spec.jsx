@@ -14,29 +14,6 @@ const CellMock = ({ offer: { offer_name: offerName } }) => (
 describe('components | TableFrame', () => {
   it('should render a Head component with the right props', () => {
     // Given
-    const useTableSpy = jest.spyOn(reactTable, 'useTable').mockImplementationOnce(jest.fn())
-    const props = {
-      columns: [
-        {
-          id: 1,
-          headerTitle: 'Stock',
-          accessor: 'stock',
-          getHeaderProps: jest.fn(),
-          getSortByToggleProps: jest.fn(),
-        },
-        {
-          id: 2,
-          headerTitle: 'Beneficiaire',
-          accessor: 'beneficiary',
-          getHeaderProps: jest.fn(),
-          getSortByToggleProps: jest.fn(),
-        },
-      ],
-      data: [{}],
-      nbBookings: 1,
-      nbBookingsPerPage: 1,
-      updateCurrentPage: jest.fn(),
-    }
     const mockedValues = {
       canPreviousPage: true,
       canNextPage: true,
@@ -80,6 +57,32 @@ describe('components | TableFrame', () => {
         pageIndex: 0,
       },
     }
+    const useTableSpy = jest
+      .spyOn(reactTable, 'useTable')
+      .mockImplementationOnce(() => mockedValues)
+    const props = {
+      columns: [
+        {
+          id: 1,
+          headerTitle: 'Stock',
+          accessor: 'stock',
+          getHeaderProps: jest.fn(),
+          getSortByToggleProps: jest.fn(),
+        },
+        {
+          id: 2,
+          headerTitle: 'Beneficiaire',
+          accessor: 'beneficiary',
+          getHeaderProps: jest.fn(),
+          getSortByToggleProps: jest.fn(),
+        },
+      ],
+      data: [{}],
+      nbBookings: 1,
+      nbBookingsPerPage: 1,
+      updateCurrentPage: jest.fn(),
+    }
+
     useTableSpy.mockReturnValue(mockedValues)
 
     // When
@@ -157,8 +160,8 @@ describe('components | TableFrame', () => {
     const table = mount(<TableFrame {...props} />)
 
     // Then
-    const tableRows = table.find('tbody > tr')
-    expect(tableRows).toHaveLength(2)
+    const tableRowsNumber = table.find('tbody > tr').length
+    expect(tableRowsNumber).toBe(2)
   })
 
   describe('pagination', () => {

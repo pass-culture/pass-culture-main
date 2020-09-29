@@ -113,6 +113,7 @@
     "jest": "23.5.0",
     "jest-environment-jsdom": "^24.8.0",
     "jest-environment-jsdom-global": "^1.2.0",
+    "jest-environment-jsdom-sixteen": "^1.0.3",
     "jest-fetch-mock": "^2.1.2",
     "license-reporter": "^1.2.2",
     "lint-staged": "^10.3.0",
@@ -133,7 +134,7 @@
     "lint:scss": "yarn stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
     "test:cafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chrome:headless' testcafe",
-    "test:unit": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest --env=jsdom",
+    "test:unit": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest",
     "symlink-shared": "if [ -d \"../shared\" ]; then cd node_modules && rm -rf pass-culture-shared && ln -sf ../../shared pass-culture-shared && cd ../../shared && yarn run compile; fi",
     "start": "node scripts/start.js"
   },

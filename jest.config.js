@@ -12,7 +12,7 @@ module.exports = {
   },
   modulePaths: ['node_modules', 'src'],
   setupFiles: ['<rootDir>/.jest-polyfill.js', '<rootDir>/jest.setup.js'],
-  testEnvironment: 'jest-environment-jsdom-global',
+  testEnvironment: 'jest-environment-jsdom-sixteen',
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx}',
     '<rootDir>/src/**/?(*.)(spec|test).{js,jsx}',
@@ -26,9 +26,6 @@ module.exports = {
     '^.+\\.css$': '<rootDir>/config/jest/cssTransform.js',
     '^(?!.*\\.(js|jsx|css|json)$)': '<rootDir>/config/jest/fileTransform.js',
   },
-  transformIgnorePatterns: [
-    '<rootDir>/node_modules/',
-    '[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$',
-  ],
+  transformIgnorePatterns: ['<rootDir>/node_modules/', '[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
   verbose: true,
 }

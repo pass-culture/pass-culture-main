@@ -15,7 +15,6 @@ global.fetch = url => {
   return response
 }
 
-jest.spyOn(window.location, 'assign')
 const mockDownloadUrl = 'http://plop.com'
 window.URL = { createObjectURL: jest.fn(() => mockDownloadUrl) }
 
