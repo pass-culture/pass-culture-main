@@ -33,7 +33,7 @@ def list_offers() -> (str, int):
 
     if not current_user.isAdmin:
         if venue_identifier:
-            venue = venue_queries.find_by_id(venue_identifier.identifier)
+            venue = venue_queries.find_by_id(venue_identifier.persisted)
             check_venue_exists_when_requested(venue, venue_identifier)
             user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
                 user_id=current_user.id,
@@ -43,7 +43,7 @@ def list_offers() -> (str, int):
         if offerer_identifier:
             user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
                 user_id=current_user.id,
-                offerer_id=offerer_identifier.identifier
+                offerer_id=offerer_identifier.persisted
             )
             check_user_has_rights_on_offerer(user_offerer)
 

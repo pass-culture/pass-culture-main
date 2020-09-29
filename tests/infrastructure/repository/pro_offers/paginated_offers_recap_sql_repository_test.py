@@ -54,7 +54,7 @@ class PaginatedOfferSQLRepositoryTest:
         )
 
         # Then
-        assert paginated_offers.offers[0].identifier.identifier > paginated_offers.offers[1].identifier.identifier
+        assert paginated_offers.offers[0].identifier.persisted() > paginated_offers.offers[1].identifier.persisted()
 
     @clean_database
     def test_return_offers_of_given_venue(self, app):

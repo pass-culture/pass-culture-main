@@ -49,6 +49,18 @@ class IdentifierTest:
         assert equality is True
 
 
+class PersistedTest:
+    def should_be_given_identifier(self):
+        # Given
+        expected_identifier = 42
+
+        # When
+        persisted_identifier = Identifier(expected_identifier).persisted()
+
+        # Then
+        assert persisted_identifier == expected_identifier
+
+
 class ScrambledTest:
     def should_scramble_identifier(self):
         # Given
