@@ -42,11 +42,10 @@
   }
 
   .select-duo-offer {
-    @extend .no-background;
-    @extend .mb12;
-    @extend .mt16;
-
+    background-color: transparent;
     display: flex;
+    margin-bottom: rem(12px);
+    margin-top: rem(16px);
 
     label {
       white-space: pre;

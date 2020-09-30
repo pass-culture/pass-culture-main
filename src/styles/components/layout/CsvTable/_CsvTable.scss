@@ -37,10 +37,9 @@
 }
 
 #no-data-container {
-  @extend .fs20;
-
   align-items: center;
   display: flex;
+  font-size: rem(20px);
   justify-content: center;
 }
 

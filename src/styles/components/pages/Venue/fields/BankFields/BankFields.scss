@@ -1,7 +1,7 @@
 .bank-instructions-label {
-  @extend .fs12, .mb18;
-
   color: $primary;
+  font-size: rem(12px);
   font-weight: $weight-bold;
   line-height: normal;
+  margin-bottom: rem(18px);
 }

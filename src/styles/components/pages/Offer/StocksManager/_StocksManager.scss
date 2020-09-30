@@ -8,12 +8,12 @@
   }
 
   .info {
-    @extend .is-absolute;
     @extend .level;
 
     background-color: $black-with-transparency;
     bottom: 0;
     margin-bottom: 0 !important;
+    position: absolute;
     left: 0;
     right: 0;
     top: 0;
@@ -21,12 +21,12 @@
 
     .content {
       @extend .level-item;
-      @extend .p24;
 
       background-color: $white;
       margin: auto;
-      min-height: rem(200px);
       max-width: 50%;
+      min-height: rem(200px);
+      padding: rem(24px);
     }
   }
 

@@ -1,11 +1,9 @@
 .field-sep {
-  @extend .is-absolute;
-
   border-top: 1px solid $grey-medium;
   height: 16px;
   left: 0;
-  right: 0;
   position: absolute;
+  right: 0;
 }
 
 .field-group {
@@ -15,14 +13,14 @@
 }
 
 .field-control {
-  @extend .pb8;
-  @extend .pt8;
+  padding: rem(8px) 0;
 }
 
 .form {
   @extend .box;
-  @extend .p36;
-  @extend .is-relative;
+
+  padding: rem(36px);
+  position: relative;
 
   &.flex-columns {
     .field-group {
@@ -52,20 +50,19 @@
   max-height: $footer-height;
 
   button {
-    @extend .no-border;
-    @extend .no-outline;
-    @extend .no-background;
+    background-color: transparent;
+    border: 0;
+    outline: none !important;
   }
 }
 
 .field-label {
-  @extend .mb12;
-  @extend .pb6;
-  @extend .pr12;
-  @extend .fs18;
-
   color: $black;
+  font-size: rem(18px);
   font-weight: 400;
+  margin-bottom: rem(12px);
+  padding-bottom: rem(6px);
+  padding-right: rem(12px);
   white-space: nowrap;
 
   &.empty {
@@ -96,22 +93,21 @@
 }
 
 .field-select {
-  @extend .no-outline;
-  @extend .no-background;
-  @extend .pl24;
-  @extend .fs16;
-
   -webkit-appearance: none;
   -moz-appearance: none;
+  background-color: transparent;
   background-repeat: no-repeat;
   background-position: 97.5% 50%;
   background-image: url('/icons/dropdown-disclosure-down.svg');
   border-radius: 16px;
   border: none;
+  font-size: rem(16px);
   font-weight: 500;
   height: 36px;
   min-width: 250px;
   min-height: 36px;
+  outline: none !important;
+  padding-left: rem(24px);
   width: 250px;
 }
 
@@ -139,15 +135,13 @@
 .field-input,
 .field-textarea,
 .field-texteditor {
-  @extend .py6;
-  @extend .px18;
-  @extend .fs16;
-  @extend .flex-1;
-  @extend .is-medium;
-  @extend .no-outline;
-
   border-radius: $control-radius;
   border: $control-border-width solid $grey-medium;
+  flex: 1;
+  font-size: rem(16px);
+  font-weight: $weight-medium;
+  outline: none !important;
+  padding: rem(6px) rem(18px);
 
   &::-webkit-input-placeholder {
     color: $grey-dark;
@@ -175,10 +169,9 @@
   padding: 6px;
 
   input.date {
-    @extend .fs12;
-
     border: 0;
     cursor: pointer;
+    font-size: rem(12px);
     font-weight: 500;
     min-width: 60px;
     width: 100%;
@@ -320,7 +313,7 @@
     }
 
     .field-label {
-      @extend .pb32;
+      padding-bottom: rem(32px);
     }
 
     .field-control {

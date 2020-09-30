@@ -42,6 +42,7 @@
     font-size: $font-size;
     font-weight: $weight-semibold;
     height: auto;
+    padding-left: rem(12px);
     text-decoration: underline;
 
     &:focus,

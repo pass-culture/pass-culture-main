@@ -4,9 +4,8 @@
 
 .allocine-provider-form {
   .field-asterisk {
-    @extend .ml2;
-
     color: $accent;
+    margin-left: rem(2px);
   }
 
   .apf-price-section {
