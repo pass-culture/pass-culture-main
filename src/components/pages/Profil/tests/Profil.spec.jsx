@@ -12,6 +12,15 @@ describe('src | components | pages | Profil', () => {
   let props
   let store
 
+  const renderProfil = props =>
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Profil {...props} />
+        </MemoryRouter>
+      </Provider>
+    )
+
   beforeEach(() => {
     dispatch = jest.fn()
     props = {
@@ -31,13 +40,7 @@ describe('src | components | pages | Profil', () => {
 
   it('should render a Titles component with right properties', () => {
     // when
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Profil {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
+    renderProfil(props)
 
     // then
     expect(screen.getByRole('heading', { name: 'Profil' })).not.toBeNull()
@@ -45,13 +48,7 @@ describe('src | components | pages | Profil', () => {
 
   it('should render two inputs for name and email address', () => {
     // when
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Profil {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
+    renderProfil(props)
 
     // then
     expect(screen.getByLabelText('Nom :')).not.toBeNull()
@@ -60,13 +57,7 @@ describe('src | components | pages | Profil', () => {
 
   it('should update user informations successfully when submitting form', () => {
     // given
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Profil {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
+    renderProfil(props)
 
     // when
     const submitButton = screen.getByText('Enregistrer')
@@ -92,13 +83,7 @@ describe('src | components | pages | Profil', () => {
   it('should disable submit button when email input value is empty', () => {
     // given
     props.currentUser.email = ''
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Profil {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
+    renderProfil(props)
     fireEvent.click(screen.getByText('Enregistrer'))
 
     // then
@@ -107,13 +92,7 @@ describe('src | components | pages | Profil', () => {
 
   it('should disable submit button when name input value is under 3 characters', () => {
     // given
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Profil {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
+    renderProfil(props)
     const input = screen.getByLabelText('Nom :')
     fireEvent.change(input, { target: { value: 'AA' } })
 
@@ -126,13 +105,7 @@ describe('src | components | pages | Profil', () => {
 
   it('should display an error message on submit if email format is not valid', () => {
     // given
-    render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Profil {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
+    renderProfil(props)
     const inputEmail = screen.getByLabelText('E-mail :')
     fireEvent.change(inputEmail, { target: { value: 'fake@email' } })
 
