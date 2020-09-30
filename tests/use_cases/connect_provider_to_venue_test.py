@@ -1,12 +1,10 @@
-from decimal import Decimal
 from unittest.mock import MagicMock
 
 import pytest
 
-from local_providers import AllocineStocks, FnacStocks, LibrairesStocks, PraxielStocks, TiteLiveStocks
-from models import AllocineVenueProvider, AllocineVenueProviderPriceRule, ApiErrors, VenueProvider
+from local_providers import FnacStocks, LibrairesStocks, PraxielStocks, TiteLiveStocks
+from models import ApiErrors, VenueProvider
 from repository import repository
-from tests.conftest import clean_database
 from tests.local_providers.provider_test_utils import TestLocalProvider
 from tests.model_creators.generic_creators import create_offerer, create_provider, create_venue
 from tests.model_creators.provider_creators import activate_provider
@@ -14,49 +12,9 @@ from use_cases.connect_provider_to_venue import connect_provider_to_venue
 from utils.human_ids import humanize
 
 
-class UseCaseTest:
-    class ConnectProviderToVenueTest:
-        class WhenProviderIsAllocine:
-            def setup_class(self):
-                self.find_by_id = MagicMock()
-            @pytest.mark.usefixtures("db_session")
-            def should_connect_venue_to_allocine_provider(self, app):
-                # Given
-                offerer = create_offerer()
-                venue = create_venue(offerer)
-                provider = activate_provider('AllocineStocks')
-
-                repository.save(venue)
-
-                self.find_by_id.return_value = venue
-                stock_repository = MagicMock()
-                provider_type = AllocineStocks
-
-                venue_provider_payload = {
-                    'providerId': humanize(provider.id),
-                    'venueId': humanize(venue.id),
-                    'price': '9.99',
-                    'isDuo': True,
-                    'quantity': 50
-                }
-
-                # When
-                connect_provider_to_venue(provider_type, stock_repository, venue_provider_payload,
-                                          self.find_by_id)
-
-                # Then
-                allocine_venue_provider = AllocineVenueProvider.query.one()
-                venue_provider_price_rule = AllocineVenueProviderPriceRule.query.one()
-
-                assert allocine_venue_provider.venue == venue
-                assert allocine_venue_provider.isDuo
-                assert allocine_venue_provider.quantity == 50
-                assert venue_provider_price_rule.price == Decimal('9.99')
-
-
-    class WhenProviderIsLibraires:
-        def setup_class(self):
-            self.find_by_id = MagicMock()
+class WhenProviderIsLibraires:
+    def setup_class(self):
+        self.find_by_id = MagicMock()
 
         @pytest.mark.usefixtures("db_session")
         def should_connect_venue_when_synchronization_is_allowed(self, app):
