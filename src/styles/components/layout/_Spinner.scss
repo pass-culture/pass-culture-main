@@ -3,7 +3,7 @@
   text-align: center;
 
   img {
-    -webkit-animation: rotation 3s infinite linear;
+    animation: rotation 3s infinite linear;
     margin-bottom: rem(15px);
   }
 
@@ -13,12 +13,12 @@
   }
 }
 
-@-webkit-keyframes rotation {
+@keyframes rotation {
   from {
-    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
   }
 
   to {
-    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
   }
 }

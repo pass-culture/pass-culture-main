@@ -118,16 +118,16 @@
   .pagination {
     @include caption();
 
+    align-items: center;
     display: flex;
     justify-content: center;
-    align-items: center;
     margin-top: rem(35px);
 
     button {
       background: none;
       border: none;
-      height: 24px;
       cursor: pointer;
+      height: 24px;
 
       &:disabled {
         cursor: not-allowed;

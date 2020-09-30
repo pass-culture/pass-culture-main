@@ -31,15 +31,15 @@ const buildQueryParams = ({ nameSearchValue, venueId, page }) => {
   const queryParams = []
 
   if (nameSearchValue !== '') {
-    queryParams.push('name=' + nameSearchValue)
+    queryParams.push(`name=${nameSearchValue}`)
   }
 
   if (venueId) {
-    queryParams.push('venueId=' + venueId)
+    queryParams.push(`venueId=${venueId}`)
   }
 
   if (page) {
-    queryParams.push('page=' + page)
+    queryParams.push(`page=${page}`)
   }
 
   return queryParams.join('&')
