@@ -1,3 +1,4 @@
+import re
 from typing import Dict, List
 
 from models import ApiErrors, OfferSQLEntity, StockSQLEntity
@@ -11,12 +12,13 @@ def check_stocks_are_editable_for_offer(offer: OfferSQLEntity) -> None:
 
 
 def check_stock_is_updatable(stock: StockSQLEntity) -> None:
-    local_class = stock.offer.lastProvider.localClass if stock.offer.lastProvider else ''
-    is_titelive_generated_offer = stock.offer.isFromProvider is True and 'TiteLive' in local_class
-    is_libraires_generated_offer = stock.offer.isFromProvider is True and 'Libraires' in local_class
-    is_fnac_generated_offer = stock.offer.isFromProvider is True and 'Fnac' in local_class
+    local_provider_names = '(TiteLive|Fnac|Libraires|Praxiel)'
 
-    if is_titelive_generated_offer or is_libraires_generated_offer or is_fnac_generated_offer:
+    local_class = stock.offer.lastProvider.localClass if stock.offer.lastProvider else ''
+    is_from_provider = stock.offer.isFromProvider is True
+    is_stocks_provider_generated_offer = re.search(local_provider_names, local_class)
+
+    if is_from_provider and is_stocks_provider_generated_offer:
         api_errors = ApiErrors()
         api_errors.add_error('global', 'Les offres importées ne sont pas modifiables')
         raise api_errors

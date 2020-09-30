@@ -19,7 +19,7 @@ from validation.routes.stocks import check_dates_are_allowed_on_new_stock, \
 
 class CheckDatesAreAllowedOnNewStockTest:
     class OfferIsOnThingTest:
-        def test_should_raise_error_with_beginning_datetime(self):
+        def should_raise_error_with_beginning_datetime(self):
             # Given
             offer = create_offer_with_thing_product(VenueSQLEntity())
             beginningDatetime = datetime(2019, 2, 14)
@@ -40,7 +40,7 @@ class CheckDatesAreAllowedOnNewStockTest:
             ]
 
 
-        def test_should_not_raise_error_with_missing_booking_limit_datetime(self):
+        def should_not_raise_error_with_missing_booking_limit_datetime(self):
             # Given
             offer = create_offer_with_thing_product(VenueSQLEntity())
 
@@ -57,7 +57,7 @@ class CheckDatesAreAllowedOnNewStockTest:
                 # Then
                 assert pytest.fail("Should not fail with valid params")
 
-        def test_should_not_raise_error_with_none_booking_limit_datetime(self):
+        def should_not_raise_error_with_none_booking_limit_datetime(self):
             # Given
             offer = create_offer_with_thing_product(VenueSQLEntity())
             data = {
@@ -75,7 +75,7 @@ class CheckDatesAreAllowedOnNewStockTest:
                 assert pytest.fail("Should not fail with valid params")
 
     class OfferIsOnEventTest:
-        def test_should_raise_error_with_missing_beginning_datetime(self):
+        def should_raise_error_with_missing_beginning_datetime(self):
             # Given
             offer = create_offer_with_event_product()
             beginningDatetime = datetime(2019, 2, 14)
@@ -95,7 +95,7 @@ class CheckDatesAreAllowedOnNewStockTest:
                 'Ce paramètre est obligatoire'
             ]
 
-        def test_should_raise_error_with_none_beginning_datetime(self):
+        def should_raise_error_with_none_beginning_datetime(self):
             # Given
             offer = create_offer_with_event_product()
             data = {
@@ -114,7 +114,7 @@ class CheckDatesAreAllowedOnNewStockTest:
                 'Ce paramètre est obligatoire'
             ]
 
-        def test_should_raise_error_with_missing_booking_limit_datetime(self):
+        def should_raise_error_with_missing_booking_limit_datetime(self):
             # Given
             offer = create_offer_with_event_product()
             beginningDatetime = datetime(2019, 2, 14)
@@ -134,7 +134,7 @@ class CheckDatesAreAllowedOnNewStockTest:
                 'Ce paramètre est obligatoire'
             ]
 
-        def test_should_raise_error_with_none_booking_limit_datetime(self):
+        def should_raise_error_with_none_booking_limit_datetime(self):
             # Given
             offer = create_offer_with_event_product()
             data = {
@@ -156,7 +156,7 @@ class CheckDatesAreAllowedOnNewStockTest:
 
 class CheckDatesAreAllowedOnExistingStockTest:
     class OfferIsOnThingTest:
-        def test_should_raise_error_with_beginning_datetime(self):
+        def should_raise_error_with_beginning_datetime(self):
             # Given
             offer = create_offer_with_thing_product(VenueSQLEntity())
             data = {'beginningDatetime': serialize(datetime(2019, 2, 14))}
@@ -171,7 +171,7 @@ class CheckDatesAreAllowedOnExistingStockTest:
             ]
 
 
-        def test_should_not_raise_error_with_missing_booking_limit_datetime(self):
+        def should_not_raise_error_with_missing_booking_limit_datetime(self):
             # Given
             offer = create_offer_with_thing_product(VenueSQLEntity())
             beginningDatetime = datetime(2019, 2, 14)
@@ -188,7 +188,7 @@ class CheckDatesAreAllowedOnExistingStockTest:
                 # Then
                 assert pytest.fail("Should not fail with valid params")
 
-        def test_should_not_raise_error_with_none_booking_limit_datetime(self):
+        def should_not_raise_error_with_none_booking_limit_datetime(self):
             # Given
             offer = create_offer_with_thing_product(VenueSQLEntity())
             data = {
@@ -206,7 +206,7 @@ class CheckDatesAreAllowedOnExistingStockTest:
                 assert pytest.fail("Should not fail with valid params")
 
     class OfferIsOnEventTest:
-        def test_should_raise_error_with_none_beginning_datetime(self):
+        def should_raise_error_with_none_beginning_datetime(self):
             # Given
             offer = create_offer_with_event_product()
             data = {'beginningDatetime': None}
@@ -221,7 +221,7 @@ class CheckDatesAreAllowedOnExistingStockTest:
             ]
 
 
-        def test_should_raise_error_with_none_booking_limit_datetime(self):
+        def should_raise_error_with_none_booking_limit_datetime(self):
             # Given
             offer = create_offer_with_event_product()
             data = {
@@ -242,7 +242,7 @@ class CheckDatesAreAllowedOnExistingStockTest:
 
 
 class CheckStocksAreEditableForOfferTest:
-    def test_fail_when_offer_is_from_provider(self, app):
+    def should_fail_when_offer_is_from_provider(self, app):
         # Given
         provider = Provider()
         provider.name = 'myProvider'
@@ -262,7 +262,7 @@ class CheckStocksAreEditableForOfferTest:
             'Les offres importées ne sont pas modifiables'
         ]
 
-    def test_does_not_raise_an_error_when_offer_is_not_from_provider(self):
+    def should_not_raise_an_error_when_offer_is_not_from_provider(self):
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -273,8 +273,9 @@ class CheckStocksAreEditableForOfferTest:
 
 
 class CheckStockIsUpdatableTest:
+    @clean_database
     @pytest.mark.usefixtures("db_session")
-    def test_fail_when_offer_is_from_titeliveprovider(self, app):
+    def should_fail_when_offer_is_from_titeliveprovider(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -294,7 +295,7 @@ class CheckStockIsUpdatableTest:
         ]
 
     @pytest.mark.usefixtures("db_session")
-    def test_fail_when_offer_is_from_librairesprovider(self, app):
+    def should_fail_when_offer_is_from_librairesprovider(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -314,7 +315,7 @@ class CheckStockIsUpdatableTest:
         ]
 
     @pytest.mark.usefixtures("db_session")
-    def test_fail_when_offer_is_from_fnacprovider(self, app):
+    def should_fail_when_offer_is_from_fnacprovider(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -334,7 +335,27 @@ class CheckStockIsUpdatableTest:
         ]
 
     @pytest.mark.usefixtures("db_session")
-    def test_raise_an_error_when_event_is_expired(self, app):
+    def should_fail_when_offer_is_from_praxielprovider(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        provider = get_provider_by_local_class('PraxielStocks')
+        offer = create_offer_with_thing_product(venue, last_provider_id=provider.id, last_provider=provider)
+        stock = create_stock(id_at_providers='test', offer=offer, quantity=10)
+
+        repository.save(stock)
+
+        # When
+        with pytest.raises(ApiErrors) as error:
+            check_stock_is_updatable(stock)
+
+        # Then
+        assert error.value.errors['global'] == [
+            'Les offres importées ne sont pas modifiables'
+        ]
+
+    @clean_database
+    def should_raise_an_error_when_event_is_expired(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -351,7 +372,7 @@ class CheckStockIsUpdatableTest:
         ]
 
     @pytest.mark.usefixtures("db_session")
-    def test_does_not_raise_an_error_when_event_is_not_expired(self, app):
+    def should_not_raise_an_error_when_event_is_not_expired(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -367,7 +388,7 @@ class CheckStockIsUpdatableTest:
             assert pytest.fail("Stock should be updatable and not expired")
 
     @pytest.mark.usefixtures("db_session")
-    def test_does_not_raise_an_error_when_offer_is_not_from_provider(self, app):
+    def should_not_raise_an_error_when_offer_is_not_from_provider(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -383,7 +404,7 @@ class CheckStockIsUpdatableTest:
             assert pytest.fail("Stock should be updatable")
 
     @pytest.mark.usefixtures("db_session")
-    def test_does_not_raise_an_error_when_offer_is_from_allocine_provider(self, app):
+    def should_not_raise_an_error_when_offer_is_from_allocine_provider(self, app):
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -403,7 +424,7 @@ class CheckStockIsUpdatableTest:
 
 
 class CheckOnlyEditableFieldsWillBeUpdatedTest:
-    def test_raise_an_error_when_no_editable_fields_in_stock(self):
+    def should_raise_an_error_when_no_editable_fields_in_stock(self):
         # Given
         editable_fields = []
 
@@ -418,7 +439,7 @@ class CheckOnlyEditableFieldsWillBeUpdatedTest:
             'Pour les offres importées, certains champs ne sont pas modifiables'
         ]
 
-    def test_raise_an_error_when_trying_to_update_a_non_editable_field_in_stock(self):
+    def should_raise_an_error_when_trying_to_update_a_non_editable_field_in_stock(self):
         # Given
         editable_fields = ['price', 'bookingLimitDatetime', 'available']
 
@@ -433,7 +454,7 @@ class CheckOnlyEditableFieldsWillBeUpdatedTest:
             'Pour les offres importées, certains champs ne sont pas modifiables'
         ]
 
-    def test_does_not_raise_an_error_when_trying_to_update_an_editable_field_in_stock(self):
+    def should_not_raise_an_error_when_trying_to_update_an_editable_field_in_stock(self):
         # Given
         editable_fields = ['price', 'bookingLimitDatetime', 'available']
 
@@ -447,7 +468,7 @@ class CheckOnlyEditableFieldsWillBeUpdatedTest:
             # Then
             assert pytest.fail("Should not fail with valid params")
 
-    def test_does_not_raise_an_error_when_there_is_no_update(self):
+    def should_not_raise_an_error_when_there_is_no_update(self):
         # Given
         editable_fields = ['price', 'bookingLimitDatetime', 'available']
 
