@@ -4,7 +4,7 @@ from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, Offer
 from routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 
 
-def test_should_return_serialized_offers_with_relevant_informations():
+def should_return_serialized_offers_with_relevant_informations():
     # given
     offer_id = 1
     stock_id = 2
@@ -64,7 +64,7 @@ def test_should_return_serialized_offers_with_relevant_informations():
     assert result['offers'] == expected_serialized_offer
 
 
-def test_should_return_pagination_details():
+def should_return_pagination_details():
     # given
     offer_id = 1
     stock_id = 2

@@ -10,7 +10,7 @@ from repository import repository
 
 class PaginatedOfferSQLRepositoryTest:
     @clean_database
-    def test_should_return_paginated_offers_with_details_of_pagination_and_offers_of_requested_page(self, app):
+    def should_return_paginated_offers_with_details_of_pagination_and_offers_of_requested_page(self, app):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -39,7 +39,7 @@ class PaginatedOfferSQLRepositoryTest:
         assert paginated_offers.offers[0].identifier == Identifier(offer1.id)
 
     @clean_database
-    def test_should_return_a_number_of_page_as_an_integer(self, app):
+    def should_return_a_number_of_page_as_an_integer(self, app):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -65,7 +65,7 @@ class PaginatedOfferSQLRepositoryTest:
         assert paginated_offers.total_pages == 2
 
     @clean_database
-    def test_return_offers_sorted_by_id_desc(self, app):
+    def should_return_offers_sorted_by_id_desc(self, app):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -87,7 +87,7 @@ class PaginatedOfferSQLRepositoryTest:
         assert paginated_offers.offers[0].identifier.persisted > paginated_offers.offers[1].identifier.persisted
 
     @clean_database
-    def test_return_offers_of_given_venue(self, app):
+    def should_return_offers_of_given_venue(self, app):
         user = create_user()
         offerer = create_offerer(siren='123456789')
         user_offerer = create_user_offerer(user=user, offerer=offerer)
@@ -117,7 +117,7 @@ class PaginatedOfferSQLRepositoryTest:
         assert Identifier(offer_on_other_venue.id) not in offers_id
 
     @clean_database
-    def test_return_offers_matching_searched_name(self, app):
+    def should_return_offers_matching_searched_name(self, app):
         user = create_user()
         offerer = create_offerer(siren='123456789')
         user_offerer = create_user_offerer(user=user, offerer=offerer)

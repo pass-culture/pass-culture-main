@@ -5,11 +5,11 @@ from domain.identifier.identifier import Identifier
 from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from domain.pro_offers.paginated_offers_recap_repository import PaginatedOffersRepository
 
-DEFAULT_OFFERS_PER_PAGE = 20
-DEFAULT_PAGE = 1
-
 
 class OffersRequestParameters(object):
+    DEFAULT_OFFERS_PER_PAGE = 20
+    DEFAULT_PAGE = 1
+
     def __init__(self,
                  user_id: int,
                  user_is_admin: bool,
@@ -20,8 +20,8 @@ class OffersRequestParameters(object):
         self.user_id = user_id
         self.user_is_admin = user_is_admin
         self.venue_id = venue_id
-        self.offers_per_page = offers_per_page or DEFAULT_OFFERS_PER_PAGE
-        self.page = page or DEFAULT_PAGE
+        self.offers_per_page = offers_per_page or self.DEFAULT_OFFERS_PER_PAGE
+        self.page = page or self.DEFAULT_PAGE
         self.name_keywords = name_keywords
 
 

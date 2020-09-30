@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 from domain.identifier.identifier import Identifier
 
 from infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
-from use_cases.list_offers_for_pro_user import ListOffersForProUser, OffersRequestParameters, DEFAULT_PAGE, DEFAULT_OFFERS_PER_PAGE
+from use_cases.list_offers_for_pro_user import ListOffersForProUser, OffersRequestParameters
 
 
 class OffersRequestParametersTest:
@@ -19,8 +19,8 @@ class OffersRequestParametersTest:
 
         # Then
         assert offers_request_parameters.name_keywords is None
-        assert offers_request_parameters.page == DEFAULT_PAGE
-        assert offers_request_parameters.offers_per_page == DEFAULT_OFFERS_PER_PAGE
+        assert offers_request_parameters.page == OffersRequestParameters.DEFAULT_PAGE
+        assert offers_request_parameters.offers_per_page == OffersRequestParameters.DEFAULT_OFFERS_PER_PAGE
 
     def should_create_object_with_expected_values(self):
         # When
@@ -46,8 +46,7 @@ class ListOffersForProUserTest:
     def setup_method(self):
         self.paginated_offers_repository = PaginatedOffersSQLRepository()
         self.paginated_offers_repository.get_paginated_offers_for_offerer_venue_and_keywords = MagicMock()
-        self.list_offers_for_pro_user = ListOffersForProUser(
-                paginated_offer_repository=self.paginated_offers_repository)
+        self.list_offers_for_pro_user = ListOffersForProUser(paginated_offer_repository=self.paginated_offers_repository)
 
     def should_call_get_paginated_offers_repository(self):
         # Given
