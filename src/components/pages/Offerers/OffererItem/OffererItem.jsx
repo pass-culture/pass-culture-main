@@ -12,7 +12,7 @@ const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable
   let createOfferLink = `/offres/creation?structure=${id}`
   const canCreateOnlyVirtualOffer = venues.length === 1 && venues[0].isVirtual
 
-  if (venues.length < 2) {
+  if (venues.length === 1) {
     createOfferLink = `/offres/creation?structure=${id}&lieu=${venues[0].id}`
   }
 
