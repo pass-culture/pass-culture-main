@@ -233,11 +233,7 @@ class Offers extends PureComponent {
               </button>
             </div>
           )}
-          {isLoading && (
-            <div className="is-loading">
-              <Spinner label="Chargement en cours" />
-            </div>
-          )}
+          {isLoading && <Spinner />}
           {offers.length > 0 && !isLoading && (
             <Fragment>
               <table>

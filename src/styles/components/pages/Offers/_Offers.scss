@@ -139,22 +139,7 @@
     }
   }
 
-  .is-loading {
+  .loading-spinner {
     margin-top: rem(70px);
-    color: $grey-dark;
-
-    .spinner {
-      img {
-        margin-right: 0;
-      }
-
-      span {
-        display: block;
-
-        &::after {
-          right: auto;
-        }
-      }
-    }
   }
 }

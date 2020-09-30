@@ -1,0 +1,24 @@
+.loading-spinner {
+  color: $grey-dark;
+  text-align: center;
+
+  img {
+    -webkit-animation: rotation 3s infinite linear;
+    margin-bottom: rem(15px);
+  }
+
+  .content::after {
+    content: attr(data-dots);
+    position: absolute;
+  }
+}
+
+@-webkit-keyframes rotation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+
+  to {
+    -webkit-transform: rotate(359deg);
+  }
+}

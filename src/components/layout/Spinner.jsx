@@ -1,12 +1,10 @@
-import classnames from 'classnames'
-import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import Icon from './Icon'
 
 class Spinner extends PureComponent {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       nbDots: 3,
     }
@@ -21,50 +19,29 @@ class Spinner extends PureComponent {
   }
 
   startDots = () => {
-    const { dotFrequency } = this.props
     if (this.timer) window.clearInterval(this.timer)
     this.timer = window.setInterval(() => {
       const { nbDots } = this.state
       this.setState({
         nbDots: (nbDots % 3) + 1,
       })
-    }, dotFrequency)
+    }, 500)
   }
 
   render() {
-    const { className, label, style, Tag } = this.props
     const { nbDots } = this.state
     return (
-      <Tag
-        className={classnames('spinner', className)}
-        style={style}
-      >
+      <div className="loading-spinner">
         <Icon svg="loader-pc" />
-        <span
+        <div
           className="content"
           data-dots={Array(nbDots).fill('.').join('')}
         >
-          {label}
-        </span>
-      </Tag>
+          {'Chargement en cours'}
+        </div>
+      </div>
     )
   }
-}
-
-Spinner.defaultProps = {
-  Tag: 'div',
-  className: null,
-  dotFrequency: 500,
-  label: 'Chargement',
-  style: null,
-}
-
-Spinner.propTypes = {
-  Tag: PropTypes.string,
-  className: PropTypes.string,
-  dotFrequency: PropTypes.number,
-  label: PropTypes.string,
-  style: PropTypes.shape(),
 }
 
 export default Spinner
