@@ -31,7 +31,7 @@ module.exports = {
       path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
   },
   resolve: {
-    modules: ['node_modules', paths.appNodeModules].concat(
+    modules: [paths.appPath, 'node_modules', paths.appNodeModules].concat(
       process.env.NODE_PATH.split(path.delimiter)
         .filter(s => s !== '')
         .concat('src')

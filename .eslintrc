@@ -80,7 +80,9 @@
         "extensions": [
           ".js",
           ".jsx"
-        ]
+        ],
+        "paths": ["."],
+        "moduleDirectory": ["node_modules", "src"]
       }
     },
     "react": {

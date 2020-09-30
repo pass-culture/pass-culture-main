@@ -2,19 +2,19 @@ import * as Sentry from '@sentry/browser'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
+import 'typeface-barlow'
 
 import { Form, Icon } from 'pass-culture-shared'
 
-import Root from './Root'
-import BicInput from './components/layout/BicInput'
-import BlockContainer from './components/layout/BlockContainer'
-import IbanInput from './components/layout/IbanInput'
-import { version } from '../package.json'
-import { ROOT_PATH, ENVIRONMENT_NAME, SENTRY_SERVER_URL } from './utils/config'
-import registerCacheWorker from './workers/cache'
+import Root from 'Root'
+import BicInput from 'components/layout/BicInput'
+import BlockContainer from 'components/layout/BlockContainer'
+import IbanInput from 'components/layout/IbanInput'
+import { ROOT_PATH, ENVIRONMENT_NAME, SENTRY_SERVER_URL } from 'utils/config'
+import registerCacheWorker from 'workers/cache'
 
+import { version } from '../package.json'
 import './styles/index.scss'
-import 'typeface-barlow'
 
 // Initialize shared Icon component
 Icon.rootPath = ROOT_PATH

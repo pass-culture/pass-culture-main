@@ -66,7 +66,7 @@ module.exports = {
     maxEntrypointSize: 3000000,
   },
   resolve: {
-    modules: ['node_modules', Paths.appNodeModules].concat(
+    modules: [Paths.appPath, 'node_modules', Paths.appNodeModules].concat(
       process.env.NODE_PATH.split(Path.delimiter)
         .filter(s => s !== '')
         .concat('src')
