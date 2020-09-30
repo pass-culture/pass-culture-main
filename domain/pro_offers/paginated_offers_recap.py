@@ -5,14 +5,14 @@ from domain.identifier.identifier import Identifier
 
 
 class OfferRecapStock:
-    def __init__(self, identifier: int, remaining_quantity: int):
-        self.identifier = Identifier(identifier)
+    def __init__(self, identifier: Identifier, remaining_quantity: int):
+        self.identifier = identifier
         self.remaining_quantity = remaining_quantity
 
 
 class OfferRecapVenue:
-    def __init__(self, identifier: int, is_virtual: bool, managing_offerer_id: int, name: str, public_name: str):
-        self.identifier = Identifier(identifier)
+    def __init__(self, identifier: Identifier, is_virtual: bool, managing_offerer_id: int, name: str, public_name: str):
+        self.identifier = identifier
         self.is_virtual = is_virtual
         self.managing_offerer_id = Identifier(managing_offerer_id)
         self.name = name
@@ -21,7 +21,7 @@ class OfferRecapVenue:
 
 class OfferRecap:
     def __init__(self,
-                 identifier: int,
+                 identifier: Identifier,
                  has_booking_limit_datetimes_passed: bool,
                  is_active: bool,
                  is_editable: bool,
@@ -30,14 +30,14 @@ class OfferRecap:
                  name: str,
                  thumb_url: str,
                  offer_type: str,
-                 venue_identifier: int,
+                 venue_identifier: Identifier,
                  venue_is_virtual: bool,
                  venue_managing_offerer_id: int,
                  venue_name: str,
                  venue_public_name: str,
                  stocks: List[Dict],
                  ):
-        self.identifier = Identifier(identifier)
+        self.identifier = identifier
         self.has_booking_limit_datetimes_passed = has_booking_limit_datetimes_passed
         self.is_active = is_active
         self.is_editable = is_editable

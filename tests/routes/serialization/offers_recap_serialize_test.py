@@ -1,3 +1,5 @@
+from domain.identifier.identifier import Identifier
+
 from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap
 from routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 
@@ -8,9 +10,9 @@ def test_should_return_serialized_offers_with_relevant_informations():
     stock_id = 2
     venue_id = 3
     offerer_id = 4
-    stock = {"identifier": stock_id, "is_event_expired": False, "remaining_quantity": 10}
+    stock = {"identifier": Identifier(stock_id), "is_event_expired": False, "remaining_quantity": 10}
     offer = OfferRecap(
-            identifier=offer_id,
+            identifier=Identifier(offer_id),
             has_booking_limit_datetimes_passed=False,
             is_active=True,
             is_editable=True,
@@ -19,7 +21,7 @@ def test_should_return_serialized_offers_with_relevant_informations():
             name="Test Book",
             thumb_url="/thumb/url",
             offer_type="ThingType.AUDIOVISUEL",
-            venue_identifier=venue_id,
+            venue_identifier=Identifier(venue_id),
             venue_is_virtual=False,
             venue_managing_offerer_id=offerer_id,
             venue_name="La petite librairie",
@@ -68,9 +70,9 @@ def test_should_return_pagination_details():
     stock_id = 2
     venue_id = 3
     offerer_id = 4
-    stock = {"identifier": stock_id, "is_event_expired": False, "remaining_quantity": 10}
+    stock = {"identifier": Identifier(stock_id), "is_event_expired": False, "remaining_quantity": 10}
     offer = OfferRecap(
-            identifier=offer_id,
+            identifier=Identifier(offer_id),
             has_booking_limit_datetimes_passed=False,
             is_active=True,
             is_editable=True,
@@ -79,7 +81,7 @@ def test_should_return_pagination_details():
             name="Test Book",
             thumb_url="/thumb/url",
             offer_type="ThingType.AUDIOVISUEL",
-            venue_identifier=venue_id,
+            venue_identifier=Identifier(venue_id),
             venue_is_virtual=False,
             venue_managing_offerer_id=offerer_id,
             venue_name="La petite librairie",

@@ -1,5 +1,7 @@
 from typing import Dict, List
 
+from domain.identifier.identifier import Identifier
+
 from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap
 from models import OfferSQLEntity, StockSQLEntity
 
@@ -17,7 +19,7 @@ def _offer_recap_to_domain(offer_sql_entity: OfferSQLEntity) -> OfferRecap:
     stocks = [_stock_serializer(stock_entity) for stock_entity in offer_sql_entity.activeStocks]
 
     return OfferRecap(
-            identifier=offer_sql_entity.id,
+            identifier=Identifier(offer_sql_entity.id),
             has_booking_limit_datetimes_passed=offer_sql_entity.hasBookingLimitDatetimesPassed,
             is_active=offer_sql_entity.isActive,
             is_editable=offer_sql_entity.isEditable,
@@ -26,7 +28,7 @@ def _offer_recap_to_domain(offer_sql_entity: OfferSQLEntity) -> OfferRecap:
             name=offer_sql_entity.name,
             thumb_url=offer_sql_entity.thumbUrl,
             offer_type=offer_sql_entity.type,
-            venue_identifier=offer_sql_entity.venue.id,
+            venue_identifier=Identifier(offer_sql_entity.venue.id),
             venue_is_virtual=offer_sql_entity.venue.isVirtual,
             venue_managing_offerer_id=offer_sql_entity.venue.managingOffererId,
             venue_name=offer_sql_entity.venue.name,
@@ -37,6 +39,6 @@ def _offer_recap_to_domain(offer_sql_entity: OfferSQLEntity) -> OfferRecap:
 
 def _stock_serializer(stock: StockSQLEntity) -> Dict:
     return {
-        "identifier": stock.id,
+        "identifier": Identifier(stock.id),
         "remaining_quantity": stock.remainingQuantity
     }
