@@ -12,7 +12,6 @@ class OffersRequestParametersTest:
         offers_request_parameters = OffersRequestParameters(
                 user_id=12,
                 user_is_admin=True,
-                offerer_id=None,
                 venue_id=None,
                 page=None,
                 offers_per_page=None
@@ -28,7 +27,6 @@ class OffersRequestParametersTest:
         offers_request_parameters = OffersRequestParameters(
                 user_id=12,
                 user_is_admin=False,
-                offerer_id=Identifier(12),
                 venue_id=None,
                 name_keywords='Toto bateau',
                 page=12,
@@ -37,7 +35,6 @@ class OffersRequestParametersTest:
 
         # Then
         assert offers_request_parameters.name_keywords == 'Toto bateau'
-        assert offers_request_parameters.offerer_id == Identifier(12)
         assert offers_request_parameters.page == 12
         assert offers_request_parameters.offers_per_page == 3
         assert offers_request_parameters.user_id == 12
@@ -57,7 +54,6 @@ class ListOffersForProUserTest:
         offers_request_parameters = OffersRequestParameters(
                 user_id=12,
                 user_is_admin=False,
-                offerer_id=Identifier(43),
                 venue_id=Identifier(36),
                 offers_per_page=12,
                 name_keywords='Offre Label',
@@ -70,7 +66,6 @@ class ListOffersForProUserTest:
         # Then
         self.paginated_offers_repository.get_paginated_offers_for_offerer_venue_and_keywords.assert_called_once_with(
                 name_keywords='Offre Label',
-                offerer_id=Identifier(43),
                 page=12,
                 offers_per_page=12,
                 user_id=12,

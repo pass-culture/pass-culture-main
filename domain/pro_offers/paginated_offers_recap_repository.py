@@ -13,7 +13,6 @@ class PaginatedOffersRepository(ABC):
                                                             user_is_admin: bool,
                                                             page: Optional[int],
                                                             offers_per_page: int,
-                                                            offerer_id: Optional[Identifier] = None,
                                                             venue_id: Optional[Identifier] = None,
                                                             name_keywords: Optional[str] = None) -> PaginatedOffersRecap:
         pass
