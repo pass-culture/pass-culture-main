@@ -1,6 +1,10 @@
-version: 2
+version: 2.1
 jobs:
   run-tests:
+    parameters:
+      is_nightly_build:
+        type: boolean
+        default: false
     working_directory: ~/pass-culture-api-ci
     docker:
       - image: circleci/python:3.7.6
@@ -48,12 +52,21 @@ jobs:
             . venv/bin/activate
             python -m nltk.downloader punkt stopwords &> /dev/null
             if [ ! -z "$(alembic branches)" ]; then echo "Multiple alembic heads found"; exit 1; fi
-      - run:
-          name: Running tests
-          command: |
-            . venv/bin/activate
-            RUN_ENV=tests pytest tests --cov --cov-report html --junitxml=test-results/junit.xml -x
-            coveralls
+      - when:
+          condition: << parameters.is_nightly_build >>
+          steps:
+            - run:
+                name: Running tests
+                command: |
+                  RUN_ENV=tests venv/bin/pytest tests --cov --cov-report html --junitxml=test-results/junit.xml -x
+                  venv/bin/coveralls
+      - unless:
+          condition: << parameters.is_nightly_build >>
+          steps:
+            - run:
+                name: Running tests
+                command: |
+                  RUN_ENV=tests venv/bin/pytest tests --junitxml=test-results/junit.xml -x
       - store_test_results:
           path: test-results
       - store_artifacts:
@@ -298,3 +311,6 @@ workflows:
       - functional-tests-webapp
       - functional-tests-pro
       - tests-data-analytics
+      - run-tests
+      - run-tests:
+          is_nightly_build: true
