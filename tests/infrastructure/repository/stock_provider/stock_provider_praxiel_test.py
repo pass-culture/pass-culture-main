@@ -12,7 +12,7 @@ class StockProviderPraxielRepositoryTest:
 
     def should_instanciate_provider_api_with_correct_params(self):
         # Then
-        assert self.stock_provider_praxiel_repository.praxiel_api.api_url == 'https://www.praxiel-passculture.fr/Ravy/stocks'
+        assert self.stock_provider_praxiel_repository.praxiel_api.api_url == 'https://www.praxiel-passculture.fr/3027011420000/stocks'
         assert self.stock_provider_praxiel_repository.praxiel_api.name == 'Praxiel/Inference'
 
     def should_call_provider_api_stocks_with_expected_arguments(self):
