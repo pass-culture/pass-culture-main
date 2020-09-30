@@ -7,7 +7,6 @@ from local_providers import AllocineStocks, FnacStocks, LibrairesStocks, Praxiel
 from models import AllocineVenueProvider, AllocineVenueProviderPriceRule, ApiErrors, VenueProvider, VenueSQLEntity
 from repository import repository
 from repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
-from repository.venue_queries import find_by_id
 from utils.human_ids import dehumanize
 from validation.routes.venues import check_existing_venue
 
@@ -23,7 +22,8 @@ ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 
 def connect_provider_to_venue(provider_class: object,
                               stock_provider_repository: StockProviderRepository,
-                              venue_provider_payload: Dict) -> VenueProvider:
+                              venue_provider_payload: Dict,
+                              find_by_id: Callable) -> VenueProvider:
     venue_id = dehumanize(venue_provider_payload['venueId'])
     venue = find_by_id(venue_id)
     check_existing_venue(venue)

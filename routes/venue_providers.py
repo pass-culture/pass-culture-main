@@ -11,6 +11,7 @@ from local_providers import FnacStocks, LibrairesStocks, PraxielStocks
 from local_providers.titelive_stocks.titelive_stocks import TiteLiveStocks
 from models.api_errors import ApiErrors
 from models.venue_provider import VenueProvider
+from repository.booking_queries import find_by_id
 from repository.provider_queries import get_provider_enabled_for_pro_by_id
 from routes.serialization import as_dict
 from use_cases.connect_provider_to_venue import connect_provider_to_venue
@@ -58,8 +59,10 @@ def create_venue_provider():
 
     provider_class = getattr(local_providers, provider.localClass)
     stock_provider_repository_or_none = _get_stock_provider_repository(provider_class)
-    new_venue_provider = connect_provider_to_venue(provider_class, stock_provider_repository_or_none,
-                                                   venue_provider_payload)
+    new_venue_provider = connect_provider_to_venue(provider_class,
+                                                   stock_provider_repository_or_none,
+                                                   venue_provider_payload,
+                                                   find_by_id)
 
     _run_first_synchronization(new_venue_provider)
 
