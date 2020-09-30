@@ -39,12 +39,10 @@ class Spinner extends PureComponent {
         className={classnames('spinner', className)}
         style={style}
       >
-        <Icon svg="ico-loader-r" />
+        <Icon svg="loader-pc" />
         <span
           className="content"
-          data-dots={Array(nbDots)
-            .fill('.')
-            .join('')}
+          data-dots={Array(nbDots).fill('.').join('')}
         >
           {label}
         </span>

@@ -17,7 +17,6 @@ describe('src | components | pages | Offers | Offers', () => {
   let history
 
   beforeEach(() => {
-    jest.spyOn(window, 'scrollTo').mockImplementation(() => {})
     change = jest.fn()
     parse = jest.fn().mockReturnValue({})
     currentUser = { isAdmin: false, name: 'Current User', publicName: 'USER' }
@@ -27,12 +26,12 @@ describe('src | components | pages | Offers | Offers', () => {
           offerers: [],
           users: [{ publicName: 'User', id: 'EY', name: 'User' }],
           venues: [{ id: 'JI', name: 'Venue' }],
-        },
+        }
       ) => state,
       modal: (
         state = {
           config: {},
-        },
+        }
       ) => state,
     })
     history = createMemoryHistory()
@@ -42,7 +41,7 @@ describe('src | components | pages | Offers | Offers', () => {
       currentUser,
       handleOnActivateAllVenueOffersClick: jest.fn(),
       handleOnDeactivateAllVenueOffersClick: jest.fn(),
-      loadOffers: jest.fn(),
+      loadOffers: jest.fn().mockImplementation((_, handleSuccess) => handleSuccess(1, 1)),
       loadTypes: jest.fn(),
       location: {
         search: 'offres?lieu=AQ&structure=A4',
@@ -72,7 +71,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
 
         // then
@@ -83,7 +82,7 @@ describe('src | components | pages | Offers | Offers', () => {
             venueId: undefined,
           },
           expect.any(Function),
-          expect.any(Function),
+          expect.any(Function)
         )
       })
 
@@ -97,7 +96,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
 
         // Then
@@ -117,7 +116,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
 
         // Then
@@ -141,7 +140,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
 
         const venueFilter = wrapper.findWhere(node => node.text() === 'Lieu : La verbeuse').first()
@@ -160,7 +159,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
 
         const venueFilter = wrapper.findWhere(node => node.text() === 'Lieu :').first()
@@ -181,7 +180,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
 
         const venueFilter = wrapper
@@ -192,11 +191,15 @@ describe('src | components | pages | Offers | Offers', () => {
         venueFilter.invoke('onClick')()
 
         // then
-        expect(props.loadOffers).toHaveBeenCalledWith({
-          "nameSearchValue": "",
-          "page": 1,
-          "venueId": undefined,
-        }, expect.any(Function), expect.any(Function))
+        expect(props.loadOffers).toHaveBeenCalledWith(
+          {
+            nameSearchValue: '',
+            page: 1,
+            venueId: undefined,
+          },
+          expect.any(Function),
+          expect.any(Function)
+        )
       })
     })
 
@@ -236,7 +239,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
 
         const firstOfferItem = wrapper.find({ children: 'My little offer' }).first()
@@ -262,7 +265,7 @@ describe('src | components | pages | Offers | Offers', () => {
               <MemoryRouter>
                 <Offers {...props} />
               </MemoryRouter>
-            </Provider>,
+            </Provider>
           )
           const navLink = wrapper.find({ children: 'Créer une offre' })
 
@@ -285,7 +288,7 @@ describe('src | components | pages | Offers | Offers', () => {
               <MemoryRouter>
                 <Offers {...props} />
               </MemoryRouter>
-            </Provider>,
+            </Provider>
           )
           const offerCreationLink = wrapper.find({ children: 'Créer une offre' }).parent()
 
@@ -307,7 +310,7 @@ describe('src | components | pages | Offers | Offers', () => {
               <Router history={history}>
                 <Offers {...props} />
               </Router>
-            </Provider>,
+            </Provider>
           )
           const offerCreationLink = wrapper.find({ children: 'Créer une offre' })
 
@@ -316,7 +319,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
           // then
           expect(history.location.pathname + history.location.search).toStrictEqual(
-            '/offres/creation?structure=XY',
+            '/offres/creation?structure=XY'
           )
         })
       })
@@ -334,7 +337,7 @@ describe('src | components | pages | Offers | Offers', () => {
               <Router history={history}>
                 <Offers {...props} />
               </Router>
-            </Provider>,
+            </Provider>
           )
           const offerCreationLink = wrapper.find({ children: 'Créer une offre' })
 
@@ -343,7 +346,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
           // then
           expect(history.location.pathname + history.location.search).toStrictEqual(
-            '/offres/creation?lieu=G6',
+            '/offres/creation?lieu=G6'
           )
         })
       })
@@ -357,7 +360,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
         const deactivateButton = wrapper.find({ children: 'Désactiver toutes les offres' })
 
@@ -375,7 +378,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
         const deactivateButton = wrapper.find({ children: 'Désactiver toutes les offres' })
 
@@ -396,7 +399,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
         // when
         const deactivateButton = wrapper.find({ children: 'Désactiver toutes les offres' })
@@ -423,7 +426,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
         const activateButton = wrapper.find({ children: 'Activer toutes les offres' })
 
@@ -441,7 +444,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
         const activateButton = wrapper.find({ children: 'Activer toutes les offres' })
 
@@ -461,7 +464,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
 
         // when
@@ -480,15 +483,13 @@ describe('src | components | pages | Offers | Offers', () => {
       describe('when name search value is not an empty string', () => {
         it('should change query', () => {
           // given
-          props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess())
           const wrapper = mount(
             <Provider store={store}>
               <MemoryRouter>
                 <Offers {...props} />
               </MemoryRouter>
-            </Provider>,
+            </Provider>
           )
-
 
           // when
           const searchInput = wrapper.find('input[placeholder="Rechercher par nom d’offre"]')
@@ -500,7 +501,7 @@ describe('src | components | pages | Offers | Offers', () => {
           expect(props.query.change).toHaveBeenCalledWith({
             lieu: null,
             nom: 'AnyWord',
-            page: undefined,
+            page: 1,
           })
         })
       })
@@ -508,13 +509,12 @@ describe('src | components | pages | Offers | Offers', () => {
       describe('when name search value is an empty string', () => {
         it('should change query with mots-clés set to null on form submit', () => {
           // given
-          props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess())
           const wrapper = mount(
             <Provider store={store}>
               <MemoryRouter>
                 <Offers {...props} />
               </MemoryRouter>
-            </Provider>,
+            </Provider>
           )
 
           // when
@@ -527,7 +527,7 @@ describe('src | components | pages | Offers | Offers', () => {
           expect(props.query.change).toHaveBeenCalledWith({
             lieu: null,
             nom: null,
-            page: undefined,
+            page: 1,
           })
         })
       })
@@ -548,7 +548,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
 
         // when
@@ -570,7 +570,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>,
+          </Provider>
         )
         // when
         wrapper.unmount()
@@ -589,7 +589,7 @@ describe('src | components | pages | Offers | Offers', () => {
           <MemoryRouter>
             <Offers {...props} />
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       )
       const rightArrow = wrapper.find('img[alt="Aller à la page suivante"]').closest('button')
 
@@ -597,7 +597,6 @@ describe('src | components | pages | Offers | Offers', () => {
       rightArrow.invoke('onClick')()
 
       // Then
-      expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' })
       expect(props.loadOffers).toHaveBeenLastCalledWith(
         {
           nameSearchValue: '',
@@ -605,19 +604,20 @@ describe('src | components | pages | Offers | Offers', () => {
           venueId: undefined,
         },
         expect.any(Function),
-        expect.any(Function),
+        expect.any(Function)
       )
     })
 
     it('should display previous page when clicking on left arrow', () => {
       // Given
-      props.query.parse.mockReturnValue({ page: 2 })
+      props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess(2, 2))
+
       const wrapper = mount(
         <Provider store={store}>
           <MemoryRouter>
             <Offers {...props} />
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       )
       const rightArrow = wrapper.find('img[alt="Aller à la page précédente"]').closest('button')
 
@@ -625,7 +625,6 @@ describe('src | components | pages | Offers | Offers', () => {
       rightArrow.invoke('onClick')()
 
       // Then
-      expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' })
       expect(props.loadOffers).toHaveBeenLastCalledWith(
         {
           nameSearchValue: '',
@@ -633,7 +632,7 @@ describe('src | components | pages | Offers | Offers', () => {
           venueId: undefined,
         },
         expect.any(Function),
-        expect.any(Function),
+        expect.any(Function)
       )
     })
 
@@ -647,7 +646,7 @@ describe('src | components | pages | Offers | Offers', () => {
           <MemoryRouter>
             <Offers {...props} />
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       )
 
       // Then
@@ -656,16 +655,13 @@ describe('src | components | pages | Offers | Offers', () => {
     })
 
     it('should not be able to click on next arrow when being on the last page', () => {
-      // Given
-      props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess(2, 2))
-
       // When
       const wrapper = mount(
         <Provider store={store}>
           <MemoryRouter>
             <Offers {...props} />
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       )
 
       // Then

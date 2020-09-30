@@ -1,6 +1,6 @@
 import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
@@ -9,6 +9,7 @@ import Main from '../../layout/Main'
 
 import Titles from '../../layout/Titles/Titles'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
+import Spinner from '../../layout/Spinner'
 
 export const createLinkToOfferCreation = (venueId, offererId) => {
   let createOfferTo = `/offres/creation`
@@ -28,7 +29,9 @@ class Offers extends PureComponent {
   constructor(props) {
     super(props)
 
-    const { name: nameKeywords, page, venueId } = translateQueryParamsToApiParams(props.query.parse())
+    const { name: nameKeywords, page, venueId } = translateQueryParamsToApiParams(
+      props.query.parse()
+    )
 
     this.state = {
       isLoading: false,
@@ -67,13 +70,16 @@ class Offers extends PureComponent {
     types.length === 0 && loadTypes()
 
     const handleSuccess = (page, pageCount) => {
-      this.setState({
-        isLoading: false,
-        page,
-        pageCount,
-      }, () => {
-        this.updateUrlMatchingState()
-      })
+      this.setState(
+        {
+          isLoading: false,
+          page,
+          pageCount,
+        },
+        () => {
+          this.updateUrlMatchingState()
+        }
+      )
     }
 
     const handleFail = () =>
@@ -89,20 +95,26 @@ class Offers extends PureComponent {
   handleOnSubmit = event => {
     event.preventDefault()
 
-    this.setState({
-      page: 1,
-    }, () => {
-      this.getPaginatedOffersWithFilters()
-    })
+    this.setState(
+      {
+        page: 1,
+      },
+      () => {
+        this.getPaginatedOffersWithFilters()
+      }
+    )
   }
 
   handleOnVenueClick = () => {
-    this.setState({
-      venueId: undefined,
-      page: 1,
-    }, () => {
-      this.getPaginatedOffersWithFilters()
-    })
+    this.setState(
+      {
+        venueId: undefined,
+        page: 1,
+      },
+      () => {
+        this.getPaginatedOffersWithFilters()
+      }
+    )
   }
 
   storeNameSearchValue = event => {
@@ -113,7 +125,6 @@ class Offers extends PureComponent {
     const { page } = this.state
     this.setState({ page: page - 1 }, () => {
       this.getPaginatedOffersWithFilters()
-      window.scrollTo({ top: 0, behavior: 'smooth' })
     })
   }
 
@@ -121,7 +132,6 @@ class Offers extends PureComponent {
     const { page } = this.state
     this.setState({ page: page + 1 }, () => {
       this.getPaginatedOffersWithFilters()
-      window.scrollTo({ top: 0, behavior: 'smooth' })
     })
   }
 
@@ -139,7 +149,7 @@ class Offers extends PureComponent {
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
     const { venueId, offererId } = apiParams
-    const { nameSearchValue, page, pageCount } = this.state
+    const { nameSearchValue, page, pageCount, isLoading } = this.state
     const createOfferTo = createLinkToOfferCreation(venueId, offererId)
 
     const actionLink = !isAdmin ? (
@@ -223,57 +233,67 @@ class Offers extends PureComponent {
               </button>
             </div>
           )}
-
-          {offers.length > 0 && (
-            <table>
-              <thead>
-              <tr>
-                <th />
-                <th />
-                <th>
-                  {'Lieu'}
-                </th>
-                <th>
-                  {'Stock'}
-                </th>
-                <th>
-                  {'Statut'}
-                </th>
-                <th />
-                <th />
-              </tr>
-              </thead>
-              <tbody className="offers-list">
-              {offers.map(offer => (
-                <OfferItemContainer
-                  key={offer.id}
-                  offer={offer}
-                />
-              ))}
-              </tbody>
-            </table>
+          {isLoading && (
+            <div className="is-loading">
+              <Spinner label="Chargement en cours" />
+            </div>
           )}
-          <button
-            disabled={page === 1}
-            onClick={this.onPreviousPageClick}
-            type="button"
-          >
-            <Icon
-              alt="Aller à la page précédente"
-              svg="ico-left-arrow"
-            />
-          </button>
-          {`Page ${page}/${pageCount}`}
-          <button
-            disabled={page === pageCount}
-            onClick={this.onNextPageClick}
-            type="button"
-          >
-            <Icon
-              alt="Aller à la page suivante"
-              svg="ico-right-arrow"
-            />
-          </button>
+          {offers.length > 0 && !isLoading && (
+            <Fragment>
+              <table>
+                <thead>
+                  <tr>
+                    <th />
+                    <th />
+                    <th>
+                      {'Lieu'}
+                    </th>
+                    <th>
+                      {'Stock'}
+                    </th>
+                    <th>
+                      {'Statut'}
+                    </th>
+                    <th />
+                    <th />
+                  </tr>
+                </thead>
+                <tbody className="offers-list">
+                  {offers.map(offer => (
+                    <OfferItemContainer
+                      key={offer.id}
+                      offer={offer}
+                    />
+                  ))}
+                </tbody>
+              </table>
+              <div className="pagination">
+                <button
+                  disabled={page === 1}
+                  onClick={this.onPreviousPageClick}
+                  type="button"
+                >
+                  <Icon
+                    alt="Aller à la page précédente"
+                    svg="ico-left-arrow"
+                  />
+                </button>
+                <span>
+                  {`Page ${page}/${pageCount}`}
+                </span>
+                <button
+                  disabled={page === pageCount}
+                  onClick={this.onNextPageClick}
+                  type="button"
+                >
+                  <Icon
+                    alt="Aller à la page suivante"
+                    svg="ico-right-arrow"
+                  />
+                </button>
+              </div>
+            </Fragment>
+          )}
         </div>
       </Main>
     )

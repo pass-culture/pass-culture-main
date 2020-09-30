@@ -114,4 +114,47 @@
       }
     }
   }
+
+  .pagination {
+    @include caption();
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: rem(35px);
+
+    button {
+      background: none;
+      border: none;
+      height: 24px;
+      cursor: pointer;
+
+      &:disabled {
+        cursor: not-allowed;
+      }
+    }
+
+    span {
+      margin: 0 rem(15px);
+    }
+  }
+
+  .is-loading {
+    margin-top: rem(70px);
+    color: $grey-dark;
+
+    .spinner {
+      img {
+        margin-right: 0;
+      }
+
+      span {
+        display: block;
+
+        &::after {
+          right: auto;
+        }
+      }
+    }
+  }
 }
