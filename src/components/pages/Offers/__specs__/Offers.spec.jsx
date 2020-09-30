@@ -17,8 +17,9 @@ describe('src | components | pages | Offers | Offers', () => {
   let history
 
   beforeEach(() => {
+    jest.spyOn(window, 'scrollTo').mockImplementation(() => {})
     change = jest.fn()
-    parse = () => ({})
+    parse = jest.fn().mockReturnValue({})
     currentUser = { isAdmin: false, name: 'Current User', publicName: 'USER' }
     store = getStubStore({
       data: (
@@ -26,12 +27,12 @@ describe('src | components | pages | Offers | Offers', () => {
           offerers: [],
           users: [{ publicName: 'User', id: 'EY', name: 'User' }],
           venues: [{ id: 'JI', name: 'Venue' }],
-        }
+        },
       ) => state,
       modal: (
         state = {
           config: {},
-        }
+        },
       ) => state,
     })
     history = createMemoryHistory()
@@ -71,7 +72,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
 
         // then
@@ -82,7 +83,7 @@ describe('src | components | pages | Offers | Offers', () => {
             venueId: undefined,
           },
           expect.any(Function),
-          expect.any(Function)
+          expect.any(Function),
         )
       })
 
@@ -96,7 +97,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
 
         // Then
@@ -116,7 +117,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
 
         // Then
@@ -140,7 +141,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
 
         const venueFilter = wrapper.findWhere(node => node.text() === 'Lieu : La verbeuse').first()
@@ -159,7 +160,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
 
         const venueFilter = wrapper.findWhere(node => node.text() === 'Lieu :').first()
@@ -180,7 +181,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
 
         const venueFilter = wrapper
@@ -191,7 +192,11 @@ describe('src | components | pages | Offers | Offers', () => {
         venueFilter.invoke('onClick')()
 
         // then
-        expect(props.loadOffers).toHaveBeenCalledWith({"nameSearchValue": "", "page": 1, "venueId": undefined}, expect.any(Function), expect.any(Function))
+        expect(props.loadOffers).toHaveBeenCalledWith({
+          "nameSearchValue": "",
+          "page": 1,
+          "venueId": undefined,
+        }, expect.any(Function), expect.any(Function))
       })
     })
 
@@ -231,7 +236,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
 
         const firstOfferItem = wrapper.find({ children: 'My little offer' }).first()
@@ -257,7 +262,7 @@ describe('src | components | pages | Offers | Offers', () => {
               <MemoryRouter>
                 <Offers {...props} />
               </MemoryRouter>
-            </Provider>
+            </Provider>,
           )
           const navLink = wrapper.find({ children: 'Créer une offre' })
 
@@ -280,7 +285,7 @@ describe('src | components | pages | Offers | Offers', () => {
               <MemoryRouter>
                 <Offers {...props} />
               </MemoryRouter>
-            </Provider>
+            </Provider>,
           )
           const offerCreationLink = wrapper.find({ children: 'Créer une offre' }).parent()
 
@@ -302,7 +307,7 @@ describe('src | components | pages | Offers | Offers', () => {
               <Router history={history}>
                 <Offers {...props} />
               </Router>
-            </Provider>
+            </Provider>,
           )
           const offerCreationLink = wrapper.find({ children: 'Créer une offre' })
 
@@ -311,7 +316,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
           // then
           expect(history.location.pathname + history.location.search).toStrictEqual(
-            '/offres/creation?structure=XY'
+            '/offres/creation?structure=XY',
           )
         })
       })
@@ -329,7 +334,7 @@ describe('src | components | pages | Offers | Offers', () => {
               <Router history={history}>
                 <Offers {...props} />
               </Router>
-            </Provider>
+            </Provider>,
           )
           const offerCreationLink = wrapper.find({ children: 'Créer une offre' })
 
@@ -338,7 +343,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
           // then
           expect(history.location.pathname + history.location.search).toStrictEqual(
-            '/offres/creation?lieu=G6'
+            '/offres/creation?lieu=G6',
           )
         })
       })
@@ -352,7 +357,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
         const deactivateButton = wrapper.find({ children: 'Désactiver toutes les offres' })
 
@@ -370,7 +375,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
         const deactivateButton = wrapper.find({ children: 'Désactiver toutes les offres' })
 
@@ -391,7 +396,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
         // when
         const deactivateButton = wrapper.find({ children: 'Désactiver toutes les offres' })
@@ -418,7 +423,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
         const activateButton = wrapper.find({ children: 'Activer toutes les offres' })
 
@@ -436,7 +441,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
         const activateButton = wrapper.find({ children: 'Activer toutes les offres' })
 
@@ -456,7 +461,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
 
         // when
@@ -481,7 +486,7 @@ describe('src | components | pages | Offers | Offers', () => {
               <MemoryRouter>
                 <Offers {...props} />
               </MemoryRouter>
-            </Provider>
+            </Provider>,
           )
 
 
@@ -509,7 +514,7 @@ describe('src | components | pages | Offers | Offers', () => {
               <MemoryRouter>
                 <Offers {...props} />
               </MemoryRouter>
-            </Provider>
+            </Provider>,
           )
 
           // when
@@ -543,7 +548,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
 
         // when
@@ -565,7 +570,7 @@ describe('src | components | pages | Offers | Offers', () => {
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
-          </Provider>
+          </Provider>,
         )
         // when
         wrapper.unmount()
@@ -573,6 +578,99 @@ describe('src | components | pages | Offers | Offers', () => {
         // then
         expect(props.closeNotification).not.toHaveBeenCalledWith()
       })
+    })
+  })
+
+  describe('page navigation', () => {
+    it('should display next page when clicking on right arrow', () => {
+      // Given
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>,
+      )
+      const rightArrow = wrapper.find('img[alt="Aller à la page suivante"]').closest('button')
+
+      // When
+      rightArrow.invoke('onClick')()
+
+      // Then
+      expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' })
+      expect(props.loadOffers).toHaveBeenLastCalledWith(
+        {
+          nameSearchValue: '',
+          page: 2,
+          venueId: undefined,
+        },
+        expect.any(Function),
+        expect.any(Function),
+      )
+    })
+
+    it('should display previous page when clicking on left arrow', () => {
+      // Given
+      props.query.parse.mockReturnValue({ page: 2 })
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>,
+      )
+      const rightArrow = wrapper.find('img[alt="Aller à la page précédente"]').closest('button')
+
+      // When
+      rightArrow.invoke('onClick')()
+
+      // Then
+      expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' })
+      expect(props.loadOffers).toHaveBeenLastCalledWith(
+        {
+          nameSearchValue: '',
+          page: 1,
+          venueId: undefined,
+        },
+        expect.any(Function),
+        expect.any(Function),
+      )
+    })
+
+    it('should not be able to click on previous arrow when being on the first page', () => {
+      // Given
+      props.query.parse.mockReturnValue({ page: 1 })
+
+      // When
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>,
+      )
+
+      // Then
+      const rightArrow = wrapper.find('img[alt="Aller à la page précédente"]').closest('button')
+      expect(rightArrow.prop('disabled')).toBe(true)
+    })
+
+    it('should not be able to click on next arrow when being on the last page', () => {
+      // Given
+      props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess(2, 2))
+
+      // When
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>,
+      )
+
+      // Then
+      const rightArrow = wrapper.find('img[alt="Aller à la page suivante"]').closest('button')
+      expect(rightArrow.prop('disabled')).toBe(true)
     })
   })
 
