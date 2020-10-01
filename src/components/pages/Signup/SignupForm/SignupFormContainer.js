@@ -1,12 +1,13 @@
-import { closeNotification, showNotification } from 'pass-culture-shared'
-import { withRouter } from 'react-router-dom'
-import { compose } from 'redux'
-import { connect } from 'react-redux'
 import get from 'lodash.get'
-import SignupForm from './SignupForm'
-import { requestData } from 'redux-saga-data'
+import { closeNotification, showNotification } from 'pass-culture-shared'
+import { compose } from 'redux'
 import { removeWhitespaces } from 'react-final-form-utils'
-import { removeErrors } from '../../../../reducers/errors'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
+import { requestData } from 'redux-saga-data'
+
+import { removeErrors } from 'store/reducers/errors'
+import SignupForm from './SignupForm'
 
 const STATE_ERROR_NAME = 'user'
 
@@ -49,10 +50,4 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
   },
 })
 
-export default compose(
-  withRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(SignupForm)
+export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(SignupForm)

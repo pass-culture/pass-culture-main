@@ -1,4 +1,4 @@
-import { MAINTENANCE_PAGE_AVAILABLE } from '../utils/config'
+import { MAINTENANCE_PAGE_AVAILABLE } from 'utils/config'
 
 const FAIL_DATA_PATTERN = 'FAIL_DATA_'
 const SUCCESS_DATA_PATTERN = 'SUCCESS_DATA_'

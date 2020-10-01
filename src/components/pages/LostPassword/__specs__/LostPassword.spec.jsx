@@ -1,11 +1,11 @@
 import { mount, shallow } from 'enzyme'
 import React from 'react'
-
-import LostPassword from '../LostPassword'
-import { MemoryRouter } from 'react-router'
 import { Provider } from 'react-redux'
-import configureStore from '../../../../utils/store'
-import GenericError from '../../../layout/errors/GenericError'
+import { MemoryRouter } from 'react-router'
+
+import GenericError from 'components/layout/errors/GenericError'
+import configureStore from 'store'
+import LostPassword from '../LostPassword'
 
 describe('src | components | pages | LostPassword', () => {
   let props

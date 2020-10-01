@@ -1,13 +1,13 @@
 import { shallow, mount } from 'enzyme'
 import React from 'react'
-
-import Signin from '../Signin'
 import { MemoryRouter } from 'react-router'
 import { Provider } from 'react-redux'
-import configureStore from '../../../../utils/store'
-import GenericError from '../../../layout/errors/GenericError'
 
-describe('src | components | pages | Signin | Signin ', () => {
+import GenericError from 'components/layout/errors/GenericError'
+import configureStore from 'store'
+import Signin from '../Signin'
+
+describe('src | components | pages | Signin | Signin', () => {
   let submit
   let props
   let action
@@ -63,19 +63,13 @@ describe('src | components | pages | Signin | Signin ', () => {
           </MemoryRouter>
         </Provider>
       )
-      const eyePasswordInput = wrapper
-        .find('label')
-        .at(1)
-        .find('button')
+      const eyePasswordInput = wrapper.find('label').at(1).find('button')
 
       // When
       eyePasswordInput.invoke('onClick')({ preventDefault: jest.fn() })
 
       //then
-      const passwordInput = wrapper
-        .find('label')
-        .at(1)
-        .find('input')
+      const passwordInput = wrapper.find('label').at(1).find('input')
       expect(passwordInput.prop('type')).toBe('text')
     })
 
@@ -89,20 +83,14 @@ describe('src | components | pages | Signin | Signin ', () => {
             </MemoryRouter>
           </Provider>
         )
-        const eyePasswordInput = wrapper
-          .find('label')
-          .at(1)
-          .find('button')
+        const eyePasswordInput = wrapper.find('label').at(1).find('button')
 
         // When
         eyePasswordInput.invoke('onClick')({ preventDefault: jest.fn() })
         eyePasswordInput.invoke('onClick')({ preventDefault: jest.fn() })
 
         //then
-        const passwordInput = wrapper
-          .find('label')
-          .at(1)
-          .find('input')
+        const passwordInput = wrapper.find('label').at(1).find('input')
         expect(passwordInput.prop('type')).toBe('password')
       })
     })

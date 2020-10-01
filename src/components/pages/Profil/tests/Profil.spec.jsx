@@ -1,11 +1,11 @@
+import { render, screen, fireEvent } from '@testing-library/react'
 import { shallow } from 'enzyme'
 import React from 'react'
-
-import Profil from '../Profil'
-import { MemoryRouter } from 'react-router'
-import configureStore from '../../../../utils/store'
 import { Provider } from 'react-redux'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
+
+import configureStore from 'store'
+import Profil from '../Profil'
 
 describe('src | components | pages | Profil', () => {
   let dispatch

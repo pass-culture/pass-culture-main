@@ -1,12 +1,13 @@
 import { shallow } from 'enzyme'
 import { Field, Form } from 'pass-culture-shared'
 import React from 'react'
-import { showModal } from '../../../../../reducers/modal'
-import Titles from '../../../../layout/Titles/Titles'
-import LocalProviderInformation from '../../LocalProviderInformation/LocalProviderInformationContainer'
-import MediationsManager from '../../MediationsManager/MediationsManagerContainer'
-import StocksManagerContainer from '../../StocksManager/StocksManagerContainer'
+
+import Titles from 'components/layout/Titles/Titles'
+import LocalProviderInformation from 'components/pages/Offer/LocalProviderInformation/LocalProviderInformationContainer'
+import MediationsManager from 'components/pages/Offer/MediationsManager/MediationsManagerContainer'
+import StocksManagerContainer from 'components/pages/Offer/StocksManager/StocksManagerContainer'
 import OfferCreation from '../OfferCreation'
+import { showModal } from 'store/reducers/modal'
 
 describe('src | OfferCreation', () => {
   let dispatch
