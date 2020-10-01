@@ -1,4 +1,37 @@
+.app.modal-open {
+  max-height: 100vh;
+  overflow-y: hidden;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .modal {
+  // on top of header in mobile view
+  z-index: 10000;
+  justify-content: center;
+  align-items: center;
+  // overlay
+  background-color: rgba($black, 0.8);
+  display: none;
+  opacity: 0;
+  will-change: opacity;
+  overflow: auto;
+
+  &.active {
+    display: flex;
+    opacity: 1;
+    // cannot just use opacity: 1 here,
+    // the element is display none - not rendered, when this class gets applied
+    animation: fadeIn 0.5s ease;
+  }
+
   &.modal-in-modal {
     .modal-dialog {
       .modal-content {
@@ -15,7 +48,31 @@
   }
 
   .modal-dialog {
-    width: 100%;
+    backface-visibility: hidden;
+    background-color: $white;
+    text-align: center;
+    transition-timing-function: ease-out;
+    transition-property: transform;
     max-width: 64em;
+    padding: $page-padding;
+    position: relative;
+    width: 100%;
+    will-change: transform, opacity;
+
+    button.close {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      z-index: 10;
+    }
+
+    .modal-content {
+      overflow: initial;
+      width: auto;
+      max-width: $desktop;
+    }
   }
 }
