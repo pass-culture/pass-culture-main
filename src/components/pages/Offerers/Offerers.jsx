@@ -4,7 +4,7 @@ import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { Link } from 'react-router-dom'
 
-import { selectOfferers } from '../../../selectors/data/offerersSelectors'
+import { selectOfferers } from 'store/selectors/data/offerersSelectors'
 import { mapApiToBrowser } from '../../../utils/translate'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'

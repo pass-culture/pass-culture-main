@@ -7,11 +7,11 @@ import { stringify } from 'query-string'
 import Offerers from './Offerers'
 import { withRequiredLogin } from '../../hocs'
 import { offererNormalizer } from '../../../utils/normalizers'
-import { selectOfferers } from '../../../selectors/data/offerersSelectors'
+import { selectOfferers } from 'store/selectors/data/offerersSelectors'
 
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
-import {} from '../../../selectors/data/featuresSelectors'
-import { isAPISireneAvailable } from '../../../selectors/data/featuresSelectors'
+import {} from 'store/selectors/data/featuresSelectors'
+import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 
 export const createApiPath = searchKeyWords => {
   let apiPath = OFFERERS_API_PATH
@@ -83,10 +83,4 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
   },
 })
 
-export default compose(
-  withRequiredLogin,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(Offerers)
+export default compose(withRequiredLogin, connect(mapStateToProps, mapDispatchToProps))(Offerers)

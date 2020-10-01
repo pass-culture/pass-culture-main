@@ -2,18 +2,18 @@ import { showNotification } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
-import { selectOffererById } from '../../../../selectors/data/offerersSelectors'
+import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { offererNormalizer, venueNormalizer } from '../../../../utils/normalizers'
 import { withRequiredLogin } from '../../../hocs'
 import { CREATION } from '../../../hocs/withFrenchQueryRouter'
 import withTracking from '../../../hocs/withTracking'
 import NotificationMessage from '../Notification'
 import VenueCreation from './VenueCreation'
-import { selectVenueTypes } from '../../../../selectors/data/venueTypesSelectors'
+import { selectVenueTypes } from 'store/selectors/data/venueTypesSelectors'
 import VenueType from '../ValueObjects/VenueType'
 import { formatVenuePayload } from '../utils/formatVenuePayload'
 import VenueLabel from '../ValueObjects/VenueLabel'
-import { selectVenueLabels } from '../../../../selectors/data/venueLabelsSelectors'
+import { selectVenueLabels } from 'store/selectors/data/venueLabelsSelectors'
 
 export const mapStateToProps = (
   state,
@@ -139,9 +139,5 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 export default compose(
   withTracking('Venue'),
   withRequiredLogin,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-    mergeProps
-  )
+  connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(VenueCreation)

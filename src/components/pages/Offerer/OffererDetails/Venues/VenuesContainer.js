@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import Venues from './Venues'
-import { isAPISireneAvailable } from '../../../../../selectors/data/featuresSelectors'
+import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 
 export const mapStateToProps = state => {
   return {

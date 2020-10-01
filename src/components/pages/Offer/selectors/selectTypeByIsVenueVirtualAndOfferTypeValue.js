@@ -1,6 +1,6 @@
 import createCachedSelector from 're-reselect'
 
-import { selectTypesByIsVenueVirtual } from '../../../../selectors/data/typesSelectors'
+import { selectTypesByIsVenueVirtual } from 'store/selectors/data/typesSelectors'
 
 const selectTypeByIsVenueVirtualAndOfferTypeValue = createCachedSelector(
   selectTypesByIsVenueVirtual,

@@ -3,8 +3,8 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import MediationsManager from './MediationsManager'
-import { selectMediationsByOfferId } from '../../../../selectors/data/mediationsSelectors'
-import { selectOfferById } from '../../../../selectors/data/offersSelectors'
+import { selectMediationsByOfferId } from 'store/selectors/data/mediationsSelectors'
+import { selectOfferById } from 'store/selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -23,7 +23,4 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export default compose(
-  withRouter,
-  connect(mapStateToProps)
-)(MediationsManager)
+export default compose(withRouter, connect(mapStateToProps))(MediationsManager)

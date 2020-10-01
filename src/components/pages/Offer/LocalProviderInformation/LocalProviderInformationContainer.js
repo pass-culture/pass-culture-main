@@ -4,7 +4,7 @@ import { compose } from 'redux'
 import LocalProviderInformation from './LocalProviderInformation'
 import { getProviderInfo } from './getProviderInfo'
 import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
-import { selectOfferById } from '../../../../selectors/data/offersSelectors'
+import { selectOfferById } from 'store/selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {

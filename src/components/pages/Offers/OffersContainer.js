@@ -5,10 +5,10 @@ import { assignData, requestData } from 'redux-saga-data'
 
 import Offers from './Offers'
 import { withRequiredLogin } from '../../hocs'
-import { selectOffererById } from '../../../selectors/data/offerersSelectors'
-import { selectVenueById } from '../../../selectors/data/venuesSelectors'
+import { selectOffererById } from 'store/selectors/data/offerersSelectors'
+import { selectVenueById } from 'store/selectors/data/venuesSelectors'
 import { translateQueryParamsToApiParams } from '../../../utils/translate'
-import { selectOffers } from '../../../selectors/data/offersSelectors'
+import { selectOffers } from 'store/selectors/data/offersSelectors'
 import { fetchFromApiWithCredentials } from '../../../utils/fetch'
 
 export const mapStateToProps = (state, ownProps) => {

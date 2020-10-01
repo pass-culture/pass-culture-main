@@ -4,8 +4,8 @@ import { requestData } from 'redux-saga-data'
 import { withRouter } from 'react-router'
 
 import OfferItem from './OfferItem'
-import { selectStocksByOfferId } from '../../../../selectors/data/stocksSelectors'
-import { selectVenueById } from '../../../../selectors/data/venuesSelectors'
+import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
+import { selectVenueById } from 'store/selectors/data/venuesSelectors'
 import { offerNormalizer } from '../../../../utils/normalizers'
 import withTracking from '../../../hocs/withTracking'
 
@@ -55,9 +55,5 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 export default compose(
   withTracking('OfferItem'),
   withRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-    mergeProps
-  )
+  connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(OfferItem)

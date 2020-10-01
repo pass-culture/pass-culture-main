@@ -1,7 +1,7 @@
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
-import { selectCurrentUser } from '../../selectors/data/usersSelectors'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import Matomo from './Matomo'
 
@@ -14,7 +14,4 @@ export const mapStateToProps = state => {
   }
 }
 
-export default compose(
-  withRouter,
-  connect(mapStateToProps)
-)(Matomo)
+export default compose(withRouter, connect(mapStateToProps))(Matomo)

@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 
 import FeaturedRoute from './FeaturedRoute'
-import { selectIsFeatureActive } from '../../selectors/data/featuresSelectors'
+import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { features } = state.data
@@ -27,7 +27,4 @@ export const mapDispatchToProps = dispatch => ({
   requestGetFeatures: () => dispatch(requestData({ apiPath: '/features' })),
 })
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(FeaturedRoute)
+export default connect(mapStateToProps, mapDispatchToProps)(FeaturedRoute)

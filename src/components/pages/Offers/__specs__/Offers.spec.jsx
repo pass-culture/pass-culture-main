@@ -4,7 +4,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Router } from 'react-router'
 
-import * as usersSelectors from '../../../../selectors/data/usersSelectors'
+import * as usersSelectors from 'store/selectors/data/usersSelectors'
 import { getStubStore } from '../../../../utils/stubStore'
 import Offers, { createLinkToOfferCreation } from '../Offers'
 

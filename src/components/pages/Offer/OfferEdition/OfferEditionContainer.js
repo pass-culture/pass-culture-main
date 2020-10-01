@@ -7,21 +7,21 @@ import { withRequiredLogin } from '../../../hocs'
 import withTracking from '../../../hocs/withTracking'
 
 import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from '../selectors/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
-import { selectOffererById } from '../../../../selectors/data/offerersSelectors'
-import { selectProductById } from '../../../../selectors/data/productsSelectors'
+import { selectOffererById } from 'store/selectors/data/offerersSelectors'
+import { selectProductById } from 'store/selectors/data/productsSelectors'
 import { selectMusicSubOptionsByMusicType } from '../../../../utils/selectMusicSubOptionsByMusicType'
 import selectShowSubOptionsByShowType from '../../../../utils/selectShowSubOptionsByShowType'
-import { selectTypesByIsVenueVirtual } from '../../../../selectors/data/typesSelectors'
+import { selectTypesByIsVenueVirtual } from 'store/selectors/data/typesSelectors'
 import selectTypeByIsVenueVirtualAndOfferTypeValue from '../selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
 import {
   selectVenueById,
   selectVenuesByOffererIdAndOfferType,
-} from '../../../../selectors/data/venuesSelectors'
-import { selectOfferers } from '../../../../selectors/data/offerersSelectors'
+} from 'store/selectors/data/venuesSelectors'
+import { selectOfferers } from 'store/selectors/data/offerersSelectors'
 import { mergeForm, showNotification } from 'pass-culture-shared'
-import { selectStocksByOfferId } from '../../../../selectors/data/stocksSelectors'
-import { selectProviders } from '../../../../selectors/data/providersSelectors'
-import { selectOfferById } from '../../../../selectors/data/offersSelectors'
+import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
+import { selectProviders } from 'store/selectors/data/providersSelectors'
+import { selectOfferById } from 'store/selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -135,9 +135,5 @@ export const mapDispatchToProps = dispatch => ({
 export default compose(
   withTracking('Offer'),
   withRequiredLogin,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-    mergeProps
-  )
+  connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(OfferEdition)

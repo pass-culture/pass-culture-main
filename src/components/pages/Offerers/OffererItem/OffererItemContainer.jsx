@@ -4,9 +4,9 @@ import OffererItem from './OffererItem'
 import {
   selectPhysicalVenuesByOffererId,
   selectVenuesByOffererId,
-} from '../../../../selectors/data/venuesSelectors'
+} from 'store/selectors/data/venuesSelectors'
 
-import { isAPISireneAvailable } from '../../../../selectors/data/featuresSelectors'
+import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {

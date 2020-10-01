@@ -6,9 +6,9 @@ import StockItem from './StockItem'
 import withFrenchQueryRouter from '../../../../hocs/withFrenchQueryRouter'
 import selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone from './selectors/selectFormInitialValuesByStockAndOfferIdAndOffererId'
 import { translateQueryParamsToApiParams } from '../../../../../utils/translate'
-import { selectVenueById } from '../../../../../selectors/data/venuesSelectors'
-import { selectOffererById } from '../../../../../selectors/data/offerersSelectors'
-import { selectOfferById } from '../../../../../selectors/data/offersSelectors'
+import { selectVenueById } from 'store/selectors/data/venuesSelectors'
+import { selectOffererById } from 'store/selectors/data/offerersSelectors'
+import { selectOfferById } from 'store/selectors/data/offersSelectors'
 import { requestData } from 'redux-saga-data'
 import Offer from '../ValueObjects/Offer'
 import { getTimezone } from '../../../../../utils/timezone'
@@ -100,8 +100,5 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
 export default compose(
   withFrenchQueryRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps, mapDispatchToProps)
 )(StockItem)

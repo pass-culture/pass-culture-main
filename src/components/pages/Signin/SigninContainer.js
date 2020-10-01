@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { withNotRequiredLogin } from '../../hocs'
 import Signin from './Signin'
-import { isAPISireneAvailable } from '../../../selectors/data/featuresSelectors'
+import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 import { requestData } from 'redux-saga-data'
 
 export const mapStateToProps = state => {
@@ -25,10 +25,4 @@ export const mapDispatchToProps = dispatch => ({
   },
 })
 
-export default compose(
-  withNotRequiredLogin,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(Signin)
+export default compose(withNotRequiredLogin, connect(mapStateToProps, mapDispatchToProps))(Signin)

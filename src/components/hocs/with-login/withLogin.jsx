@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import { connect } from 'react-redux'
-import { selectCurrentUser, resolveCurrentUser } from '../../../selectors/data/usersSelectors'
+import { selectCurrentUser, resolveCurrentUser } from 'store/selectors/data/usersSelectors'
 
 export default (config = {}) => WrappedComponent => {
   const { handleFail, handleSuccess } = config

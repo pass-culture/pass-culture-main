@@ -6,12 +6,12 @@ import { showNotification } from 'pass-culture-shared'
 
 import Mediation from './Mediation'
 import { withRequiredLogin } from '../../hocs'
-import { selectMediationById } from '../../../selectors/data/mediationsSelectors'
-import { selectOffererById } from '../../../selectors/data/offerersSelectors'
-import { selectVenueById } from '../../../selectors/data/venuesSelectors'
+import { selectMediationById } from 'store/selectors/data/mediationsSelectors'
+import { selectOffererById } from 'store/selectors/data/offerersSelectors'
+import { selectVenueById } from 'store/selectors/data/venuesSelectors'
 
 import { mediationNormalizer, offerNormalizer } from '../../../utils/normalizers'
-import { selectOfferById } from '../../../selectors/data/offersSelectors'
+import { selectOfferById } from 'store/selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -82,10 +82,4 @@ export const mapDispatchToProps = dispatch => {
   }
 }
 
-export default compose(
-  withRequiredLogin,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(Mediation)
+export default compose(withRequiredLogin, connect(mapStateToProps, mapDispatchToProps))(Mediation)

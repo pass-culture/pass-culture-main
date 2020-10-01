@@ -7,8 +7,8 @@ import {
   getDatetimeOneDayAfter,
   getDatetimeAtSpecificHoursAndMinutes,
 } from '../utils/utils'
-import { selectStocksByOfferId } from '../../../../../../selectors/data/stocksSelectors'
-import { selectOfferById } from '../../../../../../selectors/data/offersSelectors'
+import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
+import { selectOfferById } from 'store/selectors/data/offersSelectors'
 
 function mapArgsToCacheKey(state, stock, offerId, offererId) {
   return `${(stock && stock.id) || ''}${offerId || ''}/${offererId || ''}`

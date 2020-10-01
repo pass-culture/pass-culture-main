@@ -6,9 +6,9 @@ import { makeOffererComponentValueObject } from './OffererFactory'
 
 import { withRequiredLogin } from '../../../hocs'
 import withTracking from '../../../hocs/withTracking'
-import { selectOffererById } from '../../../../selectors/data/offerersSelectors'
-import { selectPhysicalVenuesByOffererId } from '../../../../selectors/data/venuesSelectors'
-import { selectUserOffererByOffererIdAndUserIdAndRightsType } from '../../../../selectors/data/userOfferersSelectors'
+import { selectOffererById } from 'store/selectors/data/offerersSelectors'
+import { selectPhysicalVenuesByOffererId } from 'store/selectors/data/venuesSelectors'
+import { selectUserOffererByOffererIdAndUserIdAndRightsType } from 'store/selectors/data/userOfferersSelectors'
 import { requestData } from 'redux-saga-data'
 import { offererNormalizer } from '../../../../utils/normalizers'
 

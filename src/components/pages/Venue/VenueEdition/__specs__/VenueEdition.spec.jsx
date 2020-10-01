@@ -5,7 +5,7 @@ import { Form } from 'react-final-form'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
 
-import * as usersSelectors from '../../../../../selectors/data/usersSelectors'
+import * as usersSelectors from 'store/selectors/data/usersSelectors'
 import { getStubStore } from '../../../../../utils/stubStore'
 import AddressField from '../../fields/LocationFields/AddressField'
 import LocationFields from '../../fields/LocationFields/LocationFields'
