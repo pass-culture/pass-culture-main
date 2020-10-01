@@ -1,0 +1,13 @@
+{ "auth": {
+    "identity": {
+      "methods": ["password"],
+      "password": {
+        "user": {
+          "name": "admin",
+          "domain": { "id": "default" },
+          "password": "adminpwd"
+        }
+      }
+    }
+  }
+}

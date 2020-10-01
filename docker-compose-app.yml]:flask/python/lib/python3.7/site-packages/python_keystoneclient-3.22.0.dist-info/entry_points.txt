@@ -1,0 +1,13 @@
+[keystoneclient.auth.plugin]
+admin_token = keystoneclient.auth.token_endpoint:Token
+password = keystoneclient.auth.identity.generic:Password
+token = keystoneclient.auth.identity.generic:Token
+v2password = keystoneclient.auth.identity.v2:Password
+v2token = keystoneclient.auth.identity.v2:Token
+v3oidcpassword = keystoneclient.contrib.auth.v3.oidc:OidcPassword
+v3password = keystoneclient.auth.identity.v3:Password
+v3scopedsaml = keystoneclient.contrib.auth.v3.saml2:Saml2ScopedToken
+v3token = keystoneclient.auth.identity.v3:Token
+v3unscopedadfs = keystoneclient.contrib.auth.v3.saml2:ADFSUnscopedToken
+v3unscopedsaml = keystoneclient.contrib.auth.v3.saml2:Saml2UnscopedToken
+

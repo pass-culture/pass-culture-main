@@ -1,0 +1,67 @@
+# Translations template for oslo.utils.
+# Copyright (C) 2015 ORGANIZATION
+# This file is distributed under the same license as the oslo.utils project.
+#
+# Translators:
+# Andreas Jaeger <jaegerandi@gmail.com>, 2014
+# Ettore Atalan <atalanttore@googlemail.com>, 2014
+# Andreas Jaeger <jaegerandi@gmail.com>, 2016. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: oslo.utils 3.7.1.dev13\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
+"POT-Creation-Date: 2016-05-02 20:03+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-01-31 08:10+0000\n"
+"Last-Translator: Andreas Jaeger <jaegerandi@gmail.com>\n"
+"Language: de\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.0\n"
+"X-Generator: Zanata 3.7.3\n"
+"Language-Team: German\n"
+
+#, python-format
+msgid "%s is not a string or unicode"
+msgstr "%s ist keine Zeichenkette oder Unicode"
+
+#, python-format
+msgid ""
+"Bad prefix or mac format for generating IPv6 address by EUI-64: %(prefix)s, "
+"%(mac)s:"
+msgstr ""
+"Falsches Präfix- oder MAC-Format für das Generieren der IPv6-Adresse durch "
+"EUI-64: %(prefix)s, %(mac)s:"
+
+#, python-format
+msgid "Bad prefix type for generating IPv6 address by EUI-64: %s"
+msgstr ""
+"Falscher Präfixtyp für das Generieren der IPv6-Adresse durch EUI-64: %s"
+
+#, python-format
+msgid "Invalid input value \"%s\"."
+msgstr "Ungültiger Eingabewert \"%s\"."
+
+#, python-format
+msgid "Invalid string format: %s"
+msgstr "Ungültiges Stringformat: %s"
+
+#, python-format
+msgid "Invalid unit system: \"%s\""
+msgstr "Ungültiges Einheitensystem: \"%s\""
+
+msgid "Snapshot list encountered but no header found!"
+msgstr "Momentaufnahmenliste gefunden, aber kein Header gefunden!"
+
+msgid "Unable to generate IP address by EUI64 for IPv4 prefix"
+msgstr ""
+"IP-Adresse kann nicht mithilfe von EUI64 mit dem IPv4-Präfix generiert werden"
+
+#, python-format
+msgid "Unrecognized value '%(val)s', acceptable values are: %(acceptable)s"
+msgstr "Nicht erkannter Wert '%(val)s', zulässige Werte are: %(acceptable)s"
+
+#, python-format
+msgid "Version %s is invalid."
+msgstr "Version %s ist ungültig."

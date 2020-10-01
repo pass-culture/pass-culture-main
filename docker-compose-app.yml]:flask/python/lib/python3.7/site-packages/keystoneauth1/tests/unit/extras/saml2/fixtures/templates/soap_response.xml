@@ -1,0 +1,45 @@
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+    <S:Header>
+        <paos:Request xmlns:paos="urn:liberty:paos:2003-08"
+                S:actor="http://schemas.xmlsoap.org/soap/actor/next"
+                S:mustUnderstand="1"
+                responseConsumerURL="$consumer"
+                service="urn:oasis:names:tc:SAML:2.0:profiles:SSO:ecp"/>
+        <ecp:Request xmlns:ecp="urn:oasis:names:tc:SAML:2.0:profiles:SSO:ecp"
+                IsPassive="0"
+                S:actor="http://schemas.xmlsoap.org/soap/actor/next"
+                S:mustUnderstand="1">
+            <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
+                $issuer
+            </saml:Issuer>
+            <samlp:IDPList xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">
+                <samlp:IDPEntry ProviderID="$provider"/>
+            </samlp:IDPList>
+        </ecp:Request>
+        <ecp:RelayState
+                xmlns:ecp="urn:oasis:names:tc:SAML:2.0:profiles:SSO:ecp"
+                S:actor="http://schemas.xmlsoap.org/soap/actor/next"
+                S:mustUnderstand="1">
+            ss:mem:6f1f20fafbb38433467e9d477df67615
+        </ecp:RelayState>
+    </S:Header>
+    <S:Body>
+        <samlp:AuthnRequest
+                xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+                AssertionConsumerServiceURL="$consumer"
+                ID="_a07186e3992e70e92c17b9d249495643"
+                IssueInstant="2014-06-09T09:48:57Z"
+                ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:PAOS"
+                Version="2.0">
+            <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
+                $issuer
+            </saml:Issuer>
+            <samlp:NameIDPolicy AllowCreate="1"/>
+            <samlp:Scoping>
+                <samlp:IDPList>
+                    <samlp:IDPEntry ProviderID="$provider"/>
+                </samlp:IDPList>
+            </samlp:Scoping>
+        </samlp:AuthnRequest>
+    </S:Body>
+</S:Envelope>

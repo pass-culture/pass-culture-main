@@ -1,0 +1,15 @@
+{"token": {"methods": ["password"], "roles": [{"id":
+"9fe2ff9ee4384b1894a90878d3e92bab", "name": "_member_"}, {"id":
+"c703057be878458588961ce9a0ce686b", "name": "admin"}], "expires_at":
+"2014-06-10T2:55:16.806001Z", "project": {"domain": {"id": "default", "name":
+"Default"}, "id": "8538a3f13f9541b28c2620eb19065e45", "name": "admin"},
+"catalog": [{"endpoints": [{"url": "http://localhost:3537/v2.0", "region":
+"RegionOne", "interface": "admin", "id": "29beb2f1567642eb810b042b6719ea88"},
+{"url": "http://localhost:5000/v2.0", "region": "RegionOne", "interface":
+"internal", "id": "8707e3735d4415c97ae231b4841eb1c"}, {"url":
+"http://localhost:5000/v2.0", "region": "RegionOne", "interface": "public",
+"id": "ef303187fc8d41668f25199c298396a5"}], "type": "identity", "id":
+"bd73972c0e14fb69bae8ff76e112a90", "name": "keystone"}], "extras": {},
+"user": {"domain": {"id": "default", "name": "Default"}, "id":
+"3ec3164f750146be97f21559ee4d9c51", "name": "admin"}, "audit_ids":
+["yRt0UrxJSs6-WYJgwEMMmg"], "issued_at": "201406-10T20:55:16.806027Z"}}

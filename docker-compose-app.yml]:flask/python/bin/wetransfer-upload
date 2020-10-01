@@ -1,0 +1,58 @@
+#!/Users/annaelle.sagot/pass-culture-main/docker-compose-app.yml]:flask/python/bin/python
+# -*- coding: utf-8 -*-
+
+import os
+from wetransferpy import WeTransfer
+
+if __name__ == "__main__":
+
+    import argparse
+    parser = argparse.ArgumentParser(
+        description='Uploads files or folders to WeTransfer.')
+    parser.add_argument('-b', '--no-progressbar',
+                        help='Hide progress bar', action='store_false')
+    parser.add_argument('-u', '--username',
+                        help='WeTransfer user account name')
+    parser.add_argument('-p', '--password',
+                        help='WeTransfer password')
+    parser.add_argument('-e', '--expire',
+                        help='File expiration', default='')
+    parser.add_argument('-c', '--channel',
+                        help='WeTransfer channel', default='')
+    parser.add_argument('-r', '--receiver',
+                        help='emails of the receivers', nargs='*')
+    parser.add_argument('-s', '--sender',
+                        help='email of the sender')
+    parser.add_argument('-m', '--message',
+                        help='message to send')
+    parser.add_argument('-R', '--recursive',
+                        help='recursive send', action='store_true')
+    parser.add_argument('files',
+                        help='files or directory to send', nargs='+')
+
+    args = parser.parse_args()
+
+    w = WeTransfer(sender = args.sender,
+                   receivers = args.receiver,
+                   message = args.message,
+                   username = args.username,
+                   password = args.password,
+                   channel = args.channel,
+                   expire_in = args.expire,
+                   progress = args.no_progressbar)
+
+    try:
+        for it in args.files:
+            if os.path.isfile(it):
+                print("Upload file : " + it)
+                url = w.uploadFile(it)
+                print 'Download url: {0}\n'.format(url)
+            elif os.path.isdir(it):
+                w.uploadDir(it)
+            else:
+                print("Not a file/directory : " + it)
+
+    except KeyboardInterrupt:
+        print ""
+        if w._transfer_id:
+            w._cancel_transfer()

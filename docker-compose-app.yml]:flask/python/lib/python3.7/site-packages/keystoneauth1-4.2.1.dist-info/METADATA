@@ -1,0 +1,104 @@
+Metadata-Version: 2.0
+Name: keystoneauth1
+Version: 4.2.1
+Summary: Authentication Library for OpenStack Identity
+Home-page: https://docs.openstack.org/keystoneauth/latest/
+Author: OpenStack
+Author-email: openstack-discuss@lists.openstack.org
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Environment :: OpenStack
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Requires-Python: >=3.6
+Provides-Extra: betamax
+Provides-Extra: kerberos
+Provides-Extra: oauth1
+Provides-Extra: saml2
+Provides-Extra: test
+Requires-Dist: iso8601 (>=0.1.11)
+Requires-Dist: os-service-types (>=1.2.0)
+Requires-Dist: pbr (!=2.1.0,>=2.0.0)
+Requires-Dist: requests (>=2.14.2)
+Requires-Dist: six (>=1.10.0)
+Requires-Dist: stevedore (>=1.20.0)
+Provides-Extra: betamax
+Requires-Dist: betamax (>=0.7.0); extra == 'betamax'
+Requires-Dist: fixtures (>=3.0.0); extra == 'betamax'
+Requires-Dist: mock (>=2.0.0); extra == 'betamax'
+Provides-Extra: kerberos
+Requires-Dist: requests-kerberos (>=0.8.0); extra == 'kerberos'
+Provides-Extra: oauth1
+Requires-Dist: oauthlib (>=0.6.2); extra == 'oauth1'
+Provides-Extra: saml2
+Requires-Dist: lxml (>=4.2.0); extra == 'saml2'
+Provides-Extra: test
+Requires-Dist: PyYAML (>=3.12); extra == 'test'
+Requires-Dist: bandit (<1.6.0,>=1.1.0); extra == 'test'
+Requires-Dist: betamax (>=0.7.0); extra == 'test'
+Requires-Dist: coverage (!=4.4,>=4.0); extra == 'test'
+Requires-Dist: fixtures (>=3.0.0); extra == 'test'
+Requires-Dist: flake8-docstrings (==0.2.1.post1); extra == 'test'
+Requires-Dist: flake8-import-order (>=0.17.1); extra == 'test'
+Requires-Dist: hacking (<3.1.0,>=3.0.1); extra == 'test'
+Requires-Dist: lxml (>=4.2.0); extra == 'test'
+Requires-Dist: oauthlib (>=0.6.2); extra == 'test'
+Requires-Dist: oslo.config (>=5.2.0); extra == 'test'
+Requires-Dist: oslo.utils (>=3.33.0); extra == 'test'
+Requires-Dist: oslotest (>=3.2.0); extra == 'test'
+Requires-Dist: pycodestyle (<2.6.0,>=2.0.0); extra == 'test'
+Requires-Dist: reno (>=3.1.0); extra == 'test'
+Requires-Dist: requests-kerberos (>=0.8.0); extra == 'test'
+Requires-Dist: requests-mock (>=1.2.0); extra == 'test'
+Requires-Dist: stestr (>=1.0.0); extra == 'test'
+Requires-Dist: testresources (>=2.0.0); extra == 'test'
+Requires-Dist: testtools (>=2.2.0); extra == 'test'
+
+========================
+Team and repository tags
+========================
+
+.. image:: https://governance.openstack.org/tc/badges/keystoneauth.svg
+    :target: https://governance.openstack.org/tc/reference/tags/index.html
+
+.. Change things from this point on
+
+============
+keystoneauth
+============
+
+.. image:: https://img.shields.io/pypi/v/keystoneauth1.svg
+    :target:https://pypi.org/project/keystoneauth1
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/dm/keystoneauth1.svg
+    :target: https://pypi.org/project/keystoneauth1/
+    :alt: Downloads
+
+This package contains tools for authenticating to an OpenStack-based cloud.
+These tools include:
+
+* Authentication plugins (password, token, and federation based)
+* Discovery mechanisms to determine API version support
+* A session that is used to maintain client settings across requests (based on
+  the requests Python library)
+
+Further information:
+
+* Free software: Apache license
+* Documentation: https://docs.openstack.org/keystoneauth/latest/
+* Source: https://opendev.org/openstack/keystoneauth
+* Bugs: https://bugs.launchpad.net/keystoneauth
+* Release notes: https://docs.openstack.org/releasenotes/keystoneauth/
+
+
+

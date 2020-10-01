@@ -1,0 +1,691 @@
+Metadata-Version: 2.1
+Name: pip-licenses
+Version: 1.15.2
+Summary: Dump the software license list of Python packages installed with pip.
+Home-page: https://github.com/raimon49/pip-licenses
+Author: raimon
+License: MIT License
+Keywords: pip pypi package license check
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Topic :: System :: Systems Administration
+Classifier: Topic :: System :: System Shells
+Requires-Python: >=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*
+Requires-Dist: PTable
+Provides-Extra: test
+Requires-Dist: pytest-cov ; extra == 'test'
+Requires-Dist: pytest-pycodestyle ; extra == 'test'
+Requires-Dist: pytest-runner ; extra == 'test'
+
+pip-licenses
+============
+
+|Build Status| |PyPI - Python Version| |PyPI version| |GitHub Release|
+|Codecov| |BSD License| |Requirements Status|
+
+Dump the software license list of Python packages installed with pip.
+
+Table of Contents
+-----------------
+
+-  `Description <#description>`__
+-  `Installation <#installation>`__
+-  `Usage <#usage>`__
+-  `Command-Line Options <#command-line-options>`__
+
+   -  `Option: from <#option-from>`__
+
+      -  `Deprecated from-classifier <#deprecated-from-classifier>`__
+
+   -  `Option: with-system <#option-with-system>`__
+   -  `Option: with-authors <#option-with-authors>`__
+   -  `Option: with-urls <#option-with-urls>`__
+   -  `Option: with-description <#option-with-description>`__
+   -  `Option: with-license-file <#option-with-license-file>`__
+   -  `Option: ignore-packages <#option-ignore-packages>`__
+   -  `Option: order <#option-order>`__
+   -  `Option: format <#option-format>`__
+
+      -  `Markdown <#markdown>`__
+      -  `reST <#rest>`__
+      -  `Confluence <#confluence>`__
+      -  `HTML <#html>`__
+      -  `JSON <#json>`__
+      -  `CSV <#csv>`__
+      -  `Deprecated options <#deprecated-options>`__
+
+   -  `Option: summary <#option-summary>`__
+   -  `More Information <#more-information>`__
+
+-  `Dockerfile <#dockerfile>`__
+-  `License <#license>`__
+
+   -  `Dependencies <#dependencies>`__
+
+-  `Uninstallation <#uninstallation>`__
+-  `Contributing <#contributing>`__
+
+Description
+-----------
+
+``pip-licenses`` is a CLI tool for checking the software license of
+installed Python packages with pip.
+
+Implemented with the idea inspired by ``composer licenses`` command in
+Composer (a.k.a PHP package management tool).
+
+https://getcomposer.org/doc/03-cli.md#licenses
+
+Installation
+------------
+
+Install it via PyPI using ``pip`` command.
+
+.. code:: bash
+
+    # Install or Upgrade to newest available version
+    $ pip install -U pip-licenses
+
+Usage
+-----
+
+Execute the command with your venv (or virtualenv) environment.
+
+.. code:: bash
+
+    # Install packages in your venv environment
+    (venv) $ pip install Django pip-licenses
+
+    # Check the licenses with your venv environment
+    (venv) $ pip-licenses
+     Name    Version  License
+     Django  2.0.2    BSD
+     pytz    2017.3   MIT
+
+Command-Line Options
+--------------------
+
+Option: from
+~~~~~~~~~~~~
+
+By default, this tool finds the license from package Metadata
+(``--from=meta``). However, depending on the type of package, it does
+not declare a license only in the Classifiers.
+
+(See also): `Set license to MIT in setup.py by alisianoi ・ Pull Request
+#1058 ・
+pypa/setuptools <https://github.com/pypa/setuptools/pull/1058>`__, `PEP
+314#License <https://www.python.org/dev/peps/pep-0314/#license>`__
+
+For example, even if you check with the ``pip show`` command, the
+license is displayed as ``UNKNOWN``.
+
+.. code:: bash
+
+    (venv) $ pip show setuptools
+    Name: setuptools
+    Version: 38.5.0
+    Summary: Easily download, build, install, upgrade, and uninstall Python packages
+    Home-page: https://github.com/pypa/setuptools
+    Author: Python Packaging Authority
+    Author-email: distutils-sig@python.org
+    License: UNKNOWN
+
+If you want to refer to the license declared in `the
+Classifiers <https://pypi.python.org/pypi?%3Aaction=list_classifiers>`__,
+use the ``--from=classifier`` option.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --from=classifier --with-system | grep setuptools
+     setuptools    38.5.0   MIT License
+
+If you want to find a license from whichever, mixed mode
+(``--from=mixed``) is available in ``pip-licenses`` version 1.14.0 or
+later.
+
+In mixed mode, it first tries to look for licenses in the Classifiers.
+When not found in the Classifiers, the license declared in Metadata is
+displayed.
+
+**Note:** If neither can find license information, please check with the
+``with-authors`` and ``with-urls`` options and contact the software
+author.
+
+-  The ``m`` keyword is prepared as alias of ``meta``.
+-  The ``c`` keyword is prepared as alias of ``classifier``.
+-  The ``mix`` keyword is prepared as alias of ``mixed``.
+
+Deprecated from-classifier
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``from-classifier`` option will be deprecated in version 2.0.0. Please
+migrate to ``--from`` option.
+
+Option: with-system
+~~~~~~~~~~~~~~~~~~~
+
+By default, system packages such as ``pip`` and ``setuptools`` are
+ignored.
+
+If you want to output all including system package, use the
+``--with-system`` option.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --with-system
+     Name          Version  License
+     Django        2.0.2    BSD
+     PTable        0.9.2    BSD (3 clause)
+     pip           9.0.1    MIT
+     pip-licenses  1.0.0    MIT License
+     pytz          2017.3   MIT
+     setuptools    38.5.0   UNKNOWN
+
+Option: with-authors
+~~~~~~~~~~~~~~~~~~~~
+
+When executed with the ``--with-authors`` option, output with author of
+the package.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --with-authors
+     Name    Version  License  Author
+     Django  2.0.2    BSD      Django Software Foundation
+     pytz    2017.3   MIT      Stuart Bishop
+
+Option: with-urls
+~~~~~~~~~~~~~~~~~
+
+For packages without Metadata, the license is output as ``UNKNOWN``. To
+get more package information, use the ``--with-urls`` option.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --with-urls
+     Name    Version  License  URL
+     Django  2.0.2    BSD      https://www.djangoproject.com/
+     pytz    2017.3   MIT      http://pythonhosted.org/pytz
+
+Option: with-description
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+When executed with the ``--with-description`` option, output with short
+description of the package.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --with-description
+     Name    Version  License  Description
+     Django  2.0.2    BSD      A high-level Python Web framework that encourages rapid development and clean, pragmatic design.
+     pytz    2017.3   MIT      World timezone definitions, modern and historical
+
+Option: with-license-file
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When executed with the ``--with-license-file`` option, output the
+location of the package's license file on disk and the full contents of
+that file. Due to the length of these fields, this option is best paired
+with ``--format=json``.
+
+Option: ignore-packages
+~~~~~~~~~~~~~~~~~~~~~~~
+
+When executed with the ``--ignore-packages`` option, ignore the package
+specified by argument from list output.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --ignore-packages django
+     Name  Version  License
+     pytz  2017.3   MIT
+
+Package names of arguments can be separated by spaces.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --with-system --ignore-packages django pip pip-licenses
+     Name        Version  License
+     PTable      0.9.2    BSD (3 clause)
+     pytz        2017.3   MIT
+     setuptools  38.5.0   UNKNOWN
+
+Option: order
+~~~~~~~~~~~~~
+
+By default, it is ordered by package name.
+
+If you give arguments to the ``--order`` option, you can output in other
+sorted order.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --order=license
+
+Option: format
+~~~~~~~~~~~~~~
+
+By default, it is output to the ``plain`` format.
+
+Markdown
+^^^^^^^^
+
+When executed with the ``--format=markdown`` option, you can output list
+in markdown format. The ``m`` ``md`` keyword is prepared as alias of
+``markdown``.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --format=markdown
+    | Name   | Version | License |
+    |--------|---------|---------|
+    | Django | 2.0.2   | BSD     |
+    | pytz   | 2017.3  | MIT     |
+
+When inserted in a markdown document, it is rendered as follows:
+
++----------+-----------+-----------+
+| Name     | Version   | License   |
++==========+===========+===========+
+| Django   | 2.0.2     | BSD       |
++----------+-----------+-----------+
+| pytz     | 2017.3    | MIT       |
++----------+-----------+-----------+
+
+reST
+^^^^
+
+When executed with the ``--format=rst`` option, you can output list in
+"`Grid
+tables <http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html#grid-tables>`__"
+of reStructuredText format. The ``r`` ``rest`` keyword is prepared as
+alias of ``rst``.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --format=rst
+    +--------+---------+---------+
+    | Name   | Version | License |
+    +--------+---------+---------+
+    | Django | 2.0.2   | BSD     |
+    +--------+---------+---------+
+    | pytz   | 2017.3  | MIT     |
+    +--------+---------+---------+
+
+Confluence
+^^^^^^^^^^
+
+When executed with the ``--format=confluence`` option, you can output
+list in `Confluence (or JIRA) Wiki
+markup <https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html#ConfluenceWikiMarkup-Tables>`__
+format. The ``c`` keyword is prepared as alias of ``confluence``.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --format=confluence
+    | Name   | Version | License |
+    | Django | 2.0.2   | BSD     |
+    | pytz   | 2017.3  | MIT     |
+
+HTML
+^^^^
+
+When executed with the ``--format=html`` option, you can output list in
+HTML table format. The ``h`` keyword is prepared as alias of ``html``.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --format=html
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Version</th>
+            <th>License</th>
+        </tr>
+        <tr>
+            <td>Django</td>
+            <td>2.0.2</td>
+            <td>BSD</td>
+        </tr>
+        <tr>
+            <td>pytz</td>
+            <td>2017.3</td>
+            <td>MIT</td>
+        </tr>
+    </table>
+
+JSON
+^^^^
+
+When executed with the ``--format=json`` option, you can output list in
+JSON format easily allowing post-processing. The ``j`` keyword is
+prepared as alias of ``json``.
+
+.. code:: json
+
+    [
+      {
+        "Author": "Django Software Foundation",
+        "License": "BSD",
+        "Name": "Django",
+        "URL": "https://www.djangoproject.com/",
+        "Version": "2.0.2"
+      },
+      {
+        "Author": "Stuart Bishop",
+        "License": "MIT",
+        "Name": "pytz",
+        "URL": "http://pythonhosted.org/pytz",
+        "Version": "2017.3"
+      }
+    ]
+
+CSV
+^^^
+
+When executed with the ``--format=csv`` option, you can output list in
+quoted CSV format. Useful when you want to copy/paste the output to an
+Excel sheet.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --format=csv
+    "Name","Version","License"
+    "Django","2.0.2","BSD"
+    "pytz","2017.3","MIT"
+
+Deprecated options
+^^^^^^^^^^^^^^^^^^
+
+The following options will be deprecated in version 2.0.0. Please
+migrate to ``--format`` option.
+
+-  ``--format-markdown``
+-  ``--format-rst``
+-  ``--format-confluence``
+-  ``--format-html``
+-  ``--format-json``
+
+Option: summary
+~~~~~~~~~~~~~~~
+
+When executed with the ``--summary`` option, you can output a summary of
+each license.
+
+.. code:: bash
+
+    (venv) $ pip-licenses --summary --from=classifier --with-system
+     Count  License
+     2      BSD License
+     4      MIT License
+
+**Note:** When using this option, only ``--order=count`` or
+``--order=license`` has an effect for the ``--order`` option. And using
+``--with-authors`` and ``--with-urls`` will be ignored.
+
+More Information
+~~~~~~~~~~~~~~~~
+
+Other, please make sure to execute the ``--help`` option.
+
+Dockerfile
+----------
+
+You can check the package license used by your app in the isolated
+Docker environment.
+
+.. code:: bash
+
+    # Clone this repository to local
+    $ git clone https://github.com/raimon49/pip-licenses.git
+    $ cd pip-licenses
+
+    # Create your app's requirements.txt file
+    # Other ways, pip freeze > docker/requirements.txt
+    $ echo "Flask" > docker/requirements.txt
+
+    # Build docker image
+    $ docker build . -t myapp-licenses
+
+    # Check the package license in container
+    $ docker run --rm myapp-licenses
+     Name          Version  License
+     Click         7.0      BSD License
+     Flask         1.0.2    BSD License
+     Jinja2        2.10     BSD License
+     MarkupSafe    1.1.1    BSD License
+     Werkzeug      0.15.2   BSD License
+     itsdangerous  1.1.0    BSD License
+
+    # Check with options
+    $ docker run --rm myapp-licenses --summary
+     Count  License
+     4      BSD
+     2      BSD-3-Clause
+
+    # When you need help
+    $ docker run --rm myapp-licenses --help
+
+**Note:** This Docker image can not check package licenses with C and C
+++ Extensions. It only works with pure Python package dependencies.
+
+If you want to resolve build environment issues, try adding
+``build-base`` packages and more.
+
+.. code:: diff
+
+    --- a/Dockerfile
+    +++ b/Dockerfile
+    @@ -7,6 +7,8 @@ WORKDIR ${APPDIR}
+
+     COPY ./docker/requirements.txt ${APPDIR}
+
+    +RUN set -ex && apk add --no-cache --update --virtual .py-deps \
+    +        build-base
+     RUN python3 -m venv ${APPDIR}/myapp \
+             && source ${APPDIR}/myapp/bin/activate
+
+License
+-------
+
+`MIT
+License <https://github.com/raimon49/pip-licenses/blob/master/LICENSE>`__
+
+Dependencies
+~~~~~~~~~~~~
+
+-  `PTable <https://pypi.org/project/PTable/>`__ by Luke Maurits and
+   maintainer of fork version Kane Blueriver under the BSD-3-Clause
+   License
+
+``pip-licenses`` has been implemented in the policy to minimize the
+dependence on external package.
+
+Uninstallation
+--------------
+
+Uninstall package and dependent package with ``pip`` command.
+
+.. code:: bash
+
+    $ pip uninstall pip-licenses PTable
+
+Contributing
+------------
+
+See `contribution
+guidelines <https://github.com/raimon49/pip-licenses/blob/master/CONTRIBUTING.md>`__.
+
+.. |Build Status| image:: https://travis-ci.org/raimon49/pip-licenses.svg?branch=master
+   :target: https://travis-ci.org/raimon49/pip-licenses
+.. |PyPI - Python Version| image:: https://img.shields.io/pypi/pyversions/pip-licenses.svg
+   :target: https://pypi.org/project/pip-licenses/
+.. |PyPI version| image:: https://badge.fury.io/py/pip-licenses.svg
+   :target: https://badge.fury.io/py/pip-licenses
+.. |GitHub Release| image:: https://img.shields.io/github/release/raimon49/pip-licenses.svg
+   :target: https://github.com/raimon49/pip-licenses/releases
+.. |Codecov| image:: https://codecov.io/gh/raimon49/pip-licenses/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/raimon49/pip-licenses
+.. |BSD License| image:: http://img.shields.io/badge/license-MIT-green.svg
+   :target: https://github.com/raimon49/pip-licenses/blob/master/LICENSE
+.. |Requirements Status| image:: https://requires.io/github/raimon49/pip-licenses/requirements.svg?branch=master
+   :target: https://requires.io/github/raimon49/pip-licenses/requirements/?branch=master
+
+
+CHANGELOG
+---------
+
+1.15.2
+~~~~~~
+
+-  Read license file works well with Windows
+
+1.15.1
+~~~~~~
+
+-  Skip parsing of license file for packages specified with
+   ``--ignore-packages`` option
+
+1.15.0
+~~~~~~
+
+-  Implement new option ``--format=csv``
+
+1.14.0
+~~~~~~
+
+-  Implement new option ``--from=mixed`` as a mixed mode
+
+1.13.0
+~~~~~~
+
+-  Implement new option ``--from=meta``, ``from=classifier``
+-  Dropped support Python 3.4
+
+1.12.1
+~~~~~~
+
+-  Fix bug
+
+   -  Change warning output to standard error
+
+1.12.0
+~~~~~~
+
+-  Supports execution within Docker container
+-  Warning of deprecated options
+-  Fix bug
+
+   -  Ignore ``OSI Approved`` string with multiple licenses
+
+1.11.0
+~~~~~~
+
+-  Implement new option ``--with-license-file``
+
+1.10.0
+~~~~~~
+
+-  Implement new option ``--with-description``
+
+1.9.0
+~~~~~
+
+-  Implement new option ``--summary``
+
+1.8.0
+~~~~~
+
+-  Implement new option ``--format-json``
+-  Dropped support Python 3.3
+
+1.7.1
+~~~~~
+
+-  Fix bug
+
+   -  Support pip 10.x
+
+1.7.0
+~~~~~
+
+-  Implement new option ``--format-confluence``
+
+1.6.1
+~~~~~
+
+-  Fix bug
+
+   -  Support display multiple license with ``--from-classifier`` option
+
+-  Improve document
+
+   -  Add section of 'Uninstallation' in README
+
+1.6.0
+~~~~~
+
+-  Implement new option ``--format-html``
+
+1.5.0
+~~~~~
+
+-  Implement new option ``--format-rst``
+
+1.4.0
+~~~~~
+
+-  Implement new option ``--format-markdown``
+-  Include LICENSE file in distribution package
+
+1.3.0
+~~~~~
+
+-  Implement new option ``--ignore-packages``
+
+1.2.0
+~~~~~
+
+-  Implement new option ``--from-classifier``
+
+1.1.0
+~~~~~
+
+-  Improve document
+
+   -  Add ToC to README document
+   -  Add a information of dependencies
+
+1.0.0
+~~~~~
+
+-  First stable release version
+
+0.2.0
+~~~~~
+
+-  Implement new option ``--order``
+
+   -  Default behavior is ``--order=name``
+
+0.1.0
+~~~~~
+
+-  First implementation version
+
+   -  Support options
+
+      -  ``--with-system``
+      -  ``--with-authors``
+      -  ``--with-urls``
+
+

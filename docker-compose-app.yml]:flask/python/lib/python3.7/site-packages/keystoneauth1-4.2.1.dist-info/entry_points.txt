@@ -1,0 +1,24 @@
+[keystoneauth1.plugin]
+admin_token = keystoneauth1.loading._plugins.admin_token:AdminToken
+http_basic = keystoneauth1.loading._plugins.http_basic:HTTPBasicAuth
+none = keystoneauth1.loading._plugins.noauth:NoAuth
+password = keystoneauth1.loading._plugins.identity.generic:Password
+token = keystoneauth1.loading._plugins.identity.generic:Token
+v2password = keystoneauth1.loading._plugins.identity.v2:Password
+v2token = keystoneauth1.loading._plugins.identity.v2:Token
+v3adfspassword = keystoneauth1.extras._saml2._loading:ADFSPassword
+v3applicationcredential = keystoneauth1.loading._plugins.identity.v3:ApplicationCredential
+v3fedkerb = keystoneauth1.extras.kerberos._loading:MappedKerberos
+v3kerberos = keystoneauth1.extras.kerberos._loading:Kerberos
+v3multifactor = keystoneauth1.loading._plugins.identity.v3:MultiFactor
+v3oauth1 = keystoneauth1.extras.oauth1._loading:V3OAuth1
+v3oidcaccesstoken = keystoneauth1.loading._plugins.identity.v3:OpenIDConnectAccessToken
+v3oidcauthcode = keystoneauth1.loading._plugins.identity.v3:OpenIDConnectAuthorizationCode
+v3oidcclientcredentials = keystoneauth1.loading._plugins.identity.v3:OpenIDConnectClientCredentials
+v3oidcpassword = keystoneauth1.loading._plugins.identity.v3:OpenIDConnectPassword
+v3password = keystoneauth1.loading._plugins.identity.v3:Password
+v3samlpassword = keystoneauth1.extras._saml2._loading:Saml2Password
+v3token = keystoneauth1.loading._plugins.identity.v3:Token
+v3tokenlessauth = keystoneauth1.loading._plugins.identity.v3:TokenlessAuth
+v3totp = keystoneauth1.loading._plugins.identity.v3:TOTP
+
