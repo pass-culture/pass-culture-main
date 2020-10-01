@@ -34,6 +34,7 @@ import {
   isAllocineOffer,
   isFnacOffer,
   isLibrairesOffer,
+  isPraxielOffer,
   isTiteLiveOffer,
 } from '../domain/localProvider'
 import { pluralize } from '../../../../utils/pluralize'
@@ -283,14 +284,18 @@ class OfferEdition extends PureComponent {
     const offerId = get(offer, 'id')
     const mediationId = get(get(offer, 'activeMediation'), 'id')
 
-    const offerFromTiteLive = isTiteLiveOffer(offer)
     const offerFromAllocine = isAllocineOffer(offer)
-    const offerFromLibraires = isLibrairesOffer(offer)
-    const offerFromFnac = isFnacOffer(offer)
     const offerFromLocalProvider =
-      offerFromTiteLive || offerFromAllocine || offerFromLibraires || offerFromFnac
+      isTiteLiveOffer(offer) ||
+      offerFromAllocine ||
+      isLibrairesOffer(offer) ||
+      isFnacOffer(offer) ||
+      isPraxielOffer(offer)
     const offerFromNonEditableLocalProvider =
-      offerFromTiteLive || offerFromLibraires || offerFromFnac
+      isTiteLiveOffer(offer) ||
+      isLibrairesOffer(offer) ||
+      isFnacOffer(offer) ||
+      isPraxielOffer(offer)
 
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
     const offererId = get(offerer, 'id')
@@ -453,7 +458,9 @@ class OfferEdition extends PureComponent {
                     <button
                       className="button is-primary is-outlined is-small manage-stock"
                       disabled={
-                        !offerFromNonEditableLocalProvider || offerFromAllocine ? '' : 'disabled'
+                        !offerFromNonEditableLocalProvider || isAllocineOffer(offer)
+                          ? ''
+                          : 'disabled'
                       }
                       id="manage-stocks"
                       onClick={this.handleOnClick(query)}
