@@ -17,7 +17,6 @@ import ReimbursementsContainer from '../components/pages/Reimbursements/Reimburs
 import SigninContainer from '../components/pages/Signin/SigninContainer'
 import SignupContainer from '../components/pages/Signup/SignupContainer'
 import SignupValidationContainer from '../components/pages/Signup/SignupValidation/SignupValidationContainer'
-import Terms from '../components/pages/Terms/Terms'
 import VenueCreationContainer from '../components/pages/Venue/VenueCreation/VenueCreationContainer'
 import VenueEditionContainer from '../components/pages/Venue/VenueEdition/VenueEditionContainer'
 import Unavailable from '../components/pages/Errors/Unavailable/Unavailable'
@@ -56,11 +55,6 @@ const routes = [
     component: SignupValidationContainer,
     path: '/inscription/validation/:token',
     title: 'Validation de votre inscription',
-  },
-  {
-    component: Terms,
-    path: '/mentions-legales',
-    title: 'Mentions Légales',
   },
   {
     component: LostPasswordContainer,
