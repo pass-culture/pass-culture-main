@@ -1,0 +1,46 @@
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
+"""
+Produce keystone compliant structures for use in testing.
+
+They are part of the public API because they may be relied upon to generate
+test tokens for other clients. However they should never be imported into the
+main client (keystoneauth or other). Because of this there may be dependencies
+from this module on libraries that are only available in testing.
+"""
+
+# flake8: noqa: F405
+
+from keystoneauth1.fixture.discovery import *  # noqa
+from keystoneauth1.fixture import exception
+from keystoneauth1.fixture.plugin import *  # noqa
+from keystoneauth1.fixture import v2
+from keystoneauth1.fixture import v3
+
+
+FixtureValidationError = exception.FixtureValidationError
+V2Token = v2.Token
+V3Token = v3.Token
+V3FederationToken = v3.V3FederationToken
+
+__all__ = ('DiscoveryList',
+           'FixtureValidationError',
+           'LoadingFixture',
+           'TestPlugin',
+           'V2Discovery',
+           'V3Discovery',
+           'V2Token',
+           'V3Token',
+           'V3FederationToken',
+           'VersionDiscovery',
+           )

@@ -1,0 +1,3 @@
+[console_scripts]
+ptable = prettytable.cli:main
+

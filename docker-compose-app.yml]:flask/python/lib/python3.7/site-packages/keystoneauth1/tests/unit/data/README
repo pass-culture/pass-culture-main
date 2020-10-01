@@ -1,0 +1,7 @@
+This directory holds the betamax test cassettes that are pre-generated
+for unit testing. This can be removed in the future with a functional
+test that stands up a full devstack, records a cassette and then
+replays it as part of the test suite.
+
+Until the functional testing is implemented do not remove this
+directory or enclosed files.

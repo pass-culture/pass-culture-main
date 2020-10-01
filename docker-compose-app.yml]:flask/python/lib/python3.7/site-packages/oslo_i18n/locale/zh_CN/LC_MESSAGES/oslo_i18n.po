@@ -1,0 +1,25 @@
+# Translations template for oslo.i18n.
+# Copyright (C) 2015 ORGANIZATION
+# This file is distributed under the same license as the oslo.i18n project.
+#
+# Translators:
+# Xiao Xi LIU <liuxx@cn.ibm.com>, 2014
+# Andreas Jaeger <jaegerandi@gmail.com>, 2016. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: oslo.i18n VERSION\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
+"POT-Creation-Date: 2018-02-05 13:14+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-04-12 06:17+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.0\n"
+"X-Generator: Zanata 4.3.3\n"
+"Language-Team: Chinese (China)\n"
+
+msgid "Message objects do not support addition."
+msgstr "消息对象不支持添加操作。"

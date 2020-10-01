@@ -1,0 +1,28 @@
+Metadata-Version: 2.1
+Name: geopandas
+Version: 0.6.2
+Summary: Geographic pandas extensions
+Home-page: http://geopandas.org
+Author: GeoPandas contributors
+Author-email: kjordahl@alum.mit.edu
+License: BSD
+Platform: UNKNOWN
+Requires-Dist: pandas (>=0.23.0)
+Requires-Dist: shapely
+Requires-Dist: fiona
+Requires-Dist: pyproj
+
+GeoPandas is a project to add support for geographic data to
+`pandas`_ objects.
+
+The goal of GeoPandas is to make working with geospatial data in
+python easier. It combines the capabilities of `pandas`_ and `shapely`_,
+providing geospatial operations in pandas and a high-level interface
+to multiple geometries to shapely. GeoPandas enables you to easily do
+operations in python that would otherwise require a spatial database
+such as PostGIS.
+
+.. _pandas: http://pandas.pydata.org
+.. _shapely: http://shapely.readthedocs.io/en/latest/
+
+

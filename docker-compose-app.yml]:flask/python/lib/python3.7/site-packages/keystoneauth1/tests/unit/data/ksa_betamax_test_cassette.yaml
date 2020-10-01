@@ -1,0 +1,92 @@
+http_interactions:
+- request:
+    body:
+      string: |-
+        {
+          "auth": {
+            "tenantName": "test_tenant_name",
+            "passwordCredentials": {
+              "username": "test_user_name",
+              "password": "test_password"
+            }
+          }
+        }
+      encoding: utf-8
+    headers:
+      Content-Length:
+      - '128'
+      Accept-Encoding:
+      - gzip, deflate
+      Accept:
+      - application/json
+      User-Agent:
+      - keystoneauth1
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+    method: POST
+    uri: http://keystoneauth-betamax.test/v2.0/tokens
+  response:
+    body:
+      string: |-
+        {
+          "access": {
+            "token": {
+              "issued_at": "2015-11-27T15:17:19.755470",
+              "expires": "2015-11-27T16:17:19Z",
+              "id": "c000c5ee4ba04594a00886028584b50d",
+              "tenant": {
+                "enabled": true,
+                "description": null,
+                "name": "test_tenant_name",
+                "id": "6932cad596634a61ac9c759fb91beef1"
+              },
+              "audit_ids": [
+                "jY3gYg_YTbmzY2a4ioGuCw"
+              ]
+            },
+            "user": {
+              "username": "test_user_name",
+              "roles_links": [],
+              "id": "96995e6cc15b40fa8e7cd762f6a5d4c0",
+              "roles": [
+                {
+                  "name": "_member_"
+                }
+              ],
+              "name": "67eff5f6-9477-4961-88b4-437e6596a795"
+            },
+            "metadata": {
+              "is_admin": 0,
+              "roles": [
+                "9fe2ff9ee4384b1894a90878d3e92bab"
+              ]
+            }
+          }
+        }
+      encoding: null
+    headers:
+      X-Openstack-Request-Id:
+      - req-f9e188b4-06fd-4a4c-a952-2315b368218c
+      Content-Length:
+      - '2684'
+      Connection:
+      - keep-alive
+      Date:
+      - Fri, 27 Nov 2015 15:17:19 GMT
+      Content-Type:
+      - application/json
+      Vary:
+      - X-Auth-Token
+      X-Distribution:
+      - Ubuntu
+      Server:
+      - Fake
+    status:
+      message: OK
+      code: 200
+    url: http://keystoneauth-betamax.test/v2.0/tokens
+  recorded_at: '2015-11-27T15:17:19'
+recorded_with: betamax/0.5.1
+

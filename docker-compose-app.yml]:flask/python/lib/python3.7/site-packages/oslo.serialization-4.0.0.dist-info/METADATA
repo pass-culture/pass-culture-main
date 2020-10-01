@@ -1,0 +1,59 @@
+Metadata-Version: 2.1
+Name: oslo.serialization
+Version: 4.0.0
+Summary: Oslo Serialization library
+Home-page: https://docs.openstack.org/oslo.serialization/latest/
+Author: OpenStack
+Author-email: openstack-discuss@lists.openstack.org
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Environment :: OpenStack
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Requires-Python: >=3.6
+Requires-Dist: pbr (!=2.1.0,>=2.0.0)
+Requires-Dist: msgpack (>=0.5.2)
+Requires-Dist: oslo.utils (>=3.33.0)
+Requires-Dist: pytz (>=2013.6)
+
+========================
+Team and repository tags
+========================
+
+.. image:: https://governance.openstack.org/tc/badges/oslo.serialization.svg
+    :target: https://governance.openstack.org/tc/ference/tags/index.html
+
+.. Change things from this point on
+
+===================
+ oslo.serialization
+===================
+
+.. image:: https://img.shields.io/pypi/v/oslo.serialization.svg
+    :target: https://pypi.org/project/oslo.serialization/
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/dm/oslo.serialization.svg
+    :target: https://pypi.org/project/oslo.serialization/
+    :alt: Downloads
+
+The oslo.serialization library provides support for representing objects
+in transmittable and storable formats, such as Base64, JSON and MessagePack.
+
+* Free software: Apache license
+* Documentation: https://docs.openstack.org/oslo.serialization/latest/
+* Source: https://opendev.org/openstack/oslo.serialization
+* Bugs: https://bugs.launchpad.net/oslo.serialization
+* Release notes: https://docs.openstack.org/releasenotes/oslo.serialization/
+
+
+

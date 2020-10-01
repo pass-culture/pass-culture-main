@@ -1,0 +1,30 @@
+Metadata-Version: 2.1
+Name: pygsheets
+Version: 2.0.3.1
+Summary: Google Spreadsheets Python API v4
+Home-page: https://github.com/nithinmurali/pygsheets
+Author: Nithin Murali
+Author-email: imnmfotmal@gmail.com
+License: MIT
+Download-URL: https://github.com/nithinmurali/pygsheets/tarball/2.0.3.1
+Keywords: spreadsheets,google-spreadsheets,pygsheets
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Office/Business :: Financial :: Spreadsheet
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Dist: google-api-python-client (>=1.5.5)
+Requires-Dist: google-auth-oauthlib
+Requires-Dist: oauth2client
+Provides-Extra: pandas
+Requires-Dist: pandas (>=0.14.0) ; extra == 'pandas'
+
+UNKNOWN
+
+

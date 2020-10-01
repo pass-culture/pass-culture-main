@@ -1,0 +1,58 @@
+Metadata-Version: 2.1
+Name: oslo.i18n
+Version: 5.0.0
+Summary: Oslo i18n library
+Home-page: https://docs.openstack.org/oslo.i18n/latest
+Author: OpenStack
+Author-email: openstack-discuss@lists.openstack.org
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Environment :: OpenStack
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Requires-Python: >=3.6
+Requires-Dist: pbr (!=2.1.0,>=2.0.0)
+Requires-Dist: six (>=1.10.0)
+
+========================
+Team and repository tags
+========================
+
+.. image:: https://governance.openstack.org/tc/badges/oslo.i18n.svg
+    :target: https://governance.openstack.org/tc/reference/tags/index.html
+
+.. Change things from this point on
+
+==================================================
+ oslo.i18n -- Oslo Internationalization Utilities
+==================================================
+
+.. image:: https://img.shields.io/pypi/v/oslo.i18n.svg
+    :target: https://pypi.org/project/oslo.i18n/
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/dm/oslo.i18n.svg
+    :target: https://pypi.org/project/oslo.i18n/
+    :alt: Downloads
+
+The oslo.i18n library contain utilities for working with
+internationalization (i18n) features, especially translation for text
+strings in an application or library.
+
+* Free software: Apache license
+* Documentation: https://docs.openstack.org/oslo.i18n/latest
+* Source: https://opendev.org/openstack/oslo.i18n
+* Bugs: https://bugs.launchpad.net/oslo.i18n
+* Release notes:  https://docs.openstack.org/releasenotes/oslo.i18n/
+
+
+

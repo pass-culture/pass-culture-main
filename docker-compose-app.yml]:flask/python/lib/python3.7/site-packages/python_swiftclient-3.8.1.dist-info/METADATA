@@ -1,0 +1,89 @@
+Metadata-Version: 2.1
+Name: python-swiftclient
+Version: 3.8.1
+Summary: OpenStack Object Storage API Client Library
+Home-page: https://docs.openstack.org/python-swiftclient/latest/
+Author: OpenStack
+Author-email: openstack-discuss@lists.openstack.org
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Environment :: OpenStack
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Requires-Dist: requests (>=1.1.0)
+Requires-Dist: six (>=1.9.0)
+Requires-Dist: futures (>=3.0.0) ; (python_version=='2.7' or python_version=='2.6')
+Provides-Extra: keystone
+Requires-Dist: python-keystoneclient (>=0.7.0) ; extra == 'keystone'
+Provides-Extra: test
+Requires-Dist: hacking (<1.2.0,>=1.1.0) ; extra == 'test'
+Requires-Dist: coverage (!=4.4,>=4.0) ; extra == 'test'
+Requires-Dist: keystoneauth1 (>=3.4.0) ; extra == 'test'
+Requires-Dist: mock (>=1.2.0) ; extra == 'test'
+Requires-Dist: stestr (>=2.0.0) ; extra == 'test'
+
+========================
+Team and repository tags
+========================
+
+.. image:: https://governance.openstack.org/tc/badges/python-swiftclient.svg
+    :target: https://governance.openstack.org/tc/reference/tags/index.html
+
+.. Change things from this point on
+
+Python bindings to the OpenStack Object Storage API
+===================================================
+
+.. image:: https://img.shields.io/pypi/v/python-swiftclient.svg
+    :target: https://pypi.org/project/python-swiftclient/
+    :alt: Latest Version
+
+This is a python client for the Swift API. There's a Python API (the
+``swiftclient`` module), and a command-line script (``swift``).
+
+Development takes place via the usual OpenStack processes as outlined
+in the `OpenStack wiki`__.
+
+__ https://docs.openstack.org/infra/manual/developers.html
+
+This code is based on the original client previously included with
+`OpenStack's Swift`__ The python-swiftclient is licensed under the
+Apache License like the rest of OpenStack.
+
+__ https://github.com/openstack/swift
+
+* Free software: Apache license
+* `PyPI`_ - package installation
+* `Online Documentation`_
+* `Launchpad project`_ - release management
+* `Blueprints`_ - feature specifications
+* `Bugs`_ - issue tracking
+* `Source`_
+* `Specs`_
+* `How to Contribute`_
+* `Release Notes`_
+
+.. _PyPI: https://pypi.org/project/python-swiftclient
+.. _Online Documentation: https://docs.openstack.org/python-swiftclient/latest/
+.. _Launchpad project: https://launchpad.net/python-swiftclient
+.. _Blueprints: https://blueprints.launchpad.net/python-swiftclient
+.. _Bugs: https://bugs.launchpad.net/python-swiftclient
+.. _Source: https://opendev.org/openstack/python-swiftclient
+.. _How to Contribute: https://docs.openstack.org/infra/manual/developers.html
+.. _Specs: https://specs.openstack.org/openstack/swift-specs/
+.. _Release Notes: https://docs.openstack.org/releasenotes/python-swiftclient
+
+.. contents:: Contents:
+   :local:
+
+
+

@@ -1,0 +1,214 @@
+.\"
+.\" Author: Joao Marcelo Martins <marcelo.martins@rackspace.com> or <btorch@gmail.com>
+.\" Copyright (c) 2010-2011 OpenStack Foundation.
+.\"
+.\" Licensed under the Apache License, Version 2.0 (the "License");
+.\" you may not use this file except in compliance with the License.
+.\" You may obtain a copy of the License at
+.\"
+.\"    http://www.apache.org/licenses/LICENSE-2.0
+.\"
+.\" Unless required by applicable law or agreed to in writing, software
+.\" distributed under the License is distributed on an "AS IS" BASIS,
+.\" WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+.\" implied.
+.\" See the License for the specific language governing permissions and
+.\" limitations under the License.
+.\"
+.TH swift 1 "8/26/2011" "Linux" "OpenStack Swift"
+
+.SH NAME
+.LP
+.B swift
+\- OpenStack Swift client tool
+
+.SH SYNOPSIS
+.LP
+.B swift
+[options] <command> [args]
+
+.SH DESCRIPTION
+.PP
+The \fBswift\fR tool is a command line utility for communicating with
+an OpenStack Object Storage (Swift) environment. It allows one to perform
+several types of operations.
+
+.SH COMMANDS
+.PP
+
+\fBstat\fR [\fIcommand-options\fR] [\fIcontainer\fR] [\fIobject\fR]
+.RS 4
+Displays information for the account, container, or object depending on the args given (if any).
+In verbose mode, the Storage URL and the authentication token are displayed
+as well. Option \-\-lh reports sizes in human readable format similar to ls \-lh.
+.RE
+
+\fBlist\fR [\fIcommand-options\fR] [\fIcontainer\fR]
+.RS 4
+Lists the containers for the account or the objects for a container.
+The \-p <prefix> or \-\-prefix <prefix> is an option that will only list items beginning
+with that prefix. The \-d <delim> or \-\-delimiter <delim> is option
+(for container listings only) that will roll up items with the given
+delimiter (see OpenStack Swift general documentation for what this means).
+
+The \-l or \-\-long and \-\-lh options provide more detail, similar to ls \-l and ls \-lh, the latter
+providing sizes in human readable format (eg 3K, 12M, etc). These latter 2 switches
+use more overhead to get those details, which is directly proportional to the number
+of container or objects being listed. With the \-t or \-\-total option they only report totals.
+.RE
+
+\fBupload\fR [\fIcommand-options\fR] container file_or_directory [\fIfile_or_directory\fR] [...]
+.RS 4
+Uploads to the given container the files and directories specified by the
+remaining args. The \-c or \-\-changed is an option that will only upload files
+that have changed since the last upload. The \-\-object\-name <object\-name> is
+an option that will upload file and name object to <object\-name> or upload dir
+and use <object\-name> as object prefix. If the file name is "-", reads the
+content from standard input. In this case, \-\-object\-name is required and no
+other files may be given. The \-S <size> or \-\-segment\-size <size> and
+\-\-leave\-segments and others are options as well (see swift upload \-\-help
+for more).
+.RE
+
+\fBpost\fR [\fIcommand-options\fR] [\fIcontainer\fR] [\fIobject\fR]
+.RS 4
+Updates meta information for the account, container, or object depending
+on the args given. If the container is not found, it will be created
+automatically; but this is not true for accounts and objects. Containers
+also allow the \-r (or \-\-read\-acl) and \-w (or \-\-write\-acl) options. The \-m
+or \-\-meta option is allowed on all and used to define the user meta data
+items to set in the form Name:Value. This option can be repeated.
+For more details and options see swift post \-\-help.
+\fBExample\fR: post \-m Color:Blue \-m Size:Large
+.RE
+
+\fBcopy\fR [\fIcommand-options\fR] \fIcontainer\fR \fIobject\fR
+.RS 4
+Copies an object to a new destination or adds user metadata to the object (current
+user metadata will be preserved, in contrast with the post command) depending
+on the args given. The \-\-destination option sets the destination in the form
+/container/object. If not set, the object will be copied onto itself which is useful
+for adding metadata. The \-M or \-\-fresh\-metadata option copies the object without
+the existing user metadata. The \-m or \-\-meta option is always allowed and is used
+to define the user metadata items to set in the form Name:Value (this option
+can be repeated).
+For more details and options see swift copy \-\-help.
+.RE
+
+\fBdownload\fR [\fIcommand-options\fR] [\fIcontainer\fR] [\fIobject\fR] [\fIobject\fR] [...]
+.RS 4
+Downloads everything in the account (with \-\-all), or everything in a
+container, or a list of objects depending on the args given. For a single
+object download, you may use the \-o [\-\-output] <filename> option to
+redirect the output to a specific file or if "-" then just redirect to stdout or
+with \-\-no-download actually not to write anything to disk.
+The \-\-ignore-checksum is an option that turns off checksum validation.
+You can specify optional headers with the repeatable cURL-like option
+\-H [\-\-header]. For more details and options see swift download \-\-help.
+The \-\-ignore\-mtime option ignores the x\-object\-meta\-mtime metadata entry
+on the object (if present) and instead creates the downloaded files with
+fresh atime and mtime values.
+.RE
+
+\fBdelete\fR [\fIcommand-options\fR] [\fIcontainer\fR] [\fIobject\fR] [\fIobject\fR] [...]
+.RS 4
+Deletes everything in the account (with \-\-all), or everything in a container,
+or all objects in a container that start with a given string (given by \-\-prefix),
+or a list of objects depending on the args given. Segments of manifest objects
+will be deleted as well, unless you specify the \-\-leave\-segments option.
+For more details and options see swift delete \-\-help.
+.RE
+
+\fBcapabilities\fR [\fIcommand-options\fR] [\fIproxy-url\fR]
+.RS 4
+Displays cluster capabilities. If the proxy-url option is not provided the
+storage-url retrieved after authentication is used as proxy-url.
+
+By default, the output includes the list of the activated Swift middlewares as
+well as relevant options for each one. Additionally the command displays
+relevant options for the Swift core.
+
+The \-\-json option will print a json representation of the cluster
+capabilities. This is typically more suitable for consumption by other
+programs, such as jq.
+
+\fBExample\fR: capabilities https://swift.example.com
+         capabilities \-\-json
+.RE
+
+\fBtempurl\fR [\fIcommand-option\fR] \fImethod\fR \fItime\fR \fIpath\fR \fIkey\fR
+.RS 4
+Generates a temporary URL allowing unauthenticated access to the Swift object
+at the given path, using the given HTTP method, for the given time,
+using the given TempURL key.
+
+The time can be specified either as an integer
+denoting the amount of seconds the temporary URL is valid, or as an ISO 8601
+timestamp in one of following formats:  Complete date: YYYY\-MM\-DD (eg 1997\-07\-16),
+complete date plus hours, minutes and seconds: YYYY\-MM\-DDThh:mm:ss
+(eg 1997\-07\-16T19:20:30) or complete date plus hours, minutes and seconds with
+UTC designator: YYYY\-MM\-DDThh:mm:ssZ (eg 1997\-07\-16T19:20:30Z). Be aware that
+if you do not use the latter format, the timestamp is generated using your locale
+timezone. If the first format is used, the time part used will equal to 00:00:00.
+
+With the \-\-prefix\-based option a
+prefix-based URL is generated.
+
+The option \-\-iso8601 provides ISO 8601 UTC timestamps
+instead of Unix timestamps inside the generated URL.
+
+If optional \-\-absolute argument is
+provided and the time argument is specified in seconds, the seconds are
+interpreted as a Unix timestamp at which the URL
+should expire.
+
+\fBExample\fR: tempurl GET $(date \-d "Jan 1 2016" +%s)
+/v1/AUTH_foo/bar_container/quux.md my_secret_tempurl_key \-\-absolute
+
+.RE
+
+\fBauth\fR
+.RS 4
+Display auth related authentication variables in shell friendly format.
+For examples see swift auth \-\-help.
+.RE
+
+.SH OPTIONS
+.PD 0
+.IP "--version              Show program's version number and exit"
+.IP "-h, --help             Show this (or any subcommand if after command) help message and exit"
+.IP "-s, --snet             Use SERVICENET internal network"
+.IP "-v, --verbose          Print more info"
+.IP "-q, --quiet            Suppress status output"
+.IP "-A AUTH, --auth=AUTH   URL for obtaining an auth token "
+.IP "-U USER, --user=USER   User name for obtaining an auth token"
+.IP "-V 1|2, --auth-version=VERSION  Authentication protocol version"
+.IP "-K KEY, --key=KEY      Key for obtaining an auth token"
+.IP "--os-storage-url=URL   Use this instead of URL returned from auth"
+.IP "--os-help              Show all OpenStack authentication options"
+.PD
+.RS 4
+For more options see swift \-\-help and swift \-\-os\-help.
+.RE
+
+
+.SH EXAMPLE
+.PP
+swift \-A https://127.0.0.1:443/auth/v1.0 \-U swiftops:swiftops \-K swiftops stat
+
+.RS 2
+.PD 0
+.IP "   Account: AUTH_43b42dae-dc0b-4a4b-ac55-97de614d6e6e"
+.IP "Containers: 1"
+.IP "   Objects: 1"
+.IP "     Bytes: 1124"
+.IP "Accept-Ranges: bytes"
+.IP "X-Trans-Id: txb21186a9eef64ed295a1e95896a0fc72"
+.PD
+.RE
+
+
+.SH DOCUMENTATION
+.LP
+More in depth documentation about OpenStack Swift as a whole can be found at
+.BI https://docs.openstack.org/swift/latest/

@@ -1,0 +1,10 @@
+[console_scripts]
+oslo-config-generator = oslo_config.generator:main
+oslo-config-validator = oslo_config.validator:main
+
+[oslo.config.driver]
+remote_file = oslo_config.sources._uri:URIConfigurationSourceDriver
+
+[oslo.config.opts]
+oslo.config = oslo_config._list_opts:list_opts
+

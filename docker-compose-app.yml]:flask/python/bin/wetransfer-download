@@ -1,0 +1,25 @@
+#!/Users/annaelle.sagot/pass-culture-main/docker-compose-app.yml]:flask/python/bin/python
+# -*- coding: utf-8 -*-
+
+import sys
+import argparse
+
+from wetransferpy import WeTransfer
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description='Download file from WeTransfer.')
+    parser.add_argument('-u', '--url',
+                        help='WeTransfer download url')
+    parser.add_argument('-d', '--destination',
+                        help='Destination folder')
+
+    if len(sys.argv)==1:
+        parser.print_help()
+        sys.exit(1)
+
+    args = parser.parse_args()
+    if args.url:
+        w = WeTransfer()
+        w.download(args.url,args.destination)

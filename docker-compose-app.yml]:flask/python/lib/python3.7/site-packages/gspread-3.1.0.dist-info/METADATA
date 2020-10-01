@@ -1,0 +1,41 @@
+Metadata-Version: 2.0
+Name: gspread
+Version: 3.1.0
+Summary: Google Spreadsheets Python API
+Home-page: https://github.com/burnash/gspread
+Author: Anton Burnashev
+Author-email: fuss.here@gmail.com
+License: MIT
+Keywords: spreadsheets,google-spreadsheets
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Office/Business :: Financial :: Spreadsheet
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Dist: requests (>=2.2.1)
+
+Super simple `Google Spreadsheets Python API`_.
+
+.. _Google Spreadsheets Python API: https://github.com/burnash/gspread
+
+Features
+--------
+
+* Google Sheets API v4.
+* Open a spreadsheet by its *title*, *url* or *key*.
+* Select cells by labels, e.g. 'A1'.
+* Extract range, entire row or column values.
+* Python 3 support.
+
+
+License
+-------
+MIT
+
+

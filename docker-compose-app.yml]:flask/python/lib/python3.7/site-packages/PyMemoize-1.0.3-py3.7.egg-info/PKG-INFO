@@ -1,0 +1,18 @@
+Metadata-Version: 1.1
+Name: PyMemoize
+Version: 1.0.3
+Summary: Simple memoizing module.
+Home-page: http://github.com/mikeboers/PyMemoize
+Author: Mike Boers
+Author-email: memoize@mikeboers.com
+License: BSD-3
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Software Development :: Libraries :: Python Modules

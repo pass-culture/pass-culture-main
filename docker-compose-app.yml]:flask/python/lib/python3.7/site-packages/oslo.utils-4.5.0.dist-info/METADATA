@@ -1,0 +1,64 @@
+Metadata-Version: 2.0
+Name: oslo.utils
+Version: 4.5.0
+Summary: Oslo Utility library
+Home-page: https://docs.openstack.org/oslo.utils/latest/
+Author: OpenStack
+Author-email: openstack-discuss@lists.openstack.org
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Environment :: OpenStack
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: System Administrators
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Requires-Python: >=3.6
+Requires-Dist: debtcollector (>=1.2.0)
+Requires-Dist: iso8601 (>=0.1.11)
+Requires-Dist: netaddr (>=0.7.18)
+Requires-Dist: netifaces (>=0.10.4)
+Requires-Dist: oslo.i18n (>=3.15.3)
+Requires-Dist: packaging (>=20.4)
+Requires-Dist: pbr (!=2.1.0,>=2.0.0)
+Requires-Dist: pyparsing (>=2.1.0)
+Requires-Dist: pytz (>=2013.6)
+Requires-Dist: six (>=1.10.0)
+
+========================
+Team and repository tags
+========================
+
+.. image:: https://governance.openstack.org/tc/badges/oslo.utils.svg
+    :target: https://governance.openstack.org/tc/reference/tags/index.html
+
+.. Change things from this point on
+
+==========
+oslo.utils
+==========
+
+.. image:: https://img.shields.io/pypi/v/oslo.utils.svg
+    :target: https://pypi.org/project/oslo.utils/
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/dm/oslo.utils.svg
+    :target: https://pypi.org/project/oslo.utils/
+    :alt: Downloads
+
+The oslo.utils library provides support for common utility type functions,
+such as encoding, exception handling, string manipulation, and time handling.
+
+* Free software: Apache license
+* Documentation: https://docs.openstack.org/oslo.utils/latest/
+* Source: https://opendev.org/openstack/oslo.utils
+* Bugs: https://bugs.launchpad.net/oslo.utils
+* Release notes: https://docs.openstack.org/releasenotes/oslo.utils/
+
+
+

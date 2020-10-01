@@ -1,0 +1,64 @@
+Metadata-Version: 2.0
+Name: oslo.config
+Version: 8.3.1
+Summary: Oslo Configuration API
+Home-page: https://docs.openstack.org/oslo.config/latest/
+Author: OpenStack
+Author-email: openstack-discuss@lists.openstack.org
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: OpenStack
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Requires-Python: >=3.6
+Requires-Dist: PyYAML (>=3.12)
+Requires-Dist: debtcollector (>=1.2.0)
+Requires-Dist: netaddr (>=0.7.18)
+Requires-Dist: oslo.i18n (>=3.15.3)
+Requires-Dist: requests (>=2.18.0)
+Requires-Dist: rfc3986 (>=1.2.0)
+Requires-Dist: stevedore (>=1.20.0)
+Requires-Dist: importlib-metadata (>=1.7.0); (python_version<'3.8')
+
+========================
+Team and repository tags
+========================
+
+.. image:: https://governance.openstack.org/tc/badges/oslo.config.svg
+    :target: https://governance.openstack.org/tc/reference/tags/index.html
+
+.. Change things from this point on
+
+==========================
+Oslo Configuration Library
+==========================
+
+.. image:: https://img.shields.io/pypi/v/oslo.config.svg
+    :target: https://pypi.org/project/oslo.config/
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/dm/oslo.config.svg
+    :target: https://pypi.org/project/oslo.config/
+    :alt: Downloads
+
+The Oslo configuration API supports parsing command line arguments and
+.ini style configuration files.
+
+* License: Apache License, Version 2.0
+* Documentation: https://docs.openstack.org/oslo.config/latest/
+* Source: https://opendev.org/openstack/oslo.config/
+* Bugs: https://bugs.launchpad.net/oslo.config
+* Release notes:  https://docs.openstack.org/releasenotes/oslo.config/
+
+
+
