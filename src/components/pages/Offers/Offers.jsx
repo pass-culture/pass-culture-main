@@ -201,7 +201,7 @@ class Offers extends PureComponent {
         <ul className="section">
           {venue && (
             <button
-              className="venue-filter tag is-rounded is-medium"
+              className="venue-filter tag is-rounded"
               onClick={this.handleOnVenueClick}
               type="button"
             >

@@ -72,5 +72,10 @@
     justify-content: flex-start;
     align-items: center;
     flex-grow: 1;
+
+    span {
+      margin-bottom: rem(6px);
+      margin-left: rem(8px);
+    }
   }
 }

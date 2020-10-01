@@ -182,13 +182,15 @@ class StocksManager extends PureComponent {
 
     return (
       <div className="stocks-manager">
-        <div className={classnames('info', { 'is-invisible': !info })}>
-          <div className="content">
-            <div>
-              {info}
+        {info && (
+          <div className="info">
+            <div className="content">
+              <div>
+                {info}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {errors && (
           <div className="notification is-danger">

@@ -107,10 +107,10 @@ class IdentifierFields extends PureComponent {
 
     return (
       <div className="section identifier-field-section">
-        <h2 className="main-list-title is-relative">
+        <h2 className="main-list-title">
           {'Informations lieu'}
           {!readOnly && (
-            <span className="is-pulled-right fs13 has-text-grey">
+            <span className="required-fields-hint">
               {'Les champs marqués d’un'}
               <span className="required-legend">
                 {' * '}

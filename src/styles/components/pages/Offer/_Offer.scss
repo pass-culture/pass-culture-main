@@ -75,10 +75,9 @@
   }
 
   .main-list-title {
-    @extend .is-uppercase;
-
     border-bottom: thin solid;
     display: block;
+    text-transform: uppercase;
     font-weight: $weight-bold;
     margin: 0.75rem 0;
     overflow-y: hidden;

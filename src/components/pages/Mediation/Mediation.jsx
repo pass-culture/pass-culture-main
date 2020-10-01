@@ -228,7 +228,7 @@ class Mediation extends PureComponent {
               {'Comment cadrer votre image d’accroche'}
             </h2>
             <ul>
-              <li className="mb12">
+              <li>
                 <span className="li-number">
                   {'1'}
                 </span>
@@ -240,7 +240,7 @@ class Mediation extends PureComponent {
                   {'.'}
                 </span>
               </li>
-              <li className="mb12">
+              <li>
                 <span className="li-number">
                   {'2'}
                 </span>
@@ -346,7 +346,7 @@ class Mediation extends PureComponent {
         >
           <div className="control">
             <Link
-              className="button is-primary is-outlined is-medium"
+              className="button is-primary is-outlined"
               to={backPath}
             >
               {'Annuler'}

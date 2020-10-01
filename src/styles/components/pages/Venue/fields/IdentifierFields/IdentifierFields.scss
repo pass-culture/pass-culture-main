@@ -25,6 +25,12 @@
     flex: 3;
   }
 
+  .required-fields-hint {
+    color: $grey-dark;
+    float: right;
+    font-size: rem(13px);
+  }
+
   .venue-type-label,
   .venue-label-label {
     padding-left: rem(22px);

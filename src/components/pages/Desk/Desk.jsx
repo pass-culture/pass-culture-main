@@ -192,7 +192,7 @@ class Desk extends React.PureComponent {
           {'Enregistrez les codes de réservations présentés par les porteurs du pass.'}
         </p>
         <div className="section form">
-          <p className="subtitle is-medium has-text-weight-bold">
+          <p className="subtitle">
             {'Scannez un code-barres ou saisissez-le ci-dessous :'}
           </p>
 

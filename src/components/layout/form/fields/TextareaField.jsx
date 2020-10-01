@@ -56,7 +56,7 @@ class TextareaField extends PureComponent {
               {!readOnly && (
                 <Fragment>
                   <br />
-                  <span className="fs12">
+                  <span className="character-count">
                     {` (${input.value.length} / ${maxLength}) `}
                   </span>
                 </Fragment>

@@ -62,9 +62,14 @@
 
   .confirmation-text {
     margin-bottom: rem(12px);
+    font-style: italic;
     font-weight: 500;
     font-size: rem(20px);
     line-height: rem(24px);
+
+    span {
+      font-weight: bold;
+    }
   }
 
   .information-text {
@@ -115,7 +120,7 @@
     margin-bottom: rem(32px);
 
     div {
-     margin-bottom: rem(10px)
+      margin-bottom: rem(10px)
     }
   }
 

@@ -219,7 +219,7 @@ describe('src | ProductFields', () => {
         // given
         const expected = (
           <React.Fragment>
-            <div className="mb24 has-text-left">
+            <div className="has-text-left">
               {'Vous avez saisi une offre payante. Pensez à demander à '}
               {'l’administrateur financier nommé pour votre structure de renseigner '}
               {'son IBAN. Sans IBAN, les réservations de vos offres éligibles ne vous '}

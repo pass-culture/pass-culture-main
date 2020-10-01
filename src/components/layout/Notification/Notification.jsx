@@ -58,14 +58,14 @@ class Notification extends PureComponent {
               png={png}
               svg={svg}
             />
-            <span className="ml8 mb6">
+            <span>
               {text}
             </span>
           </div>
           <div className="notification-action-links">
             {url && (
               <a
-                className="close pl12"
+                className="close"
                 href={url}
               >
                 {urlLabel}
@@ -84,7 +84,7 @@ class Notification extends PureComponent {
               </span>
             ) : (
               <button
-                className="close pl12"
+                className="close"
                 onClick={this.handleDispatchCloseNotification}
                 type="button"
               >

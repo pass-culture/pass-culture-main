@@ -256,12 +256,12 @@ class LocationViewer extends PureComponent {
           value={value || inputValue}
           wrapperProps={{ className: 'input-wrapper' }}
         />
-        <button
-          className={classnames('button is-loading', {
-            'is-invisible': !isLoading,
-          })}
-          type="button"
-        />
+        {isLoading && (
+          <button
+            className="button is-loading"
+            type="button"
+          />
+        )}
       </Fragment>
     )
   }

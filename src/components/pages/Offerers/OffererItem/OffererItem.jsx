@@ -6,7 +6,7 @@ import { UNAVAILABLE_ERROR_PAGE } from '../../../../utils/routes'
 import { pluralize } from '../../../../utils/pluralize'
 
 const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable }) => {
-  const { id, name, nOffers, isValidated } = offerer || {}
+  const { id, name, nOffers } = offerer || {}
   const showPath = `/structures/${id}`
 
   let createOfferLink = `/offres/creation?structure=${id}`
@@ -28,14 +28,6 @@ const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable
             {name}
           </Link>
         </p>
-        {!isValidated && (
-          <p
-            className="is-italic mb12"
-            id="offerer-item-validation"
-          >
-            {'Structure en cours de validation par l’équipe pass Culture.'}
-          </p>
-        )}
 
         <ul className="actions">
           <li id="create-offer-action">

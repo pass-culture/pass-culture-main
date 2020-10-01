@@ -57,6 +57,7 @@
   ul li {
     display: flex;
     flex-direction: row;
+    margin-bottom: rem(12px);
   }
 
   ul li span.li-number {

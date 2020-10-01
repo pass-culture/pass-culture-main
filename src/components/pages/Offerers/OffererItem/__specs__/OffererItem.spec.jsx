@@ -47,31 +47,6 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
   })
 
   describe('render', () => {
-    describe('when the offerer is waiting for approval', () => {
-      it('should display an activation status message', () => {
-        // given
-        props.offerer = {
-          id: 'AE',
-          name: 'Fake Name',
-          nOffers: 0,
-          isValidated: false,
-        }
-
-        // when
-        const wrapper = mount(
-          <Router history={history}>
-            <OffererItem {...props} />
-          </Router>
-        )
-        const offererInformation = wrapper.find('#offerer-item-validation')
-
-        // then
-        expect(offererInformation.text()).toBe(
-          'Structure en cours de validation par l’équipe pass Culture.'
-        )
-      })
-    })
-
     describe('navigate to offerer caret', () => {
       it('should be displayed with right link', () => {
         // given

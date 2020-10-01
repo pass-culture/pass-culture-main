@@ -12,7 +12,7 @@ const PendingOffererItem = ({ offerer }) => (
         {` (SIREN: ${formatSirenOrSiret(offerer.siren)})`}
       </p>
       <p
-        className="is-italic mb12"
+        className="validating-status"
         id="offerer-item-validation"
       >
         {'Rattachement en cours de validation'}

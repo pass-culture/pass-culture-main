@@ -1,0 +1,26 @@
+.col-66 {
+  $size: 65.5%;
+
+  flex: 1;
+  width: $size;
+  min-width: $size;
+  max-width: $size;
+}
+
+.col-50 {
+  $size: 47.5%;
+
+  flex: 1;
+  width: $size;
+  min-width: $size;
+  max-width: $size;
+}
+
+.col-33 {
+  $size: 31%;
+
+  flex: 1;
+  width: $size;
+  min-width: $size;
+  max-width: $size;
+}

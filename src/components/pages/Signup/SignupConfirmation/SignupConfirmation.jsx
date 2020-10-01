@@ -5,7 +5,7 @@ import { ROOT_PATH } from '../../../../utils/config'
 const SignupConfirmation = () => (
   <div className="hero">
     <div className="hero-body">
-      <div className="is-italic">
+      <div className="">
         <h1 className="title is-spaced is-1">
           {'Merci !'}
         </h1>
@@ -13,7 +13,7 @@ const SignupConfirmation = () => (
           {'Votre compte est en cours de création.'}
         </div>
         <div className="confirmation-text">
-          <span className="is-bold">
+          <span>
             {'Vous allez recevoir un lien de confirmation'}
           </span>
           {' par e-mail : cliquez sur ce lien pour confirmer la création de votre compte.'}
