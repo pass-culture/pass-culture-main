@@ -1,5 +1,5 @@
+import * as config from 'utils/config'
 import maintenanceReducer from '../maintenanceReducer'
-import * as config from '../../utils/config'
 
 describe('src | Reducers | Maintenance Reducer', () => {
   it('should have an initial state', () => {
@@ -14,6 +14,8 @@ describe('src | Reducers | Maintenance Reducer', () => {
 
   describe('when the configuration MAINTENANCE_PAGE_AVAILABLE is true', () => {
     beforeEach(() => {
+      // FIXME: we need to find a way to mock this configuration.
+      // eslint-disable-next-line no-import-assign, import/namespace
       config.MAINTENANCE_PAGE_AVAILABLE = true
     })
 
@@ -162,11 +164,12 @@ describe('src | Reducers | Maintenance Reducer', () => {
         })
       })
     })
-
   })
 
   describe('when the configuration MAINTENANCE_PAGE_AVAILABLE is false', () => {
     beforeEach(() => {
+      // FIXME: we need to find a way to mock this configuration.
+      // eslint-disable-next-line no-import-assign, import/namespace
       config.MAINTENANCE_PAGE_AVAILABLE = false
     })
 
@@ -315,6 +318,5 @@ describe('src | Reducers | Maintenance Reducer', () => {
         })
       })
     })
-
   })
 })
