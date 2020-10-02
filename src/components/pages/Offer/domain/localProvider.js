@@ -1,14 +1,16 @@
 const doesLastProviderExists = offer => offer !== null && offer.lastProvider
 
-const isTiteLiveOffer = (offer = null) => {
-  return doesLastProviderExists(offer)
-    ? offer.lastProvider.name.toLowerCase().includes('titelive')
-    : false
-}
+export const localProvidersNames = [
+  'fnac',
+  'leslibraires.fr',
+  'praxiel',
+  'titelive (epagine / place des libraires.com)',
+  'titelive stocks (epagine / place des libraires.com)',
+]
 
-const isLibrairesOffer = (offer = null) => {
+const isOfferFromStockProvider = (offer = null) => {
   return doesLastProviderExists(offer)
-    ? offer.lastProvider.name.toLowerCase() === 'leslibraires.fr'
+    ? localProvidersNames.includes(offer.lastProvider.name.toLowerCase())
     : false
 }
 
@@ -18,12 +20,4 @@ const isAllocineOffer = (offer = null) => {
     : false
 }
 
-const isFnacOffer = (offer = null) => {
-  return doesLastProviderExists(offer) ? offer.lastProvider.name.toLowerCase() === 'fnac' : false
-}
-
-const isPraxielOffer = (offer = null) => {
-  return doesLastProviderExists(offer) ? offer.lastProvider.name.toLowerCase() === 'praxiel' : false
-}
-
-export { isAllocineOffer, isLibrairesOffer, isTiteLiveOffer, isFnacOffer, isPraxielOffer }
+export { isAllocineOffer, isOfferFromStockProvider }

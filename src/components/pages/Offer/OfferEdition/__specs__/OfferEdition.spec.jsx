@@ -273,7 +273,7 @@ describe('components | OfferEdition', () => {
             isEvent: true,
             isThing: false,
             lastProvider: {
-              name: 'Titelive',
+              name: 'titelive (epagine / place des libraires.com)',
             },
             activeMediation: {
               id: 'MED',
@@ -651,7 +651,7 @@ describe('components | OfferEdition', () => {
           id: 'MED',
         },
         lastProvider: {
-          name: 'TiteLive Stocks',
+          name: 'titelive (epagine / place des libraires.com)',
         },
       }
 
@@ -661,7 +661,9 @@ describe('components | OfferEdition', () => {
       // then
       const localProviderInformationComponent = wrapper.find(LocalProviderInformation)
       expect(localProviderInformationComponent).toHaveLength(1)
-      expect(localProviderInformationComponent.prop('providerName')).toBe('titelive stocks')
+      expect(localProviderInformationComponent.prop('providerName')).toBe(
+        'titelive (epagine / place des libraires.com)'
+      )
       expect(localProviderInformationComponent.prop('offererId')).toBe('AZERT')
     })
 
@@ -670,7 +672,7 @@ describe('components | OfferEdition', () => {
         it('should not be possible to change stock values', () => {
           // given
           props.offer.lastProvider = {
-            name: 'Titelive',
+            name: 'titelive (epagine / place des libraires.com)',
           }
 
           // when

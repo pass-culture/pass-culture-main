@@ -30,13 +30,7 @@ import LocalProviderInformation from '../LocalProviderInformation/LocalProviderI
 import { OffererName } from './OffererName'
 import { getDurationInHours, getDurationInMinutes } from '../utils/duration'
 import { VenueName } from './VenueName'
-import {
-  isAllocineOffer,
-  isFnacOffer,
-  isLibrairesOffer,
-  isPraxielOffer,
-  isTiteLiveOffer,
-} from '../domain/localProvider'
+import { isAllocineOffer, isOfferFromStockProvider } from '../domain/localProvider'
 import { pluralize } from '../../../../utils/pluralize'
 
 const DURATION_LIMIT_TIME = 100
@@ -285,17 +279,8 @@ class OfferEdition extends PureComponent {
     const mediationId = get(get(offer, 'activeMediation'), 'id')
 
     const offerFromAllocine = isAllocineOffer(offer)
-    const offerFromLocalProvider =
-      isTiteLiveOffer(offer) ||
-      offerFromAllocine ||
-      isLibrairesOffer(offer) ||
-      isFnacOffer(offer) ||
-      isPraxielOffer(offer)
-    const offerFromNonEditableLocalProvider =
-      isTiteLiveOffer(offer) ||
-      isLibrairesOffer(offer) ||
-      isFnacOffer(offer) ||
-      isPraxielOffer(offer)
+    const offerFromLocalProvider = isOfferFromStockProvider(offer) || offerFromAllocine
+    const offerFromNonEditableLocalProvider = isOfferFromStockProvider(offer)
 
     const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
     const offererId = get(offerer, 'id')

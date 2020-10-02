@@ -1,6 +1,6 @@
 import { isAllocineOffer } from '../localProvider'
 
-describe('src | components | pages | Offer | utils | isAllocineOffer', () => {
+describe('src | isAllocineOffer', () => {
   it('should return true if last provider name is Allociné', () => {
     // given
     const offer = {

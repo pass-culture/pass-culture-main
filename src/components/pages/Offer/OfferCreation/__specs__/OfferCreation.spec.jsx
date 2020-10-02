@@ -629,7 +629,7 @@ describe('src | OfferCreation', () => {
             id: 'MED',
           },
           lastProvider: {
-            name: 'TiteLive Stocks',
+            name: 'Fnac',
           },
         }
 
@@ -639,7 +639,7 @@ describe('src | OfferCreation', () => {
         // then
         const localProviderInformationComponent = wrapper.find(LocalProviderInformation)
         expect(localProviderInformationComponent).toHaveLength(1)
-        expect(localProviderInformationComponent.prop('providerName')).toBe('titelive stocks')
+        expect(localProviderInformationComponent.prop('providerName')).toBe('fnac')
         expect(localProviderInformationComponent.prop('offererId')).toBe('AZERT')
       })
     })
@@ -678,7 +678,7 @@ describe('src | OfferCreation', () => {
         it('should not be possible to change stock values', () => {
           // given
           props.offer.lastProvider = {
-            name: 'Titelive',
+            name: 'titelive (epagine / place des libraires.com)',
           }
 
           // when
