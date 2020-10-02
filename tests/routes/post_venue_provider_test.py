@@ -1,17 +1,16 @@
 from unittest.mock import MagicMock, patch
 from unittest.mock import patch
 
-from tests.conftest import TestClient, clean_database
+
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_user, create_venue, create_venue_provider
-from tests.model_creators.provider_creators import activate_provider
+from unittest.mock import patch
 
 from infrastructure.container import api_libraires_stocks
 from local_providers import LibrairesStocks
 from models import ApiErrors, VenueProvider
 from repository import repository
 from tests.conftest import TestClient, clean_database
-from tests.model_creators.generic_creators import create_offerer, create_user, create_venue, create_venue_provider
+from tests.model_creators.generic_creators import create_allocine_pivot, create_offerer, create_user, create_venue, create_venue_provider
 from tests.model_creators.provider_creators import activate_provider
 from utils.config import API_ROOT_PATH
 from utils.human_ids import dehumanize, humanize
@@ -21,7 +20,7 @@ class Post:
     class Returns201:
         @pytest.mark.usefixtures("db_session")
         @patch('routes.venue_providers.subprocess.Popen')
-        @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
+        @patch('use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider')
         @patch('routes.venue_providers.find_by_id')
         def when_venue_provider_is_successfully_created(self,
                                                         stubbed_find_by_id,
@@ -66,15 +65,19 @@ class Post:
 
         @pytest.mark.usefixtures("db_session")
         @patch('routes.venue_providers.find_by_id')
+        @patch('routes.venue_providers.get_allocine_theaterId_for_venue')
         def when_add_allocine_stocks_provider_with_price_but_no_isDuo_config(self,
+                                                                             stubbed_get_theaterid_for_venue,
                                                                              stubbed_find_by_id,
                                                                              app):
             # Given
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer)
             user = create_user(is_admin=True, can_book_free_offers=False)
-            repository.save(venue, user)
+            allocine_pivot = create_allocine_pivot(siret=venue.siret)
+            repository.save(venue, user, allocine_pivot)
             stubbed_find_by_id.return_value = venue
+            stubbed_get_theaterid_for_venue.return_value = allocine_pivot.theaterId
 
             provider = activate_provider('AllocineStocks')
 
@@ -158,7 +161,7 @@ class Post:
             assert ['error received'] == response.json['errors']
 
         @pytest.mark.usefixtures("db_session")
-        @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
+        @patch('use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider')
         @patch('routes.venue_providers.find_by_id')
         def when_trying_to_add_existing_provider(self, stubbed_find_by_id, stubbed_check, app):
             # Given
@@ -282,7 +285,7 @@ class Post:
 
     class Returns422:
         @pytest.mark.usefixtures("db_session")
-        @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
+        @patch('use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider')
         @patch('routes.venue_providers.find_by_id')
         def when_provider_api_not_available(self, stubbed_find_by_id, stubbed_check, app):
             # Given
@@ -320,11 +323,11 @@ class Post:
 
     class ConnectProviderToVenueTest:
         @pytest.mark.usefixtures("db_session")
-        @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
+        @patch('use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider')
         @patch('routes.venue_providers.find_by_id')
-        @patch('routes.venue_providers.connect_provider_to_venue')
+        @patch('routes.venue_providers.connect_venue_to_provider')
         def should_inject_the_appropriate_repository_to_the_usecase(self,
-                                                                    mocked_connect_provider_to_venue,
+                                                                    mocked_connect_venue_to_provider,
                                                                     stubbed_find_by_id,
                                                                     stubbed_check, app):
             # Given
@@ -349,7 +352,7 @@ class Post:
             auth_request.post('/venueProviders', json=venue_provider_data)
 
             # Then
-            mocked_connect_provider_to_venue.assert_called_once_with(LibrairesStocks,
+            mocked_connect_venue_to_provider.assert_called_once_with(LibrairesStocks,
                                                                      api_libraires_stocks,
                                                                      {
                                                                          'providerId': humanize(provider.id),
@@ -357,19 +360,23 @@ class Post:
                                                                      }, stubbed_find_by_id)
 
         @pytest.mark.usefixtures("db_session")
-        @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
+        @patch('use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider')
+        @patch('routes.venue_providers.get_allocine_theaterId_for_venue')
         @patch('routes.venue_providers.find_by_id')
-        @patch('routes.venue_providers.connect_allocine_to_venue')
+        @patch('routes.venue_providers.connect_venue_to_allocine')
         def should_inject_no_repository_to_the_usecase_when_provider_is_not_concerned(self,
-                                                                                      mocked_connect_allocine_to_venue,
+                                                                                      mocked_connect_venue_to_allocine,
                                                                                       stubbed_find_by_id,
+                                                                                      stubbed_get_theaterId_for_venue,
                                                                                       stubbed_check, app):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
             venue = create_venue(offerer, siret='12345678912345')
+            allocine_pivot = create_allocine_pivot(siret=venue.siret)
             repository.save(venue, user)
             stubbed_find_by_id.return_value = venue
+            stubbed_get_theaterId_for_venue.return_value = allocine_pivot.theaterId
 
             provider = activate_provider('AllocineStocks')
 
@@ -386,7 +393,9 @@ class Post:
             auth_request.post('/venueProviders', json=venue_provider_data)
 
             # Then
-            mocked_connect_allocine_to_venue.assert_called_once_with({
+            mocked_connect_venue_to_allocine.assert_called_once_with({
                 'providerId': humanize(provider.id),
                 'venueId': humanize(venue.id)
-            }, stubbed_find_by_id)
+            },
+                stubbed_find_by_id,
+                stubbed_get_theaterId_for_venue)

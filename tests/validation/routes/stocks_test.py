@@ -359,8 +359,10 @@ class CheckStockIsUpdatableTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
+        provider = get_provider_by_local_class('PraxielStocks')
+        offer = create_offer_with_thing_product(venue, last_provider_id=provider.id, last_provider=provider)
         three_days_ago = datetime.utcnow() + timedelta(days=-3)
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, beginning_datetime=three_days_ago, booking_limit_datetime=three_days_ago)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, beginning_datetime=three_days_ago, booking_limit_datetime=three_days_ago, offer_id=offer.id)
 
         # When
         with pytest.raises(ApiErrors) as error:

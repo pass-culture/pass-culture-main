@@ -17,12 +17,12 @@ ERROR_CODE_PROVIDER_NOT_SUPPORTED = 400
 ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 
 
-def connect_provider_to_venue(provider_class: object,
+def connect_venue_to_provider(provider_class: object,
                               stock_provider_repository: StockProviderRepository,
                               venue_provider_payload: Dict,
-                              find_by_id: Callable) -> VenueProvider:
+                              find_venue_by_id: Callable) -> VenueProvider:
     venue_id = dehumanize(venue_provider_payload['venueId'])
-    venue = find_by_id(venue_id)
+    venue = find_venue_by_id(venue_id)
     check_existing_venue(venue)
     if provider_class in STANDARD_STOCK_PROVIDERS:
         _check_venue_can_be_synchronized_with_provider(venue.siret,

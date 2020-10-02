@@ -1,4 +1,4 @@
-import re
+from enum import Enum
 from typing import Dict, List
 
 from models import ApiErrors, OfferSQLEntity, StockSQLEntity
@@ -11,14 +11,26 @@ def check_stocks_are_editable_for_offer(offer: OfferSQLEntity) -> None:
         raise api_errors
 
 
-def check_stock_is_updatable(stock: StockSQLEntity) -> None:
-    local_provider_names = '(TiteLive|Fnac|Libraires|Praxiel)'
+class LocalProviderNames(Enum):
+    titelive = 'TiteLiveStocks'
+    titeliveThings = 'TiteLiveThings'
+    fnac = 'FnacStocks'
+    libraires = 'LibrairesStocks'
+    praxiel = 'PraxielStocks'
 
+
+def _is_stocks_provider_generated_offer(local_class: str) -> bool:
+    for local_provider in LocalProviderNames:
+        if local_provider.value == local_class:
+            return True
+    return False
+
+
+def check_stock_is_updatable(stock: StockSQLEntity) -> None:
     local_class = stock.offer.lastProvider.localClass if stock.offer.lastProvider else ''
     is_from_provider = stock.offer.isFromProvider is True
-    is_stocks_provider_generated_offer = re.search(local_provider_names, local_class)
 
-    if is_from_provider and is_stocks_provider_generated_offer:
+    if is_from_provider and _is_stocks_provider_generated_offer(local_class):
         api_errors = ApiErrors()
         api_errors.add_error('global', 'Les offres importées ne sont pas modifiables')
         raise api_errors

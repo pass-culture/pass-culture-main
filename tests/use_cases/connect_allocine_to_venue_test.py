@@ -4,15 +4,16 @@ from unittest.mock import MagicMock
 from models import AllocineVenueProvider, AllocineVenueProviderPriceRule
 from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_venue
+from tests.model_creators.generic_creators import create_allocine_pivot, create_offerer, create_venue
 from tests.model_creators.provider_creators import activate_provider
-from use_cases.connect_provider_allocine_to_venue import connect_allocine_to_venue
+from use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 from utils.human_ids import humanize
 
 
 class ConnectAllocineToVenueTest:
     def setup_class(self):
         self.find_by_id = MagicMock()
+        self.get_theaterid_for_venue = MagicMock()
 
     @clean_database
     def should_connect_venue_to_allocine_provider(self, app):
@@ -20,12 +21,12 @@ class ConnectAllocineToVenueTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         provider = activate_provider('AllocineStocks')
+        allocine_pivot = create_allocine_pivot(siret=venue.siret)
 
-        repository.save(venue)
+        repository.save(venue, allocine_pivot)
 
-        self.find_by_id.return_value = \
- \
-            self.find_by_id.return_value = venue
+        self.find_by_id.return_value = venue
+        self.get_theaterid_for_venue.return_value = allocine_pivot.theaterId
 
         venue_provider_payload = {
             'providerId': humanize(provider.id),
@@ -36,7 +37,9 @@ class ConnectAllocineToVenueTest:
         }
 
         # When
-        connect_allocine_to_venue(venue_provider_payload, self.find_by_id)
+        connect_venue_to_allocine(venue_provider_payload,
+                                  self.find_by_id,
+                                  self.get_theaterid_for_venue)
 
         # Then
         allocine_venue_provider = AllocineVenueProvider.query.one()

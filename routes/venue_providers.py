@@ -11,11 +11,12 @@ from local_providers import FnacStocks, LibrairesStocks, PraxielStocks, Allocine
 from local_providers.titelive_stocks.titelive_stocks import TiteLiveStocks
 from models.api_errors import ApiErrors
 from models.venue_provider import VenueProvider
+from repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
 from repository.venue_queries import find_by_id
 from repository.provider_queries import get_provider_enabled_for_pro_by_id
 from routes.serialization import as_dict
-from use_cases.connect_provider_allocine_to_venue import connect_allocine_to_venue
-from use_cases.connect_provider_to_venue import connect_provider_to_venue
+from use_cases.connect_venue_to_allocine import connect_venue_to_allocine
+from use_cases.connect_venue_to_provider import connect_venue_to_provider
 from utils.config import API_ROOT_PATH
 from utils.human_ids import dehumanize
 from utils.includes import VENUE_PROVIDER_INCLUDES
@@ -60,11 +61,12 @@ def create_venue_provider():
 
     provider_class = getattr(local_providers, provider.localClass)
     if provider_class == AllocineStocks:
-        new_venue_provider = connect_allocine_to_venue(venue_provider_payload,
-                                                       find_by_id)
+        new_venue_provider = connect_venue_to_allocine(venue_provider_payload,
+                                                       find_by_id,
+                                                       get_allocine_theaterId_for_venue)
     else:
         stock_provider_repository = _get_stock_provider_repository(provider_class)
-        new_venue_provider = connect_provider_to_venue(provider_class,
+        new_venue_provider = connect_venue_to_provider(provider_class,
                                                        stock_provider_repository,
                                                        venue_provider_payload,
                                                        find_by_id)
