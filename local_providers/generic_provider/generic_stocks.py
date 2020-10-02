@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Callable, List
+from typing import Any, Callable, List
 
 from sqlalchemy import Sequence
 
@@ -18,6 +18,7 @@ class GenericStocks(LocalProvider):
     def __init__(self,
                  venue_provider: VenueProvider,
                  get_provider_stock_information: Callable,
+                 price_divider_to_euro: int,
                  **options):
         super().__init__(venue_provider, **options)
         self.get_provider_stock_information = get_provider_stock_information
@@ -28,6 +29,7 @@ class GenericStocks(LocalProvider):
         self.modified_since = venue_provider.lastSyncDate
         self.product = None
         self.offer_id = None
+        self.price_divider_to_euro = price_divider_to_euro
 
     def __next__(self) -> List[ProvidableInfo]:
         try:
@@ -79,8 +81,14 @@ class GenericStocks(LocalProvider):
         stock.quantity = self.provider_stocks['available'] + bookings_quantity
         stock.bookingLimitDatetime = None
         stock.offerId = self.offer_id
-        stock.price = self.provider_stocks['price']
+        stock.price = _fill_stock_price(int(self.provider_stocks['price']), self.price_divider_to_euro)
+        stock.dateModified = datetime.now()
 
-    def get_next_offer_id_from_sequence(self):
+    @staticmethod
+    def get_next_offer_id_from_sequence():
         sequence = Sequence('offer_id_seq')
         return db.session.execute(sequence)
+
+
+def _fill_stock_price(provider_stock_price: int, price_divider: int) -> float:
+    return provider_stock_price / price_divider

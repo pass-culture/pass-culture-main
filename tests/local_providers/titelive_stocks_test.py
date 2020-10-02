@@ -147,7 +147,8 @@ class TiteliveStocksTest:
             titelive_stocks_provider = activate_provider('TiteLiveStocks')
             venue_provider = create_venue_provider(venue,
                                                    titelive_stocks_provider, is_active=True,
-                                                   venue_id_at_offer_provider='77567146400110')
+                                                   venue_id_at_offer_provider='77567146400110',
+                                                   last_sync_date=datetime(2020, 2, 4))
             product = create_product_with_thing_type(id_at_providers='0002730757438')
             offer = create_offer_with_thing_product(venue, product=product,
                                                     id_at_providers='0002730757438@77567146400110')
@@ -374,7 +375,7 @@ class TiteliveStocksTest:
 
             # Then
             assert stub_get_stocks_information.call_count == 2
-            assert titelive_stocks.last_seen_isbn == "0002736409898"
+            assert titelive_stocks.last_processed_isbn == "0002736409898"
 
         @clean_database
         @patch('local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
