@@ -1,4 +1,5 @@
-import React, { useCallback, useState } from 'react'
+import PropTypes from 'prop-types'
+import React, { useCallback, useEffect, useState } from 'react'
 import InputMask from 'react-input-mask'
 
 import BackLink from '../../layout/Header/BackLink/BackLink'
@@ -13,7 +14,7 @@ import IneligibleUnderEighteen from './IneligibleUnderEighteen/IneligibleUnderEi
 import { RecaptchaNotice } from './RecaptchaNotice'
 import { useReCaptchaScript } from './utils/recaptcha'
 
-const EligibilityCheck = () => {
+const EligibilityCheck = ({ history }) => {
   useReCaptchaScript()
   const [postalCodeInputValue, setPostalCodeInputValue] = useState('')
   const [dateOfBirthInputValue, setDateOfBirthInputValue] = useState('')
@@ -44,6 +45,14 @@ const EligibilityCheck = () => {
     return isDateFormatValid && birthYear <= currentYear && birthYear !== '0000'
   }
 
+  useEffect(() => {
+    const script = document.createElement('script')
+
+    script.src = '/ebOneTag.js'
+
+    document.querySelector('body').appendChild(script)
+  }, [])
+
   const handleSubmit = useCallback(
     event => {
       event.preventDefault()
@@ -65,17 +74,34 @@ const EligibilityCheck = () => {
 
   switch (componentToRender) {
     case ELIGIBILITY_VALUES.ELIGIBLE:
-      return checkIfDepartmentIsEligible(postalCodeInputValue) ? (
-        <Eligible />
-      ) : (
-        <DepartmentEligibleSoon
-          birthDate={dateOfBirthInputValue}
-          postalCode={postalCodeInputValue}
-        />
-      )
+      if (checkIfDepartmentIsEligible(postalCodeInputValue)) {
+        return <Eligible />
+      } else {
+        if (history.location.hash !== '#departement-ineligible') {
+          history.replace({
+            hash: '#departement-ineligible',
+          })
+        }
+        return (
+          <DepartmentEligibleSoon
+            birthDate={dateOfBirthInputValue}
+            postalCode={postalCodeInputValue}
+          />
+        )
+      }
     case ELIGIBILITY_VALUES.TOO_YOUNG:
+      if (history.location.hash !== '#trop-jeune') {
+        history.replace({
+          hash: '#trop-jeune',
+        })
+      }
       return <IneligibleUnderEighteen />
     case ELIGIBILITY_VALUES.TOO_OLD:
+      if (history.location.hash !== '#trop-age') {
+        history.replace({
+          hash: '#trop-age',
+        })
+      }
       return <IneligibleOverEighteen />
     case ELIGIBILITY_VALUES.SOON:
       return (
@@ -85,6 +111,11 @@ const EligibilityCheck = () => {
         />
       )
     default:
+      if (history.location.hash !== '') {
+        history.replace({
+          hash: '',
+        })
+      }
       return (
         <main className="eligibility-check-page">
           <BackLink backTo="/beta" />
@@ -142,6 +173,10 @@ const EligibilityCheck = () => {
         </main>
       )
   }
+}
+
+EligibilityCheck.propTypes = {
+  history: PropTypes.shape().isRequired,
 }
 
 export default EligibilityCheck

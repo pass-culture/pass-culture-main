@@ -23,10 +23,19 @@ jest.mock('../domain/checkIfDepartmentIsEligible', () => {
 })
 
 describe('eligibility check page', () => {
+  let props
   const getFullYear = Date.prototype.getFullYear
 
   beforeEach(() => {
     Date.prototype.getFullYear = () => 2020
+    props = {
+      history: {
+        location: {
+          hash: '',
+        },
+        replace: jest.fn(),
+      },
+    }
   })
 
   afterEach(() => {
@@ -38,7 +47,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck />
+          <EligibilityCheck {...props} />
         </MemoryRouter>
       )
 
@@ -51,7 +60,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck />
+          <EligibilityCheck {...props} />
         </MemoryRouter>
       )
 
@@ -64,15 +73,12 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck />
+          <EligibilityCheck {...props} />
         </MemoryRouter>
       )
 
       // then
-      const eligibilityPostalCodeInputLabel = wrapper
-        .find('label')
-        .at(0)
-        .text()
+      const eligibilityPostalCodeInputLabel = wrapper.find('label').at(0).text()
       expect(eligibilityPostalCodeInputLabel).toBe('Quel est ton code postal de résidence ?')
     })
 
@@ -80,15 +86,12 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck />
+          <EligibilityCheck {...props} />
         </MemoryRouter>
       )
 
       // then
-      const eligibilityDobInputLabel = wrapper
-        .find('label')
-        .at(1)
-        .text()
+      const eligibilityDobInputLabel = wrapper.find('label').at(1).text()
       expect(eligibilityDobInputLabel).toBe('Quelle est ta date de naissance ?')
     })
 
@@ -96,7 +99,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck />
+          <EligibilityCheck {...props} />
         </MemoryRouter>
       )
 
@@ -111,13 +114,47 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck />
+          <EligibilityCheck {...props} />
         </MemoryRouter>
       )
 
       // then
       const eligibilitySubmitBtn = wrapper.find('input[value="Vérifier mon éligibilité"]')
       expect(eligibilitySubmitBtn).toHaveLength(1)
+    })
+
+    it('should not have a hash in url', () => {
+      // given
+      props.history.location.hash = '#fake-hash'
+
+      // when
+      mount(
+        <MemoryRouter>
+          <EligibilityCheck {...props} />
+        </MemoryRouter>
+      )
+
+      // then
+      expect(props.history.replace).toHaveBeenCalledWith({ hash: '' })
+    })
+
+    it('should append tag script', () => {
+      // given
+      jest.spyOn(document, 'querySelector').mockReturnValue({
+        appendChild: jest.fn(),
+      })
+      const script = document.createElement('script')
+      script.src = '/ebOneTag.js'
+
+      // when
+      mount(
+        <MemoryRouter>
+          <EligibilityCheck {...props} />
+        </MemoryRouter>
+      )
+
+      // then
+      expect(document.querySelector('body').appendChild).toHaveBeenCalledWith(script)
     })
   })
 
@@ -126,7 +163,7 @@ describe('eligibility check page', () => {
       // given
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck />
+          <EligibilityCheck {...props} />
         </MemoryRouter>
       )
       const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
@@ -146,7 +183,7 @@ describe('eligibility check page', () => {
       // given
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck />
+          <EligibilityCheck {...props} />
         </MemoryRouter>
       )
       const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
@@ -168,7 +205,7 @@ describe('eligibility check page', () => {
       // given
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck />
+          <EligibilityCheck {...props} />
         </MemoryRouter>
       )
 
@@ -205,7 +242,7 @@ describe('eligibility check page', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck />
+            <EligibilityCheck {...props} />
           </MemoryRouter>
         )
 
@@ -239,7 +276,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck />
+            <EligibilityCheck {...props} />
           </MemoryRouter>
         )
 
@@ -272,7 +309,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck />
+            <EligibilityCheck {...props} />
           </MemoryRouter>
         )
 
@@ -299,6 +336,7 @@ describe('eligibility check page', () => {
         expect(
           wrapper.find({ children: 'Bientôt disponible dans ton département !' })
         ).toHaveLength(1)
+        expect(props.history.replace).toHaveBeenCalledWith({ hash: '#departement-ineligible' })
       })
     })
 
@@ -313,7 +351,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck />
+            <EligibilityCheck {...props} />
           </MemoryRouter>
         )
 
@@ -346,7 +384,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck />
+            <EligibilityCheck {...props} />
           </MemoryRouter>
         )
 
@@ -371,6 +409,7 @@ describe('eligibility check page', () => {
 
         // then
         expect(wrapper.find({ children: 'Tu as plus de 18 ans' })).toHaveLength(1)
+        expect(props.history.replace).toHaveBeenCalledWith({ hash: '#trop-age' })
       })
 
       it('should display ineligible under eighteen view when user is not eligible yet', () => {
@@ -379,7 +418,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck />
+            <EligibilityCheck {...props} />
           </MemoryRouter>
         )
 
@@ -409,6 +448,7 @@ describe('eligibility check page', () => {
               'Il est encore un peu tôt pour toi. Pour profiter du pass Culture, tu dois avoir 18 ans.',
           })
         ).toHaveLength(1)
+        expect(props.history.replace).toHaveBeenCalledWith({ hash: '#trop-jeune' })
       })
     })
 
@@ -421,7 +461,7 @@ describe('eligibility check page', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck />
+            <EligibilityCheck {...props} />
           </MemoryRouter>
         )
 
@@ -452,7 +492,7 @@ describe('eligibility check page', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck />
+            <EligibilityCheck {...props} />
           </MemoryRouter>
         )
 
@@ -483,7 +523,7 @@ describe('eligibility check page', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck />
+            <EligibilityCheck {...props} />
           </MemoryRouter>
         )
 
@@ -514,7 +554,7 @@ describe('eligibility check page', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck />
+            <EligibilityCheck {...props} />
           </MemoryRouter>
         )
 

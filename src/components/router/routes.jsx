@@ -1,28 +1,27 @@
+import { IS_DEBUG_PAGE_ACTIVE } from '../../utils/config'
 import { IcoNavBookings } from '../layout/NavBar/Icons/IcoNavBookings'
 import { IcoNavDebug } from '../layout/NavBar/Icons/IcoNavDebug'
 import { IcoNavDiscovery } from '../layout/NavBar/Icons/IcoNavDiscovery'
 import { IcoNavFavorites } from '../layout/NavBar/Icons/IcoNavFavorites'
+import { IcoNavHome } from '../layout/NavBar/Icons/IcoNavHome'
 import { IcoNavProfile } from '../layout/NavBar/Icons/IcoNavProfile'
 import { IcoNavSearch } from '../layout/NavBar/Icons/IcoNavSearch'
 import ActivationContainer from '../pages/activation/ActivationContainer'
 import BetaPageContainer from '../pages/beta-page/BetaPageContainer'
-import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
+import EligibilityCheckContainer from '../pages/create-account/EligibilityCheckContainer'
+import Debug from '../pages/debug/DebugPage'
 import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
-import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
 import ForgotPassword from '../pages/forgot-password/ForgotPassword'
+import HomeContainer from '../pages/home/HomeContainer'
+import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
+import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
 import OfferContainer from '../pages/offer/OfferContainer'
 import ProfileContainer from '../pages/profile/ProfileContainer'
-import SignupContainer from '../pages/signup/SignupContainer'
 import SearchContainer from '../pages/search/SearchContainer'
 import SignInContainer from '../pages/signin/SignInContainer'
+import SignupContainer from '../pages/signup/SignupContainer'
 import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
 import TypeFormContainer from '../pages/typeform/TypeformContainer'
-import EligibilityCheck from '../pages/create-account/EligibilityCheck'
-import Debug from '../pages/debug/DebugPage'
-
-import { IS_DEBUG_PAGE_ACTIVE } from '../../utils/config'
-import HomeContainer from '../pages/home/HomeContainer'
-import { IcoNavHome } from '../layout/NavBar/Icons/IcoNavHome'
 
 let routes = [
   {
@@ -55,7 +54,7 @@ let routes = [
     title: 'Inscription',
   },
   {
-    component: EligibilityCheck,
+    component: EligibilityCheckContainer,
     exact: true,
     path: '/verification-eligibilite',
     title: 'Eligibilité',
