@@ -1,7 +1,8 @@
-export default function setupBatchSDK(userId) {
-  const config = {
-    batchIsEnabled: process.env.BATCH_IS_ENABLED,
-  }
+const config = {
+  batchIsEnabled: process.env.BATCH_IS_ENABLED,
+}
+
+export default function setupBatchSDK() {
   if (config.batchIsEnabled === 'true') {
     getBatchSDK()
     const batchSDKUIConfig = {
@@ -36,9 +37,14 @@ export default function setupBatchSDK(userId) {
     window.batchSDK(api => {
       api.ui.show('alert')
     })
+  }
+}
 
+export const setCustomUserId = userId => {
+  if (config.batchIsEnabled === 'true') {
+    getBatchSDK()
     /* eslint-disable-next-line */
-    window.batchSDK(function(api) {
+    window.batchSDK(function (api) {
       api.setCustomUserID(userId)
     })
   }
@@ -47,11 +53,11 @@ export default function setupBatchSDK(userId) {
 export const getBatchSDK = () => {
   /* Load remote Batch SDK JavaScript code */
   /* eslint-disable-next-line */
-  ;(function(b, a, t, c, h, e, r) {
+  ;(function (b, a, t, c, h, e, r) {
     h = 'batchSDK'
     b[h] =
       b[h] ||
-      function() {
+      function () {
         /* eslint-disable-next-line */
         ;(b[h].q = b[h].q || []).push(arguments)
       }

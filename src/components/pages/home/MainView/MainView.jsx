@@ -18,7 +18,7 @@ import OfferDetailsContainer from './OfferDetails/OfferDetailsContainer'
 import Icon from '../../../layout/Icon/Icon'
 import Profile from '../Profile/Profile'
 import User from '../Profile/ValueObjects/User'
-import setUpBatchSDK from '../../../../notifications/setUpBatchSDK'
+import { setCustomUserId } from '../../../../notifications/setUpBatchSDK'
 
 class MainView extends Component {
   constructor(props) {
@@ -35,7 +35,7 @@ class MainView extends Component {
     const { history, updateCurrentUser, user } = this.props
     const queryParams = parse(history.location.search)
 
-    setUpBatchSDK(user.id)
+    setCustomUserId(user.id)
 
     updateCurrentUser({
       lastConnectionDate: new Date(),

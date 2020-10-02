@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Form } from 'react-final-form'
 import { Link } from 'react-router-dom'
+import setUpBatchSDK from '../../../notifications/setUpBatchSDK'
 import EmailField from '../../forms/inputs/EmailField'
 import PasswordField from '../../forms/inputs/PasswordField'
 import canSubmitForm from './utils/canSubmitForm'
@@ -11,6 +12,10 @@ import parseSubmitErrors from '../../forms/utils/parseSubmitErrors'
 class SignIn extends PureComponent {
   constructor(props) {
     super(props)
+  }
+
+  componentDidMount() {
+    setUpBatchSDK()
   }
 
   handleFail = formResolver => (state, action) => {
