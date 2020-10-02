@@ -8,7 +8,7 @@ import Icon from '../../layout/Icon/Icon'
 const BetaPage = ({ trackSignup }) => {
   useEffect(() => {
     setUpBatchSDK()
-  })
+  }, [])
 
   return (
     <div className="beta-page">
