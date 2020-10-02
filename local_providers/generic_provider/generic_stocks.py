@@ -1,11 +1,11 @@
 from datetime import datetime
-from typing import List, Callable
+from typing import Callable, List
 
 from sqlalchemy import Sequence
 
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
-from models import VenueProvider, OfferSQLEntity, StockSQLEntity
+from models import OfferSQLEntity, StockSQLEntity, VenueProvider
 from models.db import Model, db
 from repository import product_queries
 from repository.booking_queries import count_not_cancelled_bookings_quantity_by_stock_id
@@ -18,7 +18,6 @@ class GenericStocks(LocalProvider):
     def __init__(self,
                  venue_provider: VenueProvider,
                  get_provider_stock_information: Callable,
-                 read_last_sync_date: Callable,
                  **options):
         super().__init__(venue_provider, **options)
         self.get_provider_stock_information = get_provider_stock_information
@@ -26,7 +25,7 @@ class GenericStocks(LocalProvider):
         self.siret = self.venue.siret
         self.last_processed_isbn = ''
         self.stock_data = iter([])
-        self.modified_since = read_last_sync_date(venue_provider.lastSyncDate)
+        self.modified_since = venue_provider.lastSyncDate
         self.product = None
         self.offer_id = None
 
