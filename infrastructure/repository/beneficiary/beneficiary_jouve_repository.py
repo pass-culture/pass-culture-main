@@ -1,7 +1,7 @@
 import datetime
 import os
 
-from jsonschema.validators import requests
+import requests
 
 from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
