@@ -13,7 +13,9 @@ jest.mock('../../../../vendor/contentful/contentful', () => ({
 jest.mock('../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
 }))
-jest.mock('../../../../notifications/setUpBatchSDK', () => jest.fn())
+jest.mock('../../../../notifications/setUpBatchSDK', () => ({
+  setCustomUserId: jest.fn(),
+}))
 
 describe('src | components | home', () => {
   let props

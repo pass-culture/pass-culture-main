@@ -5,18 +5,27 @@ const config = {
 export default function setupBatchSDK() {
   if (config.batchIsEnabled === 'true') {
     getBatchSDK()
-    const batchSDKUIConfig = {
-      alert: {
-        attach: 'top center',
-        autoShow: false,
-        btnWidth: '200',
-        positiveSubBtnLabel: 'Activer les notifications',
-        negativeBtnLabel: 'Plus tard',
-        positiveBtnStyle: { backgroundColor: '#eb0055', hoverBackgroundColor: '#c10046' },
-        icon: 'favicon.ico',
-        text:
-          'Découvre les nouvelles offres en exclusivité sur ton pass en activant les notifications !',
-      },
+
+    /* Initiate Batch SDK opt-in UI configuration (native prompt) */
+    let batchSDKUIConfig = {
+      native: {},
+    }
+
+    /* Use a specific configuration for the Firefox web browser (custom prompt) */
+    if (navigator.userAgent.indexOf('Firefox') !== -1) {
+      batchSDKUIConfig = {
+        alert: {
+          attach: 'top center',
+          autoShow: false,
+          btnWidth: '200',
+          positiveSubBtnLabel: 'Activer les notifications',
+          negativeBtnLabel: 'Plus tard',
+          positiveBtnStyle: { backgroundColor: '#eb0055', hoverBackgroundColor: '#c10046' },
+          icon: 'favicon.ico', // To be updated according to https://doc.batch.com/web/sdk-integration/initial-setup#icons
+          text:
+            'Découvre les nouvelles offres en exclusivité sur ton pass en activant les notifications !',
+        },
+      }
     }
 
     /* Finalize the Batch SDK setup */

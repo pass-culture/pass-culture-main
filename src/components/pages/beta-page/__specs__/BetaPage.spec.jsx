@@ -3,9 +3,12 @@ import { mount, shallow } from 'enzyme'
 
 import BetaPage from '../BetaPage'
 import FormFooter from '../../../forms/FormFooter'
-import { Router } from 'react-router'
+import { MemoryRouter, Router } from 'react-router'
 import { createBrowserHistory } from 'history'
 import Icon from '../../../layout/Icon/Icon'
+import setupBatchSDK from '../../../../notifications/setUpBatchSDK'
+
+jest.mock('../../../../notifications/setUpBatchSDK', () => jest.fn())
 
 describe('components | BetaPage', () => {
   it('should render page component with pass culture information', () => {
@@ -79,5 +82,17 @@ describe('components | BetaPage', () => {
 
     // then
     expect(wrapper.prop('history').location.pathname).toBe('/connexion')
+  })
+
+  it('should have called batchSDK setup to enable notifications', () => {
+    // when
+    mount(
+      <MemoryRouter>
+        <BetaPage trackSignup={jest.fn()} />
+      </MemoryRouter>
+    )
+
+    // then
+    expect(setupBatchSDK).toHaveBeenCalledWith()
   })
 })

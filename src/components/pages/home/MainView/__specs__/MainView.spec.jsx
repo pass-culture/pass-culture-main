@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom'
 import Icon from '../../../../layout/Icon/Icon'
 import { Provider } from 'react-redux'
 import { getStubStore } from '../../../../../utils/stubStore'
-import setupBatchSDK from '../../../../../notifications/setUpBatchSDK'
+import { setCustomUserId } from '../../../../../notifications/setUpBatchSDK'
 
 jest.mock('../Module/domain/buildTiles', () => ({
   buildPairedTiles: jest.fn().mockReturnValue([]),
@@ -36,7 +36,9 @@ jest.mock('../../../../../vendor/algolia/algolia', () => ({
 jest.mock('../domain/parseAlgoliaParameters', () => ({
   parseAlgoliaParameters: jest.fn().mockReturnValue({}),
 }))
-jest.mock('../../../../../notifications/setUpBatchSDK', () => jest.fn())
+jest.mock('../../../../../notifications/setUpBatchSDK', () => ({
+  setCustomUserId: jest.fn(),
+}))
 
 describe('src | components | MainView', () => {
   let props
@@ -274,7 +276,7 @@ describe('src | components | MainView', () => {
     expect(props.updateCurrentUser).toHaveBeenCalledTimes(1)
   })
 
-  it('should have called batchSDK setup with userId to enable notifications', () => {
+  it('should have called batchSDK custom id setup with userId to enable notifications', () => {
     // given
     props.user = new User({
       email: 'john.doe@example.fr',
@@ -297,7 +299,7 @@ describe('src | components | MainView', () => {
     )
 
     // then
-    expect(setupBatchSDK).toHaveBeenCalledWith('myID')
+    expect(setCustomUserId).toHaveBeenCalledWith('myID')
   })
 
   describe('modules tracking', () => {
