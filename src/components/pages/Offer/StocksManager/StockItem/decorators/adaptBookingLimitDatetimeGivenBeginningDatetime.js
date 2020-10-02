@@ -1,5 +1,4 @@
-import moment from 'moment'
-import 'moment-timezone'
+import moment from 'moment-timezone'
 
 import createDecorator from 'final-form-calculate'
 import createCachedSelector from 're-reselect'

@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import DatePicker from 'react-datepicker'
@@ -156,7 +156,7 @@ DateField.defaultProps = {
   locale: 'fr',
   placeholder: 'Please enter a value',
   readOnly: false,
-  renderValue: function() {
+  renderValue: function () {
     return null
   },
   required: false,

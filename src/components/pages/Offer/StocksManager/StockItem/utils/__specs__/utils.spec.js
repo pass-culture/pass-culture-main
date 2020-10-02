@@ -1,6 +1,5 @@
-import moment from 'moment'
+import moment from 'moment-timezone'
 import 'moment/locale/fr'
-import 'moment-timezone'
 
 import {
   getDatetimeOneDayAfter,

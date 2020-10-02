@@ -1,6 +1,5 @@
 import createDecorator from 'final-form-calculate'
-import moment from 'moment'
-import 'moment-timezone'
+import moment from 'moment-timezone'
 import createCachedSelector from 're-reselect'
 
 function mapArgsToCacheKey({ timeName, dateName, timezone }) {
@@ -27,10 +26,7 @@ export const updateDateFieldWithTime = (
     }
 
     const [hour, minutes] = time.split(':')
-    const updatedDate = dateMoment
-      .hours(hour)
-      .minutes(minutes)
-      .toISOString()
+    const updatedDate = dateMoment.hours(hour).minutes(minutes).toISOString()
 
     return {
       [dateName]: updatedDate,
@@ -66,10 +62,7 @@ export const updateTimeField = (time, doublonTimeName, allValues, timezone, time
   }
 
   const [hour, minutes] = time.split(':')
-  const updatedDate = previousDateMoment
-    .hours(hour)
-    .minutes(minutes)
-    .toISOString()
+  const updatedDate = previousDateMoment.hours(hour).minutes(minutes).toISOString()
 
   return {
     [dateName]: updatedDate,

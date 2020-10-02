@@ -1,5 +1,3 @@
-import 'moment-timezone'
-
 import { updateDateFieldWithTime, updateTimeField } from '../bindTimeFieldWithDateField'
 
 const europeTimezone = 'Europe/Paris'

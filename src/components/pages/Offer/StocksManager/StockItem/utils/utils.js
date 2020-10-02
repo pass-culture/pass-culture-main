@@ -1,4 +1,4 @@
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 export const getFormattedRemainingQuantities = (quantity, bookingsCount) => {
   const isUnlimitedWithoutTypingValue = quantity === null
@@ -17,9 +17,7 @@ export const DEFAULT_BEGINNING_DATE_TIME_HOURS = 20
 export const DEFAULT_BEGINNING_DATE_TIME_MINUTES = 0
 
 export function getDatetimeOneDayAfter(datetime) {
-  return moment(datetime)
-    .add(1, 'day')
-    .toISOString()
+  return moment(datetime).add(1, 'day').toISOString()
 }
 
 export function getDatetimeAtSpecificHoursAndMinutes(datetime, hours, minutes, timezone) {
@@ -27,10 +25,7 @@ export function getDatetimeAtSpecificHoursAndMinutes(datetime, hours, minutes, t
   if (timezone) {
     datetimeMoment = datetimeMoment.tz(timezone)
   }
-  return datetimeMoment
-    .hours(hours)
-    .minutes(minutes)
-    .toISOString()
+  return datetimeMoment.hours(hours).minutes(minutes).toISOString()
 }
 
 export function errorKeyToFrenchKey(errorKey) {
