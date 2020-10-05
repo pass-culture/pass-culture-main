@@ -1,15 +1,15 @@
 import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
-import React, { PureComponent, Fragment } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import Main from '../../layout/Main'
+import Spinner from '../../layout/Spinner'
 
 import Titles from '../../layout/Titles/Titles'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
-import Spinner from '../../layout/Spinner'
 
 export const createLinkToOfferCreation = (venueId, offererId) => {
   let createOfferTo = `/offres/creation`
@@ -29,7 +29,7 @@ class Offers extends PureComponent {
   constructor(props) {
     super(props)
 
-    const { name: nameKeywords, page, venueId } = translateQueryParamsToApiParams(
+    const { name: nameKeywords, page, venueId: selectedVenue } = translateQueryParamsToApiParams(
       props.query.parse()
     )
 
@@ -38,7 +38,7 @@ class Offers extends PureComponent {
       nameSearchValue: nameKeywords || '',
       page: page || 1,
       pageCount: null,
-      venueId: venueId,
+      selectedVenue: selectedVenue,
     }
   }
 
@@ -55,18 +55,18 @@ class Offers extends PureComponent {
 
   updateUrlMatchingState = () => {
     const { query } = this.props
-    const { page, nameSearchValue, venueId } = this.state
+    const { page, nameSearchValue, selectedVenue } = this.state
 
     query.change({
       page: page,
       [mapApiToBrowser.name]: nameSearchValue === '' ? null : nameSearchValue,
-      [mapApiToBrowser.venueId]: venueId ? venueId : null,
+      [mapApiToBrowser.venueId]: selectedVenue ? selectedVenue : null,
     })
   }
 
   getPaginatedOffersWithFilters = () => {
     const { loadTypes, loadOffers, types } = this.props
-    const { nameSearchValue, venueId, page } = this.state
+    const { nameSearchValue, selectedVenue, page } = this.state
     types.length === 0 && loadTypes()
 
     const handleSuccess = (page, pageCount) => {
@@ -88,7 +88,7 @@ class Offers extends PureComponent {
       })
 
     this.setState({ isLoading: true }, () => {
-      loadOffers({ nameSearchValue, venueId, page }, handleSuccess, handleFail)
+      loadOffers({ nameSearchValue, selectedVenue, page }, handleSuccess, handleFail)
     })
   }
 
@@ -108,7 +108,7 @@ class Offers extends PureComponent {
   handleOnVenueClick = () => {
     this.setState(
       {
-        venueId: undefined,
+        selectedVenue: undefined,
         page: 1,
       },
       () => {

@@ -1,7 +1,7 @@
 import { closeNotification, lastTrackerMoment, showNotification } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { assignData, requestData } from 'redux-saga-data'
+import { requestData } from 'redux-saga-data'
 
 import Offers from './Offers'
 import { withRequiredLogin } from '../../hocs'
@@ -27,15 +27,15 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const buildQueryParams = ({ nameSearchValue, venueId, page }) => {
+const buildQueryParams = ({ nameSearchValue, selectedVenue, page }) => {
   const queryParams = []
 
   if (nameSearchValue !== '') {
     queryParams.push(`name=${nameSearchValue}`)
   }
 
-  if (venueId) {
-    queryParams.push(`venueId=${venueId}`)
+  if (selectedVenue) {
+    queryParams.push(`venueId=${selectedVenue}`)
   }
 
   if (page) {
@@ -100,8 +100,6 @@ export const mapDispatchToProps = dispatch => {
     },
 
     loadTypes: () => dispatch(requestData({ apiPath: '/types' })),
-
-    resetLoadedOffers: () => dispatch(assignData({ offers: [] })),
   }
 }
 
