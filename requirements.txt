@@ -55,6 +55,7 @@ pyparsing==2.4.5
 pytest==5.2.2
 pytest-cov==2.8.1
 pytest-flask==0.15.0
+pytest-flask-sqlalchemy==1.0.2
 pytest-mock==1.11.2
 python-keystoneclient==3.22.0
 python-swiftclient==3.8.1
