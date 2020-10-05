@@ -3,7 +3,7 @@ from pathlib import Path
 
 import geopandas as gpd
 from shapely.geometry import Point, Polygon
-from tests.conftest import clean_database
+import pytest
 
 from models import IrisFrance
 from scripts.iris.import_iris import create_centroid_from_polygon, fill_iris_from, import_iris_shape_file_to_table, read_iris_shape_file
@@ -34,7 +34,7 @@ def test_fill_iris_from_should_return_iris(app):
     assert isinstance(iris_france, IrisFrance)
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_import_iris_shape_file_to_table_should_import_shape_from_file_and_write_on_iris_table(app):
     # Given
     filepath = Path(os.path.dirname(os.path.realpath('tests/files/geolocation_data/test_guyane/test_guyane.shp')))

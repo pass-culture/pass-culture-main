@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import pytest
-from tests.conftest import clean_database
+import pytest
 from tests.domain_creators.generic_creators import \
     create_domain_beneficiary_pre_subcription
 from tests.model_creators.generic_creators import create_user
@@ -13,7 +13,7 @@ from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator 
 from repository import repository
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_not_raise_exception_for_valid_beneficiary(app):
     # Given
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription()
@@ -27,7 +27,7 @@ def test_should_not_raise_exception_for_valid_beneficiary(app):
             f'Should not raise an exception when email not given')
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_raises_if_email_already_taken(app):
     # Given
     email = "email@example.org"
@@ -45,7 +45,7 @@ def test_raises_if_email_already_taken(app):
     assert str(error.value) == f"Email {email} is already taken."
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_doesnt_raise_if_email_not_taken(app):
     # Given
     existing_user = create_user(email="email@example.org")
@@ -63,7 +63,7 @@ def test_doesnt_raise_if_email_not_taken(app):
             f'Should not raise an exception when email not given')
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_raises_if_duplicate(app):
     # Given
     first_name = "John"
@@ -85,7 +85,7 @@ def test_raises_if_duplicate(app):
         error.value) == f"User with id {existing_user.id} is a duplicate."
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_doesnt_raise_if_no_exact_duplicate(app):
     # Given
     first_name = "John"
@@ -122,7 +122,7 @@ def test_doesnt_raise_if_no_exact_duplicate(app):
     '36034',
     '97400'
 ])
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_raises_if_not_eligible(app, postal_code):
     # Given
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(
@@ -142,7 +142,7 @@ def test_raises_if_not_eligible(app, postal_code):
     '34898',
     '97340'
 ])
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_not_raise_if_eligible(app, postal_code):
     # Given
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(

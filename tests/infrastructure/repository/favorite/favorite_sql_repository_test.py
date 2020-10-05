@@ -3,7 +3,7 @@ from domain.favorite.favorite import Favorite
 from infrastructure.repository.favorite.favorite_sql_repository import FavoriteSQLRepository
 
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_user, \
     create_venue, create_mediation, create_favorite, create_booking
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
@@ -13,7 +13,7 @@ class FindByBeneficiaryTest:
     def setup_method(self):
         self.favorite_sql_repository = FavoriteSQLRepository()
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_a_list_of_beneficiary_favorites(self, app):
         # given
         beneficiary = create_user()
@@ -34,7 +34,7 @@ class FindByBeneficiaryTest:
         assert isinstance(favorites[0], Favorite)
         assert isinstance(favorites[1], Favorite)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_favorites_of_other_beneficiary(self, app):
         # given
         beneficiary = create_user()
@@ -52,7 +52,7 @@ class FindByBeneficiaryTest:
         # then
         assert len(favorites) == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_when_favorite_offer_is_booked(self, app):
         # given
         beneficiary = create_user()
@@ -75,7 +75,7 @@ class FindByBeneficiaryTest:
         assert favorite.booking_identifier == booking.id
         assert favorite.booked_stock_identifier == stock.id
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_booking_when_favorite_offer_booking_is_cancelled(self, app):
         # given
         beneficiary = create_user()

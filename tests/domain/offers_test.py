@@ -2,7 +2,7 @@ from datetime import datetime
 
 from domain.offers import is_from_allocine, update_is_active_status
 from models import OfferSQLEntity
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import (create_booking,
                                                    create_deposit,
                                                    create_offerer,
@@ -14,7 +14,7 @@ from tests.model_creators.specific_creators import \
 
 
 class UpdateIsActiveStatusTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_activate_offer(self, app):
         # given
         offerer = create_offerer()
@@ -30,7 +30,7 @@ class UpdateIsActiveStatusTest:
         for updated_offer in updated_offers:
             assert updated_offer.isActive
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_deactivate_offer(self, app):
         # given
         offerer = create_offerer()
@@ -46,7 +46,7 @@ class UpdateIsActiveStatusTest:
         for updated_offer in updated_offers:
             assert not updated_offer.isActive
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_deactivate_offer_should_keep_booking_state(self, app):
         # given
         user = create_user()

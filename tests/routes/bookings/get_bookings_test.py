@@ -1,7 +1,8 @@
 from unittest.mock import patch
 
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_stock
 from tests.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
@@ -10,7 +11,7 @@ from tests.model_creators.specific_creators import create_stock_with_thing_offer
 class Get:
     class Returns200:
         @patch('routes.bookings.feature_queries.is_active', return_value=False)
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_bookings_and_qr_code_feature_is_inactive_does_not_return_qr_code(self, qr_code_is_active,
                                                                                            app):
             # Given
@@ -51,7 +52,7 @@ class Get:
             assert 'validationToken' not in first_booking['stock']['offer']['venue']
 
         @patch('routes.bookings.feature_queries.is_active', return_value=True)
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_bookings_and_qr_code_feature_is_active(self, qr_code_is_active, app):
             # Given
             user1 = create_user(email='user1+plus@example.com')

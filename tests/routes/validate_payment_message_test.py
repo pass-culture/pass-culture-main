@@ -1,14 +1,15 @@
 from io import BytesIO
 
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.files.transactions import VALID_MESSAGE
 from tests.model_creators.generic_creators import create_user, create_payment_message
 
 
 class Post:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_file_authenticity_is_certified(self, app):
             # given
             user = create_user(can_book_free_offers=False, is_admin=True)
@@ -31,7 +32,7 @@ class Post:
             assert response.json['checksum'] == '86055b286afd11316cd7cacd00e61034fddedda50c234c0157a8f0da6e30931e'
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_given_checksum_does_not_match_known_checksum(self, app):
             # given
             user = create_user(can_book_free_offers=False, is_admin=True)
@@ -57,7 +58,7 @@ class Post:
             ]
 
     class Returns401:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_current_user_is_not_logged_in(self, app):
             # when
             response = TestClient(app.test_client()).post(
@@ -70,7 +71,7 @@ class Post:
             assert response.status_code == 401
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_current_user_is_not_admin(self, app):
             # given
             user = create_user(can_book_free_offers=True, is_admin=False)
@@ -92,7 +93,7 @@ class Post:
             assert response.status_code == 403
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_id_from_file_is_unknown(self, app):
             # given
             user = create_user(can_book_free_offers=False, is_admin=True)

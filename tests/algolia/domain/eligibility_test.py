@@ -2,7 +2,7 @@ from datetime import datetime
 
 from algolia.domain.eligibility import EligibilityRules
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock
 from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 
@@ -36,7 +36,7 @@ class NameHasChangedTest:
 
 
 class DatesHaveChangedTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_false_when_offer_is_not_an_event(self, app):
         # Given
         offerer = create_offerer()
@@ -53,7 +53,7 @@ class DatesHaveChangedTest:
         # Then
         assert not dates_have_changed
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_true_when_dates_have_changed(self, app):
         # Given
         offerer = create_offerer()
@@ -70,7 +70,7 @@ class DatesHaveChangedTest:
         # Then
         assert dates_have_changed
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_false_when_dates_have_not_changed(self, app):
         # Given
         offerer = create_offerer()
@@ -89,7 +89,7 @@ class DatesHaveChangedTest:
 
 
 class PricesHaveChangedTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_false_when_prices_have_not_changed(self, app):
         # Given
         offerer = create_offerer()
@@ -106,7 +106,7 @@ class PricesHaveChangedTest:
         # Then
         assert not prices_have_changed
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_true_when_prices_have_changed(self, app):
         # Given
         offerer = create_offerer()

@@ -5,13 +5,13 @@ from unittest.mock import patch
 from models import VenueSQLEntity
 from repository import repository
 from scripts.update_venue_type import _read_venue_type_from_file, update_venue_type
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_type
 
 
 class UpdateVenueTypeTest:
     @patch('scripts.update_venue_type._read_venue_type_from_file')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_update_venue_type_whith_type_from_read_file_when_id_match(self, stub_read_venue_type_from_file, app, capsys):
         # Given
         offerer = create_offerer()
@@ -34,7 +34,7 @@ class UpdateVenueTypeTest:
         assert "1 venues have been updated" in captured.out
 
     @patch('scripts.update_venue_type._read_venue_type_from_file')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_be_stuck_because_of_no_siren_offerer_and_print_a_list_of_errored_venues(self, stub_read_venue_type_from_file, app, capsys):
         # Given
         offerer = create_offerer(siren=None)
@@ -63,7 +63,7 @@ class UpdateVenueTypeTest:
 
 
     @patch('scripts.update_venue_type._read_venue_type_from_file')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_update_venue_type_whith_type_from_read_file_when_venue_id_does_not_match(self, stub_read_venue_type_from_file, app, capsys):
         # Given
         offerer = create_offerer()
@@ -88,7 +88,7 @@ class UpdateVenueTypeTest:
 
 
     @patch('scripts.update_venue_type._read_venue_type_from_file')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_update_venue_type_whith_type_from_read_file_when_type_label_does_not_match(self, stub_read_venue_type_from_file, app, capsys):
         # Given
         offerer = create_offerer()

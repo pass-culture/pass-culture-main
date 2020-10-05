@@ -3,14 +3,14 @@ import pytest
 from models import VenueSQLEntity, OfferSQLEntity
 from repository import repository
 from scripts.delete_venue_and_offers_for_venue_id import delete_venue_and_offers_for_venue_id
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_event_product
 from utils.human_ids import humanize
 
 
 class DeleteVenueAndOffersForVenueIdTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_delete_venue_and_offers_should_delete_venue_and_offers_with_venue_id(self, app):
         # Given
         offerer1 = create_offerer(siren='123456789')
@@ -48,7 +48,7 @@ class DeleteVenueAndOffersForVenueIdTest:
         assert all([o.venue == venue2 for o in offers])
         assert VenueSQLEntity.query.get(venue1.id) is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_delete_venue_and_offers_should_raise_an_attribute_error_when_at_least_one_offer_has_stocks(self, app):
         # Given
         offerer = create_offerer(siren='123456789')

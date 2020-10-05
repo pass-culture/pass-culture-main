@@ -1,12 +1,13 @@
 from domain.show_types import show_types
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user
 
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_list_show_types(self, app):
             # given
             user = create_user()

@@ -3,12 +3,12 @@ from datetime import datetime
 from models import BookingSQLEntity
 from repository import repository
 from scripts.booking.canceling_token_validation import canceling_token_validation
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, \
     create_deposit, create_offerer, create_payment, create_user
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_update_booking_when_valid_token_is_given_and_no_payment_associated(app):
     # Given
     token = '123456'
@@ -27,7 +27,7 @@ def test_should_update_booking_when_valid_token_is_given_and_no_payment_associat
     assert booking.dateUsed is None
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_do_nothing_when_valid_token_is_given_but_the_booking_is_linked_to_a_payment(app):
     # Given
     token = '123456'

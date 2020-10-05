@@ -5,14 +5,14 @@ import pytest
 
 from models import ApiErrors, RightsType, ThingType, user_sql_entity
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit, create_user_offerer
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_cannot_create_admin_that_can_book(app):
     # Given
     user = create_user(can_book_free_offers=True, is_admin=True)
@@ -23,7 +23,7 @@ def test_cannot_create_admin_that_can_book(app):
 
 
 class HasRightsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_user_has_no_editor_right_on_offerer_if_he_is_not_attached(self, app):
         # given
         offerer = create_offerer()
@@ -36,7 +36,7 @@ class HasRightsTest:
         # then
         assert has_rights is False
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_user_has_editor_right_on_offerer_if_he_is_attached(self, app):
         # given
         offerer = create_offerer()
@@ -50,7 +50,7 @@ class HasRightsTest:
         # then
         assert has_rights is True
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_user_has_no_editor_right_on_offerer_if_he_is_attached_but_not_validated_yet(self, app):
         # given
         offerer = create_offerer()
@@ -64,7 +64,7 @@ class HasRightsTest:
         # then
         assert has_rights is False
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_user_has_editor_right_on_offerer_if_he_is_not_attached_but_is_admin(self, app):
         # given
         offerer = create_offerer()
@@ -79,7 +79,7 @@ class HasRightsTest:
 
 
 class WalletBalanceTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_wallet_balance_is_0_with_no_deposits_and_no_bookings(self, app):
         # given
         user = create_user()
@@ -91,7 +91,7 @@ class WalletBalanceTest:
         # then
         assert balance == Decimal(0)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_wallet_balance_is_the_sum_of_deposits_if_no_bookings(self, app):
         # given
         user = create_user()
@@ -105,7 +105,7 @@ class WalletBalanceTest:
         # then
         assert balance == Decimal(150)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_wallet_balance_is_the_sum_of_deposits_minus_the_sum_of_bookings(self, app):
         # given
         user = create_user()
@@ -128,7 +128,7 @@ class WalletBalanceTest:
         # then
         assert balance == Decimal(70)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_wallet_balance_does_not_count_cancelled_bookings(self, app):
         # given
         user = create_user()
@@ -153,7 +153,7 @@ class WalletBalanceTest:
 
 
 class RealWalletBalanceTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_real_wallet_balance_is_0_with_no_deposits_and_no_bookings(self, app):
         # given
         user = create_user()
@@ -165,7 +165,7 @@ class RealWalletBalanceTest:
         # then
         assert balance == Decimal(0)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_real_wallet_balance_is_the_sum_of_deposits_if_no_bookings(self, app):
         # given
         user = create_user()
@@ -179,7 +179,7 @@ class RealWalletBalanceTest:
         # then
         assert balance == Decimal(150)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_real_wallet_balance_is_the_sum_of_deposits_minus_the_sum_of_used_bookings(self, app):
         # given
         user = create_user()
@@ -204,7 +204,7 @@ class RealWalletBalanceTest:
         # then
         assert balance == Decimal(70)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_real_wallet_balance_does_not_count_cancelled_bookings(self, app):
         # given
         user = create_user()
@@ -231,7 +231,7 @@ class RealWalletBalanceTest:
 
 
 class HasPhysicalVenuesTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_webapp_user_has_no_venue(self, app):
         # given
         user = create_user()
@@ -242,7 +242,7 @@ class HasPhysicalVenuesTest:
         # then
         assert user.hasPhysicalVenues is False
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_pro_user_has_one_digital_venue_by_default(self, app):
         # given
         user = create_user()
@@ -256,7 +256,7 @@ class HasPhysicalVenuesTest:
         # then
         assert user.hasPhysicalVenues is False
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_pro_user_has_one_digital_venue_and_a_physical_venue(self, app):
         # given
         user = create_user()
@@ -269,7 +269,7 @@ class HasPhysicalVenuesTest:
         # then
         assert user.hasPhysicalVenues is True
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_pro_user_has_one_digital_venue_and_a_physical_venue(self, app):
         # given
         user = create_user()
@@ -287,7 +287,7 @@ class HasPhysicalVenuesTest:
 
 
 class nOffersTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_webapp_user_has_no_offerers(self, app):
         # given
         user = create_user()
@@ -297,7 +297,7 @@ class nOffersTest:
         # then
         assert user.hasOffers is False
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_pro_user_with_offers_from_many_offerers(self, app):
         # given
         user = create_user()
@@ -318,7 +318,7 @@ class nOffersTest:
 
 
 class needsToSeeTutorialsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_beneficiary_has_to_see_tutorials_when_not_already_seen(self, app):
         # given
         user = create_user(can_book_free_offers=True, has_seen_tutorials=False)
@@ -327,7 +327,7 @@ class needsToSeeTutorialsTest:
         # then
         assert user.needsToSeeTutorials is True
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_beneficiary_has_not_to_see_tutorials_when_already_seen(self, app):
         # given
         user = create_user(can_book_free_offers=True, has_seen_tutorials=True)
@@ -336,7 +336,7 @@ class needsToSeeTutorialsTest:
         # then
         assert user.needsToSeeTutorials is False
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_pro_user_has_not_to_see_tutorials_when_already_seen(self, app):
         # given
         user = create_user(can_book_free_offers=False)

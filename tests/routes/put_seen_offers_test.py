@@ -5,7 +5,8 @@ import pytest
 from models import SeenOffer
 from models.feature import FeatureToggle
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_user
 from tests.model_creators.specific_creators import create_offer_with_event_product
 from tests.test_utils import deactivate_feature
@@ -15,7 +16,7 @@ from validation.routes.seen_offers import PayloadMissing
 
 class Put:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in(self, app):
             # Given
             offerer = create_offerer()
@@ -37,7 +38,7 @@ class Put:
             assert SeenOffer.query.count() == 1
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_json_is_not_provided(self, app):
             # Given
             beneficiary = create_user()
@@ -51,7 +52,7 @@ class Put:
             # Then
             assert response.status_code == 400
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.seen_offers.check_payload_is_valid')
         def when_json_is_empty(self, check_payload_is_valid_mock, app):
             # Given
@@ -68,7 +69,7 @@ class Put:
             assert response.status_code == 400
 
     class Returns401:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_not_logged_in(self, app):
             # When
             response = TestClient(app.test_client()).put('/seen_offers')
@@ -77,7 +78,7 @@ class Put:
             assert response.status_code == 401
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_feature_is_disabled(self, app):
             # Given
             deactivate_feature(FeatureToggle.SAVE_SEEN_OFFERS)

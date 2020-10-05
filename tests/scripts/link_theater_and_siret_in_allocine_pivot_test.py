@@ -1,11 +1,11 @@
 from models import AllocinePivot
 from repository import repository
 from scripts.link_theater_and_siret_in_allocine_pivot import link_theater_to_siret
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_venue, create_offerer
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def should_create_link_between_siret_and_theater(app):
     # Given
     offerer = create_offerer()

@@ -1,11 +1,11 @@
 from repository import repository
 from repository.venue_types_queries import get_all_venue_types
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_venue_type
 
 
 class GetAllVenueTypes:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_the_venue_types(self, app):
         # Given
         cinema = create_venue_type(label='Cinema', idx=1)

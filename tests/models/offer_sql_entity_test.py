@@ -5,7 +5,7 @@ import pytest
 from models import OfferSQLEntity, ApiErrors, ThingType, EventType, Product, Provider
 from repository import repository
 from routes.serialization import as_dict
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, \
     create_offerer, \
     create_venue, create_mediation
@@ -101,7 +101,7 @@ class DateRangeTest:
 
 
 class CreateOfferTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_success_when_is_digital_and_virtual_venue(self, app):
         # Given
         url = 'http://mygame.fr/offre'
@@ -117,7 +117,7 @@ class CreateOfferTest:
         # Then
         assert offer.url == url
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_success_when_is_physical_and_physical_venue(self, app):
         # Given
         physical_thing = create_product_with_thing_type(
@@ -135,7 +135,7 @@ class CreateOfferTest:
         # Then
         assert offer.url is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_fails_when_is_digital_but_physical_venue(self, app):
         # Given
         digital_thing = create_product_with_thing_type(
@@ -153,7 +153,7 @@ class CreateOfferTest:
         assert errors.value.errors['venue'] == [
             'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"']
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_fails_when_is_physical_but_venue_is_virtual(self, app):
         # Given
         physical_thing = create_product_with_thing_type(
@@ -171,7 +171,7 @@ class CreateOfferTest:
         assert errors.value.errors['venue'] == [
             'Une offre physique ne peut être associée au lieu "Offre numérique"']
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_success_when_is_event_but_durationMinute_is_empty(self, app):
         # Given
         event_product = create_product_with_event_type(duration_minutes=None)
@@ -187,7 +187,7 @@ class CreateOfferTest:
         assert offer.durationMinutes is None
         assert offer.product.durationMinutes is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_offer_is_marked_as_isevent_property(self):
         # Given
         physical_thing = create_product_with_thing_type(
@@ -229,7 +229,7 @@ class CreateOfferTest:
         assert offer.isEvent == False
         assert offer.isThing == False
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_create_digital_offer_success(self, app):
         # Given
         url = 'http://mygame.fr/offre'
@@ -247,7 +247,7 @@ class CreateOfferTest:
         # Then
         assert offer.product.url == url
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_offer_error_when_thing_is_digital_but_venue_not_virtual(self, app):
         # Given
         digital_thing = create_product_with_thing_type(
@@ -608,7 +608,7 @@ class ThumbUrlTest:
 
 
 class OfferTypeTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_matching_category_given_offer_app_label(self, app):
         # Given
         offerer = create_offerer()

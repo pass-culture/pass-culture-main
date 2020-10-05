@@ -5,7 +5,7 @@ from shapely.geometry import Polygon
 from domain.iris import _link_venue_to_irises, link_valid_venue_to_irises
 from models import IrisVenues
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_iris
 
 
@@ -21,7 +21,7 @@ class LinkVenueToIrisesTest:
         # Then
         assert IrisVenues.query.count() == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('domain.iris.find_ids_of_irises_located_near_venue')
     def test_should_link_venue_to_iris_venues(self, mock_find_iris_near_venue, app):
         # Given

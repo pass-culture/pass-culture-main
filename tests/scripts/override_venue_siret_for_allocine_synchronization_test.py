@@ -1,11 +1,11 @@
 from models import AllocinePivot
 from repository import repository
 from scripts.override_venue_siret_for_allocine_synchronization import override_venue_siret_for_allocine_synchronization
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_allocine_pivot
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_change_venue_siret_information_for_allocine_synchronization(app):
     # given
     old_siret = '1234567891234'

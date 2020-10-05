@@ -11,7 +11,8 @@ from scripts.payment.batch_steps import send_transactions, send_payments_details
     send_wallet_balances, \
     send_payments_report, concatenate_payments_with_errors_and_retries, \
     set_not_processable_payments_with_bank_information_to_retry
-from tests.conftest import clean_database, mocked_mail
+import pytest
+from tests.conftest import mocked_mail
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_payment, create_bank_information
@@ -19,7 +20,7 @@ from tests.model_creators.specific_creators import create_stock_from_offer, crea
 from models.bank_information import BankInformationStatus
 
 class ConcatenatePaymentsWithErrorsAndRetriesTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_a_list_of_payments_is_returned_with_statuses_in_error_or_retry_or_pending(self, app):
         # Given
         user = create_user()
@@ -56,7 +57,7 @@ class ConcatenatePaymentsWithErrorsAndRetriesTest:
 
 
 @mocked_mail
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_missing(app):
     # given
     offerer1 = create_offerer(name='first offerer')
@@ -81,7 +82,7 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_miss
 
 
 @mocked_mail
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missing(app):
     # given
     offerer1 = create_offerer(name='first offerer')
@@ -106,7 +107,7 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missi
 
 
 @mocked_mail
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missing(app):
     # given
     offerer1 = create_offerer(name='first offerer')
@@ -131,7 +132,7 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missin
 
 
 @mocked_mail
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     # given
     offerer1 = create_offerer(name='first offerer')
@@ -160,7 +161,7 @@ def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     assert len(args[1]['data']['Attachments']) == 1
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
 def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_properly(app):
@@ -193,7 +194,7 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
     assert all(p.paymentMessageChecksum == payments[0].paymentMessageChecksum for p in updated_payments)
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @mocked_mail
 def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
     # given
@@ -226,7 +227,7 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
         assert payment.currentStatus.status == TransactionStatus.SENT
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @mocked_mail
 def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sent_properly(
         app):
@@ -261,7 +262,7 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
         assert payment.currentStatus.detail == "Erreur d'envoi à MailJet"
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @mocked_mail
 def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_status_with_a_cause(
         app):
@@ -293,7 +294,7 @@ def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_s
                                                "by the pattern '[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}'., line 76"
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @mocked_mail
 def test_send_payment_details_sends_a_csv_attachment(app):
     # given
@@ -366,7 +367,7 @@ def test_send_payment_details_does_not_send_anything_if_recipients_are_missing(a
     app.mailjet_client.send.create.assert_not_called()
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @mocked_mail
 def test_send_wallet_balances_sends_a_csv_attachment(app):
     # given
@@ -393,7 +394,7 @@ def test_send_wallet_balances_does_not_send_anything_if_recipients_are_missing(a
 
 
 @mocked_mail
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not_processable_and_in_error(app):
     # given
     offerer1 = create_offerer(name='first offerer')
@@ -430,7 +431,7 @@ def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not
 
 
 @mocked_mail
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_error_or_sent(app):
     # given
     offerer1 = create_offerer(name='first offerer')
@@ -467,7 +468,7 @@ def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_er
 
 
 @mocked_mail
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_send_payments_report_does_not_send_anything_if_no_payments_are_provided(app):
     # given
     payments = []
@@ -480,7 +481,7 @@ def test_send_payments_report_does_not_send_anything_if_no_payments_are_provided
 
 
 class SetNotProcessablePaymentsWithBankInformationToRetryTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_set_not_processable_payments_to_retry_and_update_payments_bic_and_iban_using_offerer_information(
             self, app):
         # Given
@@ -508,7 +509,7 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         assert queried_not_processable_payment.currentStatus.status == TransactionStatus.RETRY
         assert queried_sent_payment.currentStatus.status == TransactionStatus.SENT
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_set_not_processable_payments_to_retry_when_bank_information_status_is_not_accepted(
             self, app):
         # Given
@@ -536,7 +537,7 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         assert queried_not_processable_payment.currentStatus.status == TransactionStatus.NOT_PROCESSABLE
         assert queried_sent_payment.currentStatus.status == TransactionStatus.SENT
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_set_not_processable_payments_to_retry_and_update_payments_bic_and_iban_using_venue_information(
             self, app):
         # Given

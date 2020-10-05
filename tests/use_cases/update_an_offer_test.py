@@ -5,7 +5,7 @@ import pytest
 from models import OfferSQLEntity, ApiErrors
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_venue, create_offerer
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 from use_cases.update_an_offer import update_an_offer
@@ -14,7 +14,7 @@ from use_cases.update_an_offer import update_an_offer
 class UseCaseTest:
     class UpdateAnOfferTest:
         class WhenTheOfferIsFromAllocine:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             @patch('use_cases.update_an_offer.feature_queries.is_active', return_value=True)
             @patch('use_cases.update_an_offer.redis.add_offer_id')
             def test_keep_track_of_updated_fields_so_they_wont_be_overriden(self, mock_redis, mock_feature, app):
@@ -33,7 +33,7 @@ class UseCaseTest:
                 offer = OfferSQLEntity.query.one()
                 assert offer.fieldsUpdated == ['isDuo']
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             @patch('use_cases.update_an_offer.feature_queries.is_active', return_value=True)
             @patch('use_cases.update_an_offer.redis.add_offer_id')
             def test_preserve_already_updated_fields_so_they_wont_be_overriden(self, mock_redis, mock_feature, app):
@@ -55,7 +55,7 @@ class UseCaseTest:
                 assert set(offer.fieldsUpdated) == set(['isDuo', 'isActive'])
 
             class WhenUpdatingForbiddenFields:
-                @clean_database
+                @pytest.mark.usefixtures("db_session")
                 @patch('use_cases.update_an_offer.feature_queries.is_active', return_value=True)
                 @patch('use_cases.update_an_offer.redis.add_offer_id')
                 def test_should_raise_an_error_when_field_has_changed(self, mock_redis, mock_feature, app):
@@ -76,7 +76,7 @@ class UseCaseTest:
                     # Then
                     assert error.value.errors['bookingEmail'] == ['Vous ne pouvez pas modifier ce champ']
 
-                @clean_database
+                @pytest.mark.usefixtures("db_session")
                 @patch('use_cases.update_an_offer.feature_queries.is_active', return_value=True)
                 @patch('use_cases.update_an_offer.redis.add_offer_id')
                 def test_should_not_raise_an_error_when_field_has_not_changed(self, mock_redis, mock_feature, app):
@@ -98,7 +98,7 @@ class UseCaseTest:
                         assert False
 
         class WhenTheOfferIsFromAnotherProvider:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_offer_should_not_be_updated(self, app):
                 # Given
                 provider = get_provider_by_local_class('LibrairesStocks')

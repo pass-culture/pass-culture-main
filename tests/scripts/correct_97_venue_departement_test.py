@@ -1,12 +1,12 @@
 from models.db import db
 from repository import repository
 from scripts.correct_venue_departement import correct_venue_departement
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_venue, create_offerer
 
 
 class CorrectVenueDepartementTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_changes_departement_code_to_973_when_postal_code_97300(self, app):
         # Given
         offerer = create_offerer()
@@ -21,7 +21,7 @@ class CorrectVenueDepartementTest:
         # Then
         assert venue.departementCode == '973'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_changes_departement_code_to_974_when_postal_code_97400(self, app):
         # Given
         offerer = create_offerer()
@@ -36,7 +36,7 @@ class CorrectVenueDepartementTest:
         # Then
         assert venue.departementCode == '974'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_changes_departement_code_to_04_when_postal_code_04000(self, app):
         # Given
         offerer = create_offerer()
@@ -51,7 +51,7 @@ class CorrectVenueDepartementTest:
         # Then
         assert venue.departementCode == '04'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_keeps_departement_code_when_well_set(self, app):
         # Given
         offerer = create_offerer()
@@ -66,7 +66,7 @@ class CorrectVenueDepartementTest:
         # Then
         assert venue.departementCode == '06'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_nothing_if_is_virtual_venue(self, app):
         # Given
         offerer = create_offerer()

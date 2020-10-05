@@ -2,13 +2,14 @@ from unittest.mock import patch
 
 from models import UserSQLEntity, Offerer, UserOfferer
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
 
 class Patch:
     class Returns204:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_validation_token_to_be_set_to_none(self, app):
             # Given
             user = create_user()
@@ -24,7 +25,7 @@ class Patch:
             assert response.status_code == 204
             assert UserSQLEntity.query.get(user_id).isValidated
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.validate.send_ongoing_offerer_attachment_information_email_to_pro',
                return_value=True)
         @patch('routes.validate.send_raw_email', return_value=True)
@@ -52,7 +53,7 @@ class Patch:
             mock_send_ongoing_offerer_attachment_information_email_to_pro.assert_called_once_with(user_offerer,
                                                                                                   mock_send_raw_email)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.validate.send_pro_user_waiting_for_validation_by_admin_email',
                return_value=True)
         @patch('routes.validate.send_raw_email', return_value=True)
@@ -78,7 +79,7 @@ class Patch:
             mock_send_pro_user_waiting_for_validation_by_admin_email.assert_called_once_with(user, mock_send_raw_email,
                                                                                              offerer)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.validate.IS_INTEGRATION', False)
         @patch('routes.validate.maybe_send_offerer_validation_email',
                return_value=True)
@@ -104,7 +105,7 @@ class Patch:
             assert response.status_code == 204
             mock_maybe_send_offerer_validation_email.assert_called_once_with(offerer, user_offerer, mock_send_raw_email)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.validate.IS_INTEGRATION', True)
         @patch('routes.validate.maybe_send_offerer_validation_email',
                return_value=True)
@@ -134,7 +135,7 @@ class Patch:
 
 
 class Returns404:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def when_validation_token_is_not_found(self, app):
         # Given
         random_token = '0987TYGHHJMJ'

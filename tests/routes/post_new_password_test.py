@@ -2,13 +2,14 @@ from datetime import datetime, timedelta
 
 from models import UserSQLEntity
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user
 
 
 class PostNewPassword:
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_the_token_is_outdated(self, app):
             # given
             user = create_user(reset_password_token='KL89PBNG51',
@@ -30,7 +31,7 @@ class PostNewPassword:
                 'Votre lien de changement de mot de passe est périmé. Veuillez effectuer une nouvelle demande.'
             ]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_the_token_is_unknown(self, app):
             # given
             user = create_user(reset_password_token='KL89PBNG51')
@@ -51,7 +52,7 @@ class PostNewPassword:
                 'Votre lien de changement de mot de passe est invalide.'
             ]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_the_token_is_missing(self, app):
             # given
             user = create_user(reset_password_token='KL89PBNG51')
@@ -69,7 +70,7 @@ class PostNewPassword:
                 'Votre lien de changement de mot de passe est invalide.'
             ]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_new_password_is_missing(self, app):
             # given
             user = create_user(reset_password_token='KL89PBNG51')
@@ -87,7 +88,7 @@ class PostNewPassword:
                 'Vous devez renseigner un nouveau mot de passe.'
             ]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_new_password_is_not_strong_enough(self, app):
             # given
             user = create_user(reset_password_token='KL89PBNG51', reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24))
@@ -110,7 +111,7 @@ class PostNewPassword:
             ]
 
     class Returns204:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_new_password_is_valid(self, app):
             # given
             user = create_user(reset_password_token='KL89PBNG51', reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24))

@@ -9,7 +9,8 @@ from domain.user_emails import _build_recipients_list
 from models import ThingType
 from models.email import Email, EmailStatus
 from repository import repository
-from tests.conftest import clean_database, mocked_mail
+import pytest
+from tests.conftest import mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_user_offerer
@@ -44,7 +45,7 @@ def get_by_siren_stub(offerer):
 
 
 @mocked_mail
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @freeze_time('2019-01-01 12:00:00')
 def test_save_and_send_creates_an_entry_in_email_with_status_sent_when_send_mail_successful(app):
     # given
@@ -74,7 +75,7 @@ def test_save_and_send_creates_an_entry_in_email_with_status_sent_when_send_mail
 
 
 @mocked_mail
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @freeze_time('2019-01-01 12:00:00')
 def test_save_and_send_creates_an_entry_in_email_with_status_error_when_send_mail_unsuccessful(app):
     # given
@@ -178,7 +179,7 @@ class GetUsersInformationFromStockBookingsTest:
 
 class BuildPcProOfferLinkTest:
     @patch('utils.mailing.PRO_URL', 'http://pcpro.com')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_pc_pro_offer_link(self, app):
         # Given
         offerer = create_offerer()

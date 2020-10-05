@@ -7,7 +7,7 @@ from models import ApiErrors, BeneficiaryImport, ImportStatus, UserSQLEntity
 from repository import repository
 from scripts.beneficiary import remote_import
 from scripts.beneficiary.remote_import import parse_beneficiary_information
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_user
 from tests.scripts.beneficiary.fixture import \
     APPLICATION_DETAIL_STANDARD_RESPONSE, \
@@ -112,7 +112,7 @@ class RunTest:
     @patch('scripts.beneficiary.remote_import.parse_beneficiary_information')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS': 'send@example.com'})
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2': '6712558'})
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_an_error_status_is_saved_when_an_application_is_not_parsable(
             self,
             mocked_parse_beneficiary_information,
@@ -173,7 +173,7 @@ class RunTest:
 
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2': '6712558'})
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_application_with_known_email_are_saved_as_rejected(self,
                                                                 process_beneficiary_application,
                                                                 app):
@@ -206,7 +206,7 @@ class RunTest:
 
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2': '2567158'})
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_beneficiary_is_created_with_procedure_id(
             self,
             process_beneficiary_application,
@@ -252,7 +252,7 @@ class RunTest:
 
 
 class ProcessBeneficiaryApplicationTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_new_beneficiaries_are_recorded_with_deposit(self, app):
         # given
         app.mailjet_client = Mock(spec=Client)
@@ -281,7 +281,7 @@ class ProcessBeneficiaryApplicationTest:
         assert first.civility == 'Mme'
         assert first.activity == 'Étudiant'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_an_import_status_is_saved_if_beneficiary_is_created(self, app):
         # given
         app.mailjet_client = Mock(spec=Client)
@@ -312,7 +312,7 @@ class ProcessBeneficiaryApplicationTest:
     @patch('scripts.beneficiary.remote_import.create_beneficiary_from_application')
     @patch('scripts.beneficiary.remote_import.repository')
     @patch('scripts.beneficiary.remote_import.send_activation_email')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_account_activation_email_is_sent(self, send_activation_email, mock_repository,
                                               create_beneficiary_from_application, app):
         # given
@@ -341,7 +341,7 @@ class ProcessBeneficiaryApplicationTest:
     @patch('scripts.beneficiary.remote_import.create_beneficiary_from_application')
     @patch('scripts.beneficiary.remote_import.repository')
     @patch('scripts.beneficiary.remote_import.send_activation_email')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_error_is_collected_if_beneficiary_could_not_be_saved(self,
                                                                   send_activation_email, mock_repository,
                                                                   create_beneficiary_from_application, app):
@@ -374,7 +374,7 @@ class ProcessBeneficiaryApplicationTest:
 
     @patch('scripts.beneficiary.remote_import.repository')
     @patch('scripts.beneficiary.remote_import.send_activation_email')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_beneficiary_is_not_created_if_duplicates_are_found(self, send_activation_email, mock_repository,
                                                                 app):
         # given
@@ -404,7 +404,7 @@ class ProcessBeneficiaryApplicationTest:
         assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
 
     @patch('scripts.beneficiary.remote_import.send_activation_email')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_beneficiary_is_created_if_duplicates_are_found_but_id_is_in_retry_list(self, send_activation_email, app):
         # given
         information = {
@@ -433,7 +433,7 @@ class ProcessBeneficiaryApplicationTest:
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
 
     @patch('scripts.beneficiary.remote_import.get_beneficiary_duplicates')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_an_import_status_is_saved_if_beneficiary_is_a_duplicate(self, mock_get_beneficiary_duplicates, app):
         # given
         information = {

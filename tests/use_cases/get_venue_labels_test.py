@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 from domain.venue.venue_label.venue_label import VenueLabel
 from infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
-from tests.conftest import clean_database
+import pytest
 from use_cases.get_venue_labels import GetVenueLabels
 
 
@@ -12,7 +12,7 @@ class GetVenueLabelsTest:
         self.venue_label_repository.get_all = MagicMock()
         self.get_venue_labels = GetVenueLabels(venue_label_repository=self.venue_label_repository)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_the_list(self, app):
         # Given
         venue_labels = [

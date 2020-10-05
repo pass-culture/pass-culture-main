@@ -1,7 +1,8 @@
 from io import BytesIO
 
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.files.images import ONE_PIXEL_PNG
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_mediation
@@ -11,7 +12,7 @@ from utils.human_ids import humanize
 
 class Post:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_a_file_is_uploaded_for_a_mediation(self, app):
             # given
             user = create_user()
@@ -34,7 +35,7 @@ class Post:
             assert response.status_code == 200
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_upload_is_not_authorized_on_model(self, app):
             # given
             user = create_user()
@@ -55,7 +56,7 @@ class Post:
             assert response.json['text'] == 'upload is not authorized for this model'
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_the_current_user_is_not_attached_to_the_offerers(self, app):
             # given
             user = create_user()

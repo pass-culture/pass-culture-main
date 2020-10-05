@@ -5,13 +5,13 @@ from unittest.mock import patch
 from models import Product, OfferSQLEntity
 from repository import repository
 from scripts.remove_non_book_after_import import delete_product_from_isbn_file, read_isbn_from_file
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @patch('scripts.remove_non_book_after_import.read_isbn_from_file')
 def test_remove_only_unwanted_book(read_isbn_from_file_mock, app):
     # Given
@@ -35,7 +35,7 @@ def test_remove_only_unwanted_book(read_isbn_from_file_mock, app):
     assert Product.query.count() == 1
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @patch('scripts.remove_non_book_after_import.read_isbn_from_file')
 def test_should_not_delete_product_with_bookings_and_deactivate_associated_offer(read_isbn_from_file_mock, app):
     # Given

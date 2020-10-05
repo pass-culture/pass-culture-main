@@ -1,7 +1,8 @@
 import pytest
 
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_favorite, \
     create_mediation, \
     API_URL, create_stock, create_booking
@@ -12,7 +13,7 @@ from utils.human_ids import humanize
 @pytest.mark.standalone
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_but_has_no_favorites(self, app):
             # Given
             user = create_user()
@@ -27,7 +28,7 @@ class Get:
             assert response.status_code == 200
             assert response.json == []
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_has_two_favorite_offers(self, app):
             # Given
             user = create_user()
@@ -54,7 +55,7 @@ class Get:
             assert 'mediationId' in first_favorite
             assert 'validationToken' not in first_favorite['offer']['venue']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_a_favorite_booked_offer_exist(self, app):
             # Given
             user = create_user()
@@ -82,7 +83,7 @@ class Get:
             assert 'validationToken' not in favorite['offer']['venue']
 
     class Returns401:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_not_logged_in(self, app):
             # When
             response = TestClient(app.test_client()) \

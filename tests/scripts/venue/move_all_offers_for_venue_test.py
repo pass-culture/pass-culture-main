@@ -3,14 +3,14 @@ from unittest.mock import patch
 from models.db import db
 from repository import repository
 from scripts.venue.move_all_offers_for_venue import move_all_offers_from_venue_to_other_venue
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 
 class MoveAllOffersFromVenueToOtherVenueTest:
     @patch('scripts.venue.move_all_offers_for_venue.redis')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_change_venue_id_to_destination_id_for_offers_linked_to_origin_venue(self, mocked_redis, app):
         # Given
         offerer = create_offerer()

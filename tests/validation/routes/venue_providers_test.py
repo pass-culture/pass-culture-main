@@ -2,7 +2,7 @@ import pytest
 
 from models import ApiErrors
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_provider
 from utils.human_ids import humanize
@@ -10,7 +10,7 @@ from validation.routes.venue_providers import check_new_venue_provider_informati
 
 
 class ValidateNewVenueProviderInformationTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_true_when_all_information_are_present_and_well_formed(self, app):
         # given
         provider = create_provider()

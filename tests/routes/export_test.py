@@ -5,7 +5,8 @@ from unittest.mock import patch
 from models import VenueSQLEntity, Offerer
 from repository import repository
 from routes.serialization import serialize
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.activity_creators import create_venue_activity, save_all_activities
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_bank_information
@@ -15,7 +16,7 @@ from utils.human_ids import humanize
 
 fake_export_token = 'fake'
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @patch.dict('os.environ', {'EXPORT_TOKEN': fake_export_token})
 def test_export_model_returns_200_when_given_model_is_known(app):
     # given
@@ -30,7 +31,7 @@ def test_export_model_returns_200_when_given_model_is_known(app):
     assert response.status_code == 200
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @patch.dict('os.environ', {'EXPORT_TOKEN': fake_export_token})
 def test_export_model_returns_400_when_given_model_is_not_exportable(app):
     # given
@@ -46,7 +47,7 @@ def test_export_model_returns_400_when_given_model_is_not_exportable(app):
     assert response.json['global'] == ['Classe non exportable : VersionedMixin']
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @patch.dict('os.environ', {'EXPORT_TOKEN': fake_export_token})
 def test_export_model_returns_bad_request_if_no_token_provided(app):
     # when
@@ -57,7 +58,7 @@ def test_export_model_returns_bad_request_if_no_token_provided(app):
     assert response.status_code == 400
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 @patch.dict('os.environ', {'EXPORT_TOKEN': fake_export_token})
 def test_export_model_returns_400_when_given_model_is_unknown(app):
     # given
@@ -73,7 +74,7 @@ def test_export_model_returns_400_when_given_model_is_unknown(app):
     assert response.json['global'] == ['Classe inconnue : RandomStuff']
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_pending_validation_returns_403_when_user_is_not_admin(app):
     # given
     user = create_user(is_admin=False)
@@ -87,7 +88,7 @@ def test_pending_validation_returns_403_when_user_is_not_admin(app):
     assert response.status_code == 403
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_pending_validation_returns_200_when_user_is_admin(app):
     # given
     user = create_user(can_book_free_offers=False, is_admin=True)
@@ -101,7 +102,7 @@ def test_pending_validation_returns_200_when_user_is_admin(app):
     assert response.status_code == 200
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_pending_validation_returns_403_when_user_is_structure_admin_but_not_admin(app):
     # given
     user = create_user(can_book_free_offers=False, is_admin=False)
@@ -117,7 +118,7 @@ def test_pending_validation_returns_403_when_user_is_structure_admin_but_not_adm
     assert response.status_code == 403
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_pending_validation_return_200_and_validation_token(app):
     # given
     user = create_user(can_book_free_offers=False, is_admin=True)
@@ -139,7 +140,7 @@ def test_pending_validation_return_200_and_validation_token(app):
     assert response.json[0]["UserOfferers"][0]["validationToken"] == "a_token"
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_pending_validation_return_only_requested_data(app):
     # given
     user = create_user(can_book_free_offers=False, is_admin=True)
@@ -219,7 +220,7 @@ def test_pending_validation_return_only_requested_data(app):
     assert response.json[0] == expected_result
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_requested_data(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, is_admin=True)
@@ -266,7 +267,7 @@ def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_r
     assert user_offerer5.validationToken in user_offerers_validation_token
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_venues_returns_403_when_user_is_not_admin(app):
     # given
     data = {}
@@ -281,7 +282,7 @@ def test_get_venues_returns_403_when_user_is_not_admin(app):
     assert response.status_code == 403
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_venues_returns_403_when_user_is_structure_admin_but_not_admin(app):
     # given
     data = {}
@@ -299,7 +300,7 @@ def test_get_venues_returns_403_when_user_is_structure_admin_but_not_admin(app):
     assert response.status_code == 403
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_venues_return_200_and_filtered_venues(app):
     # given
     data = {
@@ -420,7 +421,7 @@ def test_get_venues_return_200_and_filtered_venues(app):
     assert VenueSQLEntity.query.get(venue93_with_offer_in_date_range_id).name in venue_names
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(app):
     # given
     data = {
@@ -497,7 +498,7 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
     assert VenueSQLEntity.query.get(expected_venue_id).name in venue_names
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_venues_with_sirens_params_return_200_and_filtered_venues(app):
     # given
     data = {
@@ -538,7 +539,7 @@ def test_get_venues_with_sirens_params_return_200_and_filtered_venues(app):
     assert VenueSQLEntity.query.get(venue_123456783_id).name in venue_names
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_venues_return_error_when_date_param_is_wrong(app):
     # given
     wrong_date = "I\'m not a valid date"
@@ -556,7 +557,7 @@ def test_get_venues_return_error_when_date_param_is_wrong(app):
     assert response.json['date_format'] == ['to_date and from_date are of type yyyy-mm-dd']
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_offerers_returns_403_when_user_is_not_admin(app):
     # given
     data = {}
@@ -571,7 +572,7 @@ def test_get_offerers_returns_403_when_user_is_not_admin(app):
     assert response.status_code == 403
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_offerers_returns_403_when_user_is_structure_admin_but_not_admin(app):
     # given
     data = {}
@@ -588,7 +589,7 @@ def test_get_offerers_returns_403_when_user_is_structure_admin_but_not_admin(app
     assert response.status_code == 403
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_offerers_return_200_and_filtered_offerers(app):
     # given
     data = {
@@ -724,7 +725,7 @@ def test_get_offerers_return_200_and_filtered_offerers(app):
     assert len(offerer_names) == 6
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offerers(app):
     # given
     data = {
@@ -781,7 +782,7 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
     assert response_json[0]['siren'] == '123456784'
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_offerers_with_sirens_params_return_200_and_filtered_offerers(app):
     # given
     data = {
@@ -816,7 +817,7 @@ def test_get_offerers_with_sirens_params_return_200_and_filtered_offerers(app):
     assert Offerer.query.get(offerer_123456783_id).name in offerer_names
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_offerers_return_error_when_date_param_is_wrong(app):
     # given
     wrong_date = "I\'m not a valid date"

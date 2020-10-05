@@ -4,13 +4,14 @@ from unittest.mock import patch
 from domain.password import RESET_PASSWORD_TOKEN_LENGTH
 from models import UserSQLEntity
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user
 
 
 class PostResetPassword:
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_email_is_empty(self, app):
             # given
             data = {'email': ''}
@@ -23,7 +24,7 @@ class PostResetPassword:
             assert response.status_code == 400
             assert response.json['email'] == ['L\'email renseigné est vide']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_email_is_missing(self, app):
             # given
             data = {}
@@ -37,7 +38,7 @@ class PostResetPassword:
             assert response.json['email'] == ['L\'email est manquant']
 
     class Returns204:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_email_is_unknown(self, app):
             # given
             data = {'email': 'unknown.user@test.com'}
@@ -49,7 +50,7 @@ class PostResetPassword:
             # then
             assert response.status_code == 204
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_email_is_known(self, app):
             # given
             data = {'email': 'bobby@test.com'}
@@ -68,7 +69,7 @@ class PostResetPassword:
             now = datetime.utcnow()
             assert (now + timedelta(hours=23)) < user.resetPasswordTokenValidityLimit < (now + timedelta(hours=25))
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.passwords.send_reset_password_email_to_user')
         @patch('routes.passwords.send_raw_email')
         def test_should_send_reset_password_email_when_user_is_a_beneficiary(self,
@@ -88,7 +89,7 @@ class PostResetPassword:
             # then
             send_reset_password_email_to_user_mock.assert_called_once_with(user, send_raw_email_mock)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.passwords.send_reset_password_email_to_pro')
         @patch('routes.passwords.send_raw_email')
         def test_should_send_reset_password_email_when_user_is_an_offerer(self,

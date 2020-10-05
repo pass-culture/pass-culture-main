@@ -1,4 +1,5 @@
-from tests.conftest import TestClient, clean_database
+from tests.conftest import TestClient
+import pytest
 from tests.model_creators.generic_creators import API_URL, create_mediation, \
     create_offerer, create_recommendation, create_user, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product
@@ -10,7 +11,7 @@ from utils.human_ids import humanize
 
 class Post:
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_offer_id_is_not_received(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -30,7 +31,7 @@ class Post:
             assert response.json['global'] == ["Le paramètre offerId est obligatoire"]
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_offer_is_not_found(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -54,7 +55,7 @@ class Post:
             # Then
             assert response.status_code == 404
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_mediation_is_not_found(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -79,7 +80,7 @@ class Post:
             assert response.status_code == 404
 
     class Returns201:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_offer_is_added_as_favorite_for_current_user(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -108,7 +109,7 @@ class Post:
             assert favorite.mediationId == mediation.id
             assert favorite.userId == user.id
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_mediation_id_doest_not_exist(self, app):
             # Given
             user = create_user(email='test@email.com')

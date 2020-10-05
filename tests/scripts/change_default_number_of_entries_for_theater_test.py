@@ -1,12 +1,12 @@
 from models import AllocineVenueProvider, VenueSQLEntity
 from repository import repository
 from scripts.change_default_number_of_entries_for_theater import change_quantity_for_allocine_venue_provider
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_venue, create_offerer, create_provider, \
     create_allocine_venue_provider
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def should_set_given_quantity_for_allocine_venue_provider_of_given_siret(app):
     # Given
     provider = create_provider()

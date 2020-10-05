@@ -13,6 +13,7 @@ from connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids, \
     get_offer_ids_in_error, delete_offer_ids_in_error
 from repository import repository
 from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_user, create_offerer, \
     create_user_offerer, create_provider
 
@@ -137,7 +138,7 @@ class DeleteVenueIdsTest:
 
 
 class AddVenueProviderTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_add_venue_provider(self, app):
         # Given
         client = MagicMock()

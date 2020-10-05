@@ -2,14 +2,15 @@ import secrets
 
 from bs4 import BeautifulSoup
 
-from tests.conftest import clean_database, mocked_mail
+import pytest
+from tests.conftest import mocked_mail
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 from tests.utils.mailing_test import get_by_siren_stub
 from utils.mailing import make_validation_email_object
 
 
 @mocked_mail
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_write_object_validation_email(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
@@ -56,7 +57,7 @@ def test_write_object_validation_email(app):
 
 
 @mocked_mail
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_validation_email_object_does_not_include_validation_link_if_user_offerer_is_already_validated(app):
     # Given
     offerer = create_offerer()
@@ -73,7 +74,7 @@ def test_validation_email_object_does_not_include_validation_link_if_user_offere
 
 
 @mocked_mail
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_validation_email_object_does_not_include_validation_link_if_offerer_is_already_validated(app):
     # Given
     offerer = create_offerer()
@@ -90,7 +91,7 @@ def test_validation_email_object_does_not_include_validation_link_if_offerer_is_
 
 
 @mocked_mail
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_validation_email_should_neither_return_clearTextPassword_nor_totallysafepsswd(app):
     # Given
     offerer = create_offerer()

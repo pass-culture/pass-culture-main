@@ -5,14 +5,14 @@ from models import BookingSQLEntity
 from repository import repository
 from scripts.booking.correct_bookings_status import get_bookings_cancelled_during_quarantine_with_payment, \
     correct_booking_status
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, create_stock, create_venue, create_offerer, \
     create_user, create_deposit, create_payment
 from tests.model_creators.specific_creators import create_offer_with_event_product
 
 
 class GetBookingsCancelledDuringQuarantineWithPaymentTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_only_return_bookings_with_payment(self, app):
         # Given
         beneficiary = create_user()
@@ -34,7 +34,7 @@ class GetBookingsCancelledDuringQuarantineWithPaymentTest:
         # Then
         assert bookings_result == [booking1]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_cancelled_booking_with_payment(self, app):
         # Given
         beneficiary = create_user()
@@ -56,7 +56,7 @@ class GetBookingsCancelledDuringQuarantineWithPaymentTest:
         # Then
         assert bookings_result == [booking1]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_non_cancelled_booking_with_payment(self, app):
         # Given
         beneficiary = create_user()
@@ -76,7 +76,7 @@ class GetBookingsCancelledDuringQuarantineWithPaymentTest:
         # Then
         assert len(bookings_result) == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_booking_in_excluded_list(self, app):
         # Given
         beneficiary = create_user()
@@ -98,7 +98,7 @@ class GetBookingsCancelledDuringQuarantineWithPaymentTest:
 
 
 class CorrectBookingStatusTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
     def test_should_revert_booking_cancellation_for_bookings_to_update(self,
                                                                        get_bookings_cancelled_during_quarantine_with_payment,
@@ -126,7 +126,7 @@ class CorrectBookingStatusTest:
         assert corrected_booking.isUsed is True
         assert corrected_booking.dateUsed == booking.dateCreated
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
     def test_should_not_revert_booking_dateused_if_booking_already_has_one(
             self,
@@ -159,7 +159,7 @@ class CorrectBookingStatusTest:
         assert corrected_booking.isUsed is True
         assert corrected_booking.dateUsed == dateused
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
     def test_should_not_revert_booking_if_user_has_insufficient_funds(
             self,

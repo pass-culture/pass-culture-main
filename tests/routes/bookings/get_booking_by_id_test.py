@@ -1,5 +1,6 @@
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_stock
 from tests.model_creators.specific_creators import create_offer_with_thing_product
@@ -8,7 +9,7 @@ from utils.human_ids import humanize
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_booking_to_have_completed_url(self, app):
             # Given
             user = create_user(email='user@example.com')

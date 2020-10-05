@@ -2,7 +2,8 @@ from urllib.parse import urlencode
 
 from models import EventType, ThingType, Deposit, BookingSQLEntity, UserSQLEntity
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_user_offerer
@@ -14,7 +15,7 @@ from utils.human_ids import humanize
 class Patch:
     class Returns204:
         class WhenUserIsAnonymous:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def expect_booking_to_be_used(self, app):
                 # Given
                 user = create_user()
@@ -35,7 +36,7 @@ class Patch:
                 assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
         class WhenUserIsLoggedIn:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def expect_booking_to_be_used(self, app):
                 # Given
                 user = create_user()
@@ -56,7 +57,7 @@ class Patch:
                 assert response.status_code == 204
                 assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def expect_booking_with_token_in_lower_case_to_be_used(self, app):
                 # Given
                 user = create_user()
@@ -78,7 +79,7 @@ class Patch:
                 assert response.status_code == 204
                 assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
                 # Given
                 user = create_user()
@@ -101,7 +102,7 @@ class Patch:
                 assert response.status_code == 204
                 assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def expect_booking_to_be_used_with_special_char_in_url(self, app):
                 # Given
                 user = create_user(email='user+plus@email.fr')
@@ -124,7 +125,7 @@ class Patch:
                 assert response.status_code == 204
 
         class WhenUserIsAdmin:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def expect_activation_booking_to_be_used_and_linked_user_to_be_able_to_book(self, app):
                 # Given
                 user = create_user(can_book_free_offers=False, is_admin=False, first_name='John')
@@ -151,7 +152,7 @@ class Patch:
 
     class Returns400:
         class WhenUserIsAnonymous:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_email_is_missing(self, app):
                 # Given
                 user = create_user()
@@ -171,7 +172,7 @@ class Patch:
                 assert response.json['email'] == [
                     "L'adresse email qui a servie à la réservation est obligatoire dans l'URL [?email=<email>]"]
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_offer_id_is_missing(self, app):
                 # Given
                 user = create_user()
@@ -190,7 +191,7 @@ class Patch:
                 assert response.json['offer_id'] == [
                     "L'id de l'offre réservée est obligatoire dans l'URL [?offer_id=<id>]"]
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_both_email_and_offer_id_are_missing(self, app):
                 # Given
                 user = create_user()
@@ -214,7 +215,7 @@ class Patch:
 
     class Returns403:
         class WhenUserIsLoggedIn:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_not_attached_to_linked_offerer(self, app):
                 # Given
                 user = create_user()
@@ -235,7 +236,7 @@ class Patch:
                 assert response.json['global'] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
                 assert BookingSQLEntity.query.get(booking_id).isUsed is False
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_not_admin_and_tries_to_patch_activation_offer(self, app):
                 # Given
                 user = create_user()
@@ -258,7 +259,7 @@ class Patch:
 
     class Returns404:
         class WhenUserIsAnonymous:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_booking_does_not_exist(self, app):
                 # Given
                 user = create_user()
@@ -278,7 +279,7 @@ class Patch:
                 assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
         class WhenUserIsLoggedIn:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_not_editor_and_email_does_not_match(self, app):
                 # Given
                 user = create_user()
@@ -298,7 +299,7 @@ class Patch:
                 assert response.status_code == 404
                 assert BookingSQLEntity.query.get(booking_id).isUsed is False
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_email_has_special_characters_but_is_not_url_encoded(self, app):
                 # Given
                 user = create_user(email='user+plus@email.fr')
@@ -319,7 +320,7 @@ class Patch:
                 # Then
                 assert response.status_code == 404
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_not_editor_and_offer_id_is_invalid(self, app):
                 # Given
                 user = create_user()
@@ -342,7 +343,7 @@ class Patch:
 
     class Returns405:
         class WhenUserIsAdmin:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def expect_no_new_deposits_when_the_linked_user_has_been_already_activated(self, app):
                 # Given
                 user = create_user(can_book_free_offers=False, is_admin=False)
@@ -370,7 +371,7 @@ class Patch:
 
     class Returns410:
         class WhenUserIsLoggedIn:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_booking_has_been_cancelled_already(self, app):
                 # Given
                 user = create_user()
@@ -393,7 +394,7 @@ class Patch:
                 assert response.json['booking'] == ['Cette réservation a été annulée']
                 assert BookingSQLEntity.query.get(booking_id).isUsed is False
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_booking_has_been_validated_already(self, app):
                 # Given
                 user = create_user()

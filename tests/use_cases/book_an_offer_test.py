@@ -12,7 +12,7 @@ from repository import repository
 from infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
 from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
 from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
-from tests.conftest import clean_database
+import pytest
 from tests.domain_creators.generic_creators import create_domain_beneficiary
 from tests.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
     create_booking, create_stock, create_recommendation
@@ -36,7 +36,7 @@ class BookAnOfferTest:
                                          stock_repository=self.stock_repository,
                                          notification_service=self.notification_service)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_user_can_book_an_offer(self, app):
         # Given
         user = create_user()
@@ -75,7 +75,7 @@ class BookAnOfferTest:
         assert saved_booking.beneficiary.identifier == booking_information.user_id
         assert saved_booking.quantity == booking_information.quantity
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_send_a_booking_recap_email(self, app):
         # Given
         user = create_user()
@@ -112,7 +112,7 @@ class BookAnOfferTest:
         # Then
         self.notification_service.send_booking_recap.assert_called_once_with(saved_booking)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_send_booking_confirmation_email_to_beneficiary(self, app):
         # Given
         user = create_user()
@@ -149,7 +149,7 @@ class BookAnOfferTest:
         # Then
         self.notification_service.send_booking_confirmation_to_beneficiary.assert_called_once_with(saved_booking)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_saved_booking(self, app):
         # Given
         user = create_user()
@@ -185,7 +185,7 @@ class BookAnOfferTest:
         # Then
         assert booking == saved_booking
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_failure_when_stock_id_does_not_match_any_existing_stock(self, app):
         # Given
         user = create_user()
@@ -213,7 +213,7 @@ class BookAnOfferTest:
         # Then
         assert error.value.errors == {'stockId': ["stockId ne correspond à aucun stock"]}
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_failure_when_offer_already_booked_by_user(self, app):
         # Given
         user = create_user()
@@ -252,7 +252,7 @@ class BookAnOfferTest:
         # Then
         assert error.value.errors == {'offerId': ["Cette offre a déja été reservée par l'utilisateur"]}
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_failure_when_user_cannot_book_free_offers_and_offer_is_free(self, app):
         # Given
         user = create_user(can_book_free_offers=False)
@@ -290,7 +290,7 @@ class BookAnOfferTest:
         assert error.value.errors == {'cannotBookFreeOffers': ["Votre compte ne vous permet"
                                                                " pas de faire de réservation."]}
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_failure_when_stock_is_not_bookable(self, app):
         # Given
         user = create_user()
@@ -325,7 +325,7 @@ class BookAnOfferTest:
         # Then
         assert error.value.errors == {'stock': ["Ce stock n'est pas réservable"]}
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_failure_when_user_has_not_enough_credit(self, app):
         # Given
         user = create_user()
@@ -365,7 +365,7 @@ class BookAnOfferTest:
                        ' pour réserver cette offre.']
                }
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_failure_when_public_credit_and_limit_of_physical_thing_reached(self, app):
         # Given
         user = create_user()
@@ -410,7 +410,7 @@ class BookAnOfferTest:
                    ]
                }
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_failure_when_quantity_is_not_valid_for_duo_offer(self, app):
         # Given
         user = create_user()

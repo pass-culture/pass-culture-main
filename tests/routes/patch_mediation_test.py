@@ -2,7 +2,8 @@ from unittest.mock import patch
 
 from models import MediationSQLEntity
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_mediation
 from tests.model_creators.specific_creators import create_offer_with_event_product
@@ -11,7 +12,7 @@ from utils.human_ids import humanize
 
 class Patch:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_mediation_is_edited(self, app):
             # given
             user = create_user()
@@ -37,7 +38,7 @@ class Patch:
             assert response.json['thumbUrl'] == mediation.thumbUrl
             assert mediation.isActive == data['isActive']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.mediations.feature_queries.is_active', return_value=True)
         @patch('routes.mediations.redis.add_offer_id')
         def should_add_offer_id_to_redis_when_mediation_is_edited(self, mock_redis, mock_feature, app):
@@ -64,7 +65,7 @@ class Patch:
 
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_current_user_is_not_attached_to_offerer_of_mediation(self, app):
             # given
             current_user = create_user(email='bobby@test.com')
@@ -86,7 +87,7 @@ class Patch:
             assert response.status_code == 403
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_mediation_does_not_exist(self, app):
             # given
             user = create_user()

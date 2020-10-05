@@ -1,12 +1,13 @@
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 from utils.human_ids import humanize
 
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_get_user_offerer_should_return_only_user_offerer_from_current_user(self, app):
             # given
             user1 = create_user(email='patrick.fiori@test.com')
@@ -27,7 +28,7 @@ class Get:
             assert user_offerer_response['userId'] == humanize(user1.id)
             assert 'validationToken' not in user_offerer_response
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_offerer_id_does_not_exist(self, app):
             # given
             user1 = create_user(email='patrick.fiori@test.com')

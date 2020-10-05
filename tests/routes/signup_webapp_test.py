@@ -7,7 +7,8 @@ from models.feature import FeatureToggle, Feature
 from models.user_sql_entity import UserSQLEntity
 from repository import repository
 from routes.serialization import serialize
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 
 BASE_DATA = {
     'email': 'toto@btmx.fr',
@@ -26,7 +27,7 @@ class Post:
     class Returns201:
         @freeze_time('2019-01-01 01:00:00')
         @patch('routes.signup.get_authorized_emails_and_dept_codes')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_data_is_accurate(self, get_authorized_emails_and_dept_codes, app):
             # Given
             data = BASE_DATA.copy()
@@ -58,7 +59,7 @@ class Post:
                 assert key in json
 
         @patch('routes.signup.get_authorized_emails_and_dept_codes')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_created_user_does_not_have_validation_token_and_cannot_book_free_offers(self,
                                                                                          get_authorized_emails_and_dept_codes,
                                                                                          app):
@@ -78,7 +79,7 @@ class Post:
             assert not created_user.canBookFreeOffers
 
         @patch('routes.signup.get_authorized_emails_and_dept_codes')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_does_not_allow_the_creation_of_admins(self,
                                                        get_authorized_emails_and_dept_codes,
                                                        app):
@@ -107,7 +108,7 @@ class Post:
             assert not created_user.isAdmin
 
         @patch('routes.signup.get_authorized_emails_and_dept_codes')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_created_user_does_not_have_validation_token_and_cannot_book_free_offers(self,
                                                                                          get_authorized_emails_and_dept_codes,
                                                                                          app):
@@ -127,7 +128,7 @@ class Post:
             assert created_user.needsToFillCulturalSurvey == True
 
         @patch('routes.signup.get_authorized_emails_and_dept_codes')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_calling_old_route(self,
                                    get_authorized_emails_and_dept_codes,
                                    app):
@@ -145,7 +146,7 @@ class Post:
             assert response.headers.get('Location') == 'http://localhost/users/signup/webapp'
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_email_missing(self, app):
             # Given
             data = BASE_DATA.copy()
@@ -162,7 +163,7 @@ class Post:
             assert 'email' in error
 
         @patch('routes.signup.get_authorized_emails_and_dept_codes')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_email_with_invalid_format(self, get_authorized_emails_and_dept_codes, app):
             # Given
             get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])
@@ -180,7 +181,7 @@ class Post:
             assert 'email' in error
 
         @patch('routes.signup.get_authorized_emails_and_dept_codes')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_email_is_already_used(self, get_authorized_emails_and_dept_codes, app):
             # Given
             get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])
@@ -200,7 +201,7 @@ class Post:
             assert 'email' in error
 
         @patch('routes.signup.get_authorized_emails_and_dept_codes')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_public_name_is_missing(self, get_authorized_emails_and_dept_codes, app):
             # Given
             get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])
@@ -218,7 +219,7 @@ class Post:
             assert 'publicName' in error
 
         @patch('routes.signup.get_authorized_emails_and_dept_codes')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_public_name_is_too_short(self, get_authorized_emails_and_dept_codes, app):
             # Given
             get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])
@@ -236,7 +237,7 @@ class Post:
             assert 'publicName' in error
 
         @patch('routes.signup.get_authorized_emails_and_dept_codes')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_public_name_is_too_long(self, get_authorized_emails_and_dept_codes, app):
             # Given
             get_authorized_emails_and_dept_codes.return_value = (['toto@btmx.fr'], ['93'])
@@ -253,7 +254,7 @@ class Post:
             error = response.json
             assert 'publicName' in error
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_password_is_missing(self, app):
             # Given
             data = BASE_DATA.copy()
@@ -269,7 +270,7 @@ class Post:
             error = response.json
             assert 'password' in error
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_password_is_invalid(self, app):
             # Given
             data = BASE_DATA.copy()
@@ -285,7 +286,7 @@ class Post:
             response = response.json
             assert 'password' in response
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_missing_contact_ok(self, app):
             data = BASE_DATA.copy()
             del (data['contact_ok'])
@@ -300,7 +301,7 @@ class Post:
             error = response.json
             assert 'contact_ok' in error
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_wrong_format_on_contact_ok(self, app):
             data = BASE_DATA.copy()
             data['contact_ok'] = 't'
@@ -315,7 +316,7 @@ class Post:
             error = response.json
             assert 'contact_ok' in error
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.signup.get_authorized_emails_and_dept_codes')
         def when_user_not_in_exp_spreadsheet(self, get_authorized_emails_and_dept_codes, app):
             # Given
@@ -334,7 +335,7 @@ class Post:
             assert 'email' in error
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_feature_is_not_active(self, app):
             # Given
             data = BASE_DATA.copy()

@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from tests.conftest import TestClient, clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_user, create_venue, create_venue_provider
 from tests.model_creators.provider_creators import activate_provider
 
@@ -14,7 +15,7 @@ from utils.human_ids import dehumanize, humanize
 
 class Post:
     class Returns201:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.venue_providers.subprocess.Popen')
         @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
         def when_venue_provider_is_successfully_created(self, stubbed_check, mock_subprocess, app):
@@ -52,7 +53,7 @@ class Post:
                                                     cwd=API_ROOT_PATH,
                                                     shell=True)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.venue_providers.subprocess.Popen')
         def when_add_allocine_stocks_provider_with_price_but_no_isDuo_config(self, mock_subprocess, app):
             # Given
@@ -83,7 +84,7 @@ class Post:
             venue_provider = VenueProvider.query.one()
             assert json['venueId'] == humanize(venue_provider.venueId)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.venue_providers.subprocess.Popen')
         def when_add_allocine_stocks_provider_with_default_settings_at_import(self, mock_subprocess, app):
             # Given
@@ -113,7 +114,7 @@ class Post:
             assert response.status_code == 201
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.venue_providers.check_new_venue_provider_information')
         def when_api_error_raise_from_payload_validation(self, mock_check_new_venue_provider_information, app):
             # Given
@@ -139,7 +140,7 @@ class Post:
             assert response.status_code == 400
             assert ['error received'] == response.json['errors']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
         def when_trying_to_add_existing_provider(self, stubbed_check, app):
             # Given
@@ -194,7 +195,7 @@ class Post:
             assert response.json['global'] == ["Le prix doit être un nombre décimal"]
             assert VenueProvider.query.count() == 0
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.venue_providers.subprocess.Popen')
         def when_add_allocine_stocks_provider_with_no_price(self, mock_subprocess, app):
             # Given
@@ -223,7 +224,7 @@ class Post:
             assert VenueProvider.query.count() == 0
 
     class Returns401:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_not_logged_in(self, app):
             # when
             response = TestClient(app.test_client()).post('/venueProviders')
@@ -232,7 +233,7 @@ class Post:
             assert response.status_code == 401
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_venue_does_not_exist(self, app):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
@@ -258,7 +259,7 @@ class Post:
             assert response.status_code == 404
 
     class Returns422:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
         def when_provider_api_not_available(self, stubbed_check, app):
             # Given
@@ -294,7 +295,7 @@ class Post:
             assert VenueProvider.query.count() == 0
 
     class ConnectProviderToVenueTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
         @patch('routes.venue_providers.connect_provider_to_venue')
         def should_inject_the_appropriate_repository_to_the_usecase(self, mocked_connect_provider_to_venue,
@@ -327,7 +328,7 @@ class Post:
                                                                          'venueId': humanize(venue.id)
                                                                      })
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('use_cases.connect_provider_to_venue._check_venue_can_be_synchronized_with_provider')
         @patch('routes.venue_providers.connect_provider_to_venue')
         def should_inject_no_repository_to_the_usecase_when_provider_is_not_concerned(self,

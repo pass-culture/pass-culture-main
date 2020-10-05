@@ -10,6 +10,7 @@ from scripts.dashboard.finance_statistics import get_total_deposits, get_total_a
     _query_get_top_20_offerers_by_number_of_bookings, get_top_20_offerers_table_by_number_of_bookings, \
     _query_get_top_20_offerers_by_booking_amounts, get_top_20_offerers_by_amount_table
 from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit, create_payment
@@ -17,7 +18,7 @@ from tests.model_creators.specific_creators import create_offer_with_thing_produ
 
 
 class GetTotalDepositsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_no_deposits(self, app):
         # When
         total_deposits = get_total_deposits()
@@ -25,7 +26,7 @@ class GetTotalDepositsTest:
         # Then
         assert total_deposits == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1000_if_two_deposits(self, app):
         # Given
         user1 = create_user(email='test1@email.com')
@@ -41,7 +42,7 @@ class GetTotalDepositsTest:
         # Then
         assert total_deposits == 1000
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_500_if_two_deposits_but_filtered_by_departement(self, app):
         # Given
         user1 = create_user(departement_code='42', email='test1@email.com')
@@ -59,7 +60,7 @@ class GetTotalDepositsTest:
 
 
 class GetTotalAmountSpentTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_no_bookings(self, app):
         # When
         total_amount_spent = get_total_amount_spent()
@@ -67,7 +68,7 @@ class GetTotalAmountSpentTest:
         # Then
         assert total_amount_spent == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_20_if_two_booking_with_amount_10(self, app):
         # Given
         user1 = create_user(email='email1@test.com')
@@ -88,7 +89,7 @@ class GetTotalAmountSpentTest:
         # Then
         assert total_amount_spent == 20
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_10_if_two_booking_with_amount_10_and_one_cancelled(self, app):
         # Given
         user1 = create_user(email='email1@test.com')
@@ -109,7 +110,7 @@ class GetTotalAmountSpentTest:
         # Then
         assert total_amount_spent == 10
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_20_if_one_booking_with_amount_10_and_quantity_2(self, app):
         # Given
         user = create_user(email='email1@test.com')
@@ -127,7 +128,7 @@ class GetTotalAmountSpentTest:
         # Then
         assert total_amount_spent == 20
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_15_if_two_bookings_but_only_one_the_filtered_departement(self, app):
         # Given
         user67 = create_user(departement_code='67', email='email67@test.com')
@@ -151,7 +152,7 @@ class GetTotalAmountSpentTest:
 
 
 class GetTotalAmountToPayTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_no_payments(self, app):
         # When
         total_amount_to_pay = get_total_amount_to_pay()
@@ -159,7 +160,7 @@ class GetTotalAmountToPayTest:
         # Then
         assert total_amount_to_pay == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_20_if_one_payment_with_amount_10_and_one_with_amount_5(self, app):
         # Given
         user1 = create_user(email='email1@test.com')
@@ -182,7 +183,7 @@ class GetTotalAmountToPayTest:
         # Then
         assert total_amount_to_pay == 15
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_last_payment_status_banned(self, app):
         # Given
         user = create_user(email='email@test.com')
@@ -201,7 +202,7 @@ class GetTotalAmountToPayTest:
         # Then
         assert total_amount_to_pay == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_5_if_amount_5_and_last_payment_status_not_banned(self, app):
         # Given
         user = create_user(email='email@test.com')
@@ -221,7 +222,7 @@ class GetTotalAmountToPayTest:
         # Then
         assert total_amount_to_pay == 5
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_only_payment_total_by_department(self, app):
         # Given
         offerer = create_offerer(siren='111111111')
@@ -269,7 +270,7 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
         # Then
         assert bookings_counts == expected_counts
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_count_cancelled_bookings(self, app):
         # Given
         offerer = create_offerer()
@@ -307,7 +308,7 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
         # Then
         assert bookings_counts == [('Offer Name', 3, 50)]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_return_activation_offers(self, app):
         # Given
         offerer = create_offerer()
@@ -349,7 +350,7 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
         # Then
         assert bookings_counts == [('Offer', 2, 20)]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_does_not_return_activation_offers_filterd_by_departement(self, app):
         # Given
         offerer = create_offerer()
@@ -415,7 +416,7 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
         # Then
         assert bookings_counts == expected_counts
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_count_cancelled_bookings(self, app):
         # Given
         offerer = create_offerer()
@@ -474,7 +475,7 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
         # Then
         assert bookings_counts == [('Offerer', 3, 93)]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_return_offerers_with_only_activation_offers(self, app):
         # Given
         offerer = create_offerer(name='Offerer Name')
@@ -495,7 +496,7 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
         # Then
         assert bookings_counts == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_return_offerers_with_only_activation_offers_filtered_by_departement(self, app):
         # Given
         offerer = create_offerer(name='Offerer Name')
@@ -542,7 +543,7 @@ class GetTop20OfferersByNumberOfBookingsTest:
 
 
 class QueryGetTop20OfferersByAmountTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_count_cancelled_bookings(self, app):
         # Given
         offerer = create_offerer()
@@ -630,7 +631,7 @@ class QueryGetTop20OfferersByAmountTest:
         # Then
         assert bookings_counts == [('Small library', 2, 60), ('National book store', 2, 20)]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_return_offerers_with_only_activation_offer(self, app):
         # Given
         offerer = create_offerer(name='Offerer Name')
@@ -651,7 +652,7 @@ class QueryGetTop20OfferersByAmountTest:
         # Then
         assert bookings_counts == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_return_offerers_with_only_activation_offer_filtered_by_departement(self, app):
         # Given
         offerer = create_offerer(name='Offerer Name')

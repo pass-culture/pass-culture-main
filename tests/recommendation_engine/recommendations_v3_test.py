@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from recommendations_engine.recommendations import create_recommendations_for_discovery_v3
 from repository import repository, discovery_view_v3_queries
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_mediation, \
     create_offerer, create_user, create_venue, create_iris, create_iris_venue
 from tests.model_creators.specific_creators import \
@@ -12,7 +12,7 @@ from utils.human_ids import humanize
 
 
 class CreateRecommendationsForDiscoveryTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_put_mediation_ids_of_inactive_mediations(self, app):
         # Given
         sent_offers_ids = []

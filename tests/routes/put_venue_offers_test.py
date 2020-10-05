@@ -2,7 +2,8 @@ from unittest.mock import patch
 
 from models import OfferSQLEntity
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
     create_user_offerer
 from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
@@ -14,7 +15,7 @@ API_URL = '/venues/'
 
 class Put:
     class Returns401:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_the_user_is_not_logged_in(self, app):
             # Given
             user = create_user(email='test@example.net')
@@ -36,7 +37,7 @@ class Put:
             assert response.status_code == 401
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_the_user_is_not_venue_managing_offerer(self, app):
             # Given
             user = create_user(email='test@example.net')
@@ -61,7 +62,7 @@ class Put:
             assert response.status_code == 403
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_the_venue_does_not_exist(self, app):
             # Given
             user = create_user(email='test@example.net')
@@ -87,7 +88,7 @@ class Put:
             assert response.status_code == 404
 
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_activating_all_venue_offers(self, app):
             # Given
             user = create_user(email='test@example.net')
@@ -121,7 +122,7 @@ class Put:
 
         @patch('routes.venues.feature_queries.is_active', return_value=True)
         @patch('routes.venues.redis.add_venue_id')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_activating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_redis, mock_feature, app):
             # Given
             user = create_user(email='test@example.net')
@@ -148,7 +149,7 @@ class Put:
             assert response.status_code == 200
             mock_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_deactivating_all_venue_offers(self, app):
             # Given
             user = create_user(email='test@example.net')
@@ -179,7 +180,7 @@ class Put:
 
         @patch('routes.venues.feature_queries.is_active', return_value=True)
         @patch('routes.venues.redis.add_venue_id')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_deactivating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self,
                                                                                     mock_redis,
                                                                                     mock_feature,

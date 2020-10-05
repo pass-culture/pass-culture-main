@@ -3,7 +3,8 @@ from decimal import Decimal
 
 from models import EventType, BookingSQLEntity, StockSQLEntity
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_user_offerer, create_payment, create_api_key
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
@@ -16,7 +17,7 @@ API_KEY_VALUE = random_token(64)
 class Patch:
     class Returns204:
         class WithApiKeyAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_api_key_provided_is_related_to_regular_offer_with_rights(self, app):
                 # Given
                 user = create_user()
@@ -50,7 +51,7 @@ class Patch:
                 assert BookingSQLEntity.query.get(booking_id).isUsed is False
                 assert BookingSQLEntity.query.get(booking_id).dateUsed is None
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
                 # Given
                 user = create_user()
@@ -85,7 +86,7 @@ class Patch:
                 assert BookingSQLEntity.query.get(booking_id).dateUsed is None
 
         class WithBasicAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_logged_in_and_regular_offer(self, app):
                 # Given
                 user = create_user()
@@ -108,7 +109,7 @@ class Patch:
                 assert BookingSQLEntity.query.get(booking_id).isUsed is False
                 assert BookingSQLEntity.query.get(booking_id).dateUsed is None
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, app):
                 # Given
                 user = create_user()
@@ -134,7 +135,7 @@ class Patch:
                 assert BookingSQLEntity.query.get(booking_id).dateUsed is None
 
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_there_is_no_remaining_quantity_after_validating(self, app):
                 # Given
                 user = create_user()
@@ -164,7 +165,7 @@ class Patch:
                 assert BookingSQLEntity.query.get(booking.id).isUsed is False
 
     class Returns401:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_not_logged_in_and_doesnt_give_api_key(self, app):
             # Given
             user = create_user(email='user@example.net')
@@ -184,7 +185,7 @@ class Patch:
             # Then
             assert response.status_code == 401
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_not_logged_in_and_given_api_key_that_does_not_exists(self, app):
             # Given
             user = create_user(email='user@example.net')
@@ -209,7 +210,7 @@ class Patch:
 
     class Returns403:
         class WithApiKeyAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_the_api_key_is_not_linked_to_the_right_offerer(self, app):
                 # Given
                 user = create_user(email='user@example.net')
@@ -245,7 +246,7 @@ class Patch:
                     "Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
         class WithBasicAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_not_attached_to_linked_offerer(self, app):
                 # Given
                 user = create_user()
@@ -268,7 +269,7 @@ class Patch:
                     "Vous n'avez pas les droits suffisants pour valider cette contremarque."]
                 assert BookingSQLEntity.query.get(booking.id).isUsed is False
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_tries_to_patch_activation_offer(self, app):
                 # Given
                 user = create_user()
@@ -297,7 +298,7 @@ class Patch:
 
     class Returns404:
         class WithApiKeyAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_booking_is_not_provided_at_all(self, app):
                 # Given
                 user = create_user(email='user@example.net')
@@ -329,7 +330,7 @@ class Patch:
                 # Then
                 assert response.status_code == 404
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_api_key_is_provided_and_booking_does_not_exist(self, app):
                 # Given
                 user = create_user()
@@ -360,7 +361,7 @@ class Patch:
                 assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
         class WithBasicAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_logged_in_and_booking_does_not_exist(self, app):
                 # Given
                 user = create_user()
@@ -381,7 +382,7 @@ class Patch:
                 assert response.status_code == 404
                 assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_logged_in_and_booking_token_is_null(self, app):
                 # Given
                 user = create_user()
@@ -404,7 +405,7 @@ class Patch:
 
     class Returns410:
         class WithBasicAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
                 # Given
                 user = create_user()
@@ -428,7 +429,7 @@ class Patch:
                 assert response.json['booking'] == ['Cette réservation a été annulée']
                 assert BookingSQLEntity.query.get(booking.id).isUsed is True
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_logged_in_and_booking_has_not_been_validated_already(self, app):
                 # Given
                 user = create_user()
@@ -450,7 +451,7 @@ class Patch:
                 assert response.json['booking'] == ["Cette réservation n'a pas encore été validée"]
                 assert BookingSQLEntity.query.get(booking.id).isUsed is False
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_logged_in_and_booking_payment_exists(self, app):
                 # Given
                 user = create_user()
@@ -475,7 +476,7 @@ class Patch:
                 assert BookingSQLEntity.query.get(booking.id).isUsed is False
 
         class WithApiKeyAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_api_key_is_provided_and_booking_has_been_cancelled_already(self, app):
                 # Given
                 user = create_user()
@@ -512,7 +513,7 @@ class Patch:
                 assert response.json['booking'] == ['Cette réservation a été annulée']
                 assert BookingSQLEntity.query.get(booking.id).isUsed is True
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_api_key_is_provided_and_booking_has_not_been_validated_already(self, app):
                 # Given
                 user = create_user()
@@ -543,7 +544,7 @@ class Patch:
                 assert response.json['booking'] == ["Cette réservation n'a pas encore été validée"]
                 assert BookingSQLEntity.query.get(booking.id).isUsed is False
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_api_key_is_provided_and_booking_payment_exists(self, app):
                 # Given
                 user = create_user()

@@ -12,7 +12,7 @@ from models import ApiErrors
 from models import BankInformation
 from models.bank_information import BankInformationStatus
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.connector_creators.demarches_simplifiees_creators import \
     venue_demarche_simplifiee_application_detail_response_with_siret, \
     venue_demarche_simplifiee_application_detail_response_without_siret
@@ -31,7 +31,7 @@ class SaveVenueBankInformationsTest:
                     bank_informations_repository=BankInformationsSQLRepository()
                 )
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_refused_should_create_the_correct_bank_information(self,
                                                                                           mock_application_details,
                                                                                           app):
@@ -54,7 +54,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.REJECTED
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(self,
                                                                                                        mock_application_details,
                                                                                                        app):
@@ -78,7 +78,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.REJECTED
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_closed_should_create_the_correct_bank_information(self, mock_application_details,
                                                                                          app):
                 # Given
@@ -100,7 +100,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban == "FR7630007000111234567890144"
                 assert bank_information.status == BankInformationStatus.ACCEPTED
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_received_should_create_the_correct_bank_information(self,
                                                                                            mock_application_details,
                                                                                            app):
@@ -123,7 +123,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.DRAFT
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(self,
                                                                                             mock_application_details,
                                                                                             app):
@@ -147,7 +147,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.DRAFT
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_and_status_is_closed_should_raise_and_not_create_bank_information(self, mock_application_details,
                                                                                       app):
                 # Given
@@ -164,7 +164,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information_count == 0
                 assert error.value.args == (f'Offerer not found',)
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(self, mock_application_details,
                                                                                             app):
                 # Given
@@ -179,7 +179,7 @@ class SaveVenueBankInformationsTest:
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_and_status_is_closed_should_raise_and_not_create_bank_information(self, mock_application_details,
                                                                                       app):
                 # Given
@@ -198,7 +198,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information_count == 0
                 assert error.value.args == (f'Venue not found',)
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(self, mock_application_details,
                                                                                             app):
                 # Given
@@ -225,7 +225,7 @@ class SaveVenueBankInformationsTest:
                     bank_informations_repository=BankInformationsSQLRepository()
                 )
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_refused_should_create_the_correct_bank_information(self,
                                                                                           mock_application_details,
                                                                                           app):
@@ -249,7 +249,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.REJECTED
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(self,
                                                                                                        mock_application_details,
                                                                                                        app):
@@ -274,7 +274,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.REJECTED
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_closed_should_create_the_correct_bank_information(self, mock_application_details,
                                                                                          app):
                 # Given
@@ -297,7 +297,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban == "FR7630007000111234567890144"
                 assert bank_information.status == BankInformationStatus.ACCEPTED
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_received_should_create_the_correct_bank_information(self,
                                                                                            mock_application_details,
                                                                                            app):
@@ -321,7 +321,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.DRAFT
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(self,
                                                                                             mock_application_details,
                                                                                             app):
@@ -346,7 +346,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.DRAFT
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_but_status_is_not_closed_should_not_raise(self, mock_application_details,
                                                                                             app):
                 # Given
@@ -361,7 +361,7 @@ class SaveVenueBankInformationsTest:
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_and_state_is_closed_should_raise_and_not_create_bank_information(self,
                                                                                               mock_application_details,
                                                                                               app):
@@ -379,7 +379,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information_count == 0
                 assert error.value.args == (f'Offerer not found',)
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_without_siret_is_found_and_state_is_closed_should_raise_and_not_create_bank_information(self,
                                                                                               mock_application_details,
                                                                                               app):
@@ -400,7 +400,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information_count == 0
                 assert error.value.args == (f'Venue name not found',)
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_but_status_is_not_closed_should_not_raise(self, mock_application_details,
                                                                                             app):
                 # Given
@@ -426,7 +426,7 @@ class SaveVenueBankInformationsTest:
                 bank_informations_repository=BankInformationsSQLRepository()
             )
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_when_rib_and_offerer_change_everything_should_be_updated(self, mock_application_details, app):
             # Given
             application_id = '8'
@@ -457,7 +457,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.offererId == None
             assert bank_information.venueId == new_venue.id
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_when_status_change_rib_should_be_correctly_updated(self, mock_application_details, app):
             # Given
             application_id = '8'
@@ -486,7 +486,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.iban == None
             assert bank_information.status == BankInformationStatus.DRAFT
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_when_overriding_another_bank_information_should_raise(self, mock_application_details, app):
             # Given
             application_id = '8'
@@ -531,7 +531,7 @@ class SaveVenueBankInformationsTest:
                 bank_informations_repository=BankInformationsSQLRepository()
             )
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_when_receive_new_closed_application_should_override_previous_one(self, mock_application_details, app):
             # Given
             application_id = '8'
@@ -559,7 +559,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.iban == 'FR7630007000111234567890144'
             assert bank_information.applicationId == 8
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_when_receive_new_application_with_draft_state_should_update_previously_rejected_bank_information(self,
                                                                                                                   mock_application_details,
                                                                                                                   app):
@@ -590,7 +590,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.iban == None
             assert bank_information.status == BankInformationStatus.DRAFT
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_when_receive_new_application_with_lower_status_should_reject(self, mock_application_details, app):
             # Given
             application_id = '8'
@@ -623,7 +623,7 @@ class SaveVenueBankInformationsTest:
             assert error.value.args == (
                 f'Received application details state does not allow to change bank information',)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_when_receive_older_application_should_reject(self, mock_application_details, app):
             # Given
             application_id = '8'
@@ -655,7 +655,7 @@ class SaveVenueBankInformationsTest:
             assert error.value.args == (
                 f'Received application details are older than saved one',)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_when_state_is_unknown(self, mock_application_details, app):
             # Given
             application_id = '8'

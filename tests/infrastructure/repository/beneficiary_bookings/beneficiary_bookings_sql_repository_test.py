@@ -4,7 +4,7 @@ from domain.beneficiary_bookings.beneficiary_bookings_with_stocks import Benefic
 from infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import \
     BeneficiaryBookingsSQLRepository, _get_stocks_information
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_stock, \
     create_booking, create_deposit, create_recommendation
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
@@ -12,7 +12,7 @@ from utils.human_ids import humanize
 
 
 class BeneficiaryBookingsSQLRepositoryTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_return_beneficiary_bookings_with_expected_information(self, app):
         # Given
         user = create_user()
@@ -56,7 +56,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert expected_booking.departementCode == venue.departementCode
         assert expected_booking.thumb_url == f'http://localhost/storage/thumbs/products/{humanize(offer.productId)}'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_return_bookings_by_beneficiary_id(self, app):
         # Given
         user1 = create_user()
@@ -78,7 +78,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert len(result.bookings) == 1
         assert result.bookings[0].id == booking1.id
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_not_return_activation_bookings(self, app):
         # Given
         user = create_user()
@@ -106,7 +106,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert len(result.bookings) == 1
         assert result.bookings[0].id == booking3.id
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_return_only_most_recent_booking_when_two_cancelled_on_same_stock(self, app):
         # Given
         now = datetime.utcnow()
@@ -129,7 +129,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert len(result.bookings) == 1
         assert result.bookings[0].id == booking1.id
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_return_most_recent_bookings_first(self, app):
         # Given
         now = datetime.utcnow()
@@ -165,7 +165,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
 
 
 class GetStocksInformationTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_return_get_stocks_information(self, app):
         # Given
         offerer = create_offerer()

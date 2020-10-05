@@ -2,13 +2,14 @@ import secrets
 
 from models import UserOfferer
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
 
 class Get:
     class Returns202:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_user_offerer_attachment_to_be_validated(self, app):
             # Given
             user_offerer_token = secrets.token_urlsafe(20)
@@ -35,7 +36,7 @@ class Get:
 
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_user_offerer_attachment_not_to_be_validated_with_unknown_token(self, app):
             # when
             response = TestClient(app.test_client()).with_auth(email='bobby@example.net') \
@@ -45,7 +46,7 @@ class Get:
             assert response.status_code == 404
 
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_user_offerer_attachment_not_to_be_validated_with_same_token(self, app):
             user_offerer_token = secrets.token_urlsafe(20)
             offerer_token = secrets.token_urlsafe(20)

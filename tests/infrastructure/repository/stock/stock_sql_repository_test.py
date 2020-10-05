@@ -6,7 +6,7 @@ from domain.stock.stock_exceptions import StockDoesntExist
 from domain.stock.stock import Stock
 from repository import repository
 from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
 
@@ -16,7 +16,7 @@ class StockSQLRepositoryTest:
     def setup_method(self):
         self.stock_sql_repository = StockSQLRepository()
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_stock_with_correct_information(self, app):
         # Given
         offerer = create_offerer()

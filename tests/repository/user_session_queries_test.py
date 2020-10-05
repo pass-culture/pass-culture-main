@@ -5,11 +5,11 @@ import pytest
 from models import UserSession
 from repository import repository
 from repository.user_session_queries import delete_user_session
-from tests.conftest import clean_database
+import pytest
 
 
 class DeleteUserSessionTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_do_not_try_to_delete_session_when_session_does_not_exist(self, app):
         # given
         user_id = 1
@@ -21,7 +21,7 @@ class DeleteUserSessionTest:
         except:
             pytest.fail('Should not raise an error when no session found')
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_remove_session_for_user(self, app):
         # given
         user_id = 1

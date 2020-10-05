@@ -2,13 +2,13 @@ from models import StockSQLEntity
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from scripts.delete_corrupted_allocine_stocks import delete_corrupted_allocine_stocks
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 
 class DeleteCorruptedAllocineStocksTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_delete_stock_from_allocine_provider_with_specific_id_at_provider_format(self, app):
         # Given
         offerer = create_offerer()
@@ -25,7 +25,7 @@ class DeleteCorruptedAllocineStocksTest:
         # Then
         assert StockSQLEntity.query.count() == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_delete_stock_from_allocine_with_new_id_format(self, app):
         # Given
         offerer = create_offerer()
@@ -42,7 +42,7 @@ class DeleteCorruptedAllocineStocksTest:
         # Then
         assert StockSQLEntity.query.count() == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_delete_stock_from_other_provider_than_allocine(self, app):
         # Given
         offerer = create_offerer()
@@ -59,7 +59,7 @@ class DeleteCorruptedAllocineStocksTest:
         # Then
         assert StockSQLEntity.query.count() == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_delete_stock_from_allocine_when_not_sof_deleted(self, app):
         # Given
         offerer = create_offerer()

@@ -2,7 +2,7 @@ import pytest
 
 from models import ApiErrors, StockSQLEntity
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_offer_with_event_product, \
     create_event_occurrence
@@ -11,7 +11,7 @@ from utils.rest import handle_rest_get_list
 
 
 class HandleRestGetListTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_only_not_soft_deleted_stock(self, app):
         # Given
         offerer = create_offerer()
@@ -34,7 +34,7 @@ class HandleRestGetListTest:
         assert '"id":"{}"'.format(humanize(stock3.id)) in str(request[0].response)
         assert '"id":"{}"'.format(humanize(stock4.id)) in str(request[0].response)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_check_order_by(self, app):
         # When
         with pytest.raises(ApiErrors) as e:

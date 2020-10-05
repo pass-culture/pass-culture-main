@@ -3,12 +3,12 @@ from unittest.mock import MagicMock
 import pytest
 
 from models.feature import FeatureToggle, Feature
-from tests.conftest import clean_database
+import pytest
 from validation.routes.features import InconsistentFeaturesException, check_feature_consistency
 
 
 class CheckFeatureConsistencyTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_raises_inconsistent_feature_exception_if_database_and_enum_are_inconsistent(self, app):
         # Given
         find_all_features = MagicMock()
@@ -18,7 +18,7 @@ class CheckFeatureConsistencyTest:
         with pytest.raises(InconsistentFeaturesException):
             check_feature_consistency(find_all_features)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_none_if_database_and_enum_are_consistent(self, app):
         # Given
         find_all_features = MagicMock()

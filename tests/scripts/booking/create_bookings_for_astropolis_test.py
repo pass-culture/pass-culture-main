@@ -1,13 +1,13 @@
 from models import BookingSQLEntity
 from repository import repository
 from scripts.booking.create_bookings_for_astropolis import create_bookings_for_astropolis
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, \
     create_deposit, create_user, create_offerer, create_venue, create_stock
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_create_bookings_when_offer_one_with_price_0_was_booked_but_not_offer_two_nor_three(app):
     # Given
     beneficiary = create_user(first_name='John', last_name='Wick', email='john.wick@example.com')
@@ -51,7 +51,7 @@ def test_should_create_bookings_when_offer_one_with_price_0_was_booked_but_not_o
     assert expected_created_booking_for_beneficiary[0].userId == beneficiary.id
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_create_bookings_when_offer_one_with_price_0_was_booked_but_not_offer_two_nor_three_and_another_user_booked_offer_three(
         app):
     # Given
@@ -94,7 +94,7 @@ def test_should_create_bookings_when_offer_one_with_price_0_was_booked_but_not_o
     assert len(expected_created_booking_for_beneficiary) == 1
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_cancel_booking_when_offer_one_with_price_0_was_booked_but_not_offer_two_nor_three(app):
     # Given
     beneficiary = create_user(first_name='John', last_name='Wick', email='john.wick@example.com')
@@ -136,7 +136,7 @@ def test_should_cancel_booking_when_offer_one_with_price_0_was_booked_but_not_of
     assert expected_cancelled_booking_for_beneficiary[0].userId == beneficiary.id
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_not_create_bookings_when_offer_one_with_price_5_was_booked_but_not_offer_two_nor_three(app):
     # Given
     beneficiary = create_user(first_name='John', last_name='Wick', email='john.wick@example.com')
@@ -174,7 +174,7 @@ def test_should_not_create_bookings_when_offer_one_with_price_5_was_booked_but_n
     assert len(expected_created_booking_beneficiary1) == 0
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_not_create_bookings_when_offer_one_with_price_0_and_offer_two_were_booked(app):
     # Given
     beneficiary = create_user(first_name='John', last_name='Wick', email='john.wick@example.com')
@@ -213,7 +213,7 @@ def test_should_not_create_bookings_when_offer_one_with_price_0_and_offer_two_we
     assert len(expected_created_booking_beneficiary) == 0
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_not_create_bookings_when_offer_one_with_price_0_and_offer_three_were_booked(app):
     # Given
     beneficiary = create_user(first_name='John', last_name='Wick', email='john.wick@example.com')
@@ -253,7 +253,7 @@ def test_should_not_create_bookings_when_offer_one_with_price_0_and_offer_three_
     assert expected_created_booking_beneficiary[0] == booking_on_offer_three
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_not_create_bookings_when_offer_one_with_price_0_was_cancelled(app):
     # Given
     beneficiary = create_user(first_name='John', last_name='Wick', email='john.wick@example.com')
@@ -287,7 +287,7 @@ def test_should_not_create_bookings_when_offer_one_with_price_0_was_cancelled(ap
     assert len(expected_created_booking_beneficiary) == 0
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_not_create_bookings_when_offer_three_was_already_booked(app):
     # Given
     beneficiary = create_user(first_name='John', last_name='Wick', email='john.wick@example.com')
@@ -326,7 +326,7 @@ def test_should_not_create_bookings_when_offer_three_was_already_booked(app):
     assert expected_created_booking_beneficiary[0] == booking
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_not_create_bookings_when_offer_three_is_not_bookable(app):
     # Given
     beneficiary = create_user(first_name='John', last_name='Wick', email='john.wick@example.com')
@@ -364,7 +364,7 @@ def test_should_not_create_bookings_when_offer_three_is_not_bookable(app):
     assert len(expected_created_booking_beneficiary) == 0
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_not_create_bookings_when_beneficiary_does_not_have_enough_money(app):
     # Given
     beneficiary = create_user(first_name='John', last_name='Wick', email='john.wick@example.com')

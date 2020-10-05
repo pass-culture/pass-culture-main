@@ -7,7 +7,7 @@ from scripts.deactivate_offers_during_quatantine.deactivate_offers import \
     build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine, deactivate_offers, \
     deactivate_offers_with_max_stock_date_between_today_and_end_of_quarantine, \
     get_offers_with_max_stock_date_between_today_and_end_of_quarantine
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock
 from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 
@@ -28,7 +28,7 @@ class GetOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
 
 
 class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_get_offers_with_dates_only_before_today(self, app):
         # Given
         yesterday = TODAY - timedelta(days=1)
@@ -47,7 +47,7 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         # Then
         assert offers == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_get_offer_with_a_date_between_today_and_15_04(self, app):
         # Given
         offerer = create_offerer()
@@ -64,7 +64,7 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         # Then
         assert offers == [offer]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_get_offer_with_a_date_after_15_04(self, app):
         # Given
         offerer = create_offerer()
@@ -81,7 +81,7 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         # Then
         assert offers == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_get_offer_with_a_date_between_today_and_the_15_04_and_another_after_15_04(self, app):
         # Given
         offerer = create_offerer()
@@ -99,7 +99,7 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         # Then
         assert offers == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_get_offers_on_things(self, app):
         # Given
         offerer = create_offerer()
@@ -118,7 +118,7 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
 
 
 class DeactivateOffersTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_deactivate_given_offers(self, app):
         # Given
         offerer = create_offerer()
@@ -138,7 +138,7 @@ class DeactivateOffersTest:
 
 
 class DeactivateOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_deactivate_offers(self, app):
         # Given
         offerer = create_offerer()

@@ -1,12 +1,13 @@
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
 from utils.human_ids import humanize
 
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_access_to_one_venue(self, app):
             # given
             offerer = create_offerer()
@@ -32,7 +33,7 @@ class Get:
             }
             assert response.json[0] == expected_venue
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_connected_user_does_not_return_unrelated_venues(self, app):
             # given
             theater_company = create_offerer(name='Shakespear company', siren='987654321')
@@ -58,7 +59,7 @@ class Get:
             assert first_returned_venue['name'] == 'Contes et légendes'
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_current_user_doesnt_have_rights(self, app):
             # given
             offerer = create_offerer()

@@ -6,7 +6,7 @@ from freezegun import freeze_time
 
 from algolia.usecase.orchestrator import delete_expired_offers, process_eligible_offers
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 from utils.human_ids import humanize
@@ -15,7 +15,7 @@ TOMORROW = datetime.now() + timedelta(days=1)
 
 
 class ProcessEligibleOffersTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('algolia.usecase.orchestrator.add_offer_ids_in_error')
     @patch('algolia.usecase.orchestrator.delete_indexed_offers')
     @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
@@ -74,7 +74,7 @@ class ProcessEligibleOffersTest:
         mock_pipeline.reset.assert_called_once()
         mock_add_offer_ids_in_error.assert_not_called()
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('algolia.usecase.orchestrator.add_offer_ids_in_error')
     @patch('algolia.usecase.orchestrator.delete_indexed_offers')
     @patch('algolia.usecase.orchestrator.check_offer_exists')
@@ -129,7 +129,7 @@ class ProcessEligibleOffersTest:
         mock_pipeline.reset.assert_not_called()
         mock_add_offer_ids_in_error.assert_not_called()
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('algolia.usecase.orchestrator.delete_indexed_offers')
     @patch('algolia.usecase.orchestrator.check_offer_exists')
     @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
@@ -175,7 +175,7 @@ class ProcessEligibleOffersTest:
         mock_pipeline.execute.assert_not_called()
         mock_pipeline.reset.assert_not_called()
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('algolia.usecase.orchestrator.add_offer_ids_in_error')
     @patch('algolia.usecase.orchestrator.delete_indexed_offers')
     @patch('algolia.usecase.orchestrator.check_offer_exists')
@@ -234,7 +234,7 @@ class ProcessEligibleOffersTest:
     @patch('algolia.usecase.orchestrator.delete_objects')
     @patch('algolia.usecase.orchestrator.build_object')
     @patch('algolia.usecase.orchestrator.add_objects')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_index_offers_that_are_not_already_indexed(self,
                                                               mock_add_objects,
                                                               mock_build_object,
@@ -300,7 +300,7 @@ class ProcessEligibleOffersTest:
     @patch('algolia.usecase.orchestrator.delete_objects')
     @patch('algolia.usecase.orchestrator.build_object')
     @patch('algolia.usecase.orchestrator.add_objects')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_delete_offers_that_are_already_indexed(self,
                                                            mock_add_objects,
                                                            mock_build_object,
@@ -352,7 +352,7 @@ class ProcessEligibleOffersTest:
     @patch('algolia.usecase.orchestrator.delete_indexed_offers')
     @patch('algolia.usecase.orchestrator.check_offer_exists')
     @patch('algolia.usecase.orchestrator.delete_objects')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_delete_offers_that_are_not_already_indexed(self,
                                                                    mock_delete_objects,
                                                                    mock_check_offer_exists,
@@ -389,7 +389,7 @@ class ProcessEligibleOffersTest:
     @patch('algolia.usecase.orchestrator.delete_objects')
     @patch('algolia.usecase.orchestrator.build_object')
     @patch('algolia.usecase.orchestrator.add_objects')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_reindex_offers_that_are_already_indexed_only_if_offer_name_changed(self,
                                                                                        mock_add_objects,
                                                                                        mock_build_object,
@@ -445,7 +445,7 @@ class ProcessEligibleOffersTest:
     @patch('algolia.usecase.orchestrator.delete_objects')
     @patch('algolia.usecase.orchestrator.build_object')
     @patch('algolia.usecase.orchestrator.add_objects')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_reindex_offers_that_are_already_indexed_if_offer_name_has_not_changed(self,
                                                                                               mock_add_objects,
                                                                                               mock_build_object,
@@ -491,7 +491,7 @@ class ProcessEligibleOffersTest:
     @patch('algolia.usecase.orchestrator.delete_objects')
     @patch('algolia.usecase.orchestrator.build_object')
     @patch('algolia.usecase.orchestrator.add_objects')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @freeze_time('2019-01-01 12:00:00')
     def test_should_reindex_offers_only_when_stocks_beginning_datetime_have_changed(self,
                                                                                     mock_add_objects,
@@ -548,7 +548,7 @@ class ProcessEligibleOffersTest:
         assert mock_pipeline.reset.call_count == 1
         assert mock_delete_objects.call_count == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('algolia.usecase.orchestrator.add_offer_ids_in_error')
     @patch('algolia.usecase.orchestrator.delete_indexed_offers')
     @patch('algolia.usecase.orchestrator.add_to_indexed_offers')

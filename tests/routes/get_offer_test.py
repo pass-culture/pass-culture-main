@@ -1,5 +1,6 @@
 from repository import repository
-from tests.conftest import TestClient, clean_database
+from tests.conftest import TestClient
+import pytest
 from tests.model_creators.generic_creators import create_bank_information, \
     create_booking, create_deposit, create_mediation, create_offerer, \
     create_stock, create_user, create_venue
@@ -10,7 +11,7 @@ from utils.human_ids import humanize
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_rights_on_managing_offerer(self, app):
             # Given
             beneficiary = create_user()
@@ -37,7 +38,7 @@ class Get:
             assert 'validationToken' not in response_json['venue']['managingOfferer']
             assert 'thumbUrl' in response_json
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_returns_an_active_mediation(self, app):
             # Given
             beneficiary = create_user()
@@ -56,7 +57,7 @@ class Get:
             assert response.status_code == 200
             assert response.json['activeMediation'] is not None
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_returns_a_first_matching_booking(self, app):
             # Given
             beneficiary = create_user()
@@ -77,7 +78,7 @@ class Get:
             assert response.status_code == 200
             assert humanize(booking.id) in response.json['firstMatchingBooking']['id']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_returns_an_event_stock(self, app):
             # Given
             beneficiary = create_user()

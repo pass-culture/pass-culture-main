@@ -1,11 +1,11 @@
 from datetime import datetime
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_user
 from use_cases.update_user_informations import AlterableUserInformations, update_user_informations
 
 class UpdateUserInformationsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_user_with_proper_infos(self, app):
         # Given
         user = create_user()
@@ -39,7 +39,7 @@ class UpdateUserInformationsTest:
         assert user.publicName == 'Han Solo'
 
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_update_user_info_if_not_given(self, app):
         # Given
         user = create_user(phone_number='01 02 03 04 05')

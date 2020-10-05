@@ -2,7 +2,8 @@ from unittest.mock import patch
 
 from models import VenueSQLEntity
 from repository import repository
-from tests.conftest import TestClient, clean_database
+from tests.conftest import TestClient
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_user, \
     create_user_offerer, create_venue, create_venue_type, create_venue_label
 from utils.human_ids import dehumanize, humanize
@@ -10,7 +11,7 @@ from utils.human_ids import dehumanize, humanize
 
 class Patch:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_there_is_no_siret_yet(self, app):
             # Given
             offerer = create_offerer()
@@ -32,7 +33,7 @@ class Patch:
             assert response.status_code == 200
             assert response.json['siret'] == siret
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.venues.delete_venue_from_iris_venues')
         @patch('routes.venues.link_valid_venue_to_irises')
         def when_venue_is_physical_expect_delete_venue_from_iris_venues_and_link_venue_to_irises_to_be_called(self,
@@ -57,7 +58,7 @@ class Patch:
             mock_delete_venue_from_iris_venues.assert_called_once_with(venue.id)
             mock_link_venue_to_iris_if_valid.assert_called_once_with(venue)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.venues.delete_venue_from_iris_venues')
         def when_venue_is_virtual_expect_delete_venue_from_iris_venues_not_to_be_called(self,
                                                                                         mock_delete_venue_from_iris_venues,
@@ -77,7 +78,7 @@ class Patch:
             # Then
             mock_delete_venue_from_iris_venues.assert_not_called()
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.venues.feature_queries.is_active', return_value=True)
         @patch('routes.venues.redis.add_venue_id')
         def when_updating_a_venue_on_public_name_expect_relative_venue_id_to_be_added_to_redis(self,
@@ -103,7 +104,7 @@ class Patch:
             assert response.status_code == 200
             mock_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.venues.feature_queries.is_active', return_value=True)
         @patch('routes.venues.redis.add_venue_id')
         def when_updating_a_venue_on_siret_expect_relative_venue_id_to_not_be_added_to_redis(self,
@@ -130,7 +131,7 @@ class Patch:
             assert response.status_code == 200
             mock_redis.assert_not_called()
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_there_is_already_one_equal_siret(self, app):
             # Given
             offerer = create_offerer()
@@ -151,7 +152,7 @@ class Patch:
             assert response.status_code == 200
             assert response.json['siret'] == siret
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_update_venue(self, app):
             # given
             offerer = create_offerer()
@@ -181,7 +182,7 @@ class Patch:
             assert venue.isValidated
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_trying_to_patch_siret_when_already_one(self, app):
             # Given
             offerer = create_offerer()
@@ -202,7 +203,7 @@ class Patch:
             assert response.status_code == 400
             assert response.json['siret'] == ["Vous ne pouvez pas modifier le siret d'un lieu"]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_editing_is_virtual_and_managing_offerer_already_has_virtual_venue(self, app):
             # given
             offerer = create_offerer()
@@ -221,7 +222,7 @@ class Patch:
             assert response.json == {
                 'isVirtual': ['Un lieu pour les offres numériques existe déjà pour cette structure']}
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_latitude_out_of_range_and_longitude_wrong_format(self, app):
             # given
             offerer = create_offerer()
@@ -240,7 +241,7 @@ class Patch:
             assert response.json['latitude'] == ['La latitude doit être comprise entre -90.0 et +90.0']
             assert response.json['longitude'] == ['Format incorrect']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_trying_to_edit_managing_offerer(self, app):
             # Given
             offerer = create_offerer(siren='123456789')

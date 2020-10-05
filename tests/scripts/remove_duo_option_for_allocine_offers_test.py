@@ -1,4 +1,4 @@
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 
@@ -9,7 +9,7 @@ from scripts.remove_duo_option_for_allocine_offers import remove_duo_option_for_
 
 
 class RemoveDuoOptionForAllocineOffersTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_set_duo_option_as_false_only_for_allocine_offers(self, app):
         # Given
         offerer = create_offerer()

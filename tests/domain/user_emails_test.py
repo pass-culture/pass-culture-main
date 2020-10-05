@@ -1,6 +1,6 @@
 from unittest.mock import Mock, call, patch
 
-from tests.conftest import clean_database
+import pytest
 from tests.domain_creators.generic_creators import create_domain_beneficiary, \
     create_domain_beneficiary_pre_subcription
 from tests.model_creators.generic_creators import create_booking, \
@@ -103,7 +103,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
 
 
 class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     @patch('emails.beneficiary_offer_cancellation.feature_send_mail_to_users_enabled', return_value=True)
     def test_should_send_booking_cancellation_email_to_offerer_and_administration_when_booking_email_provided(self,
@@ -129,7 +129,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         args = mocked_send_email.call_args
         assert args[1]['data']['To'] == 'booking@example.com, administration@example.com'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     @patch('emails.beneficiary_offer_cancellation.feature_send_mail_to_users_enabled', return_value=True)
     def test_should_send_booking_cancellation_email_only_to_administration_when_no_booking_email_provided(self,
@@ -475,7 +475,7 @@ class SendActivationEmailTest:
 
 class SendAttachmentValidationEmailToProOffererTest:
     @patch('domain.user_emails.retrieve_data_for_offerer_attachment_validation_email')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_send_attachment_validation_email_to_pro_offerer(self,
                                                              mocked_retrieve_data_for_offerer_attachment_validation_email,
                                                              app):
@@ -497,7 +497,7 @@ class SendAttachmentValidationEmailToProOffererTest:
 class SendOngoingOffererAttachmentInformationEmailTest:
     @patch('domain.user_emails.retrieve_data_for_offerer_ongoing_attachment_email',
            return_value={'Mj-TemplateID': 778749})
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_true_when_email_data_are_valid(self,
                                                           mock_retrieve_data_for_offerer_ongoing_attachment_email,
                                                           app):

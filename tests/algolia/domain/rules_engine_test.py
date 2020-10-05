@@ -2,13 +2,13 @@ from datetime import datetime, timedelta
 
 from algolia.domain.rules_engine import is_eligible_for_reindexing
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 class IsEligibleForReindexingTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_false_when_offer_name_has_not_changed(self, app):
         # Given
         offerer = create_offerer()
@@ -27,7 +27,7 @@ class IsEligibleForReindexingTest:
         # Then
         assert not is_offer_eligible
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_true_when_offer_name_has_changed(self, app):
         # Given
         offerer = create_offerer()
@@ -46,7 +46,7 @@ class IsEligibleForReindexingTest:
         # Then
         assert is_offer_eligible
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_true_when_stocks_beginning_datetime_have_changed(self, app):
         # Given
         offerer = create_offerer(is_active=True, validation_token=None)
@@ -66,7 +66,7 @@ class IsEligibleForReindexingTest:
         # Then
         assert is_offer_eligible
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_false_when_stocks_beginning_datetime_have_not_changed(self, app):
         # Given
         offerer = create_offerer(is_active=True, validation_token=None)
@@ -86,7 +86,7 @@ class IsEligibleForReindexingTest:
         # Then
         assert not is_offer_eligible
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_true_when_stocks_prices_have_changed(self, app):
         # Given
         offerer = create_offerer()
@@ -106,7 +106,7 @@ class IsEligibleForReindexingTest:
         # Then
         assert is_offer_eligible
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_true_when_stocks_prices_have_not_changed(self, app):
         # Given
         offerer = create_offerer(is_active=True, validation_token=None)

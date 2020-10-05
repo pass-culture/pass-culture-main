@@ -1,12 +1,12 @@
 from models import StockSQLEntity
 
 from sandboxes.scripts.save_sandbox import save_sandbox
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.provider_creators import save_counts, assert_created_counts
 from utils.logger import logger
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_save_activation_sandbox(app):
     # given
     save_counts()

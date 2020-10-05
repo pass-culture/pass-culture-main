@@ -4,7 +4,8 @@ from unittest.mock import patch
 from models import BookingSQLEntity, Provider
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_user_offerer
@@ -17,7 +18,7 @@ NOW = datetime.utcnow()
 
 class Delete:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_current_user_has_rights_on_offer(self, app):
             # given
             user = create_user(email='test@email.com')
@@ -35,7 +36,7 @@ class Delete:
             assert response.status_code == 200
             assert response.json['isSoftDeleted'] is True
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_bookings_to_be_cancelled(self, app):
             # given
             user = create_user(email='test@email.com')
@@ -57,7 +58,7 @@ class Delete:
             assert booking1 in bookings
             assert booking2 in bookings
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_stock_is_on_an_offer_from_allocine_provider(self, app):
             # Given
             allocine_provider = get_provider_by_local_class('AllocineStocks')
@@ -80,7 +81,7 @@ class Delete:
 
         @patch('routes.stocks.feature_queries.is_active', return_value=True)
         @patch('routes.stocks.redis.add_offer_id')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_stock_is_deleted_expect_offer_id_to_be_added_to_redis(self, mock_redis, mock_feature, app):
             # given
             beneficiary = create_user()
@@ -99,7 +100,7 @@ class Delete:
             mock_redis.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_stock_is_on_an_offer_from_titelive_provider(self, app):
             # given
             tite_live_provider = Provider \
@@ -124,7 +125,7 @@ class Delete:
             assert response.json["global"] == ["Les offres importées ne sont pas modifiables"]
 
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_stock_is_an_event_that_ended_more_than_two_days_ago(self, app):
             # given
             user = create_user(email='test@email.com')
@@ -146,7 +147,7 @@ class Delete:
 
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_current_user_has_no_rights_on_offer(self, app):
             # given
             user = create_user(email='test@email.com')

@@ -4,7 +4,7 @@ from models import Feature
 from models.feature import FeatureToggle
 from repository import repository
 from scripts.payment.batch import generate_and_send_payments
-from tests.conftest import clean_database
+import pytest
 from tests.test_utils import deactivate_feature
 
 
@@ -23,7 +23,7 @@ class GenerateAndSendPaymentsTest:
     @patch('scripts.payment.batch.send_payments_report', return_value=[])
     @patch('scripts.payment.batch.send_payments_details', return_value=[])
     @patch('scripts.payment.batch.send_wallet_balances', return_value=[])
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_retrieve_all_steps_except_1_bis_when_message_id_is_none(self,
                                                                             send_wallet_balances,
                                                                             send_payments_details,
@@ -69,7 +69,7 @@ class GenerateAndSendPaymentsTest:
     @patch('scripts.payment.batch.send_payments_report', return_value=[])
     @patch('scripts.payment.batch.send_payments_details', return_value=[])
     @patch('scripts.payment.batch.send_wallet_balances', return_value=[])
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_start_script_at_1_bis_step_when_message_id_is_provided(self,
                                                                            send_wallet_balances,
                                                                            send_payments_details,
@@ -110,7 +110,7 @@ class GenerateAndSendPaymentsTest:
     @patch('scripts.payment.batch.send_payments_report', return_value=[])
     @patch('scripts.payment.batch.send_payments_details', return_value=[])
     @patch('scripts.payment.batch.send_wallet_balances', return_value=[])
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_update_booking_usage_if_corresponding_feature_is_disabled(self,
                                                                            send_wallet_balances,
                                                                            send_payments_details,

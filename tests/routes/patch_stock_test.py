@@ -7,7 +7,8 @@ from models import StockSQLEntity, Provider
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from routes.serialization import serialize
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_user_offerer
@@ -18,7 +19,7 @@ from utils.human_ids import humanize
 
 class Patch:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_editor_rights_on_offerer(self, app):
             # given
             user = create_user(email='test@email.com')
@@ -40,7 +41,7 @@ class Patch:
             assert request_after_update.json['quantity'] == 5
             assert request_after_update.json['price'] == 20
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_admin(self, app):
             # given
             user = create_user(can_book_free_offers=False, email='test@email.com', is_admin=True)
@@ -61,7 +62,7 @@ class Patch:
             assert request_after_update.json['quantity'] == 5
             assert request_after_update.json['price'] == 20
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_booking_limit_datetime_is_none_for_thing(self, app):
             # Given
             user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
@@ -87,7 +88,7 @@ class Patch:
 
         @patch('routes.stocks.feature_queries.is_active', return_value=True)
         @patch('routes.stocks.redis.add_offer_id')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_stock_is_edited_expect_offer_id_to_be_added_to_redis(self, mock_redis, mock_feature, app):
             # given
             beneficiary = create_user()
@@ -105,7 +106,7 @@ class Patch:
             assert request_update.status_code == 200
             mock_redis.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_offer_come_from_allocine_provider_and_fields_updated_in_stock_are_editable(self, app):
             # given
             allocine_provider = get_provider_by_local_class('AllocineStocks')
@@ -131,7 +132,7 @@ class Patch:
             assert updated_stock.quantity == 5
             assert updated_stock.price == 20
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.stocks.send_raw_email')
         @patch('routes.stocks.find_not_cancelled_bookings_by_stock')
         @freeze_time('2020-10-15 09:20:00')
@@ -165,7 +166,7 @@ class Patch:
 
         @patch('routes.stocks.have_beginning_date_been_modified')
         @patch('routes.stocks.send_batch_stock_postponement_emails_to_users')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_stock_date_has_not_been_changed_and_should_not_email_to_beneficiaries(self,
                                                                                        mocked_send_batch_stock_postponement_emails_to_users,
                                                                                        mocked_have_beginning_date_been_modified,
@@ -190,7 +191,7 @@ class Patch:
             mocked_send_batch_stock_postponement_emails_to_users.assert_not_called()
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_wrong_type_for_quantity(self, app):
             # given
             user = create_user()
@@ -209,7 +210,7 @@ class Patch:
             assert response.status_code == 400
             assert response.json['quantity'] == ['Saisissez un nombre valide']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_booking_limit_datetime_after_beginning_datetime(self, app):
             # given
             user = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
@@ -229,7 +230,7 @@ class Patch:
                 'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement'
             ]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_quantity_below_existing_bookings_quantity(self, app):
             # given
             user = create_user()
@@ -250,7 +251,7 @@ class Patch:
                 'Le stock total ne peut être inférieur au nombre de réservations'
             ]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_booking_limit_datetime_is_none_for_event(self, app):
             # Given
             user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
@@ -273,7 +274,7 @@ class Patch:
             assert response.status_code == 400
             assert response.json["bookingLimitDatetime"] == ['Ce paramètre est obligatoire']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_offer_come_from_titelive_provider(self, app):
             # given
             tite_live_provider = Provider \
@@ -302,7 +303,7 @@ class Patch:
             assert request_after_update.json['quantity'] == 10
             assert request_update.json["global"] == ["Les offres importées ne sont pas modifiables"]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_update_allocine_offer_with_new_values_for_non_editable_fields(self, app):
             # given
             allocine_provider = get_provider_by_local_class('AllocineStocks')
@@ -330,7 +331,7 @@ class Patch:
             assert existing_stock.quantity == 10
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_no_rights(self, app):
             # given
             user = create_user(email='test@email.com')

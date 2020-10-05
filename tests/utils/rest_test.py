@@ -3,14 +3,14 @@ from sqlalchemy import func
 
 from models import OfferSQLEntity, VenueSQLEntity, ApiErrors
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from utils.human_ids import humanize
 from utils.rest import check_order_by, load_or_raise_error
 
 
 class TestLoadOrRaiseErrorTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_object_if_found(self, app):
         # Given
         id = humanize(1)
@@ -22,7 +22,7 @@ class TestLoadOrRaiseErrorTest:
         assert error.value.errors['global'] == [
             'Aucun objet ne correspond à cet identifiant dans notre base de données']
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_raises_api_error_if_no_object(self, app):
         # Given
         offerer = create_offerer()

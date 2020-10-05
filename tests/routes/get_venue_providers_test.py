@@ -1,6 +1,7 @@
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_venue_provider, \
     create_allocine_venue_provider
 from utils.human_ids import humanize
@@ -9,7 +10,7 @@ from utils.logger import logger
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_listing_all_venues_with_a_valid_venue_id(self, app):
             # given
             offerer = create_offerer(siren='775671464')
@@ -31,7 +32,7 @@ class Get:
             assert response.json[0].get('id') == humanize(venue_provider.id)
             assert response.json[0].get('venueId') == humanize(venue.id)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_listing_all_allocine_venues_with_a_valid_venue_id(self, app):
             # given
             offerer = create_offerer()
@@ -54,7 +55,7 @@ class Get:
             assert response.json[0].get('venueId') == humanize(venue.id)
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_listing_all_venues_without_venue_id_argument(self, app):
             # given
             offerer = create_offerer(siren='775671464')

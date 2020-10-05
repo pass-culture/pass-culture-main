@@ -4,7 +4,7 @@ from domain.beneficiary.beneficiary import Beneficiary
 from domain.beneficiary.beneficiary_exceptions import BeneficiaryDoesntExist
 from repository import repository
 from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_user, create_deposit
 
 
@@ -12,7 +12,7 @@ class BeneficiarySQLRepositoryTest:
     def setup_method(self):
         self.beneficiary_sql_repository = BeneficiarySQLRepository()
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_user_with_correct_information(self, app):
         # Given
         beneficiary_sql_entity = create_user(idx=12, can_book_free_offers=True, email='john.doe@example.com',

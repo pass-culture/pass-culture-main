@@ -1,5 +1,6 @@
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
     create_mediation
 from tests.model_creators.specific_creators import create_offer_with_thing_product
@@ -10,7 +11,7 @@ RECOMMENDATION_URL = '/recommendations'
 
 class Patch:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_patch_recommendations_returns_is_clicked_true(self, app):
             # given
             user = create_user()

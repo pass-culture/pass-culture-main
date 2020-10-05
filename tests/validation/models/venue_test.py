@@ -1,6 +1,6 @@
 from models import ApiErrors
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from validation.models.venue import validate
 
@@ -31,7 +31,7 @@ def test_should_return_error_when_address_is_invalid():
     assert api_errors.errors == {'postalCode': ['Ce code postal est invalide']}
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_return_error_when_offerer_has_no_siren(app):
     # Given
     offerer = create_offerer(siren=None)
@@ -48,7 +48,7 @@ def test_should_return_error_when_offerer_has_no_siren(app):
     }
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_return_error_when_venue_does_not_belong_to_offerer(app):
     # Given
     offerer = create_offerer(siren="1")

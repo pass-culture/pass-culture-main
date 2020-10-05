@@ -6,6 +6,7 @@ from scripts.dashboard.users_statistics import count_activated_users, count_user
     get_mean_number_of_bookings_per_user_having_booked, get_mean_amount_spent_by_user, \
     _query_get_non_cancelled_bookings_by_user_departement, get_non_cancelled_bookings_by_user_departement
 from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit
@@ -13,7 +14,7 @@ from tests.model_creators.specific_creators import create_offer_with_thing_produ
 
 
 class CountActivatedUsersTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_count_all_users_by_default(self, app):
         # Given
         activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
@@ -27,7 +28,7 @@ class CountActivatedUsersTest:
         # Then
         assert count == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_count_users_by_departement_when_departement_code_given(self, app):
         # Given
         activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
@@ -43,7 +44,7 @@ class CountActivatedUsersTest:
 
 
 class CountUsersHavingBookedTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_count_all_users_by_default(self, app):
         # Given
         activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
@@ -64,7 +65,7 @@ class CountUsersHavingBookedTest:
         # Then
         assert count == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_count_users_having_booked_activation_offer(self, app):
         # Given
         user1 = create_user(can_book_free_offers=True, departement_code='74')
@@ -85,7 +86,7 @@ class CountUsersHavingBookedTest:
         # Then
         assert count == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_count_users_by_departement_when_departement_code_given(self, app):
         # Given
         activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
@@ -106,7 +107,7 @@ class CountUsersHavingBookedTest:
         # Then
         assert count == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_count_users_having_booked_activation_offer_when_departement_code_given(self, app):
         # Given
         user1 = create_user(can_book_free_offers=True, departement_code='74')
@@ -129,7 +130,7 @@ class CountUsersHavingBookedTest:
 
 
 class GetMeanNumberOfBookingsPerUserHavingBookedTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_no_bookings(self, app):
         # When
         mean_bookings = get_mean_number_of_bookings_per_user_having_booked()
@@ -137,7 +138,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         # Then
         assert mean_bookings == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_one_user_has_one_non_cancelled_booking(self, app):
         # Given
         user_having_booked = create_user()
@@ -154,7 +155,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         # Then
         assert mean_bookings == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_one_user_has_one_cancelled_booking(self, app):
         # Given
         user_having_booked = create_user()
@@ -171,7 +172,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         # Then
         assert mean_bookings == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_dot_5_if_one_user_has_one_cancelled_booking_and_another_a_cancelled_one(self, app):
         # Given
         user_having_booked1 = create_user()
@@ -190,7 +191,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         # Then
         assert mean_bookings == 0.5
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_one_if_only_one_user_is_from_the_good_departement(self, app):
         # Given
         user_having_booked1 = create_user(departement_code='45')
@@ -209,7 +210,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         # Then
         assert mean_bookings == 1.0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_zero_if_users_have_only_activation_bookings(self, app):
         # Given
         user1 = create_user()
@@ -230,7 +231,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         # Then
         assert mean_bookings == 0.0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_one_if_one_user_has_only_activation_booking_and_one_user_has_one_cinema_booking(self, app):
         # Given
         user1 = create_user()
@@ -253,7 +254,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
 
 
 class GetMeanAmountSpentByUserTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_no_bookings(self, app):
         # When
         mean_amount_spent = get_mean_amount_spent_by_user()
@@ -261,7 +262,7 @@ class GetMeanAmountSpentByUserTest:
         # Then
         assert mean_amount_spent == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_10_if_one_booking_not_cancelled_with_price_10_for_one_user(self, app):
         # Given
         user_having_booked = create_user()
@@ -279,7 +280,7 @@ class GetMeanAmountSpentByUserTest:
         # Then
         assert mean_amount_spent == 10
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_20_if_one_booking_with_price_10_with_2_as_quantity(self, app):
         # Given
         user_having_booked = create_user()
@@ -297,7 +298,7 @@ class GetMeanAmountSpentByUserTest:
         # Then
         assert mean_amount_spent == 20
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_one_user_has_one_cancelled_booking(self, app):
         # Given
         user_having_booked = create_user()
@@ -315,7 +316,7 @@ class GetMeanAmountSpentByUserTest:
         # Then
         assert mean_amount_spent == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_5_if_one_user_has_one_cancelled_booking_and_another_a_cancelled_one_on_stock_price_10(self, app):
         # Given
         user_having_booked1 = create_user()
@@ -337,7 +338,7 @@ class GetMeanAmountSpentByUserTest:
         # Then
         assert mean_amount_spent == 5
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_30_if_one_user_has_only_one_non_activation_booking_with_price_30(self, app):
         # Given
         user = create_user()
@@ -362,7 +363,7 @@ class GetMeanAmountSpentByUserTest:
         # Then
         assert mean_amount_spent == 30.0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_average_amount_based_on_user_location(self, app):
         # Given
         user_having_booked_from_25 = create_user(departement_code='25', email='email75@example.net')
@@ -386,7 +387,7 @@ class GetMeanAmountSpentByUserTest:
 
 
 class QueryGetNonCancelledBookingsByDepartementTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_ignore_cancelled_bookings(self, app):
         # Given
         offerer = create_offerer(name='Offerer dans le 93')
@@ -481,7 +482,7 @@ class QueryGetNonCancelledBookingsByDepartementTest:
         assert len(bookings_by_departement) == 2
         assert bookings_by_departement == [('95', 5), ('93', 2)]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_zero_bookings_if_they_are_on_activation_offers(self, app):
         # Given
         offerer = create_offerer(name='Offerer dans le 93')

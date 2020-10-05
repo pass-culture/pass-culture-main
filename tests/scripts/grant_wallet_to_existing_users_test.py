@@ -3,11 +3,11 @@ from unittest.mock import patch, MagicMock
 from models import UserSQLEntity, Deposit
 from repository import repository
 from scripts.grant_wallet_to_existing_users import grant_wallet_to_existing_users
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_user, create_deposit
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_grant_wallet_to_existing_users(app):
     # given
     beneficiary = create_user(email='email@example.com')

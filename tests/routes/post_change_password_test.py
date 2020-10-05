@@ -3,13 +3,14 @@ from unittest.mock import patch
 from domain.password import validate_change_password_request
 from models import UserSQLEntity, ApiErrors
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user
 
 
 class PostChangePassword:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_current_user_changes_password(self, app):
             # given
             user = create_user(email='user@test.com')
@@ -28,7 +29,7 @@ class PostChangePassword:
             assert response.status_code == 204
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.passwords.validate_change_password_request')
         def when_one_password_is_missing_in_the_request_body(self, validate_change_password_request, app):
             # given

@@ -2,7 +2,7 @@ from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 from freezegun import freeze_time
-from tests.conftest import clean_database
+import pytest
 from tests.domain_creators.generic_creators import \
     create_domain_beneficiary_pre_subcription
 from tests.model_creators.generic_creators import create_user
@@ -24,7 +24,7 @@ from use_cases.create_beneficiary_from_application import \
 @patch('domain.password.random_token')
 @patch('infrastructure.repository.beneficiary.beneficiary_pre_subscription_sql_converter.random_password')
 @freeze_time('2020-10-15 09:00:00')
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_saved_a_beneficiary_from_application(stubed_random_password,
                                               stubed_random_token,
                                               mocked_send_activation_email,
@@ -95,7 +95,7 @@ def test_saved_a_beneficiary_from_application(stubed_random_password,
     mocked_send_activation_email.assert_called_once()
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     # Given
     email = 'rennes@example.org'
@@ -129,7 +129,7 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     assert beneficiary_import.detail == f"Email {email} is already taken."
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_duplicate(app):
     # Given
     first_name = 'Thomas'
@@ -169,7 +169,7 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     assert beneficiary_import.detail == f"User with id {existing_user_id} is a duplicate."
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
     # Given
     application_id = 7
@@ -214,7 +214,7 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
 @patch('use_cases.create_beneficiary_from_application.validate')
 @patch('use_cases.create_beneficiary_from_application.send_raw_email')
 @patch('use_cases.create_beneficiary_from_application.send_rejection_email_to_beneficiary_pre_subscription')
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_calls_send_rejection_mail_with_validation_error(mocked_send_rejection_email_to_beneficiary_pre_subscription,
                                                          stubed_send_raw_email,
                                                          stubed_validate,

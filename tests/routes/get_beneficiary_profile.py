@@ -2,7 +2,8 @@ from datetime import datetime
 
 from models import ThingType
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_user_offerer, create_recommendation
@@ -11,7 +12,7 @@ from tests.model_creators.specific_creators import create_stock_with_thing_offer
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_has_no_deposit(self, app):
             # Given
             user = create_user(departement_code='93', email='toto@btmx.fr', public_name='Toto')
@@ -32,7 +33,7 @@ class Get:
             assert 'resetPasswordTokenValidityLimit' not in json
             assert json['wallet_is_activated'] == False
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_has_a_deposit(self, app):
             # Given
             user = create_user(departement_code='93', email='wallet_test@email.com', public_name='Test')
@@ -49,7 +50,7 @@ class Get:
             assert response.json['wallet_is_activated'] == True
             assert response.json['wallet_date_created'] == '2000-01-01T02:02:00Z'
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_booked_some_offers(self, app):
             # Given
             user = create_user(departement_code='93', email='wallet_test@email.com', public_name='Test')
@@ -76,7 +77,7 @@ class Get:
             }
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_header_not_in_whitelist(self, app):
             # Given
             user = create_user(can_book_free_offers=True, email='e@mail.com', is_admin=False)
@@ -92,7 +93,7 @@ class Get:
             assert response.json['global'] == ['Header non autorisé']
 
     class Returns401:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_not_logged_in(self, app):
             # When
             response = TestClient(app.test_client()).get('/beneficiaries/current')

@@ -9,7 +9,6 @@ from tests.model_creators.specific_creators import create_offer_with_event_produ
 
 
 class CancelBookingsOfEventsFromFileTest:
-    @clean_database
     def setup_method(self, app):
         beneficiary = create_user()
         create_deposit(user=beneficiary)
@@ -36,6 +35,7 @@ class CancelBookingsOfEventsFromFileTest:
             [offer_to_not_cancel.id, offerer_to_not_cancel.name, offer_to_not_cancel.name, "93000", "2020-06-20 18:00:12", 1, "Non", ""],
         ]
 
+    @clean_database
     def test_should_cancel_bookings_of_selected_offers(self):
         # When
         _cancel_bookings_of_offers_from_rows(self.csv_rows)
@@ -47,6 +47,7 @@ class CancelBookingsOfEventsFromFileTest:
         assert saved_booking.isUsed is False
         assert saved_booking.dateUsed is None
 
+    @clean_database
     def test_should_not_cancel_bookings_of_unselected_offers(self):
         # When
         _cancel_bookings_of_offers_from_rows(self.csv_rows)
@@ -56,6 +57,7 @@ class CancelBookingsOfEventsFromFileTest:
         assert saved_booking.isCancelled is False
         assert saved_booking.cancellationDate is None
 
+    @clean_database
     def test_should_not_cancel_bookings_of_specific_tokens(self):
         # When
         _cancel_bookings_of_offers_from_rows(self.csv_rows)

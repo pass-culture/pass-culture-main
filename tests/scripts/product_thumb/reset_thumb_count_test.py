@@ -3,11 +3,11 @@ from random import randrange
 from models import Product
 from repository import repository
 from scripts.product_thumb.reset_thumb_count import reset_thumb_count
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.specific_creators import create_product_with_thing_type
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_reset_thumb_count_before_processing_files(app):
     # Given
     for index in range(4):
@@ -22,7 +22,7 @@ def test_reset_thumb_count_before_processing_files(app):
     assert any(product.thumbCount == 0 for product in products)
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_reset_thumb_count_process_all_products(app):
     # Given
     for index in range(10):

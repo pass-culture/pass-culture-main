@@ -1,14 +1,15 @@
 import pytest
 
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, API_URL
 
 
 @pytest.mark.standalone
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in(self, app):
             # given
             user = create_user()
@@ -26,7 +27,7 @@ class Get:
             ]
             assert 'WEBAPP_SIGNUP' in feature_name_keys
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_not_logged_in(self, app):
             # when
             response = TestClient(app.test_client()).get(API_URL + '/features')

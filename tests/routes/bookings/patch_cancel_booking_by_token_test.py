@@ -1,6 +1,7 @@
 from models import ApiKey, BookingSQLEntity
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
     create_deposit, create_user_offerer
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
@@ -16,7 +17,7 @@ def create_api_key_for_offerer(offerer, token):
 
 class Patch:
     class Returns204:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_returns_204_with_cancellation_allowed(self, app):
             # Given
             pro_user = create_user(email='Mr Books@example.net', public_name='Mr Books')
@@ -48,7 +49,7 @@ class Patch:
             updated_booking = BookingSQLEntity.query.first()
             assert updated_booking.isCancelled
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_returns_204_with_lowercase_token(self, app):
             # Given
             pro_user = create_user(email='Mr Books@example.net', public_name='Mr Books')
@@ -82,7 +83,7 @@ class Patch:
             assert updated_booking.isCancelled
 
     class Returns401:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_not_authenticated_used_api_key_or_login(self, app):
             # Given
             user = create_user(email='j.f@example.net', public_name='J.F')
@@ -102,7 +103,7 @@ class Patch:
             # Then
             assert response.status_code == 401
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_giving_an_api_key_that_does_not_exists(self, app):
             # Given
             user = create_user(email='j.f@example.net', public_name='J.F')
@@ -126,7 +127,7 @@ class Patch:
             assert response.status_code == 401
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_the_api_key_is_not_linked_to_the_right_offerer(self, app):
             # Given
             pro_user = create_user(email='Mr Books@example.net', public_name='Mr Books')
@@ -162,7 +163,7 @@ class Patch:
             assert response.status_code == 403
             assert response.json['user'] == ["Vous n'avez pas les droits suffisants pour annuler cette réservation."]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_the_logged_user_has_not_rights_on_offerer(self, app):
             # Given
             pro_user = create_user(email='mr.book@example.net', public_name='Mr Books')
@@ -196,7 +197,7 @@ class Patch:
             assert response.json['global'] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
 
         class WhenTheBookingIsUsed:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_should_prevent_a_used_booking_from_being_cancelled(self, app):
                 # Given
                 pro_user = create_user(email='Mr Books@example.net', public_name='Mr Books')
@@ -231,7 +232,7 @@ class Patch:
                 assert updated_booking.isCancelled is False
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_the_booking_does_not_exists(self, app):
             # Given
             user = create_user()
@@ -260,7 +261,7 @@ class Patch:
             assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
     class Returns410:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_cancel_a_booking_already_cancelled(self, app):
             # Given
             pro_user = create_user(email='Mr Books@example.net', public_name='Mr Books')

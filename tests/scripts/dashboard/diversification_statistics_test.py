@@ -15,6 +15,7 @@ from scripts.dashboard.diversification_statistics import get_offerers_with_offer
     query_get_booking_counts_grouped_by_type_and_medium_for_departement, get_all_used_or_finished_bookings, \
     get_offers_available_on_search_count, get_offerers_with_offers_available_on_search_count, \
     get_offers_available_on_discovery_count_v2, get_offerers_with_offer_available_on_discovery_count_v2
+import pytest
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
@@ -25,7 +26,7 @@ two_days_ago = datetime.utcnow() - timedelta(days=2)
 
 
 class GetOffererCountTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_every_offerer_when_not_filtered(self, app):
         # Given
         first_user = create_user(email='first@example.net')
@@ -45,7 +46,7 @@ class GetOffererCountTest:
         # Then
         assert number_of_offerers == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_offerer_in_departement_when_filtered(self, app):
         # Given
         first_user = create_user(email='first@example.net')
@@ -67,7 +68,7 @@ class GetOffererCountTest:
 
 
 class GetOffererCountWithStockTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_every_offerer_when_not_filtered(self, app):
         # Given
         first_user = create_user(email='first@example.net')
@@ -92,7 +93,7 @@ class GetOffererCountWithStockTest:
         # Then
         assert number_of_offerers == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_offerer_in_departement_when_filtered(self, app):
         # Given
         first_user = create_user(email='first@example.net')
@@ -119,7 +120,7 @@ class GetOffererCountWithStockTest:
 
 
 class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('repository.offer_queries._exclude_booked_and_favorite')
     def test_should_not_filter_for_favorites_and_bookings_when_no_user(self, exclude_booked_and_favorite, app):
         # When
@@ -128,7 +129,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         exclude_booked_and_favorite.assert_not_called()
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_offerer_with_inactive_offer(self, app):
         # Given
         offerer = create_offerer()
@@ -145,7 +146,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_offerer_s_offer_does_not_have_a_stock(self, app):
         # Given
         offerer = create_offerer()
@@ -161,7 +162,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_offerer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
@@ -178,7 +179,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_offerer_s_offer_does_not_have_a_mediation(self, app):
         # Given
         offerer = create_offerer()
@@ -194,7 +195,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_offerer_s_offer_stock_beginning_date_time_has_passed(self, app):
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
@@ -211,7 +212,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_offerer_is_not_active(self, app):
         # Given
         offerer = create_offerer(is_active=False)
@@ -227,7 +228,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_offerer_is_not_validated(self, app):
         # Given
         offerer = create_offerer(validation_token='XDFCGHVJBKNL')
@@ -243,7 +244,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_offerer_has_only_an_activation_offer(self, app):
         # Given
         offerer = create_offerer(validation_token='XDFCGHVJBKNL')
@@ -259,7 +260,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_offerer_s_offer_has_an_available_stock_and_mediation(self, app):
         # Given
         offerer = create_offerer()
@@ -276,7 +277,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_offerer_has_2_offers_with_available_stock_and_mediation(self, app):
         # Given
         offerer = create_offerer()
@@ -296,7 +297,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_only_offerers_with_venues_in_the_departement_when_filtered_by_departement_code(self, app):
         # Given
         first_user = create_user(email='first@example.net')
@@ -323,7 +324,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_count_offerer_with_virtual_offer_when_is_not_national(self, app):
         # Given
         offerer = create_offerer()
@@ -342,7 +343,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_count_offerer_with_virtual_offer_when_is_national(self, app):
         # Given
         offerer = create_offerer()
@@ -361,7 +362,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offerers == 1\
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_count_offerer_with_national_offer_from_another_departement(self, app):
         # Given
         offerer = create_offerer()
@@ -379,7 +380,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         assert number_of_offerers == 1
 
 class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offerer_with_inactive_offer(self, app):
         # Given
         offerer = create_offerer()
@@ -396,7 +397,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offerer_with_offer_without_stock(self, app):
         # Given
         offerer = create_offerer()
@@ -412,7 +413,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offerer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
@@ -429,7 +430,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offerer_without_mediation(self, app):
         # Given
         offerer = create_offerer()
@@ -445,7 +446,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_stock_passed(self, app):
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
@@ -462,7 +463,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_offerer_not_active(self, app):
         # Given
         offerer = create_offerer(is_active=False)
@@ -478,7 +479,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_offerer_not_validated(self, app):
         # Given
         offerer = create_offerer(validation_token='XDFCGHVJBKNL')
@@ -494,7 +495,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offerer_with_activation_offer(self, app):
         # Given
         offerer = create_offerer(validation_token='XDFCGHVJBKNL')
@@ -510,7 +511,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_offerer_with_offer_stock_and_mediation(self, app):
         # Given
         offerer = create_offerer()
@@ -527,7 +528,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_the_offerer_only_once_even_if_has_2_offers_with_stock_and_mediation(self, app):
         # Given
         offerer = create_offerer()
@@ -547,7 +548,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_only_offerers_with_venues_in_the_departement_when_filtered_by_departement_code(self, app):
         # Given
         first_user = create_user(email='first@example.com')
@@ -574,7 +575,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_offerer_with_only_virtual_offer_if_is_not_national(self, app):
         # Given
         offerer = create_offerer()
@@ -594,7 +595,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_offerer_with_virtual_offer_if_is_national(self, app):
         # Given
         offerer = create_offerer()
@@ -614,7 +615,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_count_offerer_with_national_offer_from_another_departement(self, app):
         # Given
         offerer = create_offerer()
@@ -634,7 +635,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
 
 
 class GetOfferersWithOffersAvailableOnSearchCountTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_inactive_offer(self, app):
         # Given
         offerer = create_offerer()
@@ -649,7 +650,7 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_offer_with_unvalidated_offerer(self, app):
         # Given
         offerer = create_offerer(validation_token='AZERTY')
@@ -664,7 +665,7 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_offer_with_inactive_offerer(self, app):
         # Given
         offerer = create_offerer(is_active=False)
@@ -679,7 +680,7 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_offer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
@@ -694,7 +695,7 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_offer_with_no_stocks(self, app):
         # Given
         offerer = create_offerer()
@@ -708,7 +709,7 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_two_offers_recommendable_for_search_from_the_same_offerer(self, app):
         # Given
         offerer = create_offerer()
@@ -725,7 +726,7 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_one_offer_with_two_stocks_recommendable_for_search(self, app):
         # Given
         offerer = create_offerer()
@@ -741,7 +742,7 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_two_offers_recommendable_for_search_but_only_one_in_department(self, app):
         # Given
         offerer = create_offerer()
@@ -761,7 +762,7 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
 
 
 class GetOfferersWithNonCancelledBookingsCountTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_no_bookings(self, app):
         # Given
         offerer = create_offerer()
@@ -773,7 +774,7 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_offerer_with_non_cancelled_booking(self, app):
         # Given
         offerer = create_offerer()
@@ -790,7 +791,7 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_offerer_with_2_non_cancelled_bookings(self, app):
         # Given
         offerer = create_offerer()
@@ -809,7 +810,7 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_venue_is_in_the_wrong_departement(self, app):
         # Given
         user = create_user()
@@ -834,7 +835,7 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_offerer_with_cancelled_bookings(self, app):
         # Given
         offerer = create_offerer()
@@ -851,7 +852,7 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_zero_if_only_offerer_with_activation_booking(self, app):
         # Given
         offerer1 = create_offerer()
@@ -875,7 +876,7 @@ class GetOfferersWithNonCancelledBookingsCountTest:
 
 
 class GetOffersWithUserOffererAndStockCountTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_offer_without_user_offerer(self, app):
         # Given
         offerer = create_offerer()
@@ -890,7 +891,7 @@ class GetOffersWithUserOffererAndStockCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_offer_with_user_offerer_and_stock(self, app):
         # Given
         offerer = create_offerer()
@@ -907,7 +908,7 @@ class GetOffersWithUserOffererAndStockCountTest:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_offer_without_stock(self, app):
         # Given
         offerer = create_offerer()
@@ -923,7 +924,7 @@ class GetOffersWithUserOffererAndStockCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_offer_with_2_user_offerer_and_stock(self, app):
         # Given
         offerer = create_offerer()
@@ -942,7 +943,7 @@ class GetOffersWithUserOffererAndStockCountTest:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_offer_with_user_offerer_and_2_stocks(self, app):
         # Given
         offerer = create_offerer()
@@ -960,7 +961,7 @@ class GetOffersWithUserOffererAndStockCountTest:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_two_offerers_but_filtered_by_departement(self, app):
         # Given
         first_user = create_user(email='user76@example.net')
@@ -985,7 +986,7 @@ class GetOffersWithUserOffererAndStockCountTest:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_zero_if_only_activation_offers(self, app):
         # Given
         tomorrow = datetime.utcnow()
@@ -1008,7 +1009,7 @@ class GetOffersWithUserOffererAndStockCountTest:
 
 
 class GetOffersAvailableOnDiscoveryCountTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offerer_with_inactive_offer(self, app):
         # Given
         offerer = create_offerer()
@@ -1025,7 +1026,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offerer_with_offer_without_stock(self, app):
         # Given
         offerer = create_offerer()
@@ -1041,7 +1042,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offerer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
@@ -1058,7 +1059,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offerer_without_mediation(self, app):
         # Given
         offerer = create_offerer()
@@ -1074,7 +1075,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offerer_without_mediation_and_thumb_count(self, app):
         # Given
         offerer = create_offerer()
@@ -1090,7 +1091,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_stock_passed(self, app):
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
@@ -1107,7 +1108,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_offerer_not_active(self, app):
         # Given
         offerer = create_offerer(is_active=False)
@@ -1123,7 +1124,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_offerer_not_validated(self, app):
         # Given
         offerer = create_offerer(validation_token='XDFCGHVJBKNL')
@@ -1139,7 +1140,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offerer_with_activation_offer(self, app):
         # Given
         offerer = create_offerer()
@@ -1155,7 +1156,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_offerer_with_offer_returned_by_get_active_offers(self, app):
         # Given
         offerer = create_offerer()
@@ -1172,7 +1173,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_2_if_2_offers_returned_by_get_active_offers(self, app):
         # Given
         offerer = create_offerer()
@@ -1192,7 +1193,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offers == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_2_offers_returned_by_get_active_offers_but_only_one_in_departement(self, app):
         # Given
         first_user = create_user(email='user76@example.net')
@@ -1219,7 +1220,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('repository.offer_queries._exclude_booked_and_favorite')
     def test_should_not_filter_favorites_and_bookings_if_no_user(self, exclude_booked_and_favorite, app):
         # When
@@ -1228,7 +1229,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         exclude_booked_and_favorite.assert_not_called()
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_virtual_offer_if_is_not_national(self, app):
         # Given
         offerer = create_offerer()
@@ -1245,7 +1246,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert get_offers_available_on_discovery_count(None) == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_virtual_offer_if_is_national(self, app):
         # Given
         offerer = create_offerer()
@@ -1262,7 +1263,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Then
         assert get_offers_available_on_discovery_count(None) == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_count_national_offer_from_another_departement(self, app):
         # Given
         offerer = create_offerer()
@@ -1283,7 +1284,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
 
 
 class GetOffersAvailableOnDiscoveryCountV2Test:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_inactive_offer(self, app):
         # Given
         offerer = create_offerer()
@@ -1300,7 +1301,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offer_without_stock(self, app):
         # Given
         offerer = create_offerer()
@@ -1316,7 +1317,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
@@ -1333,7 +1334,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offer_without_mediation(self, app):
         # Given
         offerer = create_offerer()
@@ -1349,7 +1350,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_stock_s_beginning_date_time_has_passed(self, app):
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
@@ -1367,7 +1368,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_offer_s_offerer_is_not_active(self, app):
         # Given
         offerer = create_offerer(is_active=False)
@@ -1384,7 +1385,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_offer_s_offerer_is_not_validated(self, app):
         # Given
         offerer = create_offerer(validation_token='XDFCGHVJBKNL')
@@ -1401,7 +1402,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_activation_offer(self, app):
         # Given
         offerer = create_offerer()
@@ -1418,7 +1419,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_offer_with_stock_and_mediation(self, app):
         # Given
         offerer = create_offerer()
@@ -1436,7 +1437,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_2_if_2_offers_with_stock_and_mediation(self, app):
         # Given
         offerer = create_offerer()
@@ -1457,7 +1458,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         # Then
         assert number_of_offers == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_2_offers_with_stock_and_mediation_but_only_one_in_departement(self, app):
         # Given
         first_user = create_user(email='user76@example.net')
@@ -1485,7 +1486,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_virtual_offer_if_is_not_national(self, app):
         # Given
         offerer = create_offerer()
@@ -1503,7 +1504,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         # Then
         assert get_offers_available_on_discovery_count_v2(None) == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_virtual_offer_if_is_national(self, app):
         # Given
         offerer = create_offerer()
@@ -1522,7 +1523,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         assert get_offers_available_on_discovery_count_v2(None) == 1
 
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_count_national_offer_from_another_departement(self, app):
         # Given
         offerer = create_offerer()
@@ -1542,7 +1543,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
 
 
 class GetOffersAvailableOnSearchCountTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_inactive_offer(self, app):
         # Given
         offerer = create_offerer()
@@ -1558,7 +1559,7 @@ class GetOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_offer_with_unvalidated_offerer(self, app):
         # Given
         offerer = create_offerer(validation_token='AZERTY')
@@ -1573,7 +1574,7 @@ class GetOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_offer_with_inactive_offerer(self, app):
         # Given
         offerer = create_offerer(is_active=False)
@@ -1588,7 +1589,7 @@ class GetOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_offer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
@@ -1603,7 +1604,7 @@ class GetOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_offer_with_no_stocks(self, app):
         # Given
         offerer = create_offerer()
@@ -1617,7 +1618,7 @@ class GetOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_2_when_two_offers_recommendable_for_search(self, app):
         # Given
         offerer = create_offerer()
@@ -1634,7 +1635,7 @@ class GetOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_two_offers_recommendable_for_search_but_only_one_in_department(self, app):
         # Given
         offerer = create_offerer()
@@ -1652,7 +1653,7 @@ class GetOffersAvailableOnSearchCountTest:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_one_offer_with_two_stocks_recommendable_for_search(self, app):
         # Given
         offerer = create_offerer()
@@ -1670,7 +1671,7 @@ class GetOffersAvailableOnSearchCountTest:
 
 
 class GetOffersWithNonCancelledBookingsCountTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_no_bookings(self, app):
         # Given
         offerer = create_offerer()
@@ -1684,7 +1685,7 @@ class GetOffersWithNonCancelledBookingsCountTest:
         # Then
         assert number_of_offers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_offer_with_non_cancelled_booking(self, app):
         # Given
         offerer = create_offerer()
@@ -1701,7 +1702,7 @@ class GetOffersWithNonCancelledBookingsCountTest:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_offer_with_2_non_cancelled_bookings(self, app):
         # Given
         offerer = create_offerer()
@@ -1720,7 +1721,7 @@ class GetOffersWithNonCancelledBookingsCountTest:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_two_offerers_with_effective_bookings_but_only_one_in_departement(self, app):
         # Given
         first_user = create_user(email='user76@example.net')
@@ -1749,7 +1750,7 @@ class GetOffersWithNonCancelledBookingsCountTest:
         # Then
         assert number_of_offers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_offerer_with_cancelled_bookings(self, app):
         # Given
         offerer = create_offerer()
@@ -1766,7 +1767,7 @@ class GetOffersWithNonCancelledBookingsCountTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_activation_offers(self, app):
         # Given
         offerer = create_offerer()
@@ -1788,7 +1789,7 @@ class GetOffersWithNonCancelledBookingsCountTest:
 
 
 class GetAllBookingsCount:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_all_bookings(self, app):
         # Given
         user_in_76 = create_user(departement_code='76', email='user-76@example.net')
@@ -1809,7 +1810,7 @@ class GetAllBookingsCount:
         # Then
         assert number_of_bookings == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_all_bookings(self, app):
         # Given
         user_in_76 = create_user(departement_code='76', email='user-76@example.net')
@@ -1864,7 +1865,7 @@ class QueryGetOfferCountsByTypeAndMediumTest:
         assert ('ThingType.MUSIQUE', False, 1) in offer_counts
         assert ('ThingType.MUSIQUE', True, 1) in offer_counts
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_when_no_stock(self, app):
         # Given
         offerer = create_offerer()
@@ -1885,7 +1886,7 @@ class QueryGetOfferCountsByTypeAndMediumTest:
         # Then
         assert offer_counts == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_no_user_offerer(self, app):
         # Given
         offerer = create_offerer()
@@ -1942,7 +1943,7 @@ class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
         assert ('ThingType.MUSIQUE', False, 1) in offer_counts
         assert ('ThingType.MUSIQUE', True, 1) in offer_counts
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_when_no_stock(self, app):
         # Given
         offerer = create_offerer()
@@ -1959,7 +1960,7 @@ class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
         # Then
         assert offer_counts == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_no_user_offerer(self, app):
         # Given
         offerer = create_offerer()
@@ -1975,7 +1976,7 @@ class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
         # Then
         assert offer_counts == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_nothing_in_requested_departement(self, app):
         # Given
         offerer = create_offerer()
@@ -1998,7 +1999,7 @@ class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
 
 
 class GetOffersByTypeAndDigitalTableTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_table_with_columns_type_and_digital_ordered_by_type_then_digital(self, app):
         # Given
         expected_dataframe = pandas.read_csv('tests/scripts/dashboard/offers_by_type_and_digital.csv')
@@ -2140,7 +2141,7 @@ class QueryGetBookingCountsPerTypeAndDigitalTest:
         assert ('ThingType.MUSIQUE', False, 4) in booking_counts
         assert ('ThingType.MUSIQUE', True, 1) in booking_counts
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_when_cancelled_booking(self, app):
         # Given
         offerer = create_offerer()
@@ -2191,7 +2192,7 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
         assert ('ThingType.MUSIQUE', False, 4) in booking_counts
         assert ('ThingType.MUSIQUE', True, 1) in booking_counts
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_when_cancelled_booking(self, app):
         # Given
         offerer = create_offerer()
@@ -2208,7 +2209,7 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
         # Then
         assert booking_counts == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_when_no_booking_user_in_requested_departement(self, app):
         # Given
         offerer = create_offerer()
@@ -2232,7 +2233,7 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
 
 
 class CountAllCancelledBookingsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_2_when_not_filtered(self, app):
         # Given
         user_in_76 = create_user(departement_code='76', email='user-76@example.net')
@@ -2254,7 +2255,7 @@ class CountAllCancelledBookingsTest:
         # Then
         assert number_of_bookings == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_filtered_on_user_departement(self, app):
         # Given
         user_in_76 = create_user(departement_code='76', email='user-76@example.net')
@@ -2278,7 +2279,7 @@ class CountAllCancelledBookingsTest:
 
 
 class GetAllUsedOrFinishedBookingsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_1_if_booking_used_in_filtered_departement(self, app):
         # Given
         offerer = create_offerer()
@@ -2295,7 +2296,7 @@ class GetAllUsedOrFinishedBookingsTest:
         # Then
         assert number_of_bookings == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_0_if_booking_used_in_other_departement(self, app):
         # Given
         offerer = create_offerer()
@@ -2312,7 +2313,7 @@ class GetAllUsedOrFinishedBookingsTest:
         # Then
         assert number_of_bookings == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_0_if_thing_booking_not_used_in_departement(self, app):
         # Given
         offerer = create_offerer()
@@ -2329,7 +2330,7 @@ class GetAllUsedOrFinishedBookingsTest:
         # Then
         assert number_of_bookings == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_2_out_of_3_when_filtered_by_user_departement(self, app):
         # Given
         offerer = create_offerer()
@@ -2351,7 +2352,7 @@ class GetAllUsedOrFinishedBookingsTest:
         # Then
         assert number_of_bookings == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_0_if_bookings_are_on_activation_offer(self, app):
         # Given
         offerer = create_offerer()
@@ -2373,7 +2374,7 @@ class GetAllUsedOrFinishedBookingsTest:
         # Then
         assert number_of_bookings == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_all_bookings_when_all_departements(self, app):
         # Given
         offerer = create_offerer()

@@ -6,7 +6,7 @@ from models import OfferSQLEntity, BookingSQLEntity
 from repository import repository
 from scripts.update_offer_and_booking_status import _read_booking_tokens_from_file, \
     update_offer_and_booking_status
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_stock, \
     create_booking
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
@@ -14,7 +14,7 @@ from tests.model_creators.specific_creators import create_product_with_thing_typ
 
 class UpdateOfferAndBookingStatusTest:
     @patch('scripts.update_offer_and_booking_status._read_booking_tokens_from_file')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_deactivate_related_offer(self, stub_read_bookings_token_from_file, app):
         # Given
         product = create_product_with_thing_type()
@@ -38,7 +38,7 @@ class UpdateOfferAndBookingStatusTest:
         assert not offer.isActive
 
     @patch('scripts.update_offer_and_booking_status._read_booking_tokens_from_file')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_cancel_booking_if_not_used_yet(self, stub_read_bookings_token_from_file, app):
         # Given
         product = create_product_with_thing_type()

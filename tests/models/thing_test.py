@@ -2,7 +2,7 @@ import pytest
 
 from models import ApiErrors, ThingType
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.specific_creators import create_product_with_thing_type
 
 
@@ -48,7 +48,7 @@ def test_thing_type_find_from_sub_labels_returns_several_types_given_several_sub
     assert ThingType.INSTRUMENT in types
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_thing_error_when_thing_type_is_offlineOnly_but_has_url(app):
     # Given
     thing_product = create_product_with_thing_type(thing_type=ThingType.JEUX, url='http://mygame.fr/offre')

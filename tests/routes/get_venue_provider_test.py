@@ -1,13 +1,14 @@
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_venue_provider
 from utils.human_ids import humanize
 
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_venue_provider_exists(self, app):
             # given
             offerer = create_offerer(siren='775671464')
@@ -29,7 +30,7 @@ class Get:
             assert response.status_code == 200
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_venue_provider_id_does_not_exist(self, app):
             # given
             offerer = create_offerer(siren='775671464')

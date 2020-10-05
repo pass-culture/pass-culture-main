@@ -4,11 +4,11 @@ from pytest import fixture
 
 from models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, VenueSQLEntity, OfferSQLEntity
 from sandboxes.scripts.creators.bookings_recap.bookings_recap import save_bookings_recap_sandbox
-from tests.conftest import clean_database
+import pytest
 
 
 class BookingsRecapTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_create_bookings_recap_sandbox(self, app: fixture):
         # When
         save_bookings_recap_sandbox()

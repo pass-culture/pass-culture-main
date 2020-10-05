@@ -1,5 +1,6 @@
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_stock_with_event_offer
 from utils.human_ids import humanize
@@ -7,7 +8,7 @@ from utils.human_ids import humanize
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_admin(self, app):
             # given
             user = create_user(can_book_free_offers=False, email='test@email.com', is_admin=True)
@@ -26,7 +27,7 @@ class Get:
             assert request.json['price'] == 10
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_stock_is_soft_deleted(self, app):
             # given
             user = create_user(can_book_free_offers=False, email='test@email.com', is_admin=True)

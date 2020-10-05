@@ -1,5 +1,6 @@
 from repository import repository
-from tests.conftest import TestClient, clean_database
+from tests.conftest import TestClient
+import pytest
 from tests.model_creators.generic_creators import create_offerer, \
     create_recommendation, create_user, create_venue
 from tests.model_creators.specific_creators import create_event_occurrence, \
@@ -12,7 +13,7 @@ RECOMMENDATION_URL = '/recommendations'
 
 class Put:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_read_recommendations_are_given(self, app):
             # Given
             offerer = create_offerer()

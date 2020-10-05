@@ -1,11 +1,11 @@
 from models import UserOfferer
 from repository import repository
 from scripts.change_some_pro_users_to_beneficiary import change_pro_users_to_beneficiary
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_change_pro_users_to_beneficiary(app):
     # given
     offerer_1 = create_offerer(siren='987654321')

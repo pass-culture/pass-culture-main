@@ -1,11 +1,12 @@
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user
 
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_activation_token_exists(self, app):
             # given
             token = 'U2NCXTNB2'
@@ -19,7 +20,7 @@ class Get:
             assert request.status_code == 200
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_activation_token_does_not_exist(self, app):
             # when
             request = TestClient(app.test_client()).get('/users/token/3YU26FS')

@@ -6,7 +6,7 @@ from models import ApiErrors, VenueSQLEntity, Provider
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from routes.serialization import serialize
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product, \
     create_stock_with_event_offer
@@ -273,7 +273,7 @@ class CheckStocksAreEditableForOfferTest:
 
 
 class CheckStockIsUpdatableTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_fail_when_offer_is_from_titeliveprovider(self, app):
         # Given
         offerer = create_offerer()
@@ -293,7 +293,7 @@ class CheckStockIsUpdatableTest:
             'Les offres importées ne sont pas modifiables'
         ]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_fail_when_offer_is_from_librairesprovider(self, app):
         # Given
         offerer = create_offerer()
@@ -313,7 +313,7 @@ class CheckStockIsUpdatableTest:
             'Les offres importées ne sont pas modifiables'
         ]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_fail_when_offer_is_from_fnacprovider(self, app):
         # Given
         offerer = create_offerer()
@@ -333,7 +333,7 @@ class CheckStockIsUpdatableTest:
             'Les offres importées ne sont pas modifiables'
         ]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_raise_an_error_when_event_is_expired(self, app):
         # Given
         offerer = create_offerer()
@@ -350,7 +350,7 @@ class CheckStockIsUpdatableTest:
             'Les événements passés ne sont pas modifiables'
         ]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_raise_an_error_when_event_is_not_expired(self, app):
         # Given
         offerer = create_offerer()
@@ -366,7 +366,7 @@ class CheckStockIsUpdatableTest:
             # Then
             assert pytest.fail("Stock should be updatable and not expired")
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_raise_an_error_when_offer_is_not_from_provider(self, app):
         # Given
         offerer = create_offerer()
@@ -382,7 +382,7 @@ class CheckStockIsUpdatableTest:
             # Then
             assert pytest.fail("Stock should be updatable")
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_raise_an_error_when_offer_is_from_allocine_provider(self, app):
         # given
         offerer = create_offerer()

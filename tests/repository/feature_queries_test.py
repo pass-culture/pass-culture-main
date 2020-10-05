@@ -4,11 +4,11 @@ from models.api_errors import ResourceNotFoundError
 from models.feature import FeatureToggle, Feature
 from repository import repository
 from repository.feature_queries import is_active
-from tests.conftest import clean_database
+import pytest
 
 
 class FeatureToggleTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_is_active_returns_true_when_feature_is_active(self, app):
         # Given
         feature = Feature.query.filter_by(name=FeatureToggle.WEBAPP_SIGNUP).first()
@@ -18,7 +18,7 @@ class FeatureToggleTest:
         # When / Then
         assert is_active(FeatureToggle.WEBAPP_SIGNUP)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_is_active_returns_false_when_feature_is_inactive(self, app):
         # Given
         feature = Feature.query.filter_by(name=FeatureToggle.WEBAPP_SIGNUP).first()
@@ -27,7 +27,7 @@ class FeatureToggleTest:
         # When / Then
         assert not is_active(FeatureToggle.WEBAPP_SIGNUP)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_is_active_returns_false_when_feature_unknown(self, app):
         # When / Then
         with pytest.raises(ResourceNotFoundError):

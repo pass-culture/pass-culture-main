@@ -1,12 +1,13 @@
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_bank_information
 
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_logged_in_and_return_an_offerer_with_one_managed_venue(self, app):
             # given
             offerer1 = create_offerer(siren='123456781', name='offreur C')
@@ -28,7 +29,7 @@ class Get:
             managed_venues_response = offerer_response['managedVenues'][0]
             assert 'validationToken' not in managed_venues_response
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_logged_in_and_return_a_list_of_offerers_sorted_alphabetically(self, app):
             # given
             offerer1 = create_offerer(siren='123456781', name='offreur C')
@@ -52,7 +53,7 @@ class Get:
             names = [offerer['name'] for offerer in offerers]
             assert names == ['offreur A', 'offreur B', 'offreur C']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_logged_in_and_return_a_list_of_offerers_including_non_validated_structures(self, app):
             # given
             user = create_user()
@@ -83,7 +84,7 @@ class Get:
             assert offerers[1]['userHasAccess'] is False
             assert offerers[2]['userHasAccess'] is True
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_current_user_is_not_admin_and_returns_only_offers_managed_by_him(self, app):
             # given
             offerer1 = create_offerer(siren='123456781', name='offreur C')
@@ -104,7 +105,7 @@ class Get:
             assert response.status_code == 200
             assert len(response.json) == 2
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_current_user_is_admin_and_returns_all_offerers(self, app):
             # given
             offerer1 = create_offerer(siren='123456781', name='offreur C')
@@ -125,7 +126,7 @@ class Get:
             assert response.status_code == 200
             assert len(response.json) == 3
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_admin_and_param_validated_is_false_and_returns_all_info_of_all_offerers(
                 self, app):
             # given
@@ -157,7 +158,7 @@ class Get:
                 'name', 'postalCode', 'siren', 'thumbCount', 'userHasAccess'
             }
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_admin_and_param_validated_is_true_and_returns_only_validated_offerer(
                 self, app):
             # given
@@ -185,7 +186,7 @@ class Get:
             offerer_response = response.json[0]
             assert offerer_response['name'] == 'offreur C'
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_param_validated_is_false_and_returns_only_not_validated_offerers(self, app):
             # given
             user = create_user()
@@ -209,7 +210,7 @@ class Get:
             assert response.status_code == 200
             assert len(response.json) == 1
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_param_validated_is_true_and_returns_only_validated_offerers(self, app):
             # given
             user = create_user()
@@ -235,7 +236,7 @@ class Get:
             assert response.json[0]['name'] == 'offreur B'
             assert response.json[1]['name'] == 'offreur C'
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_param_validated_is_true_returns_all_info_of_validated_offerers(self, app):
             # given
             user = create_user()
@@ -272,7 +273,7 @@ class Get:
                 'name', 'postalCode', 'siren', 'thumbCount', 'userHasAccess'
             ]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_no_bank_information_for_offerer(self, app):
             # given
             user = create_user()
@@ -291,7 +292,7 @@ class Get:
             assert response.json[0]['bic'] is None
             assert response.json[0]['iban'] is None
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_returns_metadata(self, app):
             # given
             user = create_user(email='user@test.com')
@@ -308,7 +309,7 @@ class Get:
             assert response.status_code == 200
             assert response.headers['Total-Data-Count'] == "1"
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_returns_proper_data_count_by_counting_distinct_offerers(self, app):
             # given
             user = create_user(email='user@test.com')
@@ -330,7 +331,7 @@ class Get:
             assert response.headers['Total-Data-Count'] == "2"
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_param_validated_is_not_true_nor_false(self, app):
             # given
             offerer1 = create_offerer(siren='123456781', name='offreur C')

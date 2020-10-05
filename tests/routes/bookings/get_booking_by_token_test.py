@@ -4,7 +4,8 @@ from urllib.parse import urlencode
 from models import EventType
 from repository import repository
 from routes.serialization import serialize
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_user_offerer
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
@@ -14,7 +15,7 @@ from utils.human_ids import humanize
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_rights_and_regular_offer(self, app):
             # Given
             user = create_user(email='user@example.com', public_name='John Doe')
@@ -47,7 +48,7 @@ class Get:
                 'venueDepartementCode': '93'
             }
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, app):
             # Given
             user = create_user(email='user@example.com', public_name='John Doe')
@@ -81,7 +82,7 @@ class Get:
                 'venueDepartementCode': '93'
             }
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_rights_and_activation_event(self, app):
             # Given
             user = create_user(date_of_birth=datetime(2001, 2, 1), email='user@example.com',
@@ -116,7 +117,7 @@ class Get:
                 'venueDepartementCode': '93'
             }
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_rights_and_email_with_special_characters_url_encoded(self, app):
             # Given
             user = create_user(email='user+plus@example.com')
@@ -141,7 +142,7 @@ class Get:
             assert response.status_code == 200
 
     class Returns204:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_not_logged_in_and_gives_right_email(self, app):
             # Given
             user = create_user(email='user@example.com')
@@ -162,7 +163,7 @@ class Get:
             # Then
             assert response.status_code == 204
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_not_logged_in_and_give_right_email_and_event_offer_id(self, app):
             # Given
             user = create_user(email='user@example.com')
@@ -183,7 +184,7 @@ class Get:
             # Then
             assert response.status_code == 204
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_not_logged_in_and_give_right_email_and_offer_id_thing(self, app):
             # Given
             user = create_user(email='user@example.com')
@@ -203,7 +204,7 @@ class Get:
             assert response.status_code == 204
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_token_user_has_rights_but_token_not_found(self, app):
             # Given
             admin_user = create_user(email='admin@example.com')
@@ -219,7 +220,7 @@ class Get:
             assert response.status_code == 404
             assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_not_logged_in_and_wrong_email(self, app):
             # Given
             user = create_user(email='user@example.com')
@@ -242,7 +243,7 @@ class Get:
             assert response.status_code == 404
             assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_not_logged_in_right_email_and_wrong_offer(self, app):
             # Given
             user = create_user(email='user@example.com')
@@ -262,7 +263,7 @@ class Get:
             assert response.status_code == 404
             assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_rights_and_email_with_special_characters_not_url_encoded(self, app):
             # Given
             user = create_user(email='user+plus@example.com')
@@ -286,7 +287,7 @@ class Get:
             assert response.status_code == 404
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_not_logged_in_and_doesnt_give_email(self, app):
             # Given
             user = create_user(email='user@example.com')
@@ -309,7 +310,7 @@ class Get:
             error_message = response.json
             assert error_message['email'] == ["Vous devez préciser l'email de l'utilisateur quand vous n'êtes pas connecté(e)"]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_doesnt_have_rights_and_token_exists(self, app):
             # Given
             user = create_user(email='user@example.com')
@@ -333,7 +334,7 @@ class Get:
             assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_booking_is_on_stock_with_beginning_datetime_in_more_than_72_hours(self, app):
             # Given
             in_73_hours = datetime.utcnow() + timedelta(hours=73)
@@ -357,7 +358,7 @@ class Get:
             assert response.json['beginningDatetime'] == ["Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l'évènement"]
 
     class Returns410:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_booking_is_already_validated(self, app):
             # Given
             user = create_user(email='user@example.com')
@@ -377,7 +378,7 @@ class Get:
             assert response.status_code == 410
             assert response.json['booking'] == ['Cette réservation a déjà été validée']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_booking_is_cancelled(self, app):
             # Given
             user = create_user(email='user@example.com')

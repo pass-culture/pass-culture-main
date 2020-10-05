@@ -3,7 +3,8 @@ from unittest.mock import call, patch
 
 from models import Offerer
 from repository import repository
-from tests.conftest import TestClient, clean_database
+from tests.conftest import TestClient
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_user, \
     create_user_offerer, \
     create_venue
@@ -12,7 +13,7 @@ from tests.model_creators.generic_creators import create_offerer, create_user, \
 class Get:
     class Returns202:
         @patch('routes.validate.feature_queries.is_active')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_offerer_to_be_validated(self, mocked_feature, app):
             # Given
             mocked_feature.return_value = False
@@ -36,7 +37,7 @@ class Get:
 
         @patch('routes.validate.feature_queries.is_active')
         @patch('routes.validate.link_valid_venue_to_irises')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_link_venue_to_iris_if_valid_to_have_been_called_for_every_venue(self,
                                                                                    mocked_link_venue_to_iris_if_valid,
                                                                                    mocked_feature,
@@ -63,7 +64,7 @@ class Get:
 
         @patch('routes.validate.feature_queries.is_active')
         @patch('routes.validate.redis.add_venue_id')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_offerer_managed_venues_to_be_added_to_redis_when_feature_is_active(self, mocked_redis,
                                                                                       mocked_feature, app):
             # Given
@@ -93,7 +94,7 @@ class Get:
 
         @patch('routes.validate.feature_queries.is_active')
         @patch('routes.validate.redis.add_venue_id')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_offerer_managed_venues_not_to_be_added_to_redis_when_feature_is_not_active(self,
                                                                                               mocked_redis,
                                                                                               mocked_feature,
@@ -119,7 +120,7 @@ class Get:
             assert mocked_redis.call_count == 0
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_offerer_not_to_be_validated_with_unknown_token(self, app):
             # When
             response = TestClient(app.test_client()) \

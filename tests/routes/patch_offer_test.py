@@ -5,7 +5,8 @@ from models import OfferSQLEntity, Product, Provider
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from routes.serialization import serialize
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     API_URL, create_provider
 from tests.model_creators.provider_creators import activate_provider
@@ -16,7 +17,7 @@ from utils.human_ids import humanize
 
 class Patch:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_updating_offer_booking_email(self, app):
             # Given
             user = create_user()
@@ -41,7 +42,7 @@ class Patch:
             assert OfferSQLEntity.query.get(offer.id).bookingEmail == 'offer@example.com'
 
         @patch('use_cases.update_an_offer.redis.add_offer_id')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_updating_an_offer_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
             # Given
             user = create_user()
@@ -65,7 +66,7 @@ class Patch:
             assert response.status_code == 200
             mock_add_offer_id_to_redis.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_updating_thing_offer_is_linked_to_same_owning_offerer(self, app):
             # Given
             user = create_user(email='editor@example.com')
@@ -92,7 +93,7 @@ class Patch:
             assert OfferSQLEntity.query.get(offer_id).name == 'New Name'
             assert Product.query.get(product_id).name == 'New Name'
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_updating_thing_offer_is_not_linked_to_owning_offerer(self, app):
             # Given
             user = create_user(email='editor@example.com')
@@ -120,7 +121,7 @@ class Patch:
             assert OfferSQLEntity.query.get(offer_id).name == 'New Name'
             assert Product.query.get(product_id).name == 'Old Name'
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_updating_thing_offer_has_rights_on_offer_but_no_owningOfferer_for_thing(self, app):
             # Given
             user = create_user(email='editor@example.com')
@@ -145,7 +146,7 @@ class Patch:
             assert OfferSQLEntity.query.one().name == 'New Name'
             assert Product.query.one().name == 'Old Name'
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_deactivate_offer_from_provider(self, app):
             # Given
             user = create_user()
@@ -170,7 +171,7 @@ class Patch:
             assert response.status_code == 200
             assert not OfferSQLEntity.query.get(offer_id).isActive
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_activate_offer_from_provider(self, app):
             # Given
             user = create_user()
@@ -198,7 +199,7 @@ class Patch:
             assert response.status_code == 200
             assert OfferSQLEntity.query.get(offer_id).isActive
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_patch_an_offer_that_is_imported_from_titelive(self, app):
             # given
             tite_live_provider = Provider \
@@ -227,7 +228,7 @@ class Patch:
             # then
             assert response.status_code == 200
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_patch_an_offer_that_is_imported_from_allocine(self, app):
             # given
             allocine_provider = Provider \
@@ -257,7 +258,7 @@ class Patch:
             assert response.status_code == 200
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_trying_to_patch_forbidden_attributes(self, app):
             # Given
             user = create_user()
@@ -293,7 +294,7 @@ class Patch:
             for key in forbidden_keys:
                 assert key in response.json
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_offer_name_is_too_long(self, app):
             # Given
             user = create_user()
@@ -318,7 +319,7 @@ class Patch:
             assert response.status_code == 400
             assert response.json['name'] == ['Le titre de l’offre doit faire au maximum 90 caractères.']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_trying_to_patch_an_imported_offer(self, app):
             # Given
             user = create_user()
@@ -352,7 +353,7 @@ class Patch:
             assert response.status_code == 400
             assert response.json['global'] == ['Les offres importées ne sont pas modifiables']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_trying_to_patch_any_allocine_offer_field_except_is_duo(self, app):
             # Given
             user = create_user()
@@ -383,7 +384,7 @@ class Patch:
             assert response.json['name'] == ['Vous ne pouvez pas modifier ce champ']
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_not_attached_to_offerer(self, app):
             # Given
             user = create_user()
@@ -410,7 +411,7 @@ class Patch:
                 "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_returns_404_if_offer_does_not_exist(self, app):
             # given
             user = create_user()

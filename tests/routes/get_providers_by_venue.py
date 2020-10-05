@@ -1,5 +1,6 @@
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_allocine_pivot
 from tests.model_creators.provider_creators import activate_provider
 from utils.human_ids import humanize
@@ -7,7 +8,7 @@ from utils.human_ids import humanize
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_venue_has_known_allocine_id(self, app):
             # Given
             user = create_user(email='user@test.com')
@@ -47,7 +48,7 @@ class Get:
                 }
             ]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_venue_has_no_allocine_id(self, app):
             # Given
             user = create_user(email='user@test.com')
@@ -78,7 +79,7 @@ class Get:
             ]
 
         class Returns404:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_venue_does_not_exists(self, app):
                 # Given
                 user = create_user(email='user@test.com')
@@ -98,7 +99,7 @@ class Get:
                 assert response.status_code == 404
 
         class Returns401:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_not_logged_in(self, app):
                 # when
                 response = TestClient(app.test_client()).get('/providers/AZER')

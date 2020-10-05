@@ -5,7 +5,7 @@ import pytest
 
 from models import BookingSQLEntity, OfferSQLEntity, StockSQLEntity, UserSQLEntity, Product, ApiErrors
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_recommendation, create_mediation, create_deposit
@@ -43,7 +43,7 @@ def test_booking_completed_url_gets_normalized():
     assert completed_url == 'http://javascript:alert("plop")?token=ABCDEF&email=bob@example.com'
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_raises_error_on_booking_when_total_stock_is_less_than_bookings_count(app):
     # Given
     offerer = create_offerer()
@@ -68,7 +68,7 @@ def test_raises_error_on_booking_when_total_stock_is_less_than_bookings_count(ap
     assert e.value.errors['global'] == ['La quantité disponible pour cette offre est atteinte.']
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_is_after_last_update_on_stock(app):
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -394,7 +394,7 @@ class BookingIsCancellableTest:
 
 
 class BookingCancellationDateTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_fill_cancellation_date_when_booking_is_cancelled(self, app):
         # Given
         user = create_user()
@@ -408,7 +408,7 @@ class BookingCancellationDateTest:
         assert updated_booking.isCancelled
         assert updated_booking.cancellationDate is not None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_clear_cancellation_date_when_booking_is_not_cancelled(self, app):
         # Given
         user = create_user()
@@ -425,7 +425,7 @@ class BookingCancellationDateTest:
         assert updated_booking.isCancelled is False
         assert updated_booking.cancellationDate is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_update_cancellation_date_when_updating_another_attribute(self, app):
         # Given
         user = create_user()

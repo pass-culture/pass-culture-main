@@ -2,11 +2,11 @@ import pytest
 
 from models import ApiErrors
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_save_user_offerer_raise_api_error_when_not_unique(app):
     # Given
     user = create_user()

@@ -9,7 +9,7 @@ from models import ApiErrors
 from models.pc_object import DeletedRecordException
 from models.stock_sql_entity import StockSQLEntity
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import (create_booking,
                                                    create_offerer,
                                                    create_stock, create_user,
@@ -21,7 +21,7 @@ from tests.model_creators.specific_creators import (
 EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST = timedelta(hours=72)
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_date_modified_should_be_updated_if_quantity_changed(app):
     # given
     offerer = create_offerer()
@@ -40,7 +40,7 @@ def test_date_modified_should_be_updated_if_quantity_changed(app):
     assert stock.dateModified.timestamp() == approx(datetime.now().timestamp())
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_date_modified_should_not_be_updated_if_price_changed(app):
     # given
     offerer = create_offerer()
@@ -59,7 +59,7 @@ def test_date_modified_should_not_be_updated_if_price_changed(app):
     assert stock.dateModified == datetime(2018, 2, 12)
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_queryNotSoftDeleted_should_not_return_soft_deleted(app):
     # Given
     offerer = create_offerer()
@@ -75,7 +75,7 @@ def test_queryNotSoftDeleted_should_not_return_soft_deleted(app):
     assert not result
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_populate_dict_on_soft_deleted_object_raises_DeletedRecordException(app):
     # Given
     offerer = create_offerer()
@@ -88,7 +88,7 @@ def test_populate_dict_on_soft_deleted_object_raises_DeletedRecordException(app)
         stock.populate_from_dict({"quantity": 5})
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_stock_cannot_have_a_negative_price(app):
     # given
     offerer = create_offerer()
@@ -104,7 +104,7 @@ def test_stock_cannot_have_a_negative_price(app):
     assert e.value.errors['global'] is not None
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_stock_cannot_have_a_negative_quantity_stock(app):
     # given
     offerer = create_offerer()
@@ -120,7 +120,7 @@ def test_stock_cannot_have_a_negative_quantity_stock(app):
     assert e.value.errors['quantity'] == ["Le stock doit être positif"]
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_stock_can_have_an_quantity_stock_equal_to_zero(app):
     # given
     offerer = create_offerer()
@@ -135,7 +135,7 @@ def test_stock_can_have_an_quantity_stock_equal_to_zero(app):
     assert stock.quantity == 0
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_quantity_stocks_can_be_changed_even_when_bookings_with_cancellations_exceed_quantity(app):
     # Given
     offerer = create_offerer()
@@ -174,7 +174,7 @@ def test_quantity_stocks_can_be_changed_even_when_bookings_with_cancellations_ex
         assert False
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_update_stock_quantity_when_value_is_more_than_sum_of_bookings_quantity(app):
     # Given
     offerer = create_offerer()
@@ -197,7 +197,7 @@ def test_should_update_stock_quantity_when_value_is_more_than_sum_of_bookings_qu
     assert StockSQLEntity.query.get(stock.id).quantity == 3
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_should_not_update_quantity_stock_when_value_is_less_than_booking_count(app):
     # given
     user = create_user()
@@ -304,7 +304,7 @@ class IsBookableTest:
         # Then
         assert not stock.isBookable
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_false_when_no_remaining_stock(self, app):
         # Given
         user = create_user()

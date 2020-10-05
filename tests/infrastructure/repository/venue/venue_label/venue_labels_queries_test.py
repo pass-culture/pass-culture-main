@@ -3,7 +3,7 @@ from typing import List
 from domain.venue.venue_label.venue_label import VenueLabel
 from infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_venue_label
 
 
@@ -11,7 +11,7 @@ class VenueLabelSQLRepositoryTest:
     def setup_method(self):
         self.venue_label_sql_repository = VenueLabelSQLRepository()
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_the_venue_labels(self, app):
         # Given
         house = create_venue_label(idx=11, label='Maison des illustres')

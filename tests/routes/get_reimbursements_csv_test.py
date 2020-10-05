@@ -1,7 +1,7 @@
 from repository import repository
 from scripts.payment.batch_steps import generate_new_payments
-from tests.conftest import clean_database, \
-    TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_booking, \
     create_user, \
     create_offerer, \
@@ -14,7 +14,7 @@ from tests.model_creators.specific_creators import create_stock_with_thing_offer
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_an_offerer_attached(self, app):
             # Given
             user = create_user(email='user+plus@email.fr')
@@ -54,7 +54,7 @@ class Get:
             assert response.headers['Content-Disposition'] == 'attachment; filename=remboursements_pass_culture.csv'
             assert len(response_lines) == 7
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_no_offerer_attached(self, app):
             # Given
             user = create_user(email='user+plus@email.fr')

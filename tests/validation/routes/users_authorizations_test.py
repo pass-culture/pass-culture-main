@@ -3,7 +3,7 @@ from flask_login import AnonymousUserMixin
 
 from models import ApiErrors, ApiKey, UserSQLEntity
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 from utils.token import random_token
 from validation.routes.users_authorizations import check_user_can_validate_bookings, \
@@ -11,7 +11,7 @@ from validation.routes.users_authorizations import check_user_can_validate_booki
     check_api_key_allows_to_validate_booking, check_user_can_validate_activation_offer
 
 class CheckUserCanValidateBookingTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_check_user_can_validate_bookings_returns_true_when_user_is_authenticated_and_has_editor_rights_on_booking(
             self, app):
         # Given
@@ -52,7 +52,7 @@ class CheckUserCanValidateBookingTest:
 
 
 class CheckUserCanValidateBookingTestv2:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_raise_error_when_user_has_editor_rights_on_booking(
             self, app):
         # Given
@@ -86,7 +86,7 @@ class CheckUserCanValidateBookingTestv2:
 
 
 class CheckApiKeyAllowsToValidateBookingTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_raise_error_when_api_key_is_provided_and_is_related_to_offerer_id(
             self, app):
         # Given
@@ -125,7 +125,7 @@ class CheckApiKeyAllowsToValidateBookingTest:
         assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
 class CheckUserCanValidateActivationOfferTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_raise_error_when_user_is_admin(
             self, app):
         # Given

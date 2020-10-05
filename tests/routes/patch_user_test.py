@@ -1,13 +1,14 @@
 from models import UserSQLEntity
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user
 from utils.human_ids import humanize
 
 
 class Patch:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_changes_are_allowed(self, app):
             # given
             user = create_user()
@@ -37,7 +38,7 @@ class Patch:
 
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_changes_are_forbidden(self, app):
             # given
             user = create_user(can_book_free_offers=True, is_admin=False)

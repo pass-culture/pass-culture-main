@@ -1,4 +1,4 @@
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_product_with_event_type, create_product_with_thing_type
 
@@ -9,7 +9,7 @@ from repository import repository
 
 
 class PaginatedOfferSQLRepositoryTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_return_paginated_offers_with_details_of_pagination_and_offers_of_requested_page(self, app):
         # Given
         user = create_user()
@@ -38,7 +38,7 @@ class PaginatedOfferSQLRepositoryTest:
         assert len(paginated_offers.offers) == 1
         assert paginated_offers.offers[0].identifier == Identifier(offer1.id)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_return_a_number_of_page_as_an_integer(self, app):
         # Given
         user = create_user()
@@ -64,7 +64,7 @@ class PaginatedOfferSQLRepositoryTest:
         assert isinstance(paginated_offers, PaginatedOffersRecap)
         assert paginated_offers.total_pages == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_return_offers_sorted_by_id_desc(self, app):
         # Given
         user = create_user()
@@ -86,7 +86,7 @@ class PaginatedOfferSQLRepositoryTest:
         # Then
         assert paginated_offers.offers[0].identifier.persisted > paginated_offers.offers[1].identifier.persisted
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_return_offers_of_given_venue(self, app):
         user = create_user()
         offerer = create_offerer(siren='123456789')
@@ -116,7 +116,7 @@ class PaginatedOfferSQLRepositoryTest:
         assert Identifier(offer_on_requested_venue.id) in offers_id
         assert Identifier(offer_on_other_venue.id) not in offers_id
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_return_offers_matching_searched_name(self, app):
         user = create_user()
         offerer = create_offerer(siren='123456789')

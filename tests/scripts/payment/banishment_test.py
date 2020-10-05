@@ -5,7 +5,7 @@ import pytest
 from models.payment_status import TransactionStatus
 from repository import repository
 from scripts.payment.banishment import do_ban_payments, parse_raw_payments_ids
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, create_user, create_deposit, create_payment, \
     create_payment_message
 
@@ -31,7 +31,7 @@ class ParseRawPaymentIdsTest:
 
 
 class DoBanPaymentsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_modify_statuses_on_given_payments(self, app):
         # given
         user = create_user()
@@ -65,7 +65,7 @@ class DoBanPaymentsTest:
         assert payment5.currentStatus.status == TransactionStatus.BANNED
         assert payment6.currentStatus.status == TransactionStatus.RETRY
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_modify_statuses_on_given_payments_if_a_payment_id_is_not_found(self, app):
         # given
         user = create_user()

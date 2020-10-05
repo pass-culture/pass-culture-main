@@ -4,7 +4,7 @@ from models import BookingSQLEntity
 from models.payment_status import TransactionStatus
 from repository import repository
 from scripts.booking.cancel_banned_bookings import cancel_banned_bookings
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, create_stock, create_venue, create_offerer, \
     create_user, create_deposit, create_payment, create_payment_status
 from tests.model_creators.specific_creators import create_offer_with_thing_product
@@ -22,7 +22,7 @@ class CancelBannedBookingsTest:
         offer = create_offer_with_thing_product(venue)
         self.stock = create_stock(offer=offer)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_cancel_pending_bookings(self, app):
         # Given
         booking = create_booking(stock=self.stock, user=self.beneficiary, date_used=datetime.utcnow(), is_used=True)
@@ -39,7 +39,7 @@ class CancelBannedBookingsTest:
         assert corrected_booking.isUsed is True
         assert corrected_booking.dateUsed is not None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_cancel_reimbursed_bookings(self, app):
         # Given
         booking = create_booking(stock=self.stock, user=self.beneficiary, date_used=datetime.utcnow(), is_used=True)
@@ -56,7 +56,7 @@ class CancelBannedBookingsTest:
         assert corrected_booking.isUsed is True
         assert corrected_booking.dateUsed is not None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_cancel_banned_bookings(self, app):
         # Given
         booking = create_booking(stock=self.stock, user=self.beneficiary, date_used=datetime.utcnow(), is_used=True)
@@ -73,7 +73,7 @@ class CancelBannedBookingsTest:
         assert corrected_booking.isUsed is True
         assert corrected_booking.dateUsed is not None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_cancel_reimbursed_and_banned_bookings_with_current_status_sent(self, app):
         # Given
         booking = create_booking(stock=self.stock, user=self.beneficiary, date_used=datetime.utcnow(), is_used=True)
@@ -91,7 +91,7 @@ class CancelBannedBookingsTest:
         assert corrected_booking.isUsed is True
         assert corrected_booking.dateUsed is not None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_cancel_reimbursed_and_banned_bookings_with_current_status_banned_and_unwanted_sent_date(self, app):
         # Given
         unwanted_sent_date = self.WANTED_SENT_DATETIME - timedelta(days=1)
@@ -111,7 +111,7 @@ class CancelBannedBookingsTest:
         assert corrected_booking.isUsed is True
         assert corrected_booking.dateUsed is not None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_cancel_reimbursed_and_banned_bookings_with_current_status_banned_and_unwanted_banned_date(self, app):
         # Given
         booking = create_booking(stock=self.stock, user=self.beneficiary, date_used=datetime.utcnow(), is_used=True)
@@ -129,7 +129,7 @@ class CancelBannedBookingsTest:
         assert corrected_booking.isUsed is True
         assert corrected_booking.dateUsed is not None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_cancel_reimbursed_and_banned_bookings_with_current_status_banned_and_wanted_dates(self, app):
         # Given
         booking = create_booking(stock=self.stock, user=self.beneficiary, date_used=datetime.utcnow(), is_used=True)

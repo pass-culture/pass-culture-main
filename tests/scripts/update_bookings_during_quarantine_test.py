@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from domain.payments import create_payment_for_booking
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from scripts.cancel_bookings_during_quarantine import cancel_booking_status_for_events_happening_during_quarantine
-from tests.conftest import clean_database
+import pytest
 from models import BookingSQLEntity
 from repository import repository
 from tests.model_creators.generic_creators import create_user, create_stock, create_booking, create_venue, \
@@ -13,7 +13,7 @@ from tests.model_creators.specific_creators import create_offer_with_event_produ
 
 
 class UpdateBookingDuringQuarantineTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_update_booking_if_happening_during_quarantine(self, app):
         # Given
         offerer = create_offerer()
@@ -39,7 +39,7 @@ class UpdateBookingDuringQuarantineTest:
         assert booking.isUsed is False
         assert booking.dateUsed is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_update_booking_if_not_happening_during_quarantine(self, app):
         # Given
         offerer = create_offerer()
@@ -65,7 +65,7 @@ class UpdateBookingDuringQuarantineTest:
         assert booking.isUsed is True
         assert booking.dateUsed == date_used
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_update_booking_if_a_payment_has_been_made(self, app):
         # Given
         offerer = create_offerer()

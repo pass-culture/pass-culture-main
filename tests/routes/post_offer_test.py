@@ -1,6 +1,7 @@
 from models import EventType, OfferSQLEntity, ThingType, Product, Offerer
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     API_URL
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type
@@ -9,7 +10,7 @@ from utils.human_ids import humanize, dehumanize
 
 class Post:
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_venue_id_is_not_received(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -30,7 +31,7 @@ class Post:
             assert request.status_code == 400
             assert request.json['venueId'] == ['Vous devez préciser un identifiant de lieu']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_no_duration_given_for_an_event(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -54,7 +55,7 @@ class Post:
             # Then
             assert request.status_code == 201
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_venue_is_not_found(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -75,7 +76,7 @@ class Post:
             assert request.json['global'] == [
                 'Aucun objet ne correspond à cet identifiant dans notre base de données']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_new_offer_has_errors(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -100,7 +101,7 @@ class Post:
             assert response.status_code == 400
             assert response.json['url'] == ['Une offre de type Jeux (support physique) ne peut pas être numérique']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_offer_type_is_unknown(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -127,7 +128,7 @@ class Post:
             assert response.status_code == 400
             assert response.json['type'] == ['Le type de cette offre est inconnu']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_offer_name_is_too_long(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -155,7 +156,7 @@ class Post:
             assert response.json['name'] == ['Le titre de l’offre doit faire au maximum 90 caractères.']
 
     class Returns201:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_creating_a_new_event_offer(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -194,7 +195,7 @@ class Post:
             assert offer.type == str(EventType.SPECTACLE_VIVANT)
             assert offer.product.owningOfferer == Offerer.query.get(offerer_id)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_creating_a_new_event_offer_without_booking_email(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -221,7 +222,7 @@ class Post:
             assert response.status_code == 201
             assert offer.bookingEmail == None
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_creating_new_thing_offer(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -265,7 +266,7 @@ class Post:
             assert thing_product.isNational
             assert offer.product.owningOfferer == Offerer.query.get(offerer_id)
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_creating_a_new_offer_from_an_existing_thing(self, app):
             # given
             user = create_user(email='user@test.com')
@@ -287,7 +288,7 @@ class Post:
             # then
             assert response.status_code == 201
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_creating_a_new_offer_from_an_existing_event(self, app):
             # given
             user = create_user(email='user@test.com')
@@ -309,7 +310,7 @@ class Post:
             # then
             assert response.status_code == 201
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_creating_a_new_activation_event_offer_as_a_global_admin(self, app):
             # Given
             user = create_user(can_book_free_offers=False, email='test@email.com', is_admin=True)
@@ -333,7 +334,7 @@ class Post:
             assert request.status_code == 201
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_creating_a_new_activation_event_offer_as_an_offerer_editor(self, app):
             # Given
             user = create_user(email='test@email.com', is_admin=False)
@@ -359,7 +360,7 @@ class Post:
             assert request.json['type'] == [
                 "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_creating_a_new_activation_event_offer_as_an_offerer_admin(self, app):
             # Given
             user = create_user(email='test@email.com', is_admin=False)
@@ -385,7 +386,7 @@ class Post:
             assert request.json['type'] == [
                 "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_not_attached_to_offerer(self, app):
             # Given
             user = create_user(email='test@email.com')

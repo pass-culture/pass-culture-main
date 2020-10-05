@@ -4,7 +4,7 @@ from models import ThingType, BookingSQLEntity
 from repository import repository
 from scripts.booking.create_booking_for_user_on_specific_stock import create_booking_for_user_on_specific_stock, \
     create_booking_for_user_on_specific_stock_bypassing_capping_limits
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_user, create_stock, create_venue, create_offerer, \
     create_booking, create_deposit
 from tests.model_creators.specific_creators import create_offer_with_thing_product
@@ -37,7 +37,7 @@ class CreateBookingForUserOnSpecificStockTest:
 
 
 class CreateBookingForUserOnSpecificStockBypassingCappingLimitsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('scripts.booking.create_booking_for_user_on_specific_stock.redis')
     def should_book_an_offer_even_if_physical_offer_capping_is_exeeded(self, mocked_redis, app):
         # Given

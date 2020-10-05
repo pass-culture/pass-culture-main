@@ -8,7 +8,7 @@ from routes.serialization.reimbursement_csv_serialize import generate_reimbursem
     ReimbursementDetails, \
     find_all_offerer_reimbursement_details
 from scripts.payment.batch_steps import generate_new_payments
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_user_offerer, create_bank_information, create_payment
@@ -17,7 +17,7 @@ from tests.test_utils import deactivate_feature
 
 
 class FindReimbursementDetailsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_find_all_offerer_reimbursement_details(self, app):
         # Given
         user = create_user(email='user+plus@email.fr')
@@ -48,7 +48,7 @@ class FindReimbursementDetailsTest:
 
 @freeze_time('2019-07-10')
 class ReimbursementDetailsCSVTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_generate_payment_details_csv_with_human_readable_header(self, app):
         # given
         reimbursement_details = []
@@ -61,7 +61,7 @@ class ReimbursementDetailsCSVTest:
                            0) == "Année;Virement;Créditeur;SIRET créditeur;Adresse créditeur;IBAN;Raison sociale du lieu;Nom de l'offre;Nom utilisateur;Prénom utilisateur;Contremarque;Date de validation de la réservation;Montant remboursé;Statut du remboursement"
 
     @freeze_time('2019-07-05 12:00:00')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_generate_payment_details_csv_with_right_values(self, app):
         # given
         deactivate_feature(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE)
@@ -91,7 +91,7 @@ class ReimbursementDetailsCSVTest:
 
 
 class AsCsvRowTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_generate_payment_csv_raw_contains_human_readable_status_with_details_when_error(self, app):
         # given
         user = create_user(email='user+plus@example.com')

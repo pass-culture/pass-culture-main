@@ -4,7 +4,7 @@ from unittest.mock import patch
 from repository import repository
 from scripts.deactivate_offers_during_quatantine.fetch_user_emails_for_offers import \
     fetch_user_emails_for_offers_with_max_stock_date_between_today_and_end_of_quarantine
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock, create_user, \
     create_user_offerer
 from tests.model_creators.specific_creators import create_offer_with_event_product
@@ -25,7 +25,7 @@ class FetchUserEmailsForOffersTest:
         # Then
         stub_build_query.assert_called_once_with(first_day_after_quarantine, today)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_all_user_emails(self, app):
         # Given
         first_day_after_quarantine = datetime(2020, 4, 16)
@@ -58,7 +58,7 @@ class FetchUserEmailsForOffersTest:
         assert len(pro_emails) == 2
         assert set(pro_emails) == {'john.doe@example.com', 'john.rambo@example.com'}
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_only_pro_user_emails(self, app):
         # Given
         first_day_after_quarantine = datetime(2020, 4, 16)

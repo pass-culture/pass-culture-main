@@ -1,4 +1,5 @@
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user
 
 
@@ -7,7 +8,7 @@ RECOMMENDATION_V3_URL = '/recommendations/v3'
 
 class Put:
     class Returns308:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_navigating_in_old_recommendations_url(self, app):
             # given
             user = create_user()

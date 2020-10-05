@@ -1,13 +1,13 @@
 from domain.build_recommendations import move_requested_recommendation_first
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
     create_mediation
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 
 class MoveRequestedRecommendationFirstTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_move_requested_recommendation_first_when_second_reco_requested(self, app):
         # Given
         user = create_user()
@@ -35,7 +35,7 @@ class MoveRequestedRecommendationFirstTest:
         assert len(ordered_recommendations) == len(recommendations)
 
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_move_requested_matching_offer_first_when_other_recommendation_is_requested_with_different_mediation(self,
                                                                                                                  app):
         # Given

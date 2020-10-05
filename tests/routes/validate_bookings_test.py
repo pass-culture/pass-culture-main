@@ -3,7 +3,8 @@ from urllib.parse import urlencode
 
 from models import EventType, ThingType, Deposit, BookingSQLEntity, UserSQLEntity
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_user_offerer
@@ -19,7 +20,7 @@ class Patch:
         cls.tomorrow_minus_one_hour = cls.tomorrow - timedelta(hours=1)
 
     class Returns204:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_rights(self, app):
             # Given
             user = create_user()
@@ -42,7 +43,7 @@ class Patch:
             assert BookingSQLEntity.query.get(booking_id).isUsed
             assert BookingSQLEntity.query.get(booking_id).dateUsed is not None
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_header_is_not_standard_but_request_is_valid(self, app):
             # Given
             user = create_user()
@@ -66,7 +67,7 @@ class Patch:
             assert response.status_code == 204
             assert BookingSQLEntity.query.get(booking_id).isUsed
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_booking_user_email_has_special_character_url_encoded(self, app):
             # Given
             user = create_user(email='user+plus@email.fr')
@@ -89,7 +90,7 @@ class Patch:
             # Then
             assert response.status_code == 204
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_patching_is_global_admin_is_activation_event_and_no_deposit_for_booking_user(self, app):
             # Given
             user = create_user(can_book_free_offers=False, is_admin=False, first_name='John')
@@ -118,7 +119,7 @@ class Patch:
             assert deposits_for_user[0].amount == 500
             assert user.canBookFreeOffers
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_patching_is_global_admin_is_activation_thing_and_no_deposit_for_booking_user(self, app):
             # Given
             user = create_user(can_book_free_offers=False, is_admin=False, first_name='John')
@@ -148,7 +149,7 @@ class Patch:
             assert user.canBookFreeOffers
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_not_editor_and_valid_email(self, app):
             # Given
             user = create_user()
@@ -171,7 +172,7 @@ class Patch:
                 "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
             assert not BookingSQLEntity.query.get(booking_id).isUsed
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_booking_beginning_datetime_in_more_than_72_hours(self, app):
             # Given
             user = create_user()
@@ -194,7 +195,7 @@ class Patch:
             assert response.json['beginningDatetime'] == [
                 'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_it_is_an_offer_on_an_activation_event_and_user_patching_is_not_global_admin(self, app):
             # Given
             user = create_user()
@@ -220,7 +221,7 @@ class Patch:
             assert response.status_code == 403
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_not_editor_and_invalid_email(self, app):
             # Given
             user = create_user()
@@ -241,7 +242,7 @@ class Patch:
             assert response.status_code == 404
             assert BookingSQLEntity.query.get(booking_id).isUsed == False
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_booking_user_email_with_special_character_not_url_encoded(self, app):
             # Given
             user = create_user(email='user+plus@email.fr')
@@ -264,7 +265,7 @@ class Patch:
             # Then
             assert response.status_code == 404
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_not_editor_and_valid_email_but_invalid_offer_id(self, app):
             # Given
             user = create_user()
@@ -286,7 +287,7 @@ class Patch:
             assert not BookingSQLEntity.query.get(booking_id).isUsed
 
     class Returns405:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_patching_is_global_admin_is_activation_offer_and_existing_deposit_for_booking_user(
                 self,
                 app):
@@ -316,7 +317,7 @@ class Patch:
             assert deposits_for_user[0].amount == 500
 
     class Returns410:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_booking_is_cancelled(self, app):
             # Given
             user = create_user()
@@ -340,7 +341,7 @@ class Patch:
             assert response.json['booking'] == ['Cette réservation a été annulée']
             assert not BookingSQLEntity.query.get(booking_id).isUsed
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_booking_already_validated(self, app):
             # Given
             user = create_user()

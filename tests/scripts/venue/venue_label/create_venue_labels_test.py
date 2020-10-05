@@ -1,10 +1,10 @@
 from models import VenueLabelSQLEntity
 from scripts.venue.venue_label.create_venue_labels import save_new_venue_labels
-from tests.conftest import clean_database
+import pytest
 
 
 class SaveNewVenueLabelsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_save_venue_labels_to_database(self, app):
         # Given
         venue_labels_to_create = [

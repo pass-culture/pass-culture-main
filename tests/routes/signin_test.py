@@ -1,12 +1,13 @@
 from models import UserSession
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user
 
 
 class Post:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_account_is_known(self, app):
             # given
             user = create_user(email='user@example.com')
@@ -27,7 +28,7 @@ class Post:
             assert 'hasPhysicalVenues' in json
             assert 'hasOffers' in json
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_account_is_known_with_mixed_case_email(self, app):
             # given
             user = create_user(email='USER@example.COM')
@@ -40,7 +41,7 @@ class Post:
             # then
             assert response.status_code == 200
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_account_is_known_with_trailing_spaces_in_email(self, app):
             # given
             user = create_user(email='user@example.com')
@@ -53,7 +54,7 @@ class Post:
             # then
             assert response.status_code == 200
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_a_new_user_session_to_be_recorded(self, app):
             # given
             user = create_user(email='user@example.com')
@@ -71,7 +72,7 @@ class Post:
             assert session is not None
 
     class Returns401:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_identifier_is_missing(self, app):
             # Given
             user = create_user()
@@ -85,7 +86,7 @@ class Post:
             assert response.status_code == 401
             assert response.json['identifier'] == ['Identifiant manquant']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_identifier_is_incorrect(self, app):
             # Given
             user = create_user()
@@ -99,7 +100,7 @@ class Post:
             assert response.status_code == 401
             assert response.json['identifier'] == ['Identifiant incorrect']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_password_is_missing(self, app):
             # Given
             user = create_user()
@@ -113,7 +114,7 @@ class Post:
             assert response.status_code == 401
             assert response.json['password'] == ['Mot de passe manquant']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_password_is_incorrect(self, app):
             # Given
             user = create_user()
@@ -127,7 +128,7 @@ class Post:
             assert response.status_code == 401
             assert response.json['password'] == ['Mot de passe incorrect']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_account_is_not_validated(self, app):
             # Given
             user = create_user()

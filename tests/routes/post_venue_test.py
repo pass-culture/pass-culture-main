@@ -2,7 +2,8 @@ from unittest.mock import patch
 
 from models import VenueSQLEntity
 from repository import repository
-from tests.conftest import TestClient, clean_database
+from tests.conftest import TestClient
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_user, \
     create_user_offerer, create_venue, create_venue_type, create_venue_label
 from utils.human_ids import dehumanize, humanize
@@ -10,7 +11,7 @@ from utils.human_ids import dehumanize, humanize
 
 class Post:
     class Returns201:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_register_new_venue(self, app):
             # given
             offerer = create_offerer(siren='302559178')
@@ -51,7 +52,7 @@ class Post:
             assert venue.venueLabelId == venue_label.id
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_posting_a_virtual_venue_for_managing_offerer_with_preexisting_virtual_venue(self, app):
             # given
             offerer = create_offerer(siren='302559178')
@@ -83,7 +84,7 @@ class Post:
             assert response.json == {
                 'isVirtual': ['Un lieu pour les offres numériques existe déjà pour cette structure']}
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_latitude_out_of_range_and_longitude_wrong_format(self, app):
             # given
             offerer = create_offerer(siren='302559178')

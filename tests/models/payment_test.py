@@ -3,7 +3,7 @@ from datetime import timedelta, datetime
 from models.payment import Payment
 from models.payment_status import TransactionStatus, PaymentStatus
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_payment, create_user, create_booking, \
     create_deposit, create_payment_message, create_payment_status
 
@@ -90,7 +90,7 @@ class PaymentDateTest:
             assert payment_sent_date is None
 
     class InSQLContextTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_payment_date_should_return_payment_date_for_status_sent(self, app):
             # Given
             user = create_user()
@@ -112,7 +112,7 @@ class PaymentDateTest:
             # Then
             assert payment_from_query.payment_date == today
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_payment_date_should_return_oldest_payment_date_for_status_sent_if_several(self, app):
             # Given
             user = create_user()
@@ -136,7 +136,7 @@ class PaymentDateTest:
             # Then
             assert payment_from_query.payment_date == yesterday
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_payment_date_should_return_no_payment_date_for_status_pending(self, app):
             # Given
             user = create_user()

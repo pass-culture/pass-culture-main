@@ -1,4 +1,4 @@
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, \
     create_offerer, create_user, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product, \
@@ -36,7 +36,7 @@ class BookingDomainConverterTest:
         assert created_booking.isCancelled is True
         assert created_booking.isUsed is True
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_update_existing_booking_when_exist(self, app):
         # given
         user = create_user()

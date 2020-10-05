@@ -3,14 +3,14 @@ from unittest.mock import patch, call
 from local_providers.venue_provider_worker import update_venues_for_specific_provider, do_sync_venue_provider
 from models import VenueProvider
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider
 from tests.model_creators.provider_creators import activate_provider
 
 
 class UpdateVenuesForSpecificProviderTest:
     @patch('local_providers.venue_provider_worker.do_sync_venue_provider')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_call_sync_venue_provider_for_expected_venue_provider(self,
                                                                          mock_do_sync_venue_provider,
                                                                          app):
@@ -35,7 +35,7 @@ class UpdateVenuesForSpecificProviderTest:
     @patch('local_providers.venue_provider_worker.sleep')
     @patch('local_providers.venue_provider_worker.do_sync_venue_provider')
     @patch('local_providers.venue_provider_worker.get_nb_containers_at_work')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_call_sync_venue_provider_until_reaching_max_pool_size(self,
                                                                           mock_get_nb_containers_at_work,
                                                                           mock_do_sync_venue_provider,
@@ -65,7 +65,7 @@ class UpdateVenuesForSpecificProviderTest:
 
 class DoSyncVenueProviderTest:
     @patch('local_providers.venue_provider_worker.run_process_in_one_off_container')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_call_run_process_in_one_off_container_function(self,
                                                                    mock_run_process_in_one_off_container, app):
         # Given
@@ -85,7 +85,7 @@ class DoSyncVenueProviderTest:
         mock_run_process_in_one_off_container.assert_called_once_with(update_venue_provider_command)
 
     @patch('local_providers.venue_provider_worker.run_process_in_one_off_container')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_update_venue_provider_with_worker_id(self,
                                                          mock_run_process_in_one_off_container, app):
         # Given

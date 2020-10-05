@@ -4,14 +4,14 @@ from domain.price_rule import PriceRule
 from models import ApiErrors, AllocineVenueProviderPriceRule
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_venue, create_offerer, \
     create_allocine_venue_provider_price_rule, create_allocine_venue_provider
 from tests.model_creators.provider_creators import activate_provider
 
 
 class AllocineVenueProviderPriceRuleTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_add_price_rules_to_venue_provider(self, app):
         # Given
         offerer = create_offerer()
@@ -29,7 +29,7 @@ class AllocineVenueProviderPriceRuleTest:
         # Then
         assert len(allocine_venue_provider.priceRules) == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_raise_error_when_price_is_negative(self, app):
         # Given
         offerer = create_offerer()
@@ -48,7 +48,7 @@ class AllocineVenueProviderPriceRuleTest:
         # Then
         assert error.value.errors['global'] == ['Vous ne pouvez renseigner un prix négatif']
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_raise_error_when_saving_existing_rule_price(self, app):
         # Given
         offerer = create_offerer()
@@ -68,7 +68,7 @@ class AllocineVenueProviderPriceRuleTest:
         # Then
         assert error.value.errors['global'] == ["Vous ne pouvez avoir qu''un seul prix par catégorie"]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_raise_error_when_saving_wrong_format_price(self, app):
         # Given
         offerer = create_offerer()
@@ -88,7 +88,7 @@ class AllocineVenueProviderPriceRuleTest:
 
 
 class SaveAllocineVenueProviderPriceRuleTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_save_new_venue_provider_price_rule(self, app):
         # Given
         offerer = create_offerer()

@@ -1,7 +1,8 @@
 import secrets
 from unittest.mock import patch
 
-from tests.conftest import TestClient, clean_database
+from tests.conftest import TestClient
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 
@@ -13,7 +14,7 @@ from use_cases.list_offers_for_pro_user import OffersRequestParameters
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def should_filter_by_venue_when_user_is_admin_and_request_specific_venue_with_no_rights_on_it(self, app):
             # Given
             admin = create_user(is_admin=True, can_book_free_offers=False)
@@ -33,7 +34,7 @@ class Get:
             assert response.status_code == 200
             assert len(offers) == 1
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def should_filter_by_venue_when_user_is_not_admin_and_request_specific_venue_with_rights_on_it(self, app):
             # Given
             pro = create_user(is_admin=False, can_book_free_offers=False)
@@ -54,7 +55,7 @@ class Get:
             assert response.status_code == 200
             assert len(offers) == 1
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.offers.list_offers_for_pro_user.execute')
         def test_results_are_paginated_with_pagination_details_in_body(self, list_offers_mock, app):
             # Given
@@ -79,7 +80,7 @@ class Get:
             assert response.json['page_count'] == 1
             assert response.json['total_count'] == 2
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.offers.list_offers_for_pro_user.execute')
         def test_does_not_show_result_to_user_offerer_when_not_validated(self, list_offers_mock, app):
             # given
@@ -98,7 +99,7 @@ class Get:
             assert response.status_code == 200
             assert response.json == {'offers': [], 'page': 0, 'page_count': 0, 'total_count': 0}
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.offers.list_offers_for_pro_user.execute')
         def test_results_are_filtered_by_given_venue_id(self, list_offers_mock, app):
             # given
@@ -125,7 +126,7 @@ class Get:
             assert expected_parameter.page == 1
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_requested_venue_does_not_exist(self, app):
             # Given
             user = create_user(email='user@test.com')
@@ -140,7 +141,7 @@ class Get:
             assert response.json == {'global': ["La page que vous recherchez n'existe pas"]}
 
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_no_rights_on_requested_venue(self, app):
             # Given
             user = create_user(email='user@test.com')

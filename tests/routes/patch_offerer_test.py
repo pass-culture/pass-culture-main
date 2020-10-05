@@ -4,7 +4,8 @@ from datetime import datetime
 from models import Offerer
 from repository import repository
 from routes.serialization import serialize
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_recommendation
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
@@ -13,7 +14,7 @@ from utils.human_ids import humanize
 
 class Patch:
     class Returns403:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_does_not_have_rights_on_offerer(self, app):
             # given
             user = create_user()
@@ -31,7 +32,7 @@ class Patch:
             assert response.status_code == 403
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_editing_non_authorised_fields(self, app):
             # given
             user = create_user()
@@ -56,7 +57,7 @@ class Patch:
                 assert response.json[key] == ['Vous ne pouvez pas modifier ce champ']
 
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_deactivating_offerer(self, app):
             # given
             user = create_user()

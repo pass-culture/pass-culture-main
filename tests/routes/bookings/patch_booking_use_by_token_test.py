@@ -3,7 +3,8 @@ from unittest.mock import patch, Mock
 from domain.user_emails import send_activation_email
 from models import EventType, Deposit, BookingSQLEntity, UserSQLEntity
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit, create_user_offerer, create_api_key
@@ -16,7 +17,7 @@ API_KEY_VALUE = random_token(64)
 class Patch:
     class Returns204:
         class WithApiKeyAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_api_key_is_provided_and_rights_and_regular_offer(self, app):
                 # Given
                 user = create_user()
@@ -45,7 +46,7 @@ class Patch:
                 assert response.status_code == 204
                 assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
                 # Given
                 user = create_user()
@@ -77,7 +78,7 @@ class Patch:
                 assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
         class WithBasicAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_logged_in_and_regular_offer(self, app):
                 # Given
                 user = create_user()
@@ -98,7 +99,7 @@ class Patch:
                 assert response.status_code == 204
                 assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, app):
                 # Given
                 user = create_user()
@@ -120,7 +121,7 @@ class Patch:
                 assert response.status_code == 204
                 assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_admin_user_is_logged_in_expect_activation_booking_to_be_used_and_linked_user_to_be_able_to_book(self, app):
                 # Given
                 user = create_user(can_book_free_offers=False, is_admin=False, first_name='John')
@@ -143,7 +144,7 @@ class Patch:
                 assert user.canBookFreeOffers is True
                 assert user.deposits[0].amount == 500
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_admin_user_is_logged_in_expect_to_send_notification_email(self, app):
                 # Given
                 user = create_user(email='user@email.fr', first_name='John')
@@ -175,7 +176,7 @@ class Patch:
                 args = mocked_send_email.call_args
 
     class Returns401:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_not_logged_in_and_doesnt_give_api_key(self, app):
             # Given
             user = create_user(email='user@email.fr')
@@ -193,7 +194,7 @@ class Patch:
             # Then
             assert response.status_code == 401
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_not_logged_in_and_not_existing_api_key_given(self, app):
             # Given
             user = create_user(email='user@email.fr')
@@ -217,7 +218,7 @@ class Patch:
 
     class Returns403:
         class WithApiKeyAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_api_key_given_not_related_to_booking_offerer(self, app):
                 # Given
                 user = create_user(email='user@email.fr')
@@ -250,7 +251,7 @@ class Patch:
                 assert response.json['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
         class WithBasicAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_not_attached_to_linked_offerer(self, app):
                 # Given
                 user = create_user()
@@ -271,7 +272,7 @@ class Patch:
                 assert response.json['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
                 assert BookingSQLEntity.query.get(booking_id).isUsed is False
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_not_admin_and_tries_to_patch_activation_offer(self, app):
                 # Given
                 user = create_user()
@@ -292,7 +293,7 @@ class Patch:
                 assert response.json['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_booking_is_not_provided_at_all(self, app):
             # Given
             user = create_user(email='user@email.fr')
@@ -311,7 +312,7 @@ class Patch:
             assert response.status_code == 404
 
         class WithApiKeyAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_api_key_is_provided_and_booking_does_not_exist(self, app):
                 # Given
                 user = create_user()
@@ -341,7 +342,7 @@ class Patch:
                 assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
         class WithBasicAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_logged_in_and_booking_does_not_exist(self, app):
                 # Given
                 user = create_user()
@@ -363,7 +364,7 @@ class Patch:
 
     class Returns405:
         class WhenLoggedUserIsAdmin:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def expect_no_new_deposits_when_the_linked_user_has_been_already_activated(self, app):
                 # Given
                 user = create_user(can_book_free_offers=False, email='user@email.fr')
@@ -396,7 +397,7 @@ class Patch:
 
     class Returns410:
         class WithBasicAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
                 # Given
                 user = create_user()
@@ -419,7 +420,7 @@ class Patch:
                 assert response.json['booking'] == ['Cette réservation a été annulée']
                 assert BookingSQLEntity.query.get(booking_id).isUsed is False
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_user_is_logged_in_and_booking_has_been_validated_already(self, app):
                 # Given
                 user = create_user()
@@ -443,7 +444,7 @@ class Patch:
                 assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
         class WithApiKeyAuthTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_api_key_is_provided_and_booking_has_been_cancelled_already(self, app):
                 # Given
                 user = create_user()
@@ -466,7 +467,7 @@ class Patch:
                 assert response.json['booking'] == ['Cette réservation a été annulée']
                 assert BookingSQLEntity.query.get(booking_id).isUsed is False
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def when_api_key_is_provided_and_booking_has_been_validated_already(self, app):
                 # Given
                 user = create_user()

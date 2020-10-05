@@ -1,6 +1,6 @@
 from models import AllocineVenueProvider, VenueProvider
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue, \
     create_allocine_venue_provider, \
     create_provider, create_venue_provider
@@ -8,7 +8,7 @@ from tests.model_creators.provider_creators import activate_provider
 
 
 class AllocineVenueProviderTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_allocine_venue_provider_should_inherit_from_venue_provider(self, app):
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -28,7 +28,7 @@ class AllocineVenueProviderTest:
         assert allocine_vp.isDuo
         assert allocine_vp.isFromAllocineProvider
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_query_venue_provider_load_allocine_venue_provider_attributes_when_connected_to_allocine(self, app):
         offerer = create_offerer()
         venue = create_venue(offerer)

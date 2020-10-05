@@ -1,5 +1,6 @@
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_bank_information
 from utils.human_ids import humanize
@@ -7,7 +8,7 @@ from utils.human_ids import humanize
 
 class Get:
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_offerer_does_not_exist(self, app):
             # Given
             user = create_user()
@@ -24,7 +25,7 @@ class Get:
             assert response.json['global'] == ['La page que vous recherchez n\'existe pas']
 
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_has_rights_on_offerer(self, app):
             # given
             user = create_user()

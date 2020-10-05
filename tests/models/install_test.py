@@ -1,11 +1,11 @@
 from models import Feature
 from models.feature import FeatureToggle
 from models.install import install_features
-from tests.conftest import clean_database
+import pytest
 
 
 class InstallFeaturesTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_creates_active_features_in_database(self, app):
         # Given
         Feature.query.delete()

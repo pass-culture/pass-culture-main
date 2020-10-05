@@ -1,14 +1,14 @@
 from unittest.mock import Mock
 
 
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_venue_type
 from use_cases.get_types_of_venues import get_types_of_venues
 
 
 class UseCaseTest:
     class GetTypesOfVenuesTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_return_the_list(self, app):
             # Given
             list_of_types = [create_venue_type('Theatre')]

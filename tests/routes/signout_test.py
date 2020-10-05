@@ -1,12 +1,13 @@
 from models import UserSession
 from repository import repository
-from tests.conftest import TestClient, clean_database
+from tests.conftest import TestClient
+import pytest
 from tests.model_creators.generic_creators import create_user
 
 
 class Get:
     class Returns200:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_the_existing_user_session_to_be_deleted_deleted(self, app):
             # given
             user = create_user(email='test@mail.com')

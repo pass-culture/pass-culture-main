@@ -6,7 +6,8 @@ from pytest import fixture
 from pytest_mock import mocker
 
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, \
     create_stock, create_booking
 from tests.model_creators.specific_creators import create_offer_with_thing_product
@@ -16,7 +17,7 @@ from utils.human_ids import humanize
 
 class GetAllBookingsTest:
     @patch('routes.bookings.get_all_bookings_by_pro_user')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_call_the_usecase_with_user_id_and_page(self,
                                                            get_all_bookings_by_pro_user: mocker,
                                                            app: fixture):
@@ -34,7 +35,7 @@ class GetAllBookingsTest:
         get_all_bookings_by_pro_user.assert_called_once_with(user_id=user.id, page=page_number)
 
     @patch('routes.bookings.get_all_bookings_by_pro_user')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_call_the_usecase_with_1_when_no_page_provided(self,
                                                                   get_all_bookings_by_pro_user: mocker,
                                                                   app: fixture):
@@ -53,7 +54,7 @@ class GetAllBookingsTest:
 
 class GetTest:
     class Returns200Test:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_linked_to_a_valid_offerer(self, app: fixture):
             # Given
             beneficiary = create_user(email='beneficiary@example.com', first_name="Hermione", last_name="Granger")
@@ -125,7 +126,7 @@ class GetTest:
             assert response.json['total'] == 1
 
     class Returns400Test:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_page_number_is_not_a_number(self, app: fixture):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
@@ -144,7 +145,7 @@ class GetTest:
             }
 
     class Returns401Test:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_user_is_admin(self, app: fixture):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)

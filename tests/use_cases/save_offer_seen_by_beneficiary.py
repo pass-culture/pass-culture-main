@@ -4,14 +4,14 @@ from freezegun import freeze_time
 
 from models import SeenOffer
 from repository import repository
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_user, create_seen_offer
 from tests.model_creators.specific_creators import create_offer_with_event_product
 from use_cases.save_offer_seen_by_beneficiary import save_seen_offer
 
 
 class SaveSeenOffersTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @freeze_time("2020-04-10 16:50:10")
     def test_should_record_new_seen_offer_when_offer_is_seen_for_the_first_time(self, app):
         # given
@@ -33,7 +33,7 @@ class SaveSeenOffersTest:
 
         assert seen_offer.dateSeen == datetime(2020, 4, 10, 16, 50, 10)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @freeze_time("2020-04-10 16:50:10")
     def test_should_update_date_seen_when_offer_is_seen_for_the_second_time_by_same_user(self, app):
         # given

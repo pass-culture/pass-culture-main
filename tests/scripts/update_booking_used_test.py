@@ -5,7 +5,7 @@ from freezegun import freeze_time
 from models import BookingSQLEntity
 from repository import repository
 from scripts.update_booking_used import update_booking_used_after_stock_occurrence
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit
@@ -13,7 +13,7 @@ from tests.model_creators.specific_creators import create_offer_with_thing_produ
 
 
 class UpdateBookingUsedTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_update_booking_used_when_booking_is_on_thing_product(self, app):
         # Given
         user = create_user()
@@ -35,7 +35,7 @@ class UpdateBookingUsedTest:
         assert not updated_booking.dateUsed
 
     @freeze_time('2019-10-13')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_update_booking_used_when_event_date_is_3_days_before(self, app):
         # Given
         user = create_user()
@@ -57,7 +57,7 @@ class UpdateBookingUsedTest:
         assert updated_booking.dateUsed == datetime(2019, 10, 13)
 
     @freeze_time('2019-10-10')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_update_booking_used_when_event_date_is_only_1_day_before(self, app):
         # Given
         user = create_user()
@@ -78,7 +78,7 @@ class UpdateBookingUsedTest:
         assert not updated_booking.isUsed
         assert updated_booking.dateUsed is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_update_booking_if_already_used(self, app):
         # Given
         user = create_user()

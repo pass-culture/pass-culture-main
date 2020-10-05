@@ -2,13 +2,14 @@ from unittest.mock import patch, call
 
 from models.db import db
 from repository import repository
-from tests.conftest import clean_database, TestClient
+import pytest
+from tests.conftest import TestClient
 from tests.model_creators.generic_creators import create_offerer, create_venue
 
 
 class Get:
     class Returns202:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_validation_token_to_be_none(self, app):
             # Given
             offerer = create_offerer()
@@ -28,7 +29,7 @@ class Get:
 
         @patch('routes.validate.feature_queries.is_active', return_value=True)
         @patch('routes.validate.redis.add_venue_id')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def expect_venue_id_to_be_added_to_redis(self, mock_redis, mock_feature, app):
             # Given
             offerer = create_offerer()
@@ -46,7 +47,7 @@ class Get:
                 call(client=app.redis_client, venue_id=venue.id)
             ]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('routes.validate.link_valid_venue_to_irises')
         def expect_link_venue_to_iris_if_valid_to_be_called_for_validated_venue(self, mocked_link_venue_to_iris_if_valid, app):
             # Given
@@ -65,7 +66,7 @@ class Get:
             mocked_link_venue_to_iris_if_valid.assert_called_once_with(venue)
 
     class Returns400:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_no_validation_token_is_provided(self, app):
             # When
             response = TestClient(app.test_client()).get('/validate/venue')
@@ -75,7 +76,7 @@ class Get:
             assert response.json['token'] == ['Vous devez fournir un jeton de validation']
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_validation_token_is_unknown(self, app):
             # When
             response = TestClient(app.test_client()).get(f'/validate/venue?token=12345')

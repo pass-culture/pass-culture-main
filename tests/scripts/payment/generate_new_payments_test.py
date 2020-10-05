@@ -3,7 +3,7 @@ from models.feature import FeatureToggle
 from models.payment import Payment
 from repository import repository
 from scripts.payment.batch_steps import generate_new_payments
-from tests.conftest import clean_database
+import pytest
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_payment, create_bank_information
@@ -13,7 +13,7 @@ from tests.test_utils import deactivate_feature
 
 class GenerateNewPaymentsTest:
     class WithCurrentRulesTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_records_new_payment_lines_in_database(self, app):
             # Given
             deactivate_feature(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE)
@@ -46,7 +46,7 @@ class GenerateNewPaymentsTest:
             # Then
             assert Payment.query.count() - initial_payment_count == 2
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_returns_a_tuple_of_pending_and_not_processable_payments(self, app):
             # Given
             deactivate_feature(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE)
@@ -82,7 +82,7 @@ class GenerateNewPaymentsTest:
             assert len(pending) == 2
             assert len(not_processable) == 1
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_not_reimburse_offerer_if_he_has_more_than_20000_euros_in_bookings_on_several_venues(self, app):
             # Given
             deactivate_feature(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE)
@@ -119,7 +119,7 @@ class GenerateNewPaymentsTest:
             assert sum(p.amount for p in pending) == 20000
 
     class WithNewRulesTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_records_new_payment_lines_in_database(self, app):
             # Given
             offerer = create_offerer()
@@ -151,7 +151,7 @@ class GenerateNewPaymentsTest:
             # Then
             assert Payment.query.count() - initial_payment_count == 2
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_returns_a_tuple_of_pending_and_not_processable_payments(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
@@ -186,7 +186,7 @@ class GenerateNewPaymentsTest:
             assert len(pending) == 2
             assert len(not_processable) == 1
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_reimburses_offerer_if_he_has_more_than_20000_euros_in_bookings_on_several_venues(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
@@ -221,7 +221,7 @@ class GenerateNewPaymentsTest:
             assert len(not_processable) == 0
             assert sum(p.amount for p in pending) == 30000
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_reimburses_offerer_with_degressive_rate_for_venues_with_bookings_exceeding_20000_euros(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
@@ -256,7 +256,7 @@ class GenerateNewPaymentsTest:
             assert len(not_processable) == 0
             assert sum(p.amount for p in pending) == 48500
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_full_reimburses_book_product_when_bookings_are_below_20000_euros(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
@@ -287,7 +287,7 @@ class GenerateNewPaymentsTest:
             assert len(not_processable) == 0
             assert sum(p.amount for p in pending) == 29990
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_reimburses_95_percent_for_book_product_when_bookings_exceed_20000_euros(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
@@ -325,7 +325,7 @@ class GenerateNewPaymentsTest:
             assert len(not_processable) == 0
             assert sum(p.amount for p in pending) == 48500
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_reimburses_95_percent_for_book_product_when_bookings_exceed_40000_euros(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
@@ -363,7 +363,7 @@ class GenerateNewPaymentsTest:
             assert len(not_processable) == 0
             assert sum(p.amount for p in pending) == 67500
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_reimburses_95_percent_for_book_product_when_bookings_exceed_100000_euros(self, app):
             # Given
             offerer1 = create_offerer(siren='123456789')
