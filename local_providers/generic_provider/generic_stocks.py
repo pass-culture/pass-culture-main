@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Callable, List
+from typing import Callable, List, Optional
 
 from sqlalchemy import Sequence
 
@@ -18,7 +18,7 @@ class GenericStocks(LocalProvider):
     def __init__(self,
                  venue_provider: VenueProvider,
                  get_provider_stock_information: Callable,
-                 price_divider_to_euro: int,
+                 price_divider_to_euro: Optional[int],
                  **options):
         super().__init__(venue_provider, **options)
         self.get_provider_stock_information = get_provider_stock_information
@@ -54,13 +54,13 @@ class GenericStocks(LocalProvider):
 
         return [providable_info_offer, providable_info_stock]
 
-    def fill_object_attributes(self, pc_object: Model):
+    def fill_object_attributes(self, pc_object: Model) -> None:
         if isinstance(pc_object, OfferSQLEntity):
             self.fill_offer_attributes(pc_object)
         if isinstance(pc_object, StockSQLEntity):
             self.fill_stock_attributes(pc_object)
 
-    def fill_offer_attributes(self, offer: OfferSQLEntity):
+    def fill_offer_attributes(self, offer: OfferSQLEntity) -> None:
         offer.bookingEmail = self.venue.bookingEmail
         offer.description = self.product.description
         offer.extraData = self.product.extraData
@@ -76,12 +76,14 @@ class GenericStocks(LocalProvider):
 
         self.offer_id = offer.id
 
-    def fill_stock_attributes(self, stock: StockSQLEntity):
+    def fill_stock_attributes(self, stock: StockSQLEntity) -> None:
         bookings_quantity = count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
         stock.quantity = self.provider_stocks['available'] + bookings_quantity
         stock.bookingLimitDatetime = None
         stock.offerId = self.offer_id
-        stock.price = _fill_stock_price(int(self.provider_stocks['price']), self.price_divider_to_euro)
+        stock.price = self.provider_stocks['price'] \
+            if self.price_divider_to_euro is None \
+            else _fill_stock_price(int(self.provider_stocks['price']), self.price_divider_to_euro)
         stock.dateModified = datetime.now()
 
     @staticmethod

@@ -10,7 +10,7 @@ class LibrairesStocks(GenericStocks):
     def __init__(self, venue_provider: VenueProvider, **options):
         super().__init__(venue_provider=venue_provider,
                          get_provider_stock_information=api_libraires_stocks.stocks_information,
-                         price_divider_to_euro=1,
+                         price_divider_to_euro=None,
                          **options)
         self.venue = venue_provider.venue
         self.siret = self.venue.siret
