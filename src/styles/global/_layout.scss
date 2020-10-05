@@ -19,7 +19,7 @@ body {
 #android-statusbar-overlay {
   display: none;
   width: 100%;
-  height: 24px;
+  height: rem(24px);
   opacity: 0.5;
   background-color: $black;
   position: fixed;
@@ -108,10 +108,10 @@ ul.main-list {
 }
 
 .input-icon {
-  height: 15px;
-  width: 15px;
+  height: rem(15px);
+  width: rem(15px);
   position: absolute;
-  right: 10px;
+  right: rem(10px);
   top: 0;
   bottom: 0;
   margin: auto;

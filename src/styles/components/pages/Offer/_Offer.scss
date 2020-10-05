@@ -4,10 +4,10 @@
 
     li {
       display: inline-block;
-      height: 250px;
+      height: rem(250px);
 
       img {
-        height: 200px;
+        height: rem(200px);
       }
 
       .field {
@@ -58,7 +58,7 @@
     }
 
     .tip-icon {
-      margin-left: 3px;
+      margin-left: rem(3px);
     }
 
     div {
@@ -71,7 +71,7 @@
   }
 
   .subtitle {
-    margin-bottom: 12px;
+    margin-bottom: rem(12px);
   }
 
   .main-list-title {
@@ -83,13 +83,13 @@
     overflow-y: hidden;
 
     span {
-      margin-top: 3.5px;
+      margin-top: rem(3.5px);
     }
   }
 
   .field-content {
     vertical-align: middle;
-    padding-left: 5px;
+    padding-left: rem(5px);
   }
 
   .field-body textarea {

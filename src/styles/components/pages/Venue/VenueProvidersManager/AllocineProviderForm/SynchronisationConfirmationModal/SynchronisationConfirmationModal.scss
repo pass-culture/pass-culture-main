@@ -19,17 +19,17 @@
   .confirmation-modal-content {
     display: flex;
     flex-direction: column;
-    width: 360px;
+    width: rem(360px);
     background-color: $white;
 
     .warning-text {
-      padding: 30px;
+      padding: rem(30px);
       display: flex;
       flex-direction: row;
 
       img {
-        width: 40px;
-        margin-right: 10px;
+        width: rem(40px);
+        margin-right: rem(10px);
       }
     }
 
@@ -52,13 +52,13 @@
       .cancel-button {
         width: 50%;
         border-top: 1px dotted $primary;
-        height: 30px;
+        height: rem(30px);
       }
 
       .confirm-button {
         width: 50%;
         border-top: 1px dotted $primary;
-        height: 30px;
+        height: rem(30px);
       }
     }
   }

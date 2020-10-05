@@ -12,7 +12,7 @@
 #csv-table {
   thead {
     th {
-      padding: 10px;
+      padding: rem(10px);
     }
   }
 
@@ -20,7 +20,7 @@
     td {
       color: $grey-dark;
       line-height: normal;
-      padding: 10px;
+      padding: rem(10px);
       vertical-align: middle;
     }
 

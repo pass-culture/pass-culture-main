@@ -3,38 +3,38 @@
     text-align: center;
 
     .columns {
-      width: 392px;
+      width: rem(392px);
       margin: auto;
     }
 
     input[type='text'] {
-      width: 316px;
-      height: 72px;
-      font-size: 36px;
+      width: rem(316px);
+      height: rem(72px);
+      font-size: rem(36px);
     }
 
     .buttonContainer {
-      width: 92px;
+      width: rem(92px);
       display: inline-block;
     }
 
     button {
       border-radius: 1.125em;
-      font-size: 30px;
-      height: 72px;
-      margin-left: 20px;
+      font-size: rem(30px);
+      height: rem(72px);
+      margin-left: rem(20px);
     }
 
     .state {
       @include dotted($primary);
 
-      margin: 20px 0;
-      padding-top: 10px;
+      margin: rem(20px) 0;
+      padding-top: rem(10px);
       display: flex;
       align-items: center;
-      font-size: 20px;
+      font-size: rem(20px);
       text-align: left;
-      height: 60px;
+      height: rem(60px);
       width: calc(100% - 110px);
 
       &.pending {
@@ -42,18 +42,18 @@
       }
 
       img {
-        width: 50px;
+        width: rem(50px);
       }
 
       span {
-        padding-left: 20px;
+        padding-left: rem(20px);
         font-weight: 500;
       }
     }
   }
 
   .booking-summary {
-    margin: 10px auto;
+    margin: rem(10px) auto;
     margin-left: 28%;
 
     th {
@@ -62,7 +62,7 @@
     }
 
     td {
-      padding-left: 5px;
+      padding-left: rem(5px);
       font-weight: bold;
     }
   }
@@ -73,7 +73,7 @@
   }
 
   #exitlink {
-    margin-top: -70px;
+    margin-top: rem(-70px);
     float: right;
   }
 }

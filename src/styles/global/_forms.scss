@@ -1,6 +1,6 @@
 .field-sep {
   border-top: 1px solid $grey-medium;
-  height: 16px;
+  height: rem(16px);
   left: 0;
   position: absolute;
   right: 0;
@@ -85,7 +85,7 @@
 .checkboxes-field {
   .field-inner {
     color: $black;
-    padding-left: 4px;
+    padding-left: rem(4px);
     border: none;
     border-radius: 0;
     font-weight: 500;
@@ -103,12 +103,12 @@
   border: none;
   font-size: rem(16px);
   font-weight: 500;
-  height: 36px;
-  min-width: 250px;
-  min-height: 36px;
+  height: rem(36px);
+  min-width: rem(250px);
+  min-height: rem(36px);
   outline: none !important;
   padding-left: rem(24px);
-  width: 250px;
+  width: rem(250px);
 }
 
 .field-textarea,
@@ -165,15 +165,15 @@
 }
 
 .field-date {
-  height: 32px;
-  padding: 6px;
+  height: rem(32px);
+  padding: rem(6px);
 
   input.date {
     border: 0;
     cursor: pointer;
     font-size: rem(12px);
     font-weight: 500;
-    min-width: 60px;
+    min-width: rem(60px);
     width: 100%;
     text-align: center;
 
@@ -183,8 +183,8 @@
   }
 
   img {
-    height: 15px;
-    width: 15px;
+    height: rem(15px);
+    width: rem(15px);
   }
 }
 
@@ -196,7 +196,7 @@
 .textarea-field,
 .texteditor-field {
   .field-label {
-    padding-top: 8px;
+    padding-top: rem(8px);
     vertical-align: middle;
   }
 
@@ -230,8 +230,8 @@
       }
 
       .icon {
-        height: 30px;
-        width: 30px;
+        height: rem(30px);
+        width: rem(30px);
       }
 
       &.clicked {
@@ -274,7 +274,7 @@
     .field-inner {
       border: none;
       background-color: transparent;
-      padding-left: 4px;
+      padding-left: rem(4px);
       resize: none;
 
       .field-checkbox,
@@ -330,7 +330,7 @@
         .field-inner {
           .field-input {
             border-radius: 20px;
-            height: 36px;
+            height: rem(36px);
             width: inherit;
           }
         }
@@ -354,7 +354,7 @@
   display: flex;
   font-size: rem(14px);
   font-weight: $weight-medium;
-  min-height: 24px;
+  min-height: rem(24px);
 
   .field-error-icon {
     flex-shrink: 0;

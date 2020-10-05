@@ -11,15 +11,15 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: 80%;
-    height: 120px;
+    height: rem(120px);
     margin-left: -2.5rem;
     opacity: 0.25;
-    width: 120px;
+    width: rem(120px);
   }
 
   .section-icon-mask {
-    width: 80px;
-    height: 120px;
+    width: rem(80px);
+    height: rem(120px);
     position: absolute;
     top: -2.75rem;
     left: -5.3rem;
@@ -43,7 +43,7 @@
       display: flex;
       justify-content: flex-end;
       font-weight: $weight-semibold;
-      font-size: 14px;
+      font-size: rem(14px);
       background-color: transparent;
       color: $primary;
 

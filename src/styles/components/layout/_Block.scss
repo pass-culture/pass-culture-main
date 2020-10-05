@@ -1,9 +1,9 @@
 .confirm-change {
-  max-width: 360px;
+  max-width: rem(360px);
 
   ul {
-    margin-right: 15px;
-    margin-left: 15px;
+    margin-right: rem(15px);
+    margin-left: rem(15px);
     display: flex;
     justify-content: flex-start;
     align-items: center;

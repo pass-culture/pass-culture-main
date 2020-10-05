@@ -6,10 +6,10 @@
   justify-content: flex-start;
   flex-grow: 1;
   font-size: rem(16px);
-  padding: 18px;
+  padding: rem(18px);
 
   span {
-    margin-left: 12px;
+    margin-left: rem(12px);
   }
 
   img {
@@ -23,7 +23,7 @@
   border-radius: 6px;
   font-size: rem(16px);
   margin-bottom: 1.5rem;
-  padding: 18px;
+  padding: rem(18px);
 
   .insert-action-link {
     margin-top: 0.5rem;

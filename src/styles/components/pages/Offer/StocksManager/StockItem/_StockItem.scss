@@ -1,17 +1,17 @@
 .stock-item {
   input[type='number'] {
-    padding-left: 12px;
-    padding-right: 6px;
+    padding-left: rem(12px);
+    padding-right: rem(6px);
     text-align: right;
   }
 
   .time-field {
-    width: 66px;
+    width: rem(66px);
 
     .field-input {
-      width: 40px;
-      padding-left: 12px;
-      padding-right: 12px;
+      width: rem(40px);
+      padding-left: rem(12px);
+      padding-right: rem(12px);
     }
   }
 
@@ -21,17 +21,17 @@
     vertical-align: middle;
 
     .field-input {
-      font-size: 12px;
-      min-width: 32px;
+      font-size: rem(12px);
+      min-width: rem(32px);
       border-radius: 1rem;
 
       &.field-number {
         text-align: center;
-        width: 85px;
+        width: rem(85px);
       }
 
       &.input-number {
-        min-width: 77px;
+        min-width: rem(77px);
       }
 
       &[readonly] {
@@ -46,7 +46,7 @@
     .tooltip {
       &.tooltip-info {
         background-color: transparent;
-        margin-left: 6px !important;
+        margin-left: rem(6px) !important;
       }
     }
   }

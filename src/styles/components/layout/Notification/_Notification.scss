@@ -1,7 +1,7 @@
 .notification {
-  margin: 6px;
+  margin: rem(6px);
   overflow-y: hidden;
-  padding: 6px;
+  padding: rem(6px);
   position: relative;
 
   .small-padding {

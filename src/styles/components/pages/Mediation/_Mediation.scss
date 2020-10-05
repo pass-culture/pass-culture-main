@@ -32,8 +32,8 @@
 
 .thumbnailManager {
   background-color: $grey-light;
-  padding: 18px;
-  margin-bottom: 10px;
+  padding: rem(18px);
+  margin-bottom: rem(10px);
 
   hr {
     margin: 1rem 0;
@@ -45,12 +45,12 @@
   }
 
   .section {
-    font-size: 13px;
+    font-size: rem(13px);
     margin-bottom: 0.7rem;
 
     h2 {
-      font-size: 16px;
-      margin-bottom: 15px;
+      font-size: rem(16px);
+      margin-bottom: rem(15px);
     }
   }
 
@@ -61,13 +61,13 @@
   }
 
   ul li span.li-number {
-    height: 20px;
-    width: 20px;
+    height: rem(20px);
+    width: rem(20px);
     color: $black;
     background-color: $mediation-green;
     text-align: center;
     font-weight: bold;
-    margin-right: 10px;
+    margin-right: rem(10px);
   }
 
   ul li:first-child span.li-number {
@@ -76,6 +76,6 @@
   }
 
   h6 {
-    margin-bottom: 5px;
+    margin-bottom: rem(5px);
   }
 }

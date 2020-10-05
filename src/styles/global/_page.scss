@@ -25,7 +25,7 @@
   }
 
   .small-text {
-    font-size: 13px;
+    font-size: rem(13px);
     color: $grey-dark;
   }
 
@@ -76,7 +76,7 @@
       z-index: 10;
       background: $white;
       box-shadow: 0 0 3.75rem $black-shadow;
-      min-width: 850px;
+      min-width: rem(850px);
 
       .after-notification-content {
         padding: rem(24px);

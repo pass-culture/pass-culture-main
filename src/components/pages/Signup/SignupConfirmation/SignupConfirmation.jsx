@@ -5,7 +5,7 @@ import { ROOT_PATH } from '../../../../utils/config'
 const SignupConfirmation = () => (
   <div className="hero">
     <div className="hero-body">
-      <div className="">
+      <div>
         <h1 className="title is-spaced is-1">
           {'Merci !'}
         </h1>

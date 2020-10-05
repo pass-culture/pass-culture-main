@@ -6,7 +6,7 @@
   }
 
   p {
-    margin-bottom: 6px;
+    margin-bottom: rem(6px);
   }
 
   &.show {
@@ -22,12 +22,12 @@
 
       li {
         list-style-position: outside;
-        margin-left: 14px;
+        margin-left: rem(14px);
 
         &::before {
           content: "- ";
           list-style-position: outside;
-          margin-left: -8px;
+          margin-left: rem(-8px);
         }
       }
     }
@@ -37,6 +37,6 @@
     margin-top: 0;
   }
 
-  padding: 12px;
-  width: 300px;
+  padding: rem(12px);
+  width: rem(300px);
 }

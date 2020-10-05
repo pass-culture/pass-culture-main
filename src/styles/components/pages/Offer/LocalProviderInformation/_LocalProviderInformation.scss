@@ -22,13 +22,13 @@
     h3 {
       display: inline-block;
       vertical-align: middle;
-      padding-bottom: 1px;
+      padding-bottom: rem(1px);
     }
 
     span {
       vertical-align: middle;
       padding-left: 0.5rem;
-      padding-top: 2px;
+      padding-top: rem(2px);
     }
   }
 }

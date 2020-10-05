@@ -6,7 +6,7 @@
 
     .separator {
       background-color: $grey-medium;
-      height: 1px;
+      height: rem(1px);
       flex: 5;
     }
 
@@ -94,7 +94,7 @@
       background: none;
       border: none;
       cursor: pointer;
-      height: 24px;
+      height: rem(24px);
 
       &:disabled {
         cursor: not-allowed;

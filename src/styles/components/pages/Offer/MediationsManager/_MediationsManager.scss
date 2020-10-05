@@ -2,8 +2,8 @@
   .info-message {
     background: $attention;
     border-radius: 6px;
-    margin-bottom: 16px;
-    padding: 12px 15px;
+    margin-bottom: rem(16px);
+    padding: rem(12px) rem(15px);
   }
 
   ul.mediations-list {
@@ -11,10 +11,10 @@
 
     li {
       display: inline-block;
-      height: 250px;
+      height: rem(250px);
 
       img {
-        height: 200px;
+        height: rem(200px);
       }
 
       .field {
