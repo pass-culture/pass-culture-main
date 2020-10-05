@@ -3,7 +3,7 @@ jobs:
   run-tests:
     working_directory: ~/pass-culture-api-ci
     docker:
-      - image: circleci/python:3.7.6-stretch
+      - image: circleci/python:3.7.6
         environment:
           DATABASE_URL_TEST: postgresql://pytest:pytest@localhost:5432/pass_culture
           REDIS_URL: redis://localhost:6379
