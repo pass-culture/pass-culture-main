@@ -49,7 +49,6 @@ function getClientEnvironment(publicUrl) {
         BATCH_API_KEY: process.env.BATCH_API_KEY,
         BATCH_IS_ENABLED: process.env.BATCH_IS_ENABLED,
         BATCH_AUTH_KEY: process.env.BATCH_AUTH_KEY,
-        BATCH_SAME_ORIGIN: process.env.BATCH_SAME_ORIGIN,
         BATCH_SUBDOMAIN: process.env.BATCH_SUBDOMAIN,
         BATCH_VAPID_PUBLIC_KEY: process.env.BATCH_VAPID_PUBLIC_KEY,
         CONTENTFUL_ACCESS_TOKEN: process.env.CONTENTFUL_ACCESS_TOKEN,

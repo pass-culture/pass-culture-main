@@ -11,6 +11,10 @@ import setupBatchSDK from '../../../../notifications/setUpBatchSDK'
 jest.mock('../../../../notifications/setUpBatchSDK', () => jest.fn())
 
 describe('components | BetaPage', () => {
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should render page component with pass culture information', () => {
     // when
     const wrapper = shallow(<BetaPage trackSignup={jest.fn()} />)
@@ -93,6 +97,6 @@ describe('components | BetaPage', () => {
     )
 
     // then
-    expect(setupBatchSDK).toHaveBeenCalledWith()
+    expect(setupBatchSDK).toHaveBeenCalledTimes(1)
   })
 })

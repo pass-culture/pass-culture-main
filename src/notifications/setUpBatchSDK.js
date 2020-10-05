@@ -1,3 +1,5 @@
+import { IS_DEV } from '../utils/config'
+
 const config = {
   batchIsEnabled: process.env.BATCH_IS_ENABLED,
 }
@@ -38,7 +40,7 @@ export default function setupBatchSDK() {
       ui: batchSDKUIConfig,
       defaultIcon: 'favicon.ico', // for Chrome desktop
       smallIcon: 'favicon.ico', // for Chrome Android
-      sameOrigin: process.env.BATCH_SAME_ORIGIN === 'true',
+      sameOrigin: !IS_DEV,
       useExistingWorker: true,
     })
 
