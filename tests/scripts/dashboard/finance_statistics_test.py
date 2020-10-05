@@ -393,27 +393,6 @@ class GetTop20OffersByNumberOfBookingsTest:
         # Then
         assert bookings_counts.eq(expected_table).all().all()
 
-    @clean_database
-    def test_returns_20_most_booked_offers_ordered_by_quantity_booked_in_data_frame(self, app):
-        # Given
-        quantities = [14, 15, 16, 17, 18, 19, 20, 21, 22, 22, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-        bookings = _create_bookings_with_quantities(quantities)
-        repository.save(*bookings)
-        expected_counts = [
-            ('8', 22, 0), ('9', 22, 0), ('7', 21, 0), ('6', 20, 0), ('5', 19, 0), ('4', 18, 0),
-            ('3', 17, 0), ('2', 16, 0), ('1', 15, 0), ('0', 14, 0), ('23', 14, 0), ('22', 13, 0),
-            ('21', 12, 0), ('20', 11, 0), ('19', 10, 0), ('18', 9, 0), ('17', 8, 0), ('16', 7, 0),
-            ('15', 6, 0), ('14', 5, 0)
-        ]
-        expected_table = pandas.DataFrame(columns=['Offre', 'Nombre de réservations', 'Montant dépensé'],
-                                          data=expected_counts)
-
-        # When
-        bookings_counts = get_top_20_offers_table()
-
-        # Then
-        assert bookings_counts.eq(expected_table).all().all()
-
 
 class QueryGetTop20OfferersByNumberOfBookingsTest:
     @clean_database
