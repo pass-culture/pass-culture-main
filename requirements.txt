@@ -3,8 +3,8 @@ algoliasearch==2.4.0
 APScheduler==3.6.3
 Babel==2.8.0
 bcrypt==3.2.0
+beautifulsoup4==4.8.1
 coveralls==1.8.2
-beautifulsoup4==4.9.2
 Flask-Admin==1.5.6
 Flask-Cors==3.0.9
 Flask-Login==0.5.0
