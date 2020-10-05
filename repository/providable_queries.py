@@ -66,7 +66,7 @@ def _dict_to_object(object_dict: Dict, model_object: Model) -> Model:
 
 
 def dictify_pc_object(object_to_update: Model) -> Dict:
-    dict_to_update = object_to_update.__dict__
+    dict_to_update = object_to_update.__dict__.copy()
     if '_sa_instance_state' in dict_to_update:
         del dict_to_update['_sa_instance_state']
     if 'datePublished' in dict_to_update:
