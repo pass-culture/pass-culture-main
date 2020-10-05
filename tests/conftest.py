@@ -97,12 +97,31 @@ def mocked_mail(f):
 def clean_database(f: object) -> object:
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        return_value = f(*args, **kwargs)
         db.session.rollback()
         clean_all_database()
-        return f(*args, **kwargs)
+        return return_value
 
     return decorated_function
 
+@pytest.fixture(scope="session")
+def _db(app):
+    """
+    Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
+    database connection.
+    """
+    mock_db = db
+    mock_db.init_app(app)
+    install_database_extensions(app)
+    run_migrations()
+
+    install_activity()
+    install_materialized_views()
+    install_routes()
+    install_local_providers()
+    clean_all_database()
+
+    return mock_db
 
 class TestClient:
     WITH_DOC = False

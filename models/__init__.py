@@ -47,6 +47,7 @@ from models.allocine_venue_provider import AllocineVenueProvider
 from models.allocine_venue_provider_price_rule import \
     AllocineVenueProviderPriceRule
 from models.iris_france import IrisFrance
+from models.db import db
 
 __all__ = (
     'VersionedMixin',
