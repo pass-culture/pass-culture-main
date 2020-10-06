@@ -36,8 +36,8 @@
 
   .nb-dates {
     color: $primary;
-    font-weight: $weight-bold;
     display: inline-block;
+    font-weight: $weight-bold;
     margin-right: 2rem;
   }
 
@@ -48,9 +48,9 @@
     margin-top: rem(16px);
 
     label {
-      white-space: pre;
       margin-left: 0.7rem;
       vertical-align: top;
+      white-space: pre;
     }
 
     .duo-label-italic {
@@ -77,10 +77,10 @@
   .main-list-title {
     border-bottom: thin solid;
     display: block;
-    text-transform: uppercase;
     font-weight: $weight-bold;
     margin: 0.75rem 0;
     overflow-y: hidden;
+    text-transform: uppercase;
 
     span {
       margin-top: rem(3.5px);
@@ -88,8 +88,8 @@
   }
 
   .field-content {
-    vertical-align: middle;
     padding-left: rem(5px);
+    vertical-align: middle;
   }
 
   .field-body textarea {
