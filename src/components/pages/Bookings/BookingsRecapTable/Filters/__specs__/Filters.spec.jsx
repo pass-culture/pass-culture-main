@@ -24,14 +24,12 @@ describe('components | Filters', () => {
     fetchAllVenuesByProUser.mockResolvedValue([
       {
         id: 'AF',
-        booking_token: 'ABCDEF',
         name: 'Librairie Fnac',
         offererName: 'gilbert Joseph',
         isVirtual: false,
       },
       {
         id: 'AE',
-        booking_token: 'FEDCBA',
         name: 'Offre numérique',
         offererName: 'gilbert Joseph',
         isVirtual: true,
@@ -43,9 +41,9 @@ describe('components | Filters', () => {
     fetchAllVenuesByProUser.mockReset()
   })
 
-  it('should render all filters component with expected props', () => {
+  it('should render all filters component with expected props', async () => {
     // when
-    const wrapper = shallow(<Filters {...props} />)
+    const wrapper = await shallow(<Filters {...props} />)
 
     // then
     const filterByOmniSearch = wrapper.find(FilterByOmniSearch)
@@ -66,7 +64,16 @@ describe('components | Filters', () => {
       isDisabled: false,
       selectedVenue: '',
       updateFilters: expect.any(Function),
-      venuesFormattedAndOrdered: [],
+      venuesFormattedAndOrdered: [
+        {
+          displayName: 'gilbert Joseph - Offre numérique',
+          id: 'AE',
+        },
+        {
+          displayName: 'Librairie Fnac',
+          id: 'AF',
+        },
+      ],
     })
     const filterByBookingPeriod = wrapper.find(FilterByBookingPeriod)
     expect(filterByBookingPeriod.props()).toStrictEqual({

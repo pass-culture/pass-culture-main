@@ -10,6 +10,10 @@ import Spinner from '../../layout/Spinner'
 
 import Titles from '../../layout/Titles/Titles'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
+import Select from '../../layout/inputs/Select'
+import { ALL_OFFERS, ALL_VENUES, ALL_VENUES_OPTION, DEFAULT_PAGE } from './_constants'
+import { fetchAllVenuesByProUser } from '../../../services/venuesService'
+import formatAndOrderVenues from '../Bookings/BookingsRecapTable/utils/formatAndOrderVenues'
 
 export const createLinkToOfferCreation = (venueId, offererId) => {
   let createOfferTo = `/offres/creation`
@@ -35,15 +39,19 @@ class Offers extends PureComponent {
 
     this.state = {
       isLoading: false,
-      nameSearchValue: nameKeywords || '',
-      page: page || 1,
+      nameSearchValue: nameKeywords || ALL_OFFERS,
+      page: page || DEFAULT_PAGE,
       pageCount: null,
-      selectedVenue: selectedVenue,
+      selectedVenue: selectedVenue || ALL_VENUES,
+      venueOptions: [],
     }
   }
 
   componentDidMount() {
     this.getPaginatedOffersWithFilters()
+    fetchAllVenuesByProUser().then(venues =>
+      this.setState({ venueOptions: formatAndOrderVenues(venues) })
+    )
   }
 
   componentWillUnmount() {
@@ -59,8 +67,8 @@ class Offers extends PureComponent {
 
     query.change({
       page: page,
-      [mapApiToBrowser.name]: nameSearchValue === '' ? null : nameSearchValue,
-      [mapApiToBrowser.venueId]: selectedVenue ? selectedVenue : null,
+      [mapApiToBrowser.name]: nameSearchValue === ALL_OFFERS ? null : nameSearchValue,
+      [mapApiToBrowser.venueId]: selectedVenue === ALL_VENUES ? null : selectedVenue,
     })
   }
 
@@ -97,7 +105,7 @@ class Offers extends PureComponent {
 
     this.setState(
       {
-        page: 1,
+        page: DEFAULT_PAGE,
       },
       () => {
         this.getPaginatedOffersWithFilters()
@@ -109,7 +117,7 @@ class Offers extends PureComponent {
     this.setState(
       {
         selectedVenue: undefined,
-        page: 1,
+        page: DEFAULT_PAGE,
       },
       () => {
         this.getPaginatedOffersWithFilters()
@@ -119,6 +127,10 @@ class Offers extends PureComponent {
 
   storeNameSearchValue = event => {
     this.setState({ nameSearchValue: event.target.value })
+  }
+
+  storeSelectedVenue = event => {
+    this.setState({ selectedVenue: event.target.value })
   }
 
   onPreviousPageClick = () => {
@@ -149,7 +161,7 @@ class Offers extends PureComponent {
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
     const { venueId, offererId } = apiParams
-    const { nameSearchValue, page, pageCount, isLoading } = this.state
+    const { nameSearchValue, page, pageCount, isLoading, selectedVenue, venueOptions } = this.state
     const createOfferTo = createLinkToOfferCreation(venueId, offererId)
 
     const actionLink = !isAdmin ? (
@@ -185,6 +197,14 @@ class Offers extends PureComponent {
             onChange={this.storeNameSearchValue}
             placeholder="Rechercher par nom d’offre"
             value={nameSearchValue}
+          />
+          <Select
+            defaultOption={ALL_VENUES_OPTION}
+            handleSelection={this.storeSelectedVenue}
+            label="Lieu"
+            name="lieu"
+            options={venueOptions}
+            selectedValue={selectedVenue}
           />
           <div className="search-separator">
             <div className="separator" />

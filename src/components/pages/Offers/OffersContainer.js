@@ -10,6 +10,7 @@ import { selectVenueById } from 'store/selectors/data/venuesSelectors'
 import { translateQueryParamsToApiParams } from '../../../utils/translate'
 import { selectOffers } from 'store/selectors/data/offersSelectors'
 import { fetchFromApiWithCredentials } from '../../../utils/fetch'
+import { ALL_OFFERS, ALL_VENUES } from './_constants'
 
 export const mapStateToProps = (state, ownProps) => {
   const { query } = ownProps
@@ -30,11 +31,11 @@ export const mapStateToProps = (state, ownProps) => {
 const buildQueryParams = ({ nameSearchValue, selectedVenue, page }) => {
   const queryParams = []
 
-  if (nameSearchValue !== '') {
+  if (nameSearchValue !== ALL_OFFERS) {
     queryParams.push(`name=${nameSearchValue}`)
   }
 
-  if (selectedVenue) {
+  if (selectedVenue !== ALL_VENUES) {
     queryParams.push(`venueId=${selectedVenue}`)
   }
 

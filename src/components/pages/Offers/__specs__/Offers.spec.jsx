@@ -6,7 +6,12 @@ import { MemoryRouter, Router } from 'react-router'
 
 import { getStubStore } from '../../../../utils/stubStore'
 import Offers from '../Offers'
+import { ALL_OFFERS, ALL_VENUES, ALL_VENUES_OPTION, DEFAULT_PAGE } from '../_constants'
+import { fetchAllVenuesByProUser } from '../../../../services/venuesService'
 
+jest.mock('../../../../services/venuesService', () => ({
+  fetchAllVenuesByProUser: jest.fn(),
+}))
 describe('src | components | pages | Offers | Offers', () => {
   let change
   let parse
@@ -14,6 +19,20 @@ describe('src | components | pages | Offers | Offers', () => {
   let currentUser
   let store
   let history
+  const pro_venues = [
+    {
+      id: 'JI',
+      name: 'Ma venue',
+      offererName: 'Mon offerer',
+      isVirtual: false,
+    },
+    {
+      id: 'JQ',
+      name: 'Ma venue virtuelle',
+      offererName: 'Mon offerer',
+      isVirtual: true,
+    },
+  ]
 
   beforeEach(() => {
     change = jest.fn()
@@ -33,6 +52,7 @@ describe('src | components | pages | Offers | Offers', () => {
         }
       ) => state,
     })
+
     history = createMemoryHistory()
 
     props = {
@@ -42,9 +62,6 @@ describe('src | components | pages | Offers | Offers', () => {
       handleOnDeactivateAllVenueOffersClick: jest.fn(),
       loadOffers: jest.fn().mockImplementation((_, handleSuccess) => handleSuccess(1, 1)),
       loadTypes: jest.fn(),
-      location: {
-        search: 'offres?lieu=AQ&structure=A4',
-      },
       offers: [
         {
           id: 'N9',
@@ -58,6 +75,11 @@ describe('src | components | pages | Offers | Offers', () => {
       types: [],
       venue: { name: 'Ma Venue', id: 'JI' },
     }
+    fetchAllVenuesByProUser.mockResolvedValue(pro_venues)
+  })
+
+  afterEach(() => {
+    fetchAllVenuesByProUser.mockReset()
   })
 
   describe('render', () => {
@@ -74,9 +96,9 @@ describe('src | components | pages | Offers | Offers', () => {
       // then
       expect(props.loadOffers).toHaveBeenCalledWith(
         {
-          nameSearchValue: '',
-          page: 1,
-          selectedVenue: undefined,
+          nameSearchValue: ALL_OFFERS,
+          page: DEFAULT_PAGE,
+          selectedVenue: ALL_VENUES,
         },
         expect.any(Function),
         expect.any(Function)
@@ -97,8 +119,8 @@ describe('src | components | pages | Offers | Offers', () => {
       )
 
       // Then
-      const venueColumn = wrapper.find({ children: 'Lieu' })
-      const stockColumn = wrapper.find({ children: 'Stock' })
+      const venueColumn = wrapper.find('th').find({ children: 'Lieu' })
+      const stockColumn = wrapper.find('th').find({ children: 'Stock' })
       expect(venueColumn).toHaveLength(1)
       expect(stockColumn).toHaveLength(1)
     })
@@ -117,8 +139,8 @@ describe('src | components | pages | Offers | Offers', () => {
       )
 
       // Then
-      const venueColumn = wrapper.find({ children: 'Lieu' })
-      const stockColumn = wrapper.find({ children: 'Stock' })
+      const venueColumn = wrapper.find('th').find({ children: 'Lieu' })
+      const stockColumn = wrapper.find('th').find({ children: 'Stock' })
       expect(venueColumn).toHaveLength(0)
       expect(stockColumn).toHaveLength(0)
     })
@@ -167,6 +189,29 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(firstOfferItem).toHaveLength(1)
       expect(secondOfferItem).toHaveLength(1)
     })
+
+    describe('filters', () => {
+      it('should render venue filter with default option and given venues', async () => {
+        // when
+        const wrapper = await mount(
+          <Provider store={store}>
+            <MemoryRouter>
+              <Offers {...props} />
+            </MemoryRouter>
+          </Provider>
+        )
+
+        // then
+        wrapper.update()
+        const venueSelect = wrapper.find('select')
+        expect(venueSelect.props().value).toBe(ALL_VENUES_OPTION.id)
+        const options = venueSelect.find('option')
+        expect(options).toHaveLength(3)
+        expect(options.at(0).text()).toBe(ALL_VENUES_OPTION.displayName)
+        expect(options.at(1).text()).toBe(pro_venues[0].name)
+        expect(options.at(2).text()).toBe(`${pro_venues[1].offererName} - Offre numérique`)
+      })
+    })
   })
 
   describe('on click on search button', () => {
@@ -187,16 +232,16 @@ describe('src | components | pages | Offers | Offers', () => {
       // then
       expect(props.loadOffers).toHaveBeenCalledWith(
         {
-          nameSearchValue: '',
-          page: 1,
-          selectedVenue: undefined,
+          nameSearchValue: ALL_OFFERS,
+          page: DEFAULT_PAGE,
+          selectedVenue: ALL_VENUES,
         },
         expect.any(Function),
         expect.any(Function)
       )
     })
 
-    it('should load offers with offer name filter when some offer name was written', () => {
+    it('should load offers with written offer name filter', () => {
       // given
       const wrapper = mount(
         <Provider store={store}>
@@ -216,8 +261,36 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(props.loadOffers).toHaveBeenCalledWith(
         {
           nameSearchValue: 'Any word',
-          page: 1,
-          selectedVenue: undefined,
+          page: DEFAULT_PAGE,
+          selectedVenue: ALL_VENUES,
+        },
+        expect.any(Function),
+        expect.any(Function)
+      )
+    })
+
+    it('should load offers with selected venue filter', () => {
+      // given
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
+      const venueSelect = wrapper.find('select')
+      const launchSearchButton = wrapper.find('form')
+      venueSelect.invoke('onChange')({ target: { value: pro_venues[0].id } })
+
+      // when
+      launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
+
+      // then
+      expect(props.loadOffers).toHaveBeenCalledWith(
+        {
+          nameSearchValue: ALL_OFFERS,
+          page: DEFAULT_PAGE,
+          selectedVenue: pro_venues[0].id,
         },
         expect.any(Function),
         expect.any(Function)
@@ -291,9 +364,9 @@ describe('src | components | pages | Offers | Offers', () => {
       // then
       expect(props.loadOffers).toHaveBeenCalledWith(
         {
-          nameSearchValue: '',
-          page: 1,
-          selectedVenue: undefined,
+          nameSearchValue: ALL_OFFERS,
+          page: DEFAULT_PAGE,
+          selectedVenue: ALL_VENUES,
         },
         expect.any(Function),
         expect.any(Function)
@@ -539,7 +612,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(props.query.change).toHaveBeenCalledWith({
         lieu: null,
         nom: 'AnyWord',
-        page: 1,
+        page: DEFAULT_PAGE,
       })
     })
 
@@ -563,7 +636,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(props.query.change).toHaveBeenCalledWith({
         lieu: null,
         nom: null,
-        page: 1,
+        page: DEFAULT_PAGE,
       })
     })
   })
@@ -633,9 +706,9 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(props.loadOffers).toHaveBeenLastCalledWith(
         {
-          nameSearchValue: '',
+          nameSearchValue: ALL_OFFERS,
           page: 2,
-          selectedVenue: undefined,
+          selectedVenue: ALL_VENUES,
         },
         expect.any(Function),
         expect.any(Function)
@@ -661,9 +734,9 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(props.loadOffers).toHaveBeenLastCalledWith(
         {
-          nameSearchValue: '',
-          page: 1,
-          selectedVenue: undefined,
+          nameSearchValue: ALL_OFFERS,
+          page: DEFAULT_PAGE,
+          selectedVenue: ALL_VENUES,
         },
         expect.any(Function),
         expect.any(Function)
@@ -672,7 +745,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should not be able to click on previous arrow when being on the first page', () => {
       // Given
-      props.query.parse.mockReturnValue({ page: 1 })
+      props.query.parse.mockReturnValue({ page: DEFAULT_PAGE })
 
       // When
       const wrapper = mount(
