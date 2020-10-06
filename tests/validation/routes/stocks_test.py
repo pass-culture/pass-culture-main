@@ -273,7 +273,6 @@ class CheckStocksAreEditableForOfferTest:
 
 
 class CheckStockIsUpdatableTest:
-    @clean_database
     @pytest.mark.usefixtures("db_session")
     def should_fail_when_offer_is_from_titeliveprovider(self, app):
         # Given
@@ -354,7 +353,7 @@ class CheckStockIsUpdatableTest:
             'Les offres importées ne sont pas modifiables'
         ]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_raise_an_error_when_event_is_expired(self, app):
         # Given
         offerer = create_offerer()
