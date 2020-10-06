@@ -122,6 +122,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
         })
 
         it('should not be displayed when offer is no editable', () => {
+          props.offer.isEditable = false
+
           // when
           const wrapper = mount(
             <MemoryRouter>
@@ -130,7 +132,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           )
 
           // then
-          const editOfferLink = wrapper.find(`a[href="/offres/${eventOffer.id}"]`)
+          const editOfferLink = wrapper.find(`a[href="/offres/${props.offer.id}/edition"]`)
           expect(editOfferLink).toHaveLength(0)
         })
       })
@@ -146,7 +148,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         )
 
         // then
-        const titleLink = wrapper.find(`a[href="/offres/${props.offer.id}?orderBy=offer.id+desc"]`)
+        const titleLink = wrapper.find(`a[href="/offres/${props.offer.id}"]`)
         expect(titleLink).toHaveLength(1)
         expect(titleLink.prop('title')).toBe("Afficher le détail de l'offre")
         expect(titleLink.text()).toBe(eventOffer.name)
@@ -241,7 +243,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       })
     })
 
-    describe('when offer is an event product ', () => {
+    describe('when offer is an event product', () => {
       it('should display the correct text "2 dates" on the link redirecting to the offer management', () => {
         // given
         props.stocks = [{ remainingQuantity: 'unlimited' }, { remainingQuantity: 'unlimited' }]
