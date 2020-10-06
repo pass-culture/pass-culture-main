@@ -1,5 +1,5 @@
 from datetime import datetime
-from unittest.mock import call, Mock, patch
+from unittest.mock import call, patch
 import pytest
 
 from tests.connector_creators.demarches_simplifiees_creators import \
@@ -15,13 +15,12 @@ from models.bank_information import BankInformationStatus
 from utils.date import DATE_ISO_FORMAT
 
 
+@patch('domain.demarches_simplifiees.get_all_applications_for_procedure')
 class GetAllApplicationIdsForBeneficiaryImportTest:
     def setup_method(self):
         self.PROCEDURE_ID = '123456789'
         self.TOKEN = 'AZERTY123/@.,!é'
 
-    @patch(
-        'domain.demarches_simplifiees.get_all_applications_for_procedure')
     def test_returns_applications_from_all_pages(self, get_all_applications_for_procedure):
         # Given
         get_all_applications_for_procedure.side_effect = [
@@ -68,8 +67,6 @@ class GetAllApplicationIdsForBeneficiaryImportTest:
         # Then
         assert application_ids == [1, 5, 3, 4, 2]
 
-    @patch(
-        'domain.demarches_simplifiees.get_all_applications_for_procedure')
     def test_returns_applications_with_all_states_by_default(self, get_all_applications_for_procedure):
         # Given
         get_all_applications_for_procedure.return_value = {
@@ -105,8 +102,6 @@ class GetAllApplicationIdsForBeneficiaryImportTest:
         # Then
         assert sorted(application_ids) == [1, 2, 3, 4, 5]
 
-    @patch(
-        'domain.demarches_simplifiees.get_all_applications_for_procedure')
     def test_returns_applications_with_chosen_states(self, get_all_applications_for_procedure):
         # Given
         get_all_applications_for_procedure.return_value = {
@@ -143,8 +138,6 @@ class GetAllApplicationIdsForBeneficiaryImportTest:
         # Then
         assert sorted(application_ids) == [4, 5]
 
-    @patch(
-        'domain.demarches_simplifiees.get_all_applications_for_procedure')
     def test_returns_all_applications_if_no_date_specified(self, get_all_applications_for_procedure):
         # Given
         get_all_applications_for_procedure.return_value = {
@@ -171,8 +164,6 @@ class GetAllApplicationIdsForBeneficiaryImportTest:
         # Then
         assert sorted(application_ids) == [2, 3]
 
-    @patch(
-        'domain.demarches_simplifiees.get_all_applications_for_procedure')
     def test_returns_applications_updated_after_last_update_in_database_only(self, get_all_applications_for_procedure):
         # Given
         get_all_applications_for_procedure.return_value = {
@@ -199,8 +190,6 @@ class GetAllApplicationIdsForBeneficiaryImportTest:
         # Then
         assert application_ids == [2]
 
-    @patch(
-        'domain.demarches_simplifiees.get_all_applications_for_procedure')
     def test_returns_list_of_ids_ordered_by_updated_at_asc(self, get_all_applications_for_procedure):
         # Given
         get_all_applications_for_procedure.return_value = {
