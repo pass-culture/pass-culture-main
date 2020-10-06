@@ -66,7 +66,6 @@ class OfferCreation extends PureComponent {
   }
 
   componentDidMount() {
-    this.handleVenueRedirect()
     this.handleShowStocksManager()
     this.setDefaultBookingEmailIfNew()
   }
@@ -231,16 +230,6 @@ class OfferCreation extends PureComponent {
       trackCreateOffer(offerId)
     } else {
       trackModifyOffer(previousOfferId)
-    }
-  }
-
-  handleVenueRedirect = () => {
-    const { offer, query } = this.props
-    const translatedQueryParams = query.translate()
-    const venueId = get(offer, 'venueId')
-    if (venueId && !translatedQueryParams.venueId) {
-      query.change({ venueId })
-      return
     }
   }
 
