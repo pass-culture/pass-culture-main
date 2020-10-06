@@ -1,0 +1,35 @@
+.input-select {
+  display: flex;
+  flex-direction: column;
+
+  select {
+    @include body();
+
+    background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
+    border: 1px solid $grey-medium;
+    border-radius: rem(20px);
+    cursor: pointer;
+    height: rem(40px);
+    margin-top: rem(8px);
+    outline: none;
+    padding-left: rem(16px);
+    padding-right: rem(30px);
+    text-overflow: ellipsis;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+
+    &:focus {
+      border-color: $primary;
+      box-shadow: 0 0 0 1px $primary inset;
+    }
+
+    &:disabled {
+      background-color: $grey-light;
+      background-image: url("/icons/dropdown-disclosure-down-b-disabled.svg");
+      border-color: $grey-light;
+      color: $grey-dark;
+      cursor: initial;
+      opacity: 1;
+    }
+  }
+}

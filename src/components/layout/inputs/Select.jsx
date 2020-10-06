@@ -12,14 +12,10 @@ const Select = ({
   selectedValue,
 }) => (
   <div className="input-select">
-    <label
-      className="labels"
-      htmlFor={name}
-    >
+    <label htmlFor={name}>
       {label}
     </label>
     <select
-      className="is-select"
       disabled={isDisabled}
       id={name}
       name={name}
