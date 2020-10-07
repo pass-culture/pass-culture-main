@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
+import pytest
+
 from pcapi.models.db import db
 from pcapi.models.offer_type import EventType, ThingType
 from pcapi.repository import repository, discovery_view_queries
 from pcapi.repository.discovery_view_queries import order_by_digital_offers
 from pcapi.repository.offer_queries import get_offers_for_recommendation
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_booking, create_criterion, \
     create_user, create_offerer, create_venue, \
     create_favorite, create_mediation, create_seen_offer
@@ -17,7 +18,7 @@ from pcapi.model_creators.specific_creators import create_stock_from_offer, \
 
 class GetOfferForRecommendationsTest:
     class FiltersTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_when_department_code_00_should_return_offers_of_all_departements(self, app):
             # Given
             offerer = create_offerer(siren='123456789')
@@ -50,7 +51,7 @@ class GetOfferForRecommendationsTest:
             assert offer_93 in offers
             assert offer_75 in offers
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_return_offer_when_offer_is_national(self, app):
             # Given
             offerer = create_offerer(siren='123456789')
@@ -76,7 +77,7 @@ class GetOfferForRecommendationsTest:
             assert offer_34 not in offers
             assert offer_national in offers
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_not_return_activation_event(self, app):
             # Given
             offerer = create_offerer(siren='123456789')
@@ -103,7 +104,7 @@ class GetOfferForRecommendationsTest:
             assert offer_93 in offers
             assert offer_activation_93 not in offers
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_not_return_activation_thing(self, app):
             # Given
             offerer = create_offerer(siren='123456789')
@@ -129,7 +130,7 @@ class GetOfferForRecommendationsTest:
             assert offer_93 in offers
             assert offer_activation_93 not in offers
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_return_offers_with_stock(self, app):
             # Given
             product = create_product_with_thing_type(
@@ -151,7 +152,7 @@ class GetOfferForRecommendationsTest:
             # Then
             assert len(offers) == 1
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_return_offers_with_mediation_only(self, app):
             # Given
             offerer = create_offerer()
@@ -172,7 +173,7 @@ class GetOfferForRecommendationsTest:
             assert len(offers) == 1
             assert offers[0].name == 'thing_with_mediation'
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_not_return_offers_with_no_stock(self, app):
             # Given
             product = create_product_with_thing_type(
@@ -197,7 +198,7 @@ class GetOfferForRecommendationsTest:
             # Then
             assert len(offers) == 0
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_not_return_booked_offers(self, app):
             # Given
             offerer = create_offerer()
@@ -218,7 +219,7 @@ class GetOfferForRecommendationsTest:
             # Then
             assert offers == []
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_not_return_favorite_offers(self, app):
             # Given
             offerer = create_offerer()
@@ -242,7 +243,7 @@ class GetOfferForRecommendationsTest:
             assert offers == []
 
     class OrderTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_order_offers_by_criterion_score_first(self, app):
             # Given
             offerer = create_offerer()
@@ -273,7 +274,7 @@ class GetOfferForRecommendationsTest:
             # Then
             assert offers == [physical_offer, digital_offer]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.repository.offer_queries.feature_queries.is_active', return_value=True)
         def test_should_return_ordered_offers_by_dateSeen_when_feature_is_active(self, app):
             # Given
@@ -306,7 +307,7 @@ class GetOfferForRecommendationsTest:
             # Then
             assert offers == [offer_1, offer_2]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.repository.offer_queries.feature_queries.is_active', return_value=True)
         def test_should_return_unseen_offers_first_for_specific_beneficiary_when_feature_is_active(self, app):
             # Given
@@ -340,7 +341,7 @@ class GetOfferForRecommendationsTest:
             # Then
             assert offers == [offer_2]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.repository.offer_queries.feature_queries.is_active', return_value=False)
         @patch('pcapi.repository.offer_queries.order_offers_by_unseen_offers_first')
         def test_should_not_order_offers_by_dateSeen_when_feature_is_not_active(self, mock_order_offers_by_unseen_offers_first, app):

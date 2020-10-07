@@ -1,5 +1,7 @@
 from datetime import MINYEAR, datetime, timedelta
 
+import pytest
+
 from pcapi.models import EventType, ImportStatus, ThingType, BeneficiaryImportSources
 from pcapi.repository import repository
 from pcapi.repository.user_queries import \
@@ -8,7 +10,6 @@ from pcapi.repository.user_queries import \
     find_by_civility, \
     find_most_recent_beneficiary_creation_date_for_source, \
     get_all_users_wallet_balances
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_beneficiary_import, \
     create_booking, create_deposit, create_offerer, create_stock, create_user, \
     create_venue
@@ -17,7 +18,7 @@ from pcapi.model_creators.specific_creators import \
 
 
 class GetAllUsersWalletBalancesTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_users_are_sorted_by_user_id(self, app):
         # given
         user1 = create_user(email='user1@example.com')
@@ -40,7 +41,7 @@ class GetAllUsersWalletBalancesTest:
         assert len(balances) == 2
         assert balances[0].user_id < balances[1].user_id
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_users_with_no_deposits_are_ignored(self, app):
         # given
         user1 = create_user(email='user1@example.com')
@@ -59,7 +60,7 @@ class GetAllUsersWalletBalancesTest:
         # then
         assert len(balances) == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_current_balances(self, app):
         # given
         user1 = create_user(email='user1@example.com')
@@ -82,7 +83,7 @@ class GetAllUsersWalletBalancesTest:
         assert balances[0].current_balance == 50
         assert balances[1].current_balance == 80
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_real_balances(self, app):
         # given
         user1 = create_user(email='user1@example.com')
@@ -107,7 +108,7 @@ class GetAllUsersWalletBalancesTest:
 
 
 class FindByCivilityTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_case(self, app):
         # given
         user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john@example.com', first_name="john",
@@ -123,7 +124,7 @@ class FindByCivilityTest:
         assert len(users) == 1
         assert users[0].email == 'john@example.com'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_dash(self, app):
         # given
         user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@example.com', first_name="jaNE",
@@ -139,7 +140,7 @@ class FindByCivilityTest:
         assert len(users) == 1
         assert users[0].email == 'john.b@example.com'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_spaces(self, app):
         # given
         user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@example.com', first_name="jaNE",
@@ -155,7 +156,7 @@ class FindByCivilityTest:
         assert len(users) == 1
         assert users[0].email == 'john.b@example.com'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_accents(self, app):
         # given
         user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@example.com', first_name="jaNE",
@@ -171,7 +172,7 @@ class FindByCivilityTest:
         assert len(users) == 1
         assert users[0].email == 'john.b@example.com'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_one_criteria_does_not_match(self, app):
         # given
         user = create_user(date_of_birth=datetime(2000, 5, 1), first_name="Jean", last_name='DOe')
@@ -183,7 +184,7 @@ class FindByCivilityTest:
         # then
         assert not users
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_first_and_last_names_and_birthdate_and_invalid_email(self, app):
         # given
         user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john@example.com', first_name="john",
@@ -201,7 +202,7 @@ class FindByCivilityTest:
 
 
 class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_created_at_date_of_most_recent_beneficiary_import_with_created_status_for_one_procedure(
             self, app):
         # given
@@ -231,7 +232,7 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
         # then
         assert most_recent_creation_date == three_days_ago
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_min_year_if_no_beneficiary_import_exist_for_given_source_id(self, app):
         # given
         old_source_id = 1
@@ -252,7 +253,7 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
         # then
         assert most_recent_creation_date == datetime(MINYEAR, 1, 1)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_min_year_if_no_beneficiary_import_exist(self, app):
         # given
         yesterday = datetime.utcnow() - timedelta(days=1)
@@ -267,7 +268,7 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
 
 
 class CountAllActivatedUsersTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_only_one_active_user(self, app):
         # Given
         user_activated = create_user(can_book_free_offers=True)
@@ -280,7 +281,7 @@ class CountAllActivatedUsersTest:
         # Then
         assert number_of_active_users == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_no_active_user(self, app):
         # Given
         user_activated = create_user(can_book_free_offers=False)
@@ -295,7 +296,7 @@ class CountAllActivatedUsersTest:
 
 
 class CountActivatedUsersByDepartementTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_only_one_active_user_in_departement(self, app):
         # Given
         user_activated = create_user(can_book_free_offers=True, departement_code='74')
@@ -308,7 +309,7 @@ class CountActivatedUsersByDepartementTest:
         # Then
         assert number_of_active_users == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_no_active_user_in_departement_74(self, app):
         # Given
         user_activated = create_user(can_book_free_offers=False, departement_code='74')
@@ -321,7 +322,7 @@ class CountActivatedUsersByDepartementTest:
         # Then
         assert number_of_active_users == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_no_active_user_in_departement_76(self, app):
         # Given
         user_activated = create_user(can_book_free_offers=True, departement_code='76')
@@ -336,7 +337,7 @@ class CountActivatedUsersByDepartementTest:
 
 
 class CountUsersHavingBookedTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_one_when_user_with_one_cancelled_and_one_non_cancelled_bookings(self, app):
         # Given
         user_having_booked = create_user()
@@ -356,7 +357,7 @@ class CountUsersHavingBookedTest:
         # Then
         assert number_of_users_having_booked == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_two_when_two_users_with_cancelled_bookings(self, app):
         # Given
         user_having_booked1 = create_user()
@@ -375,7 +376,7 @@ class CountUsersHavingBookedTest:
         # Then
         assert number_of_users_having_booked == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_zero_when_no_user_with_booking(self, app):
         # Given
         user = create_user()
@@ -387,7 +388,7 @@ class CountUsersHavingBookedTest:
         # Then
         assert number_of_users_having_booked == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_zero_when_user_with_only_activation_booking(self, app):
         # Given
         user_having_booked1 = create_user()
@@ -404,7 +405,7 @@ class CountUsersHavingBookedTest:
         # Then
         assert number_of_users_having_booked == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_zero_when_users_have_only_activation_bookings(self, app):
         # Given
         tomorrow = datetime.utcnow() + timedelta(days=1)
@@ -429,7 +430,7 @@ class CountUsersHavingBookedTest:
 
 
 class CountUsersHavingBookedByDepartementTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_only_user_from_the_right_departement(self, app):
         # Given
         user_having_booked_from_73 = create_user(departement_code='73', email='email73@example.net')
@@ -448,7 +449,7 @@ class CountUsersHavingBookedByDepartementTest:
         # Then
         assert number_of_users_having_booked == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_one_when_user_with_one_cancelled_and_one_non_cancelled_bookings(self, app):
         # Given
         user_having_booked = create_user(departement_code='73')
@@ -468,7 +469,7 @@ class CountUsersHavingBookedByDepartementTest:
         # Then
         assert number_of_users_having_booked == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_two_when_two_users_with_cancelled_bookings(self, app):
         # Given
         user_having_booked1 = create_user(departement_code='87')
@@ -487,7 +488,7 @@ class CountUsersHavingBookedByDepartementTest:
         # Then
         assert number_of_users_having_booked == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_zero_when_no_user_with_booking(self, app):
         # Given
         user = create_user()
@@ -499,7 +500,7 @@ class CountUsersHavingBookedByDepartementTest:
         # Then
         assert number_of_users_having_booked == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_zero_when_user_with_only_activation_booking(self, app):
         # Given
         user_having_booked1 = create_user()
@@ -516,7 +517,7 @@ class CountUsersHavingBookedByDepartementTest:
         # Then
         assert number_of_users_having_booked == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_zero_when_two_users_with_activation_bookings(self, app):
         # Given
         user_having_booked1 = create_user(departement_code='87')

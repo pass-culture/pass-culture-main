@@ -2,7 +2,8 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 from bs4 import BeautifulSoup
-from tests.conftest import clean_database
+import pytest
+
 from pcapi.model_creators.generic_creators import create_booking, create_offerer, create_user, create_venue
 from pcapi.model_creators.specific_creators import create_event_occurrence, create_offer_with_event_product, create_offer_with_thing_product, create_product_with_thing_type, \
     create_stock_from_event_occurrence, create_stock_from_offer
@@ -13,7 +14,7 @@ from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offer
 
 
 class MakeOffererDrivenCancellationEmailForOffererTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_make_offerer_driven_cancellation_email_for_offerer_event_when_no_other_booking(self, app):
         # Given
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
@@ -51,7 +52,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert email[
             'Subject'] == 'Confirmation de votre annulation de réservation pour Le théâtre des ombres, proposé par Le petit théâtre'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_make_offerer_driven_cancellation_email_for_offerer_event_when_other_booking(self, app):
         # Given
         user1 = create_user(email='john@doe.fr', first_name='John', last_name='Doe', public_name='John Doe')
@@ -82,7 +83,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert 'jane@smith.fr' in html_recap_table
         assert '12345' in html_recap_table
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_existing_booking(self, app):
         # Given
         user = create_user(email='john@doe.fr', first_name='John', last_name='Doe', public_name='John Doe')
@@ -323,7 +324,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
 
 
 class IsOfferActiveForRecapTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_true_when_offer_is_active_and_stock_still_bookable(self, app):
         # Given
         offerer = create_offerer()
@@ -338,7 +339,7 @@ class IsOfferActiveForRecapTest:
         # Then
         assert is_active
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_false_when_offer_is_not_active(self, app):
         # Given
         offerer = create_offerer()
@@ -353,7 +354,7 @@ class IsOfferActiveForRecapTest:
         # Then
         assert not is_active
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_false_when_stock_has_no_remaining_quantity(self, app):
         # Given
         user = create_user()
@@ -371,7 +372,7 @@ class IsOfferActiveForRecapTest:
         # Then
         assert not is_active
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_false_when_stock_booking_limit_is_past(self, app):
         # Given
         user = create_user()
@@ -389,7 +390,7 @@ class IsOfferActiveForRecapTest:
         # Then
         assert not is_active
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_true_when_stock_is_unlimited(self, app):
         # Given
         user = create_user()
@@ -406,7 +407,7 @@ class IsOfferActiveForRecapTest:
         # Then
         assert is_active
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_false_when_stock_is_unlimited_but_booking_date_is_past(self, app):
         # Given
         user = create_user()

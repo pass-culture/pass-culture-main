@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
+import pytest
 from shapely.geometry import Polygon
 
 from pcapi.models import EventType, ThingType
 from pcapi.repository import repository, discovery_view_v3_queries
 from pcapi.repository.offer_queries import get_offers_for_recommendation_v3
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_booking, \
     create_criterion, \
     create_favorite, create_iris, \
@@ -24,7 +24,7 @@ from tests.test_utils import POLYGON_TEST
 class GetOffersForRecommendationV3Test:
     class UniversalBehaviorTest:
         class FiltersTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_filter_should_not_return_activation_event(self, app):
                 # Given
                 offerer = create_offerer(siren='123456789')
@@ -49,7 +49,7 @@ class GetOffersForRecommendationV3Test:
                 assert offer in offers
                 assert offer_activation not in offers
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_filter_should_not_return_activation_thing(self, app):
                 # Given
                 offerer = create_offerer(siren='123456789')
@@ -74,7 +74,7 @@ class GetOffersForRecommendationV3Test:
                 assert offer_93 in offers
                 assert offer_activation_93 not in offers
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_filter_should_return_offers_with_stock(self, app):
                 # Given
                 product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
@@ -96,7 +96,7 @@ class GetOffersForRecommendationV3Test:
                 # Then
                 assert len(offers) == 1
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_filter_should_return_offers_with_mediation_only(self, app):
                 # Given
                 offerer = create_offerer()
@@ -116,7 +116,7 @@ class GetOffersForRecommendationV3Test:
                 assert len(offers) == 1
                 assert offers[0].name == 'thing_with_mediation'
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_filter_should_not_return_offers_with_no_stock(self, app):
                 # Given
                 product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
@@ -139,7 +139,7 @@ class GetOffersForRecommendationV3Test:
                 # Then
                 assert len(offers) == 0
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_filter_should_not_return_offers_having_only_soft_deleted_stocks(self, app):
                 # Given
                 product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
@@ -161,7 +161,7 @@ class GetOffersForRecommendationV3Test:
                 # Then
                 assert len(offers) == 0
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_filter_should_not_return_offers_from_non_validated_venue(self, app):
                 # Given
                 product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
@@ -183,7 +183,7 @@ class GetOffersForRecommendationV3Test:
                 # Then
                 assert len(offers) == 0
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_filter_should_not_return_offers_from_non_validated_offerers(self, app):
                 # Given
                 product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
@@ -205,7 +205,7 @@ class GetOffersForRecommendationV3Test:
                 # Then
                 assert len(offers) == 0
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_filter_should_not_return_offers_having_only_stocks_with_past_booking_limit_date_time(self, app):
                 # Given
                 product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
@@ -229,7 +229,7 @@ class GetOffersForRecommendationV3Test:
                 assert len(offers) == 0
 
         class OrderTest:
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_order_with_criteria_should_return_offer_with_highest_base_score_first(self, app):
                 # Given
                 offerer = create_offerer()
@@ -257,7 +257,7 @@ class GetOffersForRecommendationV3Test:
                 # Then
                 assert offers[0].offer == offer2
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             @patch('pcapi.repository.offer_queries.feature_queries.is_active', return_value=True)
             def test_order_should_return_ordered_offers_by_dateSeen_when_feature_is_active(self, app):
                 # Given
@@ -290,7 +290,7 @@ class GetOffersForRecommendationV3Test:
                 # Then
                 assert offers == [offer_1, offer_2]
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             @patch('pcapi.repository.offer_queries.feature_queries.is_active', return_value=True)
             def test_order_should_return_unseen_offers_first_when_feature_is_active(self, app):
                 # Given
@@ -322,7 +322,7 @@ class GetOffersForRecommendationV3Test:
                 # Then
                 assert offers[0] == offer_1
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             @patch('pcapi.repository.offer_queries.feature_queries.is_active', return_value=False)
             @patch('pcapi.repository.offer_queries.order_offers_by_unseen_offers_first')
             def test_order_should_not_order_offers_by_dateSeen_when_feature_is_not_active(self, mock_order_offers_by_unseen_offers_first, app):
@@ -347,7 +347,7 @@ class GetOffersForRecommendationV3Test:
                 mock_order_offers_by_unseen_offers_first.assert_not_called()
 
     class UserSpecificBehaviorTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_filter_should_not_return_booked_offers(self, app):
             # Given
             offerer = create_offerer()
@@ -368,7 +368,7 @@ class GetOffersForRecommendationV3Test:
             # Then
             assert offers == []
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_filter_should_not_return_favorite_offers(self, app):
             # Given
             offerer = create_offerer()
@@ -392,7 +392,7 @@ class GetOffersForRecommendationV3Test:
 
         class WhenUserIsGeolocatedTest:
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_filter_should_return_offer_when_offer_is_national(self, app):
                 # Given
                 offerer = create_offerer(siren='123456789')
@@ -422,7 +422,7 @@ class GetOffersForRecommendationV3Test:
                 # Then
                 assert offers == [offer]
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_filter_should_not_return_offers_from_venue_outside_user_iris(self, app):
                 # given
                 offerer = create_offerer(siren='123456789')
@@ -452,7 +452,7 @@ class GetOffersForRecommendationV3Test:
                 # then
                 assert offers == []
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_filter_should_return_only_national_offers_when_user_is_geolocated_abroad(self, app):
                 # given
                 offerer = create_offerer(siren='123456789')
@@ -484,7 +484,7 @@ class GetOffersForRecommendationV3Test:
 
         class WhenUserIsNotGeolocatedTest:
 
-            @clean_database
+            @pytest.mark.usefixtures("db_session")
             def test_filter_should_return_offers_regardless_of_location(self, app):
                 # given
                 offerer = create_offerer(siren='123456789')

@@ -1,14 +1,15 @@
+import pytest
+
 from pcapi.models import ThingType
 from pcapi.models.activity import load_activity
 from pcapi.repository import repository
 from pcapi.repository.stock_queries import find_online_activation_stock
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_offerer, create_venue
 from pcapi.model_creators.specific_creators import create_stock_from_offer, \
     create_offer_with_thing_product, create_offer_with_event_product
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_create_stock_triggers_insert_activities(app):
     # Given
     offerer = create_offerer()
@@ -28,7 +29,7 @@ def test_create_stock_triggers_insert_activities(app):
     assert {"insert"} == set([a.verb for a in activities])
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_online_activation_stock(app):
     # given
     offerer = create_offerer(siren='123456789', name='pass Culture')

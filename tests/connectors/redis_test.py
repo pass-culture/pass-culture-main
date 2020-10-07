@@ -1,6 +1,7 @@
 import os
 from unittest.mock import patch, MagicMock
 
+import pytest
 import redis
 
 from pcapi.connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids, \
@@ -12,8 +13,6 @@ from pcapi.connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids
     delete_venue_provider_currently_in_sync, get_number_of_venue_providers_currently_in_sync, add_offer_ids_in_error, \
     get_offer_ids_in_error, delete_offer_ids_in_error
 from pcapi.repository import repository
-from tests.conftest import clean_database
-import pytest
 from pcapi.model_creators.generic_creators import create_venue_provider, create_venue, create_user, create_offerer, \
     create_user_offerer, create_provider
 
@@ -160,7 +159,7 @@ class AddVenueProviderTest:
 
     @patch('pcapi.connectors.redis._add_venue_provider')
     @patch('pcapi.connectors.redis.redis')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_send_venue_provider_should_call_add_venue_provider_with_redis_client_and_venue_provider(self,
                                                                                                      mock_redis,
                                                                                                      mock_add_venue_provider,
@@ -250,7 +249,7 @@ class AddToIndexedOffersTest:
 
 
 class DeleteIndexedOffersTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_delete_indexed_offers(self, app):
         # Given
         client = MagicMock()

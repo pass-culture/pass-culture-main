@@ -1,8 +1,9 @@
 import uuid
 
+import pytest
+
 from pcapi.models.payment_status import PaymentStatus, TransactionStatus
 from pcapi.repository import payment_queries, repository
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_bank_information, \
     create_booking, create_deposit, create_offerer, create_payment, \
     create_payment_message, create_user, create_venue
@@ -12,7 +13,7 @@ from pcapi.models.bank_information import BankInformationStatus
 
 
 class FindMessageChecksumTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_a_checksum_if_message_id_is_known(self, app):
         # given
         message_id = 'ABCD1234'
@@ -25,7 +26,7 @@ class FindMessageChecksumTest:
         # then
         assert checksum == message.checksum
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_none_is_message_id_is_unknown(self, app):
         # given
         message_id = 'ABCD1234'
@@ -40,7 +41,7 @@ class FindMessageChecksumTest:
 
 
 class FindErrorPaymentsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_payments_with_last_payment_status_error(self, app):
         # Given
         user = create_user()
@@ -62,7 +63,7 @@ class FindErrorPaymentsTest:
         for payment in payments:
             assert payment.currentStatus.status == TransactionStatus.ERROR
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_return_payment_if_has_status_error_but_not_last(self, app):
         # Given
         user = create_user()
@@ -87,7 +88,7 @@ class FindErrorPaymentsTest:
 
 
 class FindRetryPaymentsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_payments_with_last_payment_status_retry(self, app):
         # Given
         user = create_user()
@@ -110,7 +111,7 @@ class FindRetryPaymentsTest:
         for payment in payments:
             assert payment.currentStatus.status == TransactionStatus.RETRY
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_return_payment_if_has_status_retry_but_not_last(self, app):
         # Given
         user = create_user()
@@ -137,7 +138,7 @@ class FindRetryPaymentsTest:
 
 
 class FindPaymentsByMessageTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_payments_matching_message(self, app):
         # given
         user = create_user()
@@ -170,7 +171,7 @@ class FindPaymentsByMessageTest:
         for payment in matching_payments:
             assert payment.paymentMessageName == 'XML1'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_message_is_not_matched(self, app):
         # given
         user = create_user()
@@ -200,7 +201,7 @@ class FindPaymentsByMessageTest:
 
 
 class GeneratePayementsByMessageIdTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_only_returns_payments_with_given_message(self, app):
         # Given
         offerer = create_offerer()
@@ -233,7 +234,7 @@ class GeneratePayementsByMessageIdTest:
 
 
 class FindNotProcessableWithBankInformationTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_payments_to_retry_if_no_bank_information(self, app):
         # Given
         offerer = create_offerer()
@@ -253,7 +254,7 @@ class FindNotProcessableWithBankInformationTest:
         # Then
         assert payments_to_retry == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_payment_to_retry_if_bank_information_linked_to_offerer_and_current_status_is_not_processable(self, app):
         # Given
         offerer = create_offerer()
@@ -274,7 +275,7 @@ class FindNotProcessableWithBankInformationTest:
         # Then
         assert not_processable_payment in payments_to_retry
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_payments_to_retry_if_bank_information_linked_to_offerer_and_current_status_is_not_not_processable(self, app):
         # Given
         offerer = create_offerer()
@@ -297,7 +298,7 @@ class FindNotProcessableWithBankInformationTest:
         # Then
         assert payments_to_retry == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_payment_to_retry_if_bank_information_status_is_not_accepted(self, app):
         # Given
         offerer = create_offerer()
@@ -318,7 +319,7 @@ class FindNotProcessableWithBankInformationTest:
         # Then
         assert payments_to_retry == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_payment_to_retry_if_bank_information_linked_to_venue_and_current_status_is_not_processable(self, app):
         # Given
         offerer = create_offerer()
@@ -341,7 +342,7 @@ class FindNotProcessableWithBankInformationTest:
 
 
 class FindByBookingIdTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_a_payment_when_one_linked_to_booking(self, app):
         # Given
         beneficiary = create_user()
@@ -357,7 +358,7 @@ class FindByBookingIdTest:
         # Then
         assert payment == valid_payment
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_nothing_when_no_payment_linked_to_booking(self, app):
         # Given
         invalid_booking_id = '99999'

@@ -1,18 +1,19 @@
 from shapely.geometry import Polygon
 
+import pytest
+
 from pcapi.domain.iris import MAXIMUM_DISTANCE_IN_METERS
 from pcapi.models import IrisVenues
 from pcapi.repository import repository
 from pcapi.repository.iris_venues_queries import find_ids_of_irises_located_near_venue, insert_venue_in_iris_venue, \
     delete_venue_from_iris_venues, get_iris_containing_user_location, find_venues_located_near_iris
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_venue, create_offerer, create_iris, create_iris_venue
 
 WGS_SPATIAL_REFERENCE_IDENTIFIER = 4326
 
 
 class FindIrisesLocatedNearVenueTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_ids_list_of_iris_located_near_given_venue(self, app):
         # given
         offerer = create_offerer()
@@ -35,7 +36,7 @@ class FindIrisesLocatedNearVenueTest:
         # then
         assert iris_id == [iris_beauvais.id]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_empty_list_when_no_iris_found_near_given_venue(self, app):
         # given
         offerer = create_offerer()
@@ -51,7 +52,7 @@ class FindIrisesLocatedNearVenueTest:
 
 
 class InsertVenueInIrisVenueTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_insert_venue_in_iris_venues(self, app):
         # Given
         polygon_1 = Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])
@@ -75,7 +76,7 @@ class InsertVenueInIrisVenueTest:
 
 
 class DeleteVenueFromIrisVenuesTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_delete_given_venue_from_iris_venues(self, app):
         # Given
         offerer = create_offerer()
@@ -104,7 +105,7 @@ class DeleteVenueFromIrisVenuesTest:
         assert iris_venue[0].venueId == venue_2.id
         assert iris_venue[0].irisId == iris_2.id
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_delete_from_iris_venues_if_venue_id_is_none(self, app):
         # Given
         offerer = create_offerer()
@@ -124,7 +125,7 @@ class DeleteVenueFromIrisVenuesTest:
 
 
 class GetIrisContainingUserLocationTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_link_user_to_iris_when_his_location_is_in_one_iris(self, app):
         # Given
         user_latitude = 49.894171
@@ -145,7 +146,7 @@ class GetIrisContainingUserLocationTest:
         # Then
         assert iris_id == iris_2.id
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_link_user_to_first_iris_returned_when_his_location_is_in_two_irises(self, app):
         # Given
         user_latitude = 49.894171
@@ -167,7 +168,7 @@ class GetIrisContainingUserLocationTest:
         # Then
         assert iris_id == iris_1.id
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_link_user_to_iris_if_no_iris_is_found(self, app):
         # Given
         user_latitude = 0
@@ -181,7 +182,7 @@ class GetIrisContainingUserLocationTest:
 
 
 class FindVenuesLocatedNearIrisTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_ids_list_of_venues_located_near_given_iris(self, app):
         # given
         offerer = create_offerer()
@@ -201,7 +202,7 @@ class FindVenuesLocatedNearIrisTest:
         # then
         assert venues_ids == [venue.id]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_empty_list_when_no_venue_found_near_given_iris(self, app):
         # given
         polygon = Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])
@@ -216,7 +217,7 @@ class FindVenuesLocatedNearIrisTest:
         # then
         assert venues_ids == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_empty_list_when_iris_does_not_exist(self, app):
         # when
         venues_ids = find_venues_located_near_iris(None)

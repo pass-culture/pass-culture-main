@@ -6,7 +6,6 @@ import pytest
 from pcapi.local_providers.libraires.libraires_stocks import LibrairesStocks
 from pcapi.models import OfferSQLEntity, StockSQLEntity
 from pcapi.repository import repository
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_booking, create_offerer, create_stock, create_user, \
     create_venue, create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
@@ -15,7 +14,7 @@ from pcapi.model_creators.specific_creators import create_offer_with_thing_produ
 
 class LibrairesStocksTest:
     class NextTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
         def test_should_return_providable_infos_with_correct_data(self, mock_libraires_api_response, app):
             # Given
@@ -56,7 +55,7 @@ class LibrairesStocksTest:
 
     class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
         def test_stock_provider_libraires_create_one_stock_and_one_offer_with_wanted_attributes(self,
                                                                                                 mock_libraires_api_response,
@@ -96,7 +95,7 @@ class LibrairesStocksTest:
             assert stock.quantity == 10
             assert stock.bookingLimitDatetime is None
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
         def test_stock_provider_libraires_update_one_stock_and_update_matching_offer(self, mock_libraires_api_response,
                                                                                      app):
@@ -129,7 +128,7 @@ class LibrairesStocksTest:
             assert stock.quantity == 10
             assert OfferSQLEntity.query.count() == 1
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
         def test_libraires_stocks_create_2_stocks_and_2_offers_even_if_existing_offer_on_same_product(self,
                                                                                                       mock_libraires_api_response,
@@ -167,7 +166,7 @@ class LibrairesStocksTest:
             assert OfferSQLEntity.query.filter_by(lastProviderId=libraires_stocks_provider.id).count() == 2
             assert libraires_stocks_local_provider.last_processed_isbn == '1550199555555'
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
         def test_stock_provider_libraires_available_stock_is_sum_of_updated_available_and_bookings(self,
                                                                                                    mock_libraires_api_response,
@@ -219,7 +218,7 @@ class LibrairesStocksTest:
             assert stock.quantity == 67
 
     class WhenSynchronizedTwiceTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
         def test_stock_provider_libraires_iterates_over_pagination(self, mock_libraires_api_response, app):
             # Given

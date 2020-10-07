@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
+import pytest
+
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.repository.reimbursement_queries import find_all_offerer_payments
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_payment, create_payment_status
@@ -12,7 +13,7 @@ from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 
 
 class FindAllOffererPaymentsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_payment_info_with_error_status(self, app):
         # Given
         user = create_user(last_name='User', first_name='Plus')
@@ -52,7 +53,7 @@ class FindAllOffererPaymentsTest:
             TransactionStatus.ERROR,
             'Iban non fourni')
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_payment_info_with_sent_status(self, app):
         # Given
         user = create_user(last_name='User', first_name='Plus')
@@ -98,7 +99,7 @@ class FindAllOffererPaymentsTest:
             TransactionStatus.SENT,
             'All good')
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_last_matching_status_based_on_date_for_each_payment(self, app):
         # Given
         user = create_user(last_name='User', first_name='Plus')

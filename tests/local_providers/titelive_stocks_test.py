@@ -2,11 +2,11 @@ from datetime import date, datetime, timedelta
 from unittest.mock import call, patch
 
 from freezegun import freeze_time
+import pytest
 
 from pcapi.local_providers import TiteLiveStocks
 from pcapi.models import OfferSQLEntity, StockSQLEntity
 from pcapi.repository import repository
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_booking, create_offerer, create_stock, create_user, \
     create_venue, create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
@@ -15,7 +15,7 @@ from pcapi.model_creators.specific_creators import create_offer_with_thing_produ
 
 class TiteliveStocksTest:
     class NextTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
         def test_should_return_providable_infos_with_correct_data(self, mock_titelive_api_response, app):
             # Given
@@ -54,7 +54,7 @@ class TiteliveStocksTest:
             assert stock_providable_info.id_at_providers == '0002730757438@12345678912345'
 
     class UpdateObjectsTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
         def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attributes(self,
                                                                                            stub_get_stocks_information,
@@ -94,7 +94,7 @@ class TiteliveStocksTest:
             assert stock.quantity == 10
             assert stock.bookingLimitDatetime is None
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
         def test_titelive_stock_provider_update_1_stock_and_1_offer(self, stub_get_stocks_information, app):
             # Given
@@ -129,7 +129,7 @@ class TiteliveStocksTest:
             assert OfferSQLEntity.query.count() == 1
 
         @freeze_time('2019-01-03 12:00:00')
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
         def test_titelive_stock_provider_always_update_the_stock_modification_date(self, stub_get_stocks_information,
                                                                                    app):
@@ -166,7 +166,7 @@ class TiteliveStocksTest:
             stock = StockSQLEntity.query.one()
             assert stock.dateModified == datetime.now()
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
         def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(self, stub_get_stocks_information,
 
@@ -200,7 +200,7 @@ class TiteliveStocksTest:
             assert StockSQLEntity.query.count() == 1
             assert OfferSQLEntity.query.count() == 1
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
         def test_titelive_stock_provider_create_2_stocks_and_2_offers_even_if_existing_offer_on_same_product(
                 self, mock_stocks_information, app):
@@ -238,7 +238,7 @@ class TiteliveStocksTest:
             assert OfferSQLEntity.query.filter_by(lastProviderId=titelive_stocks_provider.id).count() == 2
             assert StockSQLEntity.query.count() == 2
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
         def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_results(self,
                                                                                            stub_get_stocks_information,
@@ -266,7 +266,7 @@ class TiteliveStocksTest:
             assert OfferSQLEntity.query.filter_by(lastProviderId=titelive_stocks_provider.id).count() == 0
             assert StockSQLEntity.query.count() == 0
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
         def test_titelive_stock_provider_iterates_over_pagination(self, stub_get_stocks_information, app):
             # Given
@@ -308,7 +308,7 @@ class TiteliveStocksTest:
                                                                   call('77567146400110', '0002730757438', None),
                                                                   call('77567146400110', '0002736409898', None)]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
         def should_call_api_with_venue_siret_and_last_sync_date(self, stub_get_stocks_information, app):
             # Given
@@ -343,7 +343,7 @@ class TiteliveStocksTest:
                                                                   call('77567146400110', '0002730757438',
                                                                        last_sync_date)]
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
         def test_titelive_stock_provider_return_last_elements_as_last_seen_isbn(self, stub_get_stocks_information,
 
@@ -377,7 +377,7 @@ class TiteliveStocksTest:
             assert stub_get_stocks_information.call_count == 2
             assert titelive_stocks.last_processed_isbn == "0002736409898"
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
         def test_should_not_create_offer_when_product_is_not_gcu_compatible(self, stub_get_stocks_information,
                                                                             app):
@@ -408,7 +408,7 @@ class TiteliveStocksTest:
             assert OfferSQLEntity.query.count() == 0
             assert StockSQLEntity.query.count() == 0
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information')
         def test_titelive_stock_provider_available_stock_is_sum_of_updated_available_and_bookings(self,
                                                                                                   stub_get_stocks_information,

@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
-import pytest
 from dateutil import tz
+import pytest
 from pytest import fixture
-from tests.conftest import clean_database
+
 from pcapi.model_creators.activity_creators import create_booking_activity, save_all_activities
 from pcapi.model_creators.generic_creators import create_booking, create_deposit, create_offerer, create_payment, create_recommendation, create_stock, create_user, create_user_offerer, create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_stock_from_offer, create_stock_with_event_offer, \
@@ -24,7 +24,7 @@ FOUR_DAYS_AGO = NOW - timedelta(days=4)
 FIVE_DAYS_AGO = NOW - timedelta(days=5)
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_all_ongoing_bookings(app):
     # Given
     offerer = create_offerer()
@@ -44,7 +44,7 @@ def test_find_all_ongoing_bookings(app):
     assert all_ongoing_bookings == [ongoing_booking]
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_not_cancelled_bookings_by_stock(app):
     # Given
     offerer = create_offerer()
@@ -65,7 +65,7 @@ def test_find_not_cancelled_bookings_by_stock(app):
 
 
 class FindFinalOffererBookingsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_bookings_for_given_offerer(self, app: fixture):
         # Given
         user = create_user()
@@ -91,7 +91,7 @@ class FindFinalOffererBookingsTest:
         assert booking1 in bookings
         assert booking2 in bookings
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_bookings_with_payment_first_ordered_by_date_created(self, app: fixture):
         # Given
         user = create_user()
@@ -117,7 +117,7 @@ class FindFinalOffererBookingsTest:
         assert bookings[2] == booking1
         assert bookings[3] == booking2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_not_cancelled_bookings_for_offerer(self, app: fixture):
         # Given
         user = create_user()
@@ -137,7 +137,7 @@ class FindFinalOffererBookingsTest:
         assert len(bookings) == 1
         assert booking1 in bookings
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_only_used_bookings(self, app: fixture):
         # Given
         user = create_user()
@@ -157,7 +157,7 @@ class FindFinalOffererBookingsTest:
         assert len(bookings) == 1
         assert thing_booking1 in bookings
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_return_finished_for_more_than_the_automatic_refund_delay_bookings(self, app: fixture):
         # Given
         user = create_user()
@@ -192,7 +192,7 @@ class FindFinalOffererBookingsTest:
 
 
 class FindFinalVenueBookingsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_bookings_for_given_venue_ordered_by_date_created(self, app: fixture):
         # Given
         user = create_user()
@@ -221,7 +221,7 @@ class FindFinalVenueBookingsTest:
 
 
 class FindDateUsedTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_date_used_if_not_none(self, app: fixture):
         # given
         user = create_user()
@@ -235,7 +235,7 @@ class FindDateUsedTest:
         # then
         assert date_used == datetime(2018, 2, 12)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_none_when_date_used_is_none(self, app: fixture):
         # given
         user = create_user()
@@ -249,7 +249,7 @@ class FindDateUsedTest:
         # then
         assert date_used is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_find_date_used_on_booking_returns_none_if_no_update_recorded_in_activity_table(self, app: fixture):
         # given
         user = create_user()
@@ -267,7 +267,7 @@ class FindDateUsedTest:
 
 
 class FindUserActivationBookingTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_activation_thing_booking_linked_to_user(self, app: fixture):
         # given
         user = create_user()
@@ -285,7 +285,7 @@ class FindUserActivationBookingTest:
         # then
         assert booking == activation_booking
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_activation_event_booking_linked_to_user(self, app: fixture):
         # given
         user = create_user()
@@ -303,7 +303,7 @@ class FindUserActivationBookingTest:
         # then
         assert booking == activation_booking
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_false_is_no_booking_exists_on_such_stock(self, app: fixture):
         # given
         user = create_user()
@@ -323,7 +323,7 @@ class FindUserActivationBookingTest:
 
 
 class GetExistingTokensTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_a_set_of_tokens(self, app: fixture):
         # given
         user = create_user()
@@ -343,7 +343,7 @@ class GetExistingTokensTest:
         # then
         assert tokens == {booking1.token, booking2.token, booking3.token}
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_an_empty_set_if_no_bookings(self, app: fixture):
         # when
         tokens = booking_queries.find_existing_tokens()
@@ -354,7 +354,7 @@ class GetExistingTokensTest:
 
 class FindByTest:
     class ByTokenTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_is_known(self, app: fixture):
             # given
             user = create_user()
@@ -370,7 +370,7 @@ class FindByTest:
             # then
             assert result.id == booking.id
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_raises_an_exception_if_token_is_unknown(self, app: fixture):
             # given
             user = create_user()
@@ -389,7 +389,7 @@ class FindByTest:
                 "Cette contremarque n'a pas été trouvée"]
 
     class ByTokenAndEmailTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_and_email_are_known(self, app: fixture):
             # given
             user = create_user(email='user@example.com')
@@ -405,7 +405,7 @@ class FindByTest:
             # then
             assert result.id == booking.id
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_is_known_and_email_is_known_case_insensitively(self, app: fixture):
             # given
             user = create_user(email='USer@eXAMple.COm')
@@ -421,7 +421,7 @@ class FindByTest:
             # then
             assert result.id == booking.id
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_is_known_and_email_is_known_with_trailing_spaces(self, app: fixture):
             # given
             user = create_user(email='user@example.com')
@@ -437,7 +437,7 @@ class FindByTest:
             # then
             assert result.id == booking.id
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_raises_an_exception_if_token_is_known_but_email_is_unknown(self, app: fixture):
             # given
             user = create_user(email='user@example.com')
@@ -456,7 +456,7 @@ class FindByTest:
                 "Cette contremarque n'a pas été trouvée"]
 
     class ByTokenAndEmailAndOfferIdTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_and_email_and_offer_id_for_thing_are_known(self, app: fixture):
             # given
             user = create_user(email='user@example.com')
@@ -473,7 +473,7 @@ class FindByTest:
             # then
             assert result.id == booking.id
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_and_email_and_offer_id_for_event_are_known(self, app: fixture):
             # given
             user = create_user(email='user@example.com')
@@ -490,7 +490,7 @@ class FindByTest:
             # then
             assert result.id == booking.id
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_and_email_are_known_but_offer_id_is_unknown(self, app: fixture):
             # given
             user = create_user(email='user@example.com')
@@ -511,7 +511,7 @@ class FindByTest:
 
 
 class SaveBookingTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_saves_booking_when_enough_stocks_after_cancellation(self, app: fixture):
         # Given
         offerer = create_offerer()
@@ -531,7 +531,7 @@ class SaveBookingTest:
         assert BookingSQLEntity.query.filter_by(isCancelled=False).count() == 1
         assert BookingSQLEntity.query.filter_by(isCancelled=True).count() == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_raises_too_many_bookings_error_when_not_enough_stocks(self, app: fixture):
         # Given
         offerer = create_offerer()
@@ -554,7 +554,7 @@ class SaveBookingTest:
 
 
 class CountNonCancelledBookingsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_one_user_has_one_non_cancelled_booking(self, app: fixture):
         # Given
         user_having_booked = create_user()
@@ -571,7 +571,7 @@ class CountNonCancelledBookingsTest:
         # Then
         assert count == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_one_user_has_one_cancelled_booking(self, app: fixture):
         # Given
         user_having_booked = create_user()
@@ -588,7 +588,7 @@ class CountNonCancelledBookingsTest:
         # Then
         assert count == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_zero_if_two_users_have_activation_booking(self, app: fixture):
         # Given
         user1 = create_user()
@@ -613,7 +613,7 @@ class CountNonCancelledBookingsTest:
 
 
 class CountNonCancelledBookingsByDepartementTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_one_user_has_one_non_cancelled_booking(self, app: fixture):
         # Given
         user_having_booked = create_user(departement_code='76')
@@ -630,7 +630,7 @@ class CountNonCancelledBookingsByDepartementTest:
         # Then
         assert count == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_one_user_has_one_cancelled_booking(self, app: fixture):
         # Given
         user_having_booked = create_user(departement_code='76')
@@ -647,7 +647,7 @@ class CountNonCancelledBookingsByDepartementTest:
         # Then
         assert count == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_user_comes_from_wrong_departement(self, app: fixture):
         # Given
         user_having_booked = create_user(departement_code='76')
@@ -664,7 +664,7 @@ class CountNonCancelledBookingsByDepartementTest:
         # Then
         assert count == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_zero_if_users_only_have_activation_bookings(self, app: fixture):
         # Given
         user1 = create_user(departement_code='76')
@@ -689,7 +689,7 @@ class CountNonCancelledBookingsByDepartementTest:
 
 
 class GetAllCancelledBookingsCountTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_no_cancelled_bookings(self, app: fixture):
         # Given
         offerer = create_offerer()
@@ -706,7 +706,7 @@ class GetAllCancelledBookingsCountTest:
         # Then
         assert number_of_bookings == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_one_cancelled_bookings(self, app: fixture):
         # Given
         beginning_datetime = datetime.utcnow() + timedelta(hours=4)
@@ -724,7 +724,7 @@ class GetAllCancelledBookingsCountTest:
         # Then
         assert number_of_bookings == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_zero_if_only_activation_offers(self, app: fixture):
         # Given
         beginning_datetime = datetime.utcnow() + timedelta(hours=47)
@@ -749,7 +749,7 @@ class GetAllCancelledBookingsCountTest:
 
 
 class GetAllCancelledBookingsByDepartementCountTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_no_cancelled_bookings(self, app: fixture):
         # Given
         beginning_datetime = datetime.utcnow() + timedelta(hours=47)
@@ -767,7 +767,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         # Then
         assert number_of_bookings == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_one_cancelled_bookings(self, app: fixture):
         # Given
         beginning_datetime = datetime.utcnow() + timedelta(hours=47)
@@ -785,7 +785,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         # Then
         assert number_of_bookings == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_filtered_on_user_departement(self, app: fixture):
         # Given
         user_in_76 = create_user(departement_code='76', email='user-76@example.net')
@@ -805,7 +805,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         # Then
         assert number_of_bookings == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_zero_if_only_activation_bookings(self, app: fixture):
         # Given
         user = create_user(departement_code='41')
@@ -829,7 +829,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
 
 
 class CountAllBookingsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_no_bookings(self, app: fixture):
         # When
         number_of_bookings = booking_queries.count()
@@ -837,7 +837,7 @@ class CountAllBookingsTest:
         # Then
         assert number_of_bookings == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_2_when_bookings_cancelled_or_not(self, app: fixture):
         # Given
         offerer = create_offerer()
@@ -855,7 +855,7 @@ class CountAllBookingsTest:
         # Then
         assert number_of_bookings == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_2_when_bookings_cancelled_or_not(self, app: fixture):
         # Given
         offerer = create_offerer()
@@ -873,7 +873,7 @@ class CountAllBookingsTest:
         # Then
         assert number_of_bookings == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_bookings_are_on_activation_offer(self, app: fixture):
         # Given
         offerer = create_offerer()
@@ -897,7 +897,7 @@ class CountAllBookingsTest:
 
 
 class CountBookingsByDepartementTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_no_bookings(self, app: fixture):
         # When
         number_of_bookings = booking_queries.count_by_departement('74')
@@ -905,7 +905,7 @@ class CountBookingsByDepartementTest:
         # Then
         assert number_of_bookings == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_2_when_bookings_cancelled_or_not(self, app: fixture):
         # Given
         offerer = create_offerer()
@@ -923,7 +923,7 @@ class CountBookingsByDepartementTest:
         # Then
         assert number_of_bookings == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_bookings_are_filtered_by_departement(self, app: fixture):
         # Given
         user_in_76 = create_user(departement_code='76', email='user-76@example.net')
@@ -942,7 +942,7 @@ class CountBookingsByDepartementTest:
         # Then
         assert number_of_bookings == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_bookings_are_on_activation_offers(self, app: fixture):
         # Given
         user = create_user(departement_code='76')
@@ -966,7 +966,7 @@ class CountBookingsByDepartementTest:
 
 
 class FindAllNotUsedAndNotCancelledTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_no_booking_if_only_used(self, app: fixture):
         # Given
         user = create_user()
@@ -984,7 +984,7 @@ class FindAllNotUsedAndNotCancelledTest:
         # Then
         assert len(bookings) == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_no_booking_if_only_cancelled(self, app: fixture):
         # Given
         user = create_user()
@@ -1002,7 +1002,7 @@ class FindAllNotUsedAndNotCancelledTest:
         # Then
         assert len(bookings) == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_no_booking_if_used_but_cancelled(self, app: fixture):
         # Given
         user = create_user()
@@ -1020,7 +1020,7 @@ class FindAllNotUsedAndNotCancelledTest:
         # Then
         assert len(bookings) == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_1_booking_if_not_used_and_not_cancelled(self, app: fixture):
         # Given
         user = create_user()
@@ -1042,7 +1042,7 @@ class FindAllNotUsedAndNotCancelledTest:
 
 
 class GetValidBookingsByUserId:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_by_user_id(self, app: fixture):
         # Given
         user1 = create_user(email='me@example.net')
@@ -1063,7 +1063,7 @@ class GetValidBookingsByUserId:
         # Then
         assert bookings == [booking1]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_when_there_is_one_cancelled_booking(self, app: fixture):
         # Given
         user = create_user()
@@ -1085,7 +1085,7 @@ class GetValidBookingsByUserId:
         # Then
         assert booking1 not in bookings
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_most_recent_booking_when_two_cancelled_on_same_stock(self, app: fixture):
         # Given
         user = create_user()
@@ -1104,7 +1104,7 @@ class GetValidBookingsByUserId:
         # Then
         assert bookings == [booking1]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_ordered_by_beginning_date_time_ascendant(self, app: fixture):
         # Given
         two_days = NOW + timedelta(days=2, hours=10)
@@ -1136,7 +1136,7 @@ class GetValidBookingsByUserId:
 
 
 class FindByTokenTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_a_booking_when_valid_token_is_given(self, app: fixture):
         # Given
         beneficiary = create_user()
@@ -1150,7 +1150,7 @@ class FindByTokenTest:
         # Then
         assert booking == valid_booking
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_nothing_when_invalid_token_is_given(self, app: fixture):
         # Given
         invalid_token = 'fake_token'
@@ -1165,7 +1165,7 @@ class FindByTokenTest:
         # Then
         assert booking is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_nothing_when_valid_token_is_given_but_its_not_used(self, app: fixture):
         # Given
         beneficiary = create_user()
@@ -1181,7 +1181,7 @@ class FindByTokenTest:
 
 
 class IsOfferAlreadyBookedByUserTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_true_when_booking_exists_for_user_and_offer(self, app: fixture):
         # Given
         user = create_user()
@@ -1199,7 +1199,7 @@ class IsOfferAlreadyBookedByUserTest:
         # Then
         assert is_offer_already_booked
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_false_when_no_booking_exists_for_same_user_and_offer(self, app: fixture):
         # Given
         user = create_user()
@@ -1215,7 +1215,7 @@ class IsOfferAlreadyBookedByUserTest:
         # Then
         assert not is_offer_already_booked
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_false_when_there_is_a_booking_on_offer_but_from_different_user(self, app: fixture):
         # Given
         user = create_user()
@@ -1232,7 +1232,7 @@ class IsOfferAlreadyBookedByUserTest:
         # Then
         assert not is_offer_already_booked
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_false_when_a_booking_exists_for_same_user_and_offer_but_is_cancelled(self,
                                                                                                 app: fixture):
         # Given
@@ -1253,7 +1253,7 @@ class IsOfferAlreadyBookedByUserTest:
 
 
 class CountNotCancelledBookingsQuantityByStocksTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_sum_of_bookings_quantity_that_are_not_cancelled_for_given_stock(self, app: fixture):
         # Given
         user = create_user()
@@ -1274,7 +1274,7 @@ class CountNotCancelledBookingsQuantityByStocksTest:
         # Then
         assert result == 15
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_0_when_no_bookings_found(self, app: fixture):
         # Given
         user = create_user()
@@ -1301,7 +1301,7 @@ class CountNotCancelledBookingsQuantityByStocksTest:
 
 
 class FindByProUserIdTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com', first_name='Ron', last_name='Weasley')
@@ -1340,7 +1340,7 @@ class FindByProUserIdTest:
             tz.gettz('Europe/Paris'))
         assert expected_booking_recap.venue_is_virtual == venue.isVirtual
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
@@ -1361,7 +1361,7 @@ class FindByProUserIdTest:
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_is_duo is True
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_reimbursed_when_a_payment_was_sent(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
@@ -1395,7 +1395,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_cancelled is True
         assert expected_booking_recap.booking_is_reimbursed is True
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
@@ -1430,7 +1430,7 @@ class FindByProUserIdTest:
             tz.gettz('Europe/Paris'))
         assert expected_booking_recap.venue_identifier == venue.id
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_payment_date_when_booking_has_been_reimbursed(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
@@ -1458,7 +1458,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_status_history.payment_date == yesterday.astimezone(
             tz.gettz('Europe/Paris'))
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
@@ -1483,7 +1483,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_cancelled is True
         assert expected_booking_recap.booking_status_history.cancellation_date is not None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(self,
                                                                                                        app: fixture):
         # Given
@@ -1511,7 +1511,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_reimbursed is False
         assert expected_booking_recap.booking_status_history.date_used is not None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
@@ -1537,7 +1537,7 @@ class FindByProUserIdTest:
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_from_first_page(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
@@ -1563,7 +1563,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.pages == 2
         assert bookings_recap_paginated.total == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_from_second_page(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
@@ -1589,7 +1589,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.pages == 2
         assert bookings_recap_paginated.total == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
@@ -1608,7 +1608,7 @@ class FindByProUserIdTest:
         # Then
         assert bookings_recap_paginated.bookings_recap == []
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
@@ -1633,7 +1633,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.pages == 1
         assert bookings_recap_paginated.total == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
@@ -1659,7 +1659,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.pages == 1
         assert bookings_recap_paginated.total == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
@@ -1681,7 +1681,7 @@ class FindByProUserIdTest:
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz('America/Cayenne'))
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_isbn_when_information_is_available(self, app: fixture):
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
@@ -1705,7 +1705,7 @@ class FindByProUserIdTest:
         assert isinstance(expected_booking_recap, BookBookingRecap)
         assert expected_booking_recap.offer_isbn == '9876543234'
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_venue_name_when_public_name_is_not_provided(self, app):
         # Given
         beneficiary = create_user(email='beneficiary@example.com', first_name='Ron', last_name='Weasley')
@@ -1760,7 +1760,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.bookings_recap[1].venue_name == venue_for_book.name
         assert bookings_recap_paginated.bookings_recap[2].venue_name == venue_for_thing.name
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_venue_public_name_when_public_name_is_provided(self, app):
         # Given
         beneficiary = create_user(email='beneficiary@example.com', first_name='Ron', last_name='Weasley')
@@ -1820,7 +1820,7 @@ class FindByProUserIdTest:
 
 
 class FindFirstMatchingFromOfferByUserTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_nothing_when_no_bookings(self, app: fixture):
         # Given
         beneficiary = create_user()
@@ -1835,7 +1835,7 @@ class FindFirstMatchingFromOfferByUserTest:
         # Then
         assert booking is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_nothing_when_beneficiary_has_no_bookings(self, app: fixture):
         # Given
         beneficiary = create_user(idx=1)
@@ -1854,7 +1854,7 @@ class FindFirstMatchingFromOfferByUserTest:
         # Then
         assert booking is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_first_booking_for_user(self, app: fixture):
         # Given
         beneficiary = create_user(idx=1)

@@ -1,16 +1,17 @@
 from sqlalchemy import Sequence
 
+import pytest
+
 from pcapi.local_providers.chunk_manager import save_chunks
 from pcapi.models import OfferSQLEntity, StockSQLEntity
 from pcapi.models.db import db
 from pcapi.repository import repository
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_stock, create_offerer, create_venue
 from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 class SaveChunksTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_save_chunks_insert_1_offer_in_chunk(self, app):
         # Given
         offerer = create_offerer()
@@ -35,7 +36,7 @@ class SaveChunksTest:
         # Then
         assert OfferSQLEntity.query.count() == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_save_chunks_insert_1_offer_and_1_stock_in_chunk(self, app):
         # Given
         offerer = create_offerer()
@@ -69,7 +70,7 @@ class SaveChunksTest:
         assert OfferSQLEntity.query.count() == 1
         assert StockSQLEntity.query.count() == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_save_chunks_update_1_offer_in_chunk(self, app):
         # Given
         offerer = create_offerer()
@@ -95,7 +96,7 @@ class SaveChunksTest:
         # Then
         assert OfferSQLEntity.query.count() == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_save_chunks_update_2_offers_and_1_stock_in_chunk(self, app):
         # Given
         offerer = create_offerer()

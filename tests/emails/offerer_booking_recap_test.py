@@ -1,12 +1,13 @@
 from datetime import datetime, timezone
 from unittest.mock import patch
 
+import pytest
+
 from pcapi.domain.booking.booking import Booking
 from pcapi.domain.stock.stock import Stock
 from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 from pcapi.models import ThingType
 from pcapi.repository import repository
-from tests.conftest import clean_database
 from tests.domain_creators.generic_creators import create_domain_beneficiary
 from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, create_stock
@@ -17,7 +18,7 @@ from pcapi.model_creators.specific_creators import create_stock_from_offer, crea
 class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_write_email_with_right_data_when_offer_is_an_event(self, app):
         # Given
         user_sql_entity = create_user(idx=1, email='test@example.com', first_name='John', last_name='Doe')
@@ -80,7 +81,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
     @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_write_email_with_right_data_when_offer_is_a_book(self, app):
         # Given
         user = create_user(idx=1, email='test@example.com', first_name='John', last_name='Doe')
@@ -142,7 +143,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
     @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_truncate_price(self, app):
         # Given
         user_sql_entity = create_user(idx=1, email='test@example.com', first_name='John', last_name='Doe')
@@ -205,7 +206,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
     @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_empty_ISBN_when_no_extra_data(self, app):
         # Given
         user_sql_entity = create_user(idx=1, email='test@example.com', first_name='John', last_name='Doe')
@@ -267,7 +268,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
     @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_empty_ISBN_when_extra_data_has_no_key_isbn(self, app):
         # Given
         user_sql_entity = create_user(idx=1, email="test@example.com", first_name='John', last_name='Doe')
@@ -330,7 +331,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
     @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.repository.feature_queries.IS_PROD', True)
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_recipients_email_when_production_environment(self, app):
         # Given
         user_sql_entity = create_user(email='test@example.com', first_name='John', last_name='Doe')
@@ -364,7 +365,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
     @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_dev_email_adress_when_feature_send_mail_to_users_disabled(self, app):
         # Given
         user_sql_entity = create_user(idx=1, email='test@example.com', first_name='John', last_name='Doe')
@@ -400,7 +401,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
     @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_email_with_correct_data_when_two_users_book_the_same_offer(self, app):
         # Given
         user_sql_entity_1 = create_user(idx=1, email='test@example.com', first_name='Jean', last_name='Dupont')
@@ -448,7 +449,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
     @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_email_with_link_to_the_corresponding_offer(self, app):
         # Given
         user_sql_entity = create_user(idx=1, email='test@example.com', first_name='Jean', last_name='Dupont')

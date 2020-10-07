@@ -1,19 +1,19 @@
 from datetime import datetime, timedelta
 
 from freezegun import freeze_time
+import pytest
 
 from pcapi.models import BeneficiaryImport, ImportStatus, BeneficiaryImportSources
 from pcapi.repository import repository
 from pcapi.repository.beneficiary_import_queries import \
     find_applications_ids_to_retry, is_already_imported, \
     save_beneficiary_import_with_status
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_beneficiary_import, \
     create_user
 
 
 class IsAlreadyImportedTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_true_when_a_beneficiary_import_exist_with_status_created(self, app):
         # given
         now = datetime.utcnow()
@@ -29,7 +29,7 @@ class IsAlreadyImportedTest:
         # then
         assert result is True
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_true_when_a_beneficiary_import_exist_with_status_duplicate(self, app):
         # given
         now = datetime.utcnow()
@@ -46,7 +46,7 @@ class IsAlreadyImportedTest:
         # then
         assert result is True
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_true_when_a_beneficiary_import_exist_with_status_rejected(self, app):
         # given
         now = datetime.utcnow()
@@ -63,7 +63,7 @@ class IsAlreadyImportedTest:
         # then
         assert result is True
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_true_when_a_beneficiary_import_exist_with_status_error(self, app):
         # given
         now = datetime.utcnow()
@@ -80,7 +80,7 @@ class IsAlreadyImportedTest:
         # then
         assert result is True
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_false_when_a_beneficiary_import_exist_with_status_retry(self, app):
         # given
         now = datetime.utcnow()
@@ -97,7 +97,7 @@ class IsAlreadyImportedTest:
         # then
         assert result is False
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_false_when_no_beneficiary_import_exist_for_this_id(self, app):
         # given
         now = datetime.utcnow()
@@ -116,7 +116,7 @@ class IsAlreadyImportedTest:
 
 
 class SaveBeneficiaryImportWithStatusTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_a_status_is_set_on_a_new_import(self, app):
         # when
         save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=14562,
@@ -126,7 +126,7 @@ class SaveBeneficiaryImportWithStatusTest:
         beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_a_beneficiary_import_is_saved_with_all_fields(self, app):
         # when
         save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=145236,
@@ -138,7 +138,7 @@ class SaveBeneficiaryImportWithStatusTest:
         assert beneficiary_import.sourceId == 145236
         assert beneficiary_import.source == "demarches_simplifiees"
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_a_status_is_set_on_an_existing_import(self, app):
         # given
         two_days_ago = datetime.utcnow() - timedelta(days=2)
@@ -157,7 +157,7 @@ class SaveBeneficiaryImportWithStatusTest:
         assert beneficiary_imports[0].currentStatus == ImportStatus.CREATED
         assert beneficiary_imports[0].beneficiary == beneficiary
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_delete_beneficiary_when_import_already_exists(self, app):
         # Given
         two_days_ago = datetime.utcnow() - timedelta(days=2)
@@ -176,7 +176,7 @@ class SaveBeneficiaryImportWithStatusTest:
 
 
 class FindApplicationsIdsToRetryTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_applications_ids_with_current_status_retry(self, app):
         # given
         beneficiary = create_user()
@@ -194,7 +194,7 @@ class FindApplicationsIdsToRetryTest:
         # then
         assert ids == [123, 456]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_an_empty_list_if_no_retry_imports_exist(self, app):
         # given
         beneficiary = create_user()

@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from pcapi.domain.booking.booking import Booking
 from pcapi.domain.booking.booking_exceptions import BookingDoesntExist
@@ -8,7 +9,6 @@ from pcapi.infrastructure.repository.booking import booking_domain_converter
 from pcapi.infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
 from pcapi.models import ThingType
 from pcapi.repository import repository
-from tests.conftest import clean_database
 from tests.domain_creators.generic_creators import create_domain_beneficiary
 from pcapi.model_creators.generic_creators import create_booking, \
     create_offerer, create_user, \
@@ -22,7 +22,7 @@ class BookingSQLRepositoryTest:
         def setup_method(self):
             self.booking_sql_repository = BookingSQLRepository()
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.infrastructure.repository.booking.booking_sql_repository.get_expenses')
         def test_compute_expenses_without_cancelled_bookings(self, get_expenses_mock, app):
             # given
@@ -57,7 +57,7 @@ class BookingSQLRepositoryTest:
         def setup_method(self):
             self.booking_sql_repository = BookingSQLRepository()
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_create_booking_on_save_when_booking_does_not_exist(self, app):
             # given
             user_sql_entity = create_user(idx=4)
@@ -86,7 +86,7 @@ class BookingSQLRepositoryTest:
             assert booking_saved.stock.identifier == booking_to_save.stock.identifier
             assert booking_saved.identifier is not None
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_should_return_saved_booking_with_updated_user_wallet_balance_on_save(self, app):
             # given
             user_sql_entity = create_user(idx=4)
@@ -118,7 +118,7 @@ class BookingSQLRepositoryTest:
         def setup_method(self):
             self.booking_sql_repository = BookingSQLRepository()
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def test_returns_booking_by_offer_id_and_user_id_when_not_cancelled(self, app):
             # given
             user = create_user()
@@ -143,7 +143,7 @@ class BookingSQLRepositoryTest:
         def setup_method(self):
             self.booking_sql_repository = BookingSQLRepository()
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def should_return_booking_matching_identifier(self, app):
             # given
             user = create_user()
@@ -163,7 +163,7 @@ class BookingSQLRepositoryTest:
             # then
             assert found_booking.identifier == booking_sql_entity.id
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def should_raise_exception_when_no_booking_is_found(self, app):
             # given
             user = create_user()
@@ -184,7 +184,7 @@ class BookingSQLRepositoryTest:
             # then
             assert error.value.errors['bookingId'] == ['bookingId ne correspond à aucune réservation']
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def should_raise_exception_when_booking_does_not_belong_to_beneficiary(self, app):
             # given
             user = create_user()

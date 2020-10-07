@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from freezegun import freeze_time
+import pytest
 from sqlalchemy import func
 
 from pcapi.models import OfferSQLEntity, StockSQLEntity, Product
@@ -15,7 +16,6 @@ from pcapi.repository.offer_queries import department_or_national_offers, \
     get_offers_by_ids, \
     get_paginated_expired_offer_ids, \
     _build_bookings_quantity_subquery
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, \
     create_venue, create_provider
 from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product, \
@@ -24,7 +24,7 @@ from pcapi.model_creators.specific_creators import create_product_with_thing_typ
 
 
 class DepartmentOrNationalOffersTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_national_thing_with_different_department(self, app):
         # given
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
@@ -40,7 +40,7 @@ class DepartmentOrNationalOffersTest:
         # then
         assert product in query.all()
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_national_event_with_different_department(self, app):
         # given
         product = create_product_with_event_type('Voir une pièce', is_national=True)
@@ -56,7 +56,7 @@ class DepartmentOrNationalOffersTest:
         # then
         assert product in query.all()
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_event_is_not_in_given_department_list(self, app):
         # given
         product = create_product_with_event_type('Voir une pièce', is_national=False)
@@ -72,7 +72,7 @@ class DepartmentOrNationalOffersTest:
         # then
         assert query.count() == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_an_event_regardless_of_department_if_department_list_contains_00(self, app):
         # given
         product = create_product_with_event_type('Voir une pièce', is_national=False)
@@ -88,7 +88,7 @@ class DepartmentOrNationalOffersTest:
         # then
         assert query.count() == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_an_event_if_it_is_given_in_department_list(self, app):
         # given
         product = create_product_with_event_type('Voir une pièce', is_national=False)
@@ -106,7 +106,7 @@ class DepartmentOrNationalOffersTest:
 
 
 class FindActivationOffersTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_find_activation_offers_returns_activation_offers_in_given_department(self, app):
         # given
         offerer = create_offerer(siren='123456789')
@@ -126,7 +126,7 @@ class FindActivationOffersTest:
         # then
         assert len(offers) == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_find_activation_offers_returns_activation_offers_if_offer_is_national(self, app):
         # given
         offerer = create_offerer(siren='123456789')
@@ -148,7 +148,7 @@ class FindActivationOffersTest:
         # then
         assert len(offers) == 3
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_find_activation_offers_returns_activation_offers_in_all_ile_de_france_if_department_is_93(self, app):
         # given
         offerer = create_offerer(siren='123456789')
@@ -169,7 +169,7 @@ class FindActivationOffersTest:
         # then
         assert len(offers) == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_find_activation_offers_returns_activation_offers_with_available_stocks(self, app):
         # given
         user = create_user()
@@ -196,7 +196,7 @@ class FindActivationOffersTest:
         # then
         assert len(offers) == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_find_activation_offers_returns_activation_offers_with_future_booking_limit_datetime(self, app):
         # given
         now = datetime.utcnow()
@@ -224,7 +224,7 @@ class FindActivationOffersTest:
 
 
 class FindOffersTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_get_offers_by_venue_id_returns_offers_matching_venue_id(self, app):
         # Given
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
@@ -242,7 +242,7 @@ class FindOffersTest:
 
 
 class QueryOfferWithRemainingStocksTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_0_offer_when_there_is_no_stock(self, app):
         # Given
         thing = create_product_with_thing_type()
@@ -260,7 +260,7 @@ class QueryOfferWithRemainingStocksTest:
         # Then
         assert offers_count == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_1_offer_when_all_available_stock_is_not_booked(self, app):
         # Given
         thing = create_product_with_thing_type()
@@ -285,7 +285,7 @@ class QueryOfferWithRemainingStocksTest:
         # Then
         assert offers_count == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_0_offer_when_all_available_stock_is_booked(self, app):
         # Given
         thing = create_product_with_thing_type()
@@ -310,7 +310,7 @@ class QueryOfferWithRemainingStocksTest:
         # Then
         assert offers_count == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_1_offer_when_booking_was_cancelled(self, app):
         # Given
         user = create_user()
@@ -334,7 +334,7 @@ class QueryOfferWithRemainingStocksTest:
         # Then
         assert offers_count == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_0_offer_when_there_is_no_remaining_stock(app):
         # Given
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
@@ -359,7 +359,7 @@ class QueryOfferWithRemainingStocksTest:
         # Then
         assert offers_count == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_1_offer_when_there_are_one_full_stock_and_one_empty_stock(app):
         # Given
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
@@ -394,7 +394,7 @@ def _create_event_stock_and_offer_for_date(venue, date):
 
 
 class GetOffersByIdsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_all_existing_offers_when_offer_ids_are_given(self, app):
         # Given
         offerer = create_offerer()
@@ -414,7 +414,7 @@ class GetOffersByIdsTest:
 
 
 class GetPaginatedActiveOfferIdsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_two_offer_ids_from_first_page_when_limit_is_two_and_two_active_offers(self, app):
         # Given
         offerer = create_offerer()
@@ -435,7 +435,7 @@ class GetPaginatedActiveOfferIdsTest:
         assert (offer3.id,) not in offer_ids
         assert (offer4.id,) not in offer_ids
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_from_second_page_when_limit_is_1_and_three_active_offers(self, app):
         # Given
         offerer = create_offerer()
@@ -456,7 +456,7 @@ class GetPaginatedActiveOfferIdsTest:
         assert (offer2.id,) not in offer_ids
         assert (offer4.id,) not in offer_ids
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_from_third_page_when_limit_is_1_and_three_active_offers(self, app):
         # Given
         offerer = create_offerer()
@@ -479,7 +479,7 @@ class GetPaginatedActiveOfferIdsTest:
 
 
 class GetPaginatedOfferIdsByVenueIdTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_in_two_offers_from_first_page_when_limit_is_one(self, app):
         # Given
         offerer = create_offerer()
@@ -496,7 +496,7 @@ class GetPaginatedOfferIdsByVenueIdTest:
         assert (offer1.id,) in offer_ids
         assert (offer2.id,) not in offer_ids
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_in_two_offers_from_second_page_when_limit_is_one(self, app):
         # Given
         offerer = create_offerer()
@@ -515,7 +515,7 @@ class GetPaginatedOfferIdsByVenueIdTest:
 
 
 class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_offer_ids_when_exist_and_venue_id_and_last_provider_id_match(self, app):
         # Given
         provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
@@ -536,7 +536,7 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         assert len(offer_ids) == 1
         assert offer_ids[0] == (offer1.id,)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_when_exist_and_venue_id_and_last_provider_id_match_from_first_page_only(self,
                                                                                                                 app):
         # Given
@@ -557,7 +557,7 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         assert len(offer_ids) == 1
         assert offer_ids[0] == (offer1.id,)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_when_exist_and_venue_id_and_last_provider_id_match_from_second_page_only(self,
                                                                                                                  app):
         # Given
@@ -578,7 +578,7 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         assert len(offer_ids) == 1
         assert offer_ids[0] == (offer2.id,)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_offer_ids_when_venue_id_and_last_provider_id_do_not_match(self, app):
         # Given
         provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
@@ -598,7 +598,7 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         # Then
         assert len(offer_ids) == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_offer_ids_when_venue_id_matches_but_last_provider_id_do_not_match(self, app):
         # Given
         provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
@@ -618,7 +618,7 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         # Then
         assert len(offer_ids) == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_offer_ids_when_venue_id_do_not_matches_but_last_provider_id_matches(self, app):
         # Given
         provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
@@ -641,7 +641,7 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
 
 @freeze_time('2020-01-01 10:00:00')
 class GetPaginatedExpiredOfferIdsTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_from_first_page_when_active_and_booking_limit_datetime_is_expired(self, app):
         # Given
         offerer = create_offerer()
@@ -666,7 +666,7 @@ class GetPaginatedExpiredOfferIdsTest:
         assert (offer3.id,) not in results
         assert (offer4.id,) not in results
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_two_offer_ids_from_second_page_when_active_and_booking_limit_datetime_is_expired(self, app):
         # Given
         offerer = create_offerer()
@@ -691,7 +691,7 @@ class GetPaginatedExpiredOfferIdsTest:
         assert (offer3.id,) in results
         assert (offer4.id,) in results
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_offer_ids_when_not_active_and_booking_limit_datetime_is_expired(self, app):
         # Given
         offerer = create_offerer()
@@ -712,7 +712,7 @@ class GetPaginatedExpiredOfferIdsTest:
         # Then
         assert len(results) == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_offer_ids_when_active_and_booking_limit_datetime_is_not_expired(self, app):
         # Given
         offerer = create_offerer()
@@ -733,7 +733,7 @@ class GetPaginatedExpiredOfferIdsTest:
         # Then
         assert len(results) == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_from_first_page_when_active_and_beginning_datetime_is_null(self, app):
         # Given
         offerer = create_offerer()
@@ -760,7 +760,7 @@ class GetPaginatedExpiredOfferIdsTest:
         assert (offer3.id,) not in results
         assert (offer4.id,) not in results
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_when_two_offers_are_expired_and_the_second_one_is_out_of_range(self, app):
         # Given
         offerer = create_offerer()
@@ -780,7 +780,7 @@ class GetPaginatedExpiredOfferIdsTest:
         assert (offer1.id,) in results
         assert (offer2.id,) not in results
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_no_offer_ids_when_offers_are_expired_since_more_than_two_days(self, app):
         # Given
         offerer = create_offerer()
@@ -799,7 +799,7 @@ class GetPaginatedExpiredOfferIdsTest:
         # Then
         assert len(results) == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_when_offers_are_expired_since_more_than_two_days_and_one_second(self, app):
         # Given
         offerer = create_offerer()
@@ -819,7 +819,7 @@ class GetPaginatedExpiredOfferIdsTest:
         assert offer1 in results
         assert offer2 not in results
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_when_offers_are_expired_since_more_than_two_days_and_one_second(self, app):
         # Given
         offerer = create_offerer()
@@ -839,7 +839,7 @@ class GetPaginatedExpiredOfferIdsTest:
         assert offer1 in results
         assert offer2 not in results
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_when_offers_are_expired_exactly_since_two_days(self, app):
         # Given
         offerer = create_offerer()
@@ -859,7 +859,7 @@ class GetPaginatedExpiredOfferIdsTest:
         assert offer1 in results
         assert offer2 not in results
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_when_offers_are_expired_exactly_since_one_day(self, app):
         # Given
         offerer = create_offerer()
@@ -879,7 +879,7 @@ class GetPaginatedExpiredOfferIdsTest:
         assert offer1 in results
         assert offer2 not in results
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_not_get_offer_with_valid_stocks(self, app):
         # Given
         offerer = create_offerer()

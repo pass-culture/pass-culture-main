@@ -1,5 +1,5 @@
 import pytest
-from tests.conftest import clean_database
+
 from pcapi.model_creators.generic_creators import create_booking, \
     create_favorite, create_mediation, create_offerer, create_recommendation, \
     create_stock, create_user, create_venue
@@ -12,7 +12,7 @@ from pcapi.repository.product_queries import delete_unwanted_existing_product, f
 
 
 class DeleteUnwantedExistingProductTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_delete_product_when_isbn_found(self, app):
         # Given
         isbn = '1111111111111'
@@ -25,7 +25,7 @@ class DeleteUnwantedExistingProductTest:
         # Then
         assert Product.query.count() == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_delete_product_when_isbn_not_found(self, app):
         # Given
         isbn = '1111111111111'
@@ -38,7 +38,7 @@ class DeleteUnwantedExistingProductTest:
         # Then
         assert Product.query.count() == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_delete_nothing_when_product_not_found(self, app):
         # Given
         isbn = '1111111111111'
@@ -55,7 +55,7 @@ class DeleteUnwantedExistingProductTest:
         # Then
         assert Product.query.count() == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_delete_product_when_it_has_offer_and_stock_but_not_booked(self, app):
         # Given
         isbn = '1111111111111'
@@ -74,7 +74,7 @@ class DeleteUnwantedExistingProductTest:
         assert OfferSQLEntity.query.count() == 0
         assert StockSQLEntity.query.count() == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_set_isGcuCompatible_at_false_in_product_and_deactivate_offer_when_bookings_related_to_offer(self, app):
         # Given
         isbn = '1111111111111'
@@ -97,7 +97,7 @@ class DeleteUnwantedExistingProductTest:
         assert Product.query.one() == product
         assert not product.isGcuCompatible
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_delete_product_when_related_offer_has_mediation(self, app):
         # Given
         isbn = '1111111111111'
@@ -122,7 +122,7 @@ class DeleteUnwantedExistingProductTest:
         assert Recommendation.query.count() == 0
         assert MediationSQLEntity.query.count() == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_delete_product_when_related_offer_is_on_user_favorite_list(self, app):
         # Given
         isbn = '1111111111111'
@@ -151,7 +151,7 @@ class DeleteUnwantedExistingProductTest:
 
 
 class FindActiveBookProductByIsbnTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_active_book_product_when_existing_isbn_is_given(self, app):
         # Given
         isbn = '1111111111111'
@@ -164,7 +164,7 @@ class FindActiveBookProductByIsbnTest:
         # Then
         assert existing_product == product
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_nothing_when_non_existing_isbn_is_given(self, app):
         # Given
         invalid_isbn = '99999999999'
@@ -178,7 +178,7 @@ class FindActiveBookProductByIsbnTest:
         # Then
         assert existing_product is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_not_gcu_compatible_product(self, app):
         # Given
         valid_isbn = '1111111111111'

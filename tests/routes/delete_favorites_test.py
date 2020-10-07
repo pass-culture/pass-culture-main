@@ -1,3 +1,5 @@
+import pytest
+
 from tests.conftest import TestClient, clean_database
 from pcapi.model_creators.generic_creators import API_URL, create_favorite, \
     create_mediation, create_offerer, create_recommendation, create_user, create_venue
@@ -10,7 +12,7 @@ from pcapi.utils.human_ids import humanize
 
 class Delete:
     class Returns204:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_favorite_exists_with_offerId(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -34,7 +36,7 @@ class Delete:
             assert deleted_favorite is None
 
     class Returns404:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_expected_parameters_are_not_given(self, app):
             # Given
             user = create_user(email='test@email.com')
@@ -53,7 +55,7 @@ class Delete:
             # Then
             assert response.status_code == 404
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         def when_favorite_does_not_exist(self, app):
             # Given
             user = create_user(email='test@email.com')

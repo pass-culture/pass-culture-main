@@ -1,6 +1,8 @@
 import secrets
 from datetime import datetime, timedelta
 
+import pytest
+
 from pcapi.models import Offerer, VenueSQLEntity, ThingType
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_all_offerers_with_managing_user_information, \
@@ -10,14 +12,13 @@ from pcapi.repository.offerer_queries import find_all_offerers_with_managing_use
     find_filtered_offerers, filter_offerers_with_keywords_string, find_by_id, count_offerer, count_offerer_with_stock, \
     count_offerer_by_departement, count_offerer_with_stock_by_departement, find_new_offerer_user_email
 from pcapi.repository.user_queries import find_all_emails_of_user_offerers_admins
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_bank_information, create_offerer, create_stock, create_user, create_user_offerer, create_venue
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_with_thing_offer, \
     create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 
 
 class OffererQueriesTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_find_by_id_returns_the_right_offerer(self, app):
         # Given
         id = 52325
@@ -33,7 +34,7 @@ class OffererQueriesTest:
 
 
 class CountOffererTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_zero_if_no_offerer(self, app):
         # When
         number_of_offerers = count_offerer()
@@ -41,7 +42,7 @@ class CountOffererTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_1_if_offerer_with_user_offerer(self, app):
         # Given
         user = create_user()
@@ -55,7 +56,7 @@ class CountOffererTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_0_if_offerer_without_user_offerer(self, app):
         # Given
         offerer = create_offerer()
@@ -67,7 +68,7 @@ class CountOffererTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_1_if_offerer_with_2_user_offerer(self, app):
         # Given
         user1 = create_user()
@@ -85,7 +86,7 @@ class CountOffererTest:
 
 
 class CountOffererByDepartementTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_zero_if_no_offerer(self, app):
         # When
         number_of_offerers = count_offerer_by_departement('54')
@@ -93,7 +94,7 @@ class CountOffererByDepartementTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_1_if_offerer_with_user_offerer(self, app):
         # Given
         user = create_user()
@@ -108,7 +109,7 @@ class CountOffererByDepartementTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_1_with_two_venues_but_only_one_in_the_departement(self, app):
         # Given
         user = create_user()
@@ -125,7 +126,7 @@ class CountOffererByDepartementTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_0_if_offerer_without_venue(self, app):
         # Given
         user = create_user()
@@ -140,7 +141,7 @@ class CountOffererByDepartementTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_1_if_offerer_with_2_user_offerers_and_2_venues(self, app):
         # Given
         user1 = create_user()
@@ -167,7 +168,7 @@ class CountOffererWithStockTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_1_if_offerer_with_user_offerer_and_stock(self, app):
         # Given
         user = create_user()
@@ -184,7 +185,7 @@ class CountOffererWithStockTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_0_if_offerer_without_user_offerer(self, app):
         # Given
         offerer = create_offerer()
@@ -199,7 +200,7 @@ class CountOffererWithStockTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_0_if_offerer_without_stock(self, app):
         # Given
         offerer = create_offerer()
@@ -214,7 +215,7 @@ class CountOffererWithStockTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_1_if_offerer_with_user_offerer_and_two_stock(self, app):
         # Given
         user = create_user()
@@ -232,7 +233,7 @@ class CountOffererWithStockTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_1_if_offerer_with_2_user_offerers_and_stock(self, app):
         # Given
         user1 = create_user()
@@ -252,7 +253,7 @@ class CountOffererWithStockTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_offerers_with_activation_offers(self, app):
         # Given
         user = create_user(email='first@example.net')
@@ -281,7 +282,7 @@ class CountOffererWithStockByDepartementTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_0_if_offerer_without_user_offerer(self, app):
         # Given
         offerer = create_offerer()
@@ -296,7 +297,7 @@ class CountOffererWithStockByDepartementTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_0_if_offerer_without_stock(self, app):
         # Given
         offerer = create_offerer()
@@ -312,7 +313,7 @@ class CountOffererWithStockByDepartementTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_1_if_offerer_with_user_offerer_and_two_stock(self, app):
         # Given
         user = create_user()
@@ -330,7 +331,7 @@ class CountOffererWithStockByDepartementTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_counts_offerer_only_once_even_if_it_has_multiple_user_offerers_and_stock_in_departement(self, app):
         # Given
         user1 = create_user()
@@ -350,7 +351,7 @@ class CountOffererWithStockByDepartementTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_1_when_filtered_by_departement(self, app):
         # Given
         first_user = create_user(email='first@example.net')
@@ -375,7 +376,7 @@ class CountOffererWithStockByDepartementTest:
         # Then
         assert number_of_offerers == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_0_when_filtered_by_departement_and_none_is_found(self, app):
         # Given
         first_user = create_user(email='first@example.net')
@@ -400,7 +401,7 @@ class CountOffererWithStockByDepartementTest:
         # Then
         assert number_of_offerers == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_offerers_with_activation_offers(self, app):
         # Given
         user = create_user(email='first@example.net')
@@ -421,7 +422,7 @@ class CountOffererWithStockByDepartementTest:
         assert number_of_offerers == 0
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_all_emails_of_user_offerers_admins_returns_list_of_user_emails_having_user_offerer_with_admin_rights_on_offerer(
         app):
     # Given
@@ -446,7 +447,7 @@ def test_find_all_emails_of_user_offerers_admins_returns_list_of_user_emails_hav
     assert set(emails) == {'admin1@offerer.com', 'admin2@offerer.com'}
     assert type(emails) == list
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_email_of_user_offerer_should_returns_email(
         app):
     # Given
@@ -462,7 +463,7 @@ def test_find_email_of_user_offerer_should_returns_email(
     # Then
     assert result == 'pro@example.com'
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_all_offerers_with_managing_user_information(app):
     # given
     user_admin1 = create_user(email='admin1@offerer.com')
@@ -487,7 +488,7 @@ def test_find_all_offerers_with_managing_user_information(app):
     assert user_admin2.email in offerers[3].email
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_all_offerers_with_managing_user_information_and_venue(app):
     # given
     user_admin1 = create_user(email='admin1@offerer.com')
@@ -516,7 +517,7 @@ def test_find_all_offerers_with_managing_user_information_and_venue(app):
     assert offerer2.siren == offerers[3].siren
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_all_offerers_with_managing_user_information_and_not_virtual_venue(app):
     # given
     user_admin1 = create_user(email='admin1@offerer.com')
@@ -542,7 +543,7 @@ def test_find_all_offerers_with_managing_user_information_and_not_virtual_venue(
     assert offerer2.siren == offerers[1].siren
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_all_offerers_with_venue(app):
     # given
     offerer1 = create_offerer(name='offerer1')
@@ -563,7 +564,7 @@ def test_find_all_offerers_with_venue(app):
     assert venue1.bookingEmail in offerers[0].bookingEmail
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_all_pending_offerers_return_requested_tokens_in_case_only_venue_not_validated(app):
     # given
     user_validated = create_user(can_book_free_offers=False, email="user@user.pro", is_admin=False)
@@ -588,7 +589,7 @@ def test_get_all_pending_offerers_return_requested_tokens_in_case_only_venue_not
     assert venue.validationToken == venue_not_validated.validationToken
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_not_validated(app):
     # given
     user_not_validated = create_user(can_book_free_offers=False, email="user@user.pro", is_admin=False,
@@ -613,7 +614,7 @@ def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_not_
     assert venue.validationToken == venue_validated.validationToken
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_offerer_not_validated(app):
     # given
     user_validated = create_user(can_book_free_offers=False, email="user@user.pro", is_admin=False)
@@ -638,7 +639,7 @@ def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_offe
     assert venue.validationToken == venue_validated.validationToken
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_all_pending_offerers_return_nothing_in_case_only_offerer_not_validated(app):
     # given
     user_validated = create_user(can_book_free_offers=False, email="user@user.pro", is_admin=False)
@@ -662,7 +663,7 @@ def test_get_all_pending_offerers_return_nothing_in_case_only_offerer_not_valida
     assert venue.validationToken == venue_validated.validationToken
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_get_all_pending_offerers_return_empty_list_in_case_all_validated(app):
     # given
     user_validated = create_user(can_book_free_offers=False, email="user@user.pro", is_admin=False)
@@ -677,7 +678,7 @@ def test_get_all_pending_offerers_return_empty_list_in_case_all_validated(app):
     assert offerers == []
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_first_by_user_offerer_id_returns_the_first_offerer_that_was_created(app):
     # given
     user = create_user()
@@ -695,7 +696,7 @@ def test_find_first_by_user_offerer_id_returns_the_first_offerer_that_was_create
     assert offerer.id == offerer1.id
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_sirens_params_return_filtered_offerers(app):
     # given
     offerer_123456789 = create_offerer(name="offerer_123456789", siren="123456789")
@@ -718,7 +719,7 @@ def test_find_filtered_offerers_with_sirens_params_return_filtered_offerers(app)
     assert offerer_123456784 not in query_with_sirens
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_dpts_param_return_filtered_offerers(app):
     # Given
     offerer_93 = create_offerer(postal_code="93125")
@@ -747,7 +748,7 @@ def test_find_filtered_offerers_with_dpts_param_return_filtered_offerers(app):
     assert offerer_2A in query_with_dpts
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_zipcodes_param_return_filtered_offerers(app):
     # Given
     offerer_93125 = create_offerer(postal_code="93125")
@@ -765,7 +766,7 @@ def test_find_filtered_offerers_with_zipcodes_param_return_filtered_offerers(app
     assert offerer_34758 in query_with_zipcodes
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_date_params_return_filtered_offerers(app):
     # Given
     offerer_in_date_range = create_offerer(siren="123456781", date_created=datetime(2018, 7, 15))
@@ -789,7 +790,7 @@ def test_find_filtered_offerers_with_date_params_return_filtered_offerers(app):
     assert offerer_after_date_range not in query_with_date
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_has_siren_param_return_filtered_offerers(app):
     # Given
     offerer_with_siren = create_offerer(siren="123456789")
@@ -805,7 +806,7 @@ def test_find_filtered_offerers_with_has_siren_param_return_filtered_offerers(ap
     assert offerer_without_siren in query_no_siren
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_is_validated_param_return_filtered_offerers(app):
     # Given
     offerer_validated = create_offerer(siren="123456789", validation_token=None)
@@ -821,7 +822,7 @@ def test_find_filtered_offerers_with_is_validated_param_return_filtered_offerers
     assert offerer_not_validated not in query_only_validated
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_is_active_param_return_filtered_offerers(app):
     # Given
     offerer_active = create_offerer(siren="123456789", is_active=True)
@@ -837,7 +838,7 @@ def test_find_filtered_offerers_with_is_active_param_return_filtered_offerers(ap
     assert offerer_not_active not in query_only_active
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_has_bank_information_param_return_filtered_offerers(app):
     # Given
     offerer_without_bank_information = create_offerer(siren="123456781")
@@ -856,7 +857,7 @@ def test_find_filtered_offerers_with_has_bank_information_param_return_filtered_
     assert offerer_without_bank_information not in query_with_bank_information
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_True_has_validated_user_param_return_filtered_offerers(app):
     # Given
     offerer_with_not_validated_user = create_offerer(siren="123456781")
@@ -885,7 +886,7 @@ def test_find_filtered_offerers_with_True_has_validated_user_param_return_filter
     assert offerer_with_both in query_validated_user
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_False_has_validated_user_param_return_filtered_offerers(app):
     # Given
     offerer_with_not_validated_user = create_offerer(siren="123456781")
@@ -914,7 +915,7 @@ def test_find_filtered_offerers_with_False_has_validated_user_param_return_filte
     assert offerer_with_both not in query_not_validated
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_True_has_not_virtual_venue_param_return_filtered_offerers(app):
     # Given
     offerer_with_only_virtual_venue = create_offerer(siren="123456789")
@@ -934,7 +935,7 @@ def test_find_filtered_offerers_with_True_has_not_virtual_venue_param_return_fil
     assert offerer_with_both_virtual_and_not_virtual_venue in query_with_not_virtual
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_False_has_not_virtual_venue_param_return_filtered_offerers(app):
     # Given
     offerer_with_only_virtual_venue = create_offerer(siren="123456789")
@@ -954,7 +955,7 @@ def test_find_filtered_offerers_with_False_has_not_virtual_venue_param_return_fi
     assert offerer_with_both_virtual_and_not_virtual_venue not in query_only_virtual
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_True_has_validated_venue_param_return_filtered_offerers(app):
     # Given
     offerer_with_not_validated_venue = create_offerer(siren="123456789")
@@ -982,7 +983,7 @@ def test_find_filtered_offerers_with_True_has_validated_venue_param_return_filte
     assert offerer_with_both in query_validated
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_False_has_validated_venue_param_return_filtered_offerers(app):
     # Given
     offerer_with_not_validated_venue = create_offerer(siren="123456789")
@@ -1010,7 +1011,7 @@ def test_find_filtered_offerers_with_False_has_validated_venue_param_return_filt
     assert offerer_with_both not in query_not_validated
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_True_has_venue_with_siret_param_return_filtered_offerers(app):
     # Given
     offerer_with_venue_without_siret_comment = create_offerer(siren="123456789")
@@ -1046,7 +1047,7 @@ def test_find_filtered_offerers_with_True_has_venue_with_siret_param_return_filt
     assert offerer_with_both_virtual in query_with_siret
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_False_has_venue_with_siret_param_return_filtered_offerers(app):
     # Given
     offerer_with_venue_without_siret_comment = create_offerer(siren="123456789")
@@ -1081,7 +1082,7 @@ def test_find_filtered_offerers_with_False_has_venue_with_siret_param_return_fil
     assert offerer_with_both_virtual not in query_whitout_siret
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_True_has_validated_user_offerer_param_return_filtered_offerers(app):
     # Given
     offerer_with_not_validated_user_offerer = create_offerer(siren="123456781")
@@ -1109,7 +1110,7 @@ def test_find_filtered_offerers_with_True_has_validated_user_offerer_param_retur
     assert offerer_with_both in query_validated
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_False_has_validated_user_offerer_param_return_filtered_offerers(app):
     # Given
     offerer_with_not_validated_user_offerer = create_offerer(siren="123456781")
@@ -1137,7 +1138,7 @@ def test_find_filtered_offerers_with_False_has_validated_user_offerer_param_retu
     assert offerer_with_both not in query_not_validated
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filtered_offerers(app):
     # Given
     offerer_without_offer = create_offerer(siren="123456781")
@@ -1220,7 +1221,7 @@ def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filter
     assert offerer_with_not_available_event_product not in query_has_valid_offer
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_offer_status_with_EXPIRED_param_return_filtered_offerers(app):
     # Given
     offerer_without_offer = create_offerer(siren="123456781")
@@ -1299,7 +1300,7 @@ def test_find_filtered_offerers_with_offer_status_with_EXPIRED_param_return_filt
     assert offerer_with_not_available_event in query_has_expired_offer
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_offer_status_with_WITHOUT_param_return_filtered_offerers(app):
     # Given
     offerer_without_offer = create_offerer(siren="123456781")
@@ -1378,7 +1379,7 @@ def test_find_filtered_offerers_with_offer_status_with_WITHOUT_param_return_filt
     assert offerer_with_not_available_event not in query_without_offer
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_offer_status_with_ALL_param_return_filtered_offerers(app):
     # Given
     offerer_without_offer = create_offerer(siren="123456781")
@@ -1457,7 +1458,7 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_return_filtered
     assert offerer_with_not_available_event in query_with_all_offer
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_False_has_not_virtual_venues_return_filtered_offerers(
         app):
     # Given
@@ -1503,7 +1504,7 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_False_has_n
     assert offerer_with_both_venues_offer_on_not_virtual not in query_with_all_offer
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_True_has_not_virtual_venues_return_filtered_offerers(
         app):
     # Given
@@ -1549,7 +1550,7 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_True_has_no
     assert offerer_with_both_venues_offer_on_not_virtual in query_with_all_offer
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
     # Given
     offerer_67 = create_offerer(siren="123456781", postal_code="67520")
@@ -1594,7 +1595,7 @@ def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
     assert offerer_not_active in default_query
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(app):
     # given
     offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")
@@ -1644,7 +1645,7 @@ def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(app)
     assert offerer_with_both_venues_offer_on_not_virtual in offerers
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_level(app):
     # given
     offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")
@@ -1694,7 +1695,7 @@ def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_le
     assert offerer_with_both_venues_offer_on_not_virtual in offerers
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level(app):
     # given
     offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")
@@ -1744,7 +1745,7 @@ def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level
     assert offerer_with_both_venues_offer_on_not_virtual in offerers
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_offerers_with_several_partial_keywords_at_venue_public_name_level(app):
     # given
     offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")

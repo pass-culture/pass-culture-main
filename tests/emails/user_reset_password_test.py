@@ -1,10 +1,10 @@
 from unittest.mock import patch
 
+import pytest
+
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_email
 from pcapi.repository import repository
 from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
-import pytest
-from tests.conftest import clean_database
 
 
 class MakeUserResetPasswordEmailDataTest:
@@ -12,7 +12,6 @@ class MakeUserResetPasswordEmailDataTest:
     @patch('pcapi.emails.user_reset_password.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.user_reset_password.format_environment_for_email', return_value='-testing')
     @patch('pcapi.emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=False)
-    @clean_database
     @pytest.mark.usefixtures("db_session")
     def test_email_is_sent_to_dev_at_passculture_when_not_production_environment(self,
                                                                                  mock_send_mail_enabled,

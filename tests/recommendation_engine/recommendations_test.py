@@ -1,10 +1,11 @@
 from typing import List
 from unittest.mock import patch
 
+import pytest
+
 from pcapi.recommendations_engine import give_requested_recommendation_to_user, create_recommendations_for_discovery
 from pcapi.models import Offerer, StockSQLEntity
 from pcapi.repository import repository, discovery_view_queries
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
     create_recommendation, create_mediation
 from pcapi.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
@@ -12,7 +13,7 @@ from pcapi.utils.human_ids import humanize
 
 
 class CreateRecommendationsForDiscoveryTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_does_not_put_mediation_ids_of_inactive_mediations(self, app):
         # Given
         sent_offers_ids = []
@@ -40,7 +41,7 @@ class CreateRecommendationsForDiscoveryTest:
         assert humanize(mediation2.id) not in mediations
         assert humanize(mediation1.id) not in mediations
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_include_recommendations_on_offers_previously_displayed_in_search_results(
             self, app):
         # Given
@@ -83,7 +84,7 @@ class CreateRecommendationsForDiscoveryTest:
                                                                          sent_offers_ids=sent_offers_ids,
                                                                          user=user)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_offer_in_all_ile_de_france_for_user_from_93(self, app):
         # given
         departements_ok = ['75', '77', '78', '91', '92', '93', '94', '95']
@@ -113,7 +114,7 @@ class CreateRecommendationsForDiscoveryTest:
         assert len(recommendations) == 8
         assert recommended_offer_ids == offer_ids_in_adjacent_department
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_offers_from_any_departement_for_user_from_00(self, app):
         # given
         departements_ok = ['97', '01', '93', '06', '78']
@@ -141,7 +142,7 @@ class CreateRecommendationsForDiscoveryTest:
 
 
 class GiveRequestedRecommendationToUserTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_when_recommendation_exists_returns_it(self, app):
         # Given
         user = create_user()
@@ -160,7 +161,7 @@ class GiveRequestedRecommendationToUserTest:
         # Then
         assert result_reco.id == reco_ok.id
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_when_recommendation_exists_for_other_user_returns_a_new_one_for_the_current_user(self, app):
         # Given
         user = create_user()

@@ -1,9 +1,10 @@
 from decimal import Decimal
 from unittest.mock import MagicMock
 
+import pytest
+
 from pcapi.models import AllocineVenueProvider, AllocineVenueProviderPriceRule
 from pcapi.repository import repository
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_allocine_pivot, create_offerer, create_venue
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
@@ -15,7 +16,7 @@ class ConnectAllocineToVenueTest:
         self.find_by_id = MagicMock()
         self.get_theaterid_for_venue = MagicMock()
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def should_connect_venue_to_allocine_provider(self, app):
         # Given
         offerer = create_offerer()

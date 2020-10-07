@@ -6,13 +6,12 @@ from pcapi.repository import repository
 from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id, \
     find_user_offerer_email, \
     filter_query_where_user_is_user_offerer_and_is_validated
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
 from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
     create_offer_with_thing_product, create_offer_with_event_product
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_user_offerer_email(app):
     # Given
     user = create_user(email='offerer@email.com')
@@ -27,7 +26,7 @@ def test_find_user_offerer_email(app):
     assert email == 'offerer@email.com'
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_one_or_none_by_user_id_should_return_one_user_offerer_with_same_user_id(app):
     # Given
     user = create_user(email='offerer@email.com')
@@ -43,7 +42,7 @@ def test_find_one_or_none_by_user_id_should_return_one_user_offerer_with_same_us
     assert first_user_offerer.id == user_offerer.id
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_one_or_none_by_user_id_raises_exception_when_several_are_found(app):
     # Given
     user = create_user(email='offerer@email.com')
@@ -59,7 +58,7 @@ def test_find_one_or_none_by_user_id_raises_exception_when_several_are_found(app
 
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_one_or_none_by_user_id_should_return_none_user_offerer_when_none_are_found(app):
     # Given
     user = create_user(email='offerer@email.com')
@@ -74,7 +73,7 @@ def test_find_one_or_none_by_user_id_should_return_none_user_offerer_when_none_a
 
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_filter_query_where_user_is_user_offerer_and_is_validated(app):
     # Given
     user = create_user(email='offerer@email.com')

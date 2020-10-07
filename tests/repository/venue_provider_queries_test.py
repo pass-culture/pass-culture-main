@@ -1,15 +1,16 @@
+import pytest
+
 from pcapi.models import AllocineVenueProvider, VenueProvider
 from pcapi.repository import repository
 from pcapi.repository.venue_provider_queries import get_venue_providers_to_sync, get_nb_containers_at_work, \
     get_venue_provider_by_id, get_active_venue_providers_for_specific_provider
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider, \
     create_allocine_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
 
 
 class GetActiveVenueProvidersForSpecificProviderTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_all_venue_provider_matching_provider_id(self, app):
         # Given
         offerer = create_offerer()
@@ -27,7 +28,7 @@ class GetActiveVenueProvidersForSpecificProviderTest:
         # Then
         assert venue_providers == [venue_provider1]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_all_active_venue_providers_matching_provider_id(self, app):
         # Given
         offerer = create_offerer()
@@ -46,7 +47,7 @@ class GetActiveVenueProvidersForSpecificProviderTest:
 
 
 class GetVenueProvidersToSyncTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_only_venue_provider_for_specified_provider(self, app):
         # Given
         offerer = create_offerer()
@@ -63,7 +64,7 @@ class GetVenueProvidersToSyncTest:
         # Then
         assert venue_providers == [venue_provider_titelive]
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_venue_provider_with_no_worker_id(self, app):
         # Given
         offerer = create_offerer()
@@ -83,7 +84,7 @@ class GetVenueProvidersToSyncTest:
 
 
 class GetNbContainersAtWorkTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_number_of_venue_provider_with_worker_id(self, app):
         # Given
         offerer = create_offerer()
@@ -102,7 +103,7 @@ class GetNbContainersAtWorkTest:
 
 
 class GetVenueProviderByIdTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_matching_venue_provider(self):
         # Given
         offerer = create_offerer()
@@ -118,7 +119,7 @@ class GetVenueProviderByIdTest:
         assert existing_venue_provider == venue_provider
         assert isinstance(venue_provider, VenueProvider)
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_matching_venue_provider_with_allocine_attributes(self):
         # Given
         offerer = create_offerer()

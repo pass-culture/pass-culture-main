@@ -6,7 +6,6 @@ import pytest
 from pcapi.local_providers.fnac.fnac_stocks import FnacStocks
 from pcapi.models import OfferSQLEntity, StockSQLEntity
 from pcapi.repository import repository
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_stock, \
     create_booking, create_user
 from pcapi.model_creators.provider_creators import activate_provider
@@ -56,7 +55,7 @@ class FnacStocksTest:
             assert stock_providable_info.id_at_providers == '9780199536986@12345678912345'
 
     class UpdateObjectsTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_fnac_stock_provider_create_one_stock_and_one_offer_with_wanted_attributes(self,
                                                                                            mock_fnac_api_response,
@@ -96,7 +95,7 @@ class FnacStocksTest:
             assert stock.quantity == 10
             assert stock.bookingLimitDatetime is None
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_fnac_stock_provider_update_one_stock_and_update_matching_offer(self, mock_fnac_api_response,
                                                                                 app):
@@ -168,7 +167,7 @@ class FnacStocksTest:
             assert OfferSQLEntity.query.filter_by(lastProviderId=fnac_stocks_provider.id).count() == 2
             assert fnac_stocks.last_processed_isbn == '1550199555555'
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_fnac_stock_provider_available_stock_is_sum_of_updated_available_and_bookings(self,
                                                                                               mock_fnac_api_response,

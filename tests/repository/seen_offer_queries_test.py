@@ -1,17 +1,17 @@
 from datetime import datetime
 
 from freezegun import freeze_time
+import pytest
 
 from pcapi.models import SeenOffer
 from pcapi.repository import repository
 from pcapi.repository.seen_offer_queries import find_by_offer_id_and_user_id, remove_old_seen_offers
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_user, create_seen_offer
 from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 
 
 class FindByOfferIdAndUserIdTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_seen_offer_if_matching_user_id_and_offer_id(self, app):
         # given
         offerer = create_offerer()
@@ -27,7 +27,7 @@ class FindByOfferIdAndUserIdTest:
         # then
         assert queried_seen_offer == seen_offer
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_none_if_unmatching_user_id(self, app):
         # given
         offerer = create_offerer()
@@ -43,7 +43,7 @@ class FindByOfferIdAndUserIdTest:
         # then
         assert queried_seen_offer is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_none_if_unmatching_offer_id(self, app):
         # given
         offerer = create_offerer()
@@ -61,7 +61,7 @@ class FindByOfferIdAndUserIdTest:
 
 
 class RemoveOldSeenOffersTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @freeze_time("2020-5-5 16:22:00")
     def test_should_remove_seen_offers_after_one_month(self, app):
         # given

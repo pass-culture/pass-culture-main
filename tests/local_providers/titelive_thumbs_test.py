@@ -4,12 +4,13 @@ from pathlib import Path
 from unittest.mock import patch
 from zipfile import ZipFile
 
+import pytest
+
 from pcapi.local_providers import TiteLiveThingThumbs
 from pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs import extract_thumb_index
 from pcapi.models import Product
 from pcapi.repository import repository
 import pcapi.sandboxes
-from tests.conftest import clean_database
 from pcapi.model_creators.provider_creators import provider_test
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
 
@@ -36,7 +37,7 @@ class TiteliveThingThumbsTest:
             # Then
             assert thumb_index == 4
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp')
     @patch('pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_zip_file_from_ftp')
     def test_compute_first_thumb_dominant_color_even_if_not_first_file(self,
@@ -66,7 +67,7 @@ class TiteliveThingThumbsTest:
                       Product=0
                       )
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp')
     @patch('pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_zip_file_from_ftp')
     def test_updates_thumb_count_for_product_when_new_thumbs_added(self,

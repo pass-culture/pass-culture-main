@@ -1,8 +1,9 @@
+import pytest
+
 from pcapi.models import BookingSQLEntity
 from pcapi.models.db import db
 from pcapi.repository import repository
 from pcapi.scripts.update_booking_cancellation_date_from_activity import update_booking_cancellation_date_from_activity
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_user, create_stock, create_booking, create_deposit
 
 
@@ -16,7 +17,7 @@ class UpdateBookingCancellationDateFromActivityTest:
     def teardown_method():
         db.engine.execute("ALTER TABLE booking ENABLE TRIGGER stock_update_cancellation_date;")
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_fill_cancellation_date_using_activity(self, app):
         # Given
         user = create_user()

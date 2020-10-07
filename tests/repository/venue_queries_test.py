@@ -1,7 +1,8 @@
+import pytest
+
 from pcapi.repository import repository
 from pcapi.repository.venue_queries import find_filtered_venues, find_by_managing_user, \
     find_by_managing_offerer_id_and_siret
-from tests.conftest import clean_database
 from pcapi.model_creators.activity_creators import create_venue_activity, save_all_activities
 from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_with_thing_offer, \
@@ -9,7 +10,7 @@ from pcapi.model_creators.specific_creators import create_stock_from_event_occur
 from datetime import datetime, timedelta
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_sirens_params_return_filtered_venues(app):
     # given
     offerer_123456789 = create_offerer(
@@ -49,7 +50,7 @@ def test_find_filtered_venues_with_sirens_params_return_filtered_venues(app):
     assert venue_123456784 not in query_with_sirens
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_has_validated_offerer_param_return_filtered_venues(app):
     # Given
     offerer_valid = create_offerer()
@@ -69,7 +70,7 @@ def test_find_filtered_venues_with_has_validated_offerer_param_return_filtered_v
     assert venue_with_offerer_not_valid in query_with_not_valid_offerer_only
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_dpts_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
@@ -97,7 +98,7 @@ def test_find_filtered_venues_with_dpts_param_return_filtered_venues(app):
     assert venue_virtual not in query_with_dpts
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_zipcodes_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
@@ -119,7 +120,7 @@ def test_find_filtered_venues_with_zipcodes_param_return_filtered_venues(app):
     assert venue_67000 not in query_with_zipcodes
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_date_params_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
@@ -146,7 +147,7 @@ def test_find_filtered_venues_with_date_params_return_filtered_venues(app):
     assert venue_20180730 in query_with_date
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_is_virtual_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
@@ -163,7 +164,7 @@ def test_find_filtered_venues_with_is_virtual_param_return_filtered_venues(app):
     assert venue_not_virtual not in query_only_virtual
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_has_siret_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
@@ -182,7 +183,7 @@ def test_find_filtered_venues_with_has_siret_param_return_filtered_venues(app):
     assert venue_with_siret not in query_no_siret
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_is_validated_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
@@ -199,7 +200,7 @@ def test_find_filtered_venues_with_is_validated_param_return_filtered_venues(app
     assert venue_validated in query_only_validated
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_has_offerer_with_siren_param_return_filtered_venues(app):
     # Given
     offerer_with_siren = create_offerer(siren='123456789')
@@ -219,7 +220,7 @@ def test_find_filtered_venues_with_has_offerer_with_siren_param_return_filtered_
     assert venue_with_offerer_with_siren in query_validated
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_True_has_validated_user_offerer_param_return_filtered_venues(app):
     # Given
     user = create_user()
@@ -254,7 +255,7 @@ def test_find_filtered_venues_with_True_has_validated_user_offerer_param_return_
     assert venue_with_both in query_validated
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return_filtered_venues(app):
     # Given
     user = create_user()
@@ -290,7 +291,7 @@ def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return
     assert venue_with_both not in query_not_validated
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered_venues(app):
     # Given
     validated_user = create_user()
@@ -323,7 +324,7 @@ def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered
     assert venue_with_both in query_validated
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_False_has_validated_user_param_return_filtered_venues(app):
     # Given
     validated_user = create_user()
@@ -356,7 +357,7 @@ def test_find_filtered_venues_with_False_has_validated_user_param_return_filtere
     assert venue_with_both not in query_not_validated
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
@@ -434,7 +435,7 @@ def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered
     assert venue_with_not_available_event not in query_has_valid_offer
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_offer_status_with_EXPIRED_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
@@ -512,7 +513,7 @@ def test_find_filtered_venues_with_offer_status_with_EXPIRED_param_return_filter
     assert venue_with_not_available_event in query_has_expired_offer
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_offer_status_with_WITHOUT_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
@@ -590,7 +591,7 @@ def test_find_filtered_venues_with_offer_status_with_WITHOUT_param_return_filter
     assert venue_with_not_available_event not in query_without_offer
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_offer_status_with_ALL_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
@@ -668,7 +669,7 @@ def test_find_filtered_venues_with_offer_status_with_ALL_param_return_filtered_v
     assert venue_with_not_available_event in query_with_all_offer
 
 
-@clean_database
+@pytest.mark.usefixtures("db_session")
 def test_find_filtered_venues_with_default_param_return_all_venues(app):
     # Given
     offerer = create_offerer()
@@ -710,7 +711,7 @@ def test_find_filtered_venues_with_default_param_return_all_venues(app):
 
 
 class FindVenuesByManagingUserTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_returns_venues_that_a_user_manages(self):
         # given
         user = create_user(email='user@example.net')
@@ -741,7 +742,7 @@ class FindVenuesByManagingUserTest:
 
 
 class FindByManagingOffererIdAndSiretTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_none_when_not_matching_venues(self):
         # Given
         offerer = create_offerer()
@@ -755,7 +756,7 @@ class FindByManagingOffererIdAndSiretTest:
         # Then
         assert venue is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_return_matching_venue(self):
         # Given
         offerer = create_offerer()

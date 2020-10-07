@@ -1,13 +1,14 @@
 from unittest.mock import patch
 
+import pytest
+
 from pcapi.emails.offerer_ongoing_attachment import retrieve_data_for_offerer_ongoing_attachment_email
 from pcapi.repository import repository
-from tests.conftest import clean_database
 from pcapi.model_creators.generic_creators import create_offerer, create_user, create_user_offerer
 
 
 class ProOffererAttachmentValidationEmailTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('pcapi.emails.offerer_ongoing_attachment.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.offerer_ongoing_attachment.feature_send_mail_to_users_enabled', return_value=False)
     @patch('pcapi.emails.offerer_ongoing_attachment.format_environment_for_email', return_value='-testing')
@@ -41,7 +42,7 @@ class ProOffererAttachmentValidationEmailTest:
                 }
         }
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('pcapi.emails.offerer_ongoing_attachment.feature_send_mail_to_users_enabled', return_value=True)
     @patch('pcapi.emails.offerer_ongoing_attachment.format_environment_for_email', return_value='')
     @patch('pcapi.emails.offerer_ongoing_attachment.find_user_offerer_email',
