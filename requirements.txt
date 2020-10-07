@@ -35,7 +35,6 @@ pytest-flask-sqlalchemy==1.0.2
 pytest-mock==1.11.2
 python-dotenv==0.14.0
 python-json-logger==0.1.11
-python-keystoneclient==3.22.0
 python-swiftclient==3.10.1
 qrcode==6.1
 rq==1.5.2
