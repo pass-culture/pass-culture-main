@@ -26,7 +26,6 @@ def install_scripts():
     from models import VenueSQLEntity
 
     import scripts.clean_database
-    import scripts.request
     import scripts.sandbox
     import scripts.update_providables
     import scripts.storage
