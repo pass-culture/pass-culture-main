@@ -1,8 +1,10 @@
 from repository import repository
 from sandboxes.scripts.utils.select import remove_every
 from tests.model_creators.specific_creators import create_stock_from_offer
-from tests.test_utils import get_price_by_short_name, get_occurrence_short_name
 from utils.logger import logger
+
+from .utils import get_price_by_short_name, get_occurrence_short_name
+
 
 THING_OFFERS_WITH_STOCK_REMOVE_MODULO = 3
 

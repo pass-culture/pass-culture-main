@@ -2,8 +2,10 @@ from models.offer_type import EventType
 from repository import repository
 from sandboxes.scripts.utils.select import remove_every
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence
-from tests.test_utils import get_price_by_short_name, get_occurrence_short_name
 from utils.logger import logger
+
+from .utils import get_price_by_short_name, get_occurrence_short_name
+
 
 EVENT_OCCURRENCES_WITH_STOCKS_REMOVE_MODULO = 4
 
