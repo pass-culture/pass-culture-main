@@ -376,13 +376,7 @@ class OfferCreation extends PureComponent {
       title = 'Détails de l’offre'
     }
 
-    let isDuoDefaultStatus
-
-    if (formInitialValues.isDuo === undefined) {
-      isDuoDefaultStatus = true
-    } else {
-      isDuoDefaultStatus = formInitialValues.isDuo
-    }
+    let isDuoDefaultStatus = formInitialValues.isDuo
 
     const offererHasNoPhysicalVenues = offerer && get(venuesMatchingOfferType, 'length') === 0
 
