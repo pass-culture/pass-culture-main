@@ -1,7 +1,6 @@
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
-import { withRouter } from 'react-router'
 
 import OfferItem from './OfferItem'
 import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
@@ -54,6 +53,5 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 
 export default compose(
   withTracking('OfferItem'),
-  withRouter,
   connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(OfferItem)

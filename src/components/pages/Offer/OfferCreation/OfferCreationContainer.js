@@ -92,6 +92,7 @@ export const mapStateToProps = (state, ownProps) => {
     offer,
     offerer,
     offerers,
+    offersSearchFilters: state.offers.searchFilters,
     offerTypeError,
     providers,
     selectedOfferType,

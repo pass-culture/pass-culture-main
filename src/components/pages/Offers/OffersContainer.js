@@ -4,10 +4,12 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import Offers from './Offers'
-import { withRequiredLogin } from '../../hocs'
+import { withRequiredLogin } from 'components/hocs'
+import { SAVE_SEARCH_FILTERS } from 'store/reducers/offers'
 import { selectOffers } from 'store/selectors/data/offersSelectors'
-import { fetchFromApiWithCredentials } from '../../../utils/fetch'
+import { fetchFromApiWithCredentials } from 'utils/fetch'
 import { ALL_OFFERS, ALL_VENUES } from './_constants'
+import Offers from './Offers'
 
 export const mapStateToProps = state => {
   return {
@@ -15,6 +17,7 @@ export const mapStateToProps = state => {
     notification: state.notification,
     offers: selectOffers(state),
     types: state.data.types,
+    searchFilters: state.offers.searchFilters,
   }
 }
 
@@ -73,6 +76,13 @@ export const mapDispatchToProps = dispatch => {
           ),
         })
       )
+    },
+
+    saveSearchFilters: filters => {
+      dispatch({
+        type: SAVE_SEARCH_FILTERS,
+        filters,
+      })
     },
 
     loadOffers: (filters, handleSuccess, handleFail) => {

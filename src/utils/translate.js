@@ -97,3 +97,7 @@ export const mapApiToBrowser = invert(mapBrowserToApi)
 export function translateQueryParamsToApiParams(queryParams) {
   return getObjectWithMappedKeys(queryParams, mapBrowserToApi)
 }
+
+export function translateApiParamsToQueryParams(apiParams) {
+  return getObjectWithMappedKeys(apiParams, mapApiToBrowser)
+}

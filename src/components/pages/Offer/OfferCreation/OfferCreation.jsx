@@ -34,6 +34,7 @@ import Insert from '../../../layout/Insert/Insert'
 import offerIsRefundable from '../domain/offerIsRefundable'
 import { isAllocineOffer, isOfferFromStockProvider } from '../domain/localProvider'
 import { pluralize } from '../../../../utils/pluralize'
+import { translateApiParamsToQueryParams } from 'utils/translate'
 
 const DURATION_LIMIT_TIME = 100
 
@@ -305,6 +306,15 @@ class OfferCreation extends PureComponent {
     updateFormSetIsDuo(event.target.checked)
   }
 
+  computeOffersUrl = () => {
+    const { offersSearchFilters } = this.props
+    let queryString = new URLSearchParams(
+      translateApiParamsToQueryParams(offersSearchFilters)
+    ).toString()
+    queryString = queryString.length ? `?${queryString}` : ''
+    return `/offres${queryString}`
+  }
+
   render() {
     const {
       currentUser,
@@ -378,7 +388,7 @@ class OfferCreation extends PureComponent {
 
     return (
       <Main
-        backTo={{ path: '/offres', label: 'Offres' }}
+        backTo={{ path: this.computeOffersUrl(), label: 'Offres' }}
         handleDataRequest={this.onHandleDataRequest}
         id="offer"
         name="offer"

@@ -6,6 +6,7 @@ import data from './data'
 import errors from './errors'
 import maintenanceReducer from './maintenanceReducer'
 import modal from './modal'
+import offers from './offers'
 
 const rootReducer = combineReducers({
   bookingSummary,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   form,
   loading,
   modal,
+  offers,
   notification,
   tracker,
   maintenance: maintenanceReducer,

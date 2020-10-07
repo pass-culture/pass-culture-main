@@ -21,7 +21,6 @@ class Offers extends PureComponent {
     const { name: nameKeywords, page, venueId: selectedVenueId } = translateQueryParamsToApiParams(
       props.query.parse()
     )
-
     this.state = {
       isLoading: false,
       nameSearchValue: nameKeywords || ALL_OFFERS,
@@ -59,9 +58,10 @@ class Offers extends PureComponent {
   }
 
   getPaginatedOffersWithFilters = () => {
-    const { loadTypes, loadOffers, types } = this.props
+    const { loadTypes, loadOffers, saveSearchFilters, types } = this.props
     const { nameSearchValue, selectedVenueId, page } = this.state
     types.length === 0 && loadTypes()
+    saveSearchFilters({ name: nameSearchValue, venueId: selectedVenueId, page })
 
     const handleSuccess = (page, pageCount, offersCount) => {
       this.setState(

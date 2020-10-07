@@ -29,7 +29,6 @@ const OFFER_STATUS_PROPERTIES = {
 }
 
 const OfferItem = ({
-  location,
   offer,
   stocks,
   trackActivateOffer,
@@ -84,7 +83,7 @@ const OfferItem = ({
         <Link
           className="name"
           title="Afficher le détail de l'offre"
-          to={`/offres/${offer.id}${location.search}`}
+          to={`/offres/${offer.id}`}
         >
           {offer.name}
         </Link>
@@ -147,9 +146,6 @@ const OfferItem = ({
 }
 
 OfferItem.propTypes = {
-  location: PropTypes.shape({
-    search: PropTypes.string.isRequired,
-  }).isRequired,
   offer: PropTypes.shape().isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   trackActivateOffer: PropTypes.func.isRequired,
