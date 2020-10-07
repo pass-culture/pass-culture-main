@@ -6,6 +6,8 @@ from tests.conftest import TestClient
 from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_stock
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
+from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.human_ids import humanize
 
 
 class Get:
@@ -34,22 +36,93 @@ class Get:
                 user1.email).get('/bookings')
 
             # Then
-            all_bookings = response.json
-            first_booking = all_bookings[0]
             assert response.status_code == 200
-            assert len(all_bookings) == 2
-            assert 'qrCode' not in first_booking
-            assert 'completedUrl' in first_booking
-            assert 'isEventExpired' in first_booking
-            assert 'offer' in first_booking['stock']
-            assert 'isEventExpired' in first_booking['stock']
-            assert 'isDigital' in first_booking['stock']['offer']
-            assert 'isEvent' in first_booking['stock']['offer']
-            assert 'offerType' in first_booking['stock']['offer']
-            assert 'thumbUrl' in first_booking['stock']['offer']
-            assert 'stocks' in first_booking['stock']['offer']
-            assert 'venue' in first_booking['stock']['offer']
-            assert 'validationToken' not in first_booking['stock']['offer']['venue']
+            bookings = response.json
+            assert len(bookings) == 2
+            assert {b['id'] for b in bookings} == set(humanize(b.id) for b in {booking1, booking3})
+            assert 'qrCode' not in bookings[0]
+            assert 'validationToken' not in bookings[0]['stock']['offer']['venue']
+            assert bookings[0]['id'] == humanize(booking1.id)
+            assert bookings[0] == {
+                'amount': 0.0,
+                'cancellationDate': None,
+                'completedUrl': None,
+                'dateCreated': format_into_utc_date(booking1.dateCreated),
+                'dateUsed': None,
+                'id': humanize(booking1.id),
+                'isCancelled': False,
+                'isEventExpired': False,
+                'isUsed': False,
+                'quantity': 1,
+                'recommendationId': None,
+                'stock': {
+                    'beginningDatetime': None,
+                    'id': humanize(stock.id),
+                    'isEventExpired': False,
+                    'offer': {
+                        'description': None,
+                        'durationMinutes': None,
+                        'extraData': {'author': 'Test Author'},
+                        'id': humanize(offer.id),
+                        'isBookable': True,
+                        'isDigital': False,
+                        'isDuo': False,
+                        'isEvent': False,
+                        'isNational': False,
+                        'name': 'Test Book',
+                        'offerType': {
+                            'appLabel': 'Film',
+                            'conditionalFields': [],
+                            'description': (
+                                'Action, science-fiction, documentaire ou comédie '
+                                'sentimentale ? En salle, en plein air ou bien au chaud '
+                                'chez soi ? Et si c’était plutôt cette exposition qui '
+                                'allait faire son cinéma ?'
+                            ),
+                            'isActive': True,
+                            'offlineOnly': False,
+                            'onlineOnly': False,
+                            'proLabel': 'Audiovisuel - films sur '
+                            'supports physiques et VOD',
+                            'sublabel': 'Regarder',
+                            'type': 'Thing',
+                            'value': 'ThingType.AUDIOVISUEL',
+                        },
+                        'stocks': [
+                            {
+                                'beginningDatetime': None,
+                                'bookingLimitDatetime': None,
+                                'dateCreated': format_into_utc_date(stock.dateCreated),
+                                'dateModified': format_into_utc_date(stock.dateModified),
+                                'id': humanize(stock.id),
+                                'isBookable': True,
+                                'offerId': humanize(offer.id),
+                                'price': 0.0,
+                                'quantity': None,
+                                'remainingQuantity': 'unlimited',
+                            }
+                        ],
+                        'thumbUrl': None,
+                        'venue': {
+                            'address': '123 rue de Paris',
+                            'city': 'Montreuil',
+                            'departementCode': '93',
+                            'id': humanize(venue.id),
+                            'latitude': None,
+                            'longitude': None,
+                            'name': 'La petite librairie',
+                            'postalCode': '93100'
+                        },
+                        'venueId': humanize(venue.id),
+                        'withdrawalDetails': None
+                    },
+                    'offerId': humanize(offer.id),
+                    'price': 0.0
+                },
+                'stockId': humanize(stock.id),
+                'token': 'ABCDEF',
+                'userId': humanize(booking1.userId),
+            }
 
         @patch('pcapi.routes.bookings.feature_queries.is_active', return_value=True)
         @pytest.mark.usefixtures("db_session")

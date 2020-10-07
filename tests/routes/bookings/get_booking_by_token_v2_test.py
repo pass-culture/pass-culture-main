@@ -11,6 +11,8 @@ from pcapi.model_creators.generic_creators import create_booking, create_user, c
     create_user_offerer, create_api_key
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
     create_stock_with_thing_offer, create_offer_with_event_product, create_event_occurrence
+from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.human_ids import humanize
 
 API_KEY_VALUE = 'A_MOCKED_API_KEY'
 
@@ -42,6 +44,26 @@ class Get:
             # Then
             assert response.headers['Content-type'] == 'application/json'
             assert response.status_code == 200
+            assert response.json == {
+                'bookingId': humanize(booking.id),
+                'dateOfBirth': '',
+                'datetime': format_into_utc_date(stock.beginningDatetime),
+                'ean13': '',
+                'email': 'user@example.com',
+                'formula': 'PLACE',
+                'isUsed': False,
+                'offerId': offer.id,
+                'offerName': 'Event Name',
+                'offerType': 'EVENEMENT',
+                'phoneNumber': '',
+                'price': 12.0,
+                'publicOfferId': humanize(offer.id),
+                'quantity': 3,
+                'userName': 'John Doe',
+                'venueAddress': 'Venue address',
+                'venueDepartementCode': '93',
+                'venueName': 'Venue name',
+            }
 
         @pytest.mark.usefixtures("db_session")
         def when_api_key_is_provided_and_rights_and_regular_offer(self, app):

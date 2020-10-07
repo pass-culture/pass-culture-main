@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
 
 from pcapi.domain.booking.booking_exceptions import StockIsNotBookable
+from pcapi.models.booking_sql_entity import BookingSQLEntity
 from pcapi.repository import repository
 from tests.conftest import TestClient
 import pytest
@@ -42,8 +43,23 @@ class Post:
                 .post('/bookings', json=booking_json)
 
             # Then
+            booking = BookingSQLEntity.query.one()
             assert response.status_code == 201
-            assert 'qrCode' not in response.json.keys()
+            assert response.json == {
+                'amount': 0.0,
+                'completedUrl': None,
+                'id': humanize(booking.id),
+                'isCancelled': False,
+                'quantity': 1,
+                'stock': {'price': 0.0},
+                'stockId': humanize(ok_stock.id),
+                'token': booking.token,
+                'user': {
+                    'id': humanize(user.id),
+                    'wallet_balance': 0.0,
+                },
+            }
+            assert 'qrCode' not in response.json
 
         @patch('pcapi.routes.bookings.feature_queries.is_active')
         @patch('pcapi.routes.bookings.redis.add_offer_id')
