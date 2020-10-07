@@ -41,6 +41,4 @@ rq==1.5.2
 schwifty==2018.9.1
 sentry-sdk==0.18.0
 simplejson==3.17.2
-wetransferpy==0.2.3
 wheel==0.35.1
-xlrd==1.2.0
