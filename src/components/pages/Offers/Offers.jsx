@@ -19,7 +19,7 @@ class Offers extends PureComponent {
   constructor(props) {
     super(props)
 
-    const { name: nameKeywords, page, venueId: selectedVenue } = translateQueryParamsToApiParams(
+    const { name: nameKeywords, page, venueId: selectedVenueId } = translateQueryParamsToApiParams(
       props.query.parse()
     )
 
@@ -28,7 +28,7 @@ class Offers extends PureComponent {
       nameSearchValue: nameKeywords || ALL_OFFERS,
       page: page || DEFAULT_PAGE,
       pageCount: null,
-      selectedVenue: selectedVenue || ALL_VENUES,
+      selectedVenueId: selectedVenueId || ALL_VENUES,
       venueOptions: [],
     }
   }
@@ -49,18 +49,18 @@ class Offers extends PureComponent {
 
   updateUrlMatchingState = () => {
     const { query } = this.props
-    const { page, nameSearchValue, selectedVenue } = this.state
+    const { page, nameSearchValue, selectedVenueId } = this.state
 
     query.change({
       page: page === DEFAULT_PAGE ? null : page,
       [mapApiToBrowser.name]: nameSearchValue === ALL_OFFERS ? null : nameSearchValue,
-      [mapApiToBrowser.venueId]: selectedVenue === ALL_VENUES ? null : selectedVenue,
+      [mapApiToBrowser.venueId]: selectedVenueId === ALL_VENUES ? null : selectedVenueId,
     })
   }
 
   getPaginatedOffersWithFilters = () => {
     const { loadTypes, loadOffers, types } = this.props
-    const { nameSearchValue, selectedVenue, page } = this.state
+    const { nameSearchValue, selectedVenueId, page } = this.state
     types.length === 0 && loadTypes()
 
     const handleSuccess = (page, pageCount) => {
@@ -82,7 +82,7 @@ class Offers extends PureComponent {
       })
 
     this.setState({ isLoading: true }, () => {
-      loadOffers({ nameSearchValue, selectedVenue, page }, handleSuccess, handleFail)
+      loadOffers({ nameSearchValue, selectedVenueId, page }, handleSuccess, handleFail)
     })
   }
 
@@ -104,7 +104,7 @@ class Offers extends PureComponent {
   }
 
   storeSelectedVenue = event => {
-    this.setState({ selectedVenue: event.target.value })
+    this.setState({ selectedVenueId: event.target.value })
   }
 
   onPreviousPageClick = () => {
@@ -132,7 +132,14 @@ class Offers extends PureComponent {
 
     const { isAdmin } = currentUser || {}
     const { venueId } = translateQueryParamsToApiParams(query.parse())
-    const { nameSearchValue, page, pageCount, isLoading, selectedVenue, venueOptions } = this.state
+    const {
+      nameSearchValue,
+      page,
+      pageCount,
+      isLoading,
+      selectedVenueId,
+      venueOptions,
+    } = this.state
 
     const actionLink = !isAdmin ? (
       <Link
@@ -174,7 +181,7 @@ class Offers extends PureComponent {
             label="Lieu"
             name="lieu"
             options={venueOptions}
-            selectedValue={selectedVenue}
+            selectedValue={selectedVenueId}
           />
           <div className="search-separator">
             <div className="separator" />

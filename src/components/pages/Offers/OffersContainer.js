@@ -18,15 +18,15 @@ export const mapStateToProps = state => {
   }
 }
 
-const buildQueryParams = ({ nameSearchValue, selectedVenue, page }) => {
+const buildQueryParams = ({ nameSearchValue, selectedVenueId, page }) => {
   const queryParams = []
 
   if (nameSearchValue !== ALL_OFFERS) {
     queryParams.push(`name=${nameSearchValue}`)
   }
 
-  if (selectedVenue !== ALL_VENUES) {
-    queryParams.push(`venueId=${selectedVenue}`)
+  if (selectedVenueId !== ALL_VENUES) {
+    queryParams.push(`venueId=${selectedVenueId}`)
   }
 
   if (page) {

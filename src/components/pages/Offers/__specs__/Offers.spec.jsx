@@ -94,7 +94,7 @@ describe('src | components | pages | Offers | Offers', () => {
         {
           nameSearchValue: ALL_OFFERS,
           page: DEFAULT_PAGE,
-          selectedVenue: ALL_VENUES,
+          selectedVenueId: ALL_VENUES,
         },
         expect.any(Function),
         expect.any(Function)
@@ -249,7 +249,7 @@ describe('src | components | pages | Offers | Offers', () => {
         {
           nameSearchValue: ALL_OFFERS,
           page: DEFAULT_PAGE,
-          selectedVenue: ALL_VENUES,
+          selectedVenueId: ALL_VENUES,
         },
         expect.any(Function),
         expect.any(Function)
@@ -277,7 +277,7 @@ describe('src | components | pages | Offers | Offers', () => {
         {
           nameSearchValue: 'Any word',
           page: DEFAULT_PAGE,
-          selectedVenue: ALL_VENUES,
+          selectedVenueId: ALL_VENUES,
         },
         expect.any(Function),
         expect.any(Function)
@@ -305,7 +305,7 @@ describe('src | components | pages | Offers | Offers', () => {
         {
           nameSearchValue: ALL_OFFERS,
           page: DEFAULT_PAGE,
-          selectedVenue: proVenues[0].id,
+          selectedVenueId: proVenues[0].id,
         },
         expect.any(Function),
         expect.any(Function)
@@ -683,7 +683,7 @@ describe('src | components | pages | Offers | Offers', () => {
         {
           nameSearchValue: ALL_OFFERS,
           page: 2,
-          selectedVenue: ALL_VENUES,
+          selectedVenueId: ALL_VENUES,
         },
         expect.any(Function),
         expect.any(Function)
@@ -711,7 +711,7 @@ describe('src | components | pages | Offers | Offers', () => {
         {
           nameSearchValue: ALL_OFFERS,
           page: DEFAULT_PAGE,
-          selectedVenue: ALL_VENUES,
+          selectedVenueId: ALL_VENUES,
         },
         expect.any(Function),
         expect.any(Function)

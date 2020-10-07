@@ -45,15 +45,6 @@ describe('src | components | layout | form | Select', () => {
     expect(options.at(2).text()).toBe(props.options[1].displayName)
   })
 
-  it('should have default option selected when no value is given', async () => {
-    // when
-    const wrapper = await mount(<Select {...props} />)
-
-    // then
-    const select = wrapper.find('select').at(0)
-    expect(select.props().value).toBe(props.defaultOption.id)
-  })
-
   it('should have given option selected when value is given', async () => {
     // given
     props.selectedValue = props.options[0].id
@@ -73,7 +64,7 @@ describe('src | components | layout | form | Select', () => {
     const select = wrapper.find('select')
 
     // when
-    await select.simulate('blur', selectedOption)
+    await select.invoke('onBlur')(selectedOption)
 
     // then
     const handleSelectionParameters = props.handleSelection.mock.calls[0][0]
@@ -87,7 +78,7 @@ describe('src | components | layout | form | Select', () => {
     const select = wrapper.find('select')
 
     // when
-    await select.simulate('change', selectedOption)
+    await select.invoke('onChange')(selectedOption)
 
     // then
     const handleSelectionParameters = props.handleSelection.mock.calls[0][0]
