@@ -19,7 +19,7 @@ def upgrade():
     op.alter_column(
         'payment_transaction', 'checksum',
         existing_type=sa.String(40),
-        type_=sa.Binary(32),
+        type_=sa.LargeBinary(32),
         existing_nullable=True,
         postgresql_using='checksum::bytea'
     )
@@ -28,7 +28,7 @@ def upgrade():
 def downgrade():
     op.alter_column(
         'payment_transaction', 'checksum',
-        existing_type=sa.Binary(32),
+        existing_type=sa.LargeBinary(32),
         type_=sa.String(40),
         existing_nullable=True
     )

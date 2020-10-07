@@ -3,7 +3,7 @@ from decimal import Decimal
 from hashlib import md5
 
 import bcrypt
-from sqlalchemy import Binary, \
+from sqlalchemy import LargeBinary, \
     Boolean, \
     CheckConstraint, \
     Column, \
@@ -113,7 +113,7 @@ class UserSQLEntity(PcObject,
     offerers = relationship('Offerer',
                             secondary='user_offerer')
 
-    password = Column(Binary(60), nullable=False)
+    password = Column(LargeBinary(60), nullable=False)
 
     phoneNumber = Column(String(20), nullable=True)
 

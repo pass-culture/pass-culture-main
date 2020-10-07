@@ -21,5 +21,5 @@ def upgrade():
 
 
 def downgrade():
-    op.add_column('user', sa.Column('firstThumbDominantColor', sa.Binary(3), nullable=True))
+    op.add_column('user', sa.Column('firstThumbDominantColor', sa.LargeBinary(3), nullable=True))
     op.add_column('user', sa.Column('thumbCount', sa.INTEGER, nullable=False, server_default='0'))
