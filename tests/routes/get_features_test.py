@@ -1,12 +1,10 @@
 import pytest
 
 from pcapi.repository import repository
-import pytest
 from tests.conftest import TestClient
 from pcapi.model_creators.generic_creators import create_user, API_URL
 
 
-@pytest.mark.standalone
 class Get:
     class Returns200:
         @pytest.mark.usefixtures("db_session")

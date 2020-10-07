@@ -1,7 +1,6 @@
 import pytest
 
 from pcapi.repository import repository
-import pytest
 from tests.conftest import TestClient
 from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_favorite, \
     create_mediation, \
@@ -10,7 +9,6 @@ from pcapi.model_creators.specific_creators import create_offer_with_thing_produ
 from pcapi.utils.human_ids import humanize
 
 
-@pytest.mark.standalone
 class Get:
     class Returns200:
         @pytest.mark.usefixtures("db_session")
