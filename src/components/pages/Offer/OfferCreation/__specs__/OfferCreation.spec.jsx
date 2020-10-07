@@ -776,5 +776,32 @@ describe('src | OfferCreation', () => {
         expect(props.trackModifyOffer).toHaveBeenCalledWith('A9')
       })
     })
+
+    describe('when offer is an event', () => {
+      it('should display checked isDuo checkbox when offer is duo', () => {
+        // given
+        props.offer.isEvent = true
+        props.formInitialValues.isDuo = true
+
+        // when
+        const wrapper = shallow(<OfferCreation {...props} />)
+        const isDuoCheckbox = wrapper.find('input')
+
+        // then
+        expect(isDuoCheckbox.prop('defaultChecked')).toBe(true)
+      })
+
+      it('should display unchecked isDuo checkbox when offer is not duo', () => {
+        // given
+        props.offer.isEvent = true
+
+        // when
+        const wrapper = shallow(<OfferCreation {...props} />)
+        const isDuoCheckbox = wrapper.find('input')
+
+        // then
+        expect(isDuoCheckbox.prop('defaultChecked')).toBe(false)
+      })
+    })
   })
 })
