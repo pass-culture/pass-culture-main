@@ -196,7 +196,7 @@ class Offers extends PureComponent {
         </form>
 
         <div className="section">
-          {offers && venueId && (
+          {offers.length > 0 && venueId && (
             <div className="offers-list-actions">
               <button
                 className="button deactivate is-tertiary is-small"

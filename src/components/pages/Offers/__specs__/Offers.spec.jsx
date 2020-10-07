@@ -371,9 +371,28 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(deactivateButton).toHaveLength(1)
     })
 
-    it('should not be displayed when offers or venue is missing', () => {
+    it('should not be displayed when venue is missing', () => {
       // given
       jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: undefined })
+
+      // when
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
+      const deactivateButton = wrapper.find({ children: 'Désactiver toutes les offres' })
+
+      // then
+      expect(deactivateButton).toHaveLength(0)
+    })
+
+    it('should not be displayed when offers are missing', () => {
+      // given
+      jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: 'GY' })
+      props.offers = []
 
       // when
       const wrapper = mount(
@@ -429,9 +448,28 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(activateButton).toHaveLength(1)
     })
 
-    it('should not be displayed when offers or venue is missing', () => {
+    it('should not be displayed when venue is missing', () => {
       // given
       jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: undefined })
+
+      // when
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
+      const activateButton = wrapper.find({ children: 'Activer toutes les offres' })
+
+      // then
+      expect(activateButton).toHaveLength(0)
+    })
+
+    it('should not be displayed when offers are missing', () => {
+      // given
+      jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: 'GY' })
+      props.offers = []
 
       // when
       const wrapper = mount(
