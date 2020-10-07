@@ -349,7 +349,7 @@ class RetrieveShowtimeInformationTest:
 class FormatPosterUrlTest:
     def test_should_return_url_in_correct_format(self):
         # Given
-        url = "https:\/\/fr.web.img4.acsta.net\/pictures\/19\/07\/23\/15\/55\/2940058.jpg"
+        url = r"https:\/\/fr.web.img4.acsta.net\/pictures\/19\/07\/23\/15\/55\/2940058.jpg"
 
         # When
         formatted_url = _format_poster_url(url)

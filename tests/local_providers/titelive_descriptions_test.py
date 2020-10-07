@@ -24,7 +24,7 @@ class TiteLiveThingDescriptionsTest:
 
             # Then
             mock_get_files_to_process_from_titelive.assert_called_once_with('ResumesLivres',
-                                                                            re.compile('Resume(\d{6}).zip'))
+                                                                            re.compile(r'Resume(\d{6}).zip'))
             titelive_description_provider.zips = ['Resume191012.zip', 'Resume201012.zip']
 
     class NextTest:
@@ -55,7 +55,7 @@ class TiteLiveThingDescriptionsTest:
 
             # Then
             mock_get_files_to_process_from_titelive.assert_called_once_with('ResumesLivres',
-                                                                            re.compile('Resume(\d{6}).zip'))
+                                                                            re.compile(r'Resume(\d{6}).zip'))
             assert mock_get_zip_file_from_ftp.call_count == 2
             assert mock_get_date_from_filename.call_count == 3
 

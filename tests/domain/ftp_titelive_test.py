@@ -17,7 +17,7 @@ def test_put_today_file_at_end_of_list_order_file_as_expected(app):
                        'Quotidien07.tit'])
 
     # when
-    ordered_files = put_today_file_at_end_of_list(files_list, re.compile('([a-zA-Z]+)(\d+).tit'))
+    ordered_files = put_today_file_at_end_of_list(files_list, re.compile(r'([a-zA-Z]+)(\d+).tit'))
 
     # then
     assert len(ordered_files) == len(files_list)

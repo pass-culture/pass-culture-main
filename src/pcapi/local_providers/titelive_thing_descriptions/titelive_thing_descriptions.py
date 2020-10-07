@@ -10,7 +10,7 @@ from pcapi.models import Product
 from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import local_provider_event_queries
 
-DATE_REGEXP = re.compile('Resume(\d{6}).zip')
+DATE_REGEXP = re.compile(r'Resume(\d{6}).zip')
 DESCRIPTION_FOLDER_NAME_TITELIVE = 'ResumesLivres'
 END_FILE_IDENTIFIER = '_p.txt'
 

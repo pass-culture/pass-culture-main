@@ -11,7 +11,7 @@ from pcapi.models import Product
 from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import local_provider_event_queries
 
-DATE_REGEXP = re.compile('livres_tl(\d+).zip')
+DATE_REGEXP = re.compile(r'livres_tl(\d+).zip')
 THUMB_FOLDER_NAME_TITELIVE = 'Atoo'
 SYNCHONISABLE_FILE_EXTENSION = '_75.jpg'
 

@@ -194,7 +194,7 @@ def _is_header_or_blank_line(line: str) -> bool:
 
 
 def _extract_departement_code(plain_department: str) -> str:
-    return re.search('\((.*?)\)$', plain_department).group()[1:-1]
+    return re.search(r'\((.*?)\)$', plain_department).group()[1:-1]
 
 
 def _get_password(csv_row: List[List[str]]) -> str:

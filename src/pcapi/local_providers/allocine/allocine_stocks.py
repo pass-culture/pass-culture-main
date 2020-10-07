@@ -259,7 +259,7 @@ def _build_description(movie_info: Dict) -> str:
 
 
 def _format_poster_url(url: str) -> str:
-    return url.replace("\/", "/")
+    return url.replace(r"\/", "/")
 
 
 def _get_operating_visa(movie_info: Dict) -> Optional[str]:

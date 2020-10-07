@@ -326,8 +326,8 @@ class MakeValidationEmailObjectTest:
 
 
 def _remove_whitespaces(text):
-    text = re.sub('\n\s+', ' ', text)
-    text = re.sub('\n', '', text)
+    text = re.sub(r'\n\s+', ' ', text)
+    text = re.sub(r'\n', '', text)
     return text
 
 
