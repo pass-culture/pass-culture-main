@@ -27,8 +27,6 @@ mypy==0.782
 nltk==3.5
 pgcli==2.2.0
 Pillow==7.2.0
-pip-licenses==1.15.2
-pipdeptree==1.0.0
 PostgreSQL-Audit==0.10.0
 pygsheets==2.0.3.1
 pylint==2.6.0
