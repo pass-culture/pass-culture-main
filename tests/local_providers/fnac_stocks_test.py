@@ -1,6 +1,8 @@
 from datetime import datetime
 from unittest.mock import patch, call
 
+import pytest
+
 from local_providers.fnac.fnac_stocks import FnacStocks
 from models import OfferSQLEntity, StockSQLEntity
 from repository import repository
@@ -13,7 +15,7 @@ from tests.model_creators.specific_creators import create_product_with_thing_typ
 
 class FnacStocksTest:
     class NextTest:
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_should_return_providable_infos_with_correct_data(self, mock_fnac_api_response, app):
             # Given
@@ -128,7 +130,7 @@ class FnacStocksTest:
             assert stock.quantity == 10
             assert OfferSQLEntity.query.count() == 1
 
-        @clean_database
+        @pytest.mark.usefixtures("db_session")
         @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_fnac_stocks_create_2_stocks_and_2_offers_even_if_existing_offer_on_same_product(self,
                                                                                                  mock_fnac_api_response,
@@ -219,7 +221,7 @@ class FnacStocksTest:
 
 
 class WhenSynchronizedTwiceTest:
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
     def test_fnac_stock_provider_iterates_over_pagination(self, mock_fnac_api_response, app):
         # Given

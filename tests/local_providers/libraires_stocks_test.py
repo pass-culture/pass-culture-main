@@ -1,5 +1,7 @@
 from datetime import datetime
-from unittest.mock import Mock, call, patch
+from unittest.mock import call, patch
+
+import pytest
 
 from local_providers.libraires.libraires_stocks import LibrairesStocks
 from models import OfferSQLEntity, StockSQLEntity
@@ -53,6 +55,7 @@ class LibrairesStocksTest:
             assert stock_providable_info.id_at_providers == '9780199536986@12345678912345'
 
     class UpdateObjectsTest:
+        @pytest.mark.usefixtures("db_session")
         @clean_database
         @patch('local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
         def test_stock_provider_libraires_create_one_stock_and_one_offer_with_wanted_attributes(self,

@@ -1,13 +1,9 @@
-from unittest.mock import MagicMock, patch
-from unittest.mock import patch
-
-
 import pytest
 from unittest.mock import patch
 
 from infrastructure.container import api_libraires_stocks
 from local_providers import LibrairesStocks
-from models import ApiErrors, VenueProvider
+from models import AllocineVenueProvider, ApiErrors, VenueProvider
 from repository import repository
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_allocine_pivot, create_offerer, create_user, create_venue, create_venue_provider
@@ -188,7 +184,7 @@ class Post:
             assert response.status_code == 400
             assert response.json['global'] == ["Votre lieu est déjà lié à cette source"]
 
-        @pytest.mark.usefixtures("db_session")
+        @clean_database
         @patch('routes.venue_providers.find_by_id')
         def when_add_allocine_stocks_provider_with_wrong_format_price(self, stubbed_find_by_id, app):
             # Given
@@ -216,6 +212,8 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json['global'] == ["Le prix doit être un nombre décimal"]
+            print("TTTTTOOOOOTTTTOOOO")
+            print(AllocineVenueProvider.query.count())
             assert VenueProvider.query.count() == 0
 
         @pytest.mark.usefixtures("db_session")
@@ -245,6 +243,7 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json['price'] == ["Cette information est obligatoire"]
+            print(VenueProvider.query.first())
             assert VenueProvider.query.count() == 0
 
     class Returns401:
