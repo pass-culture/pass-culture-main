@@ -186,6 +186,54 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(secondOfferItem).toHaveLength(1)
     })
 
+    describe('total number of offers', () => {
+      it('should display total number of offers in plural if multiple offers', () => {
+        // Given
+        const page = 1
+        const pageCount = 2
+        const offersCount = 17
+        props.loadOffers.mockImplementation((_, handleSuccess) =>
+          handleSuccess(page, pageCount, offersCount)
+        )
+
+        // When
+        const wrapper = mount(
+          <Provider store={store}>
+            <MemoryRouter>
+              <Offers {...props} />
+            </MemoryRouter>
+          </Provider>
+        )
+
+        // Then
+        const offersCounter = wrapper.find({ children: '17 offres' })
+        expect(offersCounter).toHaveLength(1)
+      })
+
+      it('should display total number of offers in singular if one or no offer', () => {
+        // Given
+        const page = 1
+        const pageCount = 1
+        const offersCount = 1
+        props.loadOffers.mockImplementation((_, handleSuccess) =>
+          handleSuccess(page, pageCount, offersCount)
+        )
+
+        // When
+        const wrapper = mount(
+          <Provider store={store}>
+            <MemoryRouter>
+              <Offers {...props} />
+            </MemoryRouter>
+          </Provider>
+        )
+
+        // Then
+        const offersCounter = wrapper.find({ children: '1 offre' })
+        expect(offersCounter).toHaveLength(1)
+      })
+    })
+
     describe('filters', () => {
       it('should render venue filter with default option and given venues', async () => {
         // when

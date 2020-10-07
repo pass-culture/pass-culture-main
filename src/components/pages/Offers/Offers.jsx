@@ -2,6 +2,7 @@ import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
+import { pluralize } from '../../../utils/pluralize'
 
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
@@ -26,6 +27,7 @@ class Offers extends PureComponent {
     this.state = {
       isLoading: false,
       nameSearchValue: nameKeywords || ALL_OFFERS,
+      offersCount: 0,
       page: page || DEFAULT_PAGE,
       pageCount: null,
       selectedVenueId: selectedVenueId || ALL_VENUES,
@@ -63,10 +65,11 @@ class Offers extends PureComponent {
     const { nameSearchValue, selectedVenueId, page } = this.state
     types.length === 0 && loadTypes()
 
-    const handleSuccess = (page, pageCount) => {
+    const handleSuccess = (page, pageCount, offersCount) => {
       this.setState(
         {
           isLoading: false,
+          offersCount,
           page,
           pageCount,
         },
@@ -134,6 +137,7 @@ class Offers extends PureComponent {
     const { venueId } = translateQueryParamsToApiParams(query.parse())
     const {
       nameSearchValue,
+      offersCount,
       page,
       pageCount,
       isLoading,
@@ -164,10 +168,7 @@ class Offers extends PureComponent {
           action={actionLink}
           title="Offres"
         />
-        <form
-          className="section"
-          onSubmit={this.handleOnSubmit}
-        >
+        <form onSubmit={this.handleOnSubmit}>
           <TextInput
             label="Nom de l’offre"
             name="offre"
@@ -194,6 +195,10 @@ class Offers extends PureComponent {
             <div className="separator" />
           </div>
         </form>
+
+        <div className="offers-count">
+          {pluralize(offersCount, 'offre')}
+        </div>
 
         <div className="section">
           {offers.length > 0 && venueId && (

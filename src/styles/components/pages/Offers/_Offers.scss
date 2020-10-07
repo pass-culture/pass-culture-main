@@ -1,4 +1,8 @@
 .offers-page {
+  form {
+    margin-bottom: rem(20px);
+  }
+
   .search-separator {
     align-items: center;
     display: flex;
@@ -6,8 +10,8 @@
 
     .separator {
       background-color: $grey-medium;
-      height: rem(1px);
       flex: 5;
+      height: rem(1px);
     }
 
     button {
@@ -18,6 +22,10 @@
   .input-select {
     margin-top: rem(24px);
     width: rem(180px);
+  }
+
+  .offers-count {
+    margin-bottom: rem(33px);
   }
 
   .offers-list-actions {
