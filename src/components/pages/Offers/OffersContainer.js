@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import Offers from './Offers'
 import { withRequiredLogin } from 'components/hocs'
 import { SAVE_SEARCH_FILTERS } from 'store/reducers/offers'
 import { selectOffers } from 'store/selectors/data/offersSelectors'

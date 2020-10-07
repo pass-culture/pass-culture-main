@@ -1,8 +1,10 @@
-import { mapDispatchToProps, mapStateToProps, mergeProps } from '../OfferCreationContainer'
-import state from '../../../../utils/mocks/state'
 import { showNotification } from 'pass-culture-shared'
 
-describe('src | OfferCreationContainer ', () => {
+import state from 'components/utils/mocks/state'
+
+import { mapDispatchToProps, mapStateToProps, mergeProps } from '../OfferCreationContainer'
+
+describe('src | OfferCreationContainer', () => {
   let props
 
   beforeEach(() => {
@@ -126,6 +128,7 @@ describe('src | OfferCreationContainer ', () => {
           },
         ],
         offerTypeError: undefined,
+        offersSearchFilters: {},
         providers: [],
         selectedOfferType: {
           appLabel: 'Jeux Vidéo',

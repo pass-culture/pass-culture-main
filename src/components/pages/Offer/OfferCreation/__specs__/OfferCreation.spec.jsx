@@ -1,17 +1,71 @@
-import { shallow } from 'enzyme'
-import { Field, Form } from 'pass-culture-shared'
+import { mount } from 'enzyme'
+import { CheckboxInput, Field, Form } from 'pass-culture-shared'
 import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
 
+import Insert from 'components/layout/Insert/Insert'
 import Titles from 'components/layout/Titles/Titles'
+import OfferPreviewLink from 'components/layout/OfferPreviewLink/OfferPreviewLink'
 import LocalProviderInformation from 'components/pages/Offer/LocalProviderInformation/LocalProviderInformationContainer'
 import MediationsManager from 'components/pages/Offer/MediationsManager/MediationsManagerContainer'
 import StocksManagerContainer from 'components/pages/Offer/StocksManager/StocksManagerContainer'
 import OfferCreation from '../OfferCreation'
 import { showModal } from 'store/reducers/modal'
+import { getStubStore } from 'utils/stubStore'
+
+const buildStore = (store = {}) => {
+  const currentUser = {
+    id: 'EY',
+    isAdmin: false,
+    name: 'Current User',
+    publicName: 'USER',
+  }
+  return getStubStore({
+    data: (
+      state = {
+        offers: [
+          {
+            id: '6GD',
+            name: 'Super Livre',
+            lastProvider: null,
+          },
+        ],
+        offerers: [],
+        mediations: [],
+        users: [currentUser],
+        venues: [{ id: 'JI', name: 'Venue' }],
+      }
+    ) => (store.data ? { ...state, ...store.data } : state),
+    modal: (
+      state = {
+        config: {},
+      }
+    ) => (store.modal ? { ...state, ...store.modal } : state),
+    offers: (
+      state = {
+        searchFilters: {},
+      }
+    ) => (store.offers ? { ...state, ...store.offers } : state),
+  })
+}
+
+const getMountedOfferCreationWrapper = (props, store) => {
+  const wrapper = mount(
+    <Provider store={store}>
+      <MemoryRouter>
+        <OfferCreation {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
+  wrapper.update()
+  return wrapper.find(OfferCreation)
+}
 
 describe('src | OfferCreation', () => {
   let dispatch
   let props
+  let store
 
   beforeEach(() => {
     dispatch = jest.fn()
@@ -44,17 +98,29 @@ describe('src | OfferCreation', () => {
         }),
         translate: () => ({ venue: 'AQ ' }),
       },
-      selectedOfferType: {},
+      selectedOfferType: {
+        value: 'ThingType.SPECTACLE_VIVANT_ABO',
+      },
       showValidationNotification: jest.fn(),
       offer: {
+        id: '6GD',
         name: 'Super Livre',
         lastProvider: null,
       },
       history: {},
+      offersSearchFilters: {},
+      offerers: [],
+      offerer: {
+        id: 'AZERT',
+      },
+      types: [],
+      providers: [],
       trackCreateOffer: jest.fn(),
       trackModifyOffer: jest.fn(),
       venuesMatchingOfferType: [],
     }
+
+    store = buildStore()
   })
 
   describe('handleSuccess', () => {
@@ -65,11 +131,10 @@ describe('src | OfferCreation', () => {
 
         props.match.params = {}
         props.query.changeToReadOnly = queryChangeToReadOnly
-
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // when
-        const queryParams = { gestion: '' }
+        const queryParams = {}
         const offer = { id: 'SN' }
         const action = {
           config: { method: 'PATCH' },
@@ -87,6 +152,7 @@ describe('src | OfferCreation', () => {
         // given
         const queryChangeToReadOnly = jest.fn()
         const initialProps = {
+          ...props,
           location: {
             search: '?lieu=AQ',
           },
@@ -110,16 +176,16 @@ describe('src | OfferCreation', () => {
           },
           dispatch: dispatch,
           history: {},
-          selectedOfferType: {},
+          selectedOfferType: undefined,
           trackCreateOffer: jest.fn(),
           trackModifyOffer: jest.fn(),
           showValidationNotification: jest.fn(),
         }
 
-        const wrapper = shallow(<OfferCreation {...initialProps} />)
+        const wrapper = getMountedOfferCreationWrapper({ ...initialProps }, store)
 
         // when
-        const queryParams = { gestion: '' }
+        const queryParams = {}
         const offer = { id: 'SN' }
         const action = { config: { method: 'POST' }, payload: { datum: offer } }
         wrapper.instance().onHandleFormSuccess({}, action)
@@ -131,7 +197,7 @@ describe('src | OfferCreation', () => {
 
     describe('when the offer is successfully created', () => {
       it('should display a success notification', () => {
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // when
         const offer = { id: 'SN' }
@@ -148,10 +214,11 @@ describe('src | OfferCreation', () => {
     it('should display isNational if admin user', () => {
       // given
       props.currentUser.isAdmin = true
-      const wrapper = shallow(<OfferCreation {...props} />)
+      store = buildStore({ data: { currentUser: props.currentUser } })
+      const wrapper = getMountedOfferCreationWrapper(props, store)
 
       // when
-      const result = wrapper.find(Field).find('[name="isNational"]')
+      const result = wrapper.find(CheckboxInput).first('[name="isNational"]')
 
       // then
       expect(result.prop('label')).toBe('Rayonnement national')
@@ -161,7 +228,7 @@ describe('src | OfferCreation', () => {
   describe('handleShowStocksManager', () => {
     it('should pass offerId as a props to the StocksManagerContainer', () => {
       // given
-      const wrapper = shallow(<OfferCreation {...props} />)
+      const wrapper = getMountedOfferCreationWrapper(props, store)
       props.match.params.offerId = 'N9'
 
       // when
@@ -181,7 +248,7 @@ describe('src | OfferCreation', () => {
     it('should return false without selected offer type', () => {
       // given
       props.selectedOfferType = undefined
-      const wrapper = shallow(<OfferCreation {...props} />)
+      const wrapper = getMountedOfferCreationWrapper(props, store)
 
       // when
       const result = wrapper.instance().hasConditionalField(null)
@@ -196,7 +263,7 @@ describe('src | OfferCreation', () => {
         props.selectedOfferType = {
           value: 'ThingType.SPECTACLE_VIVANT_ABO',
         }
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // when
         const result = wrapper.instance().hasConditionalField('showType')
@@ -211,8 +278,7 @@ describe('src | OfferCreation', () => {
     describe('mediationsManager', () => {
       it("should be displayed when it's not a new offer", () => {
         // given
-        props.match.params.offerId = 'N9'
-        props.offer = {
+        const offer = {
           bookingEmail: 'fake@email.com',
           dateCreated: '2019-03-29T15:38:23.806900Z',
           dateModifiedAtLastProvider: '2019-03-29T15:38:23.806874Z',
@@ -229,8 +295,11 @@ describe('src | OfferCreation', () => {
           venueId: 'AQ',
         }
 
+        props.match.params.offerId = offer.id
+        props.offer = offer
+
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
         const mediationsManagerComponent = wrapper.find(MediationsManager)
 
         // then
@@ -239,6 +308,18 @@ describe('src | OfferCreation', () => {
     })
 
     describe('when creating a new offer', () => {
+      it('should display back link according to redux store data', () => {
+        // given
+        props.offersSearchFilters = {
+          name: 'searchValue',
+        }
+        // when
+        const wrapper = getMountedOfferCreationWrapper(props, store)
+        // then
+        const backButton = wrapper.find('a.back-button')
+        expect(backButton.prop('href')).toMatch('/offres?nom=searchValue')
+      })
+
       it('should create a new Product when no offer type', () => {
         // given
         props.query.context = () => ({
@@ -247,7 +328,7 @@ describe('src | OfferCreation', () => {
           readOnly: false,
         })
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers')
@@ -265,7 +346,7 @@ describe('src | OfferCreation', () => {
         }
 
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers')
@@ -273,7 +354,7 @@ describe('src | OfferCreation', () => {
 
       it('should display a limited textarea field to define name of the offer', () => {
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // then
         const field = wrapper.find(Field).at(0)
@@ -298,7 +379,7 @@ describe('src | OfferCreation', () => {
           }
 
           // when
-          const wrapper = shallow(<OfferCreation {...props} />)
+          const wrapper = getMountedOfferCreationWrapper(props, store)
 
           // then
           const fieldGroups = wrapper.find('.field-group')
@@ -318,7 +399,7 @@ describe('src | OfferCreation', () => {
           props.selectedOfferType = {
             type: 'Event',
           }
-          const wrapper = shallow(<OfferCreation {...props} />)
+          const wrapper = getMountedOfferCreationWrapper(props, store)
 
           // when
           const isDuoCheckbox = wrapper.find('#isDuo')
@@ -342,7 +423,7 @@ describe('src | OfferCreation', () => {
           }
 
           // when
-          const wrapper = shallow(<OfferCreation {...props} />)
+          const wrapper = getMountedOfferCreationWrapper(props, store)
 
           // then
           const fieldGroups = wrapper.find('.field-group')
@@ -362,7 +443,7 @@ describe('src | OfferCreation', () => {
           props.selectedOfferType = {
             type: 'Thing',
           }
-          const wrapper = shallow(<OfferCreation {...props} />)
+          const wrapper = getMountedOfferCreationWrapper(props, store)
 
           // when
           const isDuoCheckbox = wrapper.find('#isDuo')
@@ -391,11 +472,10 @@ describe('src | OfferCreation', () => {
           }
 
           // when
-          const wrapper = shallow(<OfferCreation {...props} />)
+          const wrapper = getMountedOfferCreationWrapper(props, store)
 
           // then
-
-          const warningText = wrapper.find('.yellow-insert > p').text()
+          const warningText = wrapper.find(Insert).find('p').first().text()
           expect(warningText).toStrictEqual(
             "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
           )
@@ -425,7 +505,7 @@ describe('src | OfferCreation', () => {
           }
 
           // when
-          const wrapper = shallow(<OfferCreation {...props} />)
+          const wrapper = getMountedOfferCreationWrapper(props, store)
 
           // then
           const insert = wrapper.find('.yellow-insert')
@@ -437,24 +517,36 @@ describe('src | OfferCreation', () => {
     describe('when updating the offer', () => {
       it('should update a product when no offer type', () => {
         // given
-        props.match.params = {
-          offerId: 'VAG',
-        }
-        props.query.context = () => ({
-          isCreatedEntity: false,
-          isModifiedEntity: false,
-          readOnly: true,
-        })
-        props.offer = {
+        const offer = {
           id: 'VAG',
           productId: 'V24',
           lastProvider: {
             name: 'Open Agenda',
           },
         }
+        props.match.params = {
+          offerId: offer.id,
+        }
+        props.query.context = () => ({
+          isCreatedEntity: false,
+          isModifiedEntity: false,
+          readOnly: true,
+        })
+        props.offer = offer
+        store = buildStore({
+          offer: offer,
+          mediations: [
+            {
+              id: 'fake_id',
+              thumbPath: '/',
+              isActive: true,
+              offerId: offer.id,
+            },
+          ],
+        })
 
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
@@ -462,13 +554,7 @@ describe('src | OfferCreation', () => {
 
       it('should create a new Event when event type given', () => {
         // given
-        props.match.params = {
-          offerId: 'VAG',
-        }
-        props.selectedOfferType = {
-          type: 'Event',
-        }
-        props.offer = {
+        const offer = {
           id: 'VAG',
           mediationId: 'TR',
           productId: '6GD',
@@ -476,9 +562,16 @@ describe('src | OfferCreation', () => {
           isThing: false,
           lastProvider: null,
         }
+        props.match.params = {
+          offerId: offer.id,
+        }
+        props.selectedOfferType = {
+          type: 'Event',
+        }
+        props.offer = offer
 
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
@@ -486,13 +579,7 @@ describe('src | OfferCreation', () => {
 
       it('should display preview link', () => {
         // given
-        props.match.params = {
-          offerId: 'VAG',
-        }
-        props.selectedOfferType = {
-          type: 'Event',
-        }
-        props.offer = {
+        const offer = {
           id: 'VAG',
           productId: '6GD',
           isEvent: true,
@@ -504,13 +591,21 @@ describe('src | OfferCreation', () => {
           },
           mediationsIds: ['MED'],
         }
-        const wrapper = shallow(<OfferCreation {...props} />)
+        props.match.params = {
+          offerId: offer.id,
+        }
+        props.selectedOfferType = {
+          type: 'Event',
+        }
+        props.offer = offer
+
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // when
         const preview_section = wrapper.find(Titles)
 
         // then
-        const preview_link = preview_section.dive().find('OfferPreviewLink')
+        const preview_link = preview_section.find(OfferPreviewLink)
         expect(preview_link.prop('offerWebappUrl')).toMatch('/offre/details/VAG/MED')
       })
     })
@@ -527,7 +622,7 @@ describe('src | OfferCreation', () => {
         const expectedOptions = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
 
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // then
         const fieldGroups = wrapper.find('.field-group')
@@ -555,7 +650,7 @@ describe('src | OfferCreation', () => {
         ]
 
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // then
         const fieldGroups = wrapper.find('.field-group')
@@ -577,7 +672,7 @@ describe('src | OfferCreation', () => {
         props.isEditableOffer = false
 
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // then
         const modifyOfferButton = wrapper.find('#modify-offer-button')
@@ -586,22 +681,9 @@ describe('src | OfferCreation', () => {
 
       it('should display LocalProviderInformation if offer was generated from local provider', () => {
         // given
-        props.query.context = () => ({
-          isCreatedEntity: false,
-          isModifiedEntity: false,
-          readOnly: true,
-        })
-        props.isEditableOffer = false
-        props.offerer = {
-          id: 'AZERT',
-        }
-        props.product = {
-          id: '6GD',
-          name: 'super livre',
-          thumbUrl: 'http://localhost/image/6GD',
-        }
-        props.offer = {
+        const offer = {
           id: 'VAG',
+          name: 'Test offer',
           productId: '6GD',
           isEvent: true,
           isThing: false,
@@ -612,9 +694,22 @@ describe('src | OfferCreation', () => {
             name: 'Fnac',
           },
         }
+        props.query.context = () => ({
+          isCreatedEntity: false,
+          isModifiedEntity: false,
+          readOnly: true,
+        })
+        props.isEditableOffer = false
+        props.product = {
+          id: '6GD',
+          name: 'super livre',
+          thumbUrl: 'http://localhost/image/6GD',
+        }
+        props.offer = offer
+        store = buildStore({ data: { offers: [offer] } })
 
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // then
         const localProviderInformationComponent = wrapper.find(LocalProviderInformation)
@@ -636,7 +731,7 @@ describe('src | OfferCreation', () => {
 
       it('should be possible to manage stocks', () => {
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // then
         const manageStockButton = wrapper.find('#manage-stocks')
@@ -645,7 +740,7 @@ describe('src | OfferCreation', () => {
 
       it('should be possible to modify offer', () => {
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // then
         const modifyOfferButton = wrapper.find('#modify-offer-button')
@@ -662,7 +757,7 @@ describe('src | OfferCreation', () => {
           }
 
           // when
-          const wrapper = shallow(<OfferCreation {...props} />)
+          const wrapper = getMountedOfferCreationWrapper(props, store)
 
           // then
           const manageStockButton = wrapper.find('#manage-stocks')
@@ -673,12 +768,18 @@ describe('src | OfferCreation', () => {
       describe('when offer is from Allociné provider', () => {
         it('should be possible to change stock values', () => {
           // given
-          props.offer.lastProvider = {
-            name: 'Allociné',
+          const offer = {
+            id: 'test_id',
+            name: 'test name',
+            lastProvider: {
+              name: 'Allociné',
+            },
           }
+          props.offer = offer
+          store = buildStore({ data: { offers: [offer] } })
 
           // when
-          const wrapper = shallow(<OfferCreation {...props} />)
+          const wrapper = getMountedOfferCreationWrapper(props, store)
 
           // then
           const manageStockButton = wrapper.find('#manage-stocks')
@@ -692,7 +793,7 @@ describe('src | OfferCreation', () => {
           props.offer.lastProvider = null
 
           // when
-          const wrapper = shallow(<OfferCreation {...props} />)
+          const wrapper = getMountedOfferCreationWrapper(props, store)
 
           // then
           const manageStockButton = wrapper.find('#manage-stocks')
@@ -716,7 +817,7 @@ describe('src | OfferCreation', () => {
         jest.spyOn(props.query, 'context').mockReturnValue({
           isCreatedEntity: true,
         })
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // when
         wrapper.instance().onHandleFormSuccess(state, action)
@@ -747,7 +848,7 @@ describe('src | OfferCreation', () => {
             },
           },
         }
-        const wrapper = shallow(<OfferCreation {...props} />)
+        const wrapper = getMountedOfferCreationWrapper(props, store)
 
         // when
         wrapper.instance().onHandleFormSuccess(state, action)
@@ -764,8 +865,8 @@ describe('src | OfferCreation', () => {
         props.formInitialValues.isDuo = true
 
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
-        const isDuoCheckbox = wrapper.find('input')
+        const wrapper = getMountedOfferCreationWrapper(props, store)
+        const isDuoCheckbox = wrapper.find('.offer-duo-checkbox')
 
         // then
         expect(isDuoCheckbox.prop('defaultChecked')).toBe(true)
@@ -776,8 +877,8 @@ describe('src | OfferCreation', () => {
         props.offer.isEvent = true
 
         // when
-        const wrapper = shallow(<OfferCreation {...props} />)
-        const isDuoCheckbox = wrapper.find('input')
+        const wrapper = getMountedOfferCreationWrapper(props, store)
+        const isDuoCheckbox = wrapper.find('.offer-duo-checkbox')
 
         // then
         expect(isDuoCheckbox.prop('defaultChecked')).toBe(false)

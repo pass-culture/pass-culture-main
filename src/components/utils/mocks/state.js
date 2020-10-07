@@ -1034,6 +1034,9 @@ const state = {
   },
   notification: null,
   tracker: {},
+  offers: {
+    searchFilters: {},
+  },
   user: {
     id: 'FE',
     canBookFeeOffers: false,

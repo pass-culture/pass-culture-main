@@ -350,7 +350,6 @@ class OfferCreation extends PureComponent {
     const offererId = get(offerer, 'id')
     const offerName = get(offer, 'name')
     const showAllForm = selectedOfferType || !isCreatedEntity
-
     const venueId = get(venue, 'id')
     const isOfferActive = get(offer, 'isActive')
     const isOffererSelectReadOnly = typeof offererId !== 'undefined' || offerFromLocalProvider

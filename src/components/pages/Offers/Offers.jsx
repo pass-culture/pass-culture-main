@@ -293,6 +293,7 @@ Offers.propTypes = {
   loadOffers: PropTypes.func.isRequired,
   loadTypes: PropTypes.func.isRequired,
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  saveSearchFilters: PropTypes.func.isRequired,
   venue: PropTypes.shape({
     name: PropTypes.string.isRequired,
   }),
