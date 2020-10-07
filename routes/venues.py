@@ -35,7 +35,7 @@ def get_venue(venue_id):
 @app.route('/venues', methods=['GET'])
 @login_required
 def get_venues():
-    venues = get_all_venues_by_pro_user.execute(pro_identifier=current_user.id)
+    venues = get_all_venues_by_pro_user.execute(pro_identifier=current_user.id, user_is_admin=current_user.isAdmin)
     return jsonify(serialize_venues_with_offerer_name(venues)), 200
 
 

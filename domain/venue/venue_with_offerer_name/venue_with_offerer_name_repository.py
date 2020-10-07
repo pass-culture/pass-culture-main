@@ -6,5 +6,5 @@ from domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWi
 
 class VenueWithOffererNameRepository(ABC):
     @abstractmethod
-    def get_by_pro_identifier(self, pro_identifier: int) -> List[VenueWithOffererName]:
+    def get_by_pro_identifier(self, pro_identifier: int, user_is_admin: bool) -> List[VenueWithOffererName]:
         pass

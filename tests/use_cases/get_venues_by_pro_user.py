@@ -19,7 +19,7 @@ class GetAllVenuesByProUserTest:
         self.venue_repository.get_by_pro_identifier.return_value = [venue]
 
         # When
-        pro_venues = self.get_all_venues_by_pro_user.execute(pro_identifier=24)
+        pro_venues = self.get_all_venues_by_pro_user.execute(pro_identifier=24, user_is_admin=False)
 
         # Then
         assert len(pro_venues) == 1
