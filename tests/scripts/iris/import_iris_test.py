@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-import geopandas as gpd
+import pandas
 from shapely.geometry import Point, Polygon
 import pytest
 
@@ -24,7 +24,7 @@ def test_read_iris_shape_file_should_read_shape_file_and_return_correct_data_in_
 
 def test_fill_iris_from_should_return_iris(app):
     # Given
-    iris_row = gpd.GeoSeries(data={'CODE_IRIS': '973020116',
+    iris_row = pandas.Series(data={'CODE_IRIS': '973020116',
                                    'geometry': Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])})
 
     # When
