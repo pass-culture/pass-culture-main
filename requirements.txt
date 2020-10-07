@@ -1,11 +1,3 @@
-#
-# Do not upgrade directly the following libs (incompatibility with other libs) :
-# * jsonschema
-# * PostgreSQL-Audit
-# * psycopg2
-# * psycopg2-binary (installed by building psycopg2 from the sources)
-#
-aiohttp==3.6.2
 alembic==1.4.3
 algoliasearch==2.4.0
 APScheduler==3.6.3
