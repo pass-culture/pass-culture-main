@@ -39,12 +39,7 @@ def _extract_dict_values_from_chunk(matching_tuples_in_chunk: List[Model]) -> Li
 
 
 def get_existing_object(model_type: Model, id_at_providers: str) -> Optional[Dict]:
-    conn = db.engine.connect()
-    query = select([model_type]). \
-        where(model_type.idAtProviders == id_at_providers)
-    db_object_dict = conn.execute(query).fetchone()
-
-    return _dict_to_object(db_object_dict, model_type) if db_object_dict else None
+    return model_type.query.filter_by(idAtProviders=id_at_providers).first()
 
 
 def get_last_update_for_provider(provider_id: int, pc_obj: Model) -> datetime:
