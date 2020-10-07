@@ -15,6 +15,7 @@ class VenueWithOffererNameSQLRepository(VenueWithOffererNameRepository):
         if not user_is_admin:
             query = query \
                 .join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId) \
+                .filter(Offerer.validationToken == None) \
                 .join(UserOfferer, UserOfferer.offererId == Offerer.id) \
                 .filter(UserOfferer.validationToken == None) \
                 .filter(UserOfferer.userId == pro_identifier)

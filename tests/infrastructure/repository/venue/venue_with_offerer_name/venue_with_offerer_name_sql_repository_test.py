@@ -136,6 +136,22 @@ class GetByProIdentifierTest:
         assert len(found_venues) == 0
 
     @pytest.mark.usefixtures("db_session")
+    def test_does_not_return_venues_of_non_validated_offerer(self, app: object):
+        # given
+        pro_user = create_user(email='john.doe@example.com')
+        offerer = create_offerer(siren='123456789', validation_token='NEKOT')
+        create_user_offerer(user=pro_user, offerer=offerer)
+        venue = create_venue(offerer=offerer, siret='98765432198765', name='A')
+
+        repository.save(venue)
+
+        # when
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
+
+        # then
+        assert len(found_venues) == 0
+
+    @pytest.mark.usefixtures("db_session")
     def test_returns_all_venues_of_pro_user_with_public_name_when_provided(self, app: object):
         # given
         pro_user = create_user()
