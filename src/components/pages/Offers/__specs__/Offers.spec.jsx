@@ -1,8 +1,7 @@
 import { mount } from 'enzyme'
-import { createMemoryHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter, Router } from 'react-router'
+import { MemoryRouter } from 'react-router'
 
 import { getStubStore } from '../../../../utils/stubStore'
 import Offers from '../Offers'
@@ -18,8 +17,7 @@ describe('src | components | pages | Offers | Offers', () => {
   let props
   let currentUser
   let store
-  let history
-  const pro_venues = [
+  const proVenues = [
     {
       id: 'JI',
       name: 'Ma venue',
@@ -53,8 +51,6 @@ describe('src | components | pages | Offers | Offers', () => {
       ) => state,
     })
 
-    history = createMemoryHistory()
-
     props = {
       closeNotification: jest.fn(),
       currentUser,
@@ -75,7 +71,7 @@ describe('src | components | pages | Offers | Offers', () => {
       types: [],
       venue: { name: 'Ma Venue', id: 'JI' },
     }
-    fetchAllVenuesByProUser.mockResolvedValue(pro_venues)
+    fetchAllVenuesByProUser.mockResolvedValue(proVenues)
   })
 
   afterEach(() => {
@@ -203,13 +199,32 @@ describe('src | components | pages | Offers | Offers', () => {
 
         // then
         wrapper.update()
-        const venueSelect = wrapper.find('select')
+        const venueSelect = wrapper.find('select[name="lieu"]')
         expect(venueSelect.props().value).toBe(ALL_VENUES_OPTION.id)
         const options = venueSelect.find('option')
         expect(options).toHaveLength(3)
         expect(options.at(0).text()).toBe(ALL_VENUES_OPTION.displayName)
-        expect(options.at(1).text()).toBe(pro_venues[0].name)
-        expect(options.at(2).text()).toBe(`${pro_venues[1].offererName} - Offre numérique`)
+        expect(options.at(1).text()).toBe(proVenues[0].name)
+        expect(options.at(2).text()).toBe(`${proVenues[1].offererName} - Offre numérique`)
+      })
+
+      it('should render venue filter with given venue selected', async () => {
+        // given
+        jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: proVenues[0].id })
+
+        // when
+        const wrapper = await mount(
+          <Provider store={store}>
+            <MemoryRouter>
+              <Offers {...props} />
+            </MemoryRouter>
+          </Provider>
+        )
+
+        // then
+        wrapper.update()
+        const venueSelect = wrapper.find('select[name="lieu"]')
+        expect(venueSelect.props().value).toBe(proVenues[0].id)
       })
     })
   })
@@ -278,9 +293,9 @@ describe('src | components | pages | Offers | Offers', () => {
           </MemoryRouter>
         </Provider>
       )
-      const venueSelect = wrapper.find('select')
+      const venueSelect = wrapper.find('select[name="lieu"]')
       const launchSearchButton = wrapper.find('form')
-      venueSelect.invoke('onChange')({ target: { value: pro_venues[0].id } })
+      venueSelect.invoke('onChange')({ target: { value: proVenues[0].id } })
 
       // when
       launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
@@ -290,83 +305,7 @@ describe('src | components | pages | Offers | Offers', () => {
         {
           nameSearchValue: ALL_OFFERS,
           page: DEFAULT_PAGE,
-          selectedVenue: pro_venues[0].id,
-        },
-        expect.any(Function),
-        expect.any(Function)
-      )
-    })
-  })
-
-  describe('venue filter -- DEPRECATED', () => {
-    it('should be displayed when venue is given', () => {
-      // given
-      props.venue = {
-        name: 'La verbeuse',
-      }
-
-      // when
-      const wrapper = mount(
-        <Provider store={store}>
-          <MemoryRouter>
-            <Offers {...props} />
-          </MemoryRouter>
-        </Provider>
-      )
-
-      const venueFilter = wrapper.findWhere(node => node.text() === 'Lieu : La verbeuse').first()
-
-      // then
-      expect(venueFilter).toHaveLength(1)
-    })
-
-    it('should not be displayed when venue is not given', () => {
-      // given
-      props.venue = null
-
-      // when
-      const wrapper = mount(
-        <Provider store={store}>
-          <MemoryRouter>
-            <Offers {...props} />
-          </MemoryRouter>
-        </Provider>
-      )
-
-      const venueFilter = wrapper.findWhere(node => node.text() === 'Lieu :').first()
-
-      // then
-      expect(venueFilter).toHaveLength(0)
-    })
-
-    it('should remove venue filter when clicking on it', () => {
-      // given
-      props.venue = {
-        name: 'La verbeuse',
-      }
-
-      // when
-      const wrapper = mount(
-        <Provider store={store}>
-          <MemoryRouter>
-            <Offers {...props} />
-          </MemoryRouter>
-        </Provider>
-      )
-
-      const venueFilter = wrapper
-        .findWhere(node => node.text() === 'Lieu : La verbeuse')
-        .first()
-        .find('button')
-
-      venueFilter.invoke('onClick')()
-
-      // then
-      expect(props.loadOffers).toHaveBeenCalledWith(
-        {
-          nameSearchValue: ALL_OFFERS,
-          page: DEFAULT_PAGE,
-          selectedVenue: ALL_VENUES,
+          selectedVenue: proVenues[0].id,
         },
         expect.any(Function),
         expect.any(Function)
@@ -375,97 +314,49 @@ describe('src | components | pages | Offers | Offers', () => {
   })
 
   describe('button to create an offer', () => {
-    describe('when user isAdmin', () => {
-      it('should not display the link', () => {
-        // given
-        props.currentUser.isAdmin = true
+    it('should not be displayed when user is an admin', () => {
+      // given
+      props.currentUser.isAdmin = true
 
-        // when
-        const wrapper = mount(
-          <Provider store={store}>
-            <MemoryRouter>
-              <Offers {...props} />
-            </MemoryRouter>
-          </Provider>
-        )
-        const navLink = wrapper.find({ children: 'Créer une offre' })
+      // when
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
+      const navLink = wrapper.find({ children: 'Créer une offre' })
 
-        // then
-        expect(navLink).toHaveLength(0)
-      })
+      // then
+      expect(navLink).toHaveLength(0)
     })
 
-    describe('when user is not admin', () => {
-      it('should display a link to create an offer', () => {
-        // given
-        props.currentUser.isAdmin = false
+    it('should be displayed when user is not an admin', () => {
+      // given
+      props.currentUser.isAdmin = false
 
-        // when
-        const wrapper = mount(
-          <Provider store={store}>
-            <MemoryRouter>
-              <Offers {...props} />
-            </MemoryRouter>
-          </Provider>
-        )
-        const offerCreationLink = wrapper.find({ children: 'Créer une offre' }).parent()
+      // when
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
+      const offerCreationLink = wrapper.find({ children: 'Créer une offre' }).parent()
 
-        // then
-        expect(offerCreationLink).toHaveLength(1)
-        expect(offerCreationLink.prop('href')).toBe('/offres/creation')
-      })
-    })
-
-    describe('when structure (or offererId)', () => {
-      it('should render link properly', () => {
-        // given
-        jest.spyOn(props.query, 'parse').mockReturnValue({ structure: 'XY' })
-        const wrapper = mount(
-          <Provider store={store}>
-            <Router history={history}>
-              <Offers {...props} />
-            </Router>
-          </Provider>
-        )
-        const offerCreationLink = wrapper.find({ children: 'Créer une offre' })
-
-        // when
-        offerCreationLink.simulate('click', { button: 0 })
-
-        // then
-        expect(history.location.pathname + history.location.search).toStrictEqual(
-          '/offres/creation?structure=XY'
-        )
-      })
-    })
-
-    describe('when lieu or (VenueId)', () => {
-      it('should render link properly', () => {
-        // given
-        jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: 'G6' })
-
-        const wrapper = mount(
-          <Provider store={store}>
-            <Router history={history}>
-              <Offers {...props} />
-            </Router>
-          </Provider>
-        )
-        const offerCreationLink = wrapper.find({ children: 'Créer une offre' })
-
-        // when
-        offerCreationLink.simulate('click', { button: 0 })
-
-        // then
-        expect(history.location.pathname + history.location.search).toStrictEqual(
-          '/offres/creation?lieu=G6'
-        )
-      })
+      // then
+      expect(offerCreationLink).toHaveLength(1)
+      expect(offerCreationLink.prop('href')).toBe('/offres/creation')
     })
   })
 
   describe('deactivate all offers from a venue', () => {
     it('should be displayed when offers and venue are given', () => {
+      // given
+      jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: 'GY' })
+
       // when
       const wrapper = mount(
         <Provider store={store}>
@@ -482,7 +373,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should not be displayed when offers or venue is missing', () => {
       // given
-      props.venue = null
+      jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: undefined })
 
       // when
       const wrapper = mount(
@@ -500,10 +391,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should send a request to api when clicked', () => {
       // given
-      props.venue = {
-        id: 'GY',
-        name: 'Le biennommé',
-      }
+      jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: 'GY' })
 
       // given
       const wrapper = mount(
@@ -518,19 +406,14 @@ describe('src | components | pages | Offers | Offers', () => {
       deactivateButton.simulate('click')
 
       // then
-      expect(props.handleOnDeactivateAllVenueOffersClick).toHaveBeenCalledWith({
-        id: 'GY',
-        name: 'Le biennommé',
-      })
+      expect(props.handleOnDeactivateAllVenueOffersClick).toHaveBeenCalledWith('GY')
     })
   })
 
   describe('activate all offers from a venue', () => {
     it('should be displayed when offers and venue are given', () => {
       // given
-      props.venue = {
-        name: 'Le biennommé',
-      }
+      jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: 'GY' })
 
       // when
       const wrapper = mount(
@@ -548,7 +431,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should not be displayed when offers or venue is missing', () => {
       // given
-      props.venue = null
+      jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: undefined })
 
       // when
       const wrapper = mount(
@@ -566,10 +449,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should send a request to api when clicked', () => {
       // given
-      props.venue = {
-        id: 'GY',
-        name: 'Le biennommé',
-      }
+      jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: 'GY' })
 
       const wrapper = mount(
         <Provider store={store}>
@@ -584,15 +464,62 @@ describe('src | components | pages | Offers | Offers', () => {
       activateButton.simulate('click')
 
       // then
-      expect(props.handleOnActivateAllVenueOffersClick).toHaveBeenCalledWith({
-        id: 'GY',
-        name: 'Le biennommé',
-      })
+      expect(props.handleOnActivateAllVenueOffersClick).toHaveBeenCalledWith('GY')
     })
   })
 
-  describe('offer name url query params', () => {
-    it('should be added when name search value is not an empty string', () => {
+  describe('url query params', () => {
+    it('should have page value when page value is not first page', () => {
+      // given
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
+      props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess(2, 2))
+      const rightArrow = wrapper.find('img[alt="Aller à la page suivante"]').closest('button')
+
+      // When
+      rightArrow.invoke('onClick')()
+
+      // then
+      wrapper.update()
+      expect(props.query.change).toHaveBeenCalledWith({
+        lieu: null,
+        nom: null,
+        page: 2,
+      })
+    })
+
+    it('should have page value be removed when page value is first page', () => {
+      // given
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
+      const rightArrow = wrapper.find('img[alt="Aller à la page suivante"]').closest('button')
+      const leftArrow = wrapper.find('img[alt="Aller à la page précédente"]').closest('button')
+      props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess(2, 2))
+      rightArrow.invoke('onClick')()
+      props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess(1, 2))
+
+      // When
+      leftArrow.invoke('onClick')()
+
+      // then
+      expect(props.query.change).toHaveBeenCalledWith({
+        lieu: null,
+        nom: null,
+        page: null,
+      })
+    })
+
+    it('should have offer name value when name search value is not an empty string', () => {
       // given
       const wrapper = mount(
         <Provider store={store}>
@@ -612,11 +539,11 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(props.query.change).toHaveBeenCalledWith({
         lieu: null,
         nom: 'AnyWord',
-        page: DEFAULT_PAGE,
+        page: null,
       })
     })
 
-    it('should be removed when name search value is an empty string', () => {
+    it('should have offer name value be removed when name search value is an empty string', () => {
       // given
       const wrapper = mount(
         <Provider store={store}>
@@ -625,18 +552,66 @@ describe('src | components | pages | Offers | Offers', () => {
           </MemoryRouter>
         </Provider>
       )
-
-      // when
       const searchInput = wrapper.find('input[placeholder="Rechercher par nom d’offre"]')
       const launchSearchButton = wrapper.find('form')
-      searchInput.invoke('onChange')({ target: { value: '' } })
+      searchInput.invoke('onChange')({ target: { value: ALL_OFFERS } })
+
+      // when
       launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
 
       // then
       expect(props.query.change).toHaveBeenCalledWith({
         lieu: null,
         nom: null,
-        page: DEFAULT_PAGE,
+        page: null,
+      })
+    })
+
+    it('should have venue value when user filter by venue', () => {
+      // given
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
+      const venueSelect = wrapper.find('select[name="lieu"]')
+      const launchSearchButton = wrapper.find('form')
+      venueSelect.invoke('onChange')({ target: { value: proVenues[0].id } })
+
+      // when
+      launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
+
+      // then
+      expect(props.query.change).toHaveBeenCalledWith({
+        lieu: proVenues[0].id,
+        nom: null,
+        page: null,
+      })
+    })
+
+    it('should have venue value be removed when user ask for all venues', () => {
+      // given
+      const wrapper = mount(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>
+      )
+      const venueSelect = wrapper.find('select[name="lieu"]')
+      const launchSearchButton = wrapper.find('form')
+      venueSelect.invoke('onChange')({ target: { value: ALL_VENUES } })
+
+      // when
+      launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
+
+      // then
+      expect(props.query.change).toHaveBeenCalledWith({
+        lieu: null,
+        nom: null,
+        page: null,
       })
     })
   })

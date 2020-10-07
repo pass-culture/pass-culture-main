@@ -5,26 +5,16 @@ import { requestData } from 'redux-saga-data'
 
 import Offers from './Offers'
 import { withRequiredLogin } from '../../hocs'
-import { selectOffererById } from 'store/selectors/data/offerersSelectors'
-import { selectVenueById } from 'store/selectors/data/venuesSelectors'
-import { translateQueryParamsToApiParams } from '../../../utils/translate'
 import { selectOffers } from 'store/selectors/data/offersSelectors'
 import { fetchFromApiWithCredentials } from '../../../utils/fetch'
 import { ALL_OFFERS, ALL_VENUES } from './_constants'
 
-export const mapStateToProps = (state, ownProps) => {
-  const { query } = ownProps
-  const queryParams = query.parse()
-  const apiQueryParams = translateQueryParamsToApiParams(queryParams)
-  const { offererId, venueId } = apiQueryParams
-
+export const mapStateToProps = state => {
   return {
     lastTrackerMoment: lastTrackerMoment(state, 'offers'),
     notification: state.notification,
     offers: selectOffers(state),
-    offerer: selectOffererById(state, offererId),
     types: state.data.types,
-    venue: selectVenueById(state, venueId),
   }
 }
 
@@ -59,10 +49,10 @@ export const mapDispatchToProps = dispatch => {
   return {
     closeNotification: () => dispatch(closeNotification()),
 
-    handleOnActivateAllVenueOffersClick: venue => () => {
+    handleOnActivateAllVenueOffersClick: venueId => () => {
       dispatch(
         requestData({
-          apiPath: `/venues/${venue.id}/offers/activate`,
+          apiPath: `/venues/${venueId}/offers/activate`,
           method: 'PUT',
           stateKey: 'offers',
           handleSuccess: showOffersActivationNotification(
@@ -72,10 +62,10 @@ export const mapDispatchToProps = dispatch => {
       )
     },
 
-    handleOnDeactivateAllVenueOffersClick: venue => () => {
+    handleOnDeactivateAllVenueOffersClick: venueId => () => {
       dispatch(
         requestData({
-          apiPath: `/venues/${venue.id}/offers/deactivate`,
+          apiPath: `/venues/${venueId}/offers/deactivate`,
           method: 'PUT',
           stateKey: 'offers',
           handleSuccess: showOffersActivationNotification(

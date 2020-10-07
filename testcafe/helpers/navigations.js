@@ -36,10 +36,7 @@ export const navigateToOffererAs = (user, offerer) => async t => {
 
   await navigateToOfferersAs(user)(t)
 
-  await t
-    .typeText(searchInput, offerer.keywordsString)
-    .click(submitButton)
-    .click(offererAnchor)
+  await t.typeText(searchInput, offerer.keywordsString).click(submitButton).click(offererAnchor)
 }
 
 export const navigateAfterVenueSubmit = creationOrModification => async t => {
@@ -63,10 +60,7 @@ export const navigateAfterVenueSubmit = creationOrModification => async t => {
       'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement.\n\nOK'
     )
 
-  await t
-    .click(closeAnchor)
-    .expect(notificationError.exists)
-    .notOk()
+  await t.click(closeAnchor).expect(notificationError.exists).notOk()
 }
 
 export const navigateToNewOfferAs = (user, offerer, venue, userRole) => async t => {
@@ -102,7 +96,7 @@ export const navigateToNewOfferAs = (user, offerer, venue, userRole) => async t 
 }
 
 export const navigateToOfferAs = (user, offer, userRole) => async t => {
-  const searchInput = Selector('#search')
+  const searchInput = Selector('#offre')
   const submitButton = Selector('button[type="submit"]')
   const offerAnchor = Selector(`a[href^="/offres/${offer.id}"]`)
 
@@ -114,10 +108,7 @@ export const navigateToOfferAs = (user, offer, userRole) => async t => {
 
   await t.navigateTo('/offres')
 
-  await t
-    .typeText(searchInput, offer.keywordsString)
-    .click(submitButton)
-    .click(offerAnchor)
+  await t.typeText(searchInput, offer.keywordsString).click(submitButton).click(offerAnchor)
 }
 
 export const navigateToNewMediationAs = (user, offer, userRole) => async t => {

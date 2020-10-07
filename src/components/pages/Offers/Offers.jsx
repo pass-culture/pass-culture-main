@@ -15,20 +15,6 @@ import { ALL_OFFERS, ALL_VENUES, ALL_VENUES_OPTION, DEFAULT_PAGE } from './_cons
 import { fetchAllVenuesByProUser } from '../../../services/venuesService'
 import formatAndOrderVenues from '../Bookings/BookingsRecapTable/utils/formatAndOrderVenues'
 
-export const createLinkToOfferCreation = (venueId, offererId) => {
-  let createOfferTo = `/offres/creation`
-
-  if (venueId && offererId) {
-    createOfferTo = `${createOfferTo}?${mapApiToBrowser.offererId}=${offererId}&${mapApiToBrowser.venueId}=${venueId}`
-  } else if (offererId) {
-    createOfferTo = `${createOfferTo}?${mapApiToBrowser.offererId}=${offererId}`
-  } else if (venueId) {
-    createOfferTo = `${createOfferTo}?${mapApiToBrowser.venueId}=${venueId}`
-  }
-
-  return createOfferTo
-}
-
 class Offers extends PureComponent {
   constructor(props) {
     super(props)
@@ -66,7 +52,7 @@ class Offers extends PureComponent {
     const { page, nameSearchValue, selectedVenue } = this.state
 
     query.change({
-      page: page,
+      page: page === DEFAULT_PAGE ? null : page,
       [mapApiToBrowser.name]: nameSearchValue === ALL_OFFERS ? null : nameSearchValue,
       [mapApiToBrowser.venueId]: selectedVenue === ALL_VENUES ? null : selectedVenue,
     })
@@ -113,18 +99,6 @@ class Offers extends PureComponent {
     )
   }
 
-  handleOnVenueClick = () => {
-    this.setState(
-      {
-        selectedVenue: undefined,
-        page: DEFAULT_PAGE,
-      },
-      () => {
-        this.getPaginatedOffersWithFilters()
-      }
-    )
-  }
-
   storeNameSearchValue = event => {
     this.setState({ nameSearchValue: event.target.value })
   }
@@ -154,20 +128,16 @@ class Offers extends PureComponent {
       handleOnActivateAllVenueOffersClick,
       offers,
       query,
-      venue,
     } = this.props
 
     const { isAdmin } = currentUser || {}
-    const queryParams = query.parse()
-    const apiParams = translateQueryParamsToApiParams(queryParams)
-    const { venueId, offererId } = apiParams
+    const { venueId } = translateQueryParamsToApiParams(query.parse())
     const { nameSearchValue, page, pageCount, isLoading, selectedVenue, venueOptions } = this.state
-    const createOfferTo = createLinkToOfferCreation(venueId, offererId)
 
     const actionLink = !isAdmin ? (
       <Link
         className="cta button is-primary"
-        to={createOfferTo}
+        to="/offres/creation"
       >
         <span className="icon">
           <Icon svg="ico-offres-w" />
@@ -193,7 +163,7 @@ class Offers extends PureComponent {
         >
           <TextInput
             label="Nom de l’offre"
-            name="search"
+            name="offre"
             onChange={this.storeNameSearchValue}
             placeholder="Rechercher par nom d’offre"
             value={nameSearchValue}
@@ -218,27 +188,12 @@ class Offers extends PureComponent {
           </div>
         </form>
 
-        <ul className="section">
-          {venue && (
-            <button
-              className="venue-filter tag is-rounded"
-              onClick={this.handleOnVenueClick}
-              type="button"
-            >
-              {'Lieu : '}
-              <span className="name">
-                {venue.name}
-              </span>
-              <Icon svg="ico-close-r" />
-            </button>
-          )}
-        </ul>
         <div className="section">
-          {offers && venue && (
+          {offers && venueId && (
             <div className="offers-list-actions">
               <button
                 className="button deactivate is-tertiary is-small"
-                onClick={handleOnDeactivateAllVenueOffersClick(venue)}
+                onClick={handleOnDeactivateAllVenueOffersClick(venueId)}
                 type="button"
               >
                 {'Désactiver toutes les offres'}
@@ -246,7 +201,7 @@ class Offers extends PureComponent {
 
               <button
                 className="button activate is-tertiary is-small"
-                onClick={handleOnActivateAllVenueOffersClick(venue)}
+                onClick={handleOnActivateAllVenueOffersClick(venueId)}
                 type="button"
               >
                 {'Activer toutes les offres'}
