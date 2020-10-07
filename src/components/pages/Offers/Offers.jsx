@@ -2,19 +2,17 @@ import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
-import { pluralize } from '../../../utils/pluralize'
 
+import { fetchAllVenuesByProUser } from '../../../services/venuesService'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
+import Select from '../../layout/inputs/Select'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 import Main from '../../layout/Main'
 import Spinner from '../../layout/Spinner'
-
 import Titles from '../../layout/Titles/Titles'
-import OfferItemContainer from './OfferItem/OfferItemContainer'
-import Select from '../../layout/inputs/Select'
-import { ALL_OFFERS, ALL_VENUES, ALL_VENUES_OPTION, DEFAULT_PAGE } from './_constants'
-import { fetchAllVenuesByProUser } from '../../../services/venuesService'
 import formatAndOrderVenues from '../Bookings/BookingsRecapTable/utils/formatAndOrderVenues'
+import { ALL_OFFERS, ALL_VENUES, ALL_VENUES_OPTION, DEFAULT_PAGE } from './_constants'
+import OfferItemContainer from './OfferItem/OfferItemContainer'
 
 class Offers extends PureComponent {
   constructor(props) {
@@ -197,7 +195,7 @@ class Offers extends PureComponent {
         </form>
 
         <div className="offers-count">
-          {pluralize(offersCount, 'offre')}
+          {`${offersCount} ${offersCount <= 1 ? 'offre' : 'offres'}`}
         </div>
 
         <div className="section">
