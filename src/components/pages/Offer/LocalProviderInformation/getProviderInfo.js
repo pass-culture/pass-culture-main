@@ -22,6 +22,11 @@ export const getProviderInfo = providerName => {
       icon: PROVIDER_ICONS['FnacStocks'],
       name: 'Fnac',
     },
+    {
+      id: 'praxiel',
+      icon: PROVIDER_ICONS['PraxielStocks'],
+      name: 'Praxiel',
+    },
   ]
 
   return providers.find(providerInfo => providerName.startsWith(providerInfo.id))

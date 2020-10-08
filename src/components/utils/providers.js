@@ -4,4 +4,5 @@ export const PROVIDER_ICONS = {
   LibrairesStocks: 'logo-libraires',
   OpenAgendaEvents: 'logo-openAgenda',
   TiteLiveStocks: 'logo-titeLive',
+  PraxielStocks: 'logo-praxiel',
 }

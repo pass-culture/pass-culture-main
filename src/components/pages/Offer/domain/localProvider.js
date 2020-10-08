@@ -3,7 +3,7 @@ const doesLastProviderExists = offer => offer !== null && offer.lastProvider
 export const localProvidersNames = [
   'fnac',
   'leslibraires.fr',
-  'praxiel',
+  'praxiel/inférence',
   'titelive (epagine / place des libraires.com)',
   'titelive stocks (epagine / place des libraires.com)',
 ]

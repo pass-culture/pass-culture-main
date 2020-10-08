@@ -87,7 +87,7 @@ describe('src | isOfferFromStockProvider', () => {
       const offer = {
         id: 'AZER',
         lastProvider: {
-          name: 'Praxiel',
+          name: 'praxiel/inférence',
         },
       }
 

@@ -69,4 +69,21 @@ describe('src | getProviderInfo', () => {
       })
     })
   })
+
+  describe('when offer came from Praxiel', () => {
+    it('should return its icon and label', () => {
+      // given
+      const praxielId = 'praxiel'
+
+      // when
+      const providerInfo = getProviderInfo(praxielId)
+
+      // then
+      expect(providerInfo).toStrictEqual({
+        id: 'praxiel',
+        icon: PROVIDER_ICONS['PraxielStocks'],
+        name: 'Praxiel',
+      })
+    })
+  })
 })
