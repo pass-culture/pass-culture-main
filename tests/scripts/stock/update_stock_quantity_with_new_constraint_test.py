@@ -8,9 +8,9 @@ from scripts.stock.update_stock_quantity_with_new_constraint import update_stock
     _get_old_remaining_quantity, _get_stocks_to_check, _get_stocks_with_negative_remaining_quantity, \
     update_stock_quantity_for_negative_remaining_quantity
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock, create_booking, \
+from model_creators.generic_creators import create_offerer, create_venue, create_stock, create_booking, \
     create_user
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.specific_creators import create_offer_with_thing_product
 
 
 class UpdateStockAvailableWithNewConstraintTest:

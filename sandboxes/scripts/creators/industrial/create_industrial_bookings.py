@@ -3,7 +3,7 @@ from datetime import datetime
 from models.offer_type import EventType
 from repository import repository
 from sandboxes.scripts.utils.select import remove_every
-from tests.model_creators.generic_creators import create_booking
+from model_creators.generic_creators import create_booking
 from utils.logger import logger
 
 RECOMMENDATIONS_WITH_BOOKINGS_REMOVE_RATIO = 3

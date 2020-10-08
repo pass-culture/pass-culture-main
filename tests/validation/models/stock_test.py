@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from models import ApiErrors
-from tests.model_creators.generic_creators import create_stock
+from model_creators.generic_creators import create_stock
 from validation.models.stock import validate
 
 

@@ -10,7 +10,7 @@ from sandboxes.scripts.utils.helpers import get_email
 from sandboxes.scripts.utils.locations import create_locations_from_places, \
     OFFERER_PLACES
 from sandboxes.scripts.utils.select import pick_every
-from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, \
+from model_creators.generic_creators import create_user, create_offerer, create_user_offerer, \
     create_bank_information
 from utils.logger import logger
 

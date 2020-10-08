@@ -1,7 +1,7 @@
 from datetime import datetime
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_user
+from model_creators.generic_creators import create_user
 from use_cases.update_user_informations import AlterableUserInformations, update_user_informations
 
 class UpdateUserInformationsTest:

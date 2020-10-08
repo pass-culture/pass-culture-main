@@ -1,7 +1,7 @@
 from repository import repository
 from sandboxes.scripts.utils.select import remove_every
 from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
-from tests.model_creators.generic_creators import create_mediation
+from model_creators.generic_creators import create_mediation
 from utils.logger import logger
 
 OFFERS_WITH_MEDIATION_REMOVE_MODULO = 5

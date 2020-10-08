@@ -6,8 +6,8 @@ from models import OfferSQLEntity, ApiErrors
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 import pytest
-from tests.model_creators.generic_creators import create_venue, create_offerer
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.generic_creators import create_venue, create_offerer
+from model_creators.specific_creators import create_offer_with_thing_product
 from use_cases.update_an_offer import update_an_offer
 
 

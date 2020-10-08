@@ -6,8 +6,8 @@ from scripts.beneficiary.file_import import fill_user_from, \
     create_booking_for, \
     create_users_with_activation_bookings, \
     split_rows_in_chunks_with_no_duplicated_emails
-from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue
+from model_creators.specific_creators import create_offer_with_thing_product
 from utils.token import random_token
 
 

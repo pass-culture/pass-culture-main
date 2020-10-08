@@ -4,7 +4,7 @@ from models import UserSQLEntity, Deposit
 from repository import repository
 from scripts.grant_wallet_to_existing_users import grant_wallet_to_existing_users
 import pytest
-from tests.model_creators.generic_creators import create_user, create_deposit
+from model_creators.generic_creators import create_user, create_deposit
 
 
 @pytest.mark.usefixtures("db_session")

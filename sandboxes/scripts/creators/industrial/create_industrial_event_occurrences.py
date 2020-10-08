@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from sandboxes.scripts.utils.select import remove_every
-from tests.model_creators.specific_creators import create_event_occurrence
+from model_creators.specific_creators import create_event_occurrence
 from utils.date import strftime, TODAY
 from utils.logger import logger
 

@@ -3,7 +3,7 @@ import pytest
 from repository import repository
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_user, API_URL
+from model_creators.generic_creators import create_user, API_URL
 
 
 @pytest.mark.standalone

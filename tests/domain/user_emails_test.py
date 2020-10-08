@@ -3,10 +3,10 @@ from unittest.mock import Mock, call, patch
 import pytest
 from tests.domain_creators.generic_creators import create_domain_beneficiary, \
     create_domain_beneficiary_pre_subcription
-from tests.model_creators.generic_creators import create_booking, \
+from model_creators.generic_creators import create_booking, \
     create_deposit, create_offerer, create_user, create_user_offerer, \
     create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product, \
+from model_creators.specific_creators import create_offer_with_thing_product, \
     create_stock_with_event_offer
 from tests.test_utils import create_mocked_bookings
 

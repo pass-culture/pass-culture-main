@@ -2,7 +2,7 @@ from models import UserSQLEntity
 from repository import repository
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_user
+from model_creators.generic_creators import create_user
 from utils.human_ids import humanize
 
 

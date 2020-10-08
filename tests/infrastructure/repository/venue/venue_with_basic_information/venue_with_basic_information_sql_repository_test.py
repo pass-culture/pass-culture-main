@@ -4,7 +4,7 @@ from infrastructure.repository.venue.venue_with_basic_information.venue_with_bas
     VenueWithBasicInformationSQLRepository
 from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_venue
+from model_creators.generic_creators import create_offerer, create_venue
 
 
 class VenueWithBasicInformationSQLRepositoryTest:

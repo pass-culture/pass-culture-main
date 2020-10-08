@@ -5,7 +5,7 @@ from domain.beneficiary.beneficiary_exceptions import BeneficiaryDoesntExist
 from repository import repository
 from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 import pytest
-from tests.model_creators.generic_creators import create_user, create_deposit
+from model_creators.generic_creators import create_user, create_deposit
 
 
 class BeneficiarySQLRepositoryTest:

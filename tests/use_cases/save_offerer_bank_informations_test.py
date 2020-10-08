@@ -9,7 +9,7 @@ from use_cases.save_offerer_bank_informations import SaveOffererBankInformations
 from models import ApiErrors
 
 from models.bank_information import BankInformationStatus
-from tests.model_creators.generic_creators import create_bank_information, create_offerer
+from model_creators.generic_creators import create_bank_information, create_offerer
 from tests.connector_creators.demarches_simplifiees_creators import \
     offerer_demarche_simplifiee_application_detail_response
 from repository import repository

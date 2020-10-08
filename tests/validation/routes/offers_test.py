@@ -1,7 +1,7 @@
 import pytest
 
 from models import ApiErrors, ThingType, EventType, OfferSQLEntity
-from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
+from model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 from validation.routes.offers import check_has_venue_id, check_offer_type_is_valid, check_offer_is_editable, \
     check_offer_name_length_is_valid, check_edition_for_allocine_offer_is_valid, check_user_has_rights_on_offerer
 

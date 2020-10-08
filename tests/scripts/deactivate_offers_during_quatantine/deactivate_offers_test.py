@@ -8,8 +8,8 @@ from scripts.deactivate_offers_during_quatantine.deactivate_offers import \
     deactivate_offers_with_max_stock_date_between_today_and_end_of_quarantine, \
     get_offers_with_max_stock_date_between_today_and_end_of_quarantine
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock
-from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
+from model_creators.generic_creators import create_offerer, create_venue, create_stock
+from model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 
 FIRST_DAY_AFTER_QUARANTINE = datetime(2020, 4, 16)
 TODAY = datetime(2020, 4, 10)

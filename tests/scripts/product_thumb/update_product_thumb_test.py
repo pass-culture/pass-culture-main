@@ -2,7 +2,7 @@ import os
 from unittest.mock import MagicMock, patch
 
 from tests.conftest import clean_database
-from tests.model_creators.specific_creators import create_product_with_thing_type
+from model_creators.specific_creators import create_product_with_thing_type
 from tests.scripts.product_thumb.test_image_as_bytes import IMAGE_AS_BYTES
 
 from repository import repository

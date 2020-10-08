@@ -6,9 +6,9 @@ from models import VenueProvider
 from repository import repository
 import pytest
 from tests.local_providers.provider_test_utils import TestLocalProvider
-from tests.model_creators.generic_creators import create_allocine_venue_provider
-from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_provider
-from tests.model_creators.provider_creators import activate_provider
+from model_creators.generic_creators import create_allocine_venue_provider
+from model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_provider
+from model_creators.provider_creators import activate_provider
 from tests.test_utils import fake
 
 

@@ -1,5 +1,5 @@
 from domain.venues import is_algolia_indexing
-from tests.model_creators.generic_creators import create_offerer, create_venue
+from model_creators.generic_creators import create_offerer, create_venue
 from routes.serialization import as_dict
 
 

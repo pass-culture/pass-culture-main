@@ -2,7 +2,7 @@ from typing import List
 
 from models import ImportStatus, UserSQLEntity, BeneficiaryImport, BeneficiaryImportSources
 from repository import repository
-from tests.model_creators.generic_creators import create_user, create_beneficiary_import
+from model_creators.generic_creators import create_user, create_beneficiary_import
 from utils.logger import logger
 
 

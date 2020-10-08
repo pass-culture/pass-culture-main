@@ -5,7 +5,7 @@ from models import Offerer
 from repository import repository
 from tests.conftest import TestClient
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_user, \
+from model_creators.generic_creators import create_offerer, create_user, \
     create_user_offerer, \
     create_venue
 

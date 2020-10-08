@@ -1,7 +1,7 @@
 from typing import List
 from models import UserSQLEntity, UserOfferer
 from repository import repository
-from tests.model_creators.generic_creators import create_deposit
+from model_creators.generic_creators import create_deposit
 
 
 def change_pro_users_to_beneficiary(pro_users_ids: List[int]) -> None:

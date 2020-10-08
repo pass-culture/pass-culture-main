@@ -1,7 +1,7 @@
 from repository import repository
 from repository.allocine_pivot_queries import has_allocine_pivot_for_venue, get_allocine_theaterId_for_venue
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_allocine_pivot, create_offerer, create_venue
+from model_creators.generic_creators import create_allocine_pivot, create_offerer, create_venue
 
 
 class HasAllocinePivotForVenueTest:

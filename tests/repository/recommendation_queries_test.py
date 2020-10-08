@@ -4,9 +4,9 @@ from models import Recommendation
 from repository import repository
 from repository.recommendation_queries import update_read_recommendations, delete_useless_recommendations
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_recommendation, create_favorite, create_mediation
-from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
+from model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
     create_stock_with_thing_offer, create_offer_with_thing_product, create_offer_with_event_product, \
     create_event_occurrence
 from utils.human_ids import humanize

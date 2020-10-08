@@ -6,7 +6,7 @@ from models import VenueSQLEntity
 from repository import repository
 from scripts.update_venue_type import _read_venue_type_from_file, update_venue_type
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_type
+from model_creators.generic_creators import create_offerer, create_venue, create_venue_type
 
 
 class UpdateVenueTypeTest:

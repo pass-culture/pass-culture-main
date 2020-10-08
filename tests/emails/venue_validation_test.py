@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 
-from tests.model_creators.generic_creators import create_offerer, create_venue
+from model_creators.generic_creators import create_offerer, create_venue
 from tests.utils.mailing_test import _remove_whitespaces
 from utils.mailing import make_venue_validated_email
 

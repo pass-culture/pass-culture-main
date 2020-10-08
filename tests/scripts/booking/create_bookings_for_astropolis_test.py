@@ -2,9 +2,9 @@ from models import BookingSQLEntity
 from repository import repository
 from scripts.booking.create_bookings_for_astropolis import create_bookings_for_astropolis
 import pytest
-from tests.model_creators.generic_creators import create_booking, \
+from model_creators.generic_creators import create_booking, \
     create_deposit, create_user, create_offerer, create_venue, create_stock
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.specific_creators import create_offer_with_thing_product
 
 
 @pytest.mark.usefixtures("db_session")

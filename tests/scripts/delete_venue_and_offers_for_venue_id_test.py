@@ -4,8 +4,8 @@ from models import VenueSQLEntity, OfferSQLEntity
 from repository import repository
 from scripts.delete_venue_and_offers_for_venue_id import delete_venue_and_offers_for_venue_id
 import pytest
-from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue
-from tests.model_creators.specific_creators import create_offer_with_event_product
+from model_creators.generic_creators import create_stock, create_offerer, create_venue
+from model_creators.specific_creators import create_offer_with_event_product
 from utils.human_ids import humanize
 
 

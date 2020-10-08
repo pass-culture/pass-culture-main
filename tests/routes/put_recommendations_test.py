@@ -5,10 +5,10 @@ from models import ThingType
 from models.recommendation import Recommendation
 from repository import repository, discovery_view_queries, discovery_view_v3_queries
 from tests.conftest import TestClient, clean_database
-from tests.model_creators.generic_creators import create_booking, \
+from model_creators.generic_creators import create_booking, \
     create_mediation, create_offerer, create_recommendation, \
     create_user, create_venue, create_iris_venue, create_iris
-from tests.model_creators.specific_creators import create_event_occurrence, \
+from model_creators.specific_creators import create_event_occurrence, \
     create_offer_with_event_product, \
     create_offer_with_thing_product, create_stock_from_event_occurrence, \
     create_stock_from_offer, create_stock_with_thing_offer

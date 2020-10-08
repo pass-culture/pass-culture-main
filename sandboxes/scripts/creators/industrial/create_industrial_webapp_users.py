@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timedelta
 
 from repository import repository
-from tests.model_creators.generic_creators import create_user
+from model_creators.generic_creators import create_user
 from utils.logger import logger
 
 departement_codeS = ["93", "97"]

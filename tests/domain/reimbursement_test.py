@@ -6,7 +6,7 @@ from freezegun import freeze_time
 from domain.reimbursement import ReimbursementRules, find_all_booking_reimbursements, ReimbursementRule, CURRENT_RULES, \
     NEW_RULES
 from models import BookingSQLEntity, ThingType
-from tests.model_creators.specific_creators import create_booking_for_thing, create_booking_for_event
+from model_creators.specific_creators import create_booking_for_thing, create_booking_for_event
 
 
 class DigitalThingsReimbursementTest:

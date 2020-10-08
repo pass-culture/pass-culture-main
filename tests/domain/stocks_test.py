@@ -5,7 +5,7 @@ from freezegun import freeze_time
 
 from domain.stocks import delete_stock_and_cancel_bookings, TooLateToDeleteError, \
     have_beginning_date_been_modified
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock
+from model_creators.generic_creators import create_booking, create_user, create_stock
 
 user1 = create_user()
 user2 = create_user()

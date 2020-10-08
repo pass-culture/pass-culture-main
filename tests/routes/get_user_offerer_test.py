@@ -1,7 +1,7 @@
 from repository import repository
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
+from model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 from utils.human_ids import humanize
 
 

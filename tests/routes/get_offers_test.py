@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 from tests.conftest import TestClient
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
+from model_creators.specific_creators import create_offer_with_thing_product
 
 from domain.identifier.identifier import Identifier
 from infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain

@@ -6,9 +6,9 @@ from repository import repository
 from scripts.booking.correct_bookings_status import get_bookings_cancelled_during_quarantine_with_payment, \
     correct_booking_status
 import pytest
-from tests.model_creators.generic_creators import create_booking, create_stock, create_venue, create_offerer, \
+from model_creators.generic_creators import create_booking, create_stock, create_venue, create_offerer, \
     create_user, create_deposit, create_payment
-from tests.model_creators.specific_creators import create_offer_with_event_product
+from model_creators.specific_creators import create_offer_with_event_product
 
 
 class GetBookingsCancelledDuringQuarantineWithPaymentTest:

@@ -1,10 +1,10 @@
 from models import AllocineVenueProvider, VenueProvider
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_venue, \
+from model_creators.generic_creators import create_offerer, create_venue, \
     create_allocine_venue_provider, \
     create_provider, create_venue_provider
-from tests.model_creators.provider_creators import activate_provider
+from model_creators.provider_creators import activate_provider
 
 
 class AllocineVenueProviderTest:

@@ -2,7 +2,7 @@ from infrastructure.repository.offerer import offerer_domain_converter
 from infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_offerer
+from model_creators.generic_creators import create_offerer
 
 class OffererSQLRepositoryTest:
     def setup_method(self):

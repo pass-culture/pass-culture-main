@@ -1,5 +1,5 @@
 from repository import repository
-from tests.model_creators.specific_creators import create_offer_with_event_product
+from model_creators.specific_creators import create_offer_with_event_product
 from utils.logger import logger
 
 DEACTIVATED_OFFERS_PICK_MODULO = 3

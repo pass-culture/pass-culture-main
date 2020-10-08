@@ -7,7 +7,7 @@ from models import IrisVenues
 from repository import repository
 from scripts.iris.link_iris_to_venues import link_irises_to_existing_physical_venues, _find_all_venue_ids_to_link
 import pytest
-from tests.model_creators.generic_creators import create_iris, create_venue, create_offerer
+from model_creators.generic_creators import create_iris, create_venue, create_offerer
 
 
 class LinkIrisesToExistingPhysicalVenuesTest:

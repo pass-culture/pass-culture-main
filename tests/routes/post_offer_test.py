@@ -2,9 +2,9 @@ from models import EventType, OfferSQLEntity, ThingType, Product, Offerer
 from repository import repository
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
+from model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     API_URL
-from tests.model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type
+from model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type
 from utils.human_ids import humanize, dehumanize
 
 

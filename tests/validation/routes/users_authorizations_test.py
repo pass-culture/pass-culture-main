@@ -4,7 +4,7 @@ from flask_login import AnonymousUserMixin
 from models import ApiErrors, ApiKey, UserSQLEntity
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
+from model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 from utils.token import random_token
 from validation.routes.users_authorizations import check_user_can_validate_bookings, \
     check_user_can_validate_bookings_v2, \

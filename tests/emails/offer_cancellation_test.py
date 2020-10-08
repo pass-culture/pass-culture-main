@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_offerer, create_user, create_venue
-from tests.model_creators.specific_creators import create_event_occurrence, create_offer_with_event_product, create_offer_with_thing_product, create_product_with_thing_type, \
+from model_creators.generic_creators import create_booking, create_offerer, create_user, create_venue
+from model_creators.specific_creators import create_event_occurrence, create_offer_with_event_product, create_offer_with_thing_product, create_product_with_thing_type, \
     create_stock_from_event_occurrence, create_stock_from_offer
 
 from emails.beneficiary_offer_cancellation import _is_offer_active_for_recap, retrieve_offerer_booking_recap_email_data_after_user_cancellation

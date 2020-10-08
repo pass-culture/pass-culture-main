@@ -13,7 +13,7 @@ from scripts.offerer.file_import import fill_user_from, \
     iterate_rows_for_user_offerers, \
     UserNotCreatedException, \
     OffererNotCreatedException
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue_type
+from model_creators.generic_creators import create_user, create_offerer, create_venue_type
 from utils.token import random_token
 
 

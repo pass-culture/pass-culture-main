@@ -3,7 +3,7 @@ from unittest.mock import patch
 from repository import repository
 from emails.offerer_attachment_validation import retrieve_data_for_offerer_attachment_validation_email
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_user, create_user_offerer
+from model_creators.generic_creators import create_offerer, create_user, create_user_offerer
 
 
 class ProOffererAttachmentValidationEmailTest:

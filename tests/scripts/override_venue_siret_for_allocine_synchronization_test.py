@@ -2,7 +2,7 @@ from models import AllocinePivot
 from repository import repository
 from scripts.override_venue_siret_for_allocine_synchronization import override_venue_siret_for_allocine_synchronization
 import pytest
-from tests.model_creators.generic_creators import create_allocine_pivot
+from model_creators.generic_creators import create_allocine_pivot
 
 
 @pytest.mark.usefixtures("db_session")

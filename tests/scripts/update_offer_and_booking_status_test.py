@@ -7,9 +7,9 @@ from repository import repository
 from scripts.update_offer_and_booking_status import _read_booking_tokens_from_file, \
     update_offer_and_booking_status
 import pytest
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_stock, \
+from model_creators.generic_creators import create_user, create_offerer, create_venue, create_stock, \
     create_booking
-from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+from model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 class UpdateOfferAndBookingStatusTest:

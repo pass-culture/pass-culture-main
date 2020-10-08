@@ -6,10 +6,10 @@ from models import OfferSQLEntity, ApiErrors, ThingType, EventType, Product, Pro
 from repository import repository
 from routes.serialization import as_dict
 import pytest
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, \
+from model_creators.generic_creators import create_booking, create_user, create_stock, \
     create_offerer, \
     create_venue, create_mediation
-from tests.model_creators.specific_creators import create_product_with_thing_type, \
+from model_creators.specific_creators import create_product_with_thing_type, \
     create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product
 from utils.date import DateTimes
 

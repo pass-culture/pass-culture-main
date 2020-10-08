@@ -3,8 +3,8 @@ from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from scripts.delete_corrupted_allocine_stocks import delete_corrupted_allocine_stocks
 import pytest
-from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.generic_creators import create_stock, create_offerer, create_venue
+from model_creators.specific_creators import create_offer_with_thing_product
 
 
 class DeleteCorruptedAllocineStocksTest:

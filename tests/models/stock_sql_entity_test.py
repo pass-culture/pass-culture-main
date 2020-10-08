@@ -10,11 +10,11 @@ from models.pc_object import DeletedRecordException
 from models.stock_sql_entity import StockSQLEntity
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import (create_booking,
+from model_creators.generic_creators import (create_booking,
                                                    create_offerer,
                                                    create_stock, create_user,
                                                    create_venue)
-from tests.model_creators.specific_creators import (
+from model_creators.specific_creators import (
     create_offer_with_event_product, create_offer_with_thing_product,
     create_stock_from_offer, create_stock_with_event_offer, create_stock_with_thing_offer)
 

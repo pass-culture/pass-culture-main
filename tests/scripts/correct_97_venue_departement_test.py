@@ -2,7 +2,7 @@ from models.db import db
 from repository import repository
 from scripts.correct_venue_departement import correct_venue_departement
 import pytest
-from tests.model_creators.generic_creators import create_venue, create_offerer
+from model_creators.generic_creators import create_venue, create_offerer
 
 
 class CorrectVenueDepartementTest:

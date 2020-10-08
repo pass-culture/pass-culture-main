@@ -3,8 +3,8 @@ from models.activity import load_activity
 from repository import repository
 from repository.stock_queries import find_online_activation_stock
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_venue
-from tests.model_creators.specific_creators import create_stock_from_offer, \
+from model_creators.generic_creators import create_offerer, create_venue
+from model_creators.specific_creators import create_stock_from_offer, \
     create_offer_with_thing_product, create_offer_with_event_product
 
 

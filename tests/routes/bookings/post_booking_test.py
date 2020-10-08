@@ -5,11 +5,11 @@ from domain.booking.booking_exceptions import StockIsNotBookable
 from repository import repository
 from tests.conftest import TestClient
 import pytest
-from tests.model_creators.generic_creators import create_deposit, \
+from model_creators.generic_creators import create_deposit, \
     create_offerer, \
     create_recommendation, \
     create_user, create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product, \
+from model_creators.specific_creators import create_offer_with_thing_product, \
     create_stock_with_event_offer, \
     create_stock_with_thing_offer
 from utils.human_ids import humanize

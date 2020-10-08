@@ -6,8 +6,8 @@ from local_providers import LibrairesStocks
 from models import AllocineVenueProvider, ApiErrors, VenueProvider
 from repository import repository
 from tests.conftest import TestClient, clean_database
-from tests.model_creators.generic_creators import create_allocine_pivot, create_offerer, create_user, create_venue, create_venue_provider
-from tests.model_creators.provider_creators import activate_provider
+from model_creators.generic_creators import create_allocine_pivot, create_offerer, create_user, create_venue, create_venue_provider
+from model_creators.provider_creators import activate_provider
 from utils.config import API_ROOT_PATH
 from utils.human_ids import dehumanize, humanize
 

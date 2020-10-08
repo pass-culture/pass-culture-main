@@ -2,9 +2,9 @@ from repository import repository
 from repository.venue_queries import find_filtered_venues, find_by_managing_user, \
     find_by_managing_offerer_id_and_siret
 from tests.conftest import clean_database
-from tests.model_creators.activity_creators import create_venue_activity, save_all_activities
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
-from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_with_thing_offer, \
+from model_creators.activity_creators import create_venue_activity, save_all_activities
+from model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
+from model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_with_thing_offer, \
     create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 from datetime import datetime, timedelta
 

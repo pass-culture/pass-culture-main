@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from emails.beneficiary_activation import get_activation_email_data
-from tests.model_creators.generic_creators import create_user
+from model_creators.generic_creators import create_user
 
 
 class GetActivationEmailTest:

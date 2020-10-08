@@ -4,7 +4,7 @@ from models.db import db
 from repository import repository
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_offerer, create_venue
+from model_creators.generic_creators import create_offerer, create_venue
 
 
 class Get:

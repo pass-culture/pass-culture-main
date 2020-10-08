@@ -7,9 +7,9 @@ from scripts.cancel_bookings_during_quarantine import cancel_booking_status_for_
 import pytest
 from models import BookingSQLEntity
 from repository import repository
-from tests.model_creators.generic_creators import create_user, create_stock, create_booking, create_venue, \
+from model_creators.generic_creators import create_user, create_stock, create_booking, create_venue, \
     create_offerer
-from tests.model_creators.specific_creators import create_offer_with_event_product
+from model_creators.specific_creators import create_offer_with_event_product
 
 
 class UpdateBookingDuringQuarantineTest:

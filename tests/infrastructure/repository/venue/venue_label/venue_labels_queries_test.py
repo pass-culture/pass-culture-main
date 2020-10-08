@@ -4,7 +4,7 @@ from domain.venue.venue_label.venue_label import VenueLabel
 from infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_venue_label
+from model_creators.generic_creators import create_venue_label
 
 
 class VenueLabelSQLRepositoryTest:

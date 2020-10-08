@@ -5,9 +5,9 @@ from models import ApiErrors, AllocineVenueProviderPriceRule
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 import pytest
-from tests.model_creators.generic_creators import create_venue, create_offerer, \
+from model_creators.generic_creators import create_venue, create_offerer, \
     create_allocine_venue_provider_price_rule, create_allocine_venue_provider
-from tests.model_creators.provider_creators import activate_provider
+from model_creators.provider_creators import activate_provider
 
 
 class AllocineVenueProviderPriceRuleTest:

@@ -5,10 +5,10 @@ from models.payment_status import TransactionStatus
 from repository import repository
 from repository.reimbursement_queries import find_all_offerer_payments
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_payment, create_payment_status
-from tests.model_creators.specific_creators import create_stock_with_thing_offer
+from model_creators.specific_creators import create_stock_with_thing_offer
 
 
 class FindAllOffererPaymentsTest:

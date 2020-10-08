@@ -3,7 +3,7 @@ from unittest.mock import patch
 from sqlalchemy.exc import IntegrityError
 
 from models import ApiErrors
-from tests.model_creators.generic_creators import create_user
+from model_creators.generic_creators import create_user
 from validation.models.user import validate
 
 

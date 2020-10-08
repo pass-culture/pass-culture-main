@@ -1,5 +1,5 @@
 from repository import repository
-from tests.model_creators.generic_creators import create_api_key
+from model_creators.generic_creators import create_api_key
 from utils.logger import logger
 
 PROS_COUNT = 1

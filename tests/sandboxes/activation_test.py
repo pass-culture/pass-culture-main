@@ -2,7 +2,7 @@ from models import StockSQLEntity
 
 from sandboxes.scripts.save_sandbox import save_sandbox
 import pytest
-from tests.model_creators.provider_creators import save_counts, assert_created_counts
+from model_creators.provider_creators import save_counts, assert_created_counts
 from utils.logger import logger
 
 

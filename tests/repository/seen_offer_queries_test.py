@@ -6,8 +6,8 @@ from models import SeenOffer
 from repository import repository
 from repository.seen_offer_queries import find_by_offer_id_and_user_id, remove_old_seen_offers
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_user, create_seen_offer
-from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
+from model_creators.generic_creators import create_offerer, create_venue, create_user, create_seen_offer
+from model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 
 
 class FindByOfferIdAndUserIdTest:

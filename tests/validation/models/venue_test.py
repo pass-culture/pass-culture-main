@@ -1,7 +1,7 @@
 from models import ApiErrors
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_venue
+from model_creators.generic_creators import create_offerer, create_venue
 from validation.models.venue import validate
 
 

@@ -16,9 +16,9 @@ from repository.offer_queries import department_or_national_offers, \
     get_paginated_expired_offer_ids, \
     _build_bookings_quantity_subquery
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, \
+from model_creators.generic_creators import create_booking, create_user, create_offerer, \
     create_venue, create_provider
-from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product, \
+from model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product, \
     create_product_with_event_type, create_offer_with_event_product, create_event_occurrence, \
     create_stock_from_event_occurrence, create_stock_from_offer
 

@@ -6,7 +6,7 @@ from domain.iris import _link_venue_to_irises, link_valid_venue_to_irises
 from models import IrisVenues
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_iris
+from model_creators.generic_creators import create_offerer, create_venue, create_iris
 
 
 class LinkVenueToIrisesTest:

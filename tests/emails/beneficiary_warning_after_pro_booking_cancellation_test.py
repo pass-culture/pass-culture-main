@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 from emails.beneficiary_warning_after_pro_booking_cancellation import \
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
-from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
+from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
+from model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
     create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 
 

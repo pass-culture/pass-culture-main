@@ -3,10 +3,10 @@ from random import randint
 from models import EventType
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
-from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, \
+from model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, \
     create_venue_provider
-from tests.model_creators.provider_creators import activate_provider
-from tests.model_creators.specific_creators import create_offer_with_event_product
+from model_creators.provider_creators import activate_provider
+from model_creators.specific_creators import create_offer_with_event_product
 
 
 class Sirene():

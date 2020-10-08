@@ -1,9 +1,9 @@
 import pytest
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, \
+from model_creators.generic_creators import create_booking, \
     create_favorite, create_mediation, create_offerer, create_recommendation, \
     create_stock, create_user, create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
+from model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 
 from models import FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Product, Recommendation, StockSQLEntity
 from models.offer_type import ThingType

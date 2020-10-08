@@ -13,10 +13,10 @@ from scripts.payment.batch_steps import send_transactions, send_payments_details
     set_not_processable_payments_with_bank_information_to_retry
 import pytest
 from tests.conftest import mocked_mail
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_payment, create_bank_information
-from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
+from model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
 from models.bank_information import BankInformationStatus
 
 class ConcatenatePaymentsWithErrorsAndRetriesTest:

@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from repository import repository
 import pytest
-from tests.model_creators.specific_creators import create_product_with_thing_type
+from model_creators.specific_creators import create_product_with_thing_type
 from utils.human_ids import humanize
 
 

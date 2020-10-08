@@ -4,8 +4,8 @@ from models import BookingSQLEntity
 from repository import repository
 from scripts.booking.cancel_bookings_of_events_from_file import _cancel_bookings_of_offers_from_rows
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, create_booking, create_deposit
-from tests.model_creators.specific_creators import create_offer_with_event_product
+from model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, create_booking, create_deposit
+from model_creators.specific_creators import create_offer_with_event_product
 
 
 class CancelBookingsOfEventsFromFileTest:

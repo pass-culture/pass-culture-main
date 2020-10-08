@@ -17,10 +17,10 @@ from scripts.dashboard.diversification_statistics import get_offerers_with_offer
     get_offers_available_on_discovery_count_v2, get_offerers_with_offer_available_on_discovery_count_v2
 import pytest
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_user_offerer, create_mediation
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 two_days_ago = datetime.utcnow() - timedelta(days=2)
 

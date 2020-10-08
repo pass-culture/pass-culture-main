@@ -14,10 +14,10 @@ from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from models import OfferSQLEntity, VenueSQLEntity, BookingSQLEntity, Offerer
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_payment, create_bank_information
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.specific_creators import create_offer_with_thing_product
 from utils.human_ids import humanize
 
 

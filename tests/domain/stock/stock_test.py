@@ -3,8 +3,8 @@ from datetime import datetime
 from freezegun import freeze_time
 
 from domain.stock.stock import Stock
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_user, create_booking
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
+from model_creators.generic_creators import create_offerer, create_venue, create_user, create_booking
+from model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
 
 
 class HasBookingLimitDatetimePassedTest:

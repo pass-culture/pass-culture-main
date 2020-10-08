@@ -8,7 +8,7 @@ from repository import repository
 from scripts.beneficiary import old_remote_import
 from scripts.beneficiary.old_remote_import import parse_beneficiary_information
 import pytest
-from tests.model_creators.generic_creators import create_user
+from model_creators.generic_creators import create_user
 from tests.scripts.beneficiary.old_remote_fixture import \
     APPLICATION_DETAIL_STANDARD_RESPONSE, make_old_application_detail
 

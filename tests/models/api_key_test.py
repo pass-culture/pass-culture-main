@@ -3,7 +3,7 @@ import pytest
 from models import ApiErrors, ApiKey
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_offerer
+from model_creators.generic_creators import create_offerer
 from utils.token import random_token
 
 

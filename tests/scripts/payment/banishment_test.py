@@ -6,7 +6,7 @@ from models.payment_status import TransactionStatus
 from repository import repository
 from scripts.payment.banishment import do_ban_payments, parse_raw_payments_ids
 import pytest
-from tests.model_creators.generic_creators import create_booking, create_user, create_deposit, create_payment, \
+from model_creators.generic_creators import create_booking, create_user, create_deposit, create_payment, \
     create_payment_message
 
 

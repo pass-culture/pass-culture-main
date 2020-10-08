@@ -4,7 +4,7 @@ import pytest
 import pytest
 from tests.domain_creators.generic_creators import \
     create_domain_beneficiary_pre_subcription
-from tests.model_creators.generic_creators import create_user
+from model_creators.generic_creators import create_user
 
 from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
     BeneficiaryIsADuplicate, BeneficiaryIsNotEligible, CantRegisterBeneficiary

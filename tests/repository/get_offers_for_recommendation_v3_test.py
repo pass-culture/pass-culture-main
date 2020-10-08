@@ -7,14 +7,14 @@ from models import EventType, ThingType
 from repository import repository, discovery_view_v3_queries
 from repository.offer_queries import get_offers_for_recommendation_v3
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, \
+from model_creators.generic_creators import create_booking, \
     create_criterion, \
     create_favorite, create_iris, \
     create_iris_venue, \
     create_mediation, \
     create_offerer, create_user, \
     create_venue, create_seen_offer
-from tests.model_creators.specific_creators import \
+from model_creators.specific_creators import \
     create_offer_with_event_product, create_offer_with_thing_product, \
     create_product_with_thing_type, create_stock_from_offer, \
     create_stock_with_thing_offer

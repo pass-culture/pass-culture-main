@@ -2,9 +2,9 @@ from datetime import datetime
 from unittest.mock import patch
 
 from emails.user_notification_after_stock_update import retrieve_data_to_warn_user_after_stock_update_affecting_booking
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_booking, \
+from model_creators.generic_creators import create_user, create_offerer, create_venue, create_booking, \
     create_stock, create_deposit
-from tests.model_creators.specific_creators import create_offer_with_event_product
+from model_creators.specific_creators import create_offer_with_event_product
 
 
 class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:

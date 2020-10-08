@@ -9,10 +9,10 @@ from routes.serialization.reimbursement_csv_serialize import generate_reimbursem
     find_all_offerer_reimbursement_details
 from scripts.payment.batch_steps import generate_new_payments
 import pytest
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_user_offerer, create_bank_information, create_payment
-from tests.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
+from model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
 from tests.test_utils import deactivate_feature
 
 

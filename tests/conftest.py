@@ -27,7 +27,7 @@ from models.install import install_activity, install_materialized_views
 from repository.clean_database import clean_all_database
 from repository.user_queries import find_user_by_email
 from routes import install_routes
-from tests.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
+from model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from utils.json_encoder import EnumJSONEncoder
 
 def run_migrations():

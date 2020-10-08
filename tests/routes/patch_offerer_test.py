@@ -6,9 +6,9 @@ from repository import repository
 from routes.serialization import serialize
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
+from model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_recommendation
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 from utils.human_ids import humanize
 
 

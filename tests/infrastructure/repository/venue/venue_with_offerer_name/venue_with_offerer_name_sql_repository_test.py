@@ -6,7 +6,7 @@ from infrastructure.repository.venue.venue_with_offerer_name import \
 from infrastructure.repository.venue.venue_with_offerer_name.venue_with_offerer_name_sql_repository import \
     VenueWithOffererNameSQLRepository
 from repository import repository
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_user, create_user_offerer
+from model_creators.generic_creators import create_offerer, create_venue, create_user, create_user_offerer
 
 
 class GetByProIdentifierTest:

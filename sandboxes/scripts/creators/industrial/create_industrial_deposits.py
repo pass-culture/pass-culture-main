@@ -1,5 +1,5 @@
 from repository import repository
-from tests.model_creators.generic_creators import create_deposit
+from model_creators.generic_creators import create_deposit
 from utils.logger import logger
 
 

@@ -6,10 +6,10 @@ from models import BookingSQLEntity
 from repository import repository
 from scripts.update_booking_used import update_booking_used_after_stock_occurrence
 import pytest
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 class UpdateBookingUsedTest:

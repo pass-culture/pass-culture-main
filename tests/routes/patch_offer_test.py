@@ -7,10 +7,10 @@ from repository.provider_queries import get_provider_by_local_class
 from routes.serialization import serialize
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
+from model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     API_URL, create_provider
-from tests.model_creators.provider_creators import activate_provider
-from tests.model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
+from model_creators.provider_creators import activate_provider
+from model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
     create_offer_with_thing_product, create_offer_with_event_product
 from utils.human_ids import humanize
 

@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from tests.model_creators.generic_creators import create_booking, create_mediation, create_offerer, create_recommendation, create_stock, create_user, create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
+from model_creators.generic_creators import create_booking, create_mediation, create_offerer, create_recommendation, create_stock, create_user, create_venue
+from model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 
 from routes.serialization.recommendation_serialize import serialize_recommendation, serialize_recommendations
 

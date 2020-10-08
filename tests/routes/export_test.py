@@ -7,10 +7,10 @@ from repository import repository
 from routes.serialization import serialize
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.activity_creators import create_venue_activity, save_all_activities
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
+from model_creators.activity_creators import create_venue_activity, save_all_activities
+from model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_bank_information
-from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
+from model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
     create_stock_with_thing_offer, create_offer_with_event_product, create_event_occurrence
 from utils.human_ids import humanize
 

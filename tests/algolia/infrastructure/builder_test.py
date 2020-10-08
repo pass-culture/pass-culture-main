@@ -7,8 +7,8 @@ from algolia.infrastructure.builder import build_object
 from models import EventType
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue, create_criterion
-from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
+from model_creators.generic_creators import create_offerer, create_stock, create_venue, create_criterion
+from model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 from utils.human_ids import humanize
 
 

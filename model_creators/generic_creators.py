@@ -22,7 +22,7 @@ from models.venue_label_sql_entity import VenueLabelSQLEntity
 from models.venue_type import VenueType
 from scripts.iris.import_iris import WGS_SPATIAL_REFERENCE_IDENTIFIER, \
     create_centroid_from_polygon
-from tests.model_creators.specific_creators import \
+from model_creators.specific_creators import \
     create_offer_with_thing_product, create_stock_with_thing_offer
 from utils.token import random_token
 

@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from connectors.api_entreprises import ApiEntrepriseException, get_by_offerer
-from tests.model_creators.generic_creators import create_offerer
+from model_creators.generic_creators import create_offerer
 
 
 class GetByOffererTest:

@@ -4,9 +4,9 @@ from models import OfferSQLEntity
 from repository import repository
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
+from model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
     create_user_offerer
-from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
+from model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
     create_offer_with_event_product
 from utils.human_ids import humanize
 

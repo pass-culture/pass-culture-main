@@ -2,7 +2,7 @@ from models import AllocineVenueProvider, VenueSQLEntity
 from repository import repository
 from scripts.change_default_number_of_entries_for_theater import change_quantity_for_allocine_venue_provider
 import pytest
-from tests.model_creators.generic_creators import create_venue, create_offerer, create_provider, \
+from model_creators.generic_creators import create_venue, create_offerer, create_provider, \
     create_allocine_venue_provider
 
 

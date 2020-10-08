@@ -4,10 +4,10 @@ from models import ThingType
 from repository import repository
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_user_offerer, create_recommendation
-from tests.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
+from model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
 
 
 class Get:

@@ -7,8 +7,8 @@ from domain.stock.stock import Stock
 from repository import repository
 from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
+from model_creators.generic_creators import create_offerer, create_venue
+from model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
 
 
 class StockSQLRepositoryTest:

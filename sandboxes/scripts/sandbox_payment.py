@@ -2,10 +2,10 @@ from datetime import datetime, timedelta
 
 from models import EventType, ThingType, VenueSQLEntity
 from repository import repository
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit, create_recommendation, create_bank_information
-from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_offer_with_thing_product, \
+from model_creators.specific_creators import create_stock_from_event_occurrence, create_offer_with_thing_product, \
     create_offer_with_event_product, create_event_occurrence
 from utils.logger import logger
 

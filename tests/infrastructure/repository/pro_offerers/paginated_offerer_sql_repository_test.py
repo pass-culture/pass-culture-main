@@ -2,7 +2,7 @@ from domain.pro_offerers.paginated_offerers import PaginatedOfferers
 from infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import PaginatedOfferersSQLRepository
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue
+from model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue
 
 
 class PaginatedOffererSQLRepositoryTest:

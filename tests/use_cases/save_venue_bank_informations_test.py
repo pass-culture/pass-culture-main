@@ -16,7 +16,7 @@ import pytest
 from tests.connector_creators.demarches_simplifiees_creators import \
     venue_demarche_simplifiee_application_detail_response_with_siret, \
     venue_demarche_simplifiee_application_detail_response_without_siret
-from tests.model_creators.generic_creators import create_bank_information, create_offerer, create_venue
+from model_creators.generic_creators import create_bank_information, create_offerer, create_venue
 from use_cases.save_venue_bank_informations import SaveVenueBankInformations
 
 

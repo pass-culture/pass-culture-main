@@ -8,7 +8,7 @@ from repository.beneficiary_import_queries import \
     find_applications_ids_to_retry, is_already_imported, \
     save_beneficiary_import_with_status
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_beneficiary_import, \
+from model_creators.generic_creators import create_beneficiary_import, \
     create_user
 
 

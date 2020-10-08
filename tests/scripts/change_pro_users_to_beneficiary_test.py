@@ -2,7 +2,7 @@ from models import UserOfferer
 from repository import repository
 from scripts.change_some_pro_users_to_beneficiary import change_pro_users_to_beneficiary
 import pytest
-from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
+from model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
 
 @pytest.mark.usefixtures("db_session")

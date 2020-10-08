@@ -3,8 +3,8 @@ from unittest.mock import patch
 
 from emails.offerer_bookings_recap_after_deleting_stock import \
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_booking
-from tests.model_creators.specific_creators import create_offer_with_event_product, create_event_occurrence, \
+from model_creators.generic_creators import create_user, create_offerer, create_venue, create_booking
+from model_creators.specific_creators import create_offer_with_event_product, create_event_occurrence, \
     create_stock_from_event_occurrence, create_product_with_thing_type, create_offer_with_thing_product, \
     create_stock_from_offer
 

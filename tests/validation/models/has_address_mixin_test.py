@@ -1,5 +1,5 @@
 from models import ApiErrors
-from tests.model_creators.generic_creators import create_offerer
+from model_creators.generic_creators import create_offerer
 from validation.models.has_address_mixin import validate
 
 

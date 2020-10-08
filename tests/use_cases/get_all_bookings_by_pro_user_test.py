@@ -4,7 +4,7 @@ import pytest
 
 from domain.users import UnauthorizedForAdminUser
 from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
-from tests.model_creators.generic_creators import create_user
+from model_creators.generic_creators import create_user
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
 
 

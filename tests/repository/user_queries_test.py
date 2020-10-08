@@ -9,10 +9,10 @@ from repository.user_queries import \
     find_most_recent_beneficiary_creation_date_for_source, \
     get_all_users_wallet_balances
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_beneficiary_import, \
+from model_creators.generic_creators import create_beneficiary_import, \
     create_booking, create_deposit, create_offerer, create_stock, create_user, \
     create_venue
-from tests.model_creators.specific_creators import \
+from model_creators.specific_creators import \
     create_offer_with_event_product, create_offer_with_thing_product
 
 

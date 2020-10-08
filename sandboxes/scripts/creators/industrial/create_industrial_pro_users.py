@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime
 
 from repository import repository
-from tests.model_creators.generic_creators import create_user
+from model_creators.generic_creators import create_user
 from utils.logger import logger
 
 PROS_COUNT = 1

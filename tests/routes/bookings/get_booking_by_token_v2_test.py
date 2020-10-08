@@ -6,10 +6,10 @@ from models import EventType
 from repository import repository
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_user_offerer, create_api_key
-from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
+from model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
     create_stock_with_thing_offer, create_offer_with_event_product, create_event_occurrence
 
 API_KEY_VALUE = 'A_MOCKED_API_KEY'

@@ -1,8 +1,8 @@
 from unittest.mock import MagicMock
 
 from tests.domain_creators.generic_creators import create_domain_favorite
-from tests.model_creators.generic_creators import create_offerer, create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.generic_creators import create_offerer, create_venue
+from model_creators.specific_creators import create_offer_with_thing_product
 
 from infrastructure.repository.favorite.favorite_sql_repository import FavoriteSQLRepository
 from use_cases.list_favorites_of_beneficiary import ListFavoritesOfBeneficiary

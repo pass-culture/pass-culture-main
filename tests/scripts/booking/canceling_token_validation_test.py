@@ -4,7 +4,7 @@ from models import BookingSQLEntity
 from repository import repository
 from scripts.booking.canceling_token_validation import canceling_token_validation
 import pytest
-from tests.model_creators.generic_creators import create_booking, \
+from model_creators.generic_creators import create_booking, \
     create_deposit, create_offerer, create_payment, create_user
 
 

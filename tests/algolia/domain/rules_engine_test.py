@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 from algolia.domain.rules_engine import is_eligible_for_reindexing
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_stock, create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from model_creators.generic_creators import create_offerer, create_stock, create_venue
+from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 class IsEligibleForReindexingTest:

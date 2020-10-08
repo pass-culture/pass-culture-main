@@ -11,10 +11,10 @@ from scripts.dashboard.finance_statistics import get_total_deposits, get_total_a
     _query_get_top_20_offerers_by_booking_amounts, get_top_20_offerers_by_amount_table
 from tests.conftest import clean_database
 import pytest
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit, create_payment
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 class GetTotalDepositsTest:

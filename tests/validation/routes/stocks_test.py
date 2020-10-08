@@ -7,8 +7,8 @@ from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from routes.serialization import serialize
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product, \
+from model_creators.generic_creators import create_offerer, create_venue, create_stock
+from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product, \
     create_stock_with_event_offer
 from utils.human_ids import humanize
 from validation.routes.stocks import check_dates_are_allowed_on_new_stock, \

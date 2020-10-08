@@ -3,9 +3,9 @@ from repository import repository
 from repository.venue_provider_queries import get_venue_providers_to_sync, get_nb_containers_at_work, \
     get_venue_provider_by_id, get_active_venue_providers_for_specific_provider
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider, \
+from model_creators.generic_creators import create_offerer, create_venue, create_venue_provider, \
     create_allocine_venue_provider
-from tests.model_creators.provider_creators import activate_provider
+from model_creators.provider_creators import activate_provider
 
 
 class GetActiveVenueProvidersForSpecificProviderTest:

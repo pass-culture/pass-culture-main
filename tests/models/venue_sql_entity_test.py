@@ -4,8 +4,8 @@ from models import ApiErrors
 from models.bank_information import BankInformationStatus
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_bank_information
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from model_creators.generic_creators import create_offerer, create_venue, create_bank_information
+from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 @pytest.mark.usefixtures("db_session")

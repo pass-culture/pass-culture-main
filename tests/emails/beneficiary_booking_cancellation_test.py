@@ -5,9 +5,9 @@ from freezegun import freeze_time
 
 from emails.beneficiary_booking_cancellation import \
     make_beneficiary_booking_cancellation_email_data
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_recommendation
-from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
+from model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
     create_offer_with_event_product
 
 

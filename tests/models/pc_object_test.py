@@ -11,7 +11,7 @@ from models import ThingType
 from models.api_errors import DecimalCastError, DateTimeCastError, UuidCastError
 from models.db import Model
 from routes.serialization import serialize
-from tests.model_creators.generic_creators import create_stock
+from model_creators.generic_creators import create_stock
 from utils.human_ids import dehumanize, NonDehumanizableId
 
 

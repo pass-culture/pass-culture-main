@@ -5,7 +5,7 @@ from models import Offerer, RightsType, UserOfferer
 from repository import repository
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue_type
+from model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue_type
 from utils.human_ids import humanize
 
 api_entreprise_json_mock = {"unite_legale": {

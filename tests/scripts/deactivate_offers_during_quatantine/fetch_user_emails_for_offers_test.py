@@ -5,9 +5,9 @@ from repository import repository
 from scripts.deactivate_offers_during_quatantine.fetch_user_emails_for_offers import \
     fetch_user_emails_for_offers_with_max_stock_date_between_today_and_end_of_quarantine
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock, create_user, \
+from model_creators.generic_creators import create_offerer, create_venue, create_stock, create_user, \
     create_user_offerer
-from tests.model_creators.specific_creators import create_offer_with_event_product
+from model_creators.specific_creators import create_offer_with_event_product
 
 
 class FetchUserEmailsForOffersTest:

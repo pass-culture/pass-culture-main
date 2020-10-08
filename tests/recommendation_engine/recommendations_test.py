@@ -5,9 +5,9 @@ from recommendations_engine import give_requested_recommendation_to_user, create
 from models import Offerer, StockSQLEntity
 from repository import repository, discovery_view_queries
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
+from model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
     create_recommendation, create_mediation
-from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
+from model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
 from utils.human_ids import humanize
 
 

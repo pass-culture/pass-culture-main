@@ -3,13 +3,13 @@ from datetime import datetime
 from domain.offers import is_from_allocine, update_is_active_status
 from models import OfferSQLEntity
 import pytest
-from tests.model_creators.generic_creators import (create_booking,
+from model_creators.generic_creators import (create_booking,
                                                    create_deposit,
                                                    create_offerer,
                                                    create_provider,
                                                    create_stock, create_user,
                                                    create_venue)
-from tests.model_creators.specific_creators import \
+from model_creators.specific_creators import \
     create_offer_with_event_product
 
 

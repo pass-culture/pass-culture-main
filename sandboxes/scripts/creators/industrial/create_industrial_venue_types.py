@@ -2,7 +2,7 @@ from typing import List
 
 from models.venue_type import VenueType
 from repository import repository
-from tests.model_creators.generic_creators import create_venue_type
+from model_creators.generic_creators import create_venue_type
 from utils.logger import logger
 
 

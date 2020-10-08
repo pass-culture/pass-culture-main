@@ -3,9 +3,9 @@ from unittest.mock import patch
 from recommendations_engine.recommendations import create_recommendations_for_discovery_v3
 from repository import repository, discovery_view_v3_queries
 import pytest
-from tests.model_creators.generic_creators import create_mediation, \
+from model_creators.generic_creators import create_mediation, \
     create_offerer, create_user, create_venue, create_iris, create_iris_venue
-from tests.model_creators.specific_creators import \
+from model_creators.specific_creators import \
     create_offer_with_thing_product, create_stock_from_offer
 from tests.test_utils import POLYGON_TEST
 from utils.human_ids import humanize

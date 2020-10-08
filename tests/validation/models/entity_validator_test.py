@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
-from tests.model_creators.generic_creators import create_offerer, create_bank_information, create_venue, create_stock, \
+from model_creators.generic_creators import create_offerer, create_bank_information, create_venue, create_stock, \
     create_user
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
+from model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 from validation.models.entity_validator import validate
 
 

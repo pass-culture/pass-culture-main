@@ -7,8 +7,8 @@ from models.feature import FeatureToggle
 from repository import repository
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_user
-from tests.model_creators.specific_creators import create_offer_with_event_product
+from model_creators.generic_creators import create_offerer, create_venue, create_user
+from model_creators.specific_creators import create_offer_with_event_product
 from tests.test_utils import deactivate_feature
 from utils.human_ids import humanize
 from validation.routes.seen_offers import PayloadMissing

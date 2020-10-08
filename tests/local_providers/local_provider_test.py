@@ -10,9 +10,9 @@ from repository import repository
 from tests.conftest import clean_database
 from tests.local_providers.provider_test_utils import TestLocalProvider, TestLocalProviderWithApiErrors, \
     TestLocalProviderNoCreation, TestLocalProviderWithThumb, TestLocalProviderWithThumbIndexAt4
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_provider
-from tests.model_creators.provider_creators import create_providable_info
-from tests.model_creators.specific_creators import create_product_with_thing_type
+from model_creators.generic_creators import create_offerer, create_venue, create_provider
+from model_creators.provider_creators import create_providable_info
+from model_creators.specific_creators import create_product_with_thing_type
 
 
 class LocalProviderTest:

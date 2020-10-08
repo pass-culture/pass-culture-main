@@ -1,9 +1,9 @@
 from domain.build_recommendations import move_requested_recommendation_first
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
+from model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
     create_mediation
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.specific_creators import create_offer_with_thing_product
 
 
 class MoveRequestedRecommendationFirstTest:

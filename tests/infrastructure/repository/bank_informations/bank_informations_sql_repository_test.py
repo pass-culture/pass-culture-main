@@ -7,7 +7,7 @@ from infrastructure.repository.bank_informations import bank_informations_domain
 from infrastructure.repository.bank_informations.bank_informations_sql_repository import BankInformationsSQLRepository
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_bank_information, create_venue
+from model_creators.generic_creators import create_offerer, create_bank_information, create_venue
 from models import ApiErrors
 
 

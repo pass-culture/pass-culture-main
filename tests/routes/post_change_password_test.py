@@ -5,7 +5,7 @@ from models import UserSQLEntity, ApiErrors
 from repository import repository
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_user
+from model_creators.generic_creators import create_user
 
 
 class PostChangePassword:

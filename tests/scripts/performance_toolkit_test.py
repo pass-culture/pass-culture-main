@@ -7,7 +7,7 @@ from models.db import db
 from repository import repository
 from scripts.performance_toolkit import get_pc_object_by_id_in_database, bulk_update_pc_objects, bulk_insert_pc_objects
 from tests.conftest import clean_database
-from tests.model_creators.specific_creators import create_product_with_thing_type
+from model_creators.specific_creators import create_product_with_thing_type
 
 
 class GetPcObjectByIdInDatabaseTest:

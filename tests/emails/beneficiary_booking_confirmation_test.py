@@ -5,9 +5,9 @@ from domain.booking.booking import Booking
 from domain.stock.stock import Stock
 from emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
 from tests.domain_creators.generic_creators import create_domain_beneficiary
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_mediation
-from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
+from model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
     create_offer_with_event_product
 
 

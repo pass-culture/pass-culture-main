@@ -4,9 +4,9 @@ from infrastructure.repository.favorite.favorite_sql_repository import FavoriteS
 
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_user, \
+from model_creators.generic_creators import create_offerer, create_user, \
     create_venue, create_mediation, create_favorite, create_booking
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
+from model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
 
 
 class FindByBeneficiaryTest:

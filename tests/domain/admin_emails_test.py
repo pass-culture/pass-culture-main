@@ -3,8 +3,8 @@ from unittest.mock import Mock, patch, MagicMock
 from domain.admin_emails import maybe_send_offerer_validation_email, send_payment_details_email, \
     send_wallet_balances_email, send_payments_report_emails, \
     send_offer_creation_notification_to_administration, send_payment_message_email
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
+from model_creators.specific_creators import create_offer_with_thing_product
 from utils.mailing import MailServiceException
 
 

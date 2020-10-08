@@ -5,9 +5,9 @@ from repository import repository
 from scripts.booking.create_booking_for_user_on_specific_stock import create_booking_for_user_on_specific_stock, \
     create_booking_for_user_on_specific_stock_bypassing_capping_limits
 import pytest
-from tests.model_creators.generic_creators import create_user, create_stock, create_venue, create_offerer, \
+from model_creators.generic_creators import create_user, create_stock, create_venue, create_offerer, \
     create_booking, create_deposit
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.specific_creators import create_offer_with_thing_product
 from use_cases.book_an_offer import BookingInformation
 
 

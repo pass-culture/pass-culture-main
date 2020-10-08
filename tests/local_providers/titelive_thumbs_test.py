@@ -10,8 +10,8 @@ from local_providers.titelive_thing_thumbs.titelive_thing_thumbs import extract_
 from models import Product
 from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.provider_creators import provider_test
-from tests.model_creators.specific_creators import create_product_with_thing_type
+from model_creators.provider_creators import provider_test
+from model_creators.specific_creators import create_product_with_thing_type
 
 
 class TiteliveThingThumbsTest:

@@ -2,7 +2,7 @@ from typing import List
 
 from models import UserSQLEntity
 from repository import repository
-from tests.model_creators.generic_creators import create_deposit
+from model_creators.generic_creators import create_deposit
 
 
 def grant_wallet_to_existing_users(user_ids: List[int]):

@@ -7,10 +7,10 @@ from local_providers.fnac.fnac_stocks import FnacStocks
 from models import OfferSQLEntity, StockSQLEntity
 from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_stock, \
+from model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_stock, \
     create_booking, create_user
-from tests.model_creators.provider_creators import activate_provider
-from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+from model_creators.provider_creators import activate_provider
+from model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 class FnacStocksTest:

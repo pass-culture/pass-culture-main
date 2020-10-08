@@ -14,9 +14,9 @@ from infrastructure.repository.stock.stock_sql_repository import StockSQLReposit
 from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 import pytest
 from tests.domain_creators.generic_creators import create_domain_beneficiary
-from tests.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
+from model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
     create_booking, create_stock, create_recommendation
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 from use_cases.book_an_offer import BookAnOffer, BookingInformation
 
 

@@ -4,7 +4,7 @@ from models import Product
 from repository import repository
 from scripts.product_thumb.reset_thumb_count import reset_thumb_count
 import pytest
-from tests.model_creators.specific_creators import create_product_with_thing_type
+from model_creators.specific_creators import create_product_with_thing_type
 
 
 @pytest.mark.usefixtures("db_session")

@@ -3,7 +3,7 @@ from repository import repository
 from repository.offer_queries import get_offers_for_recommendation
 from sandboxes.scripts.utils.select import remove_every
 from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
-from tests.model_creators.generic_creators import create_recommendation
+from model_creators.generic_creators import create_recommendation
 from utils.logger import logger
 
 ACTIVE_OFFERS_WITH_RECOMMENDATION_PER_USER_REMOVE_MODULO = 2

@@ -5,7 +5,7 @@ from typing import Dict, List
 from models.venue_type import VenueType
 from repository import repository
 from sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
-from tests.model_creators.generic_creators import create_bank_information, \
+from model_creators.generic_creators import create_bank_information, \
     create_venue
 from utils.logger import logger
 

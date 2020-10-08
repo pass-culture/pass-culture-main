@@ -6,9 +6,9 @@ from models import Product, OfferSQLEntity
 from repository import repository
 from scripts.remove_non_book_after_import import delete_product_from_isbn_file, read_isbn_from_file
 import pytest
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
-from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+from model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 @pytest.mark.usefixtures("db_session")

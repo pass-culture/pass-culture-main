@@ -1,6 +1,6 @@
 from domain.postal_code.postal_code import PostalCode
 from repository import repository
-from tests.model_creators.generic_creators import create_user_offerer
+from model_creators.generic_creators import create_user_offerer
 from utils.logger import logger
 
 

@@ -4,8 +4,8 @@ from models.db import db
 from repository import repository
 from scripts.venue.move_all_offers_for_venue import move_all_offers_from_venue_to_other_venue
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.generic_creators import create_offerer, create_venue
+from model_creators.specific_creators import create_offer_with_thing_product
 
 
 class MoveAllOffersFromVenueToOtherVenueTest:

@@ -1,6 +1,6 @@
 from models import ApiErrors
 from models.bank_information import BankInformationStatus
-from tests.model_creators.generic_creators import create_bank_information
+from model_creators.generic_creators import create_bank_information
 from validation.models.bank_information import validate
 
 

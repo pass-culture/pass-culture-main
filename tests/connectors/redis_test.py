@@ -14,7 +14,7 @@ from connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids, \
 from repository import repository
 from tests.conftest import clean_database
 import pytest
-from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_user, create_offerer, \
+from model_creators.generic_creators import create_venue_provider, create_venue, create_user, create_offerer, \
     create_user_offerer, create_provider
 
 

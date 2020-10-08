@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from emails.user_reset_password import retrieve_data_for_reset_password_user_email
 from repository import repository
-from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
+from model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 import pytest
 from tests.conftest import clean_database
 

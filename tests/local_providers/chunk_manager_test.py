@@ -5,8 +5,8 @@ from models import OfferSQLEntity, StockSQLEntity
 from models.db import db
 from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue
-from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+from model_creators.generic_creators import create_stock, create_offerer, create_venue
+from model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 class SaveChunksTest:

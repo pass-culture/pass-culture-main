@@ -1,6 +1,6 @@
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_venue
-from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
+from model_creators.generic_creators import create_offerer, create_venue
+from model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 
 from models import OfferSQLEntity
 from repository import repository

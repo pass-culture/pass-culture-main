@@ -5,10 +5,10 @@ from models import EventType, Deposit, BookingSQLEntity, UserSQLEntity
 from repository import repository
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit, create_user_offerer, create_api_key
-from tests.model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product
+from model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product
 from utils.token import random_token
 
 API_KEY_VALUE = random_token(64)

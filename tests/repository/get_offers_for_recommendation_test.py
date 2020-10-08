@@ -7,10 +7,10 @@ from repository import repository, discovery_view_queries
 from repository.discovery_view_queries import order_by_digital_offers
 from repository.offer_queries import get_offers_for_recommendation
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_criterion, \
+from model_creators.generic_creators import create_booking, create_criterion, \
     create_user, create_offerer, create_venue, \
     create_favorite, create_mediation, create_seen_offer
-from tests.model_creators.specific_creators import create_stock_from_offer, \
+from model_creators.specific_creators import create_stock_from_offer, \
     create_stock_with_thing_offer, create_product_with_thing_type, \
     create_offer_with_thing_product, create_offer_with_event_product
 

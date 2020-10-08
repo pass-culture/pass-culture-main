@@ -4,9 +4,9 @@ import pytest
 from dateutil import tz
 from pytest import fixture
 from tests.conftest import clean_database
-from tests.model_creators.activity_creators import create_booking_activity, save_all_activities
-from tests.model_creators.generic_creators import create_booking, create_deposit, create_offerer, create_payment, create_recommendation, create_stock, create_user, create_user_offerer, create_venue
-from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_stock_from_offer, create_stock_with_event_offer, \
+from model_creators.activity_creators import create_booking_activity, save_all_activities
+from model_creators.generic_creators import create_booking, create_deposit, create_offerer, create_payment, create_recommendation, create_stock, create_user, create_user_offerer, create_venue
+from model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_stock_from_offer, create_stock_with_event_offer, \
     create_stock_with_thing_offer
 
 from domain.booking_recap.booking_recap import BookBookingRecap, EventBookingRecap

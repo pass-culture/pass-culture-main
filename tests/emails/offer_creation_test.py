@@ -3,8 +3,8 @@ from unittest.mock import patch
 from bs4 import BeautifulSoup
 
 from models import ThingType
-from tests.model_creators.generic_creators import create_offerer, create_user, create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.generic_creators import create_offerer, create_user, create_venue
+from model_creators.specific_creators import create_offer_with_thing_product
 from tests.utils.mailing_test import _remove_whitespaces
 from utils.mailing import make_offer_creation_notification_email
 

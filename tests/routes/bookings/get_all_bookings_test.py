@@ -8,9 +8,9 @@ from pytest_mock import mocker
 from repository import repository
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, \
+from model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, \
     create_stock, create_booking
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.specific_creators import create_offer_with_thing_product
 from utils.date import format_into_timezoned_date
 from utils.human_ids import humanize
 

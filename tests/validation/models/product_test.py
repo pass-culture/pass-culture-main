@@ -1,5 +1,5 @@
 from models import ApiErrors, ThingType
-from tests.model_creators.specific_creators import \
+from model_creators.specific_creators import \
     create_product_with_thing_type
 from validation.models.product import validate
 

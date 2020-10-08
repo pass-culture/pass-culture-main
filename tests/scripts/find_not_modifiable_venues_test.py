@@ -1,7 +1,7 @@
 from repository import repository
 from scripts.find_not_modifiable_venues import generate_non_editable_venues_csv, _get_non_editable_venues
 import pytest
-from tests.model_creators.generic_creators import create_venue, create_offerer
+from model_creators.generic_creators import create_venue, create_offerer
 
 
 class GetNonEditableVenuesTest:

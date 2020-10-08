@@ -2,7 +2,7 @@ from models import AllocinePivot
 from repository import repository
 from scripts.link_theater_and_siret_in_allocine_pivot import link_theater_to_siret
 import pytest
-from tests.model_creators.generic_creators import create_venue, create_offerer
+from model_creators.generic_creators import create_venue, create_offerer
 
 
 @pytest.mark.usefixtures("db_session")

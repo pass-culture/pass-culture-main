@@ -17,10 +17,10 @@ from models.api_errors import ResourceGoneError, ForbiddenError
 from repository import repository
 import pytest
 from tests.domain_creators.generic_creators import create_domain_beneficiary
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_payment, create_deposit
-from tests.model_creators.specific_creators import create_stock_from_offer, \
+from model_creators.specific_creators import create_stock_from_offer, \
     create_product_with_thing_type, create_product_with_event_type, create_offer_with_thing_product, \
     create_offer_with_event_product
 from validation.routes.bookings import \

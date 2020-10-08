@@ -2,14 +2,14 @@ from repository import repository
 from scripts.payment.batch_steps import generate_new_payments
 import pytest
 from tests.conftest import TestClient
-from tests.model_creators.generic_creators import create_booking, \
+from model_creators.generic_creators import create_booking, \
     create_user, \
     create_offerer, \
     create_venue, \
     create_deposit, \
     create_user_offerer, \
     create_bank_information
-from tests.model_creators.specific_creators import create_stock_with_thing_offer
+from model_creators.specific_creators import create_stock_with_thing_offer
 
 
 class Get:

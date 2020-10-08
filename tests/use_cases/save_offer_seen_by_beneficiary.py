@@ -5,8 +5,8 @@ from freezegun import freeze_time
 from models import SeenOffer
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_user, create_seen_offer
-from tests.model_creators.specific_creators import create_offer_with_event_product
+from model_creators.generic_creators import create_offerer, create_venue, create_user, create_seen_offer
+from model_creators.specific_creators import create_offer_with_event_product
 from use_cases.save_offer_seen_by_beneficiary import save_seen_offer
 
 

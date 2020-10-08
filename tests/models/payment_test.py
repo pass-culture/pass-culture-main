@@ -4,7 +4,7 @@ from models.payment import Payment
 from models.payment_status import TransactionStatus, PaymentStatus
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_payment, create_user, create_booking, \
+from model_creators.generic_creators import create_payment, create_user, create_booking, \
     create_deposit, create_payment_message, create_payment_status
 
 

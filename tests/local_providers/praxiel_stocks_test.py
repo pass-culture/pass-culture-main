@@ -2,9 +2,9 @@ from datetime import datetime
 from unittest.mock import call, patch
 
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_offerer, create_stock, create_user, create_venue, create_venue_provider
-from tests.model_creators.provider_creators import activate_provider
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
+from model_creators.generic_creators import create_booking, create_offerer, create_stock, create_user, create_venue, create_venue_provider
+from model_creators.provider_creators import activate_provider
+from model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 
 from local_providers import PraxielStocks
 from models import OfferSQLEntity, StockSQLEntity

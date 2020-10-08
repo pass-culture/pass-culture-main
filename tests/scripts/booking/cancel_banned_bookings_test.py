@@ -5,9 +5,9 @@ from models.payment_status import TransactionStatus
 from repository import repository
 from scripts.booking.cancel_banned_bookings import cancel_banned_bookings
 import pytest
-from tests.model_creators.generic_creators import create_booking, create_stock, create_venue, create_offerer, \
+from model_creators.generic_creators import create_booking, create_stock, create_venue, create_offerer, \
     create_user, create_deposit, create_payment, create_payment_status
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from model_creators.specific_creators import create_offer_with_thing_product
 
 
 class CancelBannedBookingsTest:

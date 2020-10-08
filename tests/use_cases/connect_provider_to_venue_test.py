@@ -6,8 +6,8 @@ from local_providers import FnacStocks, LibrairesStocks, PraxielStocks, TiteLive
 from models import ApiErrors, VenueProvider
 from repository import repository
 from tests.local_providers.provider_test_utils import TestLocalProvider
-from tests.model_creators.generic_creators import create_offerer, create_provider, create_venue
-from tests.model_creators.provider_creators import activate_provider
+from model_creators.generic_creators import create_offerer, create_provider, create_venue
+from model_creators.provider_creators import activate_provider
 from use_cases.connect_venue_to_provider import connect_venue_to_provider
 from utils.human_ids import humanize
 

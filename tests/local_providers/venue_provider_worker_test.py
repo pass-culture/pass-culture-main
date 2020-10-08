@@ -4,8 +4,8 @@ from local_providers.venue_provider_worker import update_venues_for_specific_pro
 from models import VenueProvider
 from repository import repository
 import pytest
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider
-from tests.model_creators.provider_creators import activate_provider
+from model_creators.generic_creators import create_offerer, create_venue, create_venue_provider
+from model_creators.provider_creators import activate_provider
 
 
 class UpdateVenuesForSpecificProviderTest:
