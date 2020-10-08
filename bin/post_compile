@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# This file is used by Scalingo to install the "pcapi" (local) package
+# after it has installed all Python dependencies (which Scalingo does
+# because it detects that we have a "requirements.txt" file.
+
+pip install -e .
