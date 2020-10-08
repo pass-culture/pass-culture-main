@@ -1,4 +1,4 @@
-from models.offer_type import ProductType, ThingType, EventType
+from pcapi.models.offer_type import ProductType, ThingType, EventType
 
 
 class ProductTypeTest:

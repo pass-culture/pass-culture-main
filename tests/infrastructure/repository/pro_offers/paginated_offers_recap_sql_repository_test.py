@@ -1,11 +1,11 @@
 import pytest
-from model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
-from model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_product_with_event_type, create_product_with_thing_type
+from pcapi.model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_product_with_event_type, create_product_with_thing_type
 
-from domain.identifier.identifier import Identifier
-from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
-from infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
-from repository import repository
+from pcapi.domain.identifier.identifier import Identifier
+from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
+from pcapi.repository import repository
 
 
 class PaginatedOfferSQLRepositoryTest:

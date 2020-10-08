@@ -1,9 +1,10 @@
 import os
 from pathlib import Path
 
-from local_providers.local_provider import LocalProvider
-from models import VenueProvider, ThingType
-from models.db import Model
+from pcapi.local_providers.local_provider import LocalProvider
+from pcapi.models import VenueProvider, ThingType
+from pcapi.models.db import Model
+import pcapi.sandboxes
 
 
 class TestLocalProvider(LocalProvider):
@@ -64,8 +65,7 @@ class TestLocalProviderWithThumb(LocalProvider):
         self.venue_provider = venue_provider
 
     def get_object_thumb(self) -> bytes:
-        file_path = Path(os.path.dirname(os.path.realpath(__file__))) \
-                    / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_mocks' / 'provider_thumb.jpeg'
+        file_path = Path(pcapi.sandboxes.__path__[0]) / 'providers' / 'titelive_mocks' / 'provider_thumb.jpeg'
         return open(file_path, "rb").read()
 
     def get_object_thumb_index(self) -> int:
@@ -88,8 +88,7 @@ class TestLocalProviderWithThumbIndexAt4(LocalProvider):
         self.venue_provider = venue_provider
 
     def get_object_thumb(self) -> bytes:
-        file_path = Path(os.path.dirname(os.path.realpath(__file__))) \
-                    / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_mocks' / 'provider_thumb.jpeg'
+        file_path = Path(pcapi.sandboxes.__path__[0]) / 'providers' / 'titelive_mocks' / 'provider_thumb.jpeg'
         return open(file_path, "rb").read()
 
     def get_object_thumb_index(self) -> int:

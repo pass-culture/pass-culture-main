@@ -6,16 +6,16 @@ from tests.connector_creators.demarches_simplifiees_creators import \
     offerer_demarche_simplifiee_application_detail_response, \
     venue_demarche_simplifiee_application_detail_response_with_siret, \
     venue_demarche_simplifiee_application_detail_response_without_siret
-from domain.demarches_simplifiees import get_all_application_ids_for_demarche_simplifiee, \
+from pcapi.domain.demarches_simplifiees import get_all_application_ids_for_demarche_simplifiee, \
     get_closed_application_ids_for_demarche_simplifiee, DmsApplicationStates, \
     get_offerer_bank_information_application_details_by_application_id, \
     get_venue_bank_information_application_details_by_application_id, ApplicationDetail, \
     _get_status_from_demarches_simplifiees_application_state, CannotRegisterBankInformation
-from models.bank_information import BankInformationStatus
-from utils.date import DATE_ISO_FORMAT
+from pcapi.models.bank_information import BankInformationStatus
+from pcapi.utils.date import DATE_ISO_FORMAT
 
 
-@patch('domain.demarches_simplifiees.get_all_applications_for_procedure')
+@patch('pcapi.domain.demarches_simplifiees.get_all_applications_for_procedure')
 class GetAllApplicationIdsForBeneficiaryImportTest:
     def setup_method(self):
         self.PROCEDURE_ID = '123456789'
@@ -223,13 +223,12 @@ class GetAllApplicationIdsForBeneficiaryImportTest:
         assert application_ids == [3, 2, 1, 4]
 
 
+@patch('pcapi.domain.demarches_simplifiees.get_all_applications_for_procedure')
 class GetClosedApplicationIdsForBeneficiaryImportTest:
     def setup_method(self):
         self.PROCEDURE_ID = '123456789'
         self.TOKEN = 'AZERTY123/@.,!é'
 
-    @patch(
-        'domain.demarches_simplifiees.get_all_applications_for_procedure')
     def test_returns_applications_with_state_closed_only(self, get_all_applications_for_procedure):
         # Given
         get_all_applications_for_procedure.return_value = {
@@ -257,7 +256,7 @@ class GetClosedApplicationIdsForBeneficiaryImportTest:
         assert application_ids == [2]
 
 
-@patch('domain.demarches_simplifiees.get_application_details')
+@patch('pcapi.domain.demarches_simplifiees.get_application_details')
 class GetOffererBankInformation_applicationDetailsByApplicationId:
     def test_retrieve_and_format_all_fields(self, get_application_details):
         # Given
@@ -281,7 +280,7 @@ class GetOffererBankInformation_applicationDetailsByApplicationId:
         assert application_details.venue_name == None
         assert application_details.modification_date == updated_at
 
-    @patch('domain.demarches_simplifiees.format_raw_iban_and_bic')
+    @patch('pcapi.domain.demarches_simplifiees.format_raw_iban_and_bic')
     def test_format_bic_and_iban(self, mock_format_raw_iban_and_bic, get_application_details):
         # Given
         updated_at = datetime(2020, 1, 3)
@@ -299,7 +298,7 @@ class GetOffererBankInformation_applicationDetailsByApplicationId:
         ])
 
 
-@patch('domain.demarches_simplifiees.get_application_details')
+@patch('pcapi.domain.demarches_simplifiees.get_application_details')
 class GetVenueBankInformation_applicationDetailsByApplicationId:
     def test_retrieve_and_format_all_fields_when_with_siret(self, get_application_details):
         # Given
@@ -345,7 +344,7 @@ class GetVenueBankInformation_applicationDetailsByApplicationId:
         assert application_details.venue_name == 'VENUE_NAME'
         assert application_details.modification_date == updated_at
 
-    @patch('domain.demarches_simplifiees.format_raw_iban_and_bic')
+    @patch('pcapi.domain.demarches_simplifiees.format_raw_iban_and_bic')
     def test_format_bic_and_iban_when_with_siret(self, mock_format_raw_iban_and_bic, get_application_details):
         # Given
         updated_at = datetime(2020, 1, 3)
@@ -362,7 +361,7 @@ class GetVenueBankInformation_applicationDetailsByApplicationId:
             call("SOGeferp")
         ])
 
-    @patch('domain.demarches_simplifiees.format_raw_iban_and_bic')
+    @patch('pcapi.domain.demarches_simplifiees.format_raw_iban_and_bic')
     def test_format_bic_and_iban_when_without_siret(self, mock_format_raw_iban_and_bic, get_application_details):
         # Given
         updated_at = datetime(2020, 1, 3)

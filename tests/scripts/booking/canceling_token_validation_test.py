@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from models import BookingSQLEntity
-from repository import repository
-from scripts.booking.canceling_token_validation import canceling_token_validation
+from pcapi.models import BookingSQLEntity
+from pcapi.repository import repository
+from pcapi.scripts.booking.canceling_token_validation import canceling_token_validation
 import pytest
-from model_creators.generic_creators import create_booking, \
+from pcapi.model_creators.generic_creators import create_booking, \
     create_deposit, create_offerer, create_payment, create_user
 
 

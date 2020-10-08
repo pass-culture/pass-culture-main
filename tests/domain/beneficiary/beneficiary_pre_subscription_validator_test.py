@@ -4,13 +4,13 @@ import pytest
 import pytest
 from tests.domain_creators.generic_creators import \
     create_domain_beneficiary_pre_subcription
-from model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user
 
-from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
     BeneficiaryIsADuplicate, BeneficiaryIsNotEligible, CantRegisterBeneficiary
-from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import \
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import \
     _is_postal_code_eligible, validate
-from repository import repository
+from pcapi.repository import repository
 
 
 @pytest.mark.usefixtures("db_session")

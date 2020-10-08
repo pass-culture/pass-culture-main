@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from domain.booking.booking import Booking
-from domain.booking.booking_exceptions import EventHappensInLessThan72Hours, BookingIsAlreadyUsed
+from pcapi.domain.booking.booking import Booking
+from pcapi.domain.booking.booking_exceptions import EventHappensInLessThan72Hours, BookingIsAlreadyUsed
 from tests.domain_creators.generic_creators import create_domain_stock, create_domain_beneficiary
 
 

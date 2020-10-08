@@ -1,11 +1,11 @@
 from unittest.mock import patch
 
-from domain.password import validate_change_password_request
-from models import UserSQLEntity, ApiErrors
-from repository import repository
+from pcapi.domain.password import validate_change_password_request
+from pcapi.models import UserSQLEntity, ApiErrors
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user
 
 
 class PostChangePassword:
@@ -30,7 +30,7 @@ class PostChangePassword:
 
     class Returns400:
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.passwords.validate_change_password_request')
+        @patch('pcapi.routes.passwords.validate_change_password_request')
         def when_one_password_is_missing_in_the_request_body(self, validate_change_password_request, app):
             # given
             api_errors = ApiErrors()

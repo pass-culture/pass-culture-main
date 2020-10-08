@@ -2,19 +2,19 @@ from typing import List
 
 import pandas
 
-from models import ThingType, EventType
-from models.payment_status import TransactionStatus
-from repository import repository
-from scripts.dashboard.finance_statistics import get_total_deposits, get_total_amount_spent, get_total_amount_to_pay, \
+from pcapi.models import ThingType, EventType
+from pcapi.models.payment_status import TransactionStatus
+from pcapi.repository import repository
+from pcapi.scripts.dashboard.finance_statistics import get_total_deposits, get_total_amount_spent, get_total_amount_to_pay, \
     _query_get_top_20_offers_by_number_of_bookings, get_top_20_offers_table, \
     _query_get_top_20_offerers_by_number_of_bookings, get_top_20_offerers_table_by_number_of_bookings, \
     _query_get_top_20_offerers_by_booking_amounts, get_top_20_offerers_by_amount_table
 from tests.conftest import clean_database
 import pytest
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit, create_payment
-from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 class GetTotalDepositsTest:

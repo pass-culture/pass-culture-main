@@ -1,12 +1,12 @@
 import pytest
 from sqlalchemy import func
 
-from models import OfferSQLEntity, VenueSQLEntity, ApiErrors
-from repository import repository
+from pcapi.models import OfferSQLEntity, VenueSQLEntity, ApiErrors
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_offerer, create_venue
-from utils.human_ids import humanize
-from utils.rest import check_order_by, load_or_raise_error
+from pcapi.model_creators.generic_creators import create_offerer, create_venue
+from pcapi.utils.human_ids import humanize
+from pcapi.utils.rest import check_order_by, load_or_raise_error
 
 
 class TestLoadOrRaiseErrorTest:

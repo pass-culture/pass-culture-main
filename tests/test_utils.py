@@ -3,9 +3,9 @@ from unittest.mock import Mock
 
 from shapely.geometry import Polygon
 
-from models import BookingSQLEntity
-from models.feature import Feature, FeatureToggle
-from repository import repository
+from pcapi.models import BookingSQLEntity
+from pcapi.models.feature import Feature, FeatureToggle
+from pcapi.repository import repository
 
 
 def deactivate_feature(feature_toggle: FeatureToggle):

@@ -1,7 +1,7 @@
-from models import ApiErrors, ThingType
-from model_creators.specific_creators import \
+from pcapi.models import ApiErrors, ThingType
+from pcapi.model_creators.specific_creators import \
     create_product_with_thing_type
-from validation.models.product import validate
+from pcapi.validation.models.product import validate
 
 
 def test_should_return_error_message_when_product_is_digital_and_offline():

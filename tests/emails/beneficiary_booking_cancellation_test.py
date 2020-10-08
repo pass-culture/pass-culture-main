@@ -3,17 +3,17 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 
-from emails.beneficiary_booking_cancellation import \
+from pcapi.emails.beneficiary_booking_cancellation import \
     make_beneficiary_booking_cancellation_email_data
-from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_recommendation
-from model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
+from pcapi.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
     create_offer_with_event_product
 
 
 class MakeBeneficiaryBookingCancellationEmailDataTest:
-    @patch('emails.beneficiary_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('emails.beneficiary_booking_cancellation.format_environment_for_email', return_value='')
+    @patch('pcapi.emails.beneficiary_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.emails.beneficiary_booking_cancellation.format_environment_for_email', return_value='')
     def test_should_return_thing_data_when_booking_is_a_thing(self, mock_format_environment_for_email):
         # Given
         beneficiary = create_user(email='fabien@example.com', first_name='Fabien')
@@ -47,8 +47,8 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
         }
 
     @freeze_time('2019-11-26 18:29:20.891028')
-    @patch('emails.beneficiary_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('emails.beneficiary_booking_cancellation.format_environment_for_email', return_value='-testing')
+    @patch('pcapi.emails.beneficiary_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.emails.beneficiary_booking_cancellation.format_environment_for_email', return_value='-testing')
     def test_should_return_event_data_when_booking_is_an_event(self, mock_format_environment_for_email):
         # Given
         venue = create_venue(create_offerer())

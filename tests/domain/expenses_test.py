@@ -1,10 +1,10 @@
-from domain.booking.booking import Booking
-from domain.expenses import get_expenses
-from domain.stock.stock import Stock
-from models import ThingType, EventType
+from pcapi.domain.booking.booking import Booking
+from pcapi.domain.expenses import get_expenses
+from pcapi.domain.stock.stock import Stock
+from pcapi.models import ThingType, EventType
 from tests.domain_creators.generic_creators import create_domain_beneficiary
-from model_creators.generic_creators import create_offerer, create_venue
-from model_creators.specific_creators import create_booking_for_thing, create_booking_for_event, \
+from pcapi.model_creators.generic_creators import create_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_booking_for_thing, create_booking_for_event, \
     create_offer_with_thing_product
 
 

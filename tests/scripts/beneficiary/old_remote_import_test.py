@@ -3,12 +3,12 @@ from unittest.mock import Mock, patch
 
 from mailjet_rest import Client
 
-from models import ApiErrors, BeneficiaryImport, ImportStatus, UserSQLEntity
-from repository import repository
-from scripts.beneficiary import old_remote_import
-from scripts.beneficiary.old_remote_import import parse_beneficiary_information
+from pcapi.models import ApiErrors, BeneficiaryImport, ImportStatus, UserSQLEntity
+from pcapi.repository import repository
+from pcapi.scripts.beneficiary import old_remote_import
+from pcapi.scripts.beneficiary.old_remote_import import parse_beneficiary_information
 import pytest
-from model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user
 from tests.scripts.beneficiary.old_remote_fixture import \
     APPLICATION_DETAIL_STANDARD_RESPONSE, make_old_application_detail
 
@@ -17,7 +17,7 @@ ONE_WEEK_AGO = NOW - timedelta(days=7)
 
 
 class OldRemoteImportRunTest:
-    @patch('scripts.beneficiary.old_remote_import.process_beneficiary_application')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.process_beneficiary_application')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})
     def test_all_applications_are_processed_once(self, process_beneficiary_application):
         # given
@@ -47,7 +47,7 @@ class OldRemoteImportRunTest:
         # then
         assert process_beneficiary_application.call_count == 3
 
-    @patch('scripts.beneficiary.old_remote_import.process_beneficiary_application')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.process_beneficiary_application')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})
     def test_applications_to_retry_are_processed(self, process_beneficiary_application):
         # given
@@ -77,7 +77,7 @@ class OldRemoteImportRunTest:
         # then
         assert process_beneficiary_application.call_count == 3
 
-    @patch('scripts.beneficiary.old_remote_import.parse_beneficiary_information')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.parse_beneficiary_information')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS': 'send@example.com'})
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})
     @pytest.mark.usefixtures("db_session")
@@ -111,7 +111,7 @@ class OldRemoteImportRunTest:
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.detail == 'Le dossier 123 contient des erreurs et a été ignoré - Procedure 2567158'
 
-    @patch('scripts.beneficiary.old_remote_import.process_beneficiary_application')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.process_beneficiary_application')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})
     def test_application_with_known_application_id_are_not_processed(self,
                                                                      process_beneficiary_application
@@ -139,7 +139,7 @@ class OldRemoteImportRunTest:
         # then
         process_beneficiary_application.assert_not_called()
 
-    @patch('scripts.beneficiary.old_remote_import.process_beneficiary_application')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.process_beneficiary_application')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})
     @pytest.mark.usefixtures("db_session")
     def test_application_with_known_email_are_saved_as_rejected(self,
@@ -172,7 +172,7 @@ class OldRemoteImportRunTest:
         assert beneficiary_import.detail == 'Compte existant avec cet email'
         process_beneficiary_application.assert_not_called()
 
-    @patch('scripts.beneficiary.old_remote_import.process_beneficiary_application')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.process_beneficiary_application')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})
     @pytest.mark.usefixtures("db_session")
     def test_beneficiary_is_created_with_procedure_id(
@@ -277,9 +277,9 @@ class ProcessBeneficiaryApplicationTest:
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert beneficiary_import.applicationId == 123
 
-    @patch('scripts.beneficiary.old_remote_import.create_beneficiary_from_application')
-    @patch('scripts.beneficiary.old_remote_import.repository')
-    @patch('scripts.beneficiary.old_remote_import.send_activation_email')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.create_beneficiary_from_application')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.repository')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.send_activation_email')
     @pytest.mark.usefixtures("db_session")
     def test_account_activation_email_is_sent(self, send_activation_email, mock_repository,
                                               create_beneficiary_from_application, app):
@@ -306,9 +306,9 @@ class ProcessBeneficiaryApplicationTest:
         # then
         send_activation_email.assert_called()
 
-    @patch('scripts.beneficiary.old_remote_import.create_beneficiary_from_application')
-    @patch('scripts.beneficiary.old_remote_import.repository')
-    @patch('scripts.beneficiary.old_remote_import.send_activation_email')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.create_beneficiary_from_application')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.repository')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.send_activation_email')
     @pytest.mark.usefixtures("db_session")
     def test_error_is_collected_if_beneficiary_could_not_be_saved(self,
                                                                   send_activation_email, mock_repository,
@@ -340,8 +340,8 @@ class ProcessBeneficiaryApplicationTest:
         assert error_messages == ['{\n  "postalCode": [\n    "baaaaad value"\n  ]\n}']
         assert not new_beneficiaries
 
-    @patch('scripts.beneficiary.old_remote_import.repository')
-    @patch('scripts.beneficiary.old_remote_import.send_activation_email')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.repository')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.send_activation_email')
     @pytest.mark.usefixtures("db_session")
     def test_beneficiary_is_not_created_if_duplicates_are_found(self, send_activation_email, mock_repository,
                                                                 app):
@@ -372,7 +372,7 @@ class ProcessBeneficiaryApplicationTest:
         beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
 
-    @patch('scripts.beneficiary.old_remote_import.send_activation_email')
+    @patch('pcapi.scripts.beneficiary.old_remote_import.send_activation_email')
     @pytest.mark.usefixtures("db_session")
     def test_beneficiary_is_created_if_duplicates_are_found_but_id_is_in_retry_list(self, send_activation_email, app):
         # given

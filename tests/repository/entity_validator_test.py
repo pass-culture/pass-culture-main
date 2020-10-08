@@ -1,5 +1,5 @@
-from validation.models import entity_validator
-from model_creators.generic_creators import create_bank_information
+from pcapi.validation.models import entity_validator
+from pcapi.model_creators.generic_creators import create_bank_information
 
 
 def test_offerer_errors_raises_an_error_if_both_iban_and_bic_are_empty():

@@ -3,13 +3,13 @@ from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-from repository import repository
+from pcapi.repository import repository
 import pytest
 from tests.conftest import clean_database, TestClient
 from tests.files.images import ONE_PIXEL_PNG
-from model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
-from model_creators.specific_creators import create_offer_with_event_product
-from utils.human_ids import humanize
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.utils.human_ids import humanize
 
 MODULE_PATH = Path(os.path.dirname(os.path.realpath(__file__)))
 
@@ -17,9 +17,9 @@ MODULE_PATH = Path(os.path.dirname(os.path.realpath(__file__)))
 class Post:
     class Returns201:
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.mediations.feature_queries.is_active', return_value=True)
-        @patch('routes.mediations.redis.add_offer_id')
-        @patch('routes.mediations.read_thumb')
+        @patch('pcapi.routes.mediations.feature_queries.is_active', return_value=True)
+        @patch('pcapi.routes.mediations.redis.add_offer_id')
+        @patch('pcapi.routes.mediations.read_thumb')
         def when_mediation_is_created_with_thumb_url(self, read_thumb, mock_redis, mock_feature, app):
             # given
             user = create_user()
@@ -49,8 +49,8 @@ class Post:
             assert response.status_code == 201
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.mediations.feature_queries.is_active', return_value=True)
-        @patch('routes.mediations.redis.add_offer_id')
+        @patch('pcapi.routes.mediations.feature_queries.is_active', return_value=True)
+        @patch('pcapi.routes.mediations.redis.add_offer_id')
         def when_mediation_is_created_with_thumb_file(self, mock_redis, mock_feature, app):
             # given
             user = create_user()
@@ -80,8 +80,8 @@ class Post:
             assert response.status_code == 201
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.mediations.feature_queries.is_active', return_value=True)
-        @patch('routes.mediations.redis.add_offer_id')
+        @patch('pcapi.routes.mediations.feature_queries.is_active', return_value=True)
+        @patch('pcapi.routes.mediations.redis.add_offer_id')
         def should_add_offer_id_to_redis_when_mediation_is_created_with_thumb(self, mock_redis, mock_feature, app):
             # given
             user = create_user()
@@ -114,7 +114,7 @@ class Post:
             assert mock_kwargs['offer_id'] == offer.id
 
     class Returns400:
-        @patch('connectors.thumb_storage.requests.get')
+        @patch('pcapi.connectors.thumb_storage.requests.get')
         @pytest.mark.usefixtures("db_session")
         def when_mediation_is_created_with_thumb_url_pointing_to_not_an_image(self, mock_thumb_storage_request, app):
             # given
@@ -198,7 +198,7 @@ class Post:
             assert response.json['thumb'] == ["L'image doit faire 400 * 400 px minimum"]
 
         @clean_database
-        @patch('routes.mediations.repository')
+        @patch('pcapi.routes.mediations.repository')
         def expect_mediation_not_to_be_saved(self, mock_repository, app):
             # given
             user = create_user()

@@ -3,13 +3,13 @@ from unittest.mock import patch
 
 from tests.conftest import TestClient
 import pytest
-from model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
-from model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 
-from domain.identifier.identifier import Identifier
-from infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
-from repository import repository
-from use_cases.list_offers_for_pro_user import OffersRequestParameters
+from pcapi.domain.identifier.identifier import Identifier
+from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
+from pcapi.repository import repository
+from pcapi.use_cases.list_offers_for_pro_user import OffersRequestParameters
 
 
 class Get:
@@ -56,7 +56,7 @@ class Get:
             assert len(offers) == 1
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.offers.list_offers_for_pro_user.execute')
+        @patch('pcapi.routes.offers.list_offers_for_pro_user.execute')
         def test_results_are_paginated_with_pagination_details_in_body(self, list_offers_mock, app):
             # Given
             user = create_user()
@@ -81,7 +81,7 @@ class Get:
             assert response.json['total_count'] == 2
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.offers.list_offers_for_pro_user.execute')
+        @patch('pcapi.routes.offers.list_offers_for_pro_user.execute')
         def test_does_not_show_result_to_user_offerer_when_not_validated(self, list_offers_mock, app):
             # given
             user = create_user()
@@ -100,7 +100,7 @@ class Get:
             assert response.json == {'offers': [], 'page': 0, 'page_count': 0, 'total_count': 0}
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.offers.list_offers_for_pro_user.execute')
+        @patch('pcapi.routes.offers.list_offers_for_pro_user.execute')
         def test_results_are_filtered_by_given_venue_id(self, list_offers_mock, app):
             # given
             user = create_user()

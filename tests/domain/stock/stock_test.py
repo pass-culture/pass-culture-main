@@ -2,9 +2,9 @@ from datetime import datetime
 
 from freezegun import freeze_time
 
-from domain.stock.stock import Stock
-from model_creators.generic_creators import create_offerer, create_venue, create_user, create_booking
-from model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
+from pcapi.domain.stock.stock import Stock
+from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_user, create_booking
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
 
 
 class HasBookingLimitDatetimePassedTest:

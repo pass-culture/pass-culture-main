@@ -1,11 +1,11 @@
 import pytest
 
-from domain.beneficiary.beneficiary import Beneficiary
-from domain.beneficiary.beneficiary_exceptions import BeneficiaryDoesntExist
-from repository import repository
-from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
+from pcapi.domain.beneficiary.beneficiary import Beneficiary
+from pcapi.domain.beneficiary.beneficiary_exceptions import BeneficiaryDoesntExist
+from pcapi.repository import repository
+from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 import pytest
-from model_creators.generic_creators import create_user, create_deposit
+from pcapi.model_creators.generic_creators import create_user, create_deposit
 
 
 class BeneficiarySQLRepositoryTest:

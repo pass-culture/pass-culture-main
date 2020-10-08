@@ -2,12 +2,12 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from connectors.api_allocine import get_movies_showtimes_from_allocine, AllocineException, \
+from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine, AllocineException, \
     get_movie_poster_from_allocine
 
 
 class GetMovieShowtimeListTest:
-    @patch('connectors.api_allocine.requests.get')
+    @patch('pcapi.connectors.api_allocine.requests.get')
     def test_should_return_request_response_from_api(self, request_get):
         # Given
         token = 'test'
@@ -25,7 +25,7 @@ class GetMovieShowtimeListTest:
                                             f"token={token}&theater={theater_id}")
         assert api_response == expected_result
 
-    @patch('connectors.api_allocine.requests.get')
+    @patch('pcapi.connectors.api_allocine.requests.get')
     def test_should_raise_exception_when_api_call_fails(self, request_get):
         # Given
         token = 'test'
@@ -41,7 +41,7 @@ class GetMovieShowtimeListTest:
         # Then
         assert str(exception.value) == "Error getting API Allocine DATA for theater test_id"
 
-    @patch('connectors.api_allocine.requests.get', side_effect=Exception)
+    @patch('pcapi.connectors.api_allocine.requests.get', side_effect=Exception)
     def test_should_raise_exception_when_api_call_fails_with_connection_error(self, mocked_requests_get):
         # Given
         token = 'test'
@@ -56,7 +56,7 @@ class GetMovieShowtimeListTest:
 
 
 class GetMoviePosterFromAllocineTest:
-    @patch('connectors.api_allocine.requests.get')
+    @patch('pcapi.connectors.api_allocine.requests.get')
     def test_should_return_poster_content_from_allocine_api(self, request_get):
         # Given
         poster_url = 'https://fr.web.img6.acsta.net/pictures/19/10/23/15/11/3506165.jpg'
@@ -71,7 +71,7 @@ class GetMoviePosterFromAllocineTest:
         request_get.assert_called_once_with(poster_url)
         assert api_response == bytes()
 
-    @patch('connectors.api_allocine.requests.get')
+    @patch('pcapi.connectors.api_allocine.requests.get')
     def test_should_raise_exception_when_allocine_api_call_fails(self, request_get):
         # Given
         poster_url = 'https://fr.web.img6.acsta.net/pictures/19/10/23/15/11/3506165.jpg'

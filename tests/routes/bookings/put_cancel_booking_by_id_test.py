@@ -1,14 +1,14 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from models import BookingSQLEntity
-from repository import repository
+from pcapi.models import BookingSQLEntity
+from pcapi.repository import repository
 from tests.conftest import TestClient
 import pytest
-from model_creators.generic_creators import create_booking, \
+from pcapi.model_creators.generic_creators import create_booking, \
     create_deposit, create_offerer, create_user, create_venue, create_stock
-from model_creators.specific_creators import create_offer_with_event_product
-from utils.human_ids import humanize
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.utils.human_ids import humanize
 
 
 class Put:
@@ -45,8 +45,8 @@ class Put:
                                      'user': {'id': humanize(user.id), 'wallet_balance': 500.0}
                                      }
 
-        @patch('routes.bookings.feature_queries.is_active', return_value=True)
-        @patch('routes.bookings.redis.add_offer_id')
+        @patch('pcapi.routes.bookings.feature_queries.is_active', return_value=True)
+        @patch('pcapi.routes.bookings.redis.add_offer_id')
         @pytest.mark.usefixtures("db_session")
         def when_booking_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, mock_feature, app):
             # Given
@@ -64,8 +64,8 @@ class Put:
             assert response.status_code == 200
             mock_add_offer_id_to_redis.assert_called_once_with(client=app.redis_client, offer_id=booking.stock.offerId)
 
-        @patch('routes.bookings.feature_queries.is_active', return_value=False)
-        @patch('routes.bookings.redis.add_offer_id')
+        @patch('pcapi.routes.bookings.feature_queries.is_active', return_value=False)
+        @patch('pcapi.routes.bookings.redis.add_offer_id')
         @pytest.mark.usefixtures("db_session")
         def when_booking_expect_offer_id_not_to_be_added_to_redis(self, mock_add_offer_id_to_redis, mock_feature, app):
             # Given

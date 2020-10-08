@@ -1,10 +1,10 @@
-from models import AllocineVenueProvider, VenueProvider
-from repository import repository
+from pcapi.models import AllocineVenueProvider, VenueProvider
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_offerer, create_venue, \
     create_allocine_venue_provider, \
     create_provider, create_venue_provider
-from model_creators.provider_creators import activate_provider
+from pcapi.model_creators.provider_creators import activate_provider
 
 
 class AllocineVenueProviderTest:

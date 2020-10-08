@@ -1,8 +1,8 @@
-from models import AllocineVenueProvider, VenueSQLEntity
-from repository import repository
-from scripts.change_default_number_of_entries_for_theater import change_quantity_for_allocine_venue_provider
+from pcapi.models import AllocineVenueProvider, VenueSQLEntity
+from pcapi.repository import repository
+from pcapi.scripts.change_default_number_of_entries_for_theater import change_quantity_for_allocine_venue_provider
 import pytest
-from model_creators.generic_creators import create_venue, create_offerer, create_provider, \
+from pcapi.model_creators.generic_creators import create_venue, create_offerer, create_provider, \
     create_allocine_venue_provider
 
 

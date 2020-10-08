@@ -1,14 +1,14 @@
 from unittest.mock import patch
 
-from recommendations_engine.recommendations import create_recommendations_for_discovery_v3
-from repository import repository, discovery_view_v3_queries
+from pcapi.recommendations_engine.recommendations import create_recommendations_for_discovery_v3
+from pcapi.repository import repository, discovery_view_v3_queries
 import pytest
-from model_creators.generic_creators import create_mediation, \
+from pcapi.model_creators.generic_creators import create_mediation, \
     create_offerer, create_user, create_venue, create_iris, create_iris_venue
-from model_creators.specific_creators import \
+from pcapi.model_creators.specific_creators import \
     create_offer_with_thing_product, create_stock_from_offer
 from tests.test_utils import POLYGON_TEST
-from utils.human_ids import humanize
+from pcapi.utils.human_ids import humanize
 
 
 class CreateRecommendationsForDiscoveryTest:
@@ -45,7 +45,7 @@ class CreateRecommendationsForDiscoveryTest:
         assert humanize(mediation2.id) not in mediations
         assert humanize(mediation1.id) not in mediations
 
-    @patch('recommendations_engine.recommendations.get_offers_for_recommendation_v3')
+    @patch('pcapi.recommendations_engine.recommendations.get_offers_for_recommendation_v3')
     def test_requests_offers_with_same_criteria(self, mock_get_offers_for_recommendation_v3):
         # Given
         user = create_user()

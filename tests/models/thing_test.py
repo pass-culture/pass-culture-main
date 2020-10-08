@@ -1,9 +1,9 @@
 import pytest
 
-from models import ApiErrors, ThingType
-from repository import repository
+from pcapi.models import ApiErrors, ThingType
+from pcapi.repository import repository
 import pytest
-from model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
 
 
 def test_thing_type_find_from_sub_labels_returns_nothing_if_no_sub_labels():

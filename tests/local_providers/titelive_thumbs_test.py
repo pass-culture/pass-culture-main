@@ -1,17 +1,17 @@
 """ local providers test """
 
-import os
 from pathlib import Path
 from unittest.mock import patch
 from zipfile import ZipFile
 
-from local_providers import TiteLiveThingThumbs
-from local_providers.titelive_thing_thumbs.titelive_thing_thumbs import extract_thumb_index
-from models import Product
-from repository import repository
+from pcapi.local_providers import TiteLiveThingThumbs
+from pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs import extract_thumb_index
+from pcapi.models import Product
+from pcapi.repository import repository
+import pcapi.sandboxes
 from tests.conftest import clean_database
-from model_creators.provider_creators import provider_test
-from model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.provider_creators import provider_test
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
 
 
 class TiteliveThingThumbsTest:
@@ -37,8 +37,8 @@ class TiteliveThingThumbsTest:
             assert thumb_index == 4
 
     @clean_database
-    @patch('local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_zip_file_from_ftp')
+    @patch('pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_zip_file_from_ftp')
     def test_compute_first_thumb_dominant_color_even_if_not_first_file(self,
                                                                        get_thumbs_zip_file_from_ftp,
                                                                        get_ordered_thumbs_zip_files,
@@ -67,8 +67,8 @@ class TiteliveThingThumbsTest:
                       )
 
     @clean_database
-    @patch('local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_zip_file_from_ftp')
+    @patch('pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_zip_file_from_ftp')
     def test_updates_thumb_count_for_product_when_new_thumbs_added(self,
                                                                    get_thumbs_zip_file_from_ftp,
                                                                    get_ordered_thumbs_zip_files,
@@ -102,8 +102,7 @@ def get_zip_with_1_usable_thumb_file():
 
 
 def get_zip_thumbs_file_from_named_sandbox_file(file_name):
-    data_root_path = Path(os.path.dirname(os.path.realpath(__file__))) \
-                     / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_mocks'
+    data_root_path = Path(pcapi.sandboxes.__path__[0]) / 'providers' / 'titelive_mocks'
     return data_root_path / file_name
 
 

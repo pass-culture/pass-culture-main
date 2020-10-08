@@ -1,8 +1,8 @@
-from models import ApiErrors
-from model_creators.generic_creators import create_offerer, create_venue
-from model_creators.specific_creators import \
+from pcapi.models import ApiErrors
+from pcapi.model_creators.generic_creators import create_offerer, create_venue
+from pcapi.model_creators.specific_creators import \
     create_offer_with_thing_product
-from validation.models.offer import validate
+from pcapi.validation.models.offer import validate
 
 
 def test_should_return_error_message_when_offer_is_digital_and_his_venue_is_not_virtual():

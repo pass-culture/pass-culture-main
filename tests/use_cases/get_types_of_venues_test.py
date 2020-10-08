@@ -2,8 +2,8 @@ from unittest.mock import Mock
 
 
 import pytest
-from model_creators.generic_creators import create_venue_type
-from use_cases.get_types_of_venues import get_types_of_venues
+from pcapi.model_creators.generic_creators import create_venue_type
+from pcapi.use_cases.get_types_of_venues import get_types_of_venues
 
 
 class UseCaseTest:

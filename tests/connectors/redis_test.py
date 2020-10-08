@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 
 import redis
 
-from connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids, \
+from pcapi.connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids, \
     add_venue_id, \
     get_venue_ids, delete_venue_ids, _add_venue_provider, get_venue_providers, \
     delete_venue_providers, send_venue_provider_data_to_redis, add_to_indexed_offers, \
@@ -11,10 +11,10 @@ from connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids, \
     check_offer_exists, get_offer_details, delete_all_indexed_offers, add_venue_provider_currently_in_sync, \
     delete_venue_provider_currently_in_sync, get_number_of_venue_providers_currently_in_sync, add_offer_ids_in_error, \
     get_offer_ids_in_error, delete_offer_ids_in_error
-from repository import repository
+from pcapi.repository import repository
 from tests.conftest import clean_database
 import pytest
-from model_creators.generic_creators import create_venue_provider, create_venue, create_user, create_offerer, \
+from pcapi.model_creators.generic_creators import create_venue_provider, create_venue, create_user, create_offerer, \
     create_user_offerer, create_provider
 
 
@@ -48,7 +48,7 @@ class AddOfferIdTest:
 
 
 class GetOfferIdsTest:
-    @patch('connectors.redis.REDIS_OFFER_IDS_CHUNK_SIZE', return_value=1000)
+    @patch('pcapi.connectors.redis.REDIS_OFFER_IDS_CHUNK_SIZE', return_value=1000)
     def test_should_return_offer_ids_from_list(self, mock_redis_lrange_end):
         # Given
         client = MagicMock()
@@ -158,8 +158,8 @@ class AddVenueProviderTest:
         client.rpush.assert_called_once_with('venue_providers',
                                              '{"id": 1, "providerId": 1, "venueId": 1}')
 
-    @patch('connectors.redis._add_venue_provider')
-    @patch('connectors.redis.redis')
+    @patch('pcapi.connectors.redis._add_venue_provider')
+    @patch('pcapi.connectors.redis.redis')
     @clean_database
     def test_send_venue_provider_should_call_add_venue_provider_with_redis_client_and_venue_provider(self,
                                                                                                      mock_redis,
@@ -183,7 +183,7 @@ class AddVenueProviderTest:
 
 
 class GetVenueProvidersTest:
-    @patch('connectors.redis.REDIS_VENUE_PROVIDERS_CHUNK_SIZE', 2)
+    @patch('pcapi.connectors.redis.REDIS_VENUE_PROVIDERS_CHUNK_SIZE', 2)
     def test_should_return_venue_providers(self):
         # Given
         client = MagicMock()

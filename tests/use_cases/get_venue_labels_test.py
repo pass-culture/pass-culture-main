@@ -1,9 +1,9 @@
 from unittest.mock import MagicMock
 
-from domain.venue.venue_label.venue_label import VenueLabel
-from infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
+from pcapi.domain.venue.venue_label.venue_label import VenueLabel
+from pcapi.infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
 import pytest
-from use_cases.get_venue_labels import GetVenueLabels
+from pcapi.use_cases.get_venue_labels import GetVenueLabels
 
 
 class GetVenueLabelsTest:

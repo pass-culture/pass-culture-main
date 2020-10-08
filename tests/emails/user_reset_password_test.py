@@ -1,17 +1,17 @@
 from unittest.mock import patch
 
-from emails.user_reset_password import retrieve_data_for_reset_password_user_email
-from repository import repository
-from model_creators.generic_creators import create_user, create_offerer, create_user_offerer
+from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_email
+from pcapi.repository import repository
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 import pytest
 from tests.conftest import clean_database
 
 
 class MakeUserResetPasswordEmailDataTest:
-    @patch('emails.user_reset_password.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('emails.user_reset_password.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('emails.user_reset_password.format_environment_for_email', return_value='-testing')
-    @patch('emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=False)
+    @patch('pcapi.emails.user_reset_password.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.emails.user_reset_password.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.user_reset_password.format_environment_for_email', return_value='-testing')
+    @patch('pcapi.emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=False)
     @clean_database
     @pytest.mark.usefixtures("db_session")
     def test_email_is_sent_to_dev_at_passculture_when_not_production_environment(self,
@@ -43,9 +43,9 @@ class MakeUserResetPasswordEmailDataTest:
                 }
         }
 
-    @patch('emails.user_reset_password.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('emails.user_reset_password.format_environment_for_email', return_value='')
-    @patch('emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.emails.user_reset_password.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.emails.user_reset_password.format_environment_for_email', return_value='')
+    @patch('pcapi.emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=True)
     @pytest.mark.usefixtures("db_session")
     def test_email_is_sent_to_pro_offerer_when_production_environment(self,
                                                                       mock_send_mail_enabled,

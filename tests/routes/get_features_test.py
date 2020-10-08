@@ -1,9 +1,9 @@
 import pytest
 
-from repository import repository
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_user, API_URL
+from pcapi.model_creators.generic_creators import create_user, API_URL
 
 
 @pytest.mark.standalone

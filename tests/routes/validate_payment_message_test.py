@@ -1,10 +1,10 @@
 from io import BytesIO
 
-from repository import repository
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
 from tests.files.transactions import VALID_MESSAGE
-from model_creators.generic_creators import create_user, create_payment_message
+from pcapi.model_creators.generic_creators import create_user, create_payment_message
 
 
 class Post:

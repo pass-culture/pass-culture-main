@@ -1,9 +1,9 @@
 from unittest.mock import patch
 
-from models import Feature
-from models.feature import FeatureToggle
-from repository import repository
-from scripts.payment.batch import generate_and_send_payments
+from pcapi.models import Feature
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import repository
+from pcapi.scripts.payment.batch import generate_and_send_payments
 import pytest
 from tests.test_utils import deactivate_feature
 
@@ -14,15 +14,15 @@ class GenerateAndSendPaymentsTest:
         'PASS_CULTURE_BIC': '1234567',
         'PASS_CULTURE_REMITTANCE_CODE': '1234567',
     })
-    @patch('scripts.payment.batch.update_booking_used_after_stock_occurrence')
-    @patch('scripts.payment.batch.get_payments_by_message_id')
-    @patch('scripts.payment.batch.generate_new_payments', return_value=([], []))
-    @patch('scripts.payment.batch.set_not_processable_payments_with_bank_information_to_retry', return_value=[])
-    @patch('scripts.payment.batch.concatenate_payments_with_errors_and_retries', return_value=[])
-    @patch('scripts.payment.batch.send_transactions', return_value=[])
-    @patch('scripts.payment.batch.send_payments_report', return_value=[])
-    @patch('scripts.payment.batch.send_payments_details', return_value=[])
-    @patch('scripts.payment.batch.send_wallet_balances', return_value=[])
+    @patch('pcapi.scripts.payment.batch.update_booking_used_after_stock_occurrence')
+    @patch('pcapi.scripts.payment.batch.get_payments_by_message_id')
+    @patch('pcapi.scripts.payment.batch.generate_new_payments', return_value=([], []))
+    @patch('pcapi.scripts.payment.batch.set_not_processable_payments_with_bank_information_to_retry', return_value=[])
+    @patch('pcapi.scripts.payment.batch.concatenate_payments_with_errors_and_retries', return_value=[])
+    @patch('pcapi.scripts.payment.batch.send_transactions', return_value=[])
+    @patch('pcapi.scripts.payment.batch.send_payments_report', return_value=[])
+    @patch('pcapi.scripts.payment.batch.send_payments_details', return_value=[])
+    @patch('pcapi.scripts.payment.batch.send_wallet_balances', return_value=[])
     @pytest.mark.usefixtures("db_session")
     def test_should_retrieve_all_steps_except_1_bis_when_message_id_is_none(self,
                                                                             send_wallet_balances,
@@ -60,15 +60,15 @@ class GenerateAndSendPaymentsTest:
         'PASS_CULTURE_BIC': '1234567',
         'PASS_CULTURE_REMITTANCE_CODE': '1234567',
     })
-    @patch('scripts.payment.batch.update_booking_used_after_stock_occurrence')
-    @patch('scripts.payment.batch.get_payments_by_message_id')
-    @patch('scripts.payment.batch.generate_new_payments', return_value=([], []))
-    @patch('scripts.payment.batch.set_not_processable_payments_with_bank_information_to_retry', return_value=[])
-    @patch('scripts.payment.batch.concatenate_payments_with_errors_and_retries', return_value=[])
-    @patch('scripts.payment.batch.send_transactions', return_value=[])
-    @patch('scripts.payment.batch.send_payments_report', return_value=[])
-    @patch('scripts.payment.batch.send_payments_details', return_value=[])
-    @patch('scripts.payment.batch.send_wallet_balances', return_value=[])
+    @patch('pcapi.scripts.payment.batch.update_booking_used_after_stock_occurrence')
+    @patch('pcapi.scripts.payment.batch.get_payments_by_message_id')
+    @patch('pcapi.scripts.payment.batch.generate_new_payments', return_value=([], []))
+    @patch('pcapi.scripts.payment.batch.set_not_processable_payments_with_bank_information_to_retry', return_value=[])
+    @patch('pcapi.scripts.payment.batch.concatenate_payments_with_errors_and_retries', return_value=[])
+    @patch('pcapi.scripts.payment.batch.send_transactions', return_value=[])
+    @patch('pcapi.scripts.payment.batch.send_payments_report', return_value=[])
+    @patch('pcapi.scripts.payment.batch.send_payments_details', return_value=[])
+    @patch('pcapi.scripts.payment.batch.send_wallet_balances', return_value=[])
     @pytest.mark.usefixtures("db_session")
     def test_should_start_script_at_1_bis_step_when_message_id_is_provided(self,
                                                                            send_wallet_balances,
@@ -101,15 +101,15 @@ class GenerateAndSendPaymentsTest:
         'PASS_CULTURE_BIC': '1234567',
         'PASS_CULTURE_REMITTANCE_CODE': '1234567',
     })
-    @patch('scripts.payment.batch.update_booking_used_after_stock_occurrence')
-    @patch('scripts.payment.batch.get_payments_by_message_id')
-    @patch('scripts.payment.batch.generate_new_payments', return_value=([], []))
-    @patch('scripts.payment.batch.set_not_processable_payments_with_bank_information_to_retry', return_value=[])
-    @patch('scripts.payment.batch.concatenate_payments_with_errors_and_retries', return_value=[])
-    @patch('scripts.payment.batch.send_transactions', return_value=[])
-    @patch('scripts.payment.batch.send_payments_report', return_value=[])
-    @patch('scripts.payment.batch.send_payments_details', return_value=[])
-    @patch('scripts.payment.batch.send_wallet_balances', return_value=[])
+    @patch('pcapi.scripts.payment.batch.update_booking_used_after_stock_occurrence')
+    @patch('pcapi.scripts.payment.batch.get_payments_by_message_id')
+    @patch('pcapi.scripts.payment.batch.generate_new_payments', return_value=([], []))
+    @patch('pcapi.scripts.payment.batch.set_not_processable_payments_with_bank_information_to_retry', return_value=[])
+    @patch('pcapi.scripts.payment.batch.concatenate_payments_with_errors_and_retries', return_value=[])
+    @patch('pcapi.scripts.payment.batch.send_transactions', return_value=[])
+    @patch('pcapi.scripts.payment.batch.send_payments_report', return_value=[])
+    @patch('pcapi.scripts.payment.batch.send_payments_details', return_value=[])
+    @patch('pcapi.scripts.payment.batch.send_wallet_balances', return_value=[])
     @pytest.mark.usefixtures("db_session")
     def test_should_not_update_booking_usage_if_corresponding_feature_is_disabled(self,
                                                                            send_wallet_balances,

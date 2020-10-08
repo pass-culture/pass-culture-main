@@ -1,10 +1,10 @@
 from unittest.mock import patch, call
 
-from models.db import db
-from repository import repository
+from pcapi.models.db import db
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_offerer, create_venue
+from pcapi.model_creators.generic_creators import create_offerer, create_venue
 
 
 class Get:
@@ -27,8 +27,8 @@ class Get:
             db.session.refresh(venue)
             assert venue.isValidated
 
-        @patch('routes.validate.feature_queries.is_active', return_value=True)
-        @patch('routes.validate.redis.add_venue_id')
+        @patch('pcapi.routes.validate.feature_queries.is_active', return_value=True)
+        @patch('pcapi.routes.validate.redis.add_venue_id')
         @pytest.mark.usefixtures("db_session")
         def expect_venue_id_to_be_added_to_redis(self, mock_redis, mock_feature, app):
             # Given
@@ -48,7 +48,7 @@ class Get:
             ]
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.validate.link_valid_venue_to_irises')
+        @patch('pcapi.routes.validate.link_valid_venue_to_irises')
         def expect_link_venue_to_iris_if_valid_to_be_called_for_validated_venue(self, mocked_link_venue_to_iris_if_valid, app):
             # Given
             offerer = create_offerer()

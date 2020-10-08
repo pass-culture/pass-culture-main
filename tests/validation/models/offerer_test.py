@@ -1,6 +1,6 @@
-from models import ApiErrors
-from model_creators.generic_creators import create_offerer
-from validation.models.offerer import validate
+from pcapi.models import ApiErrors
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.validation.models.offerer import validate
 
 
 def test_should_return_error_message_when_siren_has_not_exactly_9_characters():

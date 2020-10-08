@@ -1,8 +1,8 @@
-from domain.music_types import music_types
-from repository import repository
+from pcapi.domain.music_types import music_types
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user
 
 
 class Get:

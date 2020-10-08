@@ -2,15 +2,15 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from models import VenueSQLEntity
-from repository import repository
-from scripts.update_venue_type import _read_venue_type_from_file, update_venue_type
+from pcapi.models import VenueSQLEntity
+from pcapi.repository import repository
+from pcapi.scripts.update_venue_type import _read_venue_type_from_file, update_venue_type
 import pytest
-from model_creators.generic_creators import create_offerer, create_venue, create_venue_type
+from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_venue_type
 
 
 class UpdateVenueTypeTest:
-    @patch('scripts.update_venue_type._read_venue_type_from_file')
+    @patch('pcapi.scripts.update_venue_type._read_venue_type_from_file')
     @pytest.mark.usefixtures("db_session")
     def test_should_update_venue_type_whith_type_from_read_file_when_id_match(self, stub_read_venue_type_from_file, app, capsys):
         # Given
@@ -33,7 +33,7 @@ class UpdateVenueTypeTest:
         assert updated_venue.venueTypeId == 2
         assert "1 venues have been updated" in captured.out
 
-    @patch('scripts.update_venue_type._read_venue_type_from_file')
+    @patch('pcapi.scripts.update_venue_type._read_venue_type_from_file')
     @pytest.mark.usefixtures("db_session")
     def test_should_not_be_stuck_because_of_no_siren_offerer_and_print_a_list_of_errored_venues(self, stub_read_venue_type_from_file, app, capsys):
         # Given
@@ -62,7 +62,7 @@ class UpdateVenueTypeTest:
         assert "Venues in error : 121, 99" in captured.out
 
 
-    @patch('scripts.update_venue_type._read_venue_type_from_file')
+    @patch('pcapi.scripts.update_venue_type._read_venue_type_from_file')
     @pytest.mark.usefixtures("db_session")
     def test_should_not_update_venue_type_whith_type_from_read_file_when_venue_id_does_not_match(self, stub_read_venue_type_from_file, app, capsys):
         # Given
@@ -87,7 +87,7 @@ class UpdateVenueTypeTest:
         assert "0 venues have been updated" in captured.out
 
 
-    @patch('scripts.update_venue_type._read_venue_type_from_file')
+    @patch('pcapi.scripts.update_venue_type._read_venue_type_from_file')
     @pytest.mark.usefixtures("db_session")
     def test_should_not_update_venue_type_whith_type_from_read_file_when_type_label_does_not_match(self, stub_read_venue_type_from_file, app, capsys):
         # Given

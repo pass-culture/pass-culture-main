@@ -2,8 +2,8 @@ from typing import List
 
 from pytest import fixture
 
-from models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, VenueSQLEntity, OfferSQLEntity
-from sandboxes.scripts.creators.bookings_recap.bookings_recap import save_bookings_recap_sandbox
+from pcapi.models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, VenueSQLEntity, OfferSQLEntity
+from pcapi.sandboxes.scripts.creators.bookings_recap.bookings_recap import save_bookings_recap_sandbox
 import pytest
 
 

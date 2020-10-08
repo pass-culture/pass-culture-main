@@ -3,13 +3,13 @@ from unittest.mock import patch
 
 import pytest
 
-from models import BookingSQLEntity, OfferSQLEntity, StockSQLEntity, UserSQLEntity, Product, ApiErrors
-from repository import repository
+from pcapi.models import BookingSQLEntity, OfferSQLEntity, StockSQLEntity, UserSQLEntity, Product, ApiErrors
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_recommendation, create_mediation, create_deposit
-from model_creators.specific_creators import create_stock_from_offer, create_product_with_thing_type, \
+from pcapi.model_creators.specific_creators import create_stock_from_offer, create_product_with_thing_type, \
     create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product, \
     create_stock_with_thing_offer, create_stock_with_event_offer
 
@@ -100,7 +100,7 @@ def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_
 
 
 class BookingThumbUrlTest:
-    @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+    @patch('pcapi.models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
     def test_model_thumbUrl_should_use_mediation_of_recommendation_first_as_thumbUrl(self, get_storage_base_url):
         # given
         user = create_user(email='user@example.com')
@@ -119,7 +119,7 @@ class BookingThumbUrlTest:
         # then
         assert booking.thumbUrl == "http://localhost/storage/thumbs/mediations/AE"
 
-    @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+    @patch('pcapi.models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
     def test_model_thumbUrl_should_have_thumbUrl_using_active_mediation_when_no_recommendation(self,
                                                                                                get_storage_base_url):
         # given
@@ -138,7 +138,7 @@ class BookingThumbUrlTest:
         # then
         assert booking.thumbUrl == "http://localhost/storage/thumbs/mediations/A9"
 
-    @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+    @patch('pcapi.models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
     def test_model_thumbUrl_should_have_thumbUrl_using_product_when_no_mediation_nor_recommendation(self,
                                                                                                     get_storage_base_url):
         # given
@@ -156,7 +156,7 @@ class BookingThumbUrlTest:
         # then
         assert booking.thumbUrl == "http://localhost/storage/thumbs/products/A9"
 
-    @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+    @patch('pcapi.models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
     def test_model_thumbUrl_should_have_no_thumb_when_no_mediation_nor_recommendation_and_product_thumb_count_is_0(self,
                                                                                                                    get_storage_base_url):
         # given
@@ -173,7 +173,7 @@ class BookingThumbUrlTest:
         # then
         assert booking.thumbUrl is None
 
-    @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
+    @patch('pcapi.models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
     def test_model_thumbUrl_should_have_no_thumb_when_no_thumb_on_mediation_nor_recommendation_and_mediation_thumb_count_is_0(
             self, get_storage_base_url):
         # given
@@ -492,7 +492,7 @@ class IsEventExpiredTest:
 
 
 class IsEventDeletableTest:
-    @patch('models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch('pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_not_an_event(self):
         # Given
         user = create_user()
@@ -507,7 +507,7 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    @patch('models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch('pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_an_event_in_the_future(self):
         # Given
         user = create_user()
@@ -524,7 +524,7 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    @patch('models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch('pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_expired_since_less_than_event_automatic_refund_delay(self):
         # Given
         user = create_user()
@@ -541,7 +541,7 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    @patch('models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch('pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_not_deletable_when_stock_is_expired_since_more_than_event_automatic_refund_delay(self):
         # Given
         user = create_user()

@@ -3,20 +3,20 @@ from unittest.mock import patch, call
 
 import pytest
 
-from local_providers.fnac.fnac_stocks import FnacStocks
-from models import OfferSQLEntity, StockSQLEntity
-from repository import repository
+from pcapi.local_providers.fnac.fnac_stocks import FnacStocks
+from pcapi.models import OfferSQLEntity, StockSQLEntity
+from pcapi.repository import repository
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_stock, \
+from pcapi.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_stock, \
     create_booking, create_user
-from model_creators.provider_creators import activate_provider
-from model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+from pcapi.model_creators.provider_creators import activate_provider
+from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 class FnacStocksTest:
     class NextTest:
         @pytest.mark.usefixtures("db_session")
-        @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
+        @patch('pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_should_return_providable_infos_with_correct_data(self, mock_fnac_api_response, app):
             # Given
             mock_fnac_api_response.return_value = iter([
@@ -57,7 +57,7 @@ class FnacStocksTest:
 
     class UpdateObjectsTest:
         @clean_database
-        @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
+        @patch('pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_fnac_stock_provider_create_one_stock_and_one_offer_with_wanted_attributes(self,
                                                                                            mock_fnac_api_response,
                                                                                            app):
@@ -97,7 +97,7 @@ class FnacStocksTest:
             assert stock.bookingLimitDatetime is None
 
         @clean_database
-        @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
+        @patch('pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_fnac_stock_provider_update_one_stock_and_update_matching_offer(self, mock_fnac_api_response,
                                                                                 app):
             # Given
@@ -131,7 +131,7 @@ class FnacStocksTest:
             assert OfferSQLEntity.query.count() == 1
 
         @pytest.mark.usefixtures("db_session")
-        @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
+        @patch('pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_fnac_stocks_create_2_stocks_and_2_offers_even_if_existing_offer_on_same_product(self,
                                                                                                  mock_fnac_api_response,
                                                                                                  app):
@@ -169,7 +169,7 @@ class FnacStocksTest:
             assert fnac_stocks.last_processed_isbn == '1550199555555'
 
         @clean_database
-        @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
+        @patch('pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
         def test_fnac_stock_provider_available_stock_is_sum_of_updated_available_and_bookings(self,
                                                                                               mock_fnac_api_response,
                                                                                               app):
@@ -222,7 +222,7 @@ class FnacStocksTest:
 
 class WhenSynchronizedTwiceTest:
     @pytest.mark.usefixtures("db_session")
-    @patch('local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
+    @patch('pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information')
     def test_fnac_stock_provider_iterates_over_pagination(self, mock_fnac_api_response, app):
         # Given
         mock_fnac_api_response.side_effect = [

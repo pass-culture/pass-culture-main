@@ -2,16 +2,16 @@ from unittest.mock import patch
 
 import pytest
 
-from models import SeenOffer
-from models.feature import FeatureToggle
-from repository import repository
+from pcapi.models import SeenOffer
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_offerer, create_venue, create_user
-from model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_user
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from tests.test_utils import deactivate_feature
-from utils.human_ids import humanize
-from validation.routes.seen_offers import PayloadMissing
+from pcapi.utils.human_ids import humanize
+from pcapi.validation.routes.seen_offers import PayloadMissing
 
 
 class Put:
@@ -53,7 +53,7 @@ class Put:
             assert response.status_code == 400
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.seen_offers.check_payload_is_valid')
+        @patch('pcapi.routes.seen_offers.check_payload_is_valid')
         def when_json_is_empty(self, check_payload_is_valid_mock, app):
             # Given
             beneficiary = create_user()

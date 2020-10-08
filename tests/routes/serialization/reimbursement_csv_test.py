@@ -1,18 +1,18 @@
 from freezegun import freeze_time
 
-from models.feature import FeatureToggle
-from models.payment_status import TransactionStatus
-from repository import repository
-from repository.reimbursement_queries import find_all_offerer_payments
-from routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv, \
+from pcapi.models.feature import FeatureToggle
+from pcapi.models.payment_status import TransactionStatus
+from pcapi.repository import repository
+from pcapi.repository.reimbursement_queries import find_all_offerer_payments
+from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv, \
     ReimbursementDetails, \
     find_all_offerer_reimbursement_details
-from scripts.payment.batch_steps import generate_new_payments
+from pcapi.scripts.payment.batch_steps import generate_new_payments
 import pytest
-from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_user_offerer, create_bank_information, create_payment
-from model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
 from tests.test_utils import deactivate_feature
 
 

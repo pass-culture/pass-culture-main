@@ -1,13 +1,13 @@
 from decimal import Decimal
 from unittest.mock import MagicMock
 
-from models import AllocineVenueProvider, AllocineVenueProviderPriceRule
-from repository import repository
+from pcapi.models import AllocineVenueProvider, AllocineVenueProviderPriceRule
+from pcapi.repository import repository
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_allocine_pivot, create_offerer, create_venue
-from model_creators.provider_creators import activate_provider
-from use_cases.connect_venue_to_allocine import connect_venue_to_allocine
-from utils.human_ids import humanize
+from pcapi.model_creators.generic_creators import create_allocine_pivot, create_offerer, create_venue
+from pcapi.model_creators.provider_creators import activate_provider
+from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
+from pcapi.utils.human_ids import humanize
 
 
 class ConnectAllocineToVenueTest:

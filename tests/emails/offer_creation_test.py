@@ -2,11 +2,11 @@ from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 
-from models import ThingType
-from model_creators.generic_creators import create_offerer, create_user, create_venue
-from model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.models import ThingType
+from pcapi.model_creators.generic_creators import create_offerer, create_user, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from tests.utils.mailing_test import _remove_whitespaces
-from utils.mailing import make_offer_creation_notification_email
+from pcapi.utils.mailing import make_offer_creation_notification_email
 
 
 class MakeOfferCreationNotificationEmailTest:
@@ -18,7 +18,7 @@ class MakeOfferCreationNotificationEmailTest:
         cls.virtual_offer = create_offer_with_thing_product(virtual_venue, thing_type=ThingType.JEUX_VIDEO, thing_name='Les lapins crétins', idx=2)
         cls.physical_offer = create_offer_with_thing_product(pysical_venue, thing_type=ThingType.AUDIOVISUEL, thing_name='Le vent se lève', idx=1)
 
-    @patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_when_physical_offer_returns_subject_with_departement_information_and_dictionary_with_given_content(self, app):
         # When
         author = create_user(email='user@example.com')
@@ -45,7 +45,7 @@ class MakeOfferCreationNotificationEmailTest:
         assert 'test.url/offres/AE' in link
         assert 'href="test.url/offres/AE"' in link
 
-    @patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_when_virtual_offer_returns_subject_with_virtual_information_and_dictionary_with_given_content(self, app):
         # When
         author = create_user()

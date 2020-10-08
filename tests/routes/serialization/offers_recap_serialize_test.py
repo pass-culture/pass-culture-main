@@ -1,7 +1,7 @@
-from domain.identifier.identifier import Identifier
+from pcapi.domain.identifier.identifier import Identifier
 
-from domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap
-from routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
+from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap
+from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 
 
 def should_return_serialized_offers_with_relevant_informations():

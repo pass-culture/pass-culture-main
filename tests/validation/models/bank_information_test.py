@@ -1,7 +1,7 @@
-from models import ApiErrors
-from models.bank_information import BankInformationStatus
-from model_creators.generic_creators import create_bank_information
-from validation.models.bank_information import validate
+from pcapi.models import ApiErrors
+from pcapi.models.bank_information import BankInformationStatus
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.validation.models.bank_information import validate
 
 
 def test_should_return_error_message_when_iban_is_invalid():

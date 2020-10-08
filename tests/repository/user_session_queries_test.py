@@ -2,9 +2,9 @@ import uuid
 
 import pytest
 
-from models import UserSession
-from repository import repository
-from repository.user_session_queries import delete_user_session
+from pcapi.models import UserSession
+from pcapi.repository import repository
+from pcapi.repository.user_session_queries import delete_user_session
 import pytest
 
 

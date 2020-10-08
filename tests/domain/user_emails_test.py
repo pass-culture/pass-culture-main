@@ -3,18 +3,18 @@ from unittest.mock import Mock, call, patch
 import pytest
 from tests.domain_creators.generic_creators import create_domain_beneficiary, \
     create_domain_beneficiary_pre_subcription
-from model_creators.generic_creators import create_booking, \
+from pcapi.model_creators.generic_creators import create_booking, \
     create_deposit, create_offerer, create_user, create_user_offerer, \
     create_venue
-from model_creators.specific_creators import create_offer_with_thing_product, \
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, \
     create_stock_with_event_offer
 from tests.test_utils import create_mocked_bookings
 
-from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
     BeneficiaryIsADuplicate, BeneficiaryIsNotEligible
-from domain.booking.booking import Booking
-from domain.stock.stock import Stock
-from domain.user_emails import send_activation_email, \
+from pcapi.domain.booking.booking import Booking
+from pcapi.domain.stock.stock import Stock
+from pcapi.domain.user_emails import send_activation_email, \
     send_attachment_validation_email_to_pro_offerer, \
     send_batch_cancellation_emails_to_users, \
     send_beneficiary_booking_cancellation_email, \
@@ -29,12 +29,12 @@ from domain.user_emails import send_activation_email, \
     send_user_validation_email, send_validation_confirmation_email_to_pro, \
     send_venue_validation_confirmation_email, \
     send_warning_to_beneficiary_after_pro_booking_cancellation
-from models import Offerer
-from repository import repository
+from pcapi.models import Offerer
+from pcapi.repository import repository
 
 
 class SendBeneficiaryBookingCancellationEmailTest:
-    @patch('domain.user_emails.make_beneficiary_booking_cancellation_email_data',
+    @patch('pcapi.domain.user_emails.make_beneficiary_booking_cancellation_email_data',
            return_value={'Mj-TemplateID': 1091464})
     def test_should_called_mocked_send_email_with_valid_data(self,
                                                              mocked_make_beneficiary_booking_cancellation_email_data):
@@ -52,9 +52,9 @@ class SendBeneficiaryBookingCancellationEmailTest:
 
 
 class SendOffererDrivenCancellationEmailToOffererTest:
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-    @patch('domain.user_emails.make_offerer_driven_cancellation_email_for_offerer', return_value={'Html-part': ''})
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
+    @patch('pcapi.domain.user_emails.make_offerer_driven_cancellation_email_for_offerer', return_value={'Html-part': ''})
+    @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def test_should_send_cancellation_by_offerer_email_to_offerer_and_administration_when_booking_email_provided(self,
                                                                                                                  feature_send_mail_to_users_enabled,
                                                                                                                  make_offerer_driven_cancellation_email_for_offerer):
@@ -77,9 +77,9 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         args = mocked_send_email.call_args
         assert args[1]['data']['To'] == 'offer@example.com, administration@example.com'
 
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-    @patch('domain.user_emails.make_offerer_driven_cancellation_email_for_offerer', return_value={'Html-part': ''})
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
+    @patch('pcapi.domain.user_emails.make_offerer_driven_cancellation_email_for_offerer', return_value={'Html-part': ''})
+    @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def test_should_send_cancellation_by_offerer_email_only_to_administration_when_no_booking_email_provided(self,
                                                                                                              feature_send_mail_to_users_enabled,
                                                                                                              make_offerer_driven_cancellation_email_for_offerer):
@@ -104,8 +104,8 @@ class SendOffererDrivenCancellationEmailToOffererTest:
 
 class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
     @pytest.mark.usefixtures("db_session")
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-    @patch('emails.beneficiary_offer_cancellation.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
+    @patch('pcapi.emails.beneficiary_offer_cancellation.feature_send_mail_to_users_enabled', return_value=True)
     def test_should_send_booking_cancellation_email_to_offerer_and_administration_when_booking_email_provided(self,
                                                                                                               mock_feature_send_mail_to_users_enabled,
                                                                                                               app):
@@ -130,8 +130,8 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         assert args[1]['data']['To'] == 'booking@example.com, administration@example.com'
 
     @pytest.mark.usefixtures("db_session")
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-    @patch('emails.beneficiary_offer_cancellation.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
+    @patch('pcapi.emails.beneficiary_offer_cancellation.feature_send_mail_to_users_enabled', return_value=True)
     def test_should_send_booking_cancellation_email_only_to_administration_when_no_booking_email_provided(self,
                                                                                                           mock_feature_send_mail_to_users_enabled,
                                                                                                           app):
@@ -157,9 +157,9 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 
 
 class SendWarningToBeneficiaryAfterProBookingCancellationTest:
-    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled',
+    @patch('pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled',
            return_value=True)
     def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self, mock_feature_send_mail_to_users_enabled):
         # Given
@@ -195,8 +195,8 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
 
 
 class SendBookingConfirmationEmailToBeneficiaryTest:
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    @patch('domain.user_emails.retrieve_data_for_beneficiary_booking_confirmation_email',
+    @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.domain.user_emails.retrieve_data_for_beneficiary_booking_confirmation_email',
            return_value={'MJ-TemplateID': 1163067})
     def when_called_calls_send_email(self,
                                      mocked_retrieve_data_for_beneficiary_booking_confirmation_email,
@@ -216,8 +216,8 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
 
 
 class SendBookingRecapEmailsTest:
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
+    @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
     def when_feature_send_mail_to_users_disabled_sends_email_to_pass_culture_dev(self,
                                                                                  mock_feature_send_mail_to_users_enabled,
                                                                                  app):
@@ -245,8 +245,8 @@ class SendBookingRecapEmailsTest:
         data = args[1]['data']
         assert data['To'] == 'dev@example.com'
 
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
+    @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration(self,
                                                                                                             mock_feature_send_mail_to_users_enabled,
                                                                                                             app):
@@ -275,8 +275,8 @@ class SendBookingRecapEmailsTest:
         data = args[1]['data']
         assert data['To'] == 'administration@example.com, offer.booking.email@example.net'
 
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
+    @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(
             self,
             feature_send_mail_to_users_enabled):
@@ -307,7 +307,7 @@ class SendBookingRecapEmailsTest:
 
 
 class SendValidationConfirmationEmailTest:
-    @patch('domain.user_emails.retrieve_data_for_new_offerer_validation_email',
+    @patch('pcapi.domain.user_emails.retrieve_data_for_new_offerer_validation_email',
            return_value={'Mj-TemplateID': 778723})
     def when_feature_send_mail_to_users_is_enabled_sends_email_to_all_users_linked_to_offerer(self,
                                                                                               mock_retrieve_data_for_new_offerer_validation_email):
@@ -324,8 +324,8 @@ class SendValidationConfirmationEmailTest:
 
 
 class SendCancellationEmailOneUserTest:
-    @patch('domain.user_emails.send_warning_to_beneficiary_after_pro_booking_cancellation')
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.domain.user_emails.send_warning_to_beneficiary_after_pro_booking_cancellation')
+    @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_called_calls_send_offerer_driven_cancellation_email_to_user_for_every_booking(self,
                                                                                            feature_send_mail_to_users_enabled,
                                                                                            mocked_send_warning_to_beneficiary_after_pro_booking_cancellation):
@@ -343,10 +343,10 @@ class SendCancellationEmailOneUserTest:
 
 
 class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
-    @patch('domain.user_emails.retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation',
+    @patch('pcapi.domain.user_emails.retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation',
            return_value={'Mj-TemplateID': 1116333})
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
+    @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_sends_to_offerer_administration(self,
                                                                                 feature_send_mail_to_users_enabled,
                                                                                 retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation):
@@ -364,10 +364,10 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
                                                                                                       recipients)
         mocked_send_email.assert_called_once_with(data={'Mj-TemplateID': 1116333})
 
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-    @patch('domain.user_emails.retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation',
+    @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
+    @patch('pcapi.domain.user_emails.retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation',
            return_value={'Mj-TemplateID': 1116333})
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_offerer_email_is_missing_sends_only_to_administration(self,
                                                                                                           feature_send_mail_to_users_enabled,
                                                                                                           retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation):
@@ -387,10 +387,10 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
 
 
 class SendVenueValidationConfirmationEmailTest:
-    @patch('domain.user_emails.find_all_emails_of_user_offerers_admins',
+    @patch('pcapi.domain.user_emails.find_all_emails_of_user_offerers_admins',
            return_value=['admin1@example.com', 'admin2@example.com'])
-    @patch('domain.user_emails.make_venue_validated_email', return_value={'Html-part': ''})
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.domain.user_emails.make_venue_validated_email', return_value={'Html-part': ''})
+    @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_sends_email_to_all_users_linked_to_offerer(self,
                                                                                            mock_feature_send_mail_to_users_enabled,
                                                                                            mock_make_venue_validated_email,
@@ -411,11 +411,11 @@ class SendVenueValidationConfirmationEmailTest:
         args = mocked_send_email.call_args
         assert args[1]['data']['To'] == 'admin1@example.com, admin2@example.com'
 
-    @patch('domain.user_emails.find_all_emails_of_user_offerers_admins',
+    @patch('pcapi.domain.user_emails.find_all_emails_of_user_offerers_admins',
            return_value=['admin1@example.com', 'admin2@example.com'])
-    @patch('domain.user_emails.make_venue_validated_email', return_value={'Html-part': ''})
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.domain.user_emails.make_venue_validated_email', return_value={'Html-part': ''})
+    @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
+    @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def when_feature_send_mail_to_users_enabled_sends_email_to_pass_culutre_dev(self,
                                                                                 mock_feature_send_mail_to_users_enabled,
                                                                                 mock_make_venue_validated_email,
@@ -438,8 +438,8 @@ class SendVenueValidationConfirmationEmailTest:
 
 
 class SendUserValidationEmailTest:
-    @patch('domain.user_emails.make_user_validation_email', return_value={'Html-part': ''})
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.domain.user_emails.make_user_validation_email', return_value={'Html-part': ''})
+    @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_sends_email_to_user(self,
                                                                     feature_send_mail_to_users_enabled,
                                                                     make_user_validation_email):
@@ -458,7 +458,7 @@ class SendUserValidationEmailTest:
 
 
 class SendActivationEmailTest:
-    @patch('domain.user_emails.get_activation_email_data')
+    @patch('pcapi.domain.user_emails.get_activation_email_data')
     def test_send_activation_email(self, mocked_get_activation_email_data):
         # given
         beneficiary = create_domain_beneficiary()
@@ -474,7 +474,7 @@ class SendActivationEmailTest:
 
 
 class SendAttachmentValidationEmailToProOffererTest:
-    @patch('domain.user_emails.retrieve_data_for_offerer_attachment_validation_email')
+    @patch('pcapi.domain.user_emails.retrieve_data_for_offerer_attachment_validation_email')
     @pytest.mark.usefixtures("db_session")
     def test_send_attachment_validation_email_to_pro_offerer(self,
                                                              mocked_retrieve_data_for_offerer_attachment_validation_email,
@@ -495,7 +495,7 @@ class SendAttachmentValidationEmailToProOffererTest:
 
 
 class SendOngoingOffererAttachmentInformationEmailTest:
-    @patch('domain.user_emails.retrieve_data_for_offerer_ongoing_attachment_email',
+    @patch('pcapi.domain.user_emails.retrieve_data_for_offerer_ongoing_attachment_email',
            return_value={'Mj-TemplateID': 778749})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_true_when_email_data_are_valid(self,
@@ -521,7 +521,7 @@ class SendOngoingOffererAttachmentInformationEmailTest:
 
 
 class SendResetPasswordProEmailTest:
-    @patch('domain.user_emails.retrieve_data_for_reset_password_pro_email',
+    @patch('pcapi.domain.user_emails.retrieve_data_for_reset_password_pro_email',
            return_value={'MJ-TemplateID': 779295})
     def when_feature_send_emails_enabled_sends_a_reset_password_email_to_pro_user(self,
                                                                                   mock_retrieve_data_for_reset_password_pro_email,
@@ -539,7 +539,7 @@ class SendResetPasswordProEmailTest:
 
 
 class SendResetPasswordUserEmailTest:
-    @patch('domain.user_emails.retrieve_data_for_reset_password_user_email',
+    @patch('pcapi.domain.user_emails.retrieve_data_for_reset_password_user_email',
            return_value={'MJ-TemplateID': 912168})
     def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(self,
                                                                               mock_retrieve_data_for_reset_password_user_email,
@@ -557,7 +557,7 @@ class SendResetPasswordUserEmailTest:
 
 
 class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
-    @patch('domain.user_emails.make_duplicate_beneficiary_pre_subscription_rejected_data',
+    @patch('pcapi.domain.user_emails.make_duplicate_beneficiary_pre_subscription_rejected_data',
            return_value={'MJ-TemplateID': 1530996})
     def when_beneficiary_is_a_dupplicate_sends_correct_template(self,
                                                                 mocked_make_data,
@@ -576,7 +576,7 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
 
 
 class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
-    @patch('domain.user_emails.make_not_eligible_beneficiary_pre_subscription_rejected_data',
+    @patch('pcapi.domain.user_emails.make_not_eligible_beneficiary_pre_subscription_rejected_data',
            return_value={'MJ-TemplateID': 1619528})
     def when_beneficiary_is_not_eligible_sends_correct_template(self,
                                                                 mocked_make_data,

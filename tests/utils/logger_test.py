@@ -3,7 +3,7 @@ import logging
 import sys
 from io import StringIO
 
-from utils import logger
+from pcapi.utils import logger
 
 
 class LoggerTest:

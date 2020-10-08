@@ -3,9 +3,9 @@ from unittest.mock import patch
 
 import pandas
 
-from models import EventType, ThingType
-from repository import repository, discovery_view_queries
-from scripts.dashboard.diversification_statistics import get_offerers_with_offer_available_on_discovery_count, \
+from pcapi.models import EventType, ThingType
+from pcapi.repository import repository, discovery_view_queries
+from pcapi.scripts.dashboard.diversification_statistics import get_offerers_with_offer_available_on_discovery_count, \
     get_offerers_with_non_cancelled_bookings_count, get_offers_with_user_offerer_and_stock_count, \
     get_offers_available_on_discovery_count, get_offers_with_non_cancelled_bookings_count, \
     query_get_offer_counts_grouped_by_type_and_medium, _get_offers_grouped_by_type_and_medium, \
@@ -17,10 +17,10 @@ from scripts.dashboard.diversification_statistics import get_offerers_with_offer
     get_offers_available_on_discovery_count_v2, get_offerers_with_offer_available_on_discovery_count_v2
 import pytest
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_user_offerer, create_mediation
-from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 two_days_ago = datetime.utcnow() - timedelta(days=2)
 
@@ -121,7 +121,7 @@ class GetOffererCountWithStockTest:
 
 class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     @pytest.mark.usefixtures("db_session")
-    @patch('repository.offer_queries._exclude_booked_and_favorite')
+    @patch('pcapi.repository.offer_queries._exclude_booked_and_favorite')
     def test_should_not_filter_for_favorites_and_bookings_when_no_user(self, exclude_booked_and_favorite, app):
         # When
         get_offerers_with_offer_available_on_discovery_count()
@@ -1221,7 +1221,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         assert number_of_offers == 1
 
     @pytest.mark.usefixtures("db_session")
-    @patch('repository.offer_queries._exclude_booked_and_favorite')
+    @patch('pcapi.repository.offer_queries._exclude_booked_and_favorite')
     def test_should_not_filter_favorites_and_bookings_if_no_user(self, exclude_booked_and_favorite, app):
         # When
         get_offers_available_on_discovery_count()

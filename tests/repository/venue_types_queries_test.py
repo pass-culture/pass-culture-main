@@ -1,7 +1,7 @@
-from repository import repository
-from repository.venue_types_queries import get_all_venue_types
+from pcapi.repository import repository
+from pcapi.repository.venue_types_queries import get_all_venue_types
 import pytest
-from model_creators.generic_creators import create_venue_type
+from pcapi.model_creators.generic_creators import create_venue_type
 
 
 class GetAllVenueTypes:

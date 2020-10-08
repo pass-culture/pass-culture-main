@@ -1,22 +1,22 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from local_providers import TiteLiveThings
-from models import Product, BookFormat, LocalProviderEvent, OfferSQLEntity
-from models.local_provider_event import LocalProviderEventType
-from repository import repository
-from repository.provider_queries import get_provider_by_local_class
+from pcapi.local_providers import TiteLiveThings
+from pcapi.models import Product, BookFormat, LocalProviderEvent, OfferSQLEntity
+from pcapi.models.local_provider_event import LocalProviderEventType
+from pcapi.repository import repository
+from pcapi.repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
-from model_creators.provider_creators import activate_provider
-from model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+from pcapi.model_creators.provider_creators import activate_provider
+from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 class TiteliveThingsTest:
     @clean_database
-    @patch('local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
     def test_create_1_thing_from_one_data_line_in_one_file(self,
                                                            get_lines_from_thing_file,
                                                            get_files_to_process_from_titelive_ftp,
@@ -87,8 +87,8 @@ class TiteliveThingsTest:
         assert product.extraData.get('isbn') == '9782895026310'
 
     @clean_database
-    @patch('local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
     def test_does_not_create_product_when_product_is_a_school_book(self,
                                                                    get_lines_from_thing_file,
                                                                    get_files_to_process_from_titelive_ftp,
@@ -156,8 +156,8 @@ class TiteliveThingsTest:
         assert Product.query.count() == 0
 
     @clean_database
-    @patch('local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
     def test_update_1_thing_from_one_data_line_in_one_file(self,
                                                            get_lines_from_thing_file,
                                                            get_files_to_process_from_titelive_ftp,
@@ -235,7 +235,7 @@ class TiteliveThingsTest:
         assert updated_product.extraData.get('bookFormat') == BookFormat.BEAUX_LIVRES.value
 
     @clean_database
-    @patch('local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
     def test_does_not_create_thing_when_no_files_found(self,
                                                        get_files_to_process_from_titelive_ftp,
                                                        app):
@@ -253,8 +253,8 @@ class TiteliveThingsTest:
         assert Product.query.count() == 0
 
     @clean_database
-    @patch('local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
     def test_does_not_create_thing_when_missing_columns_in_data_line(self,
                                                                      get_lines_from_thing_file,
                                                                      get_files_to_process_from_titelive_ftp,
@@ -279,8 +279,8 @@ class TiteliveThingsTest:
         assert Product.query.count() == 0
 
     @clean_database
-    @patch('local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
     def test_does_not_create_thing_when_too_many_columns_in_data_line(self,
                                                                       get_lines_from_thing_file,
                                                                       get_files_to_process_from_titelive_ftp,
@@ -353,8 +353,8 @@ class TiteliveThingsTest:
         assert Product.query.count() == 0
 
     @clean_database
-    @patch('local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
     def test_should_not_create_product_when_school_related_product(self,
                                                                    get_lines_from_thing_file,
                                                                    get_files_to_process_from_titelive_ftp,
@@ -423,8 +423,8 @@ class TiteliveThingsTest:
         assert Product.query.count() == 0
 
     @clean_database
-    @patch('local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
     def test_should_delete_product_when_reference_changes_to_school_related_product(self,
                                                                                     get_lines_from_thing_file,
                                                                                     get_files_to_process_from_titelive_ftp,
@@ -501,8 +501,8 @@ class TiteliveThingsTest:
         assert Product.query.count() == 0
 
     @clean_database
-    @patch('local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
     def test_should_delete_product_when_non_valid_product_type(self,
                                                                get_lines_from_thing_file,
                                                                get_files_to_process_from_titelive_ftp,
@@ -577,8 +577,8 @@ class TiteliveThingsTest:
         assert Product.query.count() == 0
 
     @clean_database
-    @patch('local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
     def test_should_log_error_when_trying_to_delete_product_with_associated_bookings(self,
                                                                                      get_lines_from_thing_file,
                                                                                      get_files_to_process_from_titelive_ftp,
@@ -665,8 +665,8 @@ class TiteliveThingsTest:
         assert provider_log_error.payload == 'Error deleting product with ISBN: 9782895026310'
 
     @clean_database
-    @patch('local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
     def test_should_not_create_product_when_product_is_paper_press(self,
                                                                    get_lines_from_thing_file,
                                                                    get_files_to_process_from_titelive_ftp,
@@ -785,8 +785,8 @@ class TiteliveThingsTest:
         assert product.extraData['isbn'] == '9782895026310'
 
     @clean_database
-    @patch('local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
     def test_should_delete_product_when_it_changes_to_paper_press_product(self, get_lines_from_thing_file,
                                                                           get_files_to_process_from_titelive_ftp,
                                                                           app):
@@ -862,8 +862,8 @@ class TiteliveThingsTest:
         assert Product.query.count() == 0
 
     @clean_database
-    @patch('local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp')
+    @patch('pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file')
     def test_should_not_delete_product_and_deactivate_associated_offer_when_it_changes_to_paper_press_product(self,
                                                                                                               get_lines_from_thing_file,
                                                                                                               get_files_to_process_from_titelive_ftp,

@@ -1,22 +1,22 @@
 from datetime import datetime, timezone
 from unittest.mock import patch
 
-from domain.booking.booking import Booking
-from domain.stock.stock import Stock
-from emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
-from models import ThingType
-from repository import repository
+from pcapi.domain.booking.booking import Booking
+from pcapi.domain.stock.stock import Stock
+from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
+from pcapi.models import ThingType
+from pcapi.repository import repository
 from tests.conftest import clean_database
 from tests.domain_creators.generic_creators import create_domain_beneficiary
-from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, create_stock
-from model_creators.specific_creators import create_stock_from_offer, create_product_with_thing_type, \
+from pcapi.model_creators.specific_creators import create_stock_from_offer, create_product_with_thing_type, \
     create_offer_with_thing_product, create_offer_with_event_product
 
 
 class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
-    @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @clean_database
     def test_should_write_email_with_right_data_when_offer_is_an_event(self, app):
         # Given
@@ -78,8 +78,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                 }
         }
 
-    @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @clean_database
     def test_should_write_email_with_right_data_when_offer_is_a_book(self, app):
         # Given
@@ -140,8 +140,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                 }
         }
 
-    @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @clean_database
     def test_should_not_truncate_price(self, app):
         # Given
@@ -203,8 +203,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                 }
         }
 
-    @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @clean_database
     def test_returns_empty_ISBN_when_no_extra_data(self, app):
         # Given
@@ -265,8 +265,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                 }
         }
 
-    @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @clean_database
     def test_returns_empty_ISBN_when_extra_data_has_no_key_isbn(self, app):
         # Given
@@ -328,8 +328,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                 }
         }
 
-    @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('repository.feature_queries.IS_PROD', True)
+    @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.repository.feature_queries.IS_PROD', True)
     @clean_database
     def test_returns_recipients_email_when_production_environment(self, app):
         # Given
@@ -362,8 +362,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         # Then
         assert email_data_template.get('To') == ', '.join(recipients)
 
-    @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @clean_database
     def test_returns_dev_email_adress_when_feature_send_mail_to_users_disabled(self, app):
         # Given
@@ -398,8 +398,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         assert email_data_template.get('To') != ', '.join(recipients)
         assert email_data_template.get('To') == 'dev@example.com'
 
-    @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @clean_database
     def test_returns_email_with_correct_data_when_two_users_book_the_same_offer(self, app):
         # Given
@@ -446,8 +446,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         assert user_jean_dupont in email_data_template_users
         assert user_jaja_dudu in email_data_template_users
 
-    @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @clean_database
     def test_returns_email_with_link_to_the_corresponding_offer(self, app):
         # Given

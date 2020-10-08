@@ -1,9 +1,9 @@
-from repository import repository
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_user, create_offerer, create_venue
-from model_creators.specific_creators import create_stock_with_event_offer
-from utils.human_ids import humanize
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer
+from pcapi.utils.human_ids import humanize
 
 
 class Get:

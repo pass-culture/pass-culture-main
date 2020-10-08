@@ -2,17 +2,17 @@ from datetime import datetime
 
 from freezegun import freeze_time
 
-from domain.booking.booking import Booking
-from domain.stock.stock import Stock
-from models import EventType, ThingType
-from routes.serialization import serialize_booking
-from routes.serialization.bookings_serialize import serialize_domain_booking
+from pcapi.domain.booking.booking import Booking
+from pcapi.domain.stock.stock import Stock
+from pcapi.models import EventType, ThingType
+from pcapi.routes.serialization import serialize_booking
+from pcapi.routes.serialization.bookings_serialize import serialize_domain_booking
 from tests.domain_creators.generic_creators import create_domain_beneficiary
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
-from model_creators.specific_creators import create_stock_from_event_occurrence, create_product_with_thing_type, \
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence, create_product_with_thing_type, \
     create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
-from utils.human_ids import humanize
+from pcapi.utils.human_ids import humanize
 
 
 class SerializeBookingTest:

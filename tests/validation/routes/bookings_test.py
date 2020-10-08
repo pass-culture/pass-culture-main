@@ -1,7 +1,7 @@
 import pytest
 
-from models import ApiErrors
-from validation.routes.bookings import check_page_format_is_number
+from pcapi.models import ApiErrors
+from pcapi.validation.routes.bookings import check_page_format_is_number
 
 
 def test_should_raise_error_when_page_number_is_not_a_number():

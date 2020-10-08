@@ -1,8 +1,8 @@
-from models import UserSession
-from repository import repository
+from pcapi.models import UserSession
+from pcapi.repository import repository
 from tests.conftest import TestClient
 import pytest
-from model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user
 
 
 class Get:

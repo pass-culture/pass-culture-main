@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from algolia.domain.eligibility import EligibilityRules
-from repository import repository
+from pcapi.algolia.domain.eligibility import EligibilityRules
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_offerer, create_venue, create_stock
-from model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
+from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_stock
+from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 
 
 class NameHasChangedTest:

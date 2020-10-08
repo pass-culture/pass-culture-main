@@ -1,17 +1,17 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from models import BookingSQLEntity, Provider
-from repository import repository
-from repository.provider_queries import get_provider_by_local_class
+from pcapi.models import BookingSQLEntity, Provider
+from pcapi.repository import repository
+from pcapi.repository.provider_queries import get_provider_by_local_class
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_user_offerer
-from model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product, \
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product, \
     create_offer_with_event_product
-from utils.human_ids import humanize
+from pcapi.utils.human_ids import humanize
 
 NOW = datetime.utcnow()
 
@@ -79,8 +79,8 @@ class Delete:
             assert response.status_code == 200
             assert response.json['isSoftDeleted'] is True
 
-        @patch('routes.stocks.feature_queries.is_active', return_value=True)
-        @patch('routes.stocks.redis.add_offer_id')
+        @patch('pcapi.routes.stocks.feature_queries.is_active', return_value=True)
+        @patch('pcapi.routes.stocks.redis.add_offer_id')
         @pytest.mark.usefixtures("db_session")
         def when_stock_is_deleted_expect_offer_id_to_be_added_to_redis(self, mock_redis, mock_feature, app):
             # given

@@ -1,15 +1,15 @@
 from unittest.mock import Mock, patch, MagicMock
 
-from domain.admin_emails import maybe_send_offerer_validation_email, send_payment_details_email, \
+from pcapi.domain.admin_emails import maybe_send_offerer_validation_email, send_payment_details_email, \
     send_wallet_balances_email, send_payments_report_emails, \
     send_offer_creation_notification_to_administration, send_payment_message_email
-from model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
-from model_creators.specific_creators import create_offer_with_thing_product
-from utils.mailing import MailServiceException
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.utils.mailing import MailServiceException
 
 
-@patch('domain.admin_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-@patch('connectors.api_entreprises.requests.get')
+@patch('pcapi.domain.admin_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
+@patch('pcapi.connectors.api_entreprises.requests.get')
 def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_objects_to_validate_and_send_email_enabled(
         mock_api_entreprise,
         app):
@@ -29,7 +29,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     mocked_send_email.return_value = return_value
 
     # When
-    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+    with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
         maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_email)
 
     # Then
@@ -40,8 +40,8 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     assert 'This is a test' not in email['Html-part']
 
 
-@patch('connectors.api_entreprises.requests.get')
-@patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+@patch('pcapi.connectors.api_entreprises.requests.get')
+@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_when_objects_to_validate_and_send_email_disabled(
         mock_api_entreprise,
         app):
@@ -63,7 +63,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_whe
     mocked_send_email.return_value = return_value
 
     # When
-    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
+    with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
         maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_email)
 
     # Then
@@ -110,7 +110,7 @@ def test_send_payment_details_email_when_mailjet_status_code_200_sends_email_to_
     mocked_send_email.return_value = return_value
 
     # When
-    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+    with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
         send_payment_details_email(csv, recipients, mocked_send_email)
 
     # Then
@@ -120,7 +120,7 @@ def test_send_payment_details_email_when_mailjet_status_code_200_sends_email_to_
     assert email['To'] == 'comptable1@culture.fr, comptable2@culture.fr'
 
 
-@patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 def test_send_payment_details_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -132,7 +132,7 @@ def test_send_payment_details_email_has_pass_culture_dev_as_recipient_when_send_
     mocked_send_email.return_value = return_value
 
     # When
-    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
+    with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
         send_payment_details_email(csv, recipients, mocked_send_email)
 
     # Then
@@ -153,7 +153,7 @@ def test_send_wallet_balances_email_when_mailjet_status_code_200_sends_email_to_
     mocked_send_email.return_value = return_value
 
     # When
-    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+    with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
         send_wallet_balances_email(csv, recipients, mocked_send_email)
 
     # Then
@@ -163,7 +163,7 @@ def test_send_wallet_balances_email_when_mailjet_status_code_200_sends_email_to_
     assert email['To'] == 'comptable1@culture.fr, comptable2@culture.fr'
 
 
-@patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 def test_send_wallet_balances_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -175,7 +175,7 @@ def test_send_wallet_balances_email_has_pass_culture_dev_as_recipient_when_send_
     mocked_send_email.return_value = return_value
 
     # When
-    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
+    with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
         send_wallet_balances_email(csv, recipients, mocked_send_email)
 
     # Then
@@ -201,7 +201,7 @@ def test_send_payments_report_emails_when_mailjet_status_code_200_sends_email_to
     mocked_send_email.return_value = return_value
 
     # When
-    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+    with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
         send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, ['dev.team@test.com'],
                                     mocked_send_email)
 
@@ -212,7 +212,7 @@ def test_send_payments_report_emails_when_mailjet_status_code_200_sends_email_to
     assert email['To'] == 'dev.team@test.com'
 
 
-@patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -229,7 +229,7 @@ def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_whe
     mocked_send_email.return_value = return_value
 
     # When
-    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
+    with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
         send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, ['dev.team@test.com'],
                                     mocked_send_email)
 
@@ -241,7 +241,7 @@ def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_whe
 
 
 class SendOfferCreationNotificationToAdministrationTest:
-    @patch('utils.mailing.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
+    @patch('pcapi.utils.mailing.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     def test_when_mailjet_status_code_200_sends_email_to_administration_email(self, app):
         mocked_send_email = Mock()
         return_value = Mock()
@@ -252,7 +252,7 @@ class SendOfferCreationNotificationToAdministrationTest:
         offer = create_offer_with_thing_product(venue)
         author = create_user(email='author@email.com')
         # When
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+        with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
             send_offer_creation_notification_to_administration(offer, author, 'http://test.url', mocked_send_email)
 
         # Then
@@ -261,7 +261,7 @@ class SendOfferCreationNotificationToAdministrationTest:
         email = args[1]['data']
         assert email['To'] == 'administration@example.com'
 
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def test_when_send_email_disabled_has_pass_culture_dev_as_recipient(self, app):
         # Given
         mocked_send_email = Mock()
@@ -273,7 +273,7 @@ class SendOfferCreationNotificationToAdministrationTest:
         offer = create_offer_with_thing_product(venue)
         author = create_user(email='author@email.com')
         # When
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
+        with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
             send_offer_creation_notification_to_administration(offer, author, 'http://test.url', mocked_send_email)
 
         # Then
@@ -284,7 +284,7 @@ class SendOfferCreationNotificationToAdministrationTest:
 
 
 class SendPaymentMessageEmailTest:
-    @patch('domain.admin_emails.make_payment_message_email',
+    @patch('pcapi.domain.admin_emails.make_payment_message_email',
            return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
     def test_returns_true_if_email_was_sent(self, make_payment_transaction_email):
         # given
@@ -299,7 +299,7 @@ class SendPaymentMessageEmailTest:
         # then
         assert successfully_sent
 
-    @patch('domain.admin_emails.make_payment_message_email',
+    @patch('pcapi.domain.admin_emails.make_payment_message_email',
            return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
     def test_returns_false_if_not_email_was_sent(self, make_payment_transaction_email):
         # given

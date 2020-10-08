@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest.mock import MagicMock
 
-from infrastructure.repository.stock_provider.stock_provider_titelive import StockProviderTiteLiveRepository
+from pcapi.infrastructure.repository.stock_provider.stock_provider_titelive import StockProviderTiteLiveRepository
 
 
 class StockProviderTiteLiveRepositoryTest:

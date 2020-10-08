@@ -3,14 +3,14 @@ from decimal import Decimal
 
 import pytest
 
-from domain.user_activation import generate_activation_users_csv, is_import_status_change_allowed, is_activation_booking
-from models import ImportStatus, EventType, UserSQLEntity
-from models import ThingType
-from models.booking_sql_entity import ActivationUser
-from scripts.beneficiary.old_remote_import import create_beneficiary_from_application
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.domain.user_activation import generate_activation_users_csv, is_import_status_change_allowed, is_activation_booking
+from pcapi.models import ImportStatus, EventType, UserSQLEntity
+from pcapi.models import ThingType
+from pcapi.models.booking_sql_entity import ActivationUser
+from pcapi.scripts.beneficiary.old_remote_import import create_beneficiary_from_application
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
-from model_creators.specific_creators import create_product_with_event_type, create_offer_with_thing_product, \
+from pcapi.model_creators.specific_creators import create_product_with_event_type, create_offer_with_thing_product, \
     create_offer_with_event_product
 
 

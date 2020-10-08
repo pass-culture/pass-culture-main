@@ -1,15 +1,15 @@
 from unittest.mock import patch
 
-from models import OfferSQLEntity, Product
-from repository import repository
-from scripts.deactivate_inappropriate_offers import deactivate_inappropriate_offers
+from pcapi.models import OfferSQLEntity, Product
+from pcapi.repository import repository
+from pcapi.scripts.deactivate_inappropriate_offers import deactivate_inappropriate_offers
 import pytest
-from model_creators.generic_creators import create_offerer, create_venue
-from model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
+from pcapi.model_creators.generic_creators import create_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 
 
 class DeactivateInappropriateOffersTest:
-    @patch('scripts.deactivate_inappropriate_offers.redis')
+    @patch('pcapi.scripts.deactivate_inappropriate_offers.redis')
     @pytest.mark.usefixtures("db_session")
     def test_should_deactivate_offers_with_inappropriate_content(self, mocked_redis, app):
         # Given

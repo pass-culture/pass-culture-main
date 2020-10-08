@@ -1,10 +1,10 @@
-from models import ThingType
-from models.activity import load_activity
-from repository import repository
-from repository.stock_queries import find_online_activation_stock
+from pcapi.models import ThingType
+from pcapi.models.activity import load_activity
+from pcapi.repository import repository
+from pcapi.repository.stock_queries import find_online_activation_stock
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_offerer, create_venue
-from model_creators.specific_creators import create_stock_from_offer, \
+from pcapi.model_creators.generic_creators import create_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_stock_from_offer, \
     create_offer_with_thing_product, create_offer_with_event_product
 
 

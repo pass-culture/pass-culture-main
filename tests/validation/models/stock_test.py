@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from models import ApiErrors
-from model_creators.generic_creators import create_stock
-from validation.models.stock import validate
+from pcapi.models import ApiErrors
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.validation.models.stock import validate
 
 
 def test_should_return_error_message_when_stock_is_negative():

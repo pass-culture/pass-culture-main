@@ -1,14 +1,14 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from models import BookingSQLEntity
-from repository import repository
-from scripts.booking.correct_bookings_status import get_bookings_cancelled_during_quarantine_with_payment, \
+from pcapi.models import BookingSQLEntity
+from pcapi.repository import repository
+from pcapi.scripts.booking.correct_bookings_status import get_bookings_cancelled_during_quarantine_with_payment, \
     correct_booking_status
 import pytest
-from model_creators.generic_creators import create_booking, create_stock, create_venue, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_stock, create_venue, create_offerer, \
     create_user, create_deposit, create_payment
-from model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
 
 
 class GetBookingsCancelledDuringQuarantineWithPaymentTest:
@@ -99,7 +99,7 @@ class GetBookingsCancelledDuringQuarantineWithPaymentTest:
 
 class CorrectBookingStatusTest:
     @pytest.mark.usefixtures("db_session")
-    @patch('scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
+    @patch('pcapi.scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
     def test_should_revert_booking_cancellation_for_bookings_to_update(self,
                                                                        get_bookings_cancelled_during_quarantine_with_payment,
                                                                        app):
@@ -127,7 +127,7 @@ class CorrectBookingStatusTest:
         assert corrected_booking.dateUsed == booking.dateCreated
 
     @pytest.mark.usefixtures("db_session")
-    @patch('scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
+    @patch('pcapi.scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
     def test_should_not_revert_booking_dateused_if_booking_already_has_one(
             self,
             stub_get_bookings_cancelled_during_quarantine_with_payment,
@@ -160,7 +160,7 @@ class CorrectBookingStatusTest:
         assert corrected_booking.dateUsed == dateused
 
     @pytest.mark.usefixtures("db_session")
-    @patch('scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
+    @patch('pcapi.scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
     def test_should_not_revert_booking_if_user_has_insufficient_funds(
             self,
             stub_get_bookings_cancelled_during_quarantine_with_payment,

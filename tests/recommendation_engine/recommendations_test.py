@@ -1,14 +1,14 @@
 from typing import List
 from unittest.mock import patch
 
-from recommendations_engine import give_requested_recommendation_to_user, create_recommendations_for_discovery
-from models import Offerer, StockSQLEntity
-from repository import repository, discovery_view_queries
+from pcapi.recommendations_engine import give_requested_recommendation_to_user, create_recommendations_for_discovery
+from pcapi.models import Offerer, StockSQLEntity
+from pcapi.repository import repository, discovery_view_queries
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
     create_recommendation, create_mediation
-from model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
-from utils.human_ids import humanize
+from pcapi.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
+from pcapi.utils.human_ids import humanize
 
 
 class CreateRecommendationsForDiscoveryTest:
@@ -67,7 +67,7 @@ class CreateRecommendationsForDiscoveryTest:
         # Then
         assert len(recommendations) == 2
 
-    @patch('recommendations_engine.recommendations.get_offers_for_recommendations_discovery')
+    @patch('pcapi.recommendations_engine.recommendations.get_offers_for_recommendations_discovery')
     def test_should_get_offers_using_pagination_when_query_params_provided(self,
                                                                            get_offers_for_recommendations_discovery,
                                                                            app):

@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch
 
-from admin.base_configuration import BaseAdminView
-from models import BookingSQLEntity
+from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.models import BookingSQLEntity
 
 fake_db_session = [Mock()]
 
@@ -37,7 +37,7 @@ class BaseAdminViewTest:
                 'Edition from admin views is disabled by default. It can be enabled on a custom view'
 
     class IsAccessibleTest:
-        @patch('admin.base_configuration.current_user')
+        @patch('pcapi.admin.base_configuration.current_user')
         def test_access_is_forbidden_for_anonymous_users(self, current_user):
             # given
             current_user.is_authenticated = False
@@ -48,7 +48,7 @@ class BaseAdminViewTest:
             # then
             assert view.is_accessible() is False
 
-        @patch('admin.base_configuration.current_user')
+        @patch('pcapi.admin.base_configuration.current_user')
         def test_access_is_forbidden_for_non_admin_users(self, current_user):
             # given
             current_user.is_authenticated = True
@@ -60,7 +60,7 @@ class BaseAdminViewTest:
             # then
             assert view.is_accessible() is False
 
-        @patch('admin.base_configuration.current_user')
+        @patch('pcapi.admin.base_configuration.current_user')
         def test_access_is_authorized_for_admin_users(self, current_user):
             # given
             current_user.is_authenticated = True

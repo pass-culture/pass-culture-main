@@ -1,14 +1,14 @@
 import pytest
 from sqlalchemy.orm.exc import MultipleResultsFound
 
-from models import OfferSQLEntity, Offerer, UserOfferer, VenueSQLEntity
-from repository import repository
-from repository.user_offerer_queries import find_one_or_none_by_user_id, \
+from pcapi.models import OfferSQLEntity, Offerer, UserOfferer, VenueSQLEntity
+from pcapi.repository import repository
+from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id, \
     find_user_offerer_email, \
     filter_query_where_user_is_user_offerer_and_is_validated
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
-from model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
+from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
     create_offer_with_thing_product, create_offer_with_event_product
 
 

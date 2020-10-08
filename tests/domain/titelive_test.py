@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from domain.titelive import get_date_from_filename
+from pcapi.domain.titelive import get_date_from_filename
 
 
 class GetDateFromFilenameTest:

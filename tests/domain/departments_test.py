@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import patch
 
-from domain.departments import get_departement_codes_from_user
-from model_creators.generic_creators import create_user
+from pcapi.domain.departments import get_departement_codes_from_user
+from pcapi.model_creators.generic_creators import create_user
 
 
 class GetDepartementCodesFromUser:
@@ -11,7 +11,7 @@ class GetDepartementCodesFromUser:
         user = create_user(departement_code='973')
 
         # when
-        with patch('domain.departments.DEPARTEMENT_CODE_VISIBILITY', {'08': ['02', '08'], '97': ['971', '97']}):
+        with patch('pcapi.domain.departments.DEPARTEMENT_CODE_VISIBILITY', {'08': ['02', '08'], '97': ['971', '97']}):
             departement_codes = get_departement_codes_from_user(user)
 
         # then
@@ -22,7 +22,7 @@ class GetDepartementCodesFromUser:
         user = create_user(departement_code='32')
 
         # when
-        with patch('domain.departments.DEPARTEMENT_CODE_VISIBILITY', {'08': ['02', '08'], '97': ['971', '97']}):
+        with patch('pcapi.domain.departments.DEPARTEMENT_CODE_VISIBILITY', {'08': ['02', '08'], '97': ['971', '97']}):
             departement_codes = get_departement_codes_from_user(user)
 
         # then

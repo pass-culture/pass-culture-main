@@ -1,4 +1,4 @@
-from domain.ts_vector import _get_ts_queries_from_keywords_string
+from pcapi.domain.ts_vector import _get_ts_queries_from_keywords_string
 
 
 def test_get_ts_queries_from_keywords_string_parses_keywords_string_into_list_of_ts_strings():

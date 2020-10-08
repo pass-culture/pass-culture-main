@@ -2,16 +2,16 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import OfferSQLEntity, ApiErrors, ThingType, EventType, Product, Provider
-from repository import repository
-from routes.serialization import as_dict
+from pcapi.models import OfferSQLEntity, ApiErrors, ThingType, EventType, Product, Provider
+from pcapi.repository import repository
+from pcapi.routes.serialization import as_dict
 import pytest
-from model_creators.generic_creators import create_booking, create_user, create_stock, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, \
     create_offerer, \
     create_venue, create_mediation
-from model_creators.specific_creators import create_product_with_thing_type, \
+from pcapi.model_creators.specific_creators import create_product_with_thing_type, \
     create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product
-from utils.date import DateTimes
+from pcapi.utils.date import DateTimes
 
 now = datetime.utcnow()
 two_days_ago = now - timedelta(days=2)

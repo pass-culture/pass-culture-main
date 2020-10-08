@@ -1,12 +1,12 @@
 from unittest.mock import patch
 
-from models import VenueSQLEntity
-from repository import repository
+from pcapi.models import VenueSQLEntity
+from pcapi.repository import repository
 from tests.conftest import TestClient
 import pytest
-from model_creators.generic_creators import create_offerer, create_user, \
+from pcapi.model_creators.generic_creators import create_offerer, create_user, \
     create_user_offerer, create_venue, create_venue_type, create_venue_label
-from utils.human_ids import dehumanize, humanize
+from pcapi.utils.human_ids import dehumanize, humanize
 
 
 class Patch:
@@ -34,8 +34,8 @@ class Patch:
             assert response.json['siret'] == siret
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.venues.delete_venue_from_iris_venues')
-        @patch('routes.venues.link_valid_venue_to_irises')
+        @patch('pcapi.routes.venues.delete_venue_from_iris_venues')
+        @patch('pcapi.routes.venues.link_valid_venue_to_irises')
         def when_venue_is_physical_expect_delete_venue_from_iris_venues_and_link_venue_to_irises_to_be_called(self,
                                                                                                               mock_link_venue_to_iris_if_valid,
                                                                                                               mock_delete_venue_from_iris_venues,
@@ -59,7 +59,7 @@ class Patch:
             mock_link_venue_to_iris_if_valid.assert_called_once_with(venue)
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.venues.delete_venue_from_iris_venues')
+        @patch('pcapi.routes.venues.delete_venue_from_iris_venues')
         def when_venue_is_virtual_expect_delete_venue_from_iris_venues_not_to_be_called(self,
                                                                                         mock_delete_venue_from_iris_venues,
                                                                                         app):
@@ -79,8 +79,8 @@ class Patch:
             mock_delete_venue_from_iris_venues.assert_not_called()
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.venues.feature_queries.is_active', return_value=True)
-        @patch('routes.venues.redis.add_venue_id')
+        @patch('pcapi.routes.venues.feature_queries.is_active', return_value=True)
+        @patch('pcapi.routes.venues.redis.add_venue_id')
         def when_updating_a_venue_on_public_name_expect_relative_venue_id_to_be_added_to_redis(self,
                                                                                                mock_redis,
                                                                                                mock_feature,
@@ -105,8 +105,8 @@ class Patch:
             mock_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.venues.feature_queries.is_active', return_value=True)
-        @patch('routes.venues.redis.add_venue_id')
+        @patch('pcapi.routes.venues.feature_queries.is_active', return_value=True)
+        @patch('pcapi.routes.venues.redis.add_venue_id')
         def when_updating_a_venue_on_siret_expect_relative_venue_id_to_not_be_added_to_redis(self,
                                                                                              mock_redis,
                                                                                              mock_feature,

@@ -1,15 +1,15 @@
 from unittest.mock import patch, call
 
-from local_providers.venue_provider_worker import update_venues_for_specific_provider, do_sync_venue_provider
-from models import VenueProvider
-from repository import repository
+from pcapi.local_providers.venue_provider_worker import update_venues_for_specific_provider, do_sync_venue_provider
+from pcapi.models import VenueProvider
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_offerer, create_venue, create_venue_provider
-from model_creators.provider_creators import activate_provider
+from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider
+from pcapi.model_creators.provider_creators import activate_provider
 
 
 class UpdateVenuesForSpecificProviderTest:
-    @patch('local_providers.venue_provider_worker.do_sync_venue_provider')
+    @patch('pcapi.local_providers.venue_provider_worker.do_sync_venue_provider')
     @pytest.mark.usefixtures("db_session")
     def test_should_call_sync_venue_provider_for_expected_venue_provider(self,
                                                                          mock_do_sync_venue_provider,
@@ -32,9 +32,9 @@ class UpdateVenuesForSpecificProviderTest:
         assert call(venue_provider_titelive2) in mock_do_sync_venue_provider.call_args_list
 
     @patch.dict('os.environ', {"SYNC_WORKERS_POOL_SIZE": '1'})
-    @patch('local_providers.venue_provider_worker.sleep')
-    @patch('local_providers.venue_provider_worker.do_sync_venue_provider')
-    @patch('local_providers.venue_provider_worker.get_nb_containers_at_work')
+    @patch('pcapi.local_providers.venue_provider_worker.sleep')
+    @patch('pcapi.local_providers.venue_provider_worker.do_sync_venue_provider')
+    @patch('pcapi.local_providers.venue_provider_worker.get_nb_containers_at_work')
     @pytest.mark.usefixtures("db_session")
     def test_should_call_sync_venue_provider_until_reaching_max_pool_size(self,
                                                                           mock_get_nb_containers_at_work,
@@ -64,7 +64,7 @@ class UpdateVenuesForSpecificProviderTest:
 
 
 class DoSyncVenueProviderTest:
-    @patch('local_providers.venue_provider_worker.run_process_in_one_off_container')
+    @patch('pcapi.local_providers.venue_provider_worker.run_process_in_one_off_container')
     @pytest.mark.usefixtures("db_session")
     def test_should_call_run_process_in_one_off_container_function(self,
                                                                    mock_run_process_in_one_off_container, app):
@@ -75,7 +75,7 @@ class DoSyncVenueProviderTest:
         venue1 = create_venue(offerer)
         venue_provider = create_venue_provider(venue1, titelive_provider)
         repository.save(venue_provider)
-        update_venue_provider_command = f"python scripts/pc.py update_providables" \
+        update_venue_provider_command = f"python src/pcapi/scripts/pc.py update_providables" \
                                         f" --venue-provider-id {venue_provider.id}"
 
         # When
@@ -84,7 +84,7 @@ class DoSyncVenueProviderTest:
         # Then
         mock_run_process_in_one_off_container.assert_called_once_with(update_venue_provider_command)
 
-    @patch('local_providers.venue_provider_worker.run_process_in_one_off_container')
+    @patch('pcapi.local_providers.venue_provider_worker.run_process_in_one_off_container')
     @pytest.mark.usefixtures("db_session")
     def test_should_update_venue_provider_with_worker_id(self,
                                                          mock_run_process_in_one_off_container, app):

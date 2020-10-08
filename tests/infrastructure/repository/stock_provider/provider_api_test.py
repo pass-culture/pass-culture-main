@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 import requests
 
-from infrastructure.repository.stock_provider.provider_api import ProviderAPI, ProviderAPIException
+from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI, ProviderAPIException
 
 
 class ProviderAPITest:

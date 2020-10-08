@@ -2,12 +2,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from connectors.api_demarches_simplifiees import get_all_applications_for_procedure, ApiDemarchesSimplifieesException, \
+from pcapi.connectors.api_demarches_simplifiees import get_all_applications_for_procedure, ApiDemarchesSimplifieesException, \
     get_application_details
 
 
 class GetAllApplicationsForProcedureTest:
-    @patch('connectors.api_demarches_simplifiees.requests.get')
+    @patch('pcapi.connectors.api_demarches_simplifiees.requests.get')
     def test_calls_demarche_simplifiee_api_with_right_link(self, requests_get):
         # Given
         response_return_value = MagicMock(status_code=200, text='')
@@ -26,7 +26,7 @@ class GetAllApplicationsForProcedureTest:
             'https://www.demarches-simplifiees.fr/api/v1/procedures/1/dossiers?token=12345&page=1&resultats_par_page=1000',)
         assert applications_for_procedure == {'test': 'value'}
 
-    @patch('connectors.api_demarches_simplifiees.requests.get')
+    @patch('pcapi.connectors.api_demarches_simplifiees.requests.get')
     def test_raises_api_demarches_simplifiees_exception_when_api_status_code_not_200(self, requests_get):
         # Given
         response_return_value = MagicMock(status_code=400, text='')
@@ -45,7 +45,7 @@ class GetAllApplicationsForProcedureTest:
 
 
 class GetApplicationDetailsTest:
-    @patch('connectors.api_demarches_simplifiees.requests.get')
+    @patch('pcapi.connectors.api_demarches_simplifiees.requests.get')
     def test_calls_demarche_simplifiee_api_with_right_link(self, requests_get):
         # Given
         response_return_value = MagicMock(status_code=200, text='')
@@ -63,7 +63,7 @@ class GetApplicationDetailsTest:
         assert call_args[0] == ('https://www.demarches-simplifiees.fr/api/v1/procedures/1/dossiers/2?token=12345',)
         assert application_details == {'test': 'value'}
 
-    @patch('connectors.api_demarches_simplifiees.requests.get')
+    @patch('pcapi.connectors.api_demarches_simplifiees.requests.get')
     def test_raises_api_demarches_simplifiees_exception_when_api_status_code_not_200(self, requests_get):
         # Given
         response_return_value = MagicMock(status_code=400, text='')

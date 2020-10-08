@@ -1,5 +1,5 @@
-from models import Deposit, MediationSQLEntity
-from utils.string_processing import remove_single_letters_for_search, tokenize_for_search, get_model_plural_name
+from pcapi.models import Deposit, MediationSQLEntity
+from pcapi.utils.string_processing import remove_single_letters_for_search, tokenize_for_search, get_model_plural_name
 
 
 def test_remove_special_character():

@@ -3,26 +3,26 @@ from unittest.mock import patch
 
 import pytest
 
-from domain.bank_information import CannotRegisterBankInformation
-from infrastructure.repository.bank_informations.bank_informations_sql_repository import BankInformationsSQLRepository
-from infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
-from infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import \
+from pcapi.domain.bank_information import CannotRegisterBankInformation
+from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import BankInformationsSQLRepository
+from pcapi.infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
+from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import \
     VenueWithBasicInformationSQLRepository
-from models import ApiErrors
-from models import BankInformation
-from models.bank_information import BankInformationStatus
-from repository import repository
+from pcapi.models import ApiErrors
+from pcapi.models import BankInformation
+from pcapi.models.bank_information import BankInformationStatus
+from pcapi.repository import repository
 import pytest
 from tests.connector_creators.demarches_simplifiees_creators import \
     venue_demarche_simplifiee_application_detail_response_with_siret, \
     venue_demarche_simplifiee_application_detail_response_without_siret
-from model_creators.generic_creators import create_bank_information, create_offerer, create_venue
-from use_cases.save_venue_bank_informations import SaveVenueBankInformations
+from pcapi.model_creators.generic_creators import create_bank_information, create_offerer, create_venue
+from pcapi.use_cases.save_venue_bank_informations import SaveVenueBankInformations
 
 
 class SaveVenueBankInformationsTest:
     class SaveBankInformationTest:
-        @patch('domain.demarches_simplifiees.get_application_details')
+        @patch('pcapi.domain.demarches_simplifiees.get_application_details')
         class VenueWithSiretTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
@@ -216,7 +216,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information_count == 0
 
 
-        @patch('domain.demarches_simplifiees.get_application_details')
+        @patch('pcapi.domain.demarches_simplifiees.get_application_details')
         class VenueWitoutSiretTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
@@ -417,7 +417,7 @@ class SaveVenueBankInformationsTest:
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
 
-    @patch('domain.demarches_simplifiees.get_application_details')
+    @patch('pcapi.domain.demarches_simplifiees.get_application_details')
     class UpdateBankInformationByApplicationIdTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(
@@ -522,7 +522,7 @@ class SaveVenueBankInformationsTest:
             assert errors.value.errors['"venueId"'] == [
                 'Une entrée avec cet identifiant existe déjà dans notre base de données']
 
-    @patch('domain.demarches_simplifiees.get_application_details')
+    @patch('pcapi.domain.demarches_simplifiees.get_application_details')
     class UpdateBankInformationByVenueIdTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(

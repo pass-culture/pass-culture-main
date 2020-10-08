@@ -2,9 +2,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
-from use_cases.add_contact_in_eligiblity_list import AddContactInEligibilityList
-from domain.beneficiary_contact.beneficiary_contact import BeneficiaryContact
+from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
+from pcapi.use_cases.add_contact_in_eligiblity_list import AddContactInEligibilityList
+from pcapi.domain.beneficiary_contact.beneficiary_contact import BeneficiaryContact
 
 
 class AddContactInEligibilityListTest:

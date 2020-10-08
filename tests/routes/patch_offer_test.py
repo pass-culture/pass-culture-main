@@ -1,18 +1,18 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from models import OfferSQLEntity, Product, Provider
-from repository import repository
-from repository.provider_queries import get_provider_by_local_class
-from routes.serialization import serialize
+from pcapi.models import OfferSQLEntity, Product, Provider
+from pcapi.repository import repository
+from pcapi.repository.provider_queries import get_provider_by_local_class
+from pcapi.routes.serialization import serialize
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     API_URL, create_provider
-from model_creators.provider_creators import activate_provider
-from model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
+from pcapi.model_creators.provider_creators import activate_provider
+from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
     create_offer_with_thing_product, create_offer_with_event_product
-from utils.human_ids import humanize
+from pcapi.utils.human_ids import humanize
 
 
 class Patch:
@@ -41,7 +41,7 @@ class Patch:
             assert response.status_code == 200
             assert OfferSQLEntity.query.get(offer.id).bookingEmail == 'offer@example.com'
 
-        @patch('use_cases.update_an_offer.redis.add_offer_id')
+        @patch('pcapi.use_cases.update_an_offer.redis.add_offer_id')
         @pytest.mark.usefixtures("db_session")
         def when_updating_an_offer_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
             # Given

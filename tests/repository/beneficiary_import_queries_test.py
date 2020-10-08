@@ -2,13 +2,13 @@ from datetime import datetime, timedelta
 
 from freezegun import freeze_time
 
-from models import BeneficiaryImport, ImportStatus, BeneficiaryImportSources
-from repository import repository
-from repository.beneficiary_import_queries import \
+from pcapi.models import BeneficiaryImport, ImportStatus, BeneficiaryImportSources
+from pcapi.repository import repository
+from pcapi.repository.beneficiary_import_queries import \
     find_applications_ids_to_retry, is_already_imported, \
     save_beneficiary_import_with_status
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_beneficiary_import, \
+from pcapi.model_creators.generic_creators import create_beneficiary_import, \
     create_user
 
 

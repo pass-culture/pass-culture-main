@@ -1,9 +1,9 @@
-from repository import repository
-from repository.provider_queries import get_enabled_providers_for_pro, \
+from pcapi.repository import repository
+from pcapi.repository.provider_queries import get_enabled_providers_for_pro, \
     get_providers_enabled_for_pro_excluding_specific_provider, \
     get_provider_enabled_for_pro_by_id, get_provider_by_local_class
 import pytest
-from model_creators.generic_creators import create_provider
+from pcapi.model_creators.generic_creators import create_provider
 
 
 class GetEnabledProvidersForProTest:

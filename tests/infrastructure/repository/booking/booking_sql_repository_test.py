@@ -1,21 +1,21 @@
 import pytest
 from unittest.mock import patch
 
-from domain.booking.booking import Booking
-from domain.booking.booking_exceptions import BookingDoesntExist
-from domain.stock.stock import Stock
-from infrastructure.repository.booking import booking_domain_converter
-from infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
-from models import ThingType
-from repository import repository
+from pcapi.domain.booking.booking import Booking
+from pcapi.domain.booking.booking_exceptions import BookingDoesntExist
+from pcapi.domain.stock.stock import Stock
+from pcapi.infrastructure.repository.booking import booking_domain_converter
+from pcapi.infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
+from pcapi.models import ThingType
+from pcapi.repository import repository
 from tests.conftest import clean_database
 from tests.domain_creators.generic_creators import create_domain_beneficiary
-from model_creators.generic_creators import create_booking, \
+from pcapi.model_creators.generic_creators import create_booking, \
     create_offerer, create_user, \
     create_venue, create_stock, create_deposit
-from model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
 
-from models import BookingSQLEntity, StockSQLEntity
+from pcapi.models import BookingSQLEntity, StockSQLEntity
 
 class BookingSQLRepositoryTest:
     class GetExpensesByUserIdTest:
@@ -23,7 +23,7 @@ class BookingSQLRepositoryTest:
             self.booking_sql_repository = BookingSQLRepository()
 
         @clean_database
-        @patch('infrastructure.repository.booking.booking_sql_repository.get_expenses')
+        @patch('pcapi.infrastructure.repository.booking.booking_sql_repository.get_expenses')
         def test_compute_expenses_without_cancelled_bookings(self, get_expenses_mock, app):
             # given
             user = create_user()

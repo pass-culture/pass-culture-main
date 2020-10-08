@@ -1,14 +1,14 @@
 from datetime import datetime, timedelta
 
-from domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
-from infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import \
+from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
+from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import \
     BeneficiaryBookingsSQLRepository, _get_stocks_information
-from repository import repository
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_user, create_offerer, create_venue, create_stock, \
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_stock, \
     create_booking, create_deposit, create_recommendation
-from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
-from utils.human_ids import humanize
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from pcapi.utils.human_ids import humanize
 
 
 class BeneficiaryBookingsSQLRepositoryTest:

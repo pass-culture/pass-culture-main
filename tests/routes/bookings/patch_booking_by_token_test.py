@@ -1,15 +1,15 @@
 from urllib.parse import urlencode
 
-from models import EventType, ThingType, Deposit, BookingSQLEntity, UserSQLEntity
-from repository import repository
+from pcapi.models import EventType, ThingType, Deposit, BookingSQLEntity, UserSQLEntity
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_user_offerer
-from model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
     create_offer_with_event_product, create_event_occurrence
-from utils.human_ids import humanize
+from pcapi.utils.human_ids import humanize
 
 
 class Patch:

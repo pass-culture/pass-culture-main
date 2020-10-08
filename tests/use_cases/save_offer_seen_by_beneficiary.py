@@ -2,12 +2,12 @@ from datetime import datetime
 
 from freezegun import freeze_time
 
-from models import SeenOffer
-from repository import repository
+from pcapi.models import SeenOffer
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_offerer, create_venue, create_user, create_seen_offer
-from model_creators.specific_creators import create_offer_with_event_product
-from use_cases.save_offer_seen_by_beneficiary import save_seen_offer
+from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_user, create_seen_offer
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.use_cases.save_offer_seen_by_beneficiary import save_seen_offer
 
 
 class SaveSeenOffersTest:

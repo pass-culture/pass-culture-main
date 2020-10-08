@@ -2,12 +2,12 @@ from unittest.mock import patch, MagicMock
 
 from shapely.geometry import Polygon
 
-from domain.iris import MAXIMUM_DISTANCE_IN_METERS
-from models import IrisVenues
-from repository import repository
-from scripts.iris.link_iris_to_venues import link_irises_to_existing_physical_venues, _find_all_venue_ids_to_link
+from pcapi.domain.iris import MAXIMUM_DISTANCE_IN_METERS
+from pcapi.models import IrisVenues
+from pcapi.repository import repository
+from pcapi.scripts.iris.link_iris_to_venues import link_irises_to_existing_physical_venues, _find_all_venue_ids_to_link
 import pytest
-from model_creators.generic_creators import create_iris, create_venue, create_offerer
+from pcapi.model_creators.generic_creators import create_iris, create_venue, create_offerer
 
 
 class LinkIrisesToExistingPhysicalVenuesTest:
@@ -28,9 +28,9 @@ class LinkIrisesToExistingPhysicalVenuesTest:
         assert IrisVenues.query.count() == 1
 
     @pytest.mark.usefixtures("db_session")
-    @patch('scripts.iris.link_iris_to_venues._find_all_venue_ids_to_link')
-    @patch('scripts.iris.link_iris_to_venues.find_ids_of_irises_located_near_venue')
-    @patch('scripts.iris.link_iris_to_venues.link_irises_to_existing_physical_venues')
+    @patch('pcapi.scripts.iris.link_iris_to_venues._find_all_venue_ids_to_link')
+    @patch('pcapi.scripts.iris.link_iris_to_venues.find_ids_of_irises_located_near_venue')
+    @patch('pcapi.scripts.iris.link_iris_to_venues.link_irises_to_existing_physical_venues')
     def test_should_look_for_irises_located_near_each_venue_to_link(self, insert_venue_in_iris_venue,
                                                                     find_ids_of_irises_located_near_venue,
                                                                     _find_all_venues_to_link, app):
@@ -47,9 +47,9 @@ class LinkIrisesToExistingPhysicalVenuesTest:
         find_ids_of_irises_located_near_venue.assert_called_with(5, 100000)
 
     @pytest.mark.usefixtures("db_session")
-    @patch('scripts.iris.link_iris_to_venues._find_all_venue_ids_to_link')
-    @patch('scripts.iris.link_iris_to_venues.find_ids_of_irises_located_near_venue')
-    @patch('scripts.iris.link_iris_to_venues.insert_venue_in_iris_venue')
+    @patch('pcapi.scripts.iris.link_iris_to_venues._find_all_venue_ids_to_link')
+    @patch('pcapi.scripts.iris.link_iris_to_venues.find_ids_of_irises_located_near_venue')
+    @patch('pcapi.scripts.iris.link_iris_to_venues.insert_venue_in_iris_venue')
     def test_should_link_each_venue_to_nearby_irises(self, insert_venue_in_iris_venue,
                                                      find_ids_of_irises_located_near_venue, _find_all_venues_to_link,
                                                      app):

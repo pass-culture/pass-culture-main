@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
 from tests.domain_creators.generic_creators import create_domain_favorite
-from model_creators.generic_creators import create_offerer, create_venue, create_mediation
-from model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_mediation
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 
 
 class ThumbUrlTest:

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from domain.beneficiary_bookings.stock import Stock
+from pcapi.domain.beneficiary_bookings.stock import Stock
 
 
 class StockTest:

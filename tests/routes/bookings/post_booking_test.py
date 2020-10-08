@@ -1,24 +1,24 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
 
-from domain.booking.booking_exceptions import StockIsNotBookable
-from repository import repository
+from pcapi.domain.booking.booking_exceptions import StockIsNotBookable
+from pcapi.repository import repository
 from tests.conftest import TestClient
 import pytest
-from model_creators.generic_creators import create_deposit, \
+from pcapi.model_creators.generic_creators import create_deposit, \
     create_offerer, \
     create_recommendation, \
     create_user, create_venue
-from model_creators.specific_creators import create_offer_with_thing_product, \
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, \
     create_stock_with_event_offer, \
     create_stock_with_thing_offer
-from utils.human_ids import humanize
+from pcapi.utils.human_ids import humanize
 
 
 class Post:
     class Returns201:
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.bookings.feature_queries.is_active')
+        @patch('pcapi.routes.bookings.feature_queries.is_active')
         def expect_the_booking_to_have_good_includes_when_qr_code_feature_is_off(self, qr_code_is_active, app):
             # Given
             qr_code_is_active.return_value = False
@@ -45,8 +45,8 @@ class Post:
             assert response.status_code == 201
             assert 'qrCode' not in response.json.keys()
 
-        @patch('routes.bookings.feature_queries.is_active')
-        @patch('routes.bookings.redis.add_offer_id')
+        @patch('pcapi.routes.bookings.feature_queries.is_active')
+        @patch('pcapi.routes.bookings.redis.add_offer_id')
         @pytest.mark.usefixtures("db_session")
         def when_booking_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, mock_feature, app):
             # Given
@@ -75,8 +75,8 @@ class Post:
             assert response.status_code == 201
             mock_add_offer_id_to_redis.assert_called_once_with(client=app.redis_client, offer_id=thing_stock.offerId)
 
-        @patch('routes.bookings.feature_queries.is_active')
-        @patch('routes.bookings.redis.add_offer_id')
+        @patch('pcapi.routes.bookings.feature_queries.is_active')
+        @patch('pcapi.routes.bookings.redis.add_offer_id')
         @pytest.mark.usefixtures("db_session")
         def when_booking_expect_offer_id_not_to_be_added_to_redis(self, mock_add_offer_id_to_redis, mock_feature, app):
             # Given
@@ -106,7 +106,7 @@ class Post:
 
     class Returns400:
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.bookings.book_an_offer')
+        @patch('pcapi.routes.bookings.book_an_offer')
         def when_use_case_raise_stock_is_not_bookable_exception(self, mock_book_an_offer, app):
             # Given
             user = create_user()

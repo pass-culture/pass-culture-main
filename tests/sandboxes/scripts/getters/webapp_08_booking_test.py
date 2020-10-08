@@ -1,12 +1,12 @@
-from repository import repository
-from sandboxes.scripts.getters.webapp_08_booking import get_non_free_thing_offer_with_active_mediation, \
+from pcapi.repository import repository
+from pcapi.sandboxes.scripts.getters.webapp_08_booking import get_non_free_thing_offer_with_active_mediation, \
     get_non_free_event_offer
 import pytest
-from model_creators.generic_creators import create_offerer, create_venue, create_stock, create_mediation
-from model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type, \
+from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_stock, create_mediation
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type, \
     create_product_with_event_type, create_offer_with_event_product
-from utils.date import format_into_utc_date
-from utils.human_ids import humanize
+from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.human_ids import humanize
 
 
 class GetNonFreeThingOfferWithActiveMediationTest:

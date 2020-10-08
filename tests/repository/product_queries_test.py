@@ -1,14 +1,14 @@
 import pytest
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_booking, \
+from pcapi.model_creators.generic_creators import create_booking, \
     create_favorite, create_mediation, create_offerer, create_recommendation, \
     create_stock, create_user, create_venue
-from model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 
-from models import FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Product, Recommendation, StockSQLEntity
-from models.offer_type import ThingType
-from repository import repository
-from repository.product_queries import delete_unwanted_existing_product, find_active_book_product_by_isbn
+from pcapi.models import FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Product, Recommendation, StockSQLEntity
+from pcapi.models.offer_type import ThingType
+from pcapi.repository import repository
+from pcapi.repository.product_queries import delete_unwanted_existing_product, find_active_book_product_by_isbn
 
 
 class DeleteUnwantedExistingProductTest:

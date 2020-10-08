@@ -6,18 +6,18 @@ from freezegun import freeze_time
 from tests.infrastructure.repository.beneficiary import \
     beneficiary_jouve_creators
 
-from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
-from infrastructure.repository.beneficiary.beneficiary_jouve_repository import ApiJouveException, \
+from pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository import ApiJouveException, \
     BeneficiaryJouveRepository
 
 
 @freeze_time('2020-10-15 09:00:00')
-@patch('infrastructure.repository.beneficiary.beneficiary_jouve_repository.JOUVE_API_DOMAIN', 'https://jouve.com')
-@patch('infrastructure.repository.beneficiary.beneficiary_jouve_repository.JOUVE_PASSWORD', 'secret-password')
-@patch('infrastructure.repository.beneficiary.beneficiary_jouve_repository.JOUVE_USERNAME', 'username')
-@patch('infrastructure.repository.beneficiary.beneficiary_jouve_repository.JOUVE_VAULT_GUID', '12')
-@patch('infrastructure.repository.beneficiary.beneficiary_jouve_repository.requests.post')
+@patch('pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.JOUVE_API_DOMAIN', 'https://jouve.com')
+@patch('pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.JOUVE_PASSWORD', 'secret-password')
+@patch('pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.JOUVE_USERNAME', 'username')
+@patch('pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.JOUVE_VAULT_GUID', '12')
+@patch('pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.requests.post')
 def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     # Given
     token = 'token-for-tests'
@@ -80,7 +80,7 @@ def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     assert beneficiary_pre_subscription.public_name == 'Céline DURAND'
 
 
-@patch('infrastructure.repository.beneficiary.beneficiary_jouve_repository.requests.post')
+@patch('pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.requests.post')
 def test_raise_exception_when_password_is_invalid(stubed_requests_post):
     # Given
     application_id = '5'
@@ -94,7 +94,7 @@ def test_raise_exception_when_password_is_invalid(stubed_requests_post):
     assert str(api_jouve_exception.value) == 'Error 400 getting API jouve authentication token'
 
 
-@patch('infrastructure.repository.beneficiary.beneficiary_jouve_repository.requests.post')
+@patch('pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.requests.post')
 def test_raise_exception_when_token_is_invalid(stubed_requests_post):
     # Given
     token = 'token-for-tests'

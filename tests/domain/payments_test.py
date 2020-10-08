@@ -6,19 +6,19 @@ from unittest.mock import Mock
 import pytest
 from freezegun import freeze_time
 
-from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, create_payment_details, \
+from pcapi.domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, create_payment_details, \
     create_all_payments_details, make_transaction_label, group_payments_by_status, \
     filter_out_bookings_without_cost, keep_only_pending_payments, keep_only_not_processable_payments, apply_banishment, \
     UnmatchedPayments
-from domain.reimbursement import BookingReimbursement, ReimbursementRules
-from models import OfferSQLEntity, VenueSQLEntity, BookingSQLEntity, Offerer
-from models.payment import Payment
-from models.payment_status import TransactionStatus
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.domain.reimbursement import BookingReimbursement, ReimbursementRules
+from pcapi.models import OfferSQLEntity, VenueSQLEntity, BookingSQLEntity, Offerer
+from pcapi.models.payment import Payment
+from pcapi.models.payment_status import TransactionStatus
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_payment, create_bank_information
-from model_creators.specific_creators import create_offer_with_thing_product
-from utils.human_ids import humanize
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.utils.human_ids import humanize
 
 
 @freeze_time('2018-10-15 09:21:34')

@@ -1,6 +1,6 @@
 import sys
 
-from workers.logger import build_job_log_message, JobStatus
+from pcapi.workers.logger import build_job_log_message, JobStatus
 
 
 class JobLoggerMessageBuilderTest():

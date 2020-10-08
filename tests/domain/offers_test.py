@@ -1,15 +1,15 @@
 from datetime import datetime
 
-from domain.offers import is_from_allocine, update_is_active_status
-from models import OfferSQLEntity
+from pcapi.domain.offers import is_from_allocine, update_is_active_status
+from pcapi.models import OfferSQLEntity
 import pytest
-from model_creators.generic_creators import (create_booking,
+from pcapi.model_creators.generic_creators import (create_booking,
                                                    create_deposit,
                                                    create_offerer,
                                                    create_provider,
                                                    create_stock, create_user,
                                                    create_venue)
-from model_creators.specific_creators import \
+from pcapi.model_creators.specific_creators import \
     create_offer_with_event_product
 
 

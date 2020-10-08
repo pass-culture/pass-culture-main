@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from models import StockSQLEntity
-from repository.providable_queries import get_last_update_for_provider
+from pcapi.models import StockSQLEntity
+from pcapi.repository.providable_queries import get_last_update_for_provider
 
 
 def test_get_last_update_for_provider_should_return_date_modified_at_last_provider_when_provided():

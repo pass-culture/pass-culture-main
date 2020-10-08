@@ -5,16 +5,15 @@ from unittest.mock import patch
 import pytest
 from werkzeug.datastructures import FileStorage
 
-from connectors.thumb_storage import read_thumb
-from models import ApiErrors, EventType
+from pcapi.connectors.thumb_storage import read_thumb
+from pcapi.models import ApiErrors, EventType
+import pcapi.sandboxes
 
 
 def test_read_thumb_returns_api_error_when_no_extension_in_filename():
     # given
-    dir_path = Path(os.path.dirname(os.path.realpath(__file__)))
-    thumb_path = dir_path / '..' / '..' / \
-                 'sandboxes' / 'thumbs' / 'products' \
-                 / str(EventType.CINEMA)
+    dir_path = Path(pcapi.sandboxes.__path__[0]) / 'thumbs' / 'products'
+    thumb_path = dir_path / str(EventType.CINEMA)
 
     files = {
         'thumb': FileStorage(open(thumb_path, mode='rb'))
@@ -30,7 +29,7 @@ def test_read_thumb_returns_api_error_when_no_extension_in_filename():
     ]
 
 
-@patch('connectors.thumb_storage.requests.get')
+@patch('pcapi.connectors.thumb_storage.requests.get')
 def test_read_thumb_returns_request_content_when_url_is_fine(mocked_requests_get):
     # given
     class MockResponse:
@@ -51,7 +50,7 @@ def test_read_thumb_returns_request_content_when_url_is_fine(mocked_requests_get
     assert result == "it works !"
 
 
-@patch('connectors.thumb_storage.requests.get', side_effect=Exception)
+@patch('pcapi.connectors.thumb_storage.requests.get', side_effect=Exception)
 def test_read_thumb_returns_api_error_when_request_raise_ssl_error(mocked_requests_get):
     # given
     form = {

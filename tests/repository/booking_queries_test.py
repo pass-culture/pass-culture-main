@@ -4,18 +4,18 @@ import pytest
 from dateutil import tz
 from pytest import fixture
 from tests.conftest import clean_database
-from model_creators.activity_creators import create_booking_activity, save_all_activities
-from model_creators.generic_creators import create_booking, create_deposit, create_offerer, create_payment, create_recommendation, create_stock, create_user, create_user_offerer, create_venue
-from model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_stock_from_offer, create_stock_with_event_offer, \
+from pcapi.model_creators.activity_creators import create_booking_activity, save_all_activities
+from pcapi.model_creators.generic_creators import create_booking, create_deposit, create_offerer, create_payment, create_recommendation, create_stock, create_user, create_user_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_stock_from_offer, create_stock_with_event_offer, \
     create_stock_with_thing_offer
 
-from domain.booking_recap.booking_recap import BookBookingRecap, EventBookingRecap
-from models import BookingSQLEntity, EventType, ThingType
-from models.api_errors import ApiErrors, ResourceNotFoundError
-from models.payment_status import TransactionStatus
-from models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY
-from repository import booking_queries, repository
-from repository.booking_queries import find_by_pro_user_id, find_first_matching_from_offer_by_user
+from pcapi.domain.booking_recap.booking_recap import BookBookingRecap, EventBookingRecap
+from pcapi.models import BookingSQLEntity, EventType, ThingType
+from pcapi.models.api_errors import ApiErrors, ResourceNotFoundError
+from pcapi.models.payment_status import TransactionStatus
+from pcapi.models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY
+from pcapi.repository import booking_queries, repository
+from pcapi.repository.booking_queries import find_by_pro_user_id, find_first_matching_from_offer_by_user
 
 NOW = datetime.utcnow()
 TWO_DAYS_AGO = NOW - timedelta(days=2)

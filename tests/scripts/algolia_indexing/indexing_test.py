@@ -1,6 +1,6 @@
 from unittest.mock import patch, MagicMock, call
 
-from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, \
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, \
     batch_indexing_offers_in_algolia_by_venue, \
     batch_indexing_offers_in_algolia_from_database, \
     batch_deleting_expired_offers_in_algolia, _process_venue_provider, \
@@ -8,9 +8,9 @@ from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_b
 
 
 class BatchIndexingOffersInAlgoliaByOfferTest:
-    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
-    @patch('scripts.algolia_indexing.indexing.delete_offer_ids')
-    @patch('scripts.algolia_indexing.indexing.get_offer_ids')
+    @patch('pcapi.scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.delete_offer_ids')
+    @patch('pcapi.scripts.algolia_indexing.indexing.get_offer_ids')
     def test_should_index_offers_when_at_least_one_offer_id(self,
                                                             mock_get_offer_ids,
                                                             mock_delete_offer_ids,
@@ -29,9 +29,9 @@ class BatchIndexingOffersInAlgoliaByOfferTest:
             call(client=client, offer_ids=[1], from_provider_update=False)
         ]
 
-    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
-    @patch('scripts.algolia_indexing.indexing.delete_offer_ids')
-    @patch('scripts.algolia_indexing.indexing.get_offer_ids')
+    @patch('pcapi.scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.delete_offer_ids')
+    @patch('pcapi.scripts.algolia_indexing.indexing.get_offer_ids')
     def test_should_not_trigger_indexing_when_no_offer_id(self,
                                                           mock_get_offer_ids,
                                                           mock_delete_offer_ids,
@@ -50,11 +50,11 @@ class BatchIndexingOffersInAlgoliaByOfferTest:
 
 
 class BatchIndexingOffersInAlgoliaByVenueProviderTest:
-    @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 3)
-    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id')
-    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
-    @patch('scripts.algolia_indexing.indexing.delete_venue_providers')
-    @patch('scripts.algolia_indexing.indexing.get_venue_providers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 3)
+    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id')
+    @patch('pcapi.scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.delete_venue_providers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.get_venue_providers')
     def test_should_index_offers_when_at_least_one_venue_provider(self,
                                                                   mock_get_venue_providers,
                                                                   mock_delete_venue_providers,
@@ -90,11 +90,11 @@ class BatchIndexingOffersInAlgoliaByVenueProviderTest:
             call(client=client, from_provider_update=True, offer_ids=[8])
         ]
 
-    @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 3)
-    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id')
-    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
-    @patch('scripts.algolia_indexing.indexing.delete_venue_providers')
-    @patch('scripts.algolia_indexing.indexing.get_venue_providers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 3)
+    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id')
+    @patch('pcapi.scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.delete_venue_providers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.get_venue_providers')
     def test_should_not_trigger_indexing_when_no_venue_providers(self,
                                                                  mock_get_venue_providers,
                                                                  mock_delete_venue_providers,
@@ -115,11 +115,11 @@ class BatchIndexingOffersInAlgoliaByVenueProviderTest:
 
 
 class BatchIndexingOffersInAlgoliaByVenueTest:
-    @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE', 1)
-    @patch('scripts.algolia_indexing.indexing.delete_venue_ids')
-    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id')
-    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
-    @patch('scripts.algolia_indexing.indexing.get_venue_ids')
+    @patch('pcapi.scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE', 1)
+    @patch('pcapi.scripts.algolia_indexing.indexing.delete_venue_ids')
+    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id')
+    @patch('pcapi.scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.get_venue_ids')
     def test_should_index_offers_when_at_least_one_venue(self,
                                                          mock_get_venue_ids,
                                                          mock_process_eligible_offers,
@@ -145,11 +145,11 @@ class BatchIndexingOffersInAlgoliaByVenueTest:
         ]
         assert mock_delete_venue_ids.call_count == 1
 
-    @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE', 1)
-    @patch('scripts.algolia_indexing.indexing.delete_venue_ids')
-    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id')
-    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
-    @patch('scripts.algolia_indexing.indexing.get_venue_ids')
+    @patch('pcapi.scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE', 1)
+    @patch('pcapi.scripts.algolia_indexing.indexing.delete_venue_ids')
+    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id')
+    @patch('pcapi.scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.get_venue_ids')
     def test_should_not_trigger_indexing_when_no_venue(self,
                                                        mock_get_venue_ids,
                                                        mock_process_eligible_offers,
@@ -170,8 +170,8 @@ class BatchIndexingOffersInAlgoliaByVenueTest:
 
 
 class BatchIndexingOffersInAlgoliaFromDatabaseTest:
-    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_active_offer_ids')
-    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_active_offer_ids')
+    @patch('pcapi.scripts.algolia_indexing.indexing.process_eligible_offers')
     def test_should_index_offers_once_when_offers_per_page_is_one_and_only_one_page(self,
                                                                                     mock_process_eligible_offers,
                                                                                     mock_get_paginated_active_offer_ids,
@@ -193,8 +193,8 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
             call(client=client, offer_ids=[1], from_provider_update=False)
         ]
 
-    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_active_offer_ids')
-    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_active_offer_ids')
+    @patch('pcapi.scripts.algolia_indexing.indexing.process_eligible_offers')
     def test_should_index_offers_twice_when_offers_per_page_is_one_and_two_pages(self,
                                                                                  mock_process_eligible_offers,
                                                                                  mock_get_paginated_active_offer_ids,
@@ -218,8 +218,8 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
             call(client=client, offer_ids=[2], from_provider_update=False)
         ]
 
-    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_active_offer_ids')
-    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_active_offer_ids')
+    @patch('pcapi.scripts.algolia_indexing.indexing.process_eligible_offers')
     def test_should_index_offers_from_first_page_only_when_ending_page_is_provided(self,
                                                                                    mock_process_eligible_offers,
                                                                                    mock_get_paginated_active_offer_ids,
@@ -244,9 +244,9 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
 
 
 class BatchDeletingExpiredOffersInAlgoliaTest:
-    @patch('scripts.algolia_indexing.indexing.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE', 1)
-    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_expired_offer_ids')
-    @patch('scripts.algolia_indexing.indexing.delete_expired_offers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE', 1)
+    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_expired_offer_ids')
+    @patch('pcapi.scripts.algolia_indexing.indexing.delete_expired_offers')
     def test_should_delete_expired_offers_in_a_paginated_way(self,
                                                              mock_delete_expired_offers,
                                                              mock_get_paginated_expired_offer_ids,
@@ -267,7 +267,7 @@ class BatchDeletingExpiredOffersInAlgoliaTest:
 
 
 class BatchProcessingOfferIdsInErrorTest:
-    @patch('scripts.algolia_indexing.indexing.get_offer_ids_in_error')
+    @patch('pcapi.scripts.algolia_indexing.indexing.get_offer_ids_in_error')
     def test_should_retrieve_offer_ids_in_error(self, mock_get_offer_ids_in_error):
         # Given
         client = MagicMock()
@@ -279,9 +279,9 @@ class BatchProcessingOfferIdsInErrorTest:
         # Then
         mock_get_offer_ids_in_error.assert_called_once()
 
-    @patch('scripts.algolia_indexing.indexing.delete_offer_ids_in_error')
-    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
-    @patch('scripts.algolia_indexing.indexing.get_offer_ids_in_error')
+    @patch('pcapi.scripts.algolia_indexing.indexing.delete_offer_ids_in_error')
+    @patch('pcapi.scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.get_offer_ids_in_error')
     def test_should_delete_offer_ids_in_error_when_at_least_one_offer_id(self,
                                                                          mock_get_offer_ids_in_error,
                                                                          mock_process_eligible_offers,
@@ -298,9 +298,9 @@ class BatchProcessingOfferIdsInErrorTest:
         mock_process_eligible_offers.assert_called_once_with(client=client, offer_ids=[1], from_provider_update=False)
         mock_delete_offer_ids_in_error.assert_called_once_with(client=client)
 
-    @patch('scripts.algolia_indexing.indexing.delete_offer_ids_in_error')
-    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
-    @patch('scripts.algolia_indexing.indexing.get_offer_ids_in_error')
+    @patch('pcapi.scripts.algolia_indexing.indexing.delete_offer_ids_in_error')
+    @patch('pcapi.scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.get_offer_ids_in_error')
     def test_should_not_delete_offer_ids_in_error_when_no_offer_id(self,
                                                                    mock_get_offer_ids_in_error,
                                                                    mock_process_eligible_offers,
@@ -319,10 +319,10 @@ class BatchProcessingOfferIdsInErrorTest:
 
 
 class ProcessVenueProviderTest:
-    @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 3)
-    @patch('scripts.algolia_indexing.indexing.delete_venue_provider_currently_in_sync')
-    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id')
-    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('pcapi.scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 3)
+    @patch('pcapi.scripts.algolia_indexing.indexing.delete_venue_provider_currently_in_sync')
+    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id')
+    @patch('pcapi.scripts.algolia_indexing.indexing.process_eligible_offers')
     def test_should_index_offers_when_at_least_one_venue_provider(self,
                                                                   mock_process_eligible_offers,
                                                                   mock_get_paginated_offer_ids,
@@ -350,9 +350,9 @@ class ProcessVenueProviderTest:
             venue_provider_id=1
         )
 
-    @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 3)
-    @patch('scripts.algolia_indexing.indexing.delete_venue_provider_currently_in_sync')
-    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id',
+    @patch('pcapi.scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 3)
+    @patch('pcapi.scripts.algolia_indexing.indexing.delete_venue_provider_currently_in_sync')
+    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id',
            return_value=Exception)
     def test_should_delete_venue_provider_currently_in_sync_when_exception_is_raised(self,
                                                                                      mock_get_paginated_offer_ids,

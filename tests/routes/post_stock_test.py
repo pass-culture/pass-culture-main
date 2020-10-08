@@ -1,20 +1,20 @@
 from datetime import timedelta, datetime
 from unittest.mock import patch
 
-from models import StockSQLEntity, Provider
-from repository import repository
-from routes.serialization import serialize
+from pcapi.models import StockSQLEntity, Provider
+from pcapi.repository import repository
+from pcapi.routes.serialization import serialize
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
-from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
-from utils.human_ids import dehumanize, humanize
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from pcapi.utils.human_ids import dehumanize, humanize
 
 
 class Post:
     class Returns201:
-        @patch('routes.mediations.feature_queries.is_active', return_value=True)
-        @patch('routes.stocks.redis.add_offer_id')
+        @patch('pcapi.routes.mediations.feature_queries.is_active', return_value=True)
+        @patch('pcapi.routes.stocks.redis.add_offer_id')
         @pytest.mark.usefixtures("db_session")
         def when_user_has_rights(self, mock_add_offer_id_to_redis, mock_feature, app):
             # Given
@@ -39,7 +39,7 @@ class Post:
             stock = StockSQLEntity.query.filter_by(id=dehumanize(id)).first()
             assert stock.price == 1222
 
-        @patch('routes.stocks.redis.add_offer_id')
+        @patch('pcapi.routes.stocks.redis.add_offer_id')
         @pytest.mark.usefixtures("db_session")
         def when_booking_limit_datetime_is_none_for_thing(self, mock_add_offer_id_to_redis, app):
             # Given
@@ -69,7 +69,7 @@ class Post:
             assert stock.price == 0
             assert stock.bookingLimitDatetime is None
 
-        @patch('routes.stocks.redis.add_offer_id')
+        @patch('pcapi.routes.stocks.redis.add_offer_id')
         @pytest.mark.usefixtures("db_session")
         def when_stock_is_created_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
             # Given

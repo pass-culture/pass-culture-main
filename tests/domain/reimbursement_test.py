@@ -3,10 +3,10 @@ from decimal import Decimal
 
 from freezegun import freeze_time
 
-from domain.reimbursement import ReimbursementRules, find_all_booking_reimbursements, ReimbursementRule, CURRENT_RULES, \
+from pcapi.domain.reimbursement import ReimbursementRules, find_all_booking_reimbursements, ReimbursementRule, CURRENT_RULES, \
     NEW_RULES
-from models import BookingSQLEntity, ThingType
-from model_creators.specific_creators import create_booking_for_thing, create_booking_for_event
+from pcapi.models import BookingSQLEntity, ThingType
+from pcapi.model_creators.specific_creators import create_booking_for_thing, create_booking_for_event
 
 
 class DigitalThingsReimbursementTest:

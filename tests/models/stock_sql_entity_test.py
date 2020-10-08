@@ -5,16 +5,16 @@ import pytest
 from freezegun import freeze_time
 from pytest import approx
 
-from models import ApiErrors
-from models.pc_object import DeletedRecordException
-from models.stock_sql_entity import StockSQLEntity
-from repository import repository
+from pcapi.models import ApiErrors
+from pcapi.models.pc_object import DeletedRecordException
+from pcapi.models.stock_sql_entity import StockSQLEntity
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import (create_booking,
+from pcapi.model_creators.generic_creators import (create_booking,
                                                    create_offerer,
                                                    create_stock, create_user,
                                                    create_venue)
-from model_creators.specific_creators import (
+from pcapi.model_creators.specific_creators import (
     create_offer_with_event_product, create_offer_with_thing_product,
     create_stock_from_offer, create_stock_with_event_offer, create_stock_with_thing_offer)
 
@@ -388,7 +388,7 @@ class IsEventExpiredTest:
 
 
 class IsEventDeletableTest:
-    @patch('models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch('pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_not_an_event(self):
         # Given
         offerer = create_offerer()
@@ -401,7 +401,7 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    @patch('models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch('pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_an_event_in_the_future(self):
         # Given
         offerer = create_offerer()
@@ -416,7 +416,7 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    @patch('models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch('pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_expired_since_less_than_event_automatic_refund_delay(self):
         # Given
         offerer = create_offerer()
@@ -432,7 +432,7 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    @patch('models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch('pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_not_deletable_when_stock_is_expired_since_more_than_event_automatic_refund_delay(self):
         # Given
         offerer = create_offerer()

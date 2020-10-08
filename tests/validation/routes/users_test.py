@@ -2,8 +2,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from models import ApiErrors
-from validation.routes.users import check_valid_signup_webapp, \
+from pcapi.models import ApiErrors
+from pcapi.validation.routes.users import check_valid_signup_webapp, \
     check_valid_signup_pro
 
 

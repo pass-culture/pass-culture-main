@@ -1,14 +1,14 @@
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 
-from models import UserSQLEntity, BookingSQLEntity
-from scripts.beneficiary.file_import import fill_user_from, \
+from pcapi.models import UserSQLEntity, BookingSQLEntity
+from pcapi.scripts.beneficiary.file_import import fill_user_from, \
     create_booking_for, \
     create_users_with_activation_bookings, \
     split_rows_in_chunks_with_no_duplicated_emails
-from model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue
-from model_creators.specific_creators import create_offer_with_thing_product
-from utils.token import random_token
+from pcapi.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.utils.token import random_token
 
 
 class FillUserFromTest:
@@ -25,7 +25,7 @@ class FillUserFromTest:
             'super_secure_password'
         ]
 
-    @patch('scripts.beneficiary.file_import.hash_password')
+    @patch('pcapi.scripts.beneficiary.file_import.hash_password')
     def test_returns_an_user_with_data_from_csv_row(self, hashpw):
         # when
         user = fill_user_from(self.csv_row, UserSQLEntity())
@@ -102,7 +102,7 @@ class FillUserFromTest:
         assert user.resetPasswordToken is not None
         assert user.resetPasswordTokenValidityLimit is not None
 
-    @patch('scripts.beneficiary.file_import.random_password')
+    @patch('pcapi.scripts.beneficiary.file_import.random_password')
     def test_returns_an_user_with_computed_password(self, random_password):
         # given
         random_password.return_value = "random_string"

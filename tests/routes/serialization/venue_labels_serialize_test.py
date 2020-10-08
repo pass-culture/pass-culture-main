@@ -1,5 +1,5 @@
-from domain.venue.venue_label.venue_label import VenueLabel
-from routes.serialization.venue_labels_serialize import serialize_venue_label
+from pcapi.domain.venue.venue_label.venue_label import VenueLabel
+from pcapi.routes.serialization.venue_labels_serialize import serialize_venue_label
 
 
 class SerializeVenueLabelsTest:

@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import MagicMock, patch, Mock
 
-from infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
-from domain.beneficiary_contact.beneficiary_contact import BeneficiaryContact
-from domain.beneficiary_contact.beneficiary_contact_exceptions import AddNewBeneficiaryContactException
+from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
+from pcapi.domain.beneficiary_contact.beneficiary_contact import BeneficiaryContact
+from pcapi.domain.beneficiary_contact.beneficiary_contact_exceptions import AddNewBeneficiaryContactException
 from requests import Response
 
 MOCK_MAILJET_LIST_ID = 'mailjetListId'
@@ -13,8 +13,8 @@ class MailjetNotificationServiceTest:
         def setup_method(self):
             self.notification_service = MailjetNotificationService()
 
-        @patch('infrastructure.services.notification.mailjet_notification_service.create_contact')
-        @patch('infrastructure.services.notification.mailjet_notification_service.add_contact_informations')
+        @patch('pcapi.infrastructure.services.notification.mailjet_notification_service.create_contact')
+        @patch('pcapi.infrastructure.services.notification.mailjet_notification_service.add_contact_informations')
         def test_call_create_contact_from_mailing_and_add_informations(self, add_contact_info_mock, create_contact_mock, app):
             # Given
             beneficiary_contact = BeneficiaryContact('beneficiary@example.com', '2003-03-05', '98')
@@ -35,7 +35,7 @@ class MailjetNotificationServiceTest:
             add_contact_info_mock.assert_called_once_with(beneficiary_contact.email, birth_date_timestamp, beneficiary_contact.department_code)
 
 
-        @patch('infrastructure.services.notification.mailjet_notification_service.create_contact')
+        @patch('pcapi.infrastructure.services.notification.mailjet_notification_service.create_contact')
         def test_raises_error_on_creation_when_status_code_not_201_or_400(self, create_contact_mock):
             # Given
             beneficiary_contact = BeneficiaryContact('beneficiary@example.com', '2003-03-05', '98')
@@ -58,7 +58,7 @@ class MailjetNotificationServiceTest:
             self.notification_service = MailjetNotificationService()
 
         @patch.dict('os.environ', {'MAILJET_NOT_YET_ELIGIBLE_LIST_ID': MOCK_MAILJET_LIST_ID})
-        @patch('infrastructure.services.notification.mailjet_notification_service.add_contact_to_list')
+        @patch('pcapi.infrastructure.services.notification.mailjet_notification_service.add_contact_to_list')
         def test_call_add_contact_to_list(self, add_contact_to_list_mock):
             # Given
             beneficiary_contact = BeneficiaryContact('beneficiary@example.com', '2003-03-05', '98')
@@ -73,7 +73,7 @@ class MailjetNotificationServiceTest:
             add_contact_to_list_mock.assert_called_once_with(beneficiary_contact.email, MOCK_MAILJET_LIST_ID)
 
         @patch.dict('os.environ', {'MAILJET_NOT_YET_ELIGIBLE_LIST_ID': MOCK_MAILJET_LIST_ID})
-        @patch('infrastructure.services.notification.mailjet_notification_service.add_contact_to_list')
+        @patch('pcapi.infrastructure.services.notification.mailjet_notification_service.add_contact_to_list')
         def test_raises_error_on_list_addition_when_status_code_not_201_or_400(self, add_contact_to_list_mock):
             # Given
             beneficiary_contact = BeneficiaryContact('beneficiary@example.com', '2003-03-05', '98')

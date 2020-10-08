@@ -1,17 +1,17 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from emails.offerer_bookings_recap_after_deleting_stock import \
+from pcapi.emails.offerer_bookings_recap_after_deleting_stock import \
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
-from model_creators.generic_creators import create_user, create_offerer, create_venue, create_booking
-from model_creators.specific_creators import create_offer_with_event_product, create_event_occurrence, \
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_booking
+from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_event_occurrence, \
     create_stock_from_event_occurrence, create_product_with_thing_type, create_offer_with_thing_product, \
     create_stock_from_offer
 
 
 class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
-    @patch('emails.offerer_bookings_recap_after_deleting_stock.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('emails.offerer_bookings_recap_after_deleting_stock.feature_send_mail_to_users_enabled', return_value=False)
+    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.feature_send_mail_to_users_enabled', return_value=False)
     def test_should_send_mail_to_pass_culture_dev_when_feature_send_mail_to_users_is_disabled(self,
                                                                                               feature_send_mail_to_users_enabled):
         # Given
@@ -31,7 +31,7 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
         # Then
         assert mailjet_data['To'] == 'dev@example.com'
 
-    @patch('emails.offerer_bookings_recap_after_deleting_stock.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.feature_send_mail_to_users_enabled', return_value=True)
     def test_should_send_mail_to_offerer_and_pass_culture_administration_when_feature_send_mail_to_users_is_enabled(
             self,
             feature_send_mail_to_users_enabled):
@@ -52,11 +52,11 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
         # Then
         assert mailjet_data['To'] == 'administration@example.com, offerer@example.com'
 
-    @patch('emails.offerer_bookings_recap_after_deleting_stock.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('emails.offerer_bookings_recap_after_deleting_stock.format_environment_for_email', return_value='')
-    @patch('emails.offerer_bookings_recap_after_deleting_stock.build_pc_pro_offer_link',
+    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.format_environment_for_email', return_value='')
+    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.build_pc_pro_offer_link',
            return_value='http://pc_pro.com/offer_link')
-    @patch('emails.offerer_bookings_recap_after_deleting_stock.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.feature_send_mail_to_users_enabled', return_value=True)
     def test_should_return_mailjet_data_with_correct_information_when_offer_is_an_event(self,
                                                                                         format_environment_for_email,
                                                                                         build_pc_pro_offer_link,
@@ -98,12 +98,12 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
             }
         }
 
-    @patch('emails.offerer_bookings_recap_after_deleting_stock.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('emails.offerer_bookings_recap_after_deleting_stock.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('emails.offerer_bookings_recap_after_deleting_stock.format_environment_for_email', return_value='-testing')
-    @patch('emails.offerer_bookings_recap_after_deleting_stock.build_pc_pro_offer_link',
+    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.format_environment_for_email', return_value='-testing')
+    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.build_pc_pro_offer_link',
            return_value='http://pc_pro.com/offer_link')
-    @patch('emails.offerer_bookings_recap_after_deleting_stock.feature_send_mail_to_users_enabled', return_value=False)
+    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.feature_send_mail_to_users_enabled', return_value=False)
     def test_should_return_mailjet_data_when_multiple_bookings_and_offer_is_a_thing(self, format_environment_for_email,
                                                                                     build_pc_pro_offer_link,
                                                                                     feature_send_mail_to_users_enabled):

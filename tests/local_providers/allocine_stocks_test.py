@@ -5,21 +5,22 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 
-from local_providers import AllocineStocks
-from models import OfferSQLEntity, EventType, Product, StockSQLEntity
-from repository import repository
-from repository.provider_queries import get_provider_by_local_class
+from pcapi.local_providers import AllocineStocks
+from pcapi.models import OfferSQLEntity, EventType, Product, StockSQLEntity
+from pcapi.repository import repository
+from pcapi.repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_offerer, create_venue, \
     create_allocine_venue_provider_price_rule, create_allocine_venue_provider
-from model_creators.provider_creators import activate_provider
-from model_creators.specific_creators import create_product_with_event_type, create_offer_with_event_product
-from utils.human_ids import humanize
+from pcapi.model_creators.provider_creators import activate_provider
+from pcapi.model_creators.specific_creators import create_product_with_event_type, create_offer_with_event_product
+import pcapi.sandboxes
+from pcapi.utils.human_ids import humanize
 
 
 class AllocineStocksTest:
     class InitTest:
-        @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
         @clean_database
         def test_should_call_allocine_api(self, mock_call_allocine_api, app):
@@ -43,7 +44,7 @@ class AllocineStocksTest:
             mock_call_allocine_api.assert_called_once_with('token', theater_token)
 
     class NextTest:
-        @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
         @freeze_time('2019-10-15 09:00:00')
         @clean_database
@@ -164,10 +165,10 @@ class AllocineStocksTest:
 
 
 class UpdateObjectsTest:
-    @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
-    @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
-    @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
+    @patch('pcapi.local_providers.local_provider.feature_queries.is_active', return_value=True)
+    @patch('pcapi.local_providers.local_provider.send_venue_provider_data_to_redis')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_create_one_product_and_one_local_version_offer_with_movie_info(self,
@@ -295,10 +296,10 @@ class UpdateObjectsTest:
         assert created_product.type == str(EventType.CINEMA)
         mock_redis.assert_called_once()
 
-    @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
-    @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
-    @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
+    @patch('pcapi.local_providers.local_provider.feature_queries.is_active', return_value=True)
+    @patch('pcapi.local_providers.local_provider.send_venue_provider_data_to_redis')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_create_one_product_and_one_original_version_offer_and_one_dubbed_version_offer_with_movie_info(
@@ -455,10 +456,10 @@ class UpdateObjectsTest:
         assert dubbed_version_offer.product == created_products[0]
         assert dubbed_version_offer.type == str(EventType.CINEMA)
 
-    @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
-    @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
-    @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
+    @patch('pcapi.local_providers.local_provider.feature_queries.is_active', return_value=True)
+    @patch('pcapi.local_providers.local_provider.send_venue_provider_data_to_redis')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_create_only_one_original_version_offer_when_only_original_showtimes_exist(self,
@@ -579,10 +580,10 @@ class UpdateObjectsTest:
         assert len(created_offers) == 1
         assert len(created_products) == 1
 
-    @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
-    @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
-    @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
+    @patch('pcapi.local_providers.local_provider.feature_queries.is_active', return_value=True)
+    @patch('pcapi.local_providers.local_provider.send_venue_provider_data_to_redis')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_update_existing_product_duration_and_update_matching_offers(self,
@@ -720,10 +721,10 @@ class UpdateObjectsTest:
         assert existing_offers[1].durationMinutes == 110
         assert existing_product.durationMinutes == 110
 
-    @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
-    @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
-    @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
+    @patch('pcapi.local_providers.local_provider.feature_queries.is_active', return_value=True)
+    @patch('pcapi.local_providers.local_provider.send_venue_provider_data_to_redis')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_update_existing_product_duration_and_create_new_offer_when_no_offer_exists(self,
@@ -843,10 +844,10 @@ class UpdateObjectsTest:
         assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.name == 'Les Contes de la mère poule - VF'
 
-    @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
-    @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
-    @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
+    @patch('pcapi.local_providers.local_provider.feature_queries.is_active', return_value=True)
+    @patch('pcapi.local_providers.local_provider.send_venue_provider_data_to_redis')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_create_product_and_new_offer_with_missing_visa_and_stage_director(self,
@@ -947,10 +948,10 @@ class UpdateObjectsTest:
         assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.name == 'Les Contes de la mère poule - VF'
 
-    @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
-    @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
-    @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
+    @patch('pcapi.local_providers.local_provider.feature_queries.is_active', return_value=True)
+    @patch('pcapi.local_providers.local_provider.send_venue_provider_data_to_redis')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_not_create_product_and_offer_when_missing_required_information_in_api_response(self,
@@ -1037,11 +1038,11 @@ class UpdateObjectsTest:
         assert OfferSQLEntity.query.count() == 0
         assert Product.query.count() == 0
 
-    @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
-    @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
-    @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
-    @patch('local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb')
+    @patch('pcapi.local_providers.local_provider.feature_queries.is_active', return_value=True)
+    @patch('pcapi.local_providers.local_provider.send_venue_provider_data_to_redis')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_create_product_with_correct_thumb_and_increase_thumbCount_by_1(self,
@@ -1117,8 +1118,7 @@ class UpdateObjectsTest:
                     ]
                 }
             }])
-        file_path = Path(os.path.dirname(os.path.realpath(__file__))) \
-                    / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_mocks' / 'provider_thumb.jpeg'
+        file_path = Path(pcapi.sandboxes.__path__[0]) / 'providers' / 'titelive_mocks' / 'provider_thumb.jpeg'
         mock_get_object_thumb.return_value = open(file_path, "rb").read()
 
         product = create_product_with_event_type(
@@ -1149,11 +1149,11 @@ class UpdateObjectsTest:
         assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
         assert existing_product.thumbCount == 1
 
-    @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
-    @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
-    @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
-    @patch('local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb')
+    @patch('pcapi.local_providers.local_provider.feature_queries.is_active', return_value=True)
+    @patch('pcapi.local_providers.local_provider.send_venue_provider_data_to_redis')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_replace_product_thumb_when_product_has_already_one_thumb(self,
@@ -1244,8 +1244,7 @@ class UpdateObjectsTest:
                     ]
                 }
             }])
-        file_path = Path(os.path.dirname(os.path.realpath(__file__))) \
-                    / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_mocks' / 'provider_thumb.jpeg'
+        file_path = Path(pcapi.sandboxes.__path__[0]) / 'providers' / 'titelive_mocks' / 'provider_thumb.jpeg'
         mock_get_object_thumb.return_value = open(file_path, "rb").read()
 
         product = create_product_with_event_type(
@@ -1275,10 +1274,10 @@ class UpdateObjectsTest:
         assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
         assert existing_product.thumbCount == 1
 
-    @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
-    @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
-    @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
+    @patch('pcapi.local_providers.local_provider.feature_queries.is_active', return_value=True)
+    @patch('pcapi.local_providers.local_provider.send_venue_provider_data_to_redis')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_create_one_product_and_one_offer_and_associated_stocks(self,
@@ -1431,10 +1430,10 @@ class UpdateObjectsTest:
         assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
         assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
 
-    @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
-    @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
-    @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
+    @patch('pcapi.local_providers.local_provider.feature_queries.is_active', return_value=True)
+    @patch('pcapi.local_providers.local_provider.send_venue_provider_data_to_redis')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_create_one_product_and_two_offers_and_associated_stocks(self,
@@ -1612,8 +1611,8 @@ class UpdateObjectsTest:
         assert third_stock.bookingLimitDatetime == datetime(2019, 12, 3, 19, 0)
 
     class WhenAllocineStockAreSynchronizedTwice:
-        @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
-        @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
         @clean_database
         def test_should_update_stocks_based_on_stock_date(self,
@@ -1822,10 +1821,10 @@ class UpdateObjectsTest:
             assert second_stock.offerId == vf_offer.id
             assert second_stock.beginningDatetime == datetime(2019, 12, 4, 17, 0)
 
-        @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-        @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
-        @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
-        @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
+        @patch('pcapi.local_providers.local_provider.feature_queries.is_active', return_value=True)
+        @patch('pcapi.local_providers.local_provider.send_venue_provider_data_to_redis')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
         @clean_database
         def test_should_create_one_different_offer_and_stock_for_different_venues(self,
@@ -1946,8 +1945,8 @@ class UpdateObjectsTest:
             assert OfferSQLEntity.query.filter(OfferSQLEntity.venueId == venue2.id).count() == 1
             assert len(created_stock) == 2
 
-        @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
-        @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
         @clean_database
         def test_should_update_stocks_info_after_pro_user_modification(self,
@@ -2172,8 +2171,8 @@ class UpdateObjectsTest:
             assert second_stock.bookingLimitDatetime == datetime(2019, 12, 4, 15, 0)
 
     class WhenOfferHasBeenManuallyUpdated:
-        @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
-        @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
         @clean_database
         def test_should_preserve_manual_modification(self,
@@ -2384,8 +2383,8 @@ class UpdateObjectsTest:
             assert created_offer.isDuo is True
 
     class WhenStockHasBeenManuallyDeleted:
-        @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
-        @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
         @clean_database
         def test_should_preserve_deletion(self, mock_poster_get_allocine, mock_call_allocine_api, app):
@@ -2574,8 +2573,8 @@ class UpdateObjectsTest:
             assert created_stock.isSoftDeleted is True
 
     class WhenSettingDefaultValuesAtImport:
-        @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
-        @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
         @clean_database
         def test_should_preserve_is_duo_default_value(self,
@@ -2776,8 +2775,8 @@ class UpdateObjectsTest:
             created_offer = OfferSQLEntity.query.one()
             assert created_offer.isDuo
 
-        @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
-        @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
+        @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
         @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
         @clean_database
         def test_should_preserve_quantity_default_value(self,
@@ -2886,8 +2885,8 @@ class UpdateObjectsTest:
 
 
 class GetObjectThumbTest:
-    @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
-    @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_get_movie_poster_if_poster_url_exist(self,
@@ -2913,8 +2912,8 @@ class GetObjectThumbTest:
         mock_poster_get_allocine.assert_called_once_with('http://url.example.com')
         assert poster_thumb == 'poster_thumb'
 
-    @patch('local_providers.allocine.allocine_stocks.get_movies_showtimes')
-    @patch('local_providers.allocine.allocine_stocks.get_movie_poster')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes')
+    @patch('pcapi.local_providers.allocine.allocine_stocks.get_movie_poster')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
     def test_should_return_empty_thumb_if_poster_does_not_exist(self,

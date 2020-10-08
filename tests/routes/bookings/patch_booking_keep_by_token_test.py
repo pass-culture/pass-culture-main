@@ -1,15 +1,15 @@
 from datetime import datetime
 from decimal import Decimal
 
-from models import EventType, BookingSQLEntity, StockSQLEntity
-from repository import repository
+from pcapi.models import EventType, BookingSQLEntity, StockSQLEntity
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_user_offerer, create_payment, create_api_key
-from model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
     create_offer_with_event_product, create_event_occurrence
-from utils.token import random_token
+from pcapi.utils.token import random_token
 
 API_KEY_VALUE = random_token(64)
 

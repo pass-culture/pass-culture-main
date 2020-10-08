@@ -3,10 +3,10 @@ from datetime import datetime, timedelta
 from freezegun import freeze_time
 from sqlalchemy import func
 
-from models import OfferSQLEntity, StockSQLEntity, Product
-from models.offer_type import EventType, ThingType
-from repository import repository
-from repository.offer_queries import department_or_national_offers, \
+from pcapi.models import OfferSQLEntity, StockSQLEntity, Product
+from pcapi.models.offer_type import EventType, ThingType
+from pcapi.repository import repository
+from pcapi.repository.offer_queries import department_or_national_offers, \
     find_activation_offers, \
     get_offers_by_venue_id, \
     get_paginated_active_offer_ids, \
@@ -16,9 +16,9 @@ from repository.offer_queries import department_or_national_offers, \
     get_paginated_expired_offer_ids, \
     _build_bookings_quantity_subquery
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_booking, create_user, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, \
     create_venue, create_provider
-from model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product, \
+from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product, \
     create_product_with_event_type, create_offer_with_event_product, create_event_occurrence, \
     create_stock_from_event_occurrence, create_stock_from_offer
 

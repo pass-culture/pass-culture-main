@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 
-from models import BeneficiaryImport, BeneficiaryImportStatus, ImportStatus
+from pcapi.models import BeneficiaryImport, BeneficiaryImportStatus, ImportStatus
 
 
 class SetStatusTest:

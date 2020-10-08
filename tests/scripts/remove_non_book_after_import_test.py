@@ -2,17 +2,17 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from models import Product, OfferSQLEntity
-from repository import repository
-from scripts.remove_non_book_after_import import delete_product_from_isbn_file, read_isbn_from_file
+from pcapi.models import Product, OfferSQLEntity
+from pcapi.repository import repository
+from pcapi.scripts.remove_non_book_after_import import delete_product_from_isbn_file, read_isbn_from_file
 import pytest
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
-from model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 @pytest.mark.usefixtures("db_session")
-@patch('scripts.remove_non_book_after_import.read_isbn_from_file')
+@patch('pcapi.scripts.remove_non_book_after_import.read_isbn_from_file')
 def test_remove_only_unwanted_book(read_isbn_from_file_mock, app):
     # Given
     unwanted_isbn = '9876543211231'
@@ -36,7 +36,7 @@ def test_remove_only_unwanted_book(read_isbn_from_file_mock, app):
 
 
 @pytest.mark.usefixtures("db_session")
-@patch('scripts.remove_non_book_after_import.read_isbn_from_file')
+@patch('pcapi.scripts.remove_non_book_after_import.read_isbn_from_file')
 def test_should_not_delete_product_with_bookings_and_deactivate_associated_offer(read_isbn_from_file_mock, app):
     # Given
     unwanted_isbn = '9876543211231'

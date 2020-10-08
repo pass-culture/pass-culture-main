@@ -1,4 +1,4 @@
-from domain.postal_code.postal_code import PostalCode
+from pcapi.domain.postal_code.postal_code import PostalCode
 
 
 class PostalCodeTest:

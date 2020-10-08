@@ -1,7 +1,7 @@
 import pytest
 
-from models import ApiErrors, UserSQLEntity
-from validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided
+from pcapi.models import ApiErrors, UserSQLEntity
+from pcapi.validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided
 
 
 class CheckUserIsLoggedInOrEmailIsProvidedTest:

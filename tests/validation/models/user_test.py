@@ -2,13 +2,13 @@ from unittest.mock import patch
 
 from sqlalchemy.exc import IntegrityError
 
-from models import ApiErrors
-from model_creators.generic_creators import create_user
-from validation.models.user import validate
+from pcapi.models import ApiErrors
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.validation.models.user import validate
 
 
 class UserAlreadyExistsTest:
-    @patch('validation.models.user.user_queries.count_users_by_email')
+    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
     def test_should_return_error_when_email_already_exist_in_database_but_no_id_is_provided(self,
                                                                                             mocked_count_users_by_email,
                                                                                             app):
@@ -23,7 +23,7 @@ class UserAlreadyExistsTest:
         # Then
         assert api_error.errors['email'] == ['Un compte lié à cet e-mail existe déjà']
 
-    @patch('validation.models.user.user_queries.count_users_by_email')
+    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
     def test_should_not_return_error_when_email_already_exist_in_database_but_id_is_provided(self,
                                                                                              mocked_count_users_by_email,
                                                                                              app):
@@ -38,7 +38,7 @@ class UserAlreadyExistsTest:
         # Then
         assert api_error.errors == {}
 
-    @patch('validation.models.user.user_queries.count_users_by_email')
+    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
     def test_should_return_error_when_user_count_raise_error_and_no_id_is_provided(self, mocked_count_users_by_email,
                                                                                    app):
         # Given
@@ -52,7 +52,7 @@ class UserAlreadyExistsTest:
         # Then
         assert api_error.errors['email'] == ['Un compte lié à cet e-mail existe déjà']
 
-    @patch('validation.models.user.user_queries.count_users_by_email')
+    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
     def test_should_not_return_error_when_user_count_raise_error_and_id_is_provided(self, mocked_count_users_by_email,
                                                                                     app):
         # Given
@@ -90,7 +90,7 @@ class PublicNameTest:
         # Then
         assert api_error.errors['publicName'] == ['Tu dois saisir au moins 3 caractères.']
 
-    @patch('validation.models.user.user_queries.count_users_by_email')
+    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
     def test_should_not_return_error_message_when_user_public_name_is_correct(self, mocked_count_users_by_email, app):
         # Given
         user = create_user(public_name='Joel')
@@ -116,7 +116,7 @@ class EmailTest:
         # Then
         assert api_error.errors['email'] == ['L’e-mail doit contenir un @.']
 
-    @patch('validation.models.user.user_queries.count_users_by_email')
+    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
     def test_should_not_return_error_message_when_user_email_is_correct(self, mocked_count_users_by_email, app):
         # Given
         user = create_user(email='joel@example.com')
@@ -155,7 +155,7 @@ class PasswordTest:
         # Then
         assert api_error.errors['password'] == ['Tu dois saisir au moins 8 caractères.']
 
-    @patch('validation.models.user.user_queries.count_users_by_email')
+    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
     def test_should_not_return_error_message_when_user_password_is_correct(self, mocked_count_users_by_email, app):
         # Given
         user = create_user(password='JoelDupont')

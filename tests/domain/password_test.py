@@ -1,10 +1,10 @@
 import pytest
 
-from domain.password import _ensure_new_password_is_strong_enough, \
+from pcapi.domain.password import _ensure_new_password_is_strong_enough, \
     validate_change_password_request, \
     check_password_validity, _ensure_confirmation_password_is_same_as_new_password, _ensure_given_old_password_is_correct, \
     _ensure_new_password_is_different_from_old
-from models import UserSQLEntity, ApiErrors
+from pcapi.models import UserSQLEntity, ApiErrors
 
 
 class ValidateChangePasswordRequestTest:

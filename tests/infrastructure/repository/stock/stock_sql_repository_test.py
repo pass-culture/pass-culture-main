@@ -2,13 +2,13 @@ from datetime import datetime
 
 import pytest
 
-from domain.stock.stock_exceptions import StockDoesntExist
-from domain.stock.stock import Stock
-from repository import repository
-from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
+from pcapi.domain.stock.stock_exceptions import StockDoesntExist
+from pcapi.domain.stock.stock import Stock
+from pcapi.repository import repository
+from pcapi.infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
 import pytest
-from model_creators.generic_creators import create_offerer, create_venue
-from model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
+from pcapi.model_creators.generic_creators import create_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
 
 
 class StockSQLRepositoryTest:

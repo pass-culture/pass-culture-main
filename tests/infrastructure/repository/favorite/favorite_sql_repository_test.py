@@ -1,12 +1,12 @@
-from domain.favorite.favorite import Favorite
+from pcapi.domain.favorite.favorite import Favorite
 
-from infrastructure.repository.favorite.favorite_sql_repository import FavoriteSQLRepository
+from pcapi.infrastructure.repository.favorite.favorite_sql_repository import FavoriteSQLRepository
 
-from repository import repository
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_offerer, create_user, \
+from pcapi.model_creators.generic_creators import create_offerer, create_user, \
     create_venue, create_mediation, create_favorite, create_booking
-from model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
 
 
 class FindByBeneficiaryTest:

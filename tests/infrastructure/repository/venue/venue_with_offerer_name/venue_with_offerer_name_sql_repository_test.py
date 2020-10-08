@@ -1,12 +1,12 @@
 import pytest
 
-from domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
-from infrastructure.repository.venue.venue_with_offerer_name import \
+from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
+from pcapi.infrastructure.repository.venue.venue_with_offerer_name import \
     venue_with_offerer_name_domain_converter
-from infrastructure.repository.venue.venue_with_offerer_name.venue_with_offerer_name_sql_repository import \
+from pcapi.infrastructure.repository.venue.venue_with_offerer_name.venue_with_offerer_name_sql_repository import \
     VenueWithOffererNameSQLRepository
-from repository import repository
-from model_creators.generic_creators import create_offerer, create_venue, create_user, create_user_offerer
+from pcapi.repository import repository
+from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_user, create_user_offerer
 
 
 class GetByProIdentifierTest:

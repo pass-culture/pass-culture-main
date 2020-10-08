@@ -1,10 +1,10 @@
-from repository import repository
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
     create_mediation
-from model_creators.specific_creators import create_offer_with_thing_product
-from utils.human_ids import humanize
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.utils.human_ids import humanize
 
 RECOMMENDATION_URL = '/recommendations'
 

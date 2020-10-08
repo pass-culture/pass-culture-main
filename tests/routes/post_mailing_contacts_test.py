@@ -1,13 +1,13 @@
 from unittest.mock import patch, MagicMock
 
-from models import ApiErrors
+from pcapi.models import ApiErrors
 from tests.conftest import TestClient
-from workers.mailing_contacts_job import mailing_contacts_job
+from pcapi.workers.mailing_contacts_job import mailing_contacts_job
 
 
 class Post:
     class Returns201:
-        @patch('routes.mailing_contacts.validate_save_mailing_contact_request')
+        @patch('pcapi.routes.mailing_contacts.validate_save_mailing_contact_request')
         def when_contact_has_successfully_been_saved(self, validate_request, app):
             # Given
             mailing_contacts_job.delay = MagicMock()
@@ -26,7 +26,7 @@ class Post:
             assert response.status_code == 201
 
     class Returns400:
-        @patch('routes.mailing_contacts.validate_save_mailing_contact_request')
+        @patch('pcapi.routes.mailing_contacts.validate_save_mailing_contact_request')
         def when_payload_validation_fails(self, validate_request, app):
             # Given
             data = {

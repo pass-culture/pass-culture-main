@@ -1,9 +1,9 @@
 from unittest.mock import MagicMock
 
-from domain.identifier.identifier import Identifier
+from pcapi.domain.identifier.identifier import Identifier
 
-from infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
-from use_cases.list_offers_for_pro_user import ListOffersForProUser, OffersRequestParameters
+from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
+from pcapi.use_cases.list_offers_for_pro_user import ListOffersForProUser, OffersRequestParameters
 
 
 class OffersRequestParametersTest:

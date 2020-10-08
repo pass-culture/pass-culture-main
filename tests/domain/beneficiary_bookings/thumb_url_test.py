@@ -1,10 +1,10 @@
 from unittest.mock import patch
 
-from domain.beneficiary_bookings.thumb_url import ThumbUrl
+from pcapi.domain.beneficiary_bookings.thumb_url import ThumbUrl
 
 
 class ProductThumbUrlTest:
-    @patch('domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
+    @patch('pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
     def should_return_url_specified_for_product(self, mock_get_storage):
         # Given
         product_thumb_url = ThumbUrl.for_product(identifier=12)
@@ -14,7 +14,7 @@ class ProductThumbUrlTest:
 
 
 class MediationThumbUrlTest:
-    @patch('domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
+    @patch('pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
     def should_return_url_specified_for_mediation(self, mock_get_storage):
         # Given
         mediation_thumb_url = ThumbUrl.for_mediation(identifier=12)

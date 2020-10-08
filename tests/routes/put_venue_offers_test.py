@@ -1,14 +1,14 @@
 from unittest.mock import patch
 
-from models import OfferSQLEntity
-from repository import repository
+from pcapi.models import OfferSQLEntity
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
     create_user_offerer
-from model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
+from pcapi.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
     create_offer_with_event_product
-from utils.human_ids import humanize
+from pcapi.utils.human_ids import humanize
 
 API_URL = '/venues/'
 
@@ -120,8 +120,8 @@ class Put:
             assert offers[0].isActive == True
             assert offers[1].isActive == True
 
-        @patch('routes.venues.feature_queries.is_active', return_value=True)
-        @patch('routes.venues.redis.add_venue_id')
+        @patch('pcapi.routes.venues.feature_queries.is_active', return_value=True)
+        @patch('pcapi.routes.venues.redis.add_venue_id')
         @pytest.mark.usefixtures("db_session")
         def when_activating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_redis, mock_feature, app):
             # Given
@@ -178,8 +178,8 @@ class Put:
             assert not offers[0].isActive
             assert not offers[1].isActive
 
-        @patch('routes.venues.feature_queries.is_active', return_value=True)
-        @patch('routes.venues.redis.add_venue_id')
+        @patch('pcapi.routes.venues.feature_queries.is_active', return_value=True)
+        @patch('pcapi.routes.venues.redis.add_venue_id')
         @pytest.mark.usefixtures("db_session")
         def when_deactivating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self,
                                                                                     mock_redis,

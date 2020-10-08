@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from functools import wraps
 from pprint import pprint
 from unittest.mock import Mock
@@ -17,18 +18,19 @@ from requests.auth import _basic_auth_str
 # We want to load the env variables BEFORE importing anything
 # because some env variables will get evaluated as soon as the
 # module is imported (utils.mailing for example)
-from load_environment_variables import load_environment_variables
+from pcapi.load_environment_variables import load_environment_variables
 load_environment_variables()
 
-from install_database_extensions import install_database_extensions
-from local_providers.install import install_local_providers
-from models.db import db
-from models.install import install_activity, install_materialized_views
-from repository.clean_database import clean_all_database
-from repository.user_queries import find_user_by_email
-from routes import install_routes
-from model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
-from utils.json_encoder import EnumJSONEncoder
+import pcapi
+from pcapi.install_database_extensions import install_database_extensions
+from pcapi.local_providers.install import install_local_providers
+from pcapi.models.db import db
+from pcapi.models.install import install_activity, install_materialized_views
+from pcapi.repository.clean_database import clean_all_database
+from pcapi.repository.user_queries import find_user_by_email
+from pcapi.routes import install_routes
+from pcapi.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
+from pcapi.utils.json_encoder import EnumJSONEncoder
 
 def run_migrations():
     alembic_cfg = Config("alembic.ini")
@@ -43,7 +45,10 @@ def pytest_configure(config):
 
 @pytest.fixture(scope='session')
 def app():
-    app = Flask(__name__, template_folder='../templates')
+    app = Flask(
+        __name__,
+        template_folder=Path(pcapi.__path__[0]) / 'templates',
+    )
 
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL_TEST')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

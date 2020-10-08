@@ -1,9 +1,9 @@
-from repository import repository
-from repository.provider_queries import get_provider_by_local_class
+from pcapi.repository import repository
+from pcapi.repository.provider_queries import get_provider_by_local_class
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_user, create_offerer, create_venue, create_venue_provider
-from utils.human_ids import humanize
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_venue_provider
+from pcapi.utils.human_ids import humanize
 
 
 class Get:

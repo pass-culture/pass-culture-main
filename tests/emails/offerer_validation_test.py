@@ -4,9 +4,9 @@ from bs4 import BeautifulSoup
 
 import pytest
 from tests.conftest import mocked_mail
-from model_creators.generic_creators import create_user, create_offerer, create_user_offerer
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 from tests.utils.mailing_test import get_by_siren_stub
-from utils.mailing import make_validation_email_object
+from pcapi.utils.mailing import make_validation_email_object
 
 
 @mocked_mail

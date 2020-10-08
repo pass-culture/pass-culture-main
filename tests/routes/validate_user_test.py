@@ -1,10 +1,10 @@
 from unittest.mock import patch
 
-from models import UserSQLEntity, Offerer, UserOfferer
-from repository import repository
+from pcapi.models import UserSQLEntity, Offerer, UserOfferer
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_user, create_offerer, create_user_offerer
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
 
 class Patch:
@@ -26,9 +26,9 @@ class Patch:
             assert UserSQLEntity.query.get(user_id).isValidated
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.validate.send_ongoing_offerer_attachment_information_email_to_pro',
+        @patch('pcapi.routes.validate.send_ongoing_offerer_attachment_information_email_to_pro',
                return_value=True)
-        @patch('routes.validate.send_raw_email', return_value=True)
+        @patch('pcapi.routes.validate.send_raw_email', return_value=True)
         def test_send_ongoing_offerer_attachment_information_email_to_pro(self,
                                                                           mock_send_raw_email,
                                                                           mock_send_ongoing_offerer_attachment_information_email_to_pro,
@@ -54,9 +54,9 @@ class Patch:
                                                                                                   mock_send_raw_email)
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.validate.send_pro_user_waiting_for_validation_by_admin_email',
+        @patch('pcapi.routes.validate.send_pro_user_waiting_for_validation_by_admin_email',
                return_value=True)
-        @patch('routes.validate.send_raw_email', return_value=True)
+        @patch('pcapi.routes.validate.send_raw_email', return_value=True)
         def test_send_pro_user_waiting_for_validation_by_admin_email(self,
                                                                      mock_send_raw_email,
                                                                      mock_send_pro_user_waiting_for_validation_by_admin_email,
@@ -80,10 +80,10 @@ class Patch:
                                                                                              offerer)
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.validate.IS_INTEGRATION', False)
-        @patch('routes.validate.maybe_send_offerer_validation_email',
+        @patch('pcapi.routes.validate.IS_INTEGRATION', False)
+        @patch('pcapi.routes.validate.maybe_send_offerer_validation_email',
                return_value=True)
-        @patch('routes.validate.send_raw_email', return_value=True)
+        @patch('pcapi.routes.validate.send_raw_email', return_value=True)
         def test_maybe_send_offerer_validation_email_when_not_in_integration_env(self,
                                                                                  mock_send_raw_email,
                                                                                  mock_maybe_send_offerer_validation_email,
@@ -106,8 +106,8 @@ class Patch:
             mock_maybe_send_offerer_validation_email.assert_called_once_with(offerer, user_offerer, mock_send_raw_email)
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.validate.IS_INTEGRATION', True)
-        @patch('routes.validate.maybe_send_offerer_validation_email',
+        @patch('pcapi.routes.validate.IS_INTEGRATION', True)
+        @patch('pcapi.routes.validate.maybe_send_offerer_validation_email',
                return_value=True)
         def test_validate_offerer_and_user_offerer_when_in_integration_env(self,
                                                                            mock_maybe_send_offerer_validation_email,

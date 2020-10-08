@@ -3,27 +3,27 @@ from decimal import Decimal
 
 import pytest
 
-from domain.booking.booking import Booking
-from domain.booking.booking_exceptions import PhysicalExpenseLimitHasBeenReached, \
+from pcapi.domain.booking.booking import Booking
+from pcapi.domain.booking.booking_exceptions import PhysicalExpenseLimitHasBeenReached, \
     QuantityIsInvalid, \
     StockIsNotBookable, OfferIsAlreadyBooked, CannotBookFreeOffers, UserHasInsufficientFunds, \
     DigitalExpenseLimitHasBeenReached
-from domain.booking.booking_validator import check_offer_already_booked, check_quantity_is_valid
-from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS, SUBVENTION_TOTAL
-from domain.stock.stock import Stock
-from domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits, check_can_book_free_offer
-from models import ApiErrors, BookingSQLEntity, StockSQLEntity, OfferSQLEntity, ThingType, UserSQLEntity, EventType
-from models.api_errors import ResourceGoneError, ForbiddenError
-from repository import repository
+from pcapi.domain.booking.booking_validator import check_offer_already_booked, check_quantity_is_valid
+from pcapi.domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS, SUBVENTION_TOTAL
+from pcapi.domain.stock.stock import Stock
+from pcapi.domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits, check_can_book_free_offer
+from pcapi.models import ApiErrors, BookingSQLEntity, StockSQLEntity, OfferSQLEntity, ThingType, UserSQLEntity, EventType
+from pcapi.models.api_errors import ResourceGoneError, ForbiddenError
+from pcapi.repository import repository
 import pytest
 from tests.domain_creators.generic_creators import create_domain_beneficiary
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_payment, create_deposit
-from model_creators.specific_creators import create_stock_from_offer, \
+from pcapi.model_creators.specific_creators import create_stock_from_offer, \
     create_product_with_thing_type, create_product_with_event_type, create_offer_with_thing_product, \
     create_offer_with_event_product
-from validation.routes.bookings import \
+from pcapi.validation.routes.bookings import \
     check_booking_is_not_already_cancelled, \
     check_booking_is_not_used, \
     check_booking_token_is_usable, \

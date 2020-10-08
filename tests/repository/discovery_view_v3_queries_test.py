@@ -3,8 +3,8 @@ from datetime import datetime
 
 import pytz
 
-from models.db import db
-from repository import discovery_view_v3_queries
+from pcapi.models.db import db
+from pcapi.repository import discovery_view_v3_queries
 from tests.conftest import clean_database
 
 

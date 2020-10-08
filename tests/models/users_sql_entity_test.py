@@ -3,13 +3,13 @@ from unittest.mock import patch
 
 import pytest
 
-from models import ApiErrors, RightsType, ThingType, user_sql_entity
-from repository import repository
+from pcapi.models import ApiErrors, RightsType, ThingType, user_sql_entity
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit, create_user_offerer
-from model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 
 
 @pytest.mark.usefixtures("db_session")
@@ -358,7 +358,7 @@ class DevEnvironmentPasswordHasherTest:
         assert user_sql_entity.check_password('secret', hashed)
 
 
-@patch('models.user_sql_entity.IS_DEV', False)
+@patch('pcapi.models.user_sql_entity.IS_DEV', False)
 class ProdEnvironmentPasswordHasherTest:
 
     def test_hash_password_uses_bcrypt(self):

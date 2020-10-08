@@ -5,24 +5,24 @@ from freezegun import freeze_time
 import pytest
 from tests.domain_creators.generic_creators import \
     create_domain_beneficiary_pre_subcription
-from model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user
 
-from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
     BeneficiaryIsADuplicate, BeneficiaryIsNotEligible, CantRegisterBeneficiary
-from infrastructure.repository.beneficiary.beneficiary_sql_repository import \
+from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import \
     BeneficiarySQLRepository
-from models import BeneficiaryImport, UserSQLEntity
-from models.beneficiary_import_status import ImportStatus
-from models.deposit import Deposit
-from repository import repository
-from use_cases.create_beneficiary_from_application import \
+from pcapi.models import BeneficiaryImport, UserSQLEntity
+from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.models.deposit import Deposit
+from pcapi.repository import repository
+from pcapi.use_cases.create_beneficiary_from_application import \
     CreateBeneficiaryFromApplication
 
 
-@patch('use_cases.create_beneficiary_from_application.send_raw_email')
-@patch('use_cases.create_beneficiary_from_application.send_activation_email')
-@patch('domain.password.random_token')
-@patch('infrastructure.repository.beneficiary.beneficiary_pre_subscription_sql_converter.random_password')
+@patch('pcapi.use_cases.create_beneficiary_from_application.send_raw_email')
+@patch('pcapi.use_cases.create_beneficiary_from_application.send_activation_email')
+@patch('pcapi.domain.password.random_token')
+@patch('pcapi.infrastructure.repository.beneficiary.beneficiary_pre_subscription_sql_converter.random_password')
 @freeze_time('2020-10-15 09:00:00')
 @pytest.mark.usefixtures("db_session")
 def test_saved_a_beneficiary_from_application(stubed_random_password,
@@ -211,9 +211,9 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
     assert beneficiary_import.detail == f"Postal code {postal_code} is not eligible."
 
 
-@patch('use_cases.create_beneficiary_from_application.validate')
-@patch('use_cases.create_beneficiary_from_application.send_raw_email')
-@patch('use_cases.create_beneficiary_from_application.send_rejection_email_to_beneficiary_pre_subscription')
+@patch('pcapi.use_cases.create_beneficiary_from_application.validate')
+@patch('pcapi.use_cases.create_beneficiary_from_application.send_raw_email')
+@patch('pcapi.use_cases.create_beneficiary_from_application.send_rejection_email_to_beneficiary_pre_subscription')
 @pytest.mark.usefixtures("db_session")
 def test_calls_send_rejection_mail_with_validation_error(mocked_send_rejection_email_to_beneficiary_pre_subscription,
                                                          stubed_send_raw_email,

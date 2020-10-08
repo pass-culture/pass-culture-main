@@ -1,8 +1,8 @@
-from models import ApiErrors
-from repository import repository
+from pcapi.models import ApiErrors
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_offerer, create_venue
-from validation.models.venue import validate
+from pcapi.model_creators.generic_creators import create_offerer, create_venue
+from pcapi.validation.models.venue import validate
 
 
 def test_should_return_error_when_siret_is_invalid():

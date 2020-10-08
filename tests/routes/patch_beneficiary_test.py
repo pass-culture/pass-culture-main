@@ -1,9 +1,9 @@
-from models import UserSQLEntity
-from repository import repository
+from pcapi.models import UserSQLEntity
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_user
-from utils.human_ids import humanize
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.utils.human_ids import humanize
 
 
 class Patch:

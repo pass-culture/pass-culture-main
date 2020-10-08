@@ -1,10 +1,10 @@
 from datetime import timedelta, datetime
 
-from models.payment import Payment
-from models.payment_status import TransactionStatus, PaymentStatus
-from repository import repository
+from pcapi.models.payment import Payment
+from pcapi.models.payment_status import TransactionStatus, PaymentStatus
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_payment, create_user, create_booking, \
+from pcapi.model_creators.generic_creators import create_payment, create_user, create_booking, \
     create_deposit, create_payment_message, create_payment_status
 
 

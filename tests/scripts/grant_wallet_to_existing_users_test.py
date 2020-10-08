@@ -1,10 +1,10 @@
 from unittest.mock import patch, MagicMock
 
-from models import UserSQLEntity, Deposit
-from repository import repository
-from scripts.grant_wallet_to_existing_users import grant_wallet_to_existing_users
+from pcapi.models import UserSQLEntity, Deposit
+from pcapi.repository import repository
+from pcapi.scripts.grant_wallet_to_existing_users import grant_wallet_to_existing_users
 import pytest
-from model_creators.generic_creators import create_user, create_deposit
+from pcapi.model_creators.generic_creators import create_user, create_deposit
 
 
 @pytest.mark.usefixtures("db_session")

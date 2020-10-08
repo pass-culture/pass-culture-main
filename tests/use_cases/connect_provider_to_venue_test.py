@@ -2,14 +2,14 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from local_providers import FnacStocks, LibrairesStocks, PraxielStocks, TiteLiveStocks
-from models import ApiErrors, VenueProvider
-from repository import repository
+from pcapi.local_providers import FnacStocks, LibrairesStocks, PraxielStocks, TiteLiveStocks
+from pcapi.models import ApiErrors, VenueProvider
+from pcapi.repository import repository
 from tests.local_providers.provider_test_utils import TestLocalProvider
-from model_creators.generic_creators import create_offerer, create_provider, create_venue
-from model_creators.provider_creators import activate_provider
-from use_cases.connect_venue_to_provider import connect_venue_to_provider
-from utils.human_ids import humanize
+from pcapi.model_creators.generic_creators import create_offerer, create_provider, create_venue
+from pcapi.model_creators.provider_creators import activate_provider
+from pcapi.use_cases.connect_venue_to_provider import connect_venue_to_provider
+from pcapi.utils.human_ids import humanize
 
 
 class WhenProviderIsLibraires:

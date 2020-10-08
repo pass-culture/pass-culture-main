@@ -2,13 +2,13 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from connectors.scalingo_api import _get_application_bearer_token, ScalingoApiException, \
+from pcapi.connectors.scalingo_api import _get_application_bearer_token, ScalingoApiException, \
     run_process_in_one_off_container
 
 
 class GetApplicationBearerTokenTest:
     @patch.dict('os.environ', {"SCALINGO_APP_TOKEN": 'token123'})
-    @patch('connectors.scalingo_api.requests.post')
+    @patch('pcapi.connectors.scalingo_api.requests.post')
     def test_should_call_scalingo_auth_url_with_application_token(self, mock_post):
         # Given
         response_return_value = MagicMock(status_code=200, text='')
@@ -23,7 +23,7 @@ class GetApplicationBearerTokenTest:
                                           auth=(None, "token123"))
         assert application_bearer_token == 'bearer_token'
 
-    @patch('connectors.scalingo_api.requests.post')
+    @patch('pcapi.connectors.scalingo_api.requests.post')
     def test_should_raise_exception_when_no_application_token_given(self, mock_post):
         # Given
         response_return_value = MagicMock(status_code=400, text='')
@@ -40,9 +40,9 @@ class GetApplicationBearerTokenTest:
 
 class RunProcessInOneOffContainerTest:
     @patch.dict('os.environ', {"SCALINGO_APP_TOKEN": 'token123'})
-    @patch('connectors.scalingo_api.API_APPLICATION_NAME', 'pass-culture-api-app')
-    @patch('connectors.scalingo_api.requests.post')
-    @patch('connectors.scalingo_api._get_application_bearer_token')
+    @patch('pcapi.connectors.scalingo_api.API_APPLICATION_NAME', 'pass-culture-api-app')
+    @patch('pcapi.connectors.scalingo_api.requests.post')
+    @patch('pcapi.connectors.scalingo_api._get_application_bearer_token')
     def test_should_call_scalingo_api_with_expected_payload(self, mock_get_app_token, mock_post):
         # Given
         mock_get_app_token.return_value = 'bearer_token123'
@@ -64,9 +64,9 @@ class RunProcessInOneOffContainerTest:
         assert container_id == '12345678987654ERTY'
 
     @patch.dict('os.environ', {"SCALINGO_APP_TOKEN": 'token123'})
-    @patch('connectors.scalingo_api.API_APPLICATION_NAME', 'pass-culture-api-app')
-    @patch('connectors.scalingo_api.requests.post')
-    @patch('connectors.scalingo_api._get_application_bearer_token')
+    @patch('pcapi.connectors.scalingo_api.API_APPLICATION_NAME', 'pass-culture-api-app')
+    @patch('pcapi.connectors.scalingo_api.requests.post')
+    @patch('pcapi.connectors.scalingo_api._get_application_bearer_token')
     def test_should_raise_errors_when_error_during_api_call(self, mock_get_app_token, mock_post):
         # Given
         response_return_value = MagicMock(status_code=400, text='')

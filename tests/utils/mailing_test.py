@@ -5,19 +5,19 @@ from unittest.mock import MagicMock, patch
 from freezegun import freeze_time
 from requests import Timeout
 
-from domain.user_emails import _build_recipients_list
-from models import ThingType
-from models.email import Email, EmailStatus
-from repository import repository
+from pcapi.domain.user_emails import _build_recipients_list
+from pcapi.models import ThingType
+from pcapi.models.email import Email, EmailStatus
+from pcapi.repository import repository
 import pytest
 from tests.conftest import mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
-from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_user_offerer
-from model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
+from pcapi.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
     create_offer_with_event_product
-from utils.human_ids import humanize
-from utils.mailing import parse_email_addresses, \
+from pcapi.utils.human_ids import humanize
+from pcapi.utils.mailing import parse_email_addresses, \
     send_raw_email, \
     compute_email_html_part_and_recipients, \
     extract_users_information_from_bookings, build_pc_pro_offer_link, format_booking_date_for_email, \
@@ -128,7 +128,7 @@ class ParseEmailAddressesTest:
 class ComputeEmailHtmlPartAndRecipientsTest:
     def test_accepts_string_as_to(self, app):
         # when
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+        with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
             html, to = compute_email_html_part_and_recipients("my_html", "plop@plop.com")
 
         # then
@@ -137,7 +137,7 @@ class ComputeEmailHtmlPartAndRecipientsTest:
 
     def test_accepts_list_of_strings_as_to(self, app):
         # when
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+        with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
             html, to = compute_email_html_part_and_recipients("my_html", ["plop@plop.com", "plip@plip.com"])
 
         # then
@@ -178,7 +178,7 @@ class GetUsersInformationFromStockBookingsTest:
 
 
 class BuildPcProOfferLinkTest:
-    @patch('utils.mailing.PRO_URL', 'http://pcpro.com')
+    @patch('pcapi.utils.mailing.PRO_URL', 'http://pcpro.com')
     @pytest.mark.usefixtures("db_session")
     def test_should_return_pc_pro_offer_link(self, app):
         # Given
@@ -198,7 +198,7 @@ class BuildPcProOfferLinkTest:
 
 
 class BuildRecipientsListTest:
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
+    @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     def test_should_return_admin_email_and_booking_email_when_booking_email_on_offer_exists(self):
         # Given
         user = create_user()
@@ -214,7 +214,7 @@ class BuildRecipientsListTest:
         # Then
         assert recipients == 'booking.email@example.com, administration@example.com'
 
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
+    @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     def test_should_return_only_admin_email_when_offer_has_no_booking_email(self):
         # Given
         user = create_user()

@@ -1,7 +1,7 @@
 import pytest
 
-from models import ApiErrors
-from validation.routes.mailing_contacts import validate_save_mailing_contact_request
+from pcapi.models import ApiErrors
+from pcapi.validation.routes.mailing_contacts import validate_save_mailing_contact_request
 
 class ValidateSaveMailingContactRequestTest:
     def should_raise_exception_when_email_not_provided(self):

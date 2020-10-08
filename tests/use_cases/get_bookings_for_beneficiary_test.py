@@ -1,8 +1,8 @@
 from unittest.mock import MagicMock
 
-from infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import \
+from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import \
     BeneficiaryBookingsSQLRepository
-from use_cases.get_bookings_for_beneficiary import GetBookingsForBeneficiary
+from pcapi.use_cases.get_bookings_for_beneficiary import GetBookingsForBeneficiary
 
 
 class GetBookingsForBeneficiaryTest:

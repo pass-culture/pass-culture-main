@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from domain.booking_recap.booking_recap import BookingRecapStatus
-from domain.booking_recap.booking_recap_history import BookingRecapHistory, BookingRecapValidatedHistory, \
+from pcapi.domain.booking_recap.booking_recap import BookingRecapStatus
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory, BookingRecapValidatedHistory, \
     BookingRecapReimbursedHistory, BookingRecapCancelledHistory
 from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
 

@@ -1,16 +1,16 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch, call, MagicMock
 
-from models import StockSQLEntity
-from models.db import db
-from repository import repository
-from scripts.stock.update_stock_quantity_with_new_constraint import update_stock_quantity_with_new_constraint, \
+from pcapi.models import StockSQLEntity
+from pcapi.models.db import db
+from pcapi.repository import repository
+from pcapi.scripts.stock.update_stock_quantity_with_new_constraint import update_stock_quantity_with_new_constraint, \
     _get_old_remaining_quantity, _get_stocks_to_check, _get_stocks_with_negative_remaining_quantity, \
     update_stock_quantity_for_negative_remaining_quantity
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_offerer, create_venue, create_stock, create_booking, \
+from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_stock, create_booking, \
     create_user
-from model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 
 
 class UpdateStockAvailableWithNewConstraintTest:
@@ -94,8 +94,8 @@ class UpdateStockAvailableWithNewConstraintTest:
         assert existing_stock.quantity == 10
 
     @clean_database
-    @patch('scripts.stock.update_stock_quantity_with_new_constraint.redis.add_offer_id')
-    @patch('scripts.stock.update_stock_quantity_with_new_constraint._get_stocks_to_check')
+    @patch('pcapi.scripts.stock.update_stock_quantity_with_new_constraint.redis.add_offer_id')
+    @patch('pcapi.scripts.stock.update_stock_quantity_with_new_constraint._get_stocks_to_check')
     def test_should_update_all_needed_stocks_with_pagination(self, mock_get_stocks_to_check, mock_redis_algolia, app):
         # Given
         user = create_user()
@@ -123,7 +123,7 @@ class UpdateStockAvailableWithNewConstraintTest:
         assert mock_get_stocks_to_check.call_args == call(1, 2)
 
     @clean_database
-    @patch('scripts.stock.update_stock_quantity_with_new_constraint.redis.add_offer_id')
+    @patch('pcapi.scripts.stock.update_stock_quantity_with_new_constraint.redis.add_offer_id')
     def test_should_update_all_needed_stocks_when_stock_has_multiple_bookings(self, mock_redis_algolia, app):
         # Given
         user = create_user()
@@ -199,7 +199,7 @@ class UpdateStockAvailableWithNewConstraintTest:
         assert existing_stock.quantity == 32
 
     @clean_database
-    @patch('scripts.stock.update_stock_quantity_with_new_constraint.redis.add_offer_id')
+    @patch('pcapi.scripts.stock.update_stock_quantity_with_new_constraint.redis.add_offer_id')
     def test_should_index_offer_to_algolia_when_stock_has_been_updated(self, mock_add_offer_id_algolia,
                                                                        app):
         # Given

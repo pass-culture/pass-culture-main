@@ -1,15 +1,15 @@
 from datetime import datetime
 from typing import List, Optional
 
-from domain.favorite.favorite import Favorite
+from pcapi.domain.favorite.favorite import Favorite
 
-from domain.beneficiary.beneficiary import Beneficiary
-from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
+from pcapi.domain.beneficiary.beneficiary import Beneficiary
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
-from domain.booking.booking import Booking
-from domain.booking_recap.booking_recap import ThingBookingRecap, EventBookingRecap, BookBookingRecap
-from domain.stock.stock import Stock
-from models import OfferSQLEntity, MediationSQLEntity
+from pcapi.domain.booking.booking import Booking
+from pcapi.domain.booking_recap.booking_recap import ThingBookingRecap, EventBookingRecap, BookBookingRecap
+from pcapi.domain.stock.stock import Stock
+from pcapi.models import OfferSQLEntity, MediationSQLEntity
 
 
 def create_domain_beneficiary(identifier: int = None,

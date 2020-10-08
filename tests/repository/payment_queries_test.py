@@ -1,14 +1,14 @@
 import uuid
 
-from models.payment_status import PaymentStatus, TransactionStatus
-from repository import payment_queries, repository
+from pcapi.models.payment_status import PaymentStatus, TransactionStatus
+from pcapi.repository import payment_queries, repository
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_bank_information, \
+from pcapi.model_creators.generic_creators import create_bank_information, \
     create_booking, create_deposit, create_offerer, create_payment, \
     create_payment_message, create_user, create_venue
-from model_creators.specific_creators import \
+from pcapi.model_creators.specific_creators import \
     create_offer_with_thing_product, create_stock_from_offer
-from models.bank_information import BankInformationStatus
+from pcapi.models.bank_information import BankInformationStatus
 
 
 class FindMessageChecksumTest:

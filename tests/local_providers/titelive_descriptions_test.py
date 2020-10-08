@@ -3,15 +3,15 @@ from unittest.mock import patch
 
 import pytest
 
-from local_providers import TiteLiveThingDescriptions
-from repository import repository
-from repository.provider_queries import get_provider_by_local_class
+from pcapi.local_providers import TiteLiveThingDescriptions
+from pcapi.repository import repository
+from pcapi.repository.provider_queries import get_provider_by_local_class
 import pytest
 
 
 class TiteLiveThingDescriptionsTest:
     class InitTest:
-        @patch('local_providers.titelive_thing_descriptions.titelive_thing_descriptions.get_files_to_process_from_titelive_ftp')
+        @patch('pcapi.local_providers.titelive_thing_descriptions.titelive_thing_descriptions.get_files_to_process_from_titelive_ftp')
         @pytest.mark.usefixtures("db_session")
         def test_should_call_titelive_ftp_to_get_files_list(self, mock_get_files_to_process_from_titelive, app):
             # Given
@@ -28,9 +28,9 @@ class TiteLiveThingDescriptionsTest:
             titelive_description_provider.zips = ['Resume191012.zip', 'Resume201012.zip']
 
     class NextTest:
-        @patch('local_providers.titelive_thing_descriptions.titelive_thing_descriptions.get_files_to_process_from_titelive_ftp')
-        @patch('local_providers.titelive_thing_descriptions.titelive_thing_descriptions.get_zip_file_from_ftp')
-        @patch('local_providers.titelive_thing_descriptions.titelive_thing_descriptions.get_date_from_filename')
+        @patch('pcapi.local_providers.titelive_thing_descriptions.titelive_thing_descriptions.get_files_to_process_from_titelive_ftp')
+        @patch('pcapi.local_providers.titelive_thing_descriptions.titelive_thing_descriptions.get_zip_file_from_ftp')
+        @patch('pcapi.local_providers.titelive_thing_descriptions.titelive_thing_descriptions.get_date_from_filename')
         @pytest.mark.usefixtures("db_session")
         def test_should_iterate_over_2_zip_files(self, mock_get_date_from_filename, mock_get_zip_file_from_ftp,
                                                  mock_get_files_to_process_from_titelive):

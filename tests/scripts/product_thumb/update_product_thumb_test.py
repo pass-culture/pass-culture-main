@@ -2,16 +2,16 @@ import os
 from unittest.mock import MagicMock, patch
 
 from tests.conftest import clean_database
-from model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
 from tests.scripts.product_thumb.test_image_as_bytes import IMAGE_AS_BYTES
 
-from repository import repository
-from scripts.product_thumb.update_product_thumb import OBJECT_STORAGE_URL, _compute_product_id_from_uri, _get_product_thumb, process_file, process_product_thumb
-from utils.human_ids import humanize
+from pcapi.repository import repository
+from pcapi.scripts.product_thumb.update_product_thumb import OBJECT_STORAGE_URL, _compute_product_id_from_uri, _get_product_thumb, process_file, process_product_thumb
+from pcapi.utils.human_ids import humanize
 
 
 class GetProductThumbTest:
-    @patch('scripts.product_thumb.update_product_thumb.requests.get')
+    @patch('pcapi.scripts.product_thumb.update_product_thumb.requests.get')
     def test_should_request_data_with_complete_object_storage_url(self, requests_get):
         # Given
         uri = 'thumbs/products/A6UQA'
@@ -23,7 +23,7 @@ class GetProductThumbTest:
         thumb_storage_url = os.path.join(OBJECT_STORAGE_URL, uri)
         requests_get.assert_called_once_with(thumb_storage_url)
 
-    @patch('scripts.product_thumb.update_product_thumb.requests.get')
+    @patch('pcapi.scripts.product_thumb.update_product_thumb.requests.get')
     def test_should_return_product_thumb_when_status_code_200(self, requests_get):
         # Given
         uri = 'thumbs/products/A6UQA'
@@ -35,8 +35,8 @@ class GetProductThumbTest:
         # Then
         assert product_thumb == IMAGE_AS_BYTES
 
-    @patch('scripts.product_thumb.update_product_thumb.requests.get')
-    @patch('scripts.product_thumb.update_product_thumb.logger.error')
+    @patch('pcapi.scripts.product_thumb.update_product_thumb.requests.get')
+    @patch('pcapi.scripts.product_thumb.update_product_thumb.logger.error')
     def test_should_log_error_with_uri_when_status_code_is_not_200(self, logger_error, requests_get):
         # Given
         uri = 'thumbs/products/A6UQA'
@@ -86,7 +86,7 @@ class ProcessProductThumbTest:
         get_product_thumb.assert_called_once_with('thumbs/products/A6UQA')
 
     @clean_database
-    @patch('scripts.product_thumb.update_product_thumb.logger.debug')
+    @patch('pcapi.scripts.product_thumb.update_product_thumb.logger.debug')
     def test_should_increase_product_thumb_count_by_one_and_set_first_thumb_dominant_color_when_thumb_is_main(self,
                                                                                                               logger_debug,
                                                                                                               app):
@@ -121,7 +121,7 @@ class ProcessProductThumbTest:
         # Then
         assert updated_product.thumbCount == 2
 
-    @patch('scripts.product_thumb.update_product_thumb._compute_product_id_from_uri')
+    @patch('pcapi.scripts.product_thumb.update_product_thumb._compute_product_id_from_uri')
     def test_should_not_compute_product_id_for_uri_when_product_thumb_is_not_found(self, compute_product_id):
         # Given
         uri = 'thumbs/products/AE'
@@ -135,7 +135,7 @@ class ProcessProductThumbTest:
         assert not success
 
     @clean_database
-    @patch('scripts.product_thumb.update_product_thumb.logger.debug')
+    @patch('pcapi.scripts.product_thumb.update_product_thumb.logger.debug')
     def test_should_log_error_when_product_does_not_exist_in_database(self, logger_debug, app):
         # Given
         uri = 'thumbs/products/AE'
@@ -150,7 +150,7 @@ class ProcessProductThumbTest:
         assert not success
 
     @clean_database
-    @patch('scripts.product_thumb.update_product_thumb.logger.debug')
+    @patch('pcapi.scripts.product_thumb.update_product_thumb.logger.debug')
     def test_should_log_error_when_product_thumb_count_is_zero_and_current_thumb_is_not_main(self, logger_debug, app):
         # Given
         product = create_product_with_thing_type(thumb_count=0)
@@ -169,7 +169,7 @@ class ProcessProductThumbTest:
         assert not success
 
     @clean_database
-    @patch('scripts.product_thumb.update_product_thumb.logger.debug')
+    @patch('pcapi.scripts.product_thumb.update_product_thumb.logger.debug')
     def test_should_not_fetch_product_thumb_when_is_not_main(self, logger_debug, app):
         # Given
         product = create_product_with_thing_type(thumb_count=1)

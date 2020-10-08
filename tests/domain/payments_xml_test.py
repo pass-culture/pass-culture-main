@@ -8,12 +8,12 @@ from freezegun import freeze_time
 from lxml import etree
 from lxml.etree import DocumentInvalid
 
-from domain.payments import validate_message_file_structure, generate_message_file, \
+from pcapi.domain.payments import validate_message_file_structure, generate_message_file, \
     read_message_name_in_message_file, \
     generate_file_checksum
-from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_payment
-from model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
 
 XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
 MESSAGE_ID = 'passCulture-SCT-20181015-114356'
@@ -495,7 +495,7 @@ class GenerateMessageFileTest:
         assert nodes_amount[0] == '30'
         assert nodes_amount[1] == '20'
 
-    @patch('domain.payments.uuid.uuid4')
+    @patch('pcapi.domain.payments.uuid.uuid4')
     def test_file_has_hexadecimal_uuids_as_end_to_end_ids_in_transaction_info(self, mocked_uuid,
                                                                               app):
         # Given
@@ -565,7 +565,7 @@ class GenerateMessageFileTest:
 
 
 @freeze_time('2018-10-15 09:21:34')
-@patch('domain.payments.uuid.uuid4')
+@patch('pcapi.domain.payments.uuid.uuid4')
 def test_generate_file_checksum_returns_a_checksum_of_the_file(mocked_uuid, app):
     # given
     offerer1 = create_offerer(name='first offerer', siren='123456789')

@@ -1,9 +1,9 @@
 from unittest.mock import patch
 
-from model_creators.generic_creators import create_offerer, create_bank_information, create_venue, create_stock, \
+from pcapi.model_creators.generic_creators import create_offerer, create_bank_information, create_venue, create_stock, \
     create_user
-from model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
-from validation.models.entity_validator import validate
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
+from pcapi.validation.models.entity_validator import validate
 
 
 def test_should_return_errors_when_invalid_address():
@@ -149,7 +149,7 @@ def test_should_not_return_errors_when_valid_stock():
     assert api_errors.errors == {}
 
 
-@patch('validation.models.user.user_queries.count_users_by_email')
+@patch('pcapi.validation.models.user.user_queries.count_users_by_email')
 def test_should_return_errors_when_invalid_user(mock_count_users_by_email, app):
     # Given
     user = create_user(public_name='Jo')
@@ -162,7 +162,7 @@ def test_should_return_errors_when_invalid_user(mock_count_users_by_email, app):
     assert api_errors.errors == {'publicName': ['Tu dois saisir au moins 3 caractères.']}
 
 
-@patch('validation.models.user.user_queries.count_users_by_email')
+@patch('pcapi.validation.models.user.user_queries.count_users_by_email')
 def test_should_not_return_errors_when_valid_user(mock_count_users_by_email, app):
     # Given
     user = create_user(public_name='Joe la bricole')

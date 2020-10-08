@@ -1,14 +1,14 @@
 from datetime import datetime
 
-from models.activity import load_activity
-from models.db import db
-from repository import repository
-from scripts.clean_activity import delete_tables_from_activity, populate_stock_date_created_from_activity, \
+from pcapi.models.activity import load_activity
+from pcapi.models.db import db
+from pcapi.repository import repository
+from pcapi.scripts.clean_activity import delete_tables_from_activity, populate_stock_date_created_from_activity, \
     populate_cultural_survey_filled_date_from_activity
 from tests.conftest import clean_database
-from model_creators.activity_creators import create_activity, save_all_activities
-from model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue
-from model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.activity_creators import create_activity, save_all_activities
+from pcapi.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 
 Activity = load_activity()
 

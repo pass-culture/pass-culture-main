@@ -2,7 +2,7 @@ import re
 
 from freezegun import freeze_time
 
-from domain.titelive import put_today_file_at_end_of_list
+from pcapi.domain.titelive import put_today_file_at_end_of_list
 
 
 @freeze_time('2019-01-03 12:00:00')

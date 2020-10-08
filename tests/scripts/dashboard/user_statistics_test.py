@@ -1,16 +1,16 @@
 import pandas
 
-from models import ThingType, EventType
-from repository import repository
-from scripts.dashboard.users_statistics import count_activated_users, count_users_having_booked, \
+from pcapi.models import ThingType, EventType
+from pcapi.repository import repository
+from pcapi.scripts.dashboard.users_statistics import count_activated_users, count_users_having_booked, \
     get_mean_number_of_bookings_per_user_having_booked, get_mean_amount_spent_by_user, \
     _query_get_non_cancelled_bookings_by_user_departement, get_non_cancelled_bookings_by_user_departement
 from tests.conftest import clean_database
 import pytest
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit
-from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 class CountActivatedUsersTest:

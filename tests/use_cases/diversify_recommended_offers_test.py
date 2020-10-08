@@ -1,5 +1,5 @@
-from models import DiscoveryViewV3, ThingType
-from use_cases.diversify_recommended_offers import order_offers_by_diversified_types, \
+from pcapi.models import DiscoveryViewV3, ThingType
+from pcapi.use_cases.diversify_recommended_offers import order_offers_by_diversified_types, \
     _get_offers_grouped_by_type_and_onlineless
 
 

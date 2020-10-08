@@ -1,13 +1,13 @@
-from models import ThingType
-from models.feature import FeatureToggle
-from models.payment import Payment
-from repository import repository
-from scripts.payment.batch_steps import generate_new_payments
+from pcapi.models import ThingType
+from pcapi.models.feature import FeatureToggle
+from pcapi.models.payment import Payment
+from pcapi.repository import repository
+from pcapi.scripts.payment.batch_steps import generate_new_payments
 import pytest
-from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_payment, create_bank_information
-from model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
 from tests.test_utils import deactivate_feature
 
 

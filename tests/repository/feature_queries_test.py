@@ -1,9 +1,9 @@
 import pytest
 
-from models.api_errors import ResourceNotFoundError
-from models.feature import FeatureToggle, Feature
-from repository import repository
-from repository.feature_queries import is_active
+from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.feature import FeatureToggle, Feature
+from pcapi.repository import repository
+from pcapi.repository.feature_queries import is_active
 import pytest
 
 

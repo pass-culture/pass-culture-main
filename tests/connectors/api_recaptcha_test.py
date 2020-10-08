@@ -2,11 +2,11 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from connectors.api_recaptcha import validate_recaptcha_token, RECAPTCHA_API_URL, ReCaptchaException
+from pcapi.connectors.api_recaptcha import validate_recaptcha_token, RECAPTCHA_API_URL, ReCaptchaException
 
 
-@patch('connectors.api_recaptcha.RECAPTCHA_SECRET', "recaptcha-secret")
-@patch('connectors.api_recaptcha.requests.post')
+@patch('pcapi.connectors.api_recaptcha.RECAPTCHA_SECRET', "recaptcha-secret")
+@patch('pcapi.connectors.api_recaptcha.requests.post')
 def test_should_return_request_response_from_api(request_post):
     # Given
     expected_response = True
@@ -24,8 +24,8 @@ def test_should_return_request_response_from_api(request_post):
                                          data={"secret": "recaptcha-secret", "response": token})
     assert api_response == expected_response
 
-@patch('connectors.api_recaptcha.RECAPTCHA_SECRET', "recaptcha-secret")
-@patch('connectors.api_recaptcha.requests.post')
+@patch('pcapi.connectors.api_recaptcha.RECAPTCHA_SECRET', "recaptcha-secret")
+@patch('pcapi.connectors.api_recaptcha.requests.post')
 def test_should_raise_exception_when_api_call_fails(request_post):
     # Given
     token = 'test'

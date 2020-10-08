@@ -1,11 +1,11 @@
 import pytest
-from model_creators.generic_creators import create_offerer, create_venue
-from model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
+from pcapi.model_creators.generic_creators import create_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 
-from models import OfferSQLEntity
-from repository import repository
-from repository.provider_queries import get_provider_by_local_class
-from scripts.remove_duo_option_for_allocine_offers import remove_duo_option_for_allocine_offers
+from pcapi.models import OfferSQLEntity
+from pcapi.repository import repository
+from pcapi.repository.provider_queries import get_provider_by_local_class
+from pcapi.scripts.remove_duo_option_for_allocine_offers import remove_duo_option_for_allocine_offers
 
 
 class RemoveDuoOptionForAllocineOffersTest:

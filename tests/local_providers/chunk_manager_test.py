@@ -1,12 +1,12 @@
 from sqlalchemy import Sequence
 
-from local_providers.chunk_manager import save_chunks
-from models import OfferSQLEntity, StockSQLEntity
-from models.db import db
-from repository import repository
+from pcapi.local_providers.chunk_manager import save_chunks
+from pcapi.models import OfferSQLEntity, StockSQLEntity
+from pcapi.models.db import db
+from pcapi.repository import repository
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_stock, create_offerer, create_venue
-from model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+from pcapi.model_creators.generic_creators import create_stock, create_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 class SaveChunksTest:

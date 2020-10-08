@@ -2,12 +2,12 @@ from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 
-from model_creators.generic_creators import create_user
-from utils.mailing import make_user_validation_email
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.utils.mailing import make_user_validation_email
 
 
 class UserValidationEmailsTest:
-    @patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
         user = create_user(email="test@example.com")
@@ -15,7 +15,7 @@ class UserValidationEmailsTest:
         app_origin_url = 'portail-pro'
 
         # When
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+        with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
             email = make_user_validation_email(user, app_origin_url, is_webapp=True)
 
         # Then
@@ -32,7 +32,7 @@ class UserValidationEmailsTest:
         assert email['Subject'] == 'Validation de votre adresse email pour le pass Culture'
         assert email['FromEmail'] == 'support@example.com'
 
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
         user = create_user(email="test@example.com")

@@ -1,11 +1,11 @@
-from models import ApiKey, BookingSQLEntity
-from repository import repository
+from pcapi.models import ApiKey, BookingSQLEntity
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
     create_deposit, create_user_offerer
-from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
-from utils.token import random_token
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from pcapi.utils.token import random_token
 
 
 def create_api_key_for_offerer(offerer, token):

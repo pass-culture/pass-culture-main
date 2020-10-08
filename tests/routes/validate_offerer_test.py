@@ -1,18 +1,18 @@
 import secrets
 from unittest.mock import call, patch
 
-from models import Offerer
-from repository import repository
+from pcapi.models import Offerer
+from pcapi.repository import repository
 from tests.conftest import TestClient
 import pytest
-from model_creators.generic_creators import create_offerer, create_user, \
+from pcapi.model_creators.generic_creators import create_offerer, create_user, \
     create_user_offerer, \
     create_venue
 
 
 class Get:
     class Returns202:
-        @patch('routes.validate.feature_queries.is_active')
+        @patch('pcapi.routes.validate.feature_queries.is_active')
         @pytest.mark.usefixtures("db_session")
         def expect_offerer_to_be_validated(self, mocked_feature, app):
             # Given
@@ -35,8 +35,8 @@ class Get:
                 .first()
             assert offerer.isValidated is True
 
-        @patch('routes.validate.feature_queries.is_active')
-        @patch('routes.validate.link_valid_venue_to_irises')
+        @patch('pcapi.routes.validate.feature_queries.is_active')
+        @patch('pcapi.routes.validate.link_valid_venue_to_irises')
         @pytest.mark.usefixtures("db_session")
         def expect_link_venue_to_iris_if_valid_to_have_been_called_for_every_venue(self,
                                                                                    mocked_link_venue_to_iris_if_valid,
@@ -62,8 +62,8 @@ class Get:
             assert response.status_code == 202
             assert mocked_link_venue_to_iris_if_valid.call_count == 3
 
-        @patch('routes.validate.feature_queries.is_active')
-        @patch('routes.validate.redis.add_venue_id')
+        @patch('pcapi.routes.validate.feature_queries.is_active')
+        @patch('pcapi.routes.validate.redis.add_venue_id')
         @pytest.mark.usefixtures("db_session")
         def expect_offerer_managed_venues_to_be_added_to_redis_when_feature_is_active(self, mocked_redis,
                                                                                       mocked_feature, app):
@@ -92,8 +92,8 @@ class Get:
                 call(client=app.redis_client, venue_id=3),
             ]
 
-        @patch('routes.validate.feature_queries.is_active')
-        @patch('routes.validate.redis.add_venue_id')
+        @patch('pcapi.routes.validate.feature_queries.is_active')
+        @patch('pcapi.routes.validate.redis.add_venue_id')
         @pytest.mark.usefixtures("db_session")
         def expect_offerer_managed_venues_not_to_be_added_to_redis_when_feature_is_not_active(self,
                                                                                               mocked_redis,

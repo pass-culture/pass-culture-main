@@ -2,18 +2,18 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from models import OfferSQLEntity, BookingSQLEntity
-from repository import repository
-from scripts.update_offer_and_booking_status import _read_booking_tokens_from_file, \
+from pcapi.models import OfferSQLEntity, BookingSQLEntity
+from pcapi.repository import repository
+from pcapi.scripts.update_offer_and_booking_status import _read_booking_tokens_from_file, \
     update_offer_and_booking_status
 import pytest
-from model_creators.generic_creators import create_user, create_offerer, create_venue, create_stock, \
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_stock, \
     create_booking
-from model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 class UpdateOfferAndBookingStatusTest:
-    @patch('scripts.update_offer_and_booking_status._read_booking_tokens_from_file')
+    @patch('pcapi.scripts.update_offer_and_booking_status._read_booking_tokens_from_file')
     @pytest.mark.usefixtures("db_session")
     def test_should_deactivate_related_offer(self, stub_read_bookings_token_from_file, app):
         # Given
@@ -37,7 +37,7 @@ class UpdateOfferAndBookingStatusTest:
         offer = OfferSQLEntity.query.one()
         assert not offer.isActive
 
-    @patch('scripts.update_offer_and_booking_status._read_booking_tokens_from_file')
+    @patch('pcapi.scripts.update_offer_and_booking_status._read_booking_tokens_from_file')
     @pytest.mark.usefixtures("db_session")
     def test_should_cancel_booking_if_not_used_yet(self, stub_read_bookings_token_from_file, app):
         # Given

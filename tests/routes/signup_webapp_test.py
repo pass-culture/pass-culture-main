@@ -3,10 +3,10 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 
-from models.feature import FeatureToggle, Feature
-from models.user_sql_entity import UserSQLEntity
-from repository import repository
-from routes.serialization import serialize
+from pcapi.models.feature import FeatureToggle, Feature
+from pcapi.models.user_sql_entity import UserSQLEntity
+from pcapi.repository import repository
+from pcapi.routes.serialization import serialize
 import pytest
 from tests.conftest import TestClient
 
@@ -26,7 +26,7 @@ BASE_DATA = {
 class Post:
     class Returns201:
         @freeze_time('2019-01-01 01:00:00')
-        @patch('routes.signup.get_authorized_emails_and_dept_codes')
+        @patch('pcapi.routes.signup.get_authorized_emails_and_dept_codes')
         @pytest.mark.usefixtures("db_session")
         def when_data_is_accurate(self, get_authorized_emails_and_dept_codes, app):
             # Given
@@ -58,7 +58,7 @@ class Post:
             for key in other_expected_keys:
                 assert key in json
 
-        @patch('routes.signup.get_authorized_emails_and_dept_codes')
+        @patch('pcapi.routes.signup.get_authorized_emails_and_dept_codes')
         @pytest.mark.usefixtures("db_session")
         def test_created_user_does_not_have_validation_token_and_cannot_book_free_offers(self,
                                                                                          get_authorized_emails_and_dept_codes,
@@ -78,7 +78,7 @@ class Post:
             assert created_user.validationToken is None
             assert not created_user.canBookFreeOffers
 
-        @patch('routes.signup.get_authorized_emails_and_dept_codes')
+        @patch('pcapi.routes.signup.get_authorized_emails_and_dept_codes')
         @pytest.mark.usefixtures("db_session")
         def test_does_not_allow_the_creation_of_admins(self,
                                                        get_authorized_emails_and_dept_codes,
@@ -107,7 +107,7 @@ class Post:
             created_user = UserSQLEntity.query.filter_by(email='pctest.isAdmin.canBook@btmx.fr').one()
             assert not created_user.isAdmin
 
-        @patch('routes.signup.get_authorized_emails_and_dept_codes')
+        @patch('pcapi.routes.signup.get_authorized_emails_and_dept_codes')
         @pytest.mark.usefixtures("db_session")
         def test_created_user_does_not_have_validation_token_and_cannot_book_free_offers(self,
                                                                                          get_authorized_emails_and_dept_codes,
@@ -127,7 +127,7 @@ class Post:
             created_user = UserSQLEntity.query.filter_by(email='toto@btmx.fr').first()
             assert created_user.needsToFillCulturalSurvey == True
 
-        @patch('routes.signup.get_authorized_emails_and_dept_codes')
+        @patch('pcapi.routes.signup.get_authorized_emails_and_dept_codes')
         @pytest.mark.usefixtures("db_session")
         def when_calling_old_route(self,
                                    get_authorized_emails_and_dept_codes,
@@ -162,7 +162,7 @@ class Post:
             error = response.json
             assert 'email' in error
 
-        @patch('routes.signup.get_authorized_emails_and_dept_codes')
+        @patch('pcapi.routes.signup.get_authorized_emails_and_dept_codes')
         @pytest.mark.usefixtures("db_session")
         def when_email_with_invalid_format(self, get_authorized_emails_and_dept_codes, app):
             # Given
@@ -180,7 +180,7 @@ class Post:
             error = response.json
             assert 'email' in error
 
-        @patch('routes.signup.get_authorized_emails_and_dept_codes')
+        @patch('pcapi.routes.signup.get_authorized_emails_and_dept_codes')
         @pytest.mark.usefixtures("db_session")
         def when_email_is_already_used(self, get_authorized_emails_and_dept_codes, app):
             # Given
@@ -200,7 +200,7 @@ class Post:
             error = response.json
             assert 'email' in error
 
-        @patch('routes.signup.get_authorized_emails_and_dept_codes')
+        @patch('pcapi.routes.signup.get_authorized_emails_and_dept_codes')
         @pytest.mark.usefixtures("db_session")
         def when_public_name_is_missing(self, get_authorized_emails_and_dept_codes, app):
             # Given
@@ -218,7 +218,7 @@ class Post:
             error = response.json
             assert 'publicName' in error
 
-        @patch('routes.signup.get_authorized_emails_and_dept_codes')
+        @patch('pcapi.routes.signup.get_authorized_emails_and_dept_codes')
         @pytest.mark.usefixtures("db_session")
         def when_public_name_is_too_short(self, get_authorized_emails_and_dept_codes, app):
             # Given
@@ -236,7 +236,7 @@ class Post:
             error = response.json
             assert 'publicName' in error
 
-        @patch('routes.signup.get_authorized_emails_and_dept_codes')
+        @patch('pcapi.routes.signup.get_authorized_emails_and_dept_codes')
         @pytest.mark.usefixtures("db_session")
         def when_public_name_is_too_long(self, get_authorized_emails_and_dept_codes, app):
             # Given
@@ -317,7 +317,7 @@ class Post:
             assert 'contact_ok' in error
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.signup.get_authorized_emails_and_dept_codes')
+        @patch('pcapi.routes.signup.get_authorized_emails_and_dept_codes')
         def when_user_not_in_exp_spreadsheet(self, get_authorized_emails_and_dept_codes, app):
             # Given
             get_authorized_emails_and_dept_codes.return_value = (['toto@email.com', 'other@email.com'], ['93', '93'])

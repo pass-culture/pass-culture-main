@@ -1,13 +1,13 @@
 import pytest
 
-from domain.price_rule import PriceRule
-from models import ApiErrors, AllocineVenueProviderPriceRule
-from repository import repository
-from repository.provider_queries import get_provider_by_local_class
+from pcapi.domain.price_rule import PriceRule
+from pcapi.models import ApiErrors, AllocineVenueProviderPriceRule
+from pcapi.repository import repository
+from pcapi.repository.provider_queries import get_provider_by_local_class
 import pytest
-from model_creators.generic_creators import create_venue, create_offerer, \
+from pcapi.model_creators.generic_creators import create_venue, create_offerer, \
     create_allocine_venue_provider_price_rule, create_allocine_venue_provider
-from model_creators.provider_creators import activate_provider
+from pcapi.model_creators.provider_creators import activate_provider
 
 
 class AllocineVenueProviderPriceRuleTest:

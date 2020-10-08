@@ -1,9 +1,9 @@
 from unittest.mock import MagicMock
 
-from domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
-from infrastructure.repository.venue.venue_with_offerer_name.venue_with_offerer_name_sql_repository import \
+from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
+from pcapi.infrastructure.repository.venue.venue_with_offerer_name.venue_with_offerer_name_sql_repository import \
     VenueWithOffererNameSQLRepository
-from use_cases.get_venues_by_pro_user import GetVenuesByProUser
+from pcapi.use_cases.get_venues_by_pro_user import GetVenuesByProUser
 
 
 class GetAllVenuesByProUserTest:

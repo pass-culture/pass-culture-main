@@ -3,13 +3,13 @@ from decimal import Decimal
 
 from freezegun import freeze_time
 
-from algolia.infrastructure.builder import build_object
-from models import EventType
-from repository import repository
+from pcapi.algolia.infrastructure.builder import build_object
+from pcapi.models import EventType
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_offerer, create_stock, create_venue, create_criterion
-from model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
-from utils.human_ids import humanize
+from pcapi.model_creators.generic_creators import create_offerer, create_stock, create_venue, create_criterion
+from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
+from pcapi.utils.human_ids import humanize
 
 
 class BuildObjectTest:

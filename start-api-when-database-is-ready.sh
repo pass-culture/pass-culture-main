@@ -17,10 +17,10 @@ until psql $DATABASE_URL -c '\q'; do
 done
 
 >&2 echo -e "\n\033[0;32mPostgres is up - Install app\n"
-python install_database_extensions.py
+python src/pcapi/install_database_extensions.py
 
 >&2 echo -e "\n\033[0;32mPostgres is up - Running migration\n"
 alembic upgrade head
 
 >&2 echo -e "\n\033[0;32mMigrations has ran - Starting the application\n"
-while true; do python app.py || continue; done;
+while true; do python src/pcapi/app.py || continue; done;

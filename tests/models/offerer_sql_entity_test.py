@@ -1,10 +1,10 @@
-from models import ApiErrors
-from models.bank_information import BankInformationStatus
-from repository import repository
+from pcapi.models import ApiErrors
+from pcapi.models.bank_information import BankInformationStatus
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_bank_information
-from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 @pytest.mark.usefixtures("db_session")

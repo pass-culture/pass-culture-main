@@ -1,6 +1,6 @@
-from domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
-from routes.serialization.venues_serialize import serialize_venues_with_offerer_name
-from utils.human_ids import humanize
+from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
+from pcapi.routes.serialization.venues_serialize import serialize_venues_with_offerer_name
+from pcapi.utils.human_ids import humanize
 
 
 class SerializeVenuesWithOffererNameTest:

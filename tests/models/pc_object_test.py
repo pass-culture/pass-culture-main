@@ -6,13 +6,13 @@ import pytest
 from sqlalchemy import BigInteger, Column, DateTime, Integer, Float
 from sqlalchemy.dialects.postgresql import UUID
 
-from models import PcObject, OfferSQLEntity, UserSQLEntity
-from models import ThingType
-from models.api_errors import DecimalCastError, DateTimeCastError, UuidCastError
-from models.db import Model
-from routes.serialization import serialize
-from model_creators.generic_creators import create_stock
-from utils.human_ids import dehumanize, NonDehumanizableId
+from pcapi.models import PcObject, OfferSQLEntity, UserSQLEntity
+from pcapi.models import ThingType
+from pcapi.models.api_errors import DecimalCastError, DateTimeCastError, UuidCastError
+from pcapi.models.db import Model
+from pcapi.routes.serialization import serialize
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.utils.human_ids import dehumanize, NonDehumanizableId
 
 
 class TimeInterval(PcObject, Model):

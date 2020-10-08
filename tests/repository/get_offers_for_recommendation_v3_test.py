@@ -3,18 +3,18 @@ from unittest.mock import patch
 
 from shapely.geometry import Polygon
 
-from models import EventType, ThingType
-from repository import repository, discovery_view_v3_queries
-from repository.offer_queries import get_offers_for_recommendation_v3
+from pcapi.models import EventType, ThingType
+from pcapi.repository import repository, discovery_view_v3_queries
+from pcapi.repository.offer_queries import get_offers_for_recommendation_v3
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_booking, \
+from pcapi.model_creators.generic_creators import create_booking, \
     create_criterion, \
     create_favorite, create_iris, \
     create_iris_venue, \
     create_mediation, \
     create_offerer, create_user, \
     create_venue, create_seen_offer
-from model_creators.specific_creators import \
+from pcapi.model_creators.specific_creators import \
     create_offer_with_event_product, create_offer_with_thing_product, \
     create_product_with_thing_type, create_stock_from_offer, \
     create_stock_with_thing_offer
@@ -258,7 +258,7 @@ class GetOffersForRecommendationV3Test:
                 assert offers[0].offer == offer2
 
             @clean_database
-            @patch('repository.offer_queries.feature_queries.is_active', return_value=True)
+            @patch('pcapi.repository.offer_queries.feature_queries.is_active', return_value=True)
             def test_order_should_return_ordered_offers_by_dateSeen_when_feature_is_active(self, app):
                 # Given
                 offerer = create_offerer()
@@ -291,7 +291,7 @@ class GetOffersForRecommendationV3Test:
                 assert offers == [offer_1, offer_2]
 
             @clean_database
-            @patch('repository.offer_queries.feature_queries.is_active', return_value=True)
+            @patch('pcapi.repository.offer_queries.feature_queries.is_active', return_value=True)
             def test_order_should_return_unseen_offers_first_when_feature_is_active(self, app):
                 # Given
                 offerer = create_offerer()
@@ -323,8 +323,8 @@ class GetOffersForRecommendationV3Test:
                 assert offers[0] == offer_1
 
             @clean_database
-            @patch('repository.offer_queries.feature_queries.is_active', return_value=False)
-            @patch('repository.offer_queries.order_offers_by_unseen_offers_first')
+            @patch('pcapi.repository.offer_queries.feature_queries.is_active', return_value=False)
+            @patch('pcapi.repository.offer_queries.order_offers_by_unseen_offers_first')
             def test_order_should_not_order_offers_by_dateSeen_when_feature_is_not_active(self, mock_order_offers_by_unseen_offers_first, app):
                 # Given
                 offerer = create_offerer()

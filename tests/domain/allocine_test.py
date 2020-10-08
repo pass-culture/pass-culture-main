@@ -1,6 +1,6 @@
 from unittest.mock import Mock, MagicMock
 
-from domain.allocine import get_movies_showtimes, get_movie_poster, _exclude_movie_showtimes_with_special_event_type, \
+from pcapi.domain.allocine import get_movies_showtimes, get_movie_poster, _exclude_movie_showtimes_with_special_event_type, \
     get_editable_fields_for_allocine_stocks, get_editable_fields_for_allocine_offers
 
 

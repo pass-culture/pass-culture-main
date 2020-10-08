@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
-from infrastructure.container import add_contact_in_eligibility_list
-from workers.mailing_contacts_job import mailing_contacts_job
+from pcapi.infrastructure.container import add_contact_in_eligibility_list
+from pcapi.workers.mailing_contacts_job import mailing_contacts_job
 
 
 def test_calls_use_case():

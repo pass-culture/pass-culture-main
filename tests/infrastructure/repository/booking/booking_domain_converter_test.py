@@ -1,15 +1,15 @@
 import pytest
-from model_creators.generic_creators import create_booking, \
+from pcapi.model_creators.generic_creators import create_booking, \
     create_offerer, create_user, create_venue
-from model_creators.specific_creators import create_offer_with_thing_product, \
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, \
     create_stock_from_offer
 
-from domain.beneficiary.beneficiary import Beneficiary
-from domain.booking.booking import Booking
-from domain.stock.stock import Stock
-from infrastructure.repository.booking import booking_domain_converter
-from models import BookingSQLEntity, ThingType
-from repository import repository
+from pcapi.domain.beneficiary.beneficiary import Beneficiary
+from pcapi.domain.booking.booking import Booking
+from pcapi.domain.stock.stock import Stock
+from pcapi.infrastructure.repository.booking import booking_domain_converter
+from pcapi.models import BookingSQLEntity, ThingType
+from pcapi.repository import repository
 
 
 class BookingDomainConverterTest:

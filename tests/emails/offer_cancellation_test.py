@@ -3,13 +3,13 @@ from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_booking, create_offerer, create_user, create_venue
-from model_creators.specific_creators import create_event_occurrence, create_offer_with_event_product, create_offer_with_thing_product, create_product_with_thing_type, \
+from pcapi.model_creators.generic_creators import create_booking, create_offerer, create_user, create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence, create_offer_with_event_product, create_offer_with_thing_product, create_product_with_thing_type, \
     create_stock_from_event_occurrence, create_stock_from_offer
 
-from emails.beneficiary_offer_cancellation import _is_offer_active_for_recap, retrieve_offerer_booking_recap_email_data_after_user_cancellation
-from repository import repository
-from utils.mailing import make_offerer_driven_cancellation_email_for_offerer
+from pcapi.emails.beneficiary_offer_cancellation import _is_offer_active_for_recap, retrieve_offerer_booking_recap_email_data_after_user_cancellation
+from pcapi.repository import repository
+from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 
 
 class MakeOffererDrivenCancellationEmailForOffererTest:
@@ -30,7 +30,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         booking = create_booking(user=user, stock=stock)
 
         # When
-        with patch('utils.mailing.find_ongoing_bookings_by_stock', return_value=[]):
+        with patch('pcapi.utils.mailing.find_ongoing_bookings_by_stock', return_value=[]):
             email = make_offerer_driven_cancellation_email_for_offerer(booking)
 
         # Then
@@ -68,7 +68,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         booking2 = create_booking(user=user2, stock=stock, token='12345')
 
         # When
-        with patch('utils.mailing.find_ongoing_bookings_by_stock', return_value=[booking2]):
+        with patch('pcapi.utils.mailing.find_ongoing_bookings_by_stock', return_value=[booking2]):
             email = make_offerer_driven_cancellation_email_for_offerer(booking1)
 
         # Then
@@ -100,7 +100,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         ongoing_bookings = [booking2]
 
         # When
-        with patch('utils.mailing.find_ongoing_bookings_by_stock', return_value=ongoing_bookings):
+        with patch('pcapi.utils.mailing.find_ongoing_bookings_by_stock', return_value=ongoing_bookings):
             email = make_offerer_driven_cancellation_email_for_offerer(booking)
 
         # Then
@@ -125,10 +125,10 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
 
 
 class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
-    @patch('emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
-    @patch('emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=True)
+    @patch('pcapi.emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
+    @patch('pcapi.emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=True)
     def test_should_return_mailjet_data_with_no_ongoing_booking(self, mock_is_offer_active,
                                                                 mock_build_pc_pro_offer_link):
         # Given
@@ -168,10 +168,10 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
             },
         }
 
-    @patch('emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
-    @patch('emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=True)
+    @patch('pcapi.emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
+    @patch('pcapi.emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=True)
     def test_should_return_mailjet_data_with_ongoing_bookings(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
         user1 = create_user(email='jean.dupont@example.com', public_name='Jean Dupont')
@@ -219,10 +219,10 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
             }
         }
 
-    @patch('emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
-    @patch('emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=False)
+    @patch('pcapi.emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
+    @patch('pcapi.emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=False)
     def test_should_return_mailjet_data_on_thing_offer(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
         user1 = create_user(email='jean.dupont@example.com', public_name='Jean Dupont')
@@ -270,10 +270,10 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
             }
         }
 
-    @patch('emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
-    @patch('emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=False)
+    @patch('pcapi.emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('pcapi.emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
+    @patch('pcapi.emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=False)
     def test_should_return_numerique_when_venue_is_virtual(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
         user1 = create_user(email='jean.dupont@example.com', public_name='Jean Dupont')

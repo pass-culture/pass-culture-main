@@ -2,22 +2,22 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from domain.booking.booking import Booking
-from domain.booking.booking_exceptions import OfferIsAlreadyBooked, CannotBookFreeOffers, StockIsNotBookable, \
+from pcapi.domain.booking.booking import Booking
+from pcapi.domain.booking.booking_exceptions import OfferIsAlreadyBooked, CannotBookFreeOffers, StockIsNotBookable, \
     UserHasInsufficientFunds, PhysicalExpenseLimitHasBeenReached, QuantityIsInvalid
-from domain.stock.stock import Stock
-from domain.stock.stock_exceptions import StockDoesntExist
-from infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
-from repository import repository
-from infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
-from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
-from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
+from pcapi.domain.stock.stock import Stock
+from pcapi.domain.stock.stock_exceptions import StockDoesntExist
+from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
+from pcapi.repository import repository
+from pcapi.infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
+from pcapi.infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
+from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 import pytest
 from tests.domain_creators.generic_creators import create_domain_beneficiary
-from model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
     create_booking, create_stock, create_recommendation
-from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
-from use_cases.book_an_offer import BookAnOffer, BookingInformation
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from pcapi.use_cases.book_an_offer import BookAnOffer, BookingInformation
 
 
 class BookAnOfferTest:

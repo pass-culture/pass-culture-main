@@ -5,18 +5,18 @@ from dateutil.tz import tz
 from pytest import fixture
 from pytest_mock import mocker
 
-from repository import repository
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, \
     create_stock, create_booking
-from model_creators.specific_creators import create_offer_with_thing_product
-from utils.date import format_into_timezoned_date
-from utils.human_ids import humanize
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.utils.date import format_into_timezoned_date
+from pcapi.utils.human_ids import humanize
 
 
 class GetAllBookingsTest:
-    @patch('routes.bookings.get_all_bookings_by_pro_user')
+    @patch('pcapi.routes.bookings.get_all_bookings_by_pro_user')
     @pytest.mark.usefixtures("db_session")
     def test_should_call_the_usecase_with_user_id_and_page(self,
                                                            get_all_bookings_by_pro_user: mocker,
@@ -34,7 +34,7 @@ class GetAllBookingsTest:
         # Then
         get_all_bookings_by_pro_user.assert_called_once_with(user_id=user.id, page=page_number)
 
-    @patch('routes.bookings.get_all_bookings_by_pro_user')
+    @patch('pcapi.routes.bookings.get_all_bookings_by_pro_user')
     @pytest.mark.usefixtures("db_session")
     def test_should_call_the_usecase_with_1_when_no_page_provided(self,
                                                                   get_all_bookings_by_pro_user: mocker,

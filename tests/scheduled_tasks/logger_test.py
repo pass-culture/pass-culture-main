@@ -1,6 +1,6 @@
 import traceback
 
-from scheduled_tasks.logger import build_cron_log_message, CronStatus
+from pcapi.scheduled_tasks.logger import build_cron_log_message, CronStatus
 
 
 class CronLoggerMessageBuilderTest():

@@ -1,19 +1,19 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from models import ThingType
-from models.recommendation import Recommendation
-from repository import repository, discovery_view_queries, discovery_view_v3_queries
+from pcapi.models import ThingType
+from pcapi.models.recommendation import Recommendation
+from pcapi.repository import repository, discovery_view_queries, discovery_view_v3_queries
 from tests.conftest import TestClient, clean_database
-from model_creators.generic_creators import create_booking, \
+from pcapi.model_creators.generic_creators import create_booking, \
     create_mediation, create_offerer, create_recommendation, \
     create_user, create_venue, create_iris_venue, create_iris
-from model_creators.specific_creators import create_event_occurrence, \
+from pcapi.model_creators.specific_creators import create_event_occurrence, \
     create_offer_with_event_product, \
     create_offer_with_thing_product, create_stock_from_event_occurrence, \
     create_stock_from_offer, create_stock_with_thing_offer
 from tests.test_utils import POLYGON_TEST
-from utils.human_ids import humanize
+from pcapi.utils.human_ids import humanize
 
 RECOMMENDATION_URL = '/recommendations'
 
@@ -32,7 +32,7 @@ class Put:
             assert response.status_code == 401
 
     class Returns404:
-        @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+        @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
         @clean_database
         def when_given_mediation_does_not_match_given_offer(self, mock_geolocation_feature, app):
             # given
@@ -57,7 +57,7 @@ class Put:
             # then
             assert response.status_code == 404
 
-        @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+        @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
         @clean_database
         def when_offer_is_unknown_and_mediation_is_known(self, mock_geolocation_feature, app):
             # given
@@ -79,7 +79,7 @@ class Put:
             # then
             assert response.status_code == 404
 
-        @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+        @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
         @clean_database
         def when_mediation_is_unknown(self, mock_geolocation_feature, app):
             # given
@@ -95,7 +95,7 @@ class Put:
             # then
             assert response.status_code == 404
 
-        @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+        @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
         @clean_database
         def when_offer_is_known_and_mediation_is_unknown(self, mock_geolocation_feature, app):
             # given
@@ -117,7 +117,7 @@ class Put:
             # then
             assert response.status_code == 404
 
-        @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+        @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
         @clean_database
         def when_offer_is_unknown_and_mediation_is_unknown(self, mock_geolocation_feature, app):
             # given
@@ -134,7 +134,7 @@ class Put:
             # then
             assert response.status_code == 404
 
-        @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+        @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
         @clean_database
         def when_venue_of_given_offer_is_not_validated(self, mock_geolocation_feature, app):
             # given
@@ -158,9 +158,9 @@ class Put:
 
     class Returns200:
         class WhenGeolocationFeatureIsDeactivated:
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
-            @patch('routes.recommendations.create_recommendations_for_discovery')
-            @patch('routes.recommendations.create_recommendations_for_discovery_v3')
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.create_recommendations_for_discovery')
+            @patch('pcapi.routes.recommendations.create_recommendations_for_discovery_v3')
             @clean_database
             def when_updating_read_recommendations(self, mock_create_recommendations_for_discovery_v3,
                                                    mock_create_recommendations_for_discovery, mock_geolocation_feature,
@@ -202,7 +202,7 @@ class Put:
                 mock_create_recommendations_for_discovery_v3.assert_not_called()
                 assert any(reco.dateRead is not None for reco in Recommendation.query.all())
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_user_has_no_offer_in_his_department(self, mock_geolocation_feature, app):
                 # given
@@ -238,7 +238,7 @@ class Put:
                 assert response.status_code == 200
                 assert len(response.json) == 0
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_user_has_one_offer_in_his_department(self, mock_geolocation_feature, app):
                 # given
@@ -273,7 +273,7 @@ class Put:
                 assert 'managingOfferer' in recommendation_response['offer']['venue']
                 assert 'validationToken' not in recommendation_response['offer']['venue']['managingOfferer']
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_offers_have_soft_deleted_stocks(self, mock_geolocation_feature, app):
                 # Given
@@ -313,7 +313,7 @@ class Put:
                 assert humanize(event_offer_id) in offer_ids
                 assert humanize(thing_offer2_id) in offer_ids
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_offers_have_no_stocks(self, mock_geolocation_feature, app):
                 # given
@@ -332,7 +332,7 @@ class Put:
                 assert response.status_code == 200
                 assert len(response.json) == 0
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_offers_have_a_thumb_count_for_thing_and_no_mediation(self, mock_geolocation_feature, app):
                 # given
@@ -352,7 +352,7 @@ class Put:
                 assert response.status_code == 200
                 assert len(response.json) == 0
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_offers_have_no_thumb_count_for_thing_and_no_mediation(self, mock_geolocation_feature, app):
                 # given
@@ -372,7 +372,7 @@ class Put:
                 assert response.status_code == 200
                 assert len(response.json) == 0
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_offers_have_no_thumb_count_for_thing_and_a_mediation(
                     self, mock_geolocation_feature, app):
@@ -395,7 +395,7 @@ class Put:
                 assert response.status_code == 200
                 assert len(response.json) == 1
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_offers_have_no_thumb_count_for_event_and_no_mediation(self, mock_geolocation_feature, app):
                 # given
@@ -423,7 +423,7 @@ class Put:
                 assert response.status_code == 200
                 assert len(response.json) == 0
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_offers_have_no_thumb_count_for_event_and_have_mediation(
                     self, mock_geolocation_feature, app):
@@ -453,7 +453,7 @@ class Put:
                 assert response.status_code == 200
                 assert len(response.json) == 1
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_offers_have_a_thumb_count_for_event_and_no_mediation(
                     self, mock_geolocation_feature, app):
@@ -481,7 +481,7 @@ class Put:
                 assert response.status_code == 200
                 assert len(response.json) == 0
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_offers_have_non_validated_venues(self, mock_geolocation_feature, app):
                 # Given
@@ -513,7 +513,7 @@ class Put:
                 assert humanize(venue_validated_id) in venue_ids
                 assert humanize(venue_not_validated_id) not in venue_ids
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_offers_have_active_mediations(self, mock_geolocation_feature, app):
                 # given
@@ -546,7 +546,7 @@ class Put:
                 assert humanize(mediation2_id) not in mediation_ids
                 assert humanize(mediation1_id) not in mediation_ids
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_a_recommendation_is_requested(self, mock_geolocation_feature, app):
                 # given
@@ -594,7 +594,7 @@ class Put:
                 assert humanize(offer3_id) in offer_ids
                 assert humanize(offer4_id) in offer_ids
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def test_returns_two_recommendations_with_one_event_and_one_thing(self, mock_geolocation_feature, app):
                 # given
@@ -625,7 +625,7 @@ class Put:
                 assert response.status_code == 200
                 assert len(response.json) == 2
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def test_discovery_recommendations_should_not_include_search_recommendations(self, mock_geolocation_feature,
                                                                                          app):
@@ -656,7 +656,7 @@ class Put:
                 assert len(recommendations) == 1
                 assert recommendations[0]['search'] is None
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_a_recommendation_with_an_offer_and_a_mediation_is_requested(self, mock_geolocation_feature, app):
                 # given
@@ -679,7 +679,7 @@ class Put:
                 recos = response.json
                 assert recos[0]['mediationId'] == humanize(mediation.id)
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_a_recommendation_with_an_offer_and_no_mediation_is_requested(self, mock_geolocation_feature, app):
                 # given
@@ -703,7 +703,7 @@ class Put:
                 recos = response.json
                 assert recos[0]['mediationId'] == humanize(mediation_id)
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_a_recommendation_with_no_offer_and_a_mediation_is_requested(self, mock_geolocation_feature, app):
                 # given
@@ -728,7 +728,7 @@ class Put:
                 recos = response.json
                 assert recos[0]['offerId'] == humanize(offer_thing_id)
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def test_returns_new_recommendation_with_active_mediation_for_already_existing_but_invalid_recommendations(
                     self, mock_geolocation_feature, app):
@@ -760,7 +760,7 @@ class Put:
                 assert humanize(active_mediation_id) in mediation_ids
                 assert humanize(inactive_mediation_id) not in mediation_ids
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_stock_has_past_booking_limit_date(self, mock_geolocation_feature, app):
                 # Given
@@ -783,7 +783,7 @@ class Put:
                 assert recommendations.status_code == 200
                 assert not recommendations.json
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_user_has_already_seen_offer_sent_in_last_call(self, mock_geolocation_feature, app):
                 # given
@@ -805,7 +805,7 @@ class Put:
                 assert response.status_code == 200
                 assert response.json == []
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def test_returns_same_quantity_of_recommendations_in_different_orders(self, mock_geolocation_feature, app):
                 # given
@@ -845,7 +845,7 @@ class Put:
                     [recommendations1.json[i]['id'] != recommendations2.json[i]['id'] for i in
                      range(0, len(recommendations1.json))])
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def test_returns_stocks_with_isBookable_property(self, mock_geolocation_feature, app):
                 # Given
@@ -879,7 +879,7 @@ class Put:
                 assert len(stocks_response) == 2
                 assert all('isBookable' in stocks_response[i] for i in range(0, len(stocks_response)))
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
             @clean_database
             def when_user_has_bookings_on_recommended_offers(self, mock_geolocation_feature, app):
                 # given
@@ -902,12 +902,12 @@ class Put:
                 assert response.json == []
 
         class WhenGeolocationFeatureIsActivated:
-            @patch('routes.recommendations.feature_queries.is_active', return_value=True)
-            @patch('routes.recommendations.create_recommendations_for_discovery_v3')
-            @patch('routes.recommendations.create_recommendations_for_discovery')
-            @patch('routes.recommendations.current_user')
-            @patch('routes.recommendations.serialize_recommendations')
-            @patch('routes.recommendations.update_read_recommendations')
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=True)
+            @patch('pcapi.routes.recommendations.create_recommendations_for_discovery_v3')
+            @patch('pcapi.routes.recommendations.create_recommendations_for_discovery')
+            @patch('pcapi.routes.recommendations.current_user')
+            @patch('pcapi.routes.recommendations.serialize_recommendations')
+            @patch('pcapi.routes.recommendations.update_read_recommendations')
             @clean_database
             def when_user_is_geolocated(self, mock_update_read_recommendations,
                                                               mock_serialize_recommendations,
@@ -955,10 +955,10 @@ class Put:
                                                                                      sent_offers_ids=[],
                                                                                      limit=30)
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=True)
-            @patch('routes.recommendations.create_recommendations_for_discovery_v3')
-            @patch('routes.recommendations.current_user')
-            @patch('routes.recommendations.serialize_recommendations')
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=True)
+            @patch('pcapi.routes.recommendations.create_recommendations_for_discovery_v3')
+            @patch('pcapi.routes.recommendations.current_user')
+            @patch('pcapi.routes.recommendations.serialize_recommendations')
             @clean_database
             def when_user_is_not_located(self, mock_serialize_recommendations,
                                                                mock_current_user,
@@ -991,10 +991,10 @@ class Put:
                                                                                      sent_offers_ids=[],
                                                                                      limit=30)
 
-            @patch('routes.recommendations.feature_queries.is_active', return_value=True)
-            @patch('routes.recommendations.create_recommendations_for_discovery_v3')
-            @patch('routes.recommendations.current_user')
-            @patch('routes.recommendations.serialize_recommendations')
+            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=True)
+            @patch('pcapi.routes.recommendations.create_recommendations_for_discovery_v3')
+            @patch('pcapi.routes.recommendations.current_user')
+            @patch('pcapi.routes.recommendations.serialize_recommendations')
             @clean_database
             def when_user_is_located_outside_known_iris(self, mock_serialize_recommendations,
                                                                               mock_current_user,

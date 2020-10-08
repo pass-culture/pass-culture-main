@@ -3,18 +3,18 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 
-from models import StockSQLEntity, Provider
-from repository import repository
-from repository.provider_queries import get_provider_by_local_class
-from routes.serialization import serialize
+from pcapi.models import StockSQLEntity, Provider
+from pcapi.repository import repository
+from pcapi.repository.provider_queries import get_provider_by_local_class
+from pcapi.routes.serialization import serialize
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_user_offerer
-from model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_offer_with_thing_product, create_offer_with_event_product
-from utils.human_ids import humanize
+from pcapi.utils.human_ids import humanize
 
 
 class Patch:
@@ -86,8 +86,8 @@ class Patch:
             assert response.status_code == 200
             assert StockSQLEntity.query.get(stock_id).price == 120
 
-        @patch('routes.stocks.feature_queries.is_active', return_value=True)
-        @patch('routes.stocks.redis.add_offer_id')
+        @patch('pcapi.routes.stocks.feature_queries.is_active', return_value=True)
+        @patch('pcapi.routes.stocks.redis.add_offer_id')
         @pytest.mark.usefixtures("db_session")
         def when_stock_is_edited_expect_offer_id_to_be_added_to_redis(self, mock_redis, mock_feature, app):
             # given
@@ -133,8 +133,8 @@ class Patch:
             assert updated_stock.price == 20
 
         @pytest.mark.usefixtures("db_session")
-        @patch('routes.stocks.send_raw_email')
-        @patch('routes.stocks.find_not_cancelled_bookings_by_stock')
+        @patch('pcapi.routes.stocks.send_raw_email')
+        @patch('pcapi.routes.stocks.find_not_cancelled_bookings_by_stock')
         @freeze_time('2020-10-15 09:20:00')
         def when_stock_changes_date_and_should_send_email_to_users_with_correct_info(self,
                                                                                      find_not_cancelled_bookings_by_stock,
@@ -164,8 +164,8 @@ class Patch:
             assert data_email['data']['Vars']['event_date'] == 'samedi 17 octobre 2020'
             assert data_email['data']['Vars']['event_hour'] == '14h20'
 
-        @patch('routes.stocks.have_beginning_date_been_modified')
-        @patch('routes.stocks.send_batch_stock_postponement_emails_to_users')
+        @patch('pcapi.routes.stocks.have_beginning_date_been_modified')
+        @patch('pcapi.routes.stocks.send_batch_stock_postponement_emails_to_users')
         @pytest.mark.usefixtures("db_session")
         def when_stock_date_has_not_been_changed_and_should_not_email_to_beneficiaries(self,
                                                                                        mocked_send_batch_stock_postponement_emails_to_users,

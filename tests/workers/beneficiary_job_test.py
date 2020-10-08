@@ -1,9 +1,9 @@
 from unittest.mock import patch
 
-from workers.beneficiary_job import beneficiary_job
+from pcapi.workers.beneficiary_job import beneficiary_job
 
 
-@patch('workers.beneficiary_job.create_beneficiary_from_application.execute')
+@patch('pcapi.workers.beneficiary_job.create_beneficiary_from_application.execute')
 def test_calls_use_case(mocked_create_beneficiary_use_case):
     # Given
     application_id = 5

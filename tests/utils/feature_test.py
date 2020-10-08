@@ -1,11 +1,11 @@
 from unittest.mock import patch
 
-from models import ApiErrors
-from utils.feature import feature_required
+from pcapi.models import ApiErrors
+from pcapi.utils.feature import feature_required
 
 
 class FeatureRequiredTest:
-    @patch('utils.feature.feature_queries.is_active', return_value=True)
+    @patch('pcapi.utils.feature.feature_queries.is_active', return_value=True)
     def when_feature_is_activated_dont_raise_error(self, active_feature):
         # given
         @feature_required('feature')
@@ -18,7 +18,7 @@ class FeatureRequiredTest:
         # then
         assert result == 'expected result'
 
-    @patch('utils.feature.feature_queries.is_active', return_value=False)
+    @patch('pcapi.utils.feature.feature_queries.is_active', return_value=False)
     def when_feature_is_not_activated_raise_an_error(self, not_active_feature):
         # given
         @feature_required('feature')

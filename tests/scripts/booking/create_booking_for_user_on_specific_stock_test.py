@@ -1,14 +1,14 @@
 from unittest.mock import MagicMock, patch
 
-from models import ThingType, BookingSQLEntity
-from repository import repository
-from scripts.booking.create_booking_for_user_on_specific_stock import create_booking_for_user_on_specific_stock, \
+from pcapi.models import ThingType, BookingSQLEntity
+from pcapi.repository import repository
+from pcapi.scripts.booking.create_booking_for_user_on_specific_stock import create_booking_for_user_on_specific_stock, \
     create_booking_for_user_on_specific_stock_bypassing_capping_limits
 import pytest
-from model_creators.generic_creators import create_user, create_stock, create_venue, create_offerer, \
+from pcapi.model_creators.generic_creators import create_user, create_stock, create_venue, create_offerer, \
     create_booking, create_deposit
-from model_creators.specific_creators import create_offer_with_thing_product
-from use_cases.book_an_offer import BookingInformation
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.use_cases.book_an_offer import BookingInformation
 
 
 class CreateBookingForUserOnSpecificStockTest:
@@ -38,7 +38,7 @@ class CreateBookingForUserOnSpecificStockTest:
 
 class CreateBookingForUserOnSpecificStockBypassingCappingLimitsTest:
     @pytest.mark.usefixtures("db_session")
-    @patch('scripts.booking.create_booking_for_user_on_specific_stock.redis')
+    @patch('pcapi.scripts.booking.create_booking_for_user_on_specific_stock.redis')
     def should_book_an_offer_even_if_physical_offer_capping_is_exeeded(self, mocked_redis, app):
         # Given
         user = create_user()

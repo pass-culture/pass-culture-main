@@ -1,6 +1,6 @@
 import pytest
 
-from validation.routes.seen_offers import check_payload_is_valid, PayloadMissing
+from pcapi.validation.routes.seen_offers import check_payload_is_valid, PayloadMissing
 
 
 class checkPayloadIsValidTest:

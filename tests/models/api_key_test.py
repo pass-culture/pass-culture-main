@@ -1,10 +1,10 @@
 import pytest
 
-from models import ApiErrors, ApiKey
-from repository import repository
+from pcapi.models import ApiErrors, ApiKey
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_offerer
-from utils.token import random_token
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.utils.token import random_token
 
 
 @pytest.mark.usefixtures("db_session")

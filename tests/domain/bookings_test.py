@@ -1,17 +1,17 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from domain.bookings import generate_qr_code
-from models import ThingType
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.domain.bookings import generate_qr_code
+from pcapi.models import ThingType
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
-from model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
+from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
     create_offer_with_thing_product, create_offer_with_event_product
 
 
 class BookingsTest:
     class GenerateQrCodeTest:
-        @patch('domain.bookings.qrcode.QRCode')
+        @patch('pcapi.domain.bookings.qrcode.QRCode')
         def test_should_build_qr_code_with_the_correct_technical_parameters(
                 self,
                 build_qr_code
@@ -36,7 +36,7 @@ class BookingsTest:
                 border=1,
             )
 
-        @patch('domain.bookings.qrcode.QRCode.add_data')
+        @patch('pcapi.domain.bookings.qrcode.QRCode.add_data')
         def test_should_build_qr_code_with_booking_token_and_product_isbn_when_isbn_is_provided(
                 self,
                 build_qr_code_booking_info
@@ -60,7 +60,7 @@ class BookingsTest:
                 f'TOKEN:ABCDE'
             )
 
-        @patch('domain.bookings.qrcode.QRCode.add_data')
+        @patch('pcapi.domain.bookings.qrcode.QRCode.add_data')
         def test_should_build_qr_code_with_booking_token_and_no_product_isbn_when_isbn_is_not_provided(
                 self,
                 build_qr_code_booking_info
@@ -83,7 +83,7 @@ class BookingsTest:
                 f'TOKEN:ABCDE'
             )
 
-        @patch('domain.bookings.qrcode.QRCode.make_image')
+        @patch('pcapi.domain.bookings.qrcode.QRCode.make_image')
         def test_should_build_qr_code_with_correct_image_parameters(
                 self,
                 build_qr_code_image_parameters

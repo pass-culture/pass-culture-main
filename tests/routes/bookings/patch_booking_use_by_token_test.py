@@ -1,15 +1,15 @@
 from unittest.mock import patch, Mock
 
-from domain.user_emails import send_activation_email
-from models import EventType, Deposit, BookingSQLEntity, UserSQLEntity
-from repository import repository
+from pcapi.domain.user_emails import send_activation_email
+from pcapi.models import EventType, Deposit, BookingSQLEntity, UserSQLEntity
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_deposit, create_user_offerer, create_api_key
-from model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product
-from utils.token import random_token
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product
+from pcapi.utils.token import random_token
 
 API_KEY_VALUE = random_token(64)
 
@@ -163,7 +163,7 @@ class Patch:
 
                 # When
                 url = '/v2/bookings/use/token/{}'.format(booking.token)
-                with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+                with patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
                     send_activation_email(user, mocked_send_email)
                 response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
 

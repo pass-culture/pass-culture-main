@@ -1,6 +1,6 @@
 from enum import Enum
 
-from utils.json_encoder import EnumJSONEncoder
+from pcapi.utils.json_encoder import EnumJSONEncoder
 
 
 def test_json_encoder(app):

@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 from bs4 import BeautifulSoup
 from freezegun import freeze_time
 
-from utils.mailing import make_payments_report_email, make_payment_message_email, make_payment_details_email
+from pcapi.utils.mailing import make_payments_report_email, make_payment_message_email, make_payment_details_email
 
 
 @freeze_time('2018-10-15 09:21:34')
@@ -39,7 +39,7 @@ class MakePaymentsReportEmailTest:
             }
         ]
 
-    @patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('pcapi.utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_it_contains_from_and_subject_info(self, app):
         # When
         email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
@@ -66,7 +66,7 @@ class MakePaymentsReportEmailTest:
         assert email_html.find('ul').text == '\nERROR : 2\nSENT : 1\nPENDING : 3\n'
 
 
-@patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+@patch('pcapi.utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
 @freeze_time('2018-10-15 09:21:34')
 def test_make_payment_message_email_sends_a_xml_file_with_its_checksum_in_email_body(app):
     # Given
@@ -91,7 +91,7 @@ def test_make_payment_message_email_sends_a_xml_file_with_its_checksum_in_email_
            in email_html.find('p', {'id': 'checksum'}).find('strong').text
 
 
-@patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+@patch('pcapi.utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
 @freeze_time('2018-10-15 09:21:34')
 def test_make_payment_details_email():
     # Given

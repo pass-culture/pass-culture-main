@@ -1,11 +1,11 @@
 from tests.conftest import TestClient, clean_database
-from model_creators.generic_creators import API_URL, create_favorite, \
+from pcapi.model_creators.generic_creators import API_URL, create_favorite, \
     create_mediation, create_offerer, create_recommendation, create_user, create_venue
-from model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 
-from models import FavoriteSQLEntity
-from repository import repository
-from utils.human_ids import humanize
+from pcapi.models import FavoriteSQLEntity
+from pcapi.repository import repository
+from pcapi.utils.human_ids import humanize
 
 
 class Delete:

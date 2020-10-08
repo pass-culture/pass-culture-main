@@ -1,9 +1,9 @@
-from models import StockSQLEntity
+from pcapi.models import StockSQLEntity
 
-from sandboxes.scripts.save_sandbox import save_sandbox
+from pcapi.sandboxes.scripts.save_sandbox import save_sandbox
 import pytest
-from model_creators.provider_creators import save_counts, assert_created_counts
-from utils.logger import logger
+from pcapi.model_creators.provider_creators import save_counts, assert_created_counts
+from pcapi.utils.logger import logger
 
 
 @pytest.mark.usefixtures("db_session")

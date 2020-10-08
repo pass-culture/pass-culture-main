@@ -1,9 +1,9 @@
-from repository import repository
+from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
-from model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_bank_information
-from utils.human_ids import humanize
+from pcapi.utils.human_ids import humanize
 
 
 class Get:

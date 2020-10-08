@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
-from infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import PaginatedOfferersSQLRepository
-from use_cases.list_offerers_for_pro_user import OfferersRequestParameters, ListOfferersForProUser
+from pcapi.infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import PaginatedOfferersSQLRepository
+from pcapi.use_cases.list_offerers_for_pro_user import OfferersRequestParameters, ListOfferersForProUser
 
 
 class OfferersRequestParametersTest:

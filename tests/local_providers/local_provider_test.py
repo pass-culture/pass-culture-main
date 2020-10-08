@@ -3,16 +3,16 @@ from unittest.mock import patch
 
 import pytest
 
-from local_providers.local_provider import _save_same_thumb_from_thumb_count_to_index
-from models import Product, ThingType, VenueProvider, ApiErrors, LocalProviderEvent
-from models.local_provider_event import LocalProviderEventType
-from repository import repository
+from pcapi.local_providers.local_provider import _save_same_thumb_from_thumb_count_to_index
+from pcapi.models import Product, ThingType, VenueProvider, ApiErrors, LocalProviderEvent
+from pcapi.models.local_provider_event import LocalProviderEventType
+from pcapi.repository import repository
 from tests.conftest import clean_database
 from tests.local_providers.provider_test_utils import TestLocalProvider, TestLocalProviderWithApiErrors, \
     TestLocalProviderNoCreation, TestLocalProviderWithThumb, TestLocalProviderWithThumbIndexAt4
-from model_creators.generic_creators import create_offerer, create_venue, create_provider
-from model_creators.provider_creators import create_providable_info
-from model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_provider
+from pcapi.model_creators.provider_creators import create_providable_info
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
 
 
 class LocalProviderTest:
@@ -375,7 +375,7 @@ class LocalProviderTest:
             assert provider.createdThumbs == 1
             assert existing_product.thumbCount == 1
 
-        @patch('local_providers.local_provider._save_same_thumb_from_thumb_count_to_index')
+        @patch('pcapi.local_providers.local_provider._save_same_thumb_from_thumb_count_to_index')
         @clean_database
         def test_call_save_thumb_once_when_thumb_count_is_0(self, mock_save_thumb, app):
             # Given
@@ -401,8 +401,8 @@ class LocalProviderTest:
             assert provider.updatedThumbs == 0
             assert provider.createdThumbs == 1
 
-        @patch('local_providers.local_provider.save_provider_thumb')
-        @patch('utils.object_storage.build_thumb_path')
+        @patch('pcapi.local_providers.local_provider.save_provider_thumb')
+        @patch('pcapi.utils.object_storage.build_thumb_path')
         @clean_database
         def test_create_several_thumbs_when_thumb_index_is_4_and_current_thumbCount_is_0(self,
                                                                                          mock_get_thumb_storage_id,
@@ -487,7 +487,7 @@ class LocalProviderTest:
             # Then
             assert product.thumbCount == 4
 
-        @patch('local_providers.local_provider._add_new_thumb')
+        @patch('pcapi.local_providers.local_provider._add_new_thumb')
         @clean_database
         def test_should_only_replace_image_at_specific_thumb_index_when_thumCount_is_superior_to_thumbIndex(self,
                                                                                                             mock_add_new_thumb,

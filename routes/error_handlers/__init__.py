@@ -1,2 +1,0 @@
-import routes.error_handlers.generic_error_handlers
-import routes.error_handlers.bookings_error_handlers

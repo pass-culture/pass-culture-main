@@ -1,19 +1,19 @@
 from datetime import datetime, timezone
 from unittest.mock import patch
 
-from domain.booking.booking import Booking
-from domain.stock.stock import Stock
-from emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
+from pcapi.domain.booking.booking import Booking
+from pcapi.domain.stock.stock import Stock
+from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
 from tests.domain_creators.generic_creators import create_domain_beneficiary
-from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_mediation
-from model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
+from pcapi.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
     create_offer_with_event_product
 
 
-@patch('emails.beneficiary_booking_confirmation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('emails.beneficiary_booking_confirmation.DEV_EMAIL_ADDRESS', 'dev@example.com')
-@patch('emails.beneficiary_booking_confirmation.format_environment_for_email', return_value='')
+@patch('pcapi.emails.beneficiary_booking_confirmation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+@patch('pcapi.emails.beneficiary_booking_confirmation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+@patch('pcapi.emails.beneficiary_booking_confirmation.format_environment_for_email', return_value='')
 def test_should_return_event_specific_data_for_email_when_offer_is_an_event(mock_format_environment_for_email):
     # Given
     beneficiary = create_domain_beneficiary(first_name='Joe')
@@ -61,9 +61,9 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event(mock
     }
 
 
-@patch('emails.beneficiary_booking_confirmation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('emails.beneficiary_booking_confirmation.DEV_EMAIL_ADDRESS', 'dev@example.com')
-@patch('emails.beneficiary_booking_confirmation.format_environment_for_email', return_value='')
+@patch('pcapi.emails.beneficiary_booking_confirmation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+@patch('pcapi.emails.beneficiary_booking_confirmation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+@patch('pcapi.emails.beneficiary_booking_confirmation.format_environment_for_email', return_value='')
 def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event(mock_format_environment_for_email):
     # Given
     beneficiary = create_domain_beneficiary(first_name='Joe')
@@ -111,9 +111,9 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event(m
     }
 
 
-@patch('emails.beneficiary_booking_confirmation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('emails.beneficiary_booking_confirmation.DEV_EMAIL_ADDRESS', 'dev@example.com')
-@patch('emails.beneficiary_booking_confirmation.format_environment_for_email', return_value='')
+@patch('pcapi.emails.beneficiary_booking_confirmation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+@patch('pcapi.emails.beneficiary_booking_confirmation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+@patch('pcapi.emails.beneficiary_booking_confirmation.format_environment_for_email', return_value='')
 def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing(mock_format_environment_for_email):
     # Given
     beneficiary = create_domain_beneficiary(first_name='Joe')
@@ -160,9 +160,9 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing(mock_
     }
 
 
-@patch('emails.beneficiary_booking_confirmation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('emails.beneficiary_booking_confirmation.DEV_EMAIL_ADDRESS', 'dev@example.com')
-@patch('emails.beneficiary_booking_confirmation.format_environment_for_email', return_value='')
+@patch('pcapi.emails.beneficiary_booking_confirmation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+@patch('pcapi.emails.beneficiary_booking_confirmation.DEV_EMAIL_ADDRESS', 'dev@example.com')
+@patch('pcapi.emails.beneficiary_booking_confirmation.format_environment_for_email', return_value='')
 def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing(mock_format_environment_for_email):
     # Given
     offerer = create_offerer(idx=1, name="Théâtre de l'angle")
@@ -215,7 +215,7 @@ def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_dig
     }
 
 
-@patch('emails.beneficiary_booking_confirmation.feature_send_mail_to_users_enabled', return_value=True)
+@patch('pcapi.emails.beneficiary_booking_confirmation.feature_send_mail_to_users_enabled', return_value=True)
 def test_should_send_email_to_users_address_when_environment_is_production(mock_feature_send_mail_to_users_enabled):
     # Given
     beneficiary = create_domain_beneficiary(email='joe@example.com')

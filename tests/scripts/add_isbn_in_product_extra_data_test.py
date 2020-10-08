@@ -1,10 +1,10 @@
-from repository import repository
-from repository.provider_queries import get_provider_by_local_class
-from scripts.add_isbn_in_product_extra_data import add_isbn_in_product_and_offer_extra_data, \
+from pcapi.repository import repository
+from pcapi.repository.provider_queries import get_provider_by_local_class
+from pcapi.scripts.add_isbn_in_product_extra_data import add_isbn_in_product_and_offer_extra_data, \
     _extract_isbn_from_offer_id_at_providers
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_offerer, create_venue
-from model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+from pcapi.model_creators.generic_creators import create_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 class AddIsbnInProductExtraDataTest:

@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 
-from utils.date import english_to_french_month, get_date_formatted_for_email, get_time_formatted_for_email, \
+from pcapi.utils.date import english_to_french_month, get_date_formatted_for_email, get_time_formatted_for_email, \
     get_department_timezone
 
 

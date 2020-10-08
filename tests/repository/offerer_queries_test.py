@@ -1,18 +1,18 @@
 import secrets
 from datetime import datetime, timedelta
 
-from models import Offerer, VenueSQLEntity, ThingType
-from repository import repository
-from repository.offerer_queries import find_all_offerers_with_managing_user_information, \
+from pcapi.models import Offerer, VenueSQLEntity, ThingType
+from pcapi.repository import repository
+from pcapi.repository.offerer_queries import find_all_offerers_with_managing_user_information, \
     find_all_offerers_with_managing_user_information_and_venue, \
     find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
     find_all_offerers_with_venue, find_first_by_user_offerer_id, find_all_pending_validation, \
     find_filtered_offerers, filter_offerers_with_keywords_string, find_by_id, count_offerer, count_offerer_with_stock, \
     count_offerer_by_departement, count_offerer_with_stock_by_departement, find_new_offerer_user_email
-from repository.user_queries import find_all_emails_of_user_offerers_admins
+from pcapi.repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_bank_information, create_offerer, create_stock, create_user, create_user_offerer, create_venue
-from model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_with_thing_offer, \
+from pcapi.model_creators.generic_creators import create_bank_information, create_offerer, create_stock, create_user, create_user_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_with_thing_offer, \
     create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 
 

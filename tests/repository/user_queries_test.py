@@ -1,18 +1,18 @@
 from datetime import MINYEAR, datetime, timedelta
 
-from models import EventType, ImportStatus, ThingType, BeneficiaryImportSources
-from repository import repository
-from repository.user_queries import \
+from pcapi.models import EventType, ImportStatus, ThingType, BeneficiaryImportSources
+from pcapi.repository import repository
+from pcapi.repository.user_queries import \
     count_all_activated_users, count_all_activated_users_by_departement, \
     count_users_having_booked, count_users_having_booked_by_departement_code, \
     find_by_civility, \
     find_most_recent_beneficiary_creation_date_for_source, \
     get_all_users_wallet_balances
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_beneficiary_import, \
+from pcapi.model_creators.generic_creators import create_beneficiary_import, \
     create_booking, create_deposit, create_offerer, create_stock, create_user, \
     create_venue
-from model_creators.specific_creators import \
+from pcapi.model_creators.specific_creators import \
     create_offer_with_event_product, create_offer_with_thing_product
 
 

@@ -3,23 +3,23 @@ from datetime import datetime
 
 import pytest
 
-from infrastructure.repository.bank_informations.bank_informations_sql_repository import BankInformationsSQLRepository
-from infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
-from use_cases.save_offerer_bank_informations import SaveOffererBankInformations
-from models import ApiErrors
+from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import BankInformationsSQLRepository
+from pcapi.infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
+from pcapi.use_cases.save_offerer_bank_informations import SaveOffererBankInformations
+from pcapi.models import ApiErrors
 
-from models.bank_information import BankInformationStatus
-from model_creators.generic_creators import create_bank_information, create_offerer
+from pcapi.models.bank_information import BankInformationStatus
+from pcapi.model_creators.generic_creators import create_bank_information, create_offerer
 from tests.connector_creators.demarches_simplifiees_creators import \
     offerer_demarche_simplifiee_application_detail_response
-from repository import repository
+from pcapi.repository import repository
 import pytest
-from models import BankInformation
-from domain.bank_information import CannotRegisterBankInformation
+from pcapi.models import BankInformation
+from pcapi.domain.bank_information import CannotRegisterBankInformation
 
 
 class SaveOffererBankInformationsTest:
-    @patch('domain.demarches_simplifiees.get_application_details')
+    @patch('pcapi.domain.demarches_simplifiees.get_application_details')
     class SaveNewBankInformationsTest:
         def setup_method(self):
             self.save_offerer_bank_informations = SaveOffererBankInformations(
@@ -193,7 +193,7 @@ class SaveOffererBankInformationsTest:
             assert error.value.args == (
                 f'Unknown Demarches Simplifiées state {unknown_status}',)
 
-    @patch('domain.demarches_simplifiees.get_application_details')
+    @patch('pcapi.domain.demarches_simplifiees.get_application_details')
     class UpdateBankInformationsByApplicationIdTest:
         def setup_method(self):
             self.save_offerer_bank_informations = SaveOffererBankInformations(
@@ -295,7 +295,7 @@ class SaveOffererBankInformationsTest:
             assert errors.value.errors['"offererId"'] == [
                 'Une entrée avec cet identifiant existe déjà dans notre base de données']
 
-    @patch('domain.demarches_simplifiees.get_application_details')
+    @patch('pcapi.domain.demarches_simplifiees.get_application_details')
     class UpdateBankInformationsByOffererIdTest:
         def setup_method(self):
             self.save_offerer_bank_informations = SaveOffererBankInformations(

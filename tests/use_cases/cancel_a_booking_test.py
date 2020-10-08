@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock, patch
 
-from infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
-from infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
+from pcapi.infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
+from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from tests.domain_creators.generic_creators import create_domain_beneficiary, create_domain_booking, create_domain_stock
-from model_creators.generic_creators import create_offerer, create_venue
-from model_creators.specific_creators import create_offer_with_thing_product
-from use_cases.cancel_a_booking import CancelABooking
+from pcapi.model_creators.generic_creators import create_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.use_cases.cancel_a_booking import CancelABooking
 
 
 class CancelABookingTest:
@@ -18,7 +18,7 @@ class CancelABookingTest:
         self.cancel_a_booking = CancelABooking(booking_repository=self.booking_repository,
                                                notification_service=self.notification_service)
 
-    @patch('use_cases.cancel_a_booking.send_raw_email')
+    @patch('pcapi.use_cases.cancel_a_booking.send_raw_email')
     def test_user_can_cancel_a_booking(self, mock_send_raw_email, app):
         # Given
         offerer = create_offerer()

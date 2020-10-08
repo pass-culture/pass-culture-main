@@ -1,14 +1,14 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from models.payment_status import TransactionStatus
-from repository import repository
-from repository.reimbursement_queries import find_all_offerer_payments
+from pcapi.models.payment_status import TransactionStatus
+from pcapi.repository import repository
+from pcapi.repository.reimbursement_queries import find_all_offerer_payments
 from tests.conftest import clean_database
-from model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, \
     create_payment, create_payment_status
-from model_creators.specific_creators import create_stock_with_thing_offer
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 
 
 class FindAllOffererPaymentsTest:

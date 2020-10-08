@@ -2,12 +2,12 @@ from unittest.mock import patch
 
 import pytest
 
-from connectors.google_spreadsheet import get_credentials, MissingGoogleKeyException
+from pcapi.connectors.google_spreadsheet import get_credentials, MissingGoogleKeyException
 
 
 class GetCredentialsTest:
-    @patch('connectors.google_spreadsheet.os.environ.get')
-    @patch('connectors.google_spreadsheet.ServiceAccountCredentials')
+    @patch('pcapi.connectors.google_spreadsheet.os.environ.get')
+    @patch('pcapi.connectors.google_spreadsheet.ServiceAccountCredentials')
     def test_calls_service_account_credentials_from_temp_file_created_from_environ_variable_when_exists(self,
                                                                                                         ServiceAccountCredentials,
                                                                                                         get_environment):
@@ -31,7 +31,7 @@ class GetCredentialsTest:
                                                                             ['https://spreadsheets.google.com/feeds',
                                                                              'https://www.googleapis.com/auth/drive'])
 
-    @patch('connectors.google_spreadsheet.os.environ.get')
+    @patch('pcapi.connectors.google_spreadsheet.os.environ.get')
     def test_raises_exception_when_no_environ_variable(self, get_environment):
         # Given
         get_environment.return_value = None
@@ -40,7 +40,7 @@ class GetCredentialsTest:
         with pytest.raises(MissingGoogleKeyException):
             get_credentials()
 
-    @patch('connectors.google_spreadsheet.os.environ.get')
+    @patch('pcapi.connectors.google_spreadsheet.os.environ.get')
     def test_raises_exception_when_empty_environ_variable(self, get_environment):
         # Given
         get_environment.return_value = {}

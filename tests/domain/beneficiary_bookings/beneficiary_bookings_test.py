@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from domain.beneficiary_bookings.active_mediation import ActiveMediation
-from domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
+from pcapi.domain.beneficiary_bookings.active_mediation import ActiveMediation
+from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 
 
 class BeneficiaryBookingTest:
@@ -201,7 +201,7 @@ class BeneficiaryBookingTest:
             assert is_event_expired is True
 
     class ThumbUrlTest:
-        @patch('domain.beneficiary_bookings.thumb_url.get_storage_base_url')
+        @patch('pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url')
         def should_compute_thumb_url_based_on_product_when_thumb_count_is_more_than_0(self, mock_get_storage_base_url):
             # Given
             mock_get_storage_base_url.return_value = 'http://example.com'
@@ -249,7 +249,7 @@ class BeneficiaryBookingTest:
             # When / Then
             assert beneficiary_booking.thumb_url == 'http://example.com/thumbs/products/BQ'
 
-        @patch('domain.beneficiary_bookings.thumb_url.get_storage_base_url')
+        @patch('pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url')
         def should_compute_thumb_url_based_on_mediation_when_active_mediations_is_not_null(self,
                                                                                            mock_get_storage_base_url):
             # Given

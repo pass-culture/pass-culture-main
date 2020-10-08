@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from models import ApiErrors
-from validation.routes.mediations import check_thumb_quality
+from pcapi.models import ApiErrors
+from pcapi.validation.routes.mediations import check_thumb_quality
 
 MODULE_PATH = Path(os.path.dirname(os.path.realpath(__file__)))
 

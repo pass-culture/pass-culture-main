@@ -1,9 +1,9 @@
 from datetime import datetime
 from decimal import Decimal
 
-from domain.payments import generate_payment_details_csv, generate_wallet_balances_csv
-from models.user_sql_entity import WalletBalance
-from model_creators.generic_creators import create_payment_details
+from pcapi.domain.payments import generate_payment_details_csv, generate_wallet_balances_csv
+from pcapi.models.user_sql_entity import WalletBalance
+from pcapi.model_creators.generic_creators import create_payment_details
 
 
 class PaymentDetailsCSVTest:

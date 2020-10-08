@@ -1,6 +1,6 @@
-from models import Feature
-from models.feature import FeatureToggle
-from models.install import install_features
+from pcapi.models import Feature
+from pcapi.models.feature import FeatureToggle
+from pcapi.models.install import install_features
 import pytest
 
 

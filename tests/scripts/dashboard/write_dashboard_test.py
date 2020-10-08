@@ -1,7 +1,7 @@
 from unittest import mock
 from unittest.mock import MagicMock, patch
 
-from scripts.dashboard.write_dashboard import write_dashboard, write_dashboard_worksheet, _get_departement_code
+from pcapi.scripts.dashboard.write_dashboard import write_dashboard, write_dashboard_worksheet, _get_departement_code
 
 
 class WriteDashboardTest:
@@ -36,10 +36,10 @@ class WriteDashboardTest:
 
 
 class WriteDashboardWorksheetTest:
-    @patch('scripts.dashboard.write_dashboard._write_finance_section')
-    @patch('scripts.dashboard.write_dashboard._write_diversification_section')
-    @patch('scripts.dashboard.write_dashboard._write_usage_section')
-    @patch('scripts.dashboard.write_dashboard._initialize_worksheet')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_finance_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_diversification_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_usage_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._initialize_worksheet')
     def test_initializes_worksheet_within_given_spreadsheet(self, initialize_worksheet, write_usage_section,
                                                             write_diversification_section, write_finance_section):
         # Given
@@ -54,10 +54,10 @@ class WriteDashboardWorksheetTest:
         # Then
         initialize_worksheet.assert_called_once_with(spreadsheet, '08')
 
-    @patch('scripts.dashboard.write_dashboard._write_finance_section')
-    @patch('scripts.dashboard.write_dashboard._write_diversification_section')
-    @patch('scripts.dashboard.write_dashboard._write_usage_section')
-    @patch('scripts.dashboard.write_dashboard._initialize_worksheet')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_finance_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_diversification_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_usage_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._initialize_worksheet')
     def test_writes_worksheet_title(self, initialize_worksheet, write_usage_section, write_diversification_section,
                                     write_finance_section):
         # Given
@@ -73,10 +73,10 @@ class WriteDashboardWorksheetTest:
         # Then
         worksheet.update_value.assert_called_once_with('A1', 'TABLEAU DE BORD PASS CULTURE')
 
-    @patch('scripts.dashboard.write_dashboard._write_finance_section')
-    @patch('scripts.dashboard.write_dashboard._write_diversification_section')
-    @patch('scripts.dashboard.write_dashboard._write_usage_section')
-    @patch('scripts.dashboard.write_dashboard._initialize_worksheet')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_finance_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_diversification_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_usage_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._initialize_worksheet')
     def test_writes_usage_section_for_departement_starting_on_line_4(self, initialize_worksheet, write_usage_section,
                                                                      write_diversification_section,
                                                                      write_finance_section):
@@ -93,10 +93,10 @@ class WriteDashboardWorksheetTest:
         # Then
         write_usage_section.assert_called_once_with('08', worksheet, 4)
 
-    @patch('scripts.dashboard.write_dashboard._write_finance_section')
-    @patch('scripts.dashboard.write_dashboard._write_diversification_section')
-    @patch('scripts.dashboard.write_dashboard._write_usage_section')
-    @patch('scripts.dashboard.write_dashboard._initialize_worksheet')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_finance_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_diversification_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_usage_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._initialize_worksheet')
     def test_writes_diversification_section_for_departement_starting_on_line_5(self, initialize_worksheet,
                                                                                write_usage_section,
                                                                                write_diversification_section,
@@ -114,10 +114,10 @@ class WriteDashboardWorksheetTest:
         # Then
         write_diversification_section.assert_called_once_with('08', worksheet, 5)
 
-    @patch('scripts.dashboard.write_dashboard._write_finance_section')
-    @patch('scripts.dashboard.write_dashboard._write_diversification_section')
-    @patch('scripts.dashboard.write_dashboard._write_usage_section')
-    @patch('scripts.dashboard.write_dashboard._initialize_worksheet')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_finance_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_diversification_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._write_usage_section')
+    @patch('pcapi.scripts.dashboard.write_dashboard._initialize_worksheet')
     def test_writes_finance_section_for_departement_starting_on_line_6(self, initialize_worksheet, write_usage_section,
                                                                        write_diversification_section,
                                                                        write_finance_section):

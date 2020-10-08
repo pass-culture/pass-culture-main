@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 
-from algolia.domain.rules_engine import is_eligible_for_reindexing
-from repository import repository
+from pcapi.algolia.domain.rules_engine import is_eligible_for_reindexing
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_offerer, create_stock, create_venue
-from model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from pcapi.model_creators.generic_creators import create_offerer, create_stock, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 class IsEligibleForReindexingTest:

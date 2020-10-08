@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, patch, call
 
-from scheduled_tasks.decorators import cron_context, log_cron, cron_require_feature
-from scheduled_tasks.logger import CronStatus
+from pcapi.scheduled_tasks.decorators import cron_context, log_cron, cron_require_feature
+from pcapi.scheduled_tasks.logger import CronStatus
 
 
 class CronContextTest:
@@ -23,7 +23,7 @@ class CronContextTest:
 
 
 class CronRequireFeatureTest:
-    @patch('scheduled_tasks.decorators.feature_queries.is_active', return_value=True)
+    @patch('pcapi.scheduled_tasks.decorators.feature_queries.is_active', return_value=True)
     def test_cron_require_feature(self, mock_active_feature):
         # Given
         @cron_require_feature('feature')
@@ -36,8 +36,8 @@ class CronRequireFeatureTest:
         # Then
         assert result == 'expected result'
 
-    @patch('scheduled_tasks.decorators.logger.info')
-    @patch('scheduled_tasks.decorators.feature_queries.is_active', return_value=False)
+    @patch('pcapi.scheduled_tasks.decorators.logger.info')
+    @patch('pcapi.scheduled_tasks.decorators.feature_queries.is_active', return_value=False)
     def when_feature_is_not_activated_raise_an_error(self, mock_not_active_feature, mock_logger):
         # Given
         @cron_require_feature('feature')
@@ -53,9 +53,9 @@ class CronRequireFeatureTest:
 
 
 class LogCronTest:
-    @patch('scheduled_tasks.decorators.time.time')
-    @patch('scheduled_tasks.decorators.logger.info')
-    @patch('scheduled_tasks.decorators.build_cron_log_message')
+    @patch('pcapi.scheduled_tasks.decorators.time.time')
+    @patch('pcapi.scheduled_tasks.decorators.logger.info')
+    @patch('pcapi.scheduled_tasks.decorators.build_cron_log_message')
     def test_should_call_logger_with_builded_message(self, mock_cron_log_builder, mock_logger_info, mock_time):
         # Given
         @log_cron

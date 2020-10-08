@@ -2,12 +2,12 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from connectors.api_entreprises import ApiEntrepriseException, get_by_offerer
-from model_creators.generic_creators import create_offerer
+from pcapi.connectors.api_entreprises import ApiEntrepriseException, get_by_offerer
+from pcapi.model_creators.generic_creators import create_offerer
 
 
 class GetByOffererTest:
-    @patch('connectors.api_entreprises.requests.get')
+    @patch('pcapi.connectors.api_entreprises.requests.get')
     def test_raises_ApiEntrepriseException_when_sirene_api_does_not_respond(self, requests_get):
         # Given
         requests_get.return_value = MagicMock(status_code=400)
@@ -21,7 +21,7 @@ class GetByOffererTest:
         # Then
         assert 'Error getting API entreprise DATA for SIREN' in str(error.value)
 
-    @patch('connectors.api_entreprises.requests.get')
+    @patch('pcapi.connectors.api_entreprises.requests.get')
     def test_call_sirene_with_offerer_siren(self, requests_get):
         # Given
         offerer = create_offerer(siren='732075312')
@@ -49,7 +49,7 @@ class GetByOffererTest:
         requests_get.assert_called_once_with("https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/732075312",
                                              verify=False)
 
-    @patch('connectors.api_entreprises.requests.get')
+    @patch('pcapi.connectors.api_entreprises.requests.get')
     def test_returns_unite_legale_informations_with_etablissement_siege(self, requests_get):
         # Given
         offerer = create_offerer(siren='732075312')
@@ -76,7 +76,7 @@ class GetByOffererTest:
         # Then
         assert response == json_response
 
-    @patch('connectors.api_entreprises.requests.get')
+    @patch('pcapi.connectors.api_entreprises.requests.get')
     def test_returns_unite_legale_informations_without_etablissements_list(self, requests_get):
         # Given
         offerer = create_offerer(siren='732075312')
@@ -111,7 +111,7 @@ class GetByOffererTest:
         # Then
         assert "etablissements" not in response["unite_legale"]
 
-    @patch('connectors.api_entreprises.requests.get')
+    @patch('pcapi.connectors.api_entreprises.requests.get')
     def test_returns_unite_legale_informations_with_empty_other_etablissements_sirets_when_no_other_etablissements(self, requests_get):
         # Given
         offerer = create_offerer(siren='732075312')
@@ -146,7 +146,7 @@ class GetByOffererTest:
         # Then
         assert response["other_etablissements_sirets"] == []
 
-    @patch('connectors.api_entreprises.requests.get')
+    @patch('pcapi.connectors.api_entreprises.requests.get')
     def test_returns_other_etablissements_sirets_with_all_etablissement_siret(self, requests_get):
         # Given
         offerer = create_offerer(siren='732075312')
@@ -187,7 +187,7 @@ class GetByOffererTest:
         # Then
         assert set(response["other_etablissements_sirets"]) == {"39525144000032", "39525144000065"}
 
-    @patch('connectors.api_entreprises.requests.get')
+    @patch('pcapi.connectors.api_entreprises.requests.get')
     def test_returns_other_etablissements_sirets_without_etablissement_siege_siret(self, requests_get):
         # Given
         offerer = create_offerer(siren='732075312')

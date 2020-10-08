@@ -4,21 +4,21 @@ from unittest.mock import Mock, patch
 import pytest
 from freezegun import freeze_time
 
-from models import UserSQLEntity, UserOfferer, Offerer
-from repository import repository
-from scripts.offerer.file_import import fill_user_from, \
+from pcapi.models import UserSQLEntity, UserOfferer, Offerer
+from pcapi.repository import repository
+from pcapi.scripts.offerer.file_import import fill_user_from, \
     fill_user_offerer_from, \
     create_activated_user_offerer, \
     fill_offerer_from, \
     iterate_rows_for_user_offerers, \
     UserNotCreatedException, \
     OffererNotCreatedException
-from model_creators.generic_creators import create_user, create_offerer, create_venue_type
-from utils.token import random_token
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue_type
+from pcapi.utils.token import random_token
 
 
 class IterateRowForUserOfferersTest:
-    @patch('scripts.offerer.file_import.create_activated_user_offerer')
+    @patch('pcapi.scripts.offerer.file_import.create_activated_user_offerer')
     def test_ignores_the_first_line_with_csv_headers(self, create_activated_user_offerer):
         # given
         create_activated_user_offerer.return_value = UserOfferer()
@@ -35,7 +35,7 @@ class IterateRowForUserOfferersTest:
         # then
         assert len(user_offerers) == 3
 
-    @patch('scripts.offerer.file_import.create_activated_user_offerer')
+    @patch('pcapi.scripts.offerer.file_import.create_activated_user_offerer')
     def test_ignores_empty_lines(self, create_activated_user_offerer):
         # given
         create_activated_user_offerer.return_value = UserOfferer()
@@ -171,7 +171,7 @@ class FillUserFromTest:
         assert user.departementCode == '29'
         assert user.canBookFreeOffers == False
 
-    @patch('scripts.offerer.file_import.random_password')
+    @patch('pcapi.scripts.offerer.file_import.random_password')
     def test_returns_an_user_with_computed_password(self, random_password):
         # given
         random_password.return_value = 'random_string'

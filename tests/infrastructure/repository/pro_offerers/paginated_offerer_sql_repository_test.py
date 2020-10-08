@@ -1,8 +1,8 @@
-from domain.pro_offerers.paginated_offerers import PaginatedOfferers
-from infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import PaginatedOfferersSQLRepository
-from repository import repository
+from pcapi.domain.pro_offerers.paginated_offerers import PaginatedOfferers
+from pcapi.infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import PaginatedOfferersSQLRepository
+from pcapi.repository import repository
 import pytest
-from model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue
 
 
 class PaginatedOffererSQLRepositoryTest:
