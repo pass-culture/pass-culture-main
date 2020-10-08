@@ -14,6 +14,7 @@ from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_r
 from pcapi.routes.serialization.offers_serialize import serialize_offer
 from pcapi.use_cases.list_offers_for_pro_user import OffersRequestParameters
 from pcapi.use_cases.update_an_offer import update_an_offer
+from pcapi.use_cases.activate_an_offer import activate_an_offer
 from pcapi.utils.config import PRO_URL
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFER_INCLUDES
@@ -85,6 +86,18 @@ def post_offer() -> (str, int):
 
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 201
 
+@app.route('/offers/activate', methods=['PATCH'])
+@login_or_api_key_required
+@expect_json_data
+def activate_offers() -> (str, int):
+    payload = request.json
+    offers_id_to_activate = payload.get('offersId')
+    offers_to_activate = [offer_queries.get_offer_by_id(dehumanize(offer_id)) for offer_id in offers_id_to_activate]
+    for offer in offers_to_activate:
+        if offer:
+            activate_an_offer(offer)
+
+    return '', 204
 
 @app.route('/offers/<offer_id>', methods=['PATCH'])
 @login_or_api_key_required
