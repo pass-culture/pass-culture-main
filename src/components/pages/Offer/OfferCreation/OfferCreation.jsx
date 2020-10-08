@@ -311,6 +311,7 @@ class OfferCreation extends PureComponent {
     let queryString = new URLSearchParams(
       translateApiParamsToQueryParams(offersSearchFilters)
     ).toString()
+
     queryString = queryString.length ? `?${queryString}` : ''
     return `/offres${queryString}`
   }
@@ -532,8 +533,9 @@ class OfferCreation extends PureComponent {
               </div>
             )}
           </div>
-          {offerFromLocalProvider && (
+          {offerFromLocalProvider && offer && (
             <LocalProviderInformation
+              offerId={offer.id}
               offererId={offererId}
               providerName={offer.lastProvider.name.toLowerCase()}
             />

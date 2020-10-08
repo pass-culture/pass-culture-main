@@ -31,11 +31,7 @@ describe('src | LocalProviderInformationContainer', () => {
     it('should return an object of props', () => {
       // given
       props = {
-        match: {
-          params: {
-            offerId: 'UU',
-          },
-        },
+        offerId: 'UU',
         offererId: 'ABCD',
         providerName: 'fakeLocalProvider',
       }
