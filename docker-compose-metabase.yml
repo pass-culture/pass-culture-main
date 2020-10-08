@@ -8,8 +8,8 @@ services:
       bash -c "set -x;
                cd /opt/services/flaskapp/src;
                pip install -r ./requirements.txt;
-               PYTHONPATH=. python scripts/pc.py install_data_for_metabase;
-               PYTHONPATH=. python scripts/pc.py sandbox -n industrial"
+               python src/pcapi/scripts/pc.py install_data_for_metabase;
+               python src/pcapi/scripts/pc.py sandbox -n industrial"
     volumes:
       - ./api:/opt/services/flaskapp/src
     environment:
