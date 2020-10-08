@@ -43,7 +43,6 @@ services:
       - SUPPORT_EMAIL_ADDRESS=${ADMINISTRATION_EMAIL_ADDRESS:-""}
       - ADMINISTRATION_EMAIL_ADDRESS=${ADMINISTRATION_EMAIL_ADDRESS:-""}
       - DEV_EMAIL_ADDRESS=${DEV_EMAIL_ADDRESS:-""}
-      - PYTHONPATH=.
     networks:
       - db_nw
       - web_nw

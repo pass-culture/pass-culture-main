@@ -9,7 +9,7 @@ services:
                cd /opt/services/flaskapp/src;
                pip install -r ./requirements.txt;
                python -m nltk.downloader punkt stopwords;
-               while true; do PYTHONPATH=. python workers/worker.py; done;"
+               while true; do python src/pcapi/workers/worker.py; done;"
     volumes:
       - ./api:/opt/services/flaskapp/src
     env_file:

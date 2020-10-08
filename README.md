@@ -450,8 +450,8 @@ Pour la remplir, il faut jouer les sandboxes `industrial` et `activation`.
 
 Execution des sandboxes sur le conteneur :
 ``` bash
-scalingo -a pass-culture-api-perf --region osc-fr1 run 'PYTHONPATH=. python scripts/pc.py sandbox -n industrial'
-scalingo -a pass-culture-api-perf --region osc-fr1 run 'PYTHONPATH=. python scripts/pc.py sandbox -n activation'
+scalingo -a pass-culture-api-perf --region osc-fr1 run 'python src/pcapi/scripts/pc.py sandbox -n industrial'
+scalingo -a pass-culture-api-perf --region osc-fr1 run 'python src/pcapi/scripts/pc.py sandbox -n activation'
 ```
 
 Ensuite, lancer le script d'import des utilisateurs avec une liste d'utilisateurs en csv prédéfinie placée dans le dossier `artillery` sous le nom `user_list`.

@@ -194,7 +194,7 @@ function exit_success_restoring_branch {
 # Need to specify what alembic command you want to execute
 # Example: ./pc alembic upgrade head
 if [[ "$CMD" == "alembic" ]]; then
-  RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src && PYTHONPATH=. alembic '"$*"'"'
+  RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src && alembic '"$*"'"'
 
 # Connect to API container
 elif [[ "$CMD" == "bash" ]]; then
@@ -240,7 +240,7 @@ elif [[ "$CMD" == "restart-backend" ]]; then
 # Clear all data in postgresql database
 elif [[ "$CMD" == "reset-all-db" ]]; then
   RUN='docker exec -it pc-flask bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
-    docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py clean"'
+    docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && python src/pcapi/scripts/pc.py clean"'
 
 # Remove all booking & reco from database
 elif [[ "$CMD" == "reset-reco-db" ]]; then
@@ -585,7 +585,7 @@ elif [[ "$CMD" == "symlink" ]]; then
 elif [[ "$CMD" == "api-licenses" ]]; then
   COLUMNS=${COLUMNS:-''};
   if [[ "$ENV" == "development" ]]; then
-    RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. pip-licenses --format-html >> licenses.html"'
+    RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && pip-licenses --format-html >> licenses.html"'
   else
     echo_error "These command is only available in DEV"
     exit
@@ -637,12 +637,12 @@ elif [[ "$CMD" == "pgcli" ]]; then
 elif [[ "$CMD" == "python" ]]; then
     COLUMNS=${COLUMNS:-''};
 	if [[ "$ENV" == "development" ]]; then
-		RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
+		RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && python -i src/pcapi/scripts/interact.py '"$CMD $*"'"'
 	else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-      scalingo -a "$SCALINGO_APP" run "python -i scripts/interact.py"
+      scalingo -a "$SCALINGO_APP" run "python -i src/pcapi/scripts/interact.py"
 		else
-      scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" "python -i scripts/interact.py"
+      scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" "python -i src/pcapi/scripts/interact.py"
 		fi
 		exit
 	fi
@@ -671,12 +671,12 @@ elif [[ "$CMD" == "db_restore_infos" ]]; then
 # Run python scripts from api/scripts
 else
   if [[ "$ENV" == "development" ]]; then
-    RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
+    RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && python src/pcapi/scripts/pc.py '"$CMD $*"'"'
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-      scalingo -a "$SCALINGO_APP" run 'python scripts/pc.py '"$CMD $*"''
+      scalingo -a "$SCALINGO_APP" run 'python src/pcapi/scripts/pc.py '"$CMD $*"''
     else
-      scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" 'python scripts/pc.py '"$CMD $*"''
+      scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" 'python src/pcapi/scripts/pc.py '"$CMD $*"''
     fi
     exit
   fi
