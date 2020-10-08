@@ -99,7 +99,7 @@ secret.py
 private.tar.gz
 
 # Store
-static/object_store_data
+src/pcapi/static/object_store_data
 
 # Test
 .hypothesis/
