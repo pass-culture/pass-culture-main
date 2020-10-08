@@ -1,6 +1,6 @@
 # API Fournisseurs
 
-Ces API peuvent être implémentées par les partenaires techniques de Pass Culture qui souhaitent fournir des informations relatives à des évolutions de stocks ou places pour des objets ou événements de manière automatisée. Les différentes sections de l'API sont indépendantes et ne sont donc pas nécessairement toutes à implémenter.
+Ces API peuvent être implémentées par les partenaires techniques du pass Culture qui souhaitent fournir des informations relatives à des évolutions de stocks ou places pour des objets ou événements de manière automatisée. Les différentes sections de l'API sont indépendantes et ne sont donc pas nécessairement toutes à implémenter.
 
 Ces API ont vocation à être appelées immédiatement lorsqu'un acteur culturel choisit un fournisseur dans le portail, puis une fois par nuit et par acteur par la suite.
 
@@ -24,11 +24,18 @@ Règles de mise à jour des données dans le pass Culture
 
 Par exemple, pour lister les stocks disponible pour un établissement : GET /stocks/12345678901234?after=1978212345681&limit=2
 
+Note: Lors de l'établissement de la liaison entre un établissement et un fournisseur, nous effectuons un premier appel avec pour seul paramètre:
+- “SIRET” (string) : identifiant SIRET du lieu dans lequel sont localisées les propositions 
+
+Si l'API renvoie un code 200, cela nous permet de nous assurer que le lieu est bien reconnu par le fournisseur. 
+
 ### Paramètres de réponse
 
 L'ordre des paramètres est au choix du fournisseur mais ne doit pas varier entre deux requêtes.
 
-Les paramètres "Total" et "offset" sont des informations retournées en sortie par l'API. Ils sont présents à titre informatifs et pas utilisés lors du traitement des données :
+Note: les paramètres sont attendus en minuscules.
+
+Les paramètres "total" et "offset" sont des informations retournées en sortie par l'API. Ils sont présents à titre informatifs et pas utilisés lors du traitement des données :
 - "total" (optional, integer) : nombre total d'entrées (nombre de couples (référence; prix)) dans la requête 
 - "offset" (optional, integer) : nombre d'entrées précédent celles qui sont présentées
 
