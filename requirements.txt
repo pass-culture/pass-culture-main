@@ -1,3 +1,4 @@
+-e .
 alembic==1.4.3
 algoliasearch==2.4.0
 APScheduler==3.6.3

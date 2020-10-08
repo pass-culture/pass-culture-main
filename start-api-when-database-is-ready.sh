@@ -8,7 +8,6 @@ apt-get install -y libpq-dev
 
 >&2 echo -e "\n\033[0;32mInstalling application requirements\n"
 
-pip install -e .
 pip install -r ./requirements.txt;
 python -m nltk.downloader punkt stopwords;
 
