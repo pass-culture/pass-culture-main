@@ -28,6 +28,10 @@ jobs:
           paths:
             - "venv"
       - run:
+          name: Install pcapi Python package
+          command: |
+              venv/bin/pip install -e .
+      - run:
           name: Check for alembic multiple heads
           command: |
             python3 -m venv venv
@@ -100,6 +104,7 @@ jobs:
             cd pass-culture-api;
             python3 -m venv venv
             . venv/bin/activate
+            pip install -e .
             pip install -r requirements.txt;
             python -m nltk.downloader punkt stopwords;
             python install_database_extensions.py;
