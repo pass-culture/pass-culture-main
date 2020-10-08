@@ -1,36 +1,22 @@
-import { shallow } from 'enzyme'
+import { render, within } from '@testing-library/react'
 import React from 'react'
+import { MemoryRouter } from 'react-router'
 
-import Main from 'components/layout/Main'
-
-import Card from '../Card/Card'
 import Home from '../Home'
 
 describe('src | components | Home', () => {
-  it('should render two Cards', () => {
+  it('should render two Cards', async () => {
     // when
-    const wrapper = shallow(<Home />)
+    render(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>
+    )
 
     // then
-    const mainComponent = wrapper.find(Main)
-    const cards = wrapper.find(Card)
-
-    expect(mainComponent).toHaveLength(1)
-    expect(mainComponent.prop('name')).toStrictEqual('home')
-    expect(mainComponent.prop('whiteHeader')).toStrictEqual(true)
-
-    expect(cards).toHaveLength(2)
-    expect(cards.at(0).props()).toStrictEqual({
-      navLink: '/guichet',
-      svg: 'ico-guichet-w',
-      text: 'Enregistrez les codes de réservation des porteurs du Pass.',
-      title: 'Guichet',
-    })
-    expect(cards.at(1).props()).toStrictEqual({
-      navLink: '/offres',
-      svg: 'ico-offres-w',
-      text: 'Créez et mettez en avant vos offres présentes sur le Pass.',
-      title: 'Offres',
-    })
+    const deskLink = within(document.querySelector('a[href="/guichet"]')).queryAllByText(/guichet/i)
+    const offersLink = within(document.querySelector('a[href="/offres"]')).queryAllByText(/offres/i)
+    expect(deskLink).not.toBeNull()
+    expect(offersLink).not.toBeNull()
   })
 })

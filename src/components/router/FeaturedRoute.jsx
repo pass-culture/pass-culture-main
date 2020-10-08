@@ -16,7 +16,7 @@ class FeaturedRoute extends PureComponent {
   }
 
   render() {
-    const { areFeaturesLoaded, isRouteDisabled, ...routeProps } = this.props
+    const { areFeaturesLoaded, isRouteDisabled, children, ...routeProps } = this.props
     const { path } = routeProps
 
     if (!areFeaturesLoaded) {
@@ -31,8 +31,11 @@ class FeaturedRoute extends PureComponent {
         />
       )
     }
-
-    return <Route {...routeProps} />
+    return (
+      <Route {...routeProps}>
+        {children || null}
+      </Route>
+    )
   }
 }
 

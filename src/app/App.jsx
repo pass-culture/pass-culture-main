@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { matchPath } from 'react-router'
 
 import Spinner from 'components/layout/Spinner'
-import routes from 'utils/routes_map'
+import routes, { routesWithMain } from 'utils/routes_map'
 
 import RedirectToMaintenance from './RedirectToMaintenance'
 
@@ -21,7 +21,9 @@ export const App = props => {
 
   const [isBusy, setIsBusy] = useState(false)
   useEffect(() => {
-    const publicRouteList = routes.filter(route => route.meta && route.meta.public)
+    const publicRouteList = [...routes, ...routesWithMain].filter(
+      route => route.meta && route.meta.public
+    )
     const isPublicRoute = !!publicRouteList.find(route =>
       matchPath(window.location.pathname, route)
     )
