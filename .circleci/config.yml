@@ -4,15 +4,24 @@ jobs:
     working_directory: ~/pass-culture-api-ci
     docker:
       - image: circleci/python:3.7.6
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
         environment:
           DATABASE_URL_TEST: postgresql://pytest:pytest@localhost:5432/pass_culture
           REDIS_URL: redis://localhost:6379
       - image: circleci/postgres:12.3-postgis
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
         environment:
           POSTGRES_USER: pytest
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
       - image: redis
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - restore_cache:
@@ -87,9 +96,15 @@ jobs:
   tests-data-analytics:
     docker:
       - image: circleci/python:3.6.11
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
         environment:
           DATABASE_URL: postgresql://pass_culture:passq@postgres-product:5432/pass_culture
       - image: circleci/postgres:12.3-postgis
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
         name: postgres-product
         environment:
           POSTGRES_USER: pass_culture
