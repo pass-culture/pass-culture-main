@@ -6,11 +6,7 @@ describe('src | MediationsMananagerContainer', () => {
     it('should return an object of props', () => {
       // given
       const props = {
-        match: {
-          params: {
-            offerId: 'UU',
-          },
-        },
+        offerId: 'UU',
       }
 
       // when

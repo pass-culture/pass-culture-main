@@ -460,7 +460,7 @@ class OfferEdition extends PureComponent {
               providerName={offer.lastProvider.name.toLowerCase()}
             />
           )}
-          {offer && <MediationsManager />}
+          {offer && <MediationsManager offerId={offer.id} />}
 
           {showAllForm && (
             <div>

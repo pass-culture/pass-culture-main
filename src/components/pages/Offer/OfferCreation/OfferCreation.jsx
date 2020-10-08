@@ -538,7 +538,7 @@ class OfferCreation extends PureComponent {
               providerName={offer.lastProvider.name.toLowerCase()}
             />
           )}
-          {!isCreatedEntity && offer && <MediationsManager />}
+          {!isCreatedEntity && offer && <MediationsManager offerId={offer.id} />}
 
           {showAllForm && (
             <div>

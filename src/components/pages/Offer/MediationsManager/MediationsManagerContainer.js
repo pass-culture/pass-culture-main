@@ -1,17 +1,11 @@
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { compose } from 'redux'
 
 import MediationsManager from './MediationsManager'
 import { selectMediationsByOfferId } from 'store/selectors/data/mediationsSelectors'
 import { selectOfferById } from 'store/selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
-  const {
-    match: {
-      params: { offerId },
-    },
-  } = ownProps
+  const { offerId } = ownProps
   const mediations = selectMediationsByOfferId(state, offerId)
 
   return {
@@ -23,4 +17,4 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export default compose(withRouter, connect(mapStateToProps))(MediationsManager)
+export default connect(mapStateToProps)(MediationsManager)
