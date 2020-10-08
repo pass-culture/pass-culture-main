@@ -212,8 +212,6 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json['global'] == ["Le prix doit être un nombre décimal"]
-            print("TTTTTOOOOOTTTTOOOO")
-            print(AllocineVenueProvider.query.count())
             assert VenueProvider.query.count() == 0
 
         @pytest.mark.usefixtures("db_session")
@@ -243,7 +241,6 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json['price'] == ["Cette information est obligatoire"]
-            print(VenueProvider.query.first())
             assert VenueProvider.query.count() == 0
 
     class Returns401:
