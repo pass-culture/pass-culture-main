@@ -11,6 +11,7 @@ from flask_login import LoginManager
 from mailjet_rest import Client
 from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.middleware.profiler import ProfilerMiddleware
+from spectree import SpecTree
 
 from pcapi.models.db import db
 from pcapi.repository.feature_queries import feature_request_profiling_enabled
@@ -29,6 +30,9 @@ if IS_DEV is False:
     )
 
 app = Flask(__name__, static_url_path='/static')
+
+api = SpecTree("flask", MODE="strict")
+api.register(app)
 
 login_manager = LoginManager()
 admin = Admin(name='pc Back Office', url='/pc/back-office',
