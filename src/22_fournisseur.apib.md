@@ -24,7 +24,7 @@ Règles de mise à jour des données dans le pass Culture
 
 Par exemple, pour lister les stocks disponible pour un établissement : GET /stocks/12345678901234?after=1978212345681&limit=2
 
-Note: Lors de l'établissement de la liaison entre un établissement et un fournisseur, nous effectuons un premier appel avec pour seul paramètre:
+Note: Lors de l'établissement de la liaison entre un établissement et un fournisseur, nous effectuons un premier appel avec pour seul paramètre :
 - “SIRET” (string) : identifiant SIRET du lieu dans lequel sont localisées les propositions 
 
 Si l'API renvoie un code 200, cela nous permet de nous assurer que le lieu est bien reconnu par le fournisseur. 
@@ -33,7 +33,7 @@ Si l'API renvoie un code 200, cela nous permet de nous assurer que le lieu est b
 
 L'ordre des paramètres est au choix du fournisseur mais ne doit pas varier entre deux requêtes.
 
-Note: les paramètres sont attendus en minuscules.
+Note : les paramètres sont attendus en minuscules.
 
 Les paramètres "total" et "offset" sont des informations retournées en sortie par l'API. Ils sont présents à titre informatifs et pas utilisés lors du traitement des données :
 - "total" (optional, integer) : nombre total d'entrées (nombre de couples (référence; prix)) dans la requête 
@@ -88,5 +88,4 @@ Dans le cas des livres, si aucun prix n’est rentré, le prix unique est automa
             {
                 "errors": { "siret": [ "Siret inexistant" ] }
             }
-
 
