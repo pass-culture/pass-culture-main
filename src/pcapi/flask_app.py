@@ -20,6 +20,7 @@ from pcapi.utils.config import REDIS_URL
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
+from pcapi.serialization.utils import before_handler
 
 if IS_DEV is False:
     sentry_sdk.init(
@@ -31,7 +32,7 @@ if IS_DEV is False:
 
 app = Flask(__name__, static_url_path='/static')
 
-api = SpecTree("flask", MODE="strict")
+api = SpecTree("flask", MODE="strict", before=before_handler)
 api.register(app)
 
 login_manager = LoginManager()
