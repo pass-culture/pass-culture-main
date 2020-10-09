@@ -11,7 +11,7 @@ def check_origin_header_validity(header, endpoint, path):
         return True
 
     if not header:
-        return False
+        return True
 
     white_list = _get_origin_header_whitelist()
     combined_white_list = "(" + ")|(".join(white_list) + ")"
