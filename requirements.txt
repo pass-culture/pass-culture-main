@@ -25,6 +25,7 @@ nltk==3.5
 pgcli==2.2.0
 Pillow==7.2.0
 PostgreSQL-Audit==0.10.0
+pydantic[email]==1.6.1
 pygsheets==2.0.3.1
 pylint==2.6.0
 PyMemoize==1.0.3
@@ -41,4 +42,5 @@ rq==1.5.2
 schwifty==2020.9.0
 sentry-sdk==0.18.0
 simplejson==3.17.2
+spectree==0.3.8
 wheel==0.35.1
