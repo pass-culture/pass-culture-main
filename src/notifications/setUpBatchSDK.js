@@ -23,7 +23,7 @@ export default function setupBatchSDK() {
           positiveSubBtnLabel: 'Activer les notifications',
           negativeBtnLabel: 'Plus tard',
           positiveBtnStyle: { backgroundColor: '#eb0055', hoverBackgroundColor: '#c10046' },
-          icon: 'favicon.ico', // To be updated according to https://doc.batch.com/web/sdk-integration/initial-setup#icons
+          icon: 'favicon.ico',
           text:
             'Découvre les nouvelles offres en exclusivité sur ton pass en activant les notifications !',
         },
@@ -41,7 +41,7 @@ export default function setupBatchSDK() {
       defaultIcon: 'favicon.ico', // for Chrome desktop
       smallIcon: 'favicon.ico', // for Chrome Android
       sameOrigin: !IS_DEV,
-      useExistingWorker: true,
+      useExistingServiceWorker: true,
     })
 
     /* eslint-disable-next-line */

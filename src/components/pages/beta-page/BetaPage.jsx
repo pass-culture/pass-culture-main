@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 import React, { useEffect } from 'react'
-import setUpBatchSDK from '../../../notifications/setUpBatchSDK'
+import setupBatchSDK from '../../../notifications/setUpBatchSDK'
 
 import FormFooter from '../../forms/FormFooter'
 import Icon from '../../layout/Icon/Icon'
 
 const BetaPage = ({ trackSignup }) => {
   useEffect(() => {
-    setUpBatchSDK()
+    setupBatchSDK()
   }, [])
 
   return (
