@@ -4,6 +4,7 @@ from typing import Union, Dict
 from flask import current_app as app
 from flask import jsonify, request
 from flask_login import current_user, login_required
+from spectree import Response
 
 from pcapi.connectors import redis
 from pcapi.domain.user_activation import create_initial_deposit, is_activation_booking
@@ -17,7 +18,7 @@ from pcapi.repository.api_key_queries import find_api_key_by_value
 from pcapi.routes.serialization import as_dict, serialize, serialize_booking
 from pcapi.routes.serialization.beneficiary_bookings_serialize import serialize_beneficiary_bookings
 from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
-from pcapi.routes.serialization.bookings_serialize import serialize_domain_booking
+from pcapi.routes.serialization.bookings_serialize import serialize_domain_booking, PostBookingBodyModel, PostBookingResponseModel
 from pcapi.use_cases.book_an_offer import BookingInformation
 from pcapi.use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
 from pcapi.utils.human_ids import dehumanize, humanize
@@ -39,7 +40,7 @@ from pcapi.validation.routes.users_authorizations import \
     check_api_key_allows_to_validate_booking, check_user_can_validate_activation_offer, \
     check_user_can_validate_bookings, \
     check_user_can_validate_bookings_v2
-
+from pcapi.serialization.decorator import spectree_serialize
 
 @app.route('/bookings/pro', methods=['GET'])
 @login_required
@@ -71,17 +72,15 @@ def get_booking(booking_id: int):
 @app.route('/bookings', methods=['POST'])
 @login_required
 @expect_json_data
-def create_booking():
-    stock_id = request.json.get('stockId')
-    recommendation_id = request.json.get('recommendationId')
-    quantity = request.json.get('quantity')
-    check_has_stock_id(stock_id)
+@spectree_serialize(response_model=PostBookingResponseModel, on_success_status=201)
+def create_booking(body: PostBookingBodyModel) -> PostBookingResponseModel:
+    check_has_stock_id(body.stock_id)
 
     booking_information = BookingInformation(
-        dehumanize(stock_id),
+        dehumanize(body.stock_id),
         current_user.id,
-        quantity,
-        dehumanize(recommendation_id)
+        body.quantity,
+        dehumanize(body.recommendation_id)
     )
 
     created_booking = book_an_offer.execute(booking_information)
@@ -89,7 +88,7 @@ def create_booking():
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=created_booking.stock.offer.id)
 
-    return jsonify(serialize_domain_booking(created_booking)), 201
+    return PostBookingResponseModel(**serialize_domain_booking(created_booking))
 
 
 @app.route('/bookings/<booking_id>/cancel', methods=['PUT'])
