@@ -1,5 +1,7 @@
-from typing import Dict
+from typing import Dict, Optional, Union
+from pydantic import BaseModel, Field
 
+from pcapi.serialization.utils import to_camel
 from pcapi.domain.booking.booking import Booking
 from pcapi.models import BookingSQLEntity, EventType, ThingType
 from pcapi.routes.serialization import serialize
@@ -74,3 +76,37 @@ def serialize_domain_booking(booking: Booking) -> Dict:
             "wallet_balance": booking.beneficiary.wallet_balance,
         },
     }
+
+
+class PostBookingStockModel(BaseModel):
+    price: float
+
+
+class PostBookingUserModel(BaseModel):
+    id: str
+    wallet_balance: float
+
+
+class PostBookingBodyModel(BaseModel):
+    stock_id: str
+    recommendation_id: Optional[str]
+    quantity: int
+
+    class Config:
+        alias_generator = to_camel
+
+
+class PostBookingResponseModel(BaseModel):
+    amount: float
+    completedUrl: Optional[str]
+    id: str
+    isCancelled: bool
+    quantity: int
+    stock: PostBookingStockModel
+    stockId: str
+    token: str
+    user: PostBookingUserModel
+
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
