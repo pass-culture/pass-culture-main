@@ -29,16 +29,22 @@ const OFFER_STATUS_PROPERTIES = {
 }
 
 const OfferItem = ({
+  activateOffer,
+  deactivateOffer,
   offer,
+  refreshOffers,
   stocks,
   trackActivateOffer,
   trackDeactivateOffer,
-  updateOffer,
   venue,
 }) => {
   function handleOnDeactivateClick() {
     const { id, isActive } = offer || {}
-    updateOffer(id, !isActive)
+    isActive
+      ? deactivateOffer(id)
+      : activateOffer(id).then(() => {
+        refreshOffers(false)
+      })
     isActive ? trackDeactivateOffer(id) : trackActivateOffer(id)
   }
 
@@ -146,11 +152,12 @@ const OfferItem = ({
 }
 
 OfferItem.propTypes = {
+  activateOffer: PropTypes.func.isRequired,
+  deactivateOffer: PropTypes.func.isRequired,
   offer: PropTypes.shape().isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   trackActivateOffer: PropTypes.func.isRequired,
   trackDeactivateOffer: PropTypes.func.isRequired,
-  updateOffer: PropTypes.func.isRequired,
   venue: PropTypes.shape().isRequired,
 }
 

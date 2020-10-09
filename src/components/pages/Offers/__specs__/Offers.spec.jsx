@@ -82,7 +82,7 @@ describe('src | components | pages | Offers | Offers', () => {
       currentUser,
       handleOnActivateAllVenueOffersClick: jest.fn(),
       handleOnDeactivateAllVenueOffersClick: jest.fn(),
-      loadOffers: jest.fn().mockImplementation((_, handleSuccess) => handleSuccess(1, 1)),
+      loadOffers: jest.fn().mockResolvedValue({ page: 1, pageCount: 2, offersCount: 5 }),
       loadTypes: jest.fn(),
       saveSearchFilters: jest.fn(),
       offers: [
@@ -111,23 +111,21 @@ describe('src | components | pages | Offers | Offers', () => {
       mountOffers(props, store)
 
       // then
-      expect(props.loadOffers).toHaveBeenCalledWith(
-        {
-          nameSearchValue: ALL_OFFERS,
-          page: DEFAULT_PAGE,
-          selectedVenueId: ALL_VENUES,
-        },
-        expect.any(Function),
-        expect.any(Function)
-      )
+      expect(props.loadOffers).toHaveBeenCalledWith({
+        nameSearchValue: ALL_OFFERS,
+        page: DEFAULT_PAGE,
+        selectedVenueId: ALL_VENUES,
+      })
     })
 
-    it('should display column titles when offers are returned', () => {
+    it('should display column titles when offers are returned', async () => {
       // Given
       props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
 
       // When
-      const wrapper = mountOffers(props, store)
+      const wrapper = await mountOffers(props, store)
+
+      wrapper.update()
 
       // Then
       const venueColumn = wrapper.find('th').find({ children: 'Lieu' })
@@ -136,12 +134,14 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(stockColumn).toHaveLength(1)
     })
 
-    it('should not display column titles when no offers are returned', () => {
+    it('should not display column titles when no offers are returned', async () => {
       // Given
       props.offers = []
 
       // When
-      const wrapper = mountOffers(props, store)
+      const wrapper = await mountOffers(props, store)
+
+      wrapper.update()
 
       // Then
       const venueColumn = wrapper.find('th').find({ children: 'Lieu' })
@@ -150,7 +150,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(stockColumn).toHaveLength(0)
     })
 
-    it('should render as much offers as given in props', () => {
+    it('should render as much offers as given in props', async () => {
       // given
       props.offers = [
         {
@@ -180,7 +180,9 @@ describe('src | components | pages | Offers | Offers', () => {
       ]
 
       // when
-      const wrapper = mountOffers(props, store)
+      const wrapper = await mountOffers(props, store)
+
+      wrapper.update()
 
       // then
       const firstOfferItem = wrapper.find({ children: 'My little offer' }).first()
@@ -190,46 +192,46 @@ describe('src | components | pages | Offers | Offers', () => {
     })
 
     describe('total number of offers', () => {
-      it('should display total number of offers in plural if multiple offers', () => {
+      it('should display total number of offers in plural if multiple offers', async () => {
         // Given
         const page = 1
         const pageCount = 2
         const offersCount = 17
-        props.loadOffers.mockImplementation((_, handleSuccess) =>
-          handleSuccess(page, pageCount, offersCount)
-        )
+        props.loadOffers.mockResolvedValueOnce({ page, pageCount, offersCount })
 
         // When
-        const wrapper = mount(
+        const wrapper = await mount(
           <Provider store={store}>
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
           </Provider>
         )
+
+        wrapper.update()
 
         // Then
         const offersCounter = wrapper.find({ children: '17 offres' })
         expect(offersCounter).toHaveLength(1)
       })
 
-      it('should display total number of offers in singular if one or no offer', () => {
+      it('should display total number of offers in singular if one or no offer', async () => {
         // Given
         const page = 1
         const pageCount = 1
         const offersCount = 1
-        props.loadOffers.mockImplementation((_, handleSuccess) =>
-          handleSuccess(page, pageCount, offersCount)
-        )
+        props.loadOffers.mockResolvedValueOnce({ page, pageCount, offersCount })
 
         // When
-        const wrapper = mount(
+        const wrapper = await mount(
           <Provider store={store}>
             <MemoryRouter>
               <Offers {...props} />
             </MemoryRouter>
           </Provider>
         )
+
+        wrapper.update()
 
         // Then
         const offersCounter = wrapper.find({ children: '1 offre' })
@@ -278,15 +280,11 @@ describe('src | components | pages | Offers | Offers', () => {
       launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
 
       // then
-      expect(props.loadOffers).toHaveBeenCalledWith(
-        {
-          nameSearchValue: ALL_OFFERS,
-          page: DEFAULT_PAGE,
-          selectedVenueId: ALL_VENUES,
-        },
-        expect.any(Function),
-        expect.any(Function)
-      )
+      expect(props.loadOffers).toHaveBeenCalledWith({
+        nameSearchValue: ALL_OFFERS,
+        page: DEFAULT_PAGE,
+        selectedVenueId: ALL_VENUES,
+      })
     })
 
     it('should load offers with written offer name filter', () => {
@@ -300,15 +298,11 @@ describe('src | components | pages | Offers | Offers', () => {
       launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
 
       // then
-      expect(props.loadOffers).toHaveBeenCalledWith(
-        {
-          nameSearchValue: 'Any word',
-          page: DEFAULT_PAGE,
-          selectedVenueId: ALL_VENUES,
-        },
-        expect.any(Function),
-        expect.any(Function)
-      )
+      expect(props.loadOffers).toHaveBeenCalledWith({
+        nameSearchValue: 'Any word',
+        page: DEFAULT_PAGE,
+        selectedVenueId: ALL_VENUES,
+      })
     })
 
     it('should load offers with selected venue filter', () => {
@@ -322,15 +316,11 @@ describe('src | components | pages | Offers | Offers', () => {
       launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
 
       // then
-      expect(props.loadOffers).toHaveBeenCalledWith(
-        {
-          nameSearchValue: ALL_OFFERS,
-          page: DEFAULT_PAGE,
-          selectedVenueId: proVenues[0].id,
-        },
-        expect.any(Function),
-        expect.any(Function)
-      )
+      expect(props.loadOffers).toHaveBeenCalledWith({
+        nameSearchValue: ALL_OFFERS,
+        page: DEFAULT_PAGE,
+        selectedVenueId: proVenues[0].id,
+      })
     })
   })
 
@@ -481,10 +471,11 @@ describe('src | components | pages | Offers | Offers', () => {
   })
 
   describe('url query params', () => {
-    it('should have page value when page value is not first page', () => {
+    it('should have page value when page value is not first page', async () => {
       // given
-      const wrapper = mountOffers(props, store)
-      props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess(2, 2))
+      props.loadOffers.mockResolvedValueOnce({ page: 2, pageCount: 2, offersCount: 5 })
+      const wrapper = await mountOffers(props, store)
+      wrapper.update()
       const rightArrow = wrapper.find('img[alt="Aller à la page suivante"]').closest('button')
 
       // When
@@ -499,14 +490,13 @@ describe('src | components | pages | Offers | Offers', () => {
       })
     })
 
-    it('should have page value be removed when page value is first page', () => {
+    it('should have page value be removed when page value is first page', async () => {
       // given
-      const wrapper = mountOffers(props, store)
+      const wrapper = await mountOffers(props, store)
       const rightArrow = wrapper.find('img[alt="Aller à la page suivante"]').closest('button')
       const leftArrow = wrapper.find('img[alt="Aller à la page précédente"]').closest('button')
-      props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess(2, 2))
+      wrapper.update()
       rightArrow.invoke('onClick')()
-      props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess(1, 2))
 
       // When
       leftArrow.invoke('onClick')()
@@ -519,7 +509,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
     })
 
-    it('should have offer name value when name search value is not an empty string', () => {
+    it('should have offer name value when name search value is not an empty string', async () => {
       // given
       const wrapper = mountOffers(props, store)
       const searchInput = wrapper.find('input[placeholder="Rechercher par nom d’offre"]')
@@ -527,7 +517,9 @@ describe('src | components | pages | Offers | Offers', () => {
       searchInput.invoke('onChange')({ target: { value: 'AnyWord' } })
 
       // when
-      launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
+      await launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
+
+      wrapper.update()
 
       // then
       expect(props.query.change).toHaveBeenCalledWith({
@@ -554,7 +546,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
     })
 
-    it('should have offer name value be removed when name search value is an empty string', () => {
+    it('should have offer name value be removed when name search value is an empty string', async () => {
       // given
       const wrapper = mountOffers(props, store)
       const searchInput = wrapper.find('input[placeholder="Rechercher par nom d’offre"]')
@@ -562,7 +554,7 @@ describe('src | components | pages | Offers | Offers', () => {
       searchInput.invoke('onChange')({ target: { value: ALL_OFFERS } })
 
       // when
-      launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
+      await launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
 
       // then
       expect(props.query.change).toHaveBeenCalledWith({
@@ -572,7 +564,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
     })
 
-    it('should have venue value when user filter by venue', () => {
+    it('should have venue value when user filter by venue', async () => {
       // given
       const wrapper = mountOffers(props, store)
       const venueSelect = wrapper.find('select[name="lieu"]')
@@ -580,7 +572,7 @@ describe('src | components | pages | Offers | Offers', () => {
       venueSelect.invoke('onChange')({ target: { value: proVenues[0].id } })
 
       // when
-      launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
+      await launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
 
       // then
       expect(props.query.change).toHaveBeenCalledWith({
@@ -590,7 +582,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
     })
 
-    it('should have venue value be removed when user ask for all venues', () => {
+    it('should have venue value be removed when user ask for all venues', async () => {
       // given
       const wrapper = mountOffers(props, store)
       const venueSelect = wrapper.find('select[name="lieu"]')
@@ -598,7 +590,7 @@ describe('src | components | pages | Offers | Offers', () => {
       venueSelect.invoke('onChange')({ target: { value: ALL_VENUES } })
 
       // when
-      launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
+      await launchSearchButton.invoke('onSubmit')({ preventDefault: jest.fn() })
 
       // then
       expect(props.query.change).toHaveBeenCalledWith({
@@ -645,63 +637,65 @@ describe('src | components | pages | Offers | Offers', () => {
   })
 
   describe('page navigation', () => {
-    it('should display next page when clicking on right arrow', () => {
+    it('should display next page when clicking on right arrow', async () => {
       // Given
-      const wrapper = mountOffers(props, store)
+      props.loadOffers.mockResolvedValueOnce({ page: 1, pageCount: 4, offersCount: 5 })
+      const wrapper = await mountOffers(props, store)
+      wrapper.update()
       const rightArrow = wrapper.find('img[alt="Aller à la page suivante"]').closest('button')
 
       // When
       rightArrow.invoke('onClick')()
 
       // Then
-      expect(props.loadOffers).toHaveBeenLastCalledWith(
-        {
-          nameSearchValue: ALL_OFFERS,
-          page: 2,
-          selectedVenueId: ALL_VENUES,
-        },
-        expect.any(Function),
-        expect.any(Function)
-      )
+      expect(props.loadOffers).toHaveBeenLastCalledWith({
+        nameSearchValue: ALL_OFFERS,
+        page: 2,
+        selectedVenueId: ALL_VENUES,
+      })
     })
 
-    it('should display previous page when clicking on left arrow', () => {
+    it('should display previous page when clicking on left arrow', async () => {
       // Given
-      props.loadOffers.mockImplementation((_, handleSuccess) => handleSuccess(2, 2))
+      props.loadOffers.mockResolvedValueOnce({ page: 2, pageCount: 2, offersCount: 5 })
 
-      const wrapper = mountOffers(props, store)
+      const wrapper = await mountOffers(props, store)
+      wrapper.update()
       const rightArrow = wrapper.find('img[alt="Aller à la page précédente"]').closest('button')
 
       // When
       rightArrow.invoke('onClick')()
 
       // Then
-      expect(props.loadOffers).toHaveBeenLastCalledWith(
-        {
-          nameSearchValue: ALL_OFFERS,
-          page: DEFAULT_PAGE,
-          selectedVenueId: ALL_VENUES,
-        },
-        expect.any(Function),
-        expect.any(Function)
-      )
+      expect(props.loadOffers).toHaveBeenLastCalledWith({
+        nameSearchValue: ALL_OFFERS,
+        page: DEFAULT_PAGE,
+        selectedVenueId: ALL_VENUES,
+      })
     })
 
-    it('should not be able to click on previous arrow when being on the first page', () => {
+    it('should not be able to click on previous arrow when being on the first page', async () => {
       // Given
       props.query.parse.mockReturnValue({ page: DEFAULT_PAGE })
 
       // When
-      const wrapper = mountOffers(props, store)
+      const wrapper = await mountOffers(props, store)
+
+      wrapper.update()
 
       // Then
       const rightArrow = wrapper.find('img[alt="Aller à la page précédente"]').closest('button')
       expect(rightArrow.prop('disabled')).toBe(true)
     })
 
-    it('should not be able to click on next arrow when being on the last page', () => {
+    it('should not be able to click on next arrow when being on the last page', async () => {
+      // Given
+      props.loadOffers.mockResolvedValueOnce({ page: 2, pageCount: 2, offersCount: 5 })
+
       // When
-      const wrapper = mountOffers(props, store)
+      const wrapper = await mountOffers(props, store)
+
+      wrapper.update()
 
       // Then
       const rightArrow = wrapper.find('img[alt="Aller à la page suivante"]').closest('button')

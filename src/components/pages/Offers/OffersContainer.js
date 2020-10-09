@@ -84,20 +84,17 @@ export const mapDispatchToProps = dispatch => {
       })
     },
 
-    loadOffers: (filters, handleSuccess, handleFail) => {
-      fetchFromApiWithCredentials(`/offers?${buildQueryParams(filters)}`)
-        .then(({ offers, page, page_count: pageCount, total_count: offersCount }) => {
+    loadOffers: filters =>
+      fetchFromApiWithCredentials(`/offers?${buildQueryParams(filters)}`).then(
+        ({ offers, page, page_count: pageCount, total_count: offersCount }) => {
           dispatch({
             type: 'GET_PAGINATED_OFFERS',
             payload: offers,
           })
 
-          handleSuccess(page, pageCount, offersCount)
-        })
-        .catch(() => {
-          handleFail()
-        })
-    },
+          return { page, pageCount, offersCount }
+        },
+      ),
 
     loadTypes: () => dispatch(requestData({ apiPath: '/types' })),
   }

@@ -33,7 +33,7 @@ class Offers extends PureComponent {
   }
 
   componentDidMount() {
-    this.getPaginatedOffersWithFilters()
+    this.getPaginatedOffersWithFilters(true)
     fetchAllVenuesByProUser().then(venues =>
       this.setState({ venueOptions: formatAndOrderVenues(venues) })
     )
@@ -57,34 +57,39 @@ class Offers extends PureComponent {
     })
   }
 
-  getPaginatedOffersWithFilters = () => {
+  loadAndUpdateOffers(loadOffers, nameSearchValue, selectedVenueId, page) {
+    loadOffers({ nameSearchValue, selectedVenueId, page })
+      .then(({ page, pageCount, offersCount }) => {
+        this.setState(
+          {
+            isLoading: false,
+            offersCount,
+            page,
+            pageCount,
+          },
+          () => {
+            this.updateUrlMatchingState()
+          }
+        )
+      })
+      .catch(() => {
+        this.setState({
+          isLoading: false,
+        })
+      })
+  }
+
+  getPaginatedOffersWithFilters = shouldTriggerSpinner => {
     const { loadTypes, loadOffers, saveSearchFilters, types } = this.props
     const { nameSearchValue, selectedVenueId, page } = this.state
     types.length === 0 && loadTypes()
     saveSearchFilters({ name: nameSearchValue, venueId: selectedVenueId, page })
 
-    const handleSuccess = (page, pageCount, offersCount) => {
-      this.setState(
-        {
-          isLoading: false,
-          offersCount,
-          page,
-          pageCount,
-        },
-        () => {
-          this.updateUrlMatchingState()
-        }
-      )
-    }
-
-    const handleFail = () =>
-      this.setState({
-        isLoading: false,
-      })
-
-    this.setState({ isLoading: true }, () => {
-      loadOffers({ nameSearchValue, selectedVenueId, page }, handleSuccess, handleFail)
-    })
+    shouldTriggerSpinner
+      ? this.setState({ isLoading: true }, () => {
+          this.loadAndUpdateOffers(loadOffers, nameSearchValue, selectedVenueId, page)
+        })
+      : this.loadAndUpdateOffers(loadOffers, nameSearchValue, selectedVenueId, page)
   }
 
   handleOnSubmit = event => {
@@ -95,7 +100,7 @@ class Offers extends PureComponent {
         page: DEFAULT_PAGE,
       },
       () => {
-        this.getPaginatedOffersWithFilters()
+        this.getPaginatedOffersWithFilters(true)
       }
     )
   }
@@ -111,14 +116,14 @@ class Offers extends PureComponent {
   onPreviousPageClick = () => {
     const { page } = this.state
     this.setState({ page: page - 1 }, () => {
-      this.getPaginatedOffersWithFilters()
+      this.getPaginatedOffersWithFilters(true)
     })
   }
 
   onNextPageClick = () => {
     const { page } = this.state
     this.setState({ page: page + 1 }, () => {
-      this.getPaginatedOffersWithFilters()
+      this.getPaginatedOffersWithFilters(true)
     })
   }
 
@@ -244,6 +249,7 @@ class Offers extends PureComponent {
                     <OfferItemContainer
                       key={offer.id}
                       offer={offer}
+                      refreshOffers={this.getPaginatedOffersWithFilters}
                     />
                   ))}
                 </tbody>

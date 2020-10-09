@@ -6,7 +6,7 @@ import OfferItem from '../OfferItem'
 describe('src | components | pages | Offers | OfferItem', () => {
   let props
   let dispatch = jest.fn()
-  let updateOffer = jest.fn()
+  let refreshOffer = jest.fn()
 
   let eventOffer
 
@@ -25,6 +25,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     props = {
       dispatch,
+      activateOffer: jest.fn().mockResolvedValue({}),
+      deactivateOffer: jest.fn(),
       offer: eventOffer,
       location: {
         search: '?orderBy=offer.id+desc',
@@ -35,7 +37,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       },
       trackActivateOffer: jest.fn(),
       trackDeactivateOffer: jest.fn(),
-      updateOffer,
+      refreshOffer,
     }
   })
 
@@ -86,7 +88,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           disableButton.invoke('onClick')()
 
           // then
-          expect(updateOffer).toHaveBeenCalledWith(eventOffer.id, false)
+          expect(props.deactivateOffer).toHaveBeenCalledWith(eventOffer.id)
         })
 
         it('should activate when offer is not active', () => {
@@ -103,7 +105,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           disableButton.invoke('onClick')()
 
           // then
-          expect(updateOffer).toHaveBeenCalledWith(eventOffer.id, true)
+          expect(props.activateOffer).toHaveBeenCalledWith(eventOffer.id)
         })
       })
 

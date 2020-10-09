@@ -7,14 +7,22 @@ import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'
 import { offerNormalizer } from '../../../../utils/normalizers'
 import withTracking from '../../../hocs/withTracking'
+import { API_URL } from '../../../../utils/config'
 
 export const mapDispatchToProps = dispatch => ({
-  updateOffer: (id, status) => {
+  activateOffer: id =>
+    fetch(`${API_URL}/offers/activate`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ offersId: [id] }),
+      credentials: 'include',
+    }),
+  deactivateOffer: id => {
     dispatch(
       requestData({
         apiPath: `/offers/${id}`,
         body: {
-          isActive: status,
+          isActive: false,
         },
         isMergingDatum: true,
         isMutatingDatum: true,
