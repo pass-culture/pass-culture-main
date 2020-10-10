@@ -1,8 +1,14 @@
-from pcapi.models import UserSession
-from pcapi.repository import repository
+import datetime
+
 import pytest
-from tests.conftest import TestClient
+
+from pcapi.models import UserSession
 from pcapi.model_creators.generic_creators import create_user
+from pcapi.repository import repository
+from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
 
 
 class Post:
@@ -10,7 +16,18 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         def when_account_is_known(self, app):
             # given
-            user = create_user(email='user@example.com')
+            user = create_user(
+                civility='M.',
+                departement_code='93',
+                email='user@example.com',
+                first_name='Jean',
+                last_name='Smisse',
+                date_of_birth=datetime.datetime(2000, 1, 1),
+                phone_number='0612345678',
+                postal_code='93020',
+                public_name='Toto',
+            )
+
             repository.save(user)
             data = {'identifier': user.email, 'password': user.clearTextPassword}
 
@@ -19,14 +36,29 @@ class Post:
 
             # then
             assert response.status_code == 200
-            json = response.json
-            assert json['email'] == 'user@example.com'
-            assert 'password' not in json
-            assert 'clearTextPassword' not in json
-            assert 'resetPasswordToken' not in json
-            assert 'resetPasswordTokenValidityLimit' not in json
-            assert 'hasPhysicalVenues' in json
-            assert 'hasOffers' in json
+            assert not any('password' in field.lower() for field in response.json)
+            assert response.json == {
+                'activity': None,
+                'address': None,
+                'canBookFreeOffers': True,
+                'city': None,
+                'civility': 'M.',
+                'dateCreated': format_into_utc_date(user.dateCreated),
+                'dateOfBirth': format_into_utc_date(user.dateOfBirth),
+                'departementCode': '93',
+                'email': 'user@example.com',
+                'firstName': 'Jean',
+                'hasOffers': False,
+                'hasPhysicalVenues': False,
+                'id': humanize(user.id),
+                'isAdmin': False,
+                'lastConnectionDate': None,
+                'lastName': 'Smisse',
+                'needsToFillCulturalSurvey': False,
+                'phoneNumber': '0612345678',
+                'postalCode': '93020',
+                'publicName': 'Toto'
+            }
 
         @pytest.mark.usefixtures("db_session")
         def when_account_is_known_with_mixed_case_email(self, app):

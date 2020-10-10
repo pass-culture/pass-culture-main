@@ -18,6 +18,7 @@ class Get:
 
             # then
             assert request.status_code == 200
+            assert request.json == {}
 
     class Returns404:
         @pytest.mark.usefixtures("db_session")

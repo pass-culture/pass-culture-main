@@ -1,13 +1,15 @@
-from datetime import datetime
+import datetime
+
+import pytest
 
 from pcapi.models import ThingType
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.repository import repository
-import pytest
+from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.human_ids import humanize
+
 from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_deposit, \
-    create_user_offerer, create_recommendation
-from pcapi.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
 
 
 class Get:
@@ -15,7 +17,17 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_has_no_deposit(self, app):
             # Given
-            user = create_user(departement_code='93', email='toto@btmx.fr', public_name='Toto')
+            user = create_user(
+                civility='M.',
+                departement_code='93',
+                email='toto@btmx.fr',
+                first_name='Jean',
+                last_name='Smisse',
+                date_of_birth=datetime.datetime(2000, 1, 1),
+                phone_number='0612345678',
+                postal_code='93020',
+                public_name='Toto',
+            )
             repository.save(user)
 
             # When
@@ -25,12 +37,29 @@ class Get:
 
             # Then
             assert response.status_code == 200
-            json = response.json
-            assert json['email'] == 'toto@btmx.fr'
-            assert 'password' not in json
-            assert 'clearTextPassword' not in json
-            assert 'resetPasswordToken' not in json
-            assert 'resetPasswordTokenValidityLimit' not in json
+            assert not any('password' in field.lower() for field in response.json)
+            assert response.json == {
+                'activity': None,
+                'address': None,
+                'canBookFreeOffers': True,
+                'city': None,
+                'civility': 'M.',
+                'dateCreated': format_into_utc_date(user.dateCreated),
+                'dateOfBirth': format_into_utc_date(user.dateOfBirth),
+                'departementCode': '93',
+                'email': 'toto@btmx.fr',
+                'firstName': 'Jean',
+                'hasOffers': False,
+                'hasPhysicalVenues': False,
+                'id': humanize(user.id),
+                'isAdmin': False,
+                'lastConnectionDate': None,
+                'lastName': 'Smisse',
+                'needsToFillCulturalSurvey': False,
+                'phoneNumber': '0612345678',
+                'postalCode': '93020',
+                'publicName': 'Toto'
+            }
 
         @pytest.mark.usefixtures("db_session")
         def test_returns_has_physical_venues_and_has_offers(self, app):

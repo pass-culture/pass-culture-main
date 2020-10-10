@@ -71,4 +71,4 @@ def signin():
 def signout():
     discard_session()
     logout_user()
-    return jsonify({"global": "Deconnecté"})
+    return jsonify({"global": "Déconnecté"})

@@ -21,5 +21,6 @@ class Get:
 
             # then
             assert response.status_code == 200
+            assert response.json == {'global': "Déconnecté"}
             session = UserSession.query.filter_by(userId=user.id).first()
             assert session is None
