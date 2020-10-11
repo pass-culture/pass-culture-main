@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from sqlalchemy import BigInteger, \
     Boolean, \
@@ -84,6 +84,9 @@ class BookingSQLEntity(PcObject, Model, VersionedMixin):
     def total_amount(self):
         return self.amount * self.quantity
 
+    # FIXME: many functions here are only used when serializing
+    # bookings in the web API. They can be moved elsewhere once we
+    # have replaced the auto-magic serialization ("includes").
     @property
     def completedUrl(self):
         offer = self.stock.offer
@@ -96,15 +99,6 @@ class BookingSQLEntity(PcObject, Model, VersionedMixin):
             .replace('{offerId}', humanize(offer.id)) \
             .replace('{email}', self.user.email)
 
-    @property
-    def isUserCancellable(self):
-        if self.stock.beginningDatetime:
-            event_starts_in_more_than_72_hours = self.stock.beginningDatetime > datetime.utcnow() + timedelta(
-                hours=72)
-            return event_starts_in_more_than_72_hours
-        else:
-            return True
-
     @staticmethod
     def restize_internal_error(ie):
         if 'tooManyBookings' in str(ie.orig):
@@ -113,10 +107,6 @@ class BookingSQLEntity(PcObject, Model, VersionedMixin):
             return ['insufficientFunds',
                     "Le solde de votre pass est insuffisant pour réserver cette offre."]
         return PcObject.restize_integrity_error(ie)
-
-    @property
-    def isEventDeletable(self):
-        return self.stock.isEventDeletable
 
     @property
     def isEventExpired(self):
@@ -143,23 +133,25 @@ class BookingSQLEntity(PcObject, Model, VersionedMixin):
 
     @property
     def qrCode(self):
-        from pcapi.domain.bookings import generate_qr_code
+        from . import api # avoid import loop
+
         offer = self.stock.offer
         if offer.isEvent:
-            return generate_qr_code(booking_token=self.token,
-                                    offer_extra_data=self.stock.offer.extraData) \
-                if self.isEventExpired is False and self.isCancelled is False else None
-        return generate_qr_code(booking_token=self.token,
-                                offer_extra_data=self.stock.offer.extraData) \
-            if self.isUsed is False and self.isCancelled is False else None
+            if self.isEventExpired or self.isCancelled:
+                return None
+            return api.generate_qr_code(self.token, self.stock.offer.extraData)
+        if self.isUsed or self.isCancelled:
+            return None
+        return api.generate_qr_code(self.token, self.stock.offer.extraData)
 
 
+# FIXME: move this out of the `models` module
 class ActivationUser:
     CSV_HEADER = [
         'Prénom',
         'Nom',
         'Email',
-        'Contremarque d\'activation'
+        "Contremarque d'activation",
     ]
 
     def __init__(self, booking: BookingSQLEntity):
@@ -234,9 +226,9 @@ BookingSQLEntity.trig_ddl = """
     $$ LANGUAGE plpgsql;
 
     DROP TRIGGER IF EXISTS booking_update ON booking;
-    CREATE CONSTRAINT TRIGGER booking_update 
-    AFTER INSERT 
-    OR UPDATE OF quantity, amount, "isCancelled", "isUsed", "userId"  
+    CREATE CONSTRAINT TRIGGER booking_update
+    AFTER INSERT
+    OR UPDATE OF quantity, amount, "isCancelled", "isUsed", "userId"
     ON booking
     FOR EACH ROW EXECUTE PROCEDURE check_booking()
     """

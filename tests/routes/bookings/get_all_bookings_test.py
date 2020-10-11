@@ -2,9 +2,10 @@ from datetime import datetime
 from unittest.mock import patch
 
 from dateutil.tz import tz
-from pytest import fixture
-from pytest_mock import mocker
 
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
@@ -15,73 +16,47 @@ from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.human_ids import humanize
 
 
+@patch('pcapi.core.bookings.repository.find_by_pro_user_id')
 class GetAllBookingsTest:
-    @patch('pcapi.routes.bookings.get_all_bookings_by_pro_user')
     @pytest.mark.usefixtures("db_session")
-    def test_should_call_the_usecase_with_user_id_and_page(self,
-                                                           get_all_bookings_by_pro_user: mocker,
-                                                           app: fixture):
-        # Given
-        user = create_user(is_admin=True, can_book_free_offers=False)
-        repository.save(user)
-        page_number = 3
+    def test_call_repository_with_user_and_page(self, find_by_pro_user_id, app):
+        user = users_factories.UserFactory()
+        TestClient(app.test_client()).with_auth(user.email).get(f'/bookings/pro?page=3')
+        find_by_pro_user_id.assert_called_once_with(user_id=user.id, page=3)
 
-        # When
-        TestClient(app.test_client()) \
-            .with_auth(user.email) \
-            .get(f'/bookings/pro?page={page_number}')
-
-        # Then
-        get_all_bookings_by_pro_user.assert_called_once_with(user_id=user.id, page=page_number)
-
-    @patch('pcapi.routes.bookings.get_all_bookings_by_pro_user')
     @pytest.mark.usefixtures("db_session")
-    def test_should_call_the_usecase_with_1_when_no_page_provided(self,
-                                                                  get_all_bookings_by_pro_user: mocker,
-                                                                  app: fixture):
-        # Given
-        user = create_user(is_admin=True, can_book_free_offers=False)
-        repository.save(user)
-
-        # When
-        TestClient(app.test_client()) \
-            .with_auth(user.email) \
-            .get(f'/bookings/pro')
-
-        # Then
-        get_all_bookings_by_pro_user.assert_called_once_with(user_id=user.id, page=1)
+    def test_call_repository_with_page_1(self, find_by_pro_user_id, app):
+        user = users_factories.UserFactory()
+        TestClient(app.test_client()).with_auth(user.email).get(f'/bookings/pro')
+        find_by_pro_user_id.assert_called_once_with(user_id=user.id, page=1)
 
 
+@pytest.mark.usefixtures("db_session")
 class GetTest:
     class Returns200Test:
-        @pytest.mark.usefixtures("db_session")
-        def when_user_is_linked_to_a_valid_offerer(self, app: fixture):
-            # Given
-            beneficiary = create_user(email='beneficiary@example.com', first_name="Hermione", last_name="Granger")
-            user = create_user()
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer, idx=15)
-            offer = create_offer_with_thing_product(venue)
-            stock = create_stock(offer=offer, price=0)
-            date_created = datetime(2020, 4, 3, 12, 0, 0)
-            date_used = datetime(2020, 5, 3, 12, 0, 0)
-            booking = create_booking(user=beneficiary, stock=stock, token="ABCD", date_created=date_created,
-                                     is_used=True, date_used=date_used)
-            repository.save(user_offerer, booking)
+        def when_user_is_linked_to_a_valid_offerer(self, app):
+            booking = bookings_factories.BookingFactory(
+                dateCreated=datetime(2020, 4, 3, 12, 0, 0),
+                isUsed=True,
+                dateUsed=datetime(2020, 5, 3, 12, 0, 0),
+                token='ABCDEF',
+                user__email='beneficiary@example.com',
+                user__firstName='Hermione',
+                user__lastName='Granger',
+            )
+            pro_user = users_factories.UserFactory(email='pro@example.com')
+            offerer = booking.stock.offer.venue.managingOfferer
+            offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
-            # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .get('/bookings/pro')
+            client = TestClient(app.test_client()).with_auth(pro_user.email)
+            response = client.get('/bookings/pro')
 
-            # Then
             expected_bookings_recap = [
                 {
                     'stock': {
                         'type': 'thing',
-                        'offer_name': 'Test Book',
-                        'offer_identifier': humanize(offer.id),
+                        'offer_name': booking.stock.offer.name,
+                        'offer_identifier': humanize(booking.stock.offer.id),
                     },
                     'beneficiary': {
                         'email': 'beneficiary@example.com',
@@ -89,33 +64,33 @@ class GetTest:
                         'lastname': 'Granger',
                     },
                     'booking_date': format_into_timezoned_date(
-                        date_created.astimezone(tz.gettz('Europe/Paris'))
+                        booking.dateCreated.astimezone(tz.gettz('Europe/Paris')),
                     ),
-                    'booking_amount': 0.0,
-                    'booking_token': 'ABCD',
+                    'booking_amount': 10.0,
+                    'booking_token': 'ABCDEF',
                     'booking_status': 'validated',
                     'booking_is_duo': False,
                     'booking_status_history': [
                         {
                             'status': 'booked',
                             'date': format_into_timezoned_date(
-                                date_created.astimezone(tz.gettz('Europe/Paris'))
+                                booking.dateCreated.astimezone(tz.gettz('Europe/Paris')),
                             ),
                         },
                         {
                             'status': 'validated',
                             'date': format_into_timezoned_date(
-                                date_used.astimezone(tz.gettz('Europe/Paris'))
+                                booking.dateUsed.astimezone(tz.gettz('Europe/Paris')),
                             ),
                         },
                     ],
                     'offerer': {
-                        'name': offerer.name
+                        'name': offerer.name,
                     },
                     'venue': {
-                        'identifier': 'B4',
-                        'is_virtual': venue.isVirtual,
-                        'name': venue.name
+                        'identifier': humanize(booking.stock.offer.venue.id),
+                        'is_virtual': booking.stock.offer.venue.isVirtual,
+                        'name': booking.stock.offer.venue.name,
                     }
                 }
             ]
@@ -126,37 +101,22 @@ class GetTest:
             assert response.json['total'] == 1
 
     class Returns400Test:
-        @pytest.mark.usefixtures("db_session")
-        def when_page_number_is_not_a_number(self, app: fixture):
-            # Given
-            user = create_user(is_admin=True, can_book_free_offers=False)
-            repository.save(user)
-            page_number = 'not a number'
+        def when_page_number_is_not_a_number(self, app):
+            user = users_factories.UserFactory()
 
-            # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .get(f'/bookings/pro?page={page_number}')
+            client = TestClient(app.test_client()).with_auth(user.email)
+            response = client.get(f'/bookings/pro?page=not-a-number')
 
-            # Then
             assert response.status_code == 400
-            assert response.json == {
-                'global': [f"L'argument 'page' {page_number} n'est pas valide"]
-            }
+            assert response.json['global'] == ["L'argument 'page' not-a-number n'est pas valide"]
 
     class Returns401Test:
-        @pytest.mark.usefixtures("db_session")
-        def when_user_is_admin(self, app: fixture):
-            # Given
-            user = create_user(is_admin=True, can_book_free_offers=False)
-            repository.save(user)
+        def when_user_is_admin(self, app):
+            user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
 
-            # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .get('/bookings/pro')
+            client = TestClient(app.test_client()).with_auth(user.email)
+            response = client.get('/bookings/pro')
 
-            # Then
             assert response.status_code == 401
             assert response.json == {
                 'global': ["Le statut d'administrateur ne permet pas d'accéder au suivi des réservations"]

@@ -13,7 +13,7 @@ from pcapi.models import OfferSQLEntity, \
 from pcapi.models.db import Model, \
     db
 from pcapi.repository import product_queries
-from pcapi.repository.booking_queries import count_not_cancelled_bookings_quantity_by_stock_id
+from pcapi.core.bookings.repository import count_not_cancelled_bookings_quantity_by_stock_id
 
 
 class GenericStocks(LocalProvider):

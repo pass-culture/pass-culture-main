@@ -1,17 +1,17 @@
 from datetime import datetime
 
+import pcapi.core.bookings.repository as booking_repository
 from pcapi.repository import repository
-from pcapi.repository import booking_queries
 
 
 def update_booking_used_after_stock_occurrence():
-    bookings_to_process = booking_queries.find_not_used_and_not_cancelled()
+    bookings_to_process = booking_repository.find_not_used_and_not_cancelled()
     bookings_id_errors = []
 
     for booking in bookings_to_process:
         if booking.stock.beginningDatetime:
             now = datetime.utcnow()
-            if booking.isEventDeletable is False:
+            if not booking.stock.isEventDeletable:
                 booking.isUsed = True
                 booking.dateUsed = now
                 try:

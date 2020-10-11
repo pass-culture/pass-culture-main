@@ -16,7 +16,7 @@ from sqlalchemy.orm import relationship, joinedload
 from sqlalchemy.sql import expression
 
 from pcapi.domain.expenses import get_expenses
-from pcapi.models.booking_sql_entity import BookingSQLEntity
+from pcapi.core.bookings.models import BookingSQLEntity
 from pcapi.models.db import Model, db
 from pcapi.models.deposit import Deposit
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin

@@ -9,7 +9,7 @@ def install_scripts():
     from pcapi.models.has_thumb_mixin import HasThumbMixin
     from pcapi.models.needs_validation_mixin import NeedsValidationMixin
     from pcapi.models.providable_mixin import ProvidableMixin
-    from pcapi.models.booking_sql_entity import BookingSQLEntity
+    from pcapi.core.bookings.models import BookingSQLEntity
 
     from pcapi.models.mediation_sql_entity import MediationSQLEntity
     from pcapi.models.stock_sql_entity import StockSQLEntity

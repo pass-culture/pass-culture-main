@@ -6,34 +6,31 @@ from flask import jsonify, request
 from flask_login import current_user, login_required
 from spectree import Response
 
-from pcapi.flask_app import private_api, \
-    public_api
-from pcapi.connectors import redis
+from pcapi.flask_app import private_api, public_api
+from pcapi.core.bookings.models import BookingSQLEntity
+import pcapi.core.bookings.api as bookings_api
+import pcapi.core.bookings.validation as bookings_validation
+import pcapi.core.bookings.repository as booking_repository
 from pcapi.domain.user_activation import create_initial_deposit, is_activation_booking
 from pcapi.domain.user_emails import send_activation_email
-from pcapi.infrastructure.container import book_an_offer, cancel_a_booking, get_bookings_for_beneficiary
-from pcapi.models import BookingSQLEntity, EventType, RightsType, ApiKey, UserSQLEntity
+from pcapi.infrastructure.container import get_bookings_for_beneficiary
+from pcapi.models import EventType, RightsType, ApiKey, UserSQLEntity, StockSQLEntity, Recommendation
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ProductType
-from pcapi.repository import booking_queries, feature_queries, repository
+from pcapi.repository import feature_queries
+from pcapi.repository import repository
 from pcapi.repository.api_key_queries import find_api_key_by_value
 from pcapi.routes.serialization import as_dict, serialize, serialize_booking
 from pcapi.routes.serialization.beneficiary_bookings_serialize import serialize_beneficiary_bookings
 from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
-from pcapi.routes.serialization.bookings_serialize import serialize_domain_booking, PostBookingBodyModel, PostBookingResponseModel
-from pcapi.use_cases.book_an_offer import BookingInformation
-from pcapi.use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
+from pcapi.routes.serialization.bookings_serialize import serialize_booking_minimal, PostBookingBodyModel, PostBookingResponseModel
 from pcapi.utils.human_ids import dehumanize, humanize
 from pcapi.utils.includes import WEBAPP_GET_BOOKING_INCLUDES
 from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.rest import ensure_current_user_has_rights, expect_json_data
-from pcapi.validation.routes.bookings import check_booking_is_not_already_cancelled, \
-    check_booking_is_not_used, \
-    check_booking_token_is_keepable, \
-    check_booking_token_is_usable, \
-    check_email_and_offer_id_for_anonymous_user, \
-    check_is_not_activation_booking, \
-    check_page_format_is_number
+from pcapi.domain.users import check_is_authorized_to_access_bookings_recap
+from pcapi.validation.routes.bookings import check_email_and_offer_id_for_anonymous_user
+from pcapi.validation.routes.bookings import check_page_format_is_number
 from pcapi.validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
     login_or_api_key_required_v2
 from pcapi.validation.routes.users_authorizations import \
@@ -48,7 +45,14 @@ from pcapi.serialization.decorator import spectree_serialize
 def get_all_bookings():
     page = request.args.get('page', 1)
     check_page_format_is_number(page)
-    bookings_recap_paginated = get_all_bookings_by_pro_user(user_id=current_user.id, page=int(page))
+
+    check_is_authorized_to_access_bookings_recap(current_user)
+
+    # FIXME: rewrite this route. The repository function should return
+    # a bare SQLAlchemy query, and the route should handle the
+    # serialization so that we can get rid of BookingsRecapPaginated
+    # that is only used here.
+    bookings_recap_paginated = booking_repository.find_by_pro_user_id(user_id=current_user.id, page=int(page))
 
     return serialize_bookings_recap_paginated(bookings_recap_paginated), 200
 
@@ -75,33 +79,33 @@ def get_booking(booking_id: int):
 @expect_json_data
 @spectree_serialize(response_model=PostBookingResponseModel, on_success_status=201)
 def create_booking(body: PostBookingBodyModel) -> PostBookingResponseModel:
-    booking_information = BookingInformation(
-        dehumanize(body.stock_id),
-        current_user.id,
-        body.quantity,
-        dehumanize(body.recommendation_id)
+    stock = (
+        StockSQLEntity.query.filter_by(id=dehumanize(body.stock_id)).first_or_404()
+        if body.stock_id else None
+    )
+    recommendation = (
+        Recommendation.query.filter_by(id=dehumanize(body.recommendation_id)).first_or_404()
+        if body.recommendation_id else None
     )
 
-    created_booking = book_an_offer.execute(booking_information)
+    booking = bookings_api.book_offer(
+        beneficiary=current_user,
+        stock=stock,
+        quantity=body.quantity,
+        recommendation=recommendation,
+    )
 
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=created_booking.stock.offer.id)
-
-    return PostBookingResponseModel(**serialize_domain_booking(created_booking))
+    return PostBookingResponseModel(**serialize_booking_minimal(booking))
 
 
 @private_api.route('/bookings/<booking_id>/cancel', methods=['PUT'])
 @login_required
 def cancel_booking(booking_id: str):
-    booking = cancel_a_booking.execute(
-        booking_id=dehumanize(booking_id),
-        beneficiary_id=current_user.id
-    )
+    booking = BookingSQLEntity.query.filter_by(id=dehumanize(booking_id)).first_or_404()
 
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offer.id)
+    bookings_api.cancel_booking_by_beneficiary(current_user, booking)
 
-    return jsonify(serialize_domain_booking(booking)), 200
+    return jsonify(serialize_booking_minimal(booking)), 200
 
 
 @public_api.route('/bookings/token/<token>', methods=['GET'])
@@ -112,14 +116,10 @@ def get_booking_by_token(token: str):
     check_user_is_logged_in_or_email_is_provided(current_user, email)
 
     booking_token_upper_case = token.upper()
-    booking = booking_queries.find_by(booking_token_upper_case, email, offer_id)
-    check_booking_token_is_usable(booking)
+    booking = booking_repository.find_by(booking_token_upper_case, email, offer_id)
+    bookings_validation.check_is_usable(booking)
 
-    offerer_id = booking.stock.offer.venue.managingOffererId
-
-    current_user_can_validate_booking = check_user_can_validate_bookings(current_user, offerer_id)
-
-    if current_user_can_validate_booking:
+    if check_user_can_validate_bookings(current_user, booking.stock.offer.venue.managingOffererId):
         response = _create_response_to_get_booking_by_token(booking)
         return jsonify(response), 200
 
@@ -131,7 +131,7 @@ def patch_booking_by_token(token: str):
     email = request.args.get('email', None)
     offer_id = dehumanize(request.args.get('offer_id', None))
     booking_token_upper_case = token.upper()
-    booking = booking_queries.find_by(booking_token_upper_case, email, offer_id)
+    booking = booking_repository.find_by(booking_token_upper_case, email, offer_id)
 
     if current_user.is_authenticated:
         ensure_current_user_has_rights(
@@ -139,15 +139,11 @@ def patch_booking_by_token(token: str):
     else:
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 
-    check_booking_token_is_usable(booking)
+    bookings_api.mark_as_used(booking)
 
     if is_activation_booking(booking):
         _activate_user(booking.user)
         send_activation_email(booking.user, send_raw_email)
-
-    booking.isUsed = True
-    booking.dateUsed = datetime.utcnow()
-    repository.save(booking)
 
     return '', 204
 
@@ -157,7 +153,7 @@ def patch_booking_by_token(token: str):
 def get_booking_by_token_v2(token: str):
     valid_api_key = _get_api_key_from_header(request)
     booking_token_upper_case = token.upper()
-    booking = booking_queries.find_by(booking_token_upper_case)
+    booking = booking_repository.find_by(token=booking_token_upper_case)
     offerer_id = booking.stock.offer.venue.managingOffererId
 
     if current_user.is_authenticated:
@@ -167,7 +163,7 @@ def get_booking_by_token_v2(token: str):
     if valid_api_key:
         check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
 
-    check_booking_token_is_usable(booking)
+    bookings_validation.check_is_usable(booking)
 
     response = serialize_booking(booking)
 
@@ -177,8 +173,9 @@ def get_booking_by_token_v2(token: str):
 @public_api.route('/v2/bookings/use/token/<token>', methods=['PATCH'])
 @login_or_api_key_required_v2
 def patch_booking_use_by_token(token: str):
+    """Let a pro user mark a booking as used."""
     booking_token_upper_case = token.upper()
-    booking = booking_queries.find_by(booking_token_upper_case)
+    booking = booking_repository.find_by(token=booking_token_upper_case)
     offerer_id = booking.stock.offer.venue.managingOffererId
     valid_api_key = _get_api_key_from_header(request)
 
@@ -192,12 +189,7 @@ def patch_booking_use_by_token(token: str):
         _activate_user(booking.user)
         send_activation_email(booking.user, send_raw_email)
 
-    check_booking_token_is_usable(booking)
-
-    booking.isUsed = True
-    booking.dateUsed = datetime.utcnow()
-
-    repository.save(booking)
+    bookings_api.mark_as_used(booking)
 
     return '', 204
 
@@ -205,9 +197,10 @@ def patch_booking_use_by_token(token: str):
 @private_api.route('/v2/bookings/cancel/token/<token>', methods=['PATCH'])
 @login_or_api_key_required_v2
 def patch_cancel_booking_by_token(token: str):
+    """Let a pro user cancel a booking."""
     valid_api_key = _get_api_key_from_header(request)
     token = token.upper()
-    booking = booking_queries.find_by(token)
+    booking = booking_repository.find_by(token=token)
     offerer_id = booking.stock.offer.venue.managingOffererId
 
     if current_user.is_authenticated:
@@ -216,11 +209,7 @@ def patch_cancel_booking_by_token(token: str):
     if valid_api_key:
         check_api_key_allows_to_cancel_booking(valid_api_key, offerer_id)
 
-    check_booking_is_not_already_cancelled(booking)
-    check_booking_is_not_used(booking)
-
-    booking.isCancelled = True
-    repository.save(booking)
+    bookings_api.cancel_booking_by_offerer(booking)
 
     return '', 204
 
@@ -228,8 +217,8 @@ def patch_cancel_booking_by_token(token: str):
 @public_api.route('/v2/bookings/keep/token/<token>', methods=['PATCH'])
 @login_or_api_key_required_v2
 def patch_booking_keep_by_token(token: str):
-    booking_token_upper_case = token.upper()
-    booking = booking_queries.find_by(booking_token_upper_case)
+    """Let a pro user mark a booking as _not_ used."""
+    booking = booking_repository.find_by(token=token.upper())
     offerer_id = booking.stock.offer.venue.managingOffererId
     valid_api_key = _get_api_key_from_header(request)
 
@@ -239,13 +228,7 @@ def patch_booking_keep_by_token(token: str):
     if valid_api_key:
         check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
 
-    check_is_not_activation_booking(booking)
-    check_booking_token_is_keepable(booking)
-
-    booking.isUsed = False
-    booking.dateUsed = None
-
-    repository.save(booking)
+    bookings_api.mark_as_unused(booking)
 
     return '', 204
 

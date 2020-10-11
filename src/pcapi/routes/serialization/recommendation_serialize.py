@@ -1,7 +1,7 @@
 from typing import Dict, List
 
+import pcapi.core.bookings.repository as booking_repository
 from pcapi.models import BookingSQLEntity, Recommendation
-from pcapi.repository import booking_queries
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import RECOMMENDATION_INCLUDES
@@ -10,7 +10,7 @@ from pcapi.utils.includes import RECOMMENDATION_INCLUDES
 def serialize_recommendations(recommendations: List[Recommendation], user_id: int) -> List[Dict]:
     serialized_recommendations = [serialize_recommendation(recommendation, user_id, query_booking=False)
                                   for recommendation in recommendations]
-    bookings = booking_queries.find_user_bookings_for_recommendation(user_id)
+    bookings = booking_repository.find_user_bookings_for_recommendation(user_id)
     bookings_by_offer = _get_bookings_by_offer(bookings)
     for serialized_recommendation in serialized_recommendations:
         offer_id = dehumanize(serialized_recommendation["offerId"])
@@ -26,7 +26,7 @@ def serialize_recommendations(recommendations: List[Recommendation], user_id: in
 def serialize_recommendation(recommendation: Recommendation, user_id: int, query_booking: bool = True) -> Dict:
     serialized_recommendation = as_dict(recommendation, includes=RECOMMENDATION_INCLUDES)
     if query_booking and recommendation.offer:
-        bookings = booking_queries.find_from_recommendation(recommendation, user_id)
+        bookings = booking_repository.find_from_recommendation(recommendation, user_id)
         serialized_recommendation['bookings'] = _serialize_bookings(bookings)
 
     add_offer_and_stock_information(serialized_recommendation)

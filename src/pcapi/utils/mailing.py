@@ -11,7 +11,7 @@ from pcapi.connectors import api_entreprises
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import BookingSQLEntity, OfferSQLEntity, Offerer, StockSQLEntity, UserSQLEntity, UserOfferer, VenueSQLEntity
 from pcapi.models.email import EmailStatus
-from pcapi.repository.booking_queries import find_ongoing_bookings_by_stock
+from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
 from pcapi.repository.email_queries import save
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.utils import logger

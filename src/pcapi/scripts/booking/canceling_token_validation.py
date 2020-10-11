@@ -1,8 +1,9 @@
-from pcapi.repository import booking_queries, payment_queries, repository
+import pcapi.core.bookings.repository as booking_repository
+from pcapi.repository import payment_queries, repository
 
 
 def canceling_token_validation(token: str) -> None:
-    booking = booking_queries.find_used_by_token(token)
+    booking = booking_repository.find_used_by_token(token)
 
     if booking:
         payment = payment_queries.find_by_booking_id(booking_id=booking.id)

@@ -8,7 +8,7 @@ from pcapi.models.offer_type import EventType, ThingType
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.booking_sql_entity import ActivationUser
+from pcapi.core.bookings.models import ActivationUser
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 
 IMPORT_STATUS_MODIFICATION_RULE = 'Seuls les dossiers au statut DUPLICATE peuvent être modifiés (aux statuts REJECTED ou RETRY uniquement)'

@@ -7,7 +7,7 @@ from pcapi.routes.serialization.recommendation_serialize import serialize_recomm
 
 
 class SerializeRecommendationTest:
-    @patch('pcapi.routes.serialization.recommendation_serialize.booking_queries.find_from_recommendation')
+    @patch('pcapi.core.bookings.repository.find_from_recommendation')
     def test_should_return_booking_if_query_booking_is_True(self, find_from_recommendation):
         # Given
         user = create_user(email='user@test.com')
@@ -28,7 +28,7 @@ class SerializeRecommendationTest:
         assert 'bookings' in serialized_recommendation
         assert serialized_recommendation['bookings'] is not None
 
-    @patch('pcapi.routes.serialization.recommendation_serialize.booking_queries.find_from_recommendation')
+    @patch('pcapi.core.bookings.repository.find_from_recommendation')
     def test_should_not_return_booking_if_query_booking_is_False(self, find_from_recommendation):
         # Given
         user = create_user(email='user@test.com')
@@ -50,8 +50,8 @@ class SerializeRecommendationTest:
 
 
 class SerializeRecommendationsTest:
-    @patch('pcapi.routes.serialization.recommendation_serialize.booking_queries.find_from_recommendation')
-    @patch('pcapi.routes.serialization.recommendation_serialize.booking_queries.find_user_bookings_for_recommendation')
+    @patch('pcapi.core.bookings.repository.find_from_recommendation')
+    @patch('pcapi.core.bookings.repository.find_user_bookings_for_recommendation')
     def test_should_call_find_user_bookings_for_recommendation_and_not_find_from_recommendation(self,
                                                                                                 find_user_bookings_for_recommendation,
                                                                                                 find_from_recommendation):
@@ -77,7 +77,7 @@ class SerializeRecommendationsTest:
         find_from_recommendation.assert_not_called()
         assert 'bookings' in serialized_recommendations[0]
 
-    @patch('pcapi.routes.serialization.recommendation_serialize.booking_queries.find_user_bookings_for_recommendation')
+    @patch('pcapi.core.bookings.repository.find_user_bookings_for_recommendation')
     def test_should_return_dict_with_bookings_key_and_empty_list_when_no_bookings(self,
                                                                                   find_user_bookings_for_recommendation):
         # Given
@@ -99,7 +99,7 @@ class SerializeRecommendationsTest:
         # Then
         assert serialized_recommendations[0]['bookings'] == []
 
-    @patch('pcapi.routes.serialization.recommendation_serialize.booking_queries.find_user_bookings_for_recommendation')
+    @patch('pcapi.core.bookings.repository.find_user_bookings_for_recommendation')
     def test_should_return_dict_with_bookings_key_and_empty_list_for_recommendation_without_bookings_and_with_serialized_booking_list_for_recommendation_with_booking(
             self, find_user_bookings_for_recommendation):
         # Given

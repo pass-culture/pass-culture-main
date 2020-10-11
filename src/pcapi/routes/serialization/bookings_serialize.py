@@ -2,7 +2,6 @@ from typing import Dict, Optional, Union
 from pydantic import BaseModel, Field
 
 from pcapi.serialization.utils import to_camel
-from pcapi.domain.booking.booking import Booking
 from pcapi.models import BookingSQLEntity, EventType, ThingType
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import humanize
@@ -59,21 +58,21 @@ def serialize_booking(booking: BookingSQLEntity) -> Dict:
     }
 
 
-def serialize_domain_booking(booking: Booking) -> Dict:
+def serialize_booking_minimal(booking: BookingSQLEntity) -> Dict:
     return {
-        'amount': booking.amount,
-        'completedUrl': booking.completed_url,
-        'id': humanize(booking.identifier),
+        'amount': float(booking.amount),
+        'completedUrl': booking.completedUrl,
+        'id': humanize(booking.id),
         'isCancelled': booking.isCancelled,
         'quantity': booking.quantity,
-        'stockId': humanize(booking.stock.identifier),
+        'stockId': humanize(booking.stockId),
         'stock': {
             'price': booking.stock.price
         },
         'token': booking.token,
         'user': {
-            'id': humanize(booking.beneficiary.identifier),
-            "wallet_balance": booking.beneficiary.wallet_balance,
+            'id': humanize(booking.userId),
+            "wallet_balance": float(booking.user.wallet_balance),
         },
     }
 

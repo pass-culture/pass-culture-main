@@ -64,7 +64,7 @@ with app.app_context():
 
 ```python
 from pcapi.utils.mailing import send_raw_email
-from pcapi.repository.booking_queries import find_by
+from pcapi.core.bookings.repository import find_by
 from pcapi.domain.user_emails import send_booking_recap_emails
 
 booking = find_by(token='VU6MMM')
@@ -74,7 +74,7 @@ with app.app_context():
 
 ```python
 from pcapi.utils.mailing import send_raw_email
-from pcapi.repository.booking_queries import find_by
+from pcapi.core.bookings.repository import find_by
 from pcapi.domain.user_emails import send_beneficiary_booking_cancellation_email
 
 booking = find_by(token='100002')
@@ -84,7 +84,7 @@ with app.app_context():
 
 ```python
 from pcapi.utils.mailing import send_raw_email
-from pcapi.repository.booking_queries import find_by
+from pcapi.core.bookings.repository import find_by
 from pcapi.domain.user_emails import send_booking_confirmation_email_to_beneficiary
 
 booking = find_by(token='100002')
@@ -94,7 +94,7 @@ with app.app_context():
 
 ```python
 from pcapi.utils.mailing import send_raw_email
-from pcapi.repository.booking_queries import find_by
+from pcapi.core.bookings.repository import find_by
 from pcapi.domain.user_emails import send_warning_to_beneficiary_after_pro_booking_cancellation
 
 booking = find_by(token='100002')

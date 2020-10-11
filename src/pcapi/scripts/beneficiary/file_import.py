@@ -4,13 +4,14 @@ import re
 from datetime import datetime
 from typing import List, Set, Iterable, Callable
 
+import pcapi.core.bookings.repository as booking_repository
 from pcapi.domain.admin_emails import send_users_activation_report
 from pcapi.domain.password import generate_reset_token, random_password
 from pcapi.domain.user_activation import generate_activation_users_csv
 from pcapi.models import UserSQLEntity, BookingSQLEntity, StockSQLEntity
-from pcapi.models.booking_sql_entity import ActivationUser
+from pcapi.core.bookings.models import ActivationUser
 from pcapi.models.user_sql_entity import hash_password
-from pcapi.repository import booking_queries, repository
+from pcapi.repository import repository
 from pcapi.repository.stock_queries import find_online_activation_stock
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
@@ -36,7 +37,7 @@ ACTIVATION_USER_RECIPIENTS = parse_email_addresses(
 def create_users_with_activation_bookings(
         csv_rows: List[List[str]], stock: StockSQLEntity, existing_tokens: Set[str],
         find_user: Callable = find_user_by_email,
-        find_activation_booking: Callable = booking_queries.find_user_activation_booking
+        find_activation_booking: Callable = booking_repository.find_user_activation_booking
 ) -> List[BookingSQLEntity]:
     bookings = []
     for row in csv_rows:
@@ -158,7 +159,7 @@ def run(csv_file_path: str) -> None:
 
     logger.info(
         '[STEP 2] Enregistrement des comptes et contremarques d\'activation')
-    existing_tokens = booking_queries.find_existing_tokens()
+    existing_tokens = booking_repository.find_existing_tokens()
     all_bookings = []
     total = 0
     for chunk in chunked_file:

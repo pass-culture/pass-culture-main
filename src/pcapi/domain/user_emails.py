@@ -5,7 +5,7 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription impo
     BeneficiaryPreSubscription
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
     CantRegisterBeneficiary
-from pcapi.domain.booking.booking import Booking
+from pcapi.core.bookings.models import BookingSQLEntity
 from pcapi.emails.beneficiary_activation import get_activation_email_data
 from pcapi.emails.beneficiary_booking_cancellation import \
     make_beneficiary_booking_cancellation_email_data
@@ -46,7 +46,7 @@ from pcapi.utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
     make_user_validation_email, make_venue_validated_email
 
 
-def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool]) -> None:
+def send_booking_recap_emails(booking: BookingSQLEntity, send_email: Callable[..., bool]) -> None:
     recipients = [ADMINISTRATION_EMAIL_ADDRESS]
     booking_email = booking.stock.offer.bookingEmail
     if booking_email:
@@ -56,7 +56,7 @@ def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool])
     send_email(data=data)
 
 
-def send_booking_confirmation_email_to_beneficiary(booking: Booking, send_email: Callable[..., bool]) -> None:
+def send_booking_confirmation_email_to_beneficiary(booking: BookingSQLEntity, send_email: Callable[..., bool]) -> None:
     data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
     send_email(data=data)
 

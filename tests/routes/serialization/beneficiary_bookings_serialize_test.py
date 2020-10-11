@@ -163,7 +163,7 @@ class BeneficiaryBookingsSerializeTest:
 
         @freeze_time('2019-1-1')
         @patch('pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
-        @patch('pcapi.domain.beneficiary_bookings.beneficiary_booking.generate_qr_code', return_value='fake_qr_code')
+        @patch('pcapi.core.bookings.api.generate_qr_code', return_value='fake_qr_code')
         def should_return_expected_json_with_qr_code(self, mock_generate_qr_code, mock_get_storage):
             # Given
             stocks = [

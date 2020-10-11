@@ -5,7 +5,7 @@ from sqlalchemy import subquery
 from sqlalchemy.orm import aliased
 
 from pcapi.models import UserSQLEntity, Offerer, PaymentStatus
-from pcapi.models.booking_sql_entity import BookingSQLEntity
+from pcapi.core.bookings.models import BookingSQLEntity
 from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.payment import Payment
 from pcapi.models.stock_sql_entity import StockSQLEntity

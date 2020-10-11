@@ -1,6 +1,5 @@
 from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import BeneficiaryBookingsSQLRepository
-from pcapi.infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
 from pcapi.infrastructure.repository.favorite.favorite_sql_repository import FavoriteSQLRepository
 from pcapi.infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import PaginatedOfferersSQLRepository
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
@@ -14,8 +13,6 @@ from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_wi
 from pcapi.infrastructure.repository.venue.venue_with_offerer_name.venue_with_offerer_name_sql_repository import VenueWithOffererNameSQLRepository
 from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from pcapi.use_cases.add_contact_in_eligiblity_list import AddContactInEligibilityList
-from pcapi.use_cases.book_an_offer import BookAnOffer
-from pcapi.use_cases.cancel_a_booking import CancelABooking
 from pcapi.use_cases.get_bookings_for_beneficiary import GetBookingsForBeneficiary
 from pcapi.use_cases.get_venue_labels import GetVenueLabels
 from pcapi.use_cases.get_venues_by_pro_user import GetVenuesByProUser
@@ -24,7 +21,6 @@ from pcapi.use_cases.list_offerers_for_pro_user import ListOfferersForProUser
 from pcapi.use_cases.list_offers_for_pro_user import ListOffersForProUser
 
 beneficiary_bookings_repository = BeneficiaryBookingsSQLRepository()
-booking_repository = BookingSQLRepository()
 favorite_repository = FavoriteSQLRepository()
 notification_service = MailjetNotificationService()
 paginated_offer_repository = PaginatedOffersSQLRepository()
@@ -41,16 +37,6 @@ api_titelive_stocks = StockProviderTiteLiveRepository()
 api_praxiel_stocks = StockProviderPraxielRepository()
 
 # Usecases
-book_an_offer = BookAnOffer(booking_repository=booking_repository,
-                            user_repository=user_repository,
-                            stock_repository=stock_repository,
-                            notification_service=notification_service)
-
-cancel_a_booking = CancelABooking(
-    booking_repository=booking_repository,
-    notification_service=notification_service
-)
-
 get_venue_labels = GetVenueLabels(venue_label_repository=venue_label_repository)
 
 get_all_venues_by_pro_user = GetVenuesByProUser(venue_repository=venue_with_offerer_informations_repository)

@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import Dict, List
 
-from pcapi.models.booking_sql_entity import BookingSQLEntity
+from pcapi.core.bookings.models import BookingSQLEntity
 from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.offer_type import ThingType
 

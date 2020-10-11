@@ -1,18 +1,22 @@
 from datetime import datetime
 
 from freezegun import freeze_time
+import pytest
 
-from pcapi.domain.booking.booking import Booking
-from pcapi.domain.stock.stock import Stock
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.models import EventType, ThingType
 from pcapi.routes.serialization import serialize_booking
-from pcapi.routes.serialization.bookings_serialize import serialize_domain_booking
-from tests.domain_creators.generic_creators import create_domain_beneficiary
+from pcapi.routes.serialization.bookings_serialize import serialize_booking_minimal
 from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence, create_product_with_thing_type, \
     create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 from pcapi.utils.human_ids import humanize
+
+
+# FIXME: We already check (or should check) the JSON output of routes
+# that use these serializers. These tests are probably not very useful
+# and could be removed.
 
 
 class SerializeBookingTest:
@@ -161,49 +165,35 @@ class SerializeBookingTest:
         assert response['phoneNumber'] == '0612345678'
 
 
-class SerializeDomainBookingTest:
+@pytest.mark.usefixtures("db_session")
+class SerializeBookingMinimalTest:
     def test_should_return_booking_with_expected_information(self):
-        # Give
-        offer = create_offer_with_event_product(idx=4)
-        user = create_domain_beneficiary(
-            identifier=10,
-            can_book_free_offers=False,
-            email='joe.doe@example.com',
-            first_name='Joe',
-            last_name='Doe'
-        )
-        stock = Stock(
-            identifier=2,
-            quantity=1,
-            offer=offer,
-            price=10
-        )
-        booking = Booking(
+        # Given
+        booking = BookingFactory(
             identifier=3,
-            beneficiary=user,
-            stock=stock,
             amount=1,
             quantity=1,
-            token='GQTQR9'
+            token='GQTQR9',
+            stock__price=10,
         )
 
         # When
-        booking_json = serialize_domain_booking(booking)
+        serialized = serialize_booking_minimal(booking)
 
         # Then
-        assert booking_json == {
-            'amount': booking.amount,
+        assert serialized == {
+            'amount': 1.0,
             'isCancelled': booking.isCancelled,
-            'id': 'AM',
-            'stockId': 'A9',
+            'id': humanize(booking.id),
+            'stockId': humanize(booking.stockId),
             'quantity': 1,
             'stock': {
-                'price': 10
+                'price': 10,
             },
             'token': 'GQTQR9',
             'user': {
-                'id': 'B9',
-                'wallet_balance': None
+                'id': humanize(booking.userId),
+                'wallet_balance': 499.0,
             },
             'completedUrl': None
         }

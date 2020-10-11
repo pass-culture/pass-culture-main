@@ -1,14 +1,12 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from pcapi.domain.favorite.favorite import Favorite
 
 from pcapi.domain.beneficiary.beneficiary import Beneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
-from pcapi.domain.booking.booking import Booking
 from pcapi.domain.booking_recap.booking_recap import ThingBookingRecap, EventBookingRecap, BookBookingRecap
-from pcapi.domain.stock.stock import Stock
 from pcapi.models import OfferSQLEntity, MediationSQLEntity
 
 
@@ -169,50 +167,6 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
             date_used=date_used,
             venue_name=venue_name,
             venue_is_virtual=venue_is_virtual,
-    )
-
-
-def create_domain_stock(identifier: int,
-                        quantity: Optional[int],
-                        offer: OfferSQLEntity,
-                        price: float = 1,
-                        beginning_datetime: Optional[datetime] = None,
-                        booking_limit_datetime: Optional[datetime] = None,
-                        is_soft_deleted: bool = False,
-                        bookings: List[Booking] = []) -> Stock:
-    return Stock(
-            identifier=identifier,
-            quantity=quantity,
-            offer=offer,
-            price=price,
-            beginning_datetime=beginning_datetime,
-            booking_limit_datetime=booking_limit_datetime,
-            is_soft_deleted=is_soft_deleted,
-            bookings=bookings,
-    )
-
-
-def create_domain_booking(beneficiary: Beneficiary,
-                          stock: Stock,
-                          amount: float = 1.0,
-                          quantity: int = 1,
-                          recommendation_id: int = None,
-                          is_cancelled: bool = False,
-                          is_used: bool = False,
-                          identifier: int = None,
-                          token: str = None,
-                          date_booked: datetime = datetime.utcnow()) -> Booking:
-    return Booking(
-            beneficiary=beneficiary,
-            stock=stock,
-            amount=amount,
-            quantity=quantity,
-            recommendation_id=recommendation_id,
-            is_cancelled=is_cancelled,
-            is_used=is_used,
-            identifier=identifier,
-            token=token,
-            date_booked=date_booked
     )
 
 

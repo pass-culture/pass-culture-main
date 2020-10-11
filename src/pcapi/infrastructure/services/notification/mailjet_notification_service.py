@@ -2,38 +2,36 @@ import os
 from typing import Callable
 from datetime import datetime
 
-from pcapi.domain.booking.booking import Booking
+from pcapi.core.bookings.models import BookingSQLEntity
 from pcapi.domain.beneficiary_contact.beneficiary_contact import BeneficiaryContact
 from pcapi.domain.services.notification.notification_service import NotificationService
 from pcapi.domain.user_emails import send_booking_recap_emails, send_booking_confirmation_email_to_beneficiary, \
     send_booking_cancellation_emails_to_user_and_offerer
-from pcapi.infrastructure.repository.booking import booking_domain_converter
 from pcapi.utils.logger import logger
 from pcapi.utils.mailing import send_raw_email, create_contact, add_contact_informations, add_contact_to_list, MailServiceException
 from pcapi.domain.beneficiary_contact.beneficiary_contact_exceptions import AddNewBeneficiaryContactException
 
 
 class MailjetNotificationService(NotificationService):
-    def send_booking_recap(self, booking: Booking) -> None:
+    def send_booking_recap(self, booking: BookingSQLEntity) -> None:
         try:
             send_booking_recap_emails(booking, send_raw_email)
         except MailServiceException as error:
             logger.error('Mail service failure', error)
 
-    def send_booking_confirmation_to_beneficiary(self, booking: Booking) -> None:
+    def send_booking_confirmation_to_beneficiary(self, booking: BookingSQLEntity) -> None:
         try:
             send_booking_confirmation_email_to_beneficiary(booking, send_raw_email)
         except MailServiceException as error:
             logger.error('Mail service failure', error)
 
     def send_booking_cancellation_emails_to_user_and_offerer(self,
-                                                             booking: Booking,
+                                                             booking: BookingSQLEntity,
                                                              is_offerer_cancellation: bool,
                                                              is_user_cancellation: bool,
                                                              send_email: Callable[..., bool]):
-        booking_sql_entity = booking_domain_converter.to_model(booking)
         try:
-            send_booking_cancellation_emails_to_user_and_offerer(booking_sql_entity,
+            send_booking_cancellation_emails_to_user_and_offerer(booking,
                                                                  is_offerer_cancellation,
                                                                  is_user_cancellation,
                                                                  send_raw_email)

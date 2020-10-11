@@ -1,4 +1,5 @@
-from pcapi.repository import booking_queries, repository
+import pcapi.core.bookings.repository as booking_repository
+from pcapi.repository import repository
 
 
 def update_offer_and_booking_status(booking_tokens_file_path: str):
@@ -8,7 +9,7 @@ def update_offer_and_booking_status(booking_tokens_file_path: str):
     progress = 0
 
     for booking_token in bookings_token:
-        booking = booking_queries.find_by(booking_token)
+        booking = booking_repository.find_by(token=booking_token)
 
         if not booking.isUsed:
             booking.isCancelled = True

@@ -1,37 +1,23 @@
-from pcapi.domain.booking.booking import Booking
+import pytest
+
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.domain.expenses import get_expenses
-from pcapi.domain.stock.stock import Stock
 from pcapi.models import ThingType, EventType
-from tests.domain_creators.generic_creators import create_domain_beneficiary
-from pcapi.model_creators.generic_creators import create_offerer, create_venue
-from pcapi.model_creators.specific_creators import create_booking_for_thing, create_booking_for_event, \
-    create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_booking_for_thing, create_booking_for_event
 
 
+@pytest.mark.usefixtures("db_session")
 class ExpensesTest:
     class DomainBookingTemporaryTest:
         def test_should_return_expenses(self):
-            # Given
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, is_digital=True)
-
-            user = create_domain_beneficiary(identifier=1)
-            stock = Stock(
-                identifier=1,
-                quantity=None,
-                offer=offer,
-                price=2
+            booking = BookingFactory(
+                amount=50,
+                stock__offer__type=str(ThingType.LIVRE_EDITION),
+                stock__offer__url='url',
             )
-            booking = Booking(beneficiary=user, stock=stock, amount=2, quantity=25)
-            bookings = [
-                booking
-            ]
 
-            # When
-            expenses = get_expenses(bookings)
+            expenses = get_expenses([booking])
 
-            # Then
             assert expenses['digital']['actual'] == 50
             assert expenses['physical']['actual'] == 0
 

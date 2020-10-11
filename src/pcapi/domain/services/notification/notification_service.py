@@ -1,22 +1,22 @@
 from abc import ABC, abstractmethod
 from typing import Callable
 
-from pcapi.domain.booking.booking import Booking
+from pcapi.core.bookings.models import BookingSQLEntity
 from pcapi.domain.beneficiary_contact.beneficiary_contact import BeneficiaryContact
 
 
 class NotificationService(ABC):
     @abstractmethod
-    def send_booking_recap(self, booking: Booking) -> None:
+    def send_booking_recap(self, booking: BookingSQLEntity) -> None:
         pass
 
     @abstractmethod
-    def send_booking_confirmation_to_beneficiary(self, booking: Booking) -> None:
+    def send_booking_confirmation_to_beneficiary(self, booking: BookingSQLEntity) -> None:
         pass
 
     @abstractmethod
     def send_booking_cancellation_emails_to_user_and_offerer(self,
-                                                             booking: Booking,
+                                                             booking: BookingSQLEntity,
                                                              is_offerer_cancellation: bool,
                                                              is_user_cancellation: bool,
                                                              send_email: Callable[..., bool]):

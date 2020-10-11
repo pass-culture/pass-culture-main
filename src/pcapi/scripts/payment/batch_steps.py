@@ -3,6 +3,7 @@ from typing import List, Tuple
 
 from lxml.etree import DocumentInvalid
 
+import pcapi.core.bookings.repository as booking_repository
 from pcapi.domain.admin_emails import send_payment_message_email, send_payment_details_email, send_wallet_balances_email, \
     send_payments_report_emails
 from pcapi.domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_message_file, \
@@ -16,7 +17,7 @@ from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.repository import booking_queries, repository
+from pcapi.repository import repository
 from pcapi.repository import payment_queries
 from pcapi.repository.feature_queries import is_active
 from pcapi.repository.user_queries import get_all_users_wallet_balances
@@ -47,12 +48,12 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
         if is_active(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE):
             booking_reimbursements = []
             for venue in offerer.managedVenues:
-                final_bookings = booking_queries.find_eligible_bookings_for_venue(
+                final_bookings = booking_repository.find_eligible_bookings_for_venue(
                     venue.id)
                 booking_reimbursements += find_all_booking_reimbursements(
                     final_bookings, NEW_RULES)
         else:
-            final_bookings = booking_queries.find_eligible_bookings_for_offerer(
+            final_bookings = booking_repository.find_eligible_bookings_for_offerer(
                 offerer.id)
             booking_reimbursements = find_all_booking_reimbursements(
                 final_bookings, CURRENT_RULES)

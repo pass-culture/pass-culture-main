@@ -1,39 +1,12 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from pcapi.models import ThingType, BookingSQLEntity
 from pcapi.repository import repository
-from pcapi.scripts.booking.create_booking_for_user_on_specific_stock import create_booking_for_user_on_specific_stock, \
-    create_booking_for_user_on_specific_stock_bypassing_capping_limits
+from pcapi.scripts.booking.create_booking_for_user_on_specific_stock import create_booking_for_user_on_specific_stock_bypassing_capping_limits
 import pytest
 from pcapi.model_creators.generic_creators import create_user, create_stock, create_venue, create_offerer, \
     create_booking, create_deposit
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.use_cases.book_an_offer import BookingInformation
-
-
-class CreateBookingForUserOnSpecificStockTest:
-    def test_should_call_book_an_offer_use_case_with_expected_parameters(self):
-        # Given
-        book_an_offer_mock = MagicMock()
-        book_an_offer_mock.execute = MagicMock()
-
-        user_id = 12
-        stock_id = 15
-
-        # When
-        create_booking_for_user_on_specific_stock(
-            user_id,
-            stock_id,
-            book_an_offer_mock,
-        )
-
-        # Then
-        book_an_offer_mock.execute.assert_called_once()
-        use_case_parameters = book_an_offer_mock.execute.call_args[0][0]
-        assert isinstance(use_case_parameters, BookingInformation)
-        assert use_case_parameters.user_id == user_id
-        assert use_case_parameters.stock_id == stock_id
-        assert use_case_parameters.quantity == 1
 
 
 class CreateBookingForUserOnSpecificStockBypassingCappingLimitsTest:

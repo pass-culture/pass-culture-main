@@ -1,19 +1,18 @@
 from unittest.mock import Mock, call, patch
 
 import pytest
+
 from tests.domain_creators.generic_creators import create_domain_beneficiary, \
     create_domain_beneficiary_pre_subcription
 from pcapi.model_creators.generic_creators import create_booking, \
     create_deposit, create_offerer, create_user, create_user_offerer, \
     create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, \
-    create_stock_with_event_offer
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from tests.test_utils import create_mocked_bookings
 
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
     BeneficiaryIsADuplicate, BeneficiaryIsNotEligible
-from pcapi.domain.booking.booking import Booking
-from pcapi.domain.stock.stock import Stock
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.domain.user_emails import send_activation_email, \
     send_attachment_validation_email_to_pro_offerer, \
     send_batch_cancellation_emails_to_users, \
@@ -215,94 +214,46 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
         mocked_send_email.assert_called_once_with(data={'MJ-TemplateID': 1163067})
 
 
+@pytest.mark.usefixtures("db_session")
 class SendBookingRecapEmailsTest:
     @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
-    def when_feature_send_mail_to_users_disabled_sends_email_to_pass_culture_dev(self,
-                                                                                 mock_feature_send_mail_to_users_enabled,
-                                                                                 app):
-        # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@example.net')
-
-        user = create_domain_beneficiary(identifier=1)
-        stock = Stock(
-            identifier=1,
-            quantity=None,
-            offer=offer,
-            price=10
+    def test_send_to_developers(self, mock_feature_send_mail_to_users_enabled):
+        booking = bookings_factories.BookingFactory(
+            stock__offer__bookingEmail='booking.email@example.com',
         )
-        booking = Booking(beneficiary=user, stock=stock, amount=1, quantity=10)
         mocked_send_email = Mock()
 
-        # when
         send_booking_recap_emails(booking, mocked_send_email)
 
-        # then
         mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        data = args[1]['data']
+        data = mocked_send_email.call_args[1]['data']
         assert data['To'] == 'dev@example.com'
 
     @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration(self,
-                                                                                                            mock_feature_send_mail_to_users_enabled,
-                                                                                                            app):
-        # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@example.net')
-
-        user = create_domain_beneficiary(identifier=1)
-        stock = Stock(
-            identifier=1,
-            quantity=None,
-            offer=offer,
-            price=10
+    def test_send_to_offerer_and_admin(self, mock_feature_send_mail_to_users_enabled):
+        booking = bookings_factories.BookingFactory(
+            stock__offer__bookingEmail='booking.email@example.com',
         )
-        booking = Booking(beneficiary=user, stock=stock, amount=1, quantity=10)
-
         mocked_send_email = Mock()
 
-        # when
         send_booking_recap_emails(booking, mocked_send_email)
 
-        # then
         mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        data = args[1]['data']
-        assert data['To'] == 'administration@example.com, offer.booking.email@example.net'
+        data = mocked_send_email.call_args[1]['data']
+        assert data['To'] == 'administration@example.com, booking.email@example.com'
 
     @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     @patch('pcapi.utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(
-            self,
-            feature_send_mail_to_users_enabled):
-        # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, booking_email=None)
-
-        user = create_domain_beneficiary(identifier=1)
-        stock = Stock(
-            identifier=1,
-            quantity=None,
-            offer=offer,
-            price=10
-        )
-        booking = Booking(beneficiary=user, stock=stock, amount=1, quantity=10)
-
+    def test_send_only_to_admin(self, feature_send_mail_to_users_enabled):
+        booking = bookings_factories.BookingFactory()
         mocked_send_email = Mock()
 
-        # when
         send_booking_recap_emails(booking, mocked_send_email)
 
-        # then
         mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        data = args[1]['data']
+        data = mocked_send_email.call_args[1]['data']
         assert data['To'] == 'administration@example.com'
 
 

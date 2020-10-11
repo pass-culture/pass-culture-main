@@ -1,151 +1,61 @@
-from datetime import datetime, timedelta
-from unittest.mock import patch, MagicMock
-
-from pcapi.domain.booking.booking_exceptions import StockIsNotBookable
-from pcapi.models.booking_sql_entity import BookingSQLEntity
-from pcapi.repository import repository
-from tests.conftest import TestClient
 import pytest
-from pcapi.model_creators.generic_creators import create_deposit, \
-    create_offerer, \
-    create_recommendation, \
-    create_user, create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, \
-    create_stock_with_event_offer, \
-    create_stock_with_thing_offer
+
+from tests.conftest import TestClient
+
+import pcapi.core.bookings.models as bookings_models
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.recommendations.factories as recommendations_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
 
-class Post:
-    class Returns201:
-        @pytest.mark.usefixtures("db_session")
-        @patch('pcapi.routes.bookings.feature_queries.is_active')
-        def expect_the_booking_to_have_good_includes_when_qr_code_feature_is_off(self, qr_code_is_active, app):
-            # Given
-            qr_code_is_active.return_value = False
-            offerer = create_offerer()
-            venue = create_venue(offerer=offerer)
-            ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0,
-                                                     booking_limit_datetime=datetime.utcnow() + timedelta(minutes=2))
-            user = create_user()
-            recommendation = create_recommendation(offer=ok_stock.offer, user=user)
-            repository.save(ok_stock, user)
+@pytest.mark.usefixtures("db_session")
+class Returns201:
+    def test_booking_creation(self, app):
+        user = users_factories.UserFactory()
+        stock = offers_factories.StockFactory()
+        recommendation = recommendations_factories.RecommendationFactory(user=user)
 
-            booking_json = {
-                'stockId': humanize(ok_stock.id),
-                'recommendationId': humanize(recommendation.id),
-                'quantity': 1
-            }
+        data = {
+            'stockId': humanize(stock.id),
+            'recommendationId': humanize(recommendation.id),
+            'quantity': 1
+        }
+        client = TestClient(app.test_client()).with_auth(user.email)
+        response = client.post('/bookings', json=data)
 
-            # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .post('/bookings', json=booking_json)
+        booking = bookings_models.BookingSQLEntity.query.one()
+        assert response.status_code == 201
+        assert response.json == {
+            'amount': 10.0,
+            'completedUrl': None,
+            'id': humanize(booking.id),
+            'isCancelled': False,
+            'quantity': 1,
+            'stock': {'price': 10.0},
+            'stockId': humanize(stock.id),
+            'token': booking.token,
+            'user': {
+                'id': humanize(user.id),
+                'wallet_balance': 490.0,
+            },
+        }
 
-            # Then
-            booking = BookingSQLEntity.query.one()
-            assert response.status_code == 201
-            assert response.json == {
-                'amount': 0.0,
-                'completedUrl': None,
-                'id': humanize(booking.id),
-                'isCancelled': False,
-                'quantity': 1,
-                'stock': {'price': 0.0},
-                'stockId': humanize(ok_stock.id),
-                'token': booking.token,
-                'user': {
-                    'id': humanize(user.id),
-                    'wallet_balance': 0.0,
-                },
-            }
-            assert 'qrCode' not in response.json
+@pytest.mark.usefixtures("db_session")
+class Returns400:
+    def when_use_case_raise_stock_is_not_bookable_exception(self, app):
+        user = users_factories.UserFactory()
+        stock = offers_factories.StockFactory(quantity=0)
 
-        @patch('pcapi.routes.bookings.feature_queries.is_active')
-        @patch('pcapi.routes.bookings.redis.add_offer_id')
-        @pytest.mark.usefixtures("db_session")
-        def when_booking_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, mock_feature, app):
-            # Given
-            mock_feature.return_value = True
-            beneficiary = create_user()
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            thing_offer = create_offer_with_thing_product(venue)
-            thing_stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
-            recommendation = create_recommendation(thing_offer, beneficiary)
-            create_deposit(beneficiary)
-            repository.save(recommendation)
+        data = {
+            'stockId': humanize(stock.id),
+            'recommendationId': None,
+            'quantity': 1
+        }
+        client = TestClient(app.test_client()).with_auth(user.email)
+        response = client.post('/bookings', json=data)
 
-            booking_json = {
-                'stockId': humanize(thing_stock.id),
-                'recommendationId': humanize(recommendation.id),
-                'quantity': 1
-            }
+        assert response.status_code == 400
+        assert response.json['stock'] == ["Ce stock n'est pas réservable"]
 
-            # When
-            response = TestClient(app.test_client()) \
-                .with_auth(beneficiary.email) \
-                .post('/bookings', json=booking_json)
-
-            # Then
-            assert response.status_code == 201
-            mock_add_offer_id_to_redis.assert_called_once_with(client=app.redis_client, offer_id=thing_stock.offerId)
-
-        @patch('pcapi.routes.bookings.feature_queries.is_active')
-        @patch('pcapi.routes.bookings.redis.add_offer_id')
-        @pytest.mark.usefixtures("db_session")
-        def when_booking_expect_offer_id_not_to_be_added_to_redis(self, mock_add_offer_id_to_redis, mock_feature, app):
-            # Given
-            mock_feature.return_value = False
-            beneficiary = create_user()
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            thing_offer = create_offer_with_thing_product(venue)
-            thing_stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
-            recommendation = create_recommendation(thing_offer, beneficiary)
-            create_deposit(beneficiary)
-            repository.save(recommendation)
-
-            booking_json = {
-                'stockId': humanize(thing_stock.id),
-                'recommendationId': humanize(recommendation.id),
-                'quantity': 1
-            }
-
-            # When
-            TestClient(app.test_client()) \
-                .with_auth(beneficiary.email) \
-                .post('/bookings', json=booking_json)
-
-            # Then
-            mock_add_offer_id_to_redis.assert_not_called()
-
-    class Returns400:
-        @pytest.mark.usefixtures("db_session")
-        @patch('pcapi.routes.bookings.book_an_offer')
-        def when_use_case_raise_stock_is_not_bookable_exception(self, mock_book_an_offer, app):
-            # Given
-            user = create_user()
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue)
-            create_deposit(user)
-            repository.save(stock, user)
-
-            booking_json = {
-                'stockId': humanize(stock.id),
-                'recommendationId': None,
-                'quantity': 1
-            }
-
-            mock_book_an_offer.execute = MagicMock()
-            mock_book_an_offer.execute.side_effect = StockIsNotBookable
-
-            # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .post('/bookings', json=booking_json)
-
-            # Then
-            assert response.status_code == 400
-            assert response.json['stock'] == ["Ce stock n'est pas réservable"]
+        assert bookings_models.BookingSQLEntity.query.first() is None

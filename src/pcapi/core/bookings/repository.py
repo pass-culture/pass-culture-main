@@ -4,14 +4,15 @@ from typing import List, Optional, Set
 
 from dateutil import tz
 from sqlalchemy import desc, func, text
-from sqlalchemy.orm import Query, selectinload
+from sqlalchemy.orm import Query, joinedload, selectinload
 
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap, BookingRecap, EventBookingRecap, ThingBookingRecap
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
+import pcapi.domain.expenses
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import UserOfferer, VenueSQLEntity
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.models.booking_sql_entity import BookingSQLEntity
+from pcapi.core.bookings.models import BookingSQLEntity
 from pcapi.models.db import db
 from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.offer_type import EventType, ThingType
@@ -425,3 +426,17 @@ def _build_find_ordered_user_bookings(user_id: int) -> Query:
         .options(
         selectinload(BookingSQLEntity.stock)
     )
+
+
+def get_user_expenses(user: UserSQLEntity) -> dict:
+    bookings = (
+        BookingSQLEntity.query
+        .filter_by(user=user)
+        .filter_by(isCancelled=False)
+        .options(
+            joinedload(BookingSQLEntity.stock).
+            joinedload(StockSQLEntity.offer)
+        )
+        .all()
+    )
+    return pcapi.domain.expenses.get_expenses(bookings)

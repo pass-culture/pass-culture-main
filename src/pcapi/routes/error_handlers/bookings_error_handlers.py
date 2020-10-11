@@ -1,6 +1,6 @@
 from flask import current_app as app, jsonify
 
-from pcapi.domain.booking.booking_exceptions import OfferIsAlreadyBooked, QuantityIsInvalid, StockIsNotBookable, \
+from pcapi.core.bookings.exceptions import OfferIsAlreadyBooked, QuantityIsInvalid, StockIsNotBookable, \
     CannotBookFreeOffers, PhysicalExpenseLimitHasBeenReached, UserHasInsufficientFunds, \
     DigitalExpenseLimitHasBeenReached, BookingIsAlreadyUsed, EventHappensInLessThan72Hours, BookingDoesntExist
 from pcapi.domain.stock.stock_exceptions import StockDoesntExist

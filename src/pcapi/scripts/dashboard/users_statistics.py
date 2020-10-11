@@ -4,10 +4,10 @@ import pandas
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
+import pcapi.core.bookings.repository as booking_repository
 import pcapi.repository.user_queries as user_repository
 from pcapi.models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, OfferSQLEntity, ThingType, EventType
 from pcapi.models.db import db
-from pcapi.repository import booking_queries
 
 
 def count_activated_users(departement_code: str = None) -> int:
@@ -27,8 +27,8 @@ def count_users_having_booked(departement_code: str = None) -> int:
 def get_mean_number_of_bookings_per_user_having_booked(departement_code: str = None) -> float:
     number_of_users_having_booked = count_users_having_booked(departement_code)
 
-    number_of_non_cancelled_bookings = booking_queries.count_non_cancelled() if (departement_code is None) \
-        else booking_queries.count_non_cancelled_by_departement(departement_code)
+    number_of_non_cancelled_bookings = booking_repository.count_non_cancelled() if (departement_code is None) \
+        else booking_repository.count_non_cancelled_by_departement(departement_code)
     if not number_of_users_having_booked:
         return 0
 

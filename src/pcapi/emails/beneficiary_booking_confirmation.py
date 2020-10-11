@@ -1,6 +1,6 @@
 from typing import Dict
 
-from pcapi.domain.booking.booking import Booking
+from pcapi.core.bookings.models import BookingSQLEntity
 from pcapi.models.offer_type import ProductType
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.utils.date import get_date_formatted_for_email, get_time_formatted_for_email, utc_datetime_to_department_timezone
@@ -8,17 +8,17 @@ from pcapi.utils.human_ids import humanize
 from pcapi.utils.mailing import DEV_EMAIL_ADDRESS, SUPPORT_EMAIL_ADDRESS, format_environment_for_email
 
 
-def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -> Dict:
+def retrieve_data_for_beneficiary_booking_confirmation_email(booking: BookingSQLEntity) -> Dict:
     stock = booking.stock
     offer = stock.offer
     venue = offer.venue
-    beneficiary = booking.beneficiary
+    beneficiary = booking.user
 
     is_digital_offer = offer.isDigital
     is_physical_offer = ProductType.is_thing(name=offer.type) and not is_digital_offer
     is_event = ProductType.is_event(name=offer.type)
 
-    department_code = venue.departementCode if not is_digital_offer else beneficiary.departmentCode
+    department_code = venue.departementCode if not is_digital_offer else beneficiary.departementCode
     booking_date_in_tz = utc_datetime_to_department_timezone(booking.dateCreated, department_code)
 
     beneficiary_email = beneficiary.email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS
@@ -30,6 +30,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     offerer_name = venue.managingOfferer.name
     formatted_event_beginning_time = ''
     formatted_event_beginning_date = ''
+    # FIXME: booking.price == stock.price, so we should just write str(booking.total_amount), right?
     stock_price = str(stock.price * booking.quantity) if stock.price > 0 else 'Gratuit'
     booking_token = booking.token
     venue_name = venue.name

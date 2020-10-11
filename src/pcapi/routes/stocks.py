@@ -17,10 +17,8 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.mediation_sql_entity import MediationSQLEntity
 from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.user_offerer import RightsType
-from pcapi.repository import offerer_queries, \
-    repository, \
-    feature_queries
-from pcapi.repository.booking_queries import find_not_cancelled_bookings_by_stock
+from pcapi.repository import offerer_queries, repository, feature_queries
+from pcapi.core.bookings.repository import find_not_cancelled_bookings_by_stock
 from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.repository.stock_queries import find_stocks_with_possible_filters
 from pcapi.routes.serialization import as_dict

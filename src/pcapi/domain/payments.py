@@ -17,7 +17,7 @@ from pcapi.models import PaymentMessage
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.user_sql_entity import WalletBalance
-from pcapi.repository import booking_queries
+import pcapi.core.bookings.repository as booking_repository
 from pcapi.utils.human_ids import humanize
 
 XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
@@ -194,12 +194,12 @@ def generate_file_checksum(file: str):
     return sha256(encoded_file).digest()
 
 
-def create_all_payments_details(payments: List[Payment], find_booking_date_used=booking_queries.find_date_used) -> \
+def create_all_payments_details(payments: List[Payment], find_booking_date_used=booking_repository.find_date_used) -> \
         List[PaymentDetails]:
     return list(map(lambda p: create_payment_details(p, find_booking_date_used), payments))
 
 
-def create_payment_details(payment: Payment, find_booking_date_used=booking_queries.find_date_used) -> PaymentDetails:
+def create_payment_details(payment: Payment, find_booking_date_used=booking_repository.find_date_used) -> PaymentDetails:
     return PaymentDetails(payment, find_booking_date_used(payment.booking))
 
 

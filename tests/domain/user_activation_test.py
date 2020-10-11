@@ -6,7 +6,7 @@ import pytest
 from pcapi.domain.user_activation import generate_activation_users_csv, is_import_status_change_allowed, is_activation_booking
 from pcapi.models import ImportStatus, EventType, UserSQLEntity
 from pcapi.models import ThingType
-from pcapi.models.booking_sql_entity import ActivationUser
+from pcapi.core.bookings.models import ActivationUser
 from pcapi.scripts.beneficiary.old_remote_import import create_beneficiary_from_application
 from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue

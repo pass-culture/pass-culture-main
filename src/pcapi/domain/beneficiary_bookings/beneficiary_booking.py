@@ -1,13 +1,15 @@
 from datetime import datetime
 from typing import List, Optional, Dict
 
+import pcapi.core.bookings.api as bookings_api
 from pcapi.domain.beneficiary_bookings.active_mediation import ActiveMediation
 from pcapi.domain.beneficiary_bookings.thumb_url import ThumbUrl
-from pcapi.domain.bookings import generate_qr_code
 from pcapi.models.offer_type import ProductType, ThingType, EventType
 from pcapi.utils.human_ids import humanize
 
 
+# FIXME: This class reimplements (with minor variations) methods of
+# the `BookingSQLEntity` model. We should get rid of it.
 class BeneficiaryBooking:
     def __init__(self,
                  amount: int,
@@ -132,9 +134,11 @@ class BeneficiaryBooking:
     @property
     def qr_code(self) -> Optional[str]:
         if not self.is_event_expired and not self.isCancelled:
-            return generate_qr_code(booking_token=self.token,
-                                    offer_extra_data=self.extraData)
+            return bookings_api.generate_qr_code(
+                booking_token=self.token, offer_extra_data=self.extraData
+            )
         if not self.isUsed and not self.isCancelled:
-            return generate_qr_code(booking_token=self.token,
-                                    offer_extra_data=self.extraData)
+            return bookings_api.generate_qr_code(
+                booking_token=self.token, offer_extra_data=self.extraData
+            )
         return None

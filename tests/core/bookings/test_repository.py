@@ -9,13 +9,14 @@ from pcapi.model_creators.generic_creators import create_booking, create_deposit
 from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_stock_from_offer, create_stock_with_event_offer, \
     create_stock_with_thing_offer
 
+import pcapi.core.bookings.repository as booking_repository
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap, EventBookingRecap
+from pcapi.repository import repository
 from pcapi.models import BookingSQLEntity, EventType, ThingType
 from pcapi.models.api_errors import ApiErrors, ResourceNotFoundError
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY
-from pcapi.repository import booking_queries, repository
-from pcapi.repository.booking_queries import find_by_pro_user_id, find_first_matching_from_offer_by_user
+from pcapi.core.bookings.repository import find_by_pro_user_id, find_first_matching_from_offer_by_user
 
 NOW = datetime.utcnow()
 TWO_DAYS_AGO = NOW - timedelta(days=2)
@@ -38,7 +39,7 @@ def test_find_all_ongoing_bookings(app):
     repository.save(ongoing_booking, validated_booking, cancelled_booking)
 
     # When
-    all_ongoing_bookings = booking_queries.find_ongoing_bookings_by_stock(stock.id)
+    all_ongoing_bookings = booking_repository.find_ongoing_bookings_by_stock(stock.id)
 
     # Then
     assert all_ongoing_bookings == [ongoing_booking]
@@ -58,7 +59,7 @@ def test_find_not_cancelled_bookings_by_stock(app):
     repository.save(not_cancelled_booking, validated_booking, cancelled_booking)
 
     # When
-    all_not_cancelled_bookings = booking_queries.find_not_cancelled_bookings_by_stock(stock)
+    all_not_cancelled_bookings = booking_repository.find_not_cancelled_bookings_by_stock(stock)
 
     # Then
     assert set(all_not_cancelled_bookings) == {validated_booking, not_cancelled_booking}
@@ -84,7 +85,7 @@ class FindFinalOffererBookingsTest:
         repository.save(booking1, booking2, booking3)
 
         # When
-        bookings = booking_queries.find_eligible_bookings_for_offerer(offerer1.id)
+        bookings = booking_repository.find_eligible_bookings_for_offerer(offerer1.id)
 
         # Then
         assert len(bookings) == 2
@@ -109,7 +110,7 @@ class FindFinalOffererBookingsTest:
         repository.save(booking1, booking2, payment1, payment2)
 
         # When
-        bookings = booking_queries.find_eligible_bookings_for_offerer(offerer.id)
+        bookings = booking_repository.find_eligible_bookings_for_offerer(offerer.id)
 
         # Then
         assert bookings[0] == booking3
@@ -131,7 +132,7 @@ class FindFinalOffererBookingsTest:
         repository.save(booking1, booking2)
 
         # When
-        bookings = booking_queries.find_eligible_bookings_for_offerer(offerer.id)
+        bookings = booking_repository.find_eligible_bookings_for_offerer(offerer.id)
 
         # Then
         assert len(bookings) == 1
@@ -151,7 +152,7 @@ class FindFinalOffererBookingsTest:
         repository.save(thing_booking1, thing_booking2)
 
         # When
-        bookings = booking_queries.find_eligible_bookings_for_offerer(offerer.id)
+        bookings = booking_repository.find_eligible_bookings_for_offerer(offerer.id)
 
         # Then
         assert len(bookings) == 1
@@ -185,7 +186,7 @@ class FindFinalOffererBookingsTest:
         repository.save(event_booking1, event_booking2)
 
         # When
-        bookings = booking_queries.find_eligible_bookings_for_offerer(offerer.id)
+        bookings = booking_repository.find_eligible_bookings_for_offerer(offerer.id)
 
         # Then
         assert len(bookings) == 0
@@ -211,7 +212,7 @@ class FindFinalVenueBookingsTest:
         repository.save(booking1, booking2, booking3)
 
         # When
-        bookings = booking_queries.find_eligible_bookings_for_venue(venue1.id)
+        bookings = booking_repository.find_eligible_bookings_for_venue(venue1.id)
 
         # Then
         assert len(bookings) == 2
@@ -230,7 +231,7 @@ class FindDateUsedTest:
         repository.save(booking)
 
         # when
-        date_used = booking_queries.find_date_used(booking)
+        date_used = booking_repository.find_date_used(booking)
 
         # then
         assert date_used == datetime(2018, 2, 12)
@@ -244,7 +245,7 @@ class FindDateUsedTest:
         repository.save(booking)
 
         # when
-        date_used = booking_queries.find_date_used(booking)
+        date_used = booking_repository.find_date_used(booking)
 
         # then
         assert date_used is None
@@ -260,7 +261,7 @@ class FindDateUsedTest:
         save_all_activities(activity_insert)
 
         # when
-        date_used = booking_queries.find_date_used(booking)
+        date_used = booking_repository.find_date_used(booking)
 
         # then
         assert date_used is None
@@ -280,7 +281,7 @@ class FindUserActivationBookingTest:
         repository.save(activation_booking)
 
         # when
-        booking = booking_queries.find_user_activation_booking(user)
+        booking = booking_repository.find_user_activation_booking(user)
 
         # then
         assert booking == activation_booking
@@ -298,7 +299,7 @@ class FindUserActivationBookingTest:
         repository.save(activation_booking)
 
         # when
-        booking = booking_queries.find_user_activation_booking(user)
+        booking = booking_repository.find_user_activation_booking(user)
 
         # then
         assert booking == activation_booking
@@ -316,7 +317,7 @@ class FindUserActivationBookingTest:
         repository.save(book_booking)
 
         # when
-        booking = booking_queries.find_user_activation_booking(user)
+        booking = booking_repository.find_user_activation_booking(user)
 
         # then
         assert booking is None
@@ -338,7 +339,7 @@ class GetExistingTokensTest:
         repository.save(booking1, booking2, booking3)
 
         # when
-        tokens = booking_queries.find_existing_tokens()
+        tokens = booking_repository.find_existing_tokens()
 
         # then
         assert tokens == {booking1.token, booking2.token, booking3.token}
@@ -346,7 +347,7 @@ class GetExistingTokensTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_an_empty_set_if_no_bookings(self, app: fixture):
         # when
-        tokens = booking_queries.find_existing_tokens()
+        tokens = booking_repository.find_existing_tokens()
 
         # then
         assert tokens == set()
@@ -365,7 +366,7 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            result = booking_queries.find_by(booking.token)
+            result = booking_repository.find_by(booking.token)
 
             # then
             assert result.id == booking.id
@@ -382,7 +383,7 @@ class FindByTest:
 
             # when
             with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
-                booking_queries.find_by('UNKNOWN')
+                booking_repository.find_by('UNKNOWN')
 
             # then
             assert resource_not_found_error.value.errors['global'] == [
@@ -400,7 +401,7 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            result = booking_queries.find_by(booking.token, email='user@example.com')
+            result = booking_repository.find_by(booking.token, email='user@example.com')
 
             # then
             assert result.id == booking.id
@@ -416,7 +417,7 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            result = booking_queries.find_by(booking.token, email='USER@example.COM')
+            result = booking_repository.find_by(booking.token, email='USER@example.COM')
 
             # then
             assert result.id == booking.id
@@ -432,7 +433,7 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            result = booking_queries.find_by(booking.token, email='   user@example.com  ')
+            result = booking_repository.find_by(booking.token, email='   user@example.com  ')
 
             # then
             assert result.id == booking.id
@@ -449,7 +450,7 @@ class FindByTest:
 
             # when
             with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
-                booking_queries.find_by(booking.token, email='other.user@example.com')
+                booking_repository.find_by(booking.token, email='other.user@example.com')
 
             # then
             assert resource_not_found_error.value.errors['global'] == [
@@ -467,7 +468,7 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            result = booking_queries.find_by(booking.token, email='user@example.com',
+            result = booking_repository.find_by(booking.token, email='user@example.com',
                                              offer_id=stock.offer.id)
 
             # then
@@ -484,7 +485,7 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            result = booking_queries.find_by(booking.token, email='user@example.com',
+            result = booking_repository.find_by(booking.token, email='user@example.com',
                                              offer_id=stock.offer.id)
 
             # then
@@ -502,7 +503,7 @@ class FindByTest:
 
             # when
             with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
-                booking_queries.find_by(
+                booking_repository.find_by(
                     booking.token, email='user@example.com', offer_id=1234)
 
             # then
@@ -566,7 +567,7 @@ class CountNonCancelledBookingsTest:
         repository.save(booking)
 
         # When
-        count = booking_queries.count_non_cancelled()
+        count = booking_repository.count_non_cancelled()
 
         # Then
         assert count == 1
@@ -583,7 +584,7 @@ class CountNonCancelledBookingsTest:
         repository.save(booking)
 
         # When
-        count = booking_queries.count_non_cancelled()
+        count = booking_repository.count_non_cancelled()
 
         # Then
         assert count == 0
@@ -606,7 +607,7 @@ class CountNonCancelledBookingsTest:
         repository.save(booking1, booking2)
 
         # When
-        count = booking_queries.count_non_cancelled()
+        count = booking_repository.count_non_cancelled()
 
         # Then
         assert count == 0
@@ -625,7 +626,7 @@ class CountNonCancelledBookingsByDepartementTest:
         repository.save(booking)
 
         # When
-        count = booking_queries.count_non_cancelled_by_departement('76')
+        count = booking_repository.count_non_cancelled_by_departement('76')
 
         # Then
         assert count == 1
@@ -642,7 +643,7 @@ class CountNonCancelledBookingsByDepartementTest:
         repository.save(booking)
 
         # When
-        count = booking_queries.count_non_cancelled_by_departement('76')
+        count = booking_repository.count_non_cancelled_by_departement('76')
 
         # Then
         assert count == 0
@@ -659,7 +660,7 @@ class CountNonCancelledBookingsByDepartementTest:
         repository.save(booking)
 
         # When
-        count = booking_queries.count_non_cancelled_by_departement('81')
+        count = booking_repository.count_non_cancelled_by_departement('81')
 
         # Then
         assert count == 0
@@ -682,7 +683,7 @@ class CountNonCancelledBookingsByDepartementTest:
         repository.save(booking1, booking2)
 
         # When
-        count = booking_queries.count_non_cancelled_by_departement('76')
+        count = booking_repository.count_non_cancelled_by_departement('76')
 
         # Then
         assert count == 0
@@ -701,7 +702,7 @@ class GetAllCancelledBookingsCountTest:
         repository.save(booking)
 
         # When
-        number_of_bookings = booking_queries.count_cancelled()
+        number_of_bookings = booking_repository.count_cancelled()
 
         # Then
         assert number_of_bookings == 0
@@ -719,7 +720,7 @@ class GetAllCancelledBookingsCountTest:
         repository.save(booking)
 
         # When
-        number_of_bookings = booking_queries.count_cancelled()
+        number_of_bookings = booking_repository.count_cancelled()
 
         # Then
         assert number_of_bookings == 1
@@ -742,7 +743,7 @@ class GetAllCancelledBookingsCountTest:
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = booking_queries.count_cancelled()
+        number_of_bookings = booking_repository.count_cancelled()
 
         # Then
         assert number_of_bookings == 0
@@ -762,7 +763,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         repository.save(booking)
 
         # When
-        number_of_bookings = booking_queries.count_cancelled_by_departement('76')
+        number_of_bookings = booking_repository.count_cancelled_by_departement('76')
 
         # Then
         assert number_of_bookings == 0
@@ -780,7 +781,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         repository.save(booking)
 
         # When
-        number_of_bookings = booking_queries.count_cancelled_by_departement('76')
+        number_of_bookings = booking_repository.count_cancelled_by_departement('76')
 
         # Then
         assert number_of_bookings == 1
@@ -800,7 +801,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         repository.save(booking1, booking2, booking3)
 
         # When
-        number_of_bookings = booking_queries.count_cancelled_by_departement('41')
+        number_of_bookings = booking_repository.count_cancelled_by_departement('41')
 
         # Then
         assert number_of_bookings == 1
@@ -822,7 +823,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = booking_queries.count_cancelled_by_departement('41')
+        number_of_bookings = booking_repository.count_cancelled_by_departement('41')
 
         # Then
         assert number_of_bookings == 0
@@ -832,7 +833,7 @@ class CountAllBookingsTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_no_bookings(self, app: fixture):
         # When
-        number_of_bookings = booking_queries.count()
+        number_of_bookings = booking_repository.count()
 
         # Then
         assert number_of_bookings == 0
@@ -850,7 +851,7 @@ class CountAllBookingsTest:
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = booking_queries.count()
+        number_of_bookings = booking_repository.count()
 
         # Then
         assert number_of_bookings == 2
@@ -868,7 +869,7 @@ class CountAllBookingsTest:
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = booking_queries.count()
+        number_of_bookings = booking_repository.count()
 
         # Then
         assert number_of_bookings == 2
@@ -890,7 +891,7 @@ class CountAllBookingsTest:
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = booking_queries.count()
+        number_of_bookings = booking_repository.count()
 
         # Then
         assert number_of_bookings == 0
@@ -900,7 +901,7 @@ class CountBookingsByDepartementTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_no_bookings(self, app: fixture):
         # When
-        number_of_bookings = booking_queries.count_by_departement('74')
+        number_of_bookings = booking_repository.count_by_departement('74')
 
         # Then
         assert number_of_bookings == 0
@@ -918,7 +919,7 @@ class CountBookingsByDepartementTest:
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = booking_queries.count_by_departement('74')
+        number_of_bookings = booking_repository.count_by_departement('74')
 
         # Then
         assert number_of_bookings == 2
@@ -937,7 +938,7 @@ class CountBookingsByDepartementTest:
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = booking_queries.count_by_departement('76')
+        number_of_bookings = booking_repository.count_by_departement('76')
 
         # Then
         assert number_of_bookings == 1
@@ -959,7 +960,7 @@ class CountBookingsByDepartementTest:
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = booking_queries.count_by_departement('76')
+        number_of_bookings = booking_repository.count_by_departement('76')
 
         # Then
         assert number_of_bookings == 0
@@ -979,7 +980,7 @@ class FindAllNotUsedAndNotCancelledTest:
         repository.save(booking)
 
         # When
-        bookings = booking_queries.find_not_used_and_not_cancelled()
+        bookings = booking_repository.find_not_used_and_not_cancelled()
 
         # Then
         assert len(bookings) == 0
@@ -997,7 +998,7 @@ class FindAllNotUsedAndNotCancelledTest:
         repository.save(booking)
 
         # When
-        bookings = booking_queries.find_not_used_and_not_cancelled()
+        bookings = booking_repository.find_not_used_and_not_cancelled()
 
         # Then
         assert len(bookings) == 0
@@ -1015,7 +1016,7 @@ class FindAllNotUsedAndNotCancelledTest:
         repository.save(booking)
 
         # When
-        bookings = booking_queries.find_not_used_and_not_cancelled()
+        bookings = booking_repository.find_not_used_and_not_cancelled()
 
         # Then
         assert len(bookings) == 0
@@ -1035,7 +1036,7 @@ class FindAllNotUsedAndNotCancelledTest:
         repository.save(booking1, booking2, booking3)
 
         # When
-        bookings = booking_queries.find_not_used_and_not_cancelled()
+        bookings = booking_repository.find_not_used_and_not_cancelled()
 
         # Then
         assert bookings == [booking1]
@@ -1058,7 +1059,7 @@ class GetValidBookingsByUserId:
         repository.save(booking1, booking2)
 
         # When
-        bookings = booking_queries.find_user_bookings_for_recommendation(user1.id)
+        bookings = booking_repository.find_user_bookings_for_recommendation(user1.id)
 
         # Then
         assert bookings == [booking1]
@@ -1080,7 +1081,7 @@ class GetValidBookingsByUserId:
         repository.save(booking1, booking2, booking3)
 
         # When
-        bookings = booking_queries.find_user_bookings_for_recommendation(user.id)
+        bookings = booking_repository.find_user_bookings_for_recommendation(user.id)
 
         # Then
         assert booking1 not in bookings
@@ -1099,7 +1100,7 @@ class GetValidBookingsByUserId:
         repository.save(booking1, booking2)
 
         # When
-        bookings = booking_queries.find_user_bookings_for_recommendation(user.id)
+        bookings = booking_repository.find_user_bookings_for_recommendation(user.id)
 
         # Then
         assert bookings == [booking1]
@@ -1129,7 +1130,7 @@ class GetValidBookingsByUserId:
         repository.save(booking1, booking2, booking3)
 
         # When
-        bookings = booking_queries.find_user_bookings_for_recommendation(user.id)
+        bookings = booking_repository.find_user_bookings_for_recommendation(user.id)
 
         # Then
         assert bookings == [booking1, booking3, booking2]
@@ -1145,7 +1146,7 @@ class FindByTokenTest:
         repository.save(valid_booking)
 
         # When
-        booking = booking_queries.find_used_by_token(token=valid_booking.token)
+        booking = booking_repository.find_used_by_token(token=valid_booking.token)
 
         # Then
         assert booking == valid_booking
@@ -1160,7 +1161,7 @@ class FindByTokenTest:
         repository.save(valid_booking)
 
         # When
-        booking = booking_queries.find_used_by_token(token=invalid_token)
+        booking = booking_repository.find_used_by_token(token=invalid_token)
 
         # Then
         assert booking is None
@@ -1174,7 +1175,7 @@ class FindByTokenTest:
         repository.save(valid_booking)
 
         # When
-        booking = booking_queries.find_used_by_token(token=valid_booking.token)
+        booking = booking_repository.find_used_by_token(token=valid_booking.token)
 
         # Then
         assert booking is None
@@ -1194,7 +1195,7 @@ class IsOfferAlreadyBookedByUserTest:
         repository.save(booking)
 
         # When
-        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user.id, offer)
+        is_offer_already_booked = booking_repository.is_offer_already_booked_by_user(user.id, offer)
 
         # Then
         assert is_offer_already_booked
@@ -1210,7 +1211,7 @@ class IsOfferAlreadyBookedByUserTest:
         repository.save(offer)
 
         # When
-        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user.id, offer)
+        is_offer_already_booked = booking_repository.is_offer_already_booked_by_user(user.id, offer)
 
         # Then
         assert not is_offer_already_booked
@@ -1227,7 +1228,7 @@ class IsOfferAlreadyBookedByUserTest:
         repository.save(offer)
 
         # When
-        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user2.id, offer)
+        is_offer_already_booked = booking_repository.is_offer_already_booked_by_user(user2.id, offer)
 
         # Then
         assert not is_offer_already_booked
@@ -1246,7 +1247,7 @@ class IsOfferAlreadyBookedByUserTest:
         repository.save(booking)
 
         # When
-        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user.id, offer)
+        is_offer_already_booked = booking_repository.is_offer_already_booked_by_user(user.id, offer)
 
         # Then
         assert not is_offer_already_booked
@@ -1269,7 +1270,7 @@ class CountNotCancelledBookingsQuantityByStocksTest:
         repository.save(booking1, booking2, booking3)
 
         # When
-        result = booking_queries.count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
+        result = booking_repository.count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
 
         # Then
         assert result == 15
@@ -1287,14 +1288,14 @@ class CountNotCancelledBookingsQuantityByStocksTest:
         repository.save(stock)
 
         # When
-        result = booking_queries.count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
+        result = booking_repository.count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
 
         # Then
         assert result == 0
 
     def test_should_return_0_when_no_stock_id_given(self, app: fixture):
         # When
-        result = booking_queries.count_not_cancelled_bookings_quantity_by_stock_id(None)
+        result = booking_repository.count_not_cancelled_bookings_quantity_by_stock_id(None)
 
         # Then
         assert result == 0

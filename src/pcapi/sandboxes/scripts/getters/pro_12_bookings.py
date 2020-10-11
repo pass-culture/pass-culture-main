@@ -1,4 +1,4 @@
-from pcapi.models.booking_sql_entity import BookingSQLEntity
+from pcapi.core.bookings.models import BookingSQLEntity
 from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.offerer import Offerer
 from pcapi.models.stock_sql_entity import StockSQLEntity

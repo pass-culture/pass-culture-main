@@ -1,26 +1,26 @@
 from typing import List, Dict
 
-from pcapi.domain.booking.booking import Booking
+from pcapi.core.bookings.models import BookingSQLEntity
 from pcapi.models.offer_type import ProductType
-from pcapi.repository import booking_queries
+import pcapi.core.bookings.repository as booking_repository
 from pcapi.utils.mailing import build_pc_pro_offer_link, format_environment_for_email, SUPPORT_EMAIL_ADDRESS, \
     create_email_recipients, extract_users_information_from_bookings, format_booking_date_for_email, \
     format_booking_hours_for_email
 
 
-def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: List[str]) -> Dict:
+def retrieve_data_for_offerer_booking_recap_email(booking: BookingSQLEntity, recipients: List[str]) -> Dict:
     offer = booking.stock.offer
     venue_name = offer.venue.name
     offer_name = offer.product.name
     price = 'Gratuit' if booking.stock.price == 0 else str(booking.stock.price)
     quantity = booking.quantity
-    user_email = booking.beneficiary.email
-    user_firstname = booking.beneficiary.firstName
-    user_lastname = booking.beneficiary.lastName
+    user_email = booking.user.email
+    user_firstname = booking.user.firstName
+    user_lastname = booking.user.lastName
     departement_code = offer.venue.departementCode or 'numérique'
     offer_type = offer.type
     is_event = int(offer.isEvent)
-    bookings = booking_queries.find_ongoing_bookings_by_stock(booking.stock.identifier)
+    bookings = booking_repository.find_ongoing_bookings_by_stock(booking.stock.id)
 
     offer_link = build_pc_pro_offer_link(offer)
     environment = format_environment_for_email()

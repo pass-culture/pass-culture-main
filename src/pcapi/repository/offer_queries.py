@@ -15,7 +15,7 @@ from pcapi.models import BookingSQLEntity, DiscoveryView, DiscoveryViewV3, \
 from pcapi.models.db import Model, db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
-from pcapi.repository.booking_queries import get_only_offer_ids_from_bookings
+from pcapi.core.bookings.repository import get_only_offer_ids_from_bookings
 from pcapi.repository.favorite_queries import get_only_offer_ids_from_favorites
 from pcapi.repository.iris_venues_queries import find_venues_located_near_iris
 from pcapi.repository.venue_queries import get_only_venue_ids_for_department_codes

@@ -1,7 +1,7 @@
 from typing import Dict
 
 from pcapi.models import OfferSQLEntity, UserSQLEntity
-from pcapi.repository.booking_queries import find_first_matching_from_offer_by_user
+from pcapi.core.bookings.repository import find_first_matching_from_offer_by_user
 from pcapi.routes.serialization.dictifier import as_dict
 from pcapi.utils.includes import OFFER_INCLUDES, \
     WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES
