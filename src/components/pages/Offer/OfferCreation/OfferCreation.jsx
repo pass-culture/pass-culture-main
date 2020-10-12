@@ -27,7 +27,7 @@ import { CGU_URL } from '../../../../utils/config'
 
 import { getDurationInHours, getDurationInMinutes } from '../utils/duration'
 import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
-import { buildWebappDiscoveryUrl } from '../../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
+import { webappOfferUrl } from '../../../layout/OfferPreviewLink/webappOfferUrl'
 import OfferPreviewLink from '../../../layout/OfferPreviewLink/OfferPreviewLink'
 import Insert from '../../../layout/Insert/Insert'
 
@@ -306,7 +306,7 @@ class OfferCreation extends PureComponent {
     const offerId = get(offer, 'id')
     const mediationId = get(get(offer, 'activeMediation'), 'id')
 
-    const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
+    const offerWebappUrl = webappOfferUrl(offerId, mediationId)
 
     window.open(offerWebappUrl, 'targetWindow', 'toolbar=no,width=375,height=667').focus()
   }
@@ -346,7 +346,7 @@ class OfferCreation extends PureComponent {
     const offerFromLocalProvider = isOfferFromStockProvider(offer) || offerFromAllocine
     const offerFromNonEditableLocalProvider = isOfferFromStockProvider(offer)
 
-    const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
+    const offerWebappUrl = webappOfferUrl(offerId, mediationId)
     const offererId = get(offerer, 'id')
     const offerName = get(offer, 'name')
     const showAllForm = selectedOfferType || !isCreatedEntity
@@ -380,10 +380,9 @@ class OfferCreation extends PureComponent {
 
     const displayDigitalOfferInformationMessage = !offerIsRefundable(selectedOfferType, venue)
 
-    const actionLink = offer && mediationId && (
+    const actionLink = offer && (
       <OfferPreviewLink
-        className="link"
-        href={offerWebappUrl}
+        offerWebappUrl={offerWebappUrl}
         onClick={this.handleHrefClick()}
       />
     )

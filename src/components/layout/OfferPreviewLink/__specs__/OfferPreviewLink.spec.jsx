@@ -1,62 +1,29 @@
-import { shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
-
 import OfferPreviewLink from '../OfferPreviewLink'
 
-describe('src | components | layout | OfferPreviewLink', () => {
+describe('src | OfferPreviewLink', () => {
   let props
 
   beforeEach(() => {
     props = {
-      className: 'Fake className',
-      offerWebappUrl: 'fake url',
+      offerWebappUrl: 'http://webapp.url.app',
       onClick: jest.fn(),
     }
   })
 
-  describe('render', () => {
-    describe('a link', () => {
-      it('should display correct text and className', () => {
-        // given
-        const wrapper = shallow(<OfferPreviewLink {...props} />)
+  it('should display a link', () => {
+    // when
+    const wrapper = mount(<OfferPreviewLink {...props} />)
 
-        // when
-        const link = wrapper.find('a')
-
-        // then
-        expect(link).toHaveLength(1)
-        expect(link.prop('className')).toBe('Fake className')
-        expect(link.text()).toStrictEqual('<Icon />Prévisualiser')
-      })
-
-      it('should execute the onClick property with the link is clicked', () => {
-        // given
-        const wrapper = shallow(
-          <div>
-            <OfferPreviewLink {...props} />
-          </div>
-        )
-
-        // when
-        wrapper.find('OfferPreviewLink').simulate('click')
-
-        // then
-        expect(props.onClick).toHaveBeenCalledWith()
-      })
-    })
-
-    describe('icon', () => {
-      it('should display correct icon type', () => {
-        // given
-        const wrapper = shallow(<OfferPreviewLink {...props} />)
-
-        // when
-        const icon = wrapper.find('Icon')
-
-        // then
-        expect(icon).toHaveLength(1)
-        expect(icon.prop('svg')).toBe('ico-eye')
-      })
-    })
+    // then
+    const link = wrapper.find('a')
+    expect(link.text()).toBe('Prévisualiser')
+    expect(link.prop('href')).toBe(props.offerWebappUrl)
+    expect(link.prop('onClick')).toBe(props.onClick)
+    const tip = wrapper.find('span')
+    expect(tip.prop('data-tip')).toBe('Ouvrir un nouvel onglet avec la prévisualisation de l’offre.')
+    const icon = wrapper.find('Icon')
+    expect(icon.prop('svg')).toBe('ico-eye')
   })
 })

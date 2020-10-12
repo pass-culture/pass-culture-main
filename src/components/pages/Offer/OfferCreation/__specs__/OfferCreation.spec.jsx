@@ -285,26 +285,6 @@ describe('src | OfferCreation', () => {
         expect(field.prop('type')).toBe('textarea')
       })
 
-      it('should not display preview link', () => {
-        // given
-        props.query.context = () => ({
-          isCreatedEntity: true,
-          isModifiedEntity: false,
-          readOnly: false,
-        })
-        props.selectedOfferType = {
-          type: 'Event',
-        }
-        const wrapper = shallow(<OfferCreation {...props} />)
-
-        // when
-        const preview_section = wrapper.find(Titles)
-        const preview_link = preview_section.find('OfferPreviewLink')
-
-        // then
-        expect(preview_link).toHaveLength(0)
-      })
-
       describe('when the offer is an Event', () => {
         it('should allow to set an event duration', () => {
           // given
@@ -531,7 +511,7 @@ describe('src | OfferCreation', () => {
 
         // then
         const preview_link = preview_section.dive().find('OfferPreviewLink')
-        expect(preview_link.prop('href')).toMatch('/offre/details/VAG/MED')
+        expect(preview_link.prop('offerWebappUrl')).toMatch('/offre/details/VAG/MED')
       })
     })
 

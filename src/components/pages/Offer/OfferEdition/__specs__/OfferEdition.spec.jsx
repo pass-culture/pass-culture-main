@@ -539,7 +539,7 @@ describe('components | OfferEdition', () => {
 
           // then
           const preview_link = preview_section.dive().find('OfferPreviewLink')
-          expect(preview_link.prop('href')).toMatch('/offre/details/VAG/MED')
+          expect(preview_link.prop('offerWebappUrl')).toMatch('/offre/details/VAG/MED')
         })
 
         it('should allow to update every fields', () => {

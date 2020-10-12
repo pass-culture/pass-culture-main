@@ -23,7 +23,7 @@ import { musicOptions, showOptions } from '../../../../utils/edd'
 import { offerNormalizer } from '../../../../utils/normalizers'
 import Titles from '../../../layout/Titles/Titles'
 import Insert from '../../../layout/Insert/Insert'
-import { buildWebappDiscoveryUrl } from '../../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
+import { webappOfferUrl } from '../../../layout/OfferPreviewLink/webappOfferUrl'
 import OfferPreviewLink from '../../../layout/OfferPreviewLink/OfferPreviewLink'
 import offerIsRefundable from '../domain/offerIsRefundable'
 import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
@@ -241,7 +241,7 @@ class OfferEdition extends PureComponent {
     const offerId = get(offer, 'id')
     const mediationId = get(get(offer, 'activeMediation'), 'id')
 
-    const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
+    const offerWebappUrl = webappOfferUrl(offerId, mediationId)
 
     window.open(offerWebappUrl, 'targetWindow', 'toolbar=no,width=375,height=667').focus()
   }
@@ -282,7 +282,7 @@ class OfferEdition extends PureComponent {
     const offerFromLocalProvider = isOfferFromStockProvider(offer) || offerFromAllocine
     const offerFromNonEditableLocalProvider = isOfferFromStockProvider(offer)
 
-    const offerWebappUrl = buildWebappDiscoveryUrl(offerId, mediationId)
+    const offerWebappUrl = webappOfferUrl(offerId, mediationId)
     const offererId = get(offerer, 'id')
     const offerName = get(offer, 'name')
     const showAllForm = selectedOfferType
@@ -303,11 +303,10 @@ class OfferEdition extends PureComponent {
 
     const displayDigitalOfferInformationMessage = !offerIsRefundable(selectedOfferType, venue)
 
-    const actionLink = offer && mediationId && (
+    const actionLink = offer && (
       <div className="title-action-links">
         <OfferPreviewLink
-          className="link"
-          href={offerWebappUrl}
+          offerWebappUrl={offerWebappUrl}
           onClick={this.handlePreviewClick()}
         />
       </div>
