@@ -10,22 +10,22 @@ fi
 LINTED_FILES=""
 
 for FILE in $STAGED_FILES; do
-  LINTED_FILES+=" /opt/services/flaskapp/src/${FILE}"
+  LINTED_FILES+=" ${FILE}"
 done
 
-echo -e "Running mypy for type checking\n"
-docker exec pc-flask mypy $LINTED_FILES
+echo -e "\033[0;96mRunning mypy for type checking\033[0m\n"
+mypy $LINTED_FILES --pretty
 if [[ "$?" != 0 ]]; then
   counter=$((counter + 1))
 fi
 
-echo -e "\nRunning pylint for code linting\n"
-docker exec pc-flask pylint $LINTED_FILES
+echo -e "\n\033[0;96mRunning pylint for code linting\033[0m\n"
+pylint $LINTED_FILES --output-format="colorized" --score=no
 if [[ "$?" != 0 ]]; then
   counter=$((counter + 1))
 fi
 
 if [[ $counter > 0 ]]; then
-  echo -e "\033[0;34mIf you want to bypass it, add --no-verify option when committing.\033[0m\n"
+  echo -e "\n\033[0;96mIf you want to bypass it, add --no-verify option when committing.\033[0m\n"
   exit 1
 fi
