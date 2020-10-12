@@ -77,8 +77,6 @@ if [[ "$ENV" == "production" ]]; then
   SCALINGO_APP=pass-culture-api
 elif [[ "$ENV" == "testing" ]]; then
   SCALINGO_APP=pass-culture-api-dev
-elif [[ "$ENV" == "datalake" ]]; then
-  SCALINGO_APP=pass-culture-api-datalake
 elif [[ "$ENV" == "perf" ]]; then
   SCALINGO_APP=pass-culture-api-perf
 elif [[  ! -z "$ENV" ]]; then
@@ -428,9 +426,8 @@ elif [[ "$CMD" == "deploy" ]]; then
 
   if [[ ! "$ENV" == 'production' ]] \
   && [[ ! "$ENV" == 'staging' ]] \
-  && [[ ! "$ENV" == 'datalake' ]] \
   && [[ ! "$ENV" == 'integration' ]]; then
-     echo_error "Can only deploy in datalake, staging, integration and production"
+     echo_error "Can only deploy in staging, integration and production"
      exit 1
   fi
 
