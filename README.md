@@ -9,19 +9,21 @@ C'est tout le framework du Pass Culture!
 Il vous faudra une machine UNIX.
 
 Installer:
+
 - [docker](https://docs.docker.com/install/)
 - [docker-compose](https://docs.docker.com/compose/install/#install-compose)
 - [yarn](https://yarnpkg.com/fr/) voir le README dans le dépot https://github.com/betagouv/pass-culture-browser/
 
 Mais spécialement, en plus pour macosx:
-- brew install coreutils
 
+- brew install coreutils
 
 Enfin pour tout le monde:
 
 ```bash
 ./pc symlink
 ```
+
 puis
 
 ```bash
@@ -30,12 +32,15 @@ pc install
 ```
 
 ### Init
+
 Pour vérifier les tests:
+
 ```bash
 pc test-backend
 ```
 
 Pour avoir une database de jeu:
+
 ```bash
 pc sandbox -n industrial
 ```
@@ -43,25 +48,41 @@ pc sandbox -n industrial
 ### Démarrage
 
 Pour lancer l'API:
+
 ```bash
 pc start-backend
 ```
 
 Pour lancer l'appli webapp:
+
 ```bash
 pc start-webapp
 ```
 
 Pour lancer le portail pro:
+
 ```bash
 pc start-pro
 ```
 
 ## Développeurs.ses
 
+### Environnement python local
+
+Pour pouvoir lancer les `hooks` de `pre-commit` sur le projet API, il faut installer l'environnement python en local.
+
+- installer Python 3.6 et `pip`
+- monter un [virtualenv](https://python-guide-pt-br.readthedocs.io/fr/latest/dev/virtualenvs.html) afin d'avoir un environnement isolé et contextualisé pour les besoins de l'API
+  1. `pip install virtualenv`
+  2. `cd pass-culture-main/api`
+  3. `python -m venv venv`
+  4. `source venv/bin/activate`
+  5. `pip install -r requirements.txt`
+
 ### Rebuild
 
 Pour reconstruire l'image docker sans cache
+
 ```bash
 pc rebuild-backend
 ```
@@ -69,6 +90,7 @@ pc rebuild-backend
 ### Restart
 
 Pour effacer la base de données complétement, et relancer tous les containers:
+
 ```bash
 pc restart-backend
 ```
@@ -76,19 +98,21 @@ pc restart-backend
 ### Reset
 
 Si vos serveurs de dev tournent, et que vous souhaitez juste effacer les tables de la db:
+
 ```bash
 pc reset-sandbox-db
 ```
 
 Si vous voulez juste enlever les recommandations et bookings crées en dev par votre navigation:
+
 ```bash
 pc reset-reco-db
 ```
 
-
 ### Migrate
 
 Vous pouvez passer toutes les cli classiques d'alembic comme ceci:
+
 ```bash
 pc alembic upgrade
 ```
@@ -96,16 +120,19 @@ pc alembic upgrade
 ### Test
 
 Pour tester le backend:
+
 ```bash
 pc test-backend
 ```
 
 Pour tester la navigation du site web
+
 ```bash
 pc -e production test-cafe-webapp -b firefox
 ```
 
 Exemple d'une commande test en dev sur chrome pour un fichier test particulier:
+
 ```bash
 pc test-cafe-pro -b chrome:headless -f signup.js
 ```
@@ -136,16 +163,19 @@ pc sandbox -n industrial
 
 Cette commande faite, il y a alors deux moyens pour avoir les email/mots de passe des utilisateurs sandbox :
 
-  - on peut utiliser la commande sandbox_to_testcafe qui résume les objets utilisés de la sandbox dans les différents testcafés. Si on veut avoir tous les utilisateurs des tests pro_07_offer dans l'application pro, il faut faire:
-  ```
-    pc sandbox_to_testcafe -n pro_07_offer
-  ```
-  - on peut utiliser un curl (ou postman) qui ping directement le server à l'url du getter que l'on souhaite:
-  ```
-  curl -H "Content-Type: application/json" \
-       -H "Origin: http://localhost:3000" \
-       GET http://localhost:80/sandboxes/pro_07_offer/get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue
-  ```
+- on peut utiliser la commande sandbox_to_testcafe qui résume les objets utilisés de la sandbox dans les différents testcafés. Si on veut avoir tous les utilisateurs des tests pro_07_offer dans l'application pro, il faut faire:
+
+```
+  pc sandbox_to_testcafe -n pro_07_offer
+```
+
+- on peut utiliser un curl (ou postman) qui ping directement le server à l'url du getter que l'on souhaite:
+
+```
+curl -H "Content-Type: application/json" \
+     -H "Origin: http://localhost:3000" \
+     GET http://localhost:80/sandboxes/pro_07_offer/get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue
+```
 
 Il est important que votre serveur API local tourne.
 
@@ -176,22 +206,23 @@ Le mot de passe est toujours : `user@AZERTY123`
 ## Tagging des versions
 
 La politique de tagging de version est la suivante :
-* On n'utilise pas de _semantic versioning_
-* On utilise le format `I.P.S`
-  * I => incrément d'__Itération__
-  * P => incrément de _fix_ en __Production__
-  * S => incrément de _fix_ en __Staging__
+
+- On n'utilise pas de _semantic versioning_
+- On utilise le format `I.P.S`
+  - I => incrément d'**Itération**
+  - P => incrément de _fix_ en **Production**
+  - S => incrément de _fix_ en **Staging**
 
 ### Exemple
 
-* Je livre une nouvelle version en staging en fin d'itération n°20 => `20.0.0`
-* Je m'aperçois qu'il y a un bug en staging => `20.0.1`
-* Le bug est corrigé, je livre en production => `20.0.1`
-* On détecte un bug en production, je livre en staging => `20.1.0`
-* Tout se passe bien en staging, je livre en production => `20.1.0`
-* On détecte un autre bug en production, je livre en staging => `20.2.0`
-* Je m'aperçois que mon fix est lui-même buggé, je relivre un fix en staging => `20.2.1`
-* Mes deux fix sont cette fois OK, je livre en production => `20.2.1`
+- Je livre une nouvelle version en staging en fin d'itération n°20 => `20.0.0`
+- Je m'aperçois qu'il y a un bug en staging => `20.0.1`
+- Le bug est corrigé, je livre en production => `20.0.1`
+- On détecte un bug en production, je livre en staging => `20.1.0`
+- Tout se passe bien en staging, je livre en production => `20.1.0`
+- On détecte un autre bug en production, je livre en staging => `20.2.0`
+- Je m'aperçois que mon fix est lui-même buggé, je relivre un fix en staging => `20.2.1`
+- Mes deux fix sont cette fois OK, je livre en production => `20.2.1`
 
 Pour poser un tag sur une version :
 
@@ -212,11 +243,11 @@ Les tests sont enfin joués et on déploie sur Testing.
 ## Hotfixes
 
 Pour tagguer les hotfixes, commencer par se placer sur la dernière version déployée en production ou en staging à
-l'aide d'un ```git checkout vI.P.S``` sur chacun de projets. En effet nous voulons déployer uniquement ce qui est en Prod + nos commits de hotfix.
+l'aide d'un `git checkout vI.P.S` sur chacun de projets. En effet nous voulons déployer uniquement ce qui est en Prod + nos commits de hotfix.
 
 Une fois le tag checked-out, commiter le fix du bug puis lancer la commande de création de branches de hotfixes et de tag pour chacun des projets :
 
-```pc -t I.P(+1).S(+1) tag-hotfix```.
+`pc -t I.P(+1).S(+1) tag-hotfix`.
 
 Une fois les tests de la CI passés, on peut déployer ce tag.
 
@@ -229,20 +260,21 @@ Il faut aussi penser à supprimer les branches de hotfixs.
 Pré-requis : installer [jq](https://stedolan.github.io/jq/download/)
 
 En premier lieu:
- - bien vérifier qu'on a, en local, **main** et tous les submodules **(api, pro, webapp)** à jour par rapport à **master**
- - de là on peut poser un tag `pc -t I.P.S. tag` (pour savoir le tag précédent, il suffit de faire un `git tag` dans pass-culture-main)
- - se rendre sur CircleCI pour vérifier qu'il y a un job lancé par submodule **(api, pro, webapp)**, ainsi que **main** qui a également lancé autant de jobs qu'il y a de submodules,
- - réaliser le déploiement lorsque les tests de chaque submodule sont bien **verts**
+
+- bien vérifier qu'on a, en local, **main** et tous les submodules **(api, pro, webapp)** à jour par rapport à **master**
+- de là on peut poser un tag `pc -t I.P.S. tag` (pour savoir le tag précédent, il suffit de faire un `git tag` dans pass-culture-main)
+- se rendre sur CircleCI pour vérifier qu'il y a un job lancé par submodule **(api, pro, webapp)**, ainsi que **main** qui a également lancé autant de jobs qu'il y a de submodules,
+- réaliser le déploiement lorsque les tests de chaque submodule sont bien **verts**
 
 Pour déployer une nouvelle version, par exemple en staging:
 **(Attention de ne pas déployer sur la production sans concertation !)**
-
 
 ```bash
 pc -e <datalake|staging|production|integration> -t I.P.S deploy
 ```
 
 Par exemple pour déployer la version 3.0.1 en integration :
+
 ```bash
 pc -e integration -t 3.0.1 deploy
 
@@ -250,7 +282,7 @@ pc -e integration -t 3.0.1 deploy
 
 A la fin de l'opération, une fenêtre de votre navigateur s'ouvrira sur le workflow en cours.
 
-Après avoir livré en production, ne pas oublier de livrer ensuite sur les environnements d'integration et de datalake.  
+Après avoir livré en production, ne pas oublier de livrer ensuite sur les environnements d'integration et de datalake.
 
 #### Publier pass-culture-shared sur npm
 
@@ -300,11 +332,14 @@ pc pgcli
 ```
 
 ### Configuration de Metabase
+
 ```bash
 pc start-metabase
 ```
+
 Lance Metabase et une base de données contenant les données sandbox du produit.
 Pour supprimer les volumes avant de lancer Metabase, utiliser la commande :
+
 ```bash
 pc restart-metabase
 ```
@@ -312,6 +347,7 @@ pc restart-metabase
 L'url pour aller sur Metabase en local est : http://localhost:3002/
 
 Pour configurer Metabase, il suffit de créer un compte admin, puis de se connecter à la base produit. Pour cela, il faut renseigner les informations suivantes :
+
 - Host : pc-postgres-product-metabase
 - Port : 5432
 - Database name : pass_culture
@@ -336,24 +372,23 @@ L'option -f est également disponible pour la commande bash :
 pc -e <testing|staging|production> -f myfile.extension bash
 ```
 
-
 ### Acceder au logs des bases de données
 
 En local :
+
 ```bash
 pc access-db-logs
 ```
 
 Sur les autres environnements :
+
 ```bash
 pc -e <datalake|testing|staging|production> access-db-logs
 ```
 
-
 ### Gestion des objects storage OVH
 
 Pour toutes les commandes suivantes, vous devez disposer des secrets de connexion.
-
 
 Pour lister le contenu d'un conteneur spécifique :
 
@@ -385,7 +420,6 @@ Pour copier tous les fichiers du conteneur de production vers le conteneur d'un 
 pc copy_prod_container_content_to_dest_container --container=storage-pc-staging
 ```
 
-
 ## Gestion OVH
 
 #### CREDENTIALS
@@ -401,18 +435,19 @@ pc -e <testing|staging|production> ssh
 ### Dump Prod To Staging
 
 ssh to the prod server
+
 ```bash
 cd ~/pass-culture-main && pc dump-prod-db-to-staging
 ```
 
 Then connect to the staging server:
+
 ```bash
 cd ~/pass-culture-main
 cat "../dumps_prod/2018_<TBD>_<TBD>.pgdump" docker exec -i docker ps | grep postgres | cut -d" " -f 1 pg_restore -d pass_culture -U pass_culture -c -vvvv
 pc update-db
 pc sandbox --name=webapp
 ```
-
 
 ### Updater le dossier private
 
@@ -424,7 +459,9 @@ pc install-private
 ```
 
 #### Updater la db
+
 Une fois connecté:
+
 ```
 cd /home/deploy/pass-culture-main/ && pc update-db
 ```
@@ -432,11 +469,13 @@ cd /home/deploy/pass-culture-main/ && pc update-db
 #### Note pour une premiere configuration HTTPS (pour un premier build)
 
 Pour obtenir un certificat et le mettre dans le nginx (remplacer <domaine> par le domaine souhaité, qui doit pointer vers la machine hébergeant les docker)
+
 ```bash
 docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-culture-main/certs-data:/data/letsencrypt deliverous/certbot certonly --verbose --webroot --webroot-path=/data/letsencrypt -d <domaine>
 ```
 
 Puis mettre dans le crontab pour le renouvellement :
+
 ```bash
 docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-culture-main/certs-data:/data/letsencrypt deliverous/certbot renew --verbose --webroot --webroot-path=/data/letsencrypt
 ```
@@ -449,7 +488,8 @@ Les tests requièrent d'avoir un environnement spécifique sur Scalingo, ici `pa
 Pour la remplir, il faut jouer les sandboxes `industrial` et `activation`.
 
 Execution des sandboxes sur le conteneur :
-``` bash
+
+```bash
 scalingo -a pass-culture-api-perf --region osc-fr1 run 'python src/pcapi/scripts/pc.py sandbox -n industrial'
 scalingo -a pass-culture-api-perf --region osc-fr1 run 'python src/pcapi/scripts/pc.py sandbox -n activation'
 ```
@@ -457,11 +497,12 @@ scalingo -a pass-culture-api-perf --region osc-fr1 run 'python src/pcapi/scripts
 Ensuite, lancer le script d'import des utilisateurs avec une liste d'utilisateurs en csv prédéfinie placée dans le dossier `artillery` sous le nom `user_list`.
 On passe en paramètre un faux email qui ne sera pas utilisé.
 
-``` bash
+````bash
 scalingo -a pass-culture-api-perf --region osc-fr1 run 'ACTIVATION_USER_RECIPIENTS=<email> python /tmp/uploads/import_users.py user_list' -f scalingo/import_users.py -f user_list```
-```
+````
 
 Un exemple de csv utilisateur `user_list` :
+
 ```bash
 1709,Patricia,Chadwick,ac@enimo.com,0155819967,Drancy (93),16282,2001-05-17,secure_password
 ```
