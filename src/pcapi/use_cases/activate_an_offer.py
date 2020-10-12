@@ -1,9 +1,9 @@
 from flask import current_app as app
 
-from connectors import redis
-from models import OfferSQLEntity
-from models.feature import FeatureToggle
-from repository import repository, feature_queries
+from pcapi.connectors import redis
+from pcapi.models import OfferSQLEntity
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import repository, feature_queries
 
 
 def activate_an_offer(offer: OfferSQLEntity):

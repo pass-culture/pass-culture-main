@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock
 
-from connectors import redis
-from models.feature import FeatureToggle
-from repository import repository, feature_queries
-from tests.model_creators.generic_creators import create_offerer, create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product
-from use_cases.activate_an_offer import activate_an_offer
+from pcapi.connectors import redis
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import repository, feature_queries
+from pcapi.model_creators.generic_creators import create_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.use_cases.activate_an_offer import activate_an_offer
 
 
 class ActivateAnOfferTest:

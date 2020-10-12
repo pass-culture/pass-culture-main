@@ -1,13 +1,11 @@
 from unittest.mock import patch
 
 import pytest
-
+from pcapi.model_creators.generic_creators import create_venue, create_offerer
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import OfferSQLEntity, ApiErrors
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
-import pytest
-from pcapi.model_creators.generic_creators import create_venue, create_offerer
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.use_cases.update_an_offer import update_an_offer
 
 

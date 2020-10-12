@@ -1,12 +1,11 @@
 import pytest
 
-from models import OfferSQLEntity
-from repository import repository
+from pcapi.models import OfferSQLEntity
+from pcapi.repository import repository
+from pcapi.utils.human_ids import humanize
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, API_URL
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from tests.conftest import TestClient
-
-from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, API_URL
-from tests.model_creators.specific_creators import create_offer_with_thing_product
-from utils.human_ids import humanize
 
 
 class Patch:
