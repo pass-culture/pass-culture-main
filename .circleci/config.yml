@@ -206,25 +206,6 @@ jobs:
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Api,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
 
-  deploy-api-datalake:
-    machine:
-      image: ubuntu-1604:201903-01
-    working_directory: ~/pass-culture
-    steps:
-      - checkout
-      - run: pyenv global 3.5.2
-      - run: pip install requests
-      - run: python scripts/check_ci_status.py $CIRCLE_SHA1 $(git describe --contains)
-      - run: git submodule sync
-      - run: git submodule update --init api
-      - run:
-          name: Deploy API
-          command: |
-            SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
-            cd api
-            git remote add scalingo git@${SCALINGO_REMOTE_URL}:${SCALINGO_APP_NAME}.git
-            git push -f scalingo HEAD:master
-
   deploy-pro:
     machine:
       image: ubuntu-1604:201903-01
@@ -369,11 +350,6 @@ workflows:
                 - production
                 - staging
                 - integration
-      - deploy-api-datalake:
-          filters:
-            branches:
-              only:
-                - datalake
       - deploy-pro:
           requires:
             - deploy-api
