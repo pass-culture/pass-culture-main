@@ -270,7 +270,7 @@ Pour déployer une nouvelle version, par exemple en staging:
 **(Attention de ne pas déployer sur la production sans concertation !)**
 
 ```bash
-pc -e <datalake|staging|production|integration> -t I.P.S deploy
+pc -e <staging|production|integration> -t I.P.S deploy
 ```
 
 Par exemple pour déployer la version 3.0.1 en integration :
@@ -282,7 +282,7 @@ pc -e integration -t 3.0.1 deploy
 
 A la fin de l'opération, une fenêtre de votre navigateur s'ouvrira sur le workflow en cours.
 
-Après avoir livré en production, ne pas oublier de livrer ensuite sur les environnements d'integration et de datalake.
+Après avoir livré en production, ne pas oublier de livrer ensuite sur les environnements d'integration.
 
 #### Publier pass-culture-shared sur npm
 
@@ -383,7 +383,7 @@ pc access-db-logs
 Sur les autres environnements :
 
 ```bash
-pc -e <datalake|testing|staging|production> access-db-logs
+pc -e <testing|staging|production> access-db-logs
 ```
 
 ### Gestion des objects storage OVH

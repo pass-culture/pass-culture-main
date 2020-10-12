@@ -11,7 +11,7 @@ debug_mock() {
     echo "# call_args: " $(mock_get_call_args ${mock_git} "$index") >&3
     index=$((index+1))
   done
-  
+
   index=1
   while [ "$index" -le $(mock_get_call_num ${mock_curl}) ]
   do
@@ -49,14 +49,14 @@ setup(){
     mock_file_git="${mock_git##*/}"
     ln -sf "${mock_path_git}/${mock_file_git}" "${mock_path_git}/${mocked_command_git}"
     PATH="${mock_path_git}:$PATH"
-    
+
     mocked_command_curl="curl"
     mock_curl="$(mock_create)"
     mock_path_curl="${mock_curl%/*}"
     mock_file_curl="${mock_curl##*/}"
     ln -sf "${mock_path_curl}/${mock_file_curl}" "${mock_path_curl}/${mocked_command_curl}"
-    PATH="${mock_path_curl}:$PATH"  
-  
+    PATH="${mock_path_curl}:$PATH"
+
     mocked_command_xdg="xdg-open"
     mock_xdg="$(mock_create)"
     mock_path_xdg="${mock_xdg%/*}"
@@ -98,7 +98,7 @@ teardown(){
 @test "Deploy on unknown environment is not allowed" {
     # Given
     environment='unexisting-env'
-    expected_output='Can only deploy in datalake, staging, integration and production'
+    expected_output='Can only deploy in staging, integration and production'
 
     # When
     run pc -e "$environment" deploy
