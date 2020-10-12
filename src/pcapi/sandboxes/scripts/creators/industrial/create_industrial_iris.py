@@ -1,10 +1,10 @@
-import os
+import pcapi
 from pathlib import Path
 
 from pcapi.scripts.iris.import_iris import import_iris_shape_file_to_table
 from pcapi.utils.logger import logger
 
-FILE_PATH = Path(os.path.dirname(os.path.realpath('sandboxes/iris/paris.shp')))
+FILE_PATH = Path(pcapi.__path__[0]) / 'sandboxes' / 'iris' / 'paris.shp'
 
 
 def create_industrial_iris(file_path: str):
