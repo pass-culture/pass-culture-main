@@ -21,7 +21,7 @@ def configure_json_logger() -> None:
 
 
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
-    def add_fields(self, log_record, record, message_dict):
+    def add_fields(self, log_record: dict, record: dict, message_dict: dict) -> None:
         super(CustomJsonFormatter, self).add_fields(log_record, record, message_dict)
 
         log_record['timestamp'] = datetime \
@@ -49,4 +49,5 @@ class AttrDict:
         self.warning = lambda *args: pc_logging(logging.WARNING, *args)
 
 
+json_logger = logging.getLogger('json')
 logger = AttrDict()
