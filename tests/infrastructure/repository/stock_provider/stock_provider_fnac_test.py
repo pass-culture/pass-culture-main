@@ -1,5 +1,5 @@
 from datetime import datetime
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from pcapi.infrastructure.repository.stock_provider.stock_provider_fnac import StockProviderFnacRepository
 
@@ -10,10 +10,17 @@ class StockProviderFnacRepositoryTest:
         self.stock_provider_fnac_repository.fnac_api.stocks = MagicMock()
         self.stock_provider_fnac_repository.fnac_api.is_siret_registered = MagicMock()
 
+    @patch.dict('os.environ', {"PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN": 'token123'})
     def should_instanciate_provider_api_with_correct_params(self):
+        # Given
+        self.stock_provider_fnac_repository = StockProviderFnacRepository()
+        self.stock_provider_fnac_repository.fnac_api.stocks = MagicMock()
+        self.stock_provider_fnac_repository.fnac_api.is_siret_registered = MagicMock()
+
         # Then
         assert self.stock_provider_fnac_repository.fnac_api.api_url == 'https://passculture-fr.ws.fnac.com/api/v1/pass-culture/stocks'
         assert self.stock_provider_fnac_repository.fnac_api.name == 'Fnac'
+        assert self.stock_provider_fnac_repository.fnac_api.authentication_token == 'token123'
 
     def should_call_provider_api_stocks_with_expected_arguments(self):
         # When
