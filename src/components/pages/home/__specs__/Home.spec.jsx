@@ -51,6 +51,32 @@ describe('src | components | home', () => {
     }
   })
 
+  it('should show loading screen while waiting for geolocation', async () => {
+    // Given
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [],
+          nbHits: 0,
+          nbPages: 1,
+          page: 1,
+        })
+      })
+    )
+    fetchHomepage.mockResolvedValue([])
+
+    // When
+    const wrapper = await mount(
+      <MemoryRouter initialEntries={['/accueil']}>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+
+    // Then
+    const loadingScreen = wrapper.find({ children: 'Chargement en cours…' })
+    expect(loadingScreen).toHaveLength(1)
+  })
+
   it('should render the main view when navigating to /accueil', async () => {
     // Given
     const flushPromises = () => new Promise(setImmediate)
@@ -93,10 +119,10 @@ describe('src | components | home', () => {
         <Home {...props} />
       </MemoryRouter>
     )
-    await flushPromises()
-    wrapper.update()
 
     // Then
+    await flushPromises()
+    wrapper.update()
     const moduleName = wrapper.find('Module').find({ children: 'Mon module' })
     expect(moduleName).toHaveLength(1)
   })

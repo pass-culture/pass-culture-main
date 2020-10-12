@@ -19,6 +19,7 @@ import {
   checkIfShouldReloadRecommendationsBecauseOfLongTime,
   isDiscoveryStartupUrl,
 } from './utils/utils'
+import { getCurrentPosition } from '../../../utils/geolocation'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -40,19 +41,6 @@ export const mapStateToProps = (state, ownProps) => {
     recommendations,
     seedLastRequestTimestamp,
     shouldReloadRecommendations,
-  }
-}
-
-export const getCurrentPosition = coordinates => {
-  if (areValidCoordinates(coordinates)) {
-    return Promise.resolve({ coords: coordinates })
-  }
-  if (navigator.geolocation) {
-    return new Promise((resolve, reject) =>
-      navigator.geolocation.getCurrentPosition(resolve, reject)
-    )
-  } else {
-    return Promise.reject(new Error('Geolocation not supported'))
   }
 }
 
@@ -81,10 +69,6 @@ function getRecommendationsFromAPI(
   )
 }
 
-function areValidCoordinates(coordinates) {
-  return coordinates && coordinates.latitude && coordinates.longitude
-}
-
 export const mapDispatchToProps = (dispatch, prevProps) => ({
   loadRecommendations: async (
     handleSuccess,
@@ -99,13 +83,7 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
       (shouldReloadRecommendations && []) ||
       (recommendations && recommendations.map(reco => reco.offerId))
 
-    let userCoordinates = null
-    try {
-      const currentLocation = await getCurrentPosition(coordinates)
-      userCoordinates = currentLocation.coords
-    } catch (e) {
-      // do nothing
-    }
+    const userCoordinates = await getCurrentPosition(coordinates)
     getRecommendationsFromAPI(
       userCoordinates,
       dispatch,
@@ -148,9 +126,6 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
 
 export default compose(
   withRequiredLogin,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  ),
+  connect(mapStateToProps, mapDispatchToProps),
   withGeolocationTracking
 )(Discovery)

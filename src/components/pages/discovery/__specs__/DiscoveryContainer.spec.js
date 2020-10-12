@@ -97,7 +97,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         Object.defineProperty(navigator, 'geolocation', {
           writable: true,
           value: {
-            getCurrentPosition: jest.fn(reject => reject()),
+            getCurrentPosition: jest.fn((resolve, reject) => reject()),
           },
         })
 

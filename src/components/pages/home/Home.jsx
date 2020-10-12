@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Fragment, useState } from 'react'
 import MainView from './MainView/MainView'
 import User from './Profile/ValueObjects/User'
+import { getCurrentPosition } from '../../../utils/geolocation'
+import LoaderContainer from '../../layout/Loader/LoaderContainer'
 
 const Home = ({
   geolocation,
@@ -11,17 +13,29 @@ const Home = ({
   trackAllTilesSeen,
   updateCurrentUser,
   user,
-}) => (
-  <MainView
-    geolocation={geolocation}
-    history={history}
-    match={match}
-    trackAllModulesSeen={trackAllModulesSeen}
-    trackAllTilesSeen={trackAllTilesSeen}
-    updateCurrentUser={updateCurrentUser}
-    user={user}
-  />
-)
+}) => {
+  const [isLoading, setIsLoading] = useState(true)
+  const userCoordinates = getCurrentPosition(geolocation).then(userCoordinates => {
+    setIsLoading(false)
+    return userCoordinates
+  })
+  return (
+    <Fragment>
+      {isLoading && <LoaderContainer />}
+      {!isLoading && (
+        <MainView
+          geolocation={userCoordinates}
+          history={history}
+          match={match}
+          trackAllModulesSeen={trackAllModulesSeen}
+          trackAllTilesSeen={trackAllTilesSeen}
+          updateCurrentUser={updateCurrentUser}
+          user={user}
+        />
+      )}
+    </Fragment>
+  )
+}
 
 Home.propTypes = {
   geolocation: PropTypes.shape({

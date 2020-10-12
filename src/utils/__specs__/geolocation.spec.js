@@ -1,6 +1,7 @@
 import getMobileOperatingSystem from '../../utils/getMobileOperatingSystem'
 import {
   computeDistanceInMeters,
+  getCurrentPosition,
   getHumanizeRelativeDistance,
   humanizeDistance,
   isGeolocationEnabled,
@@ -70,7 +71,7 @@ describe('utils | geolocation', () => {
         const venueLatitude = 50.62925
         const venueLongitude = 3.057256
         const userLatitude = 139.769017
-        const userLongitude = 35.680400
+        const userLongitude = 35.6804
 
         // when
         const distance = getHumanizeRelativeDistance(
@@ -340,6 +341,85 @@ describe('utils | geolocation', () => {
 
         // Then
         expect(isUserAllowed).toBe(true)
+      })
+    })
+  })
+
+  describe('getCurrentPosition', () => {
+    it('should return given coordinates when they contain latitude and longitude', async () => {
+      // Given
+      const givenCoordinates = {
+        latitude: 2.8796567,
+        longitude: 48.256756,
+      }
+
+      // When
+      const returnedCoordinates = await getCurrentPosition(givenCoordinates)
+
+      // Then
+      expect(returnedCoordinates).toBe(givenCoordinates)
+    })
+
+    describe('when given coordinates are not valid', () => {
+      const unvalidCoordinates = {
+        latitude: null,
+        longitude: null,
+      }
+
+      it('should return current coordinates when navigator support geolocation API', async () => {
+        // Given
+        const geolocationResponse = {
+          coords: {
+            accuracy: 2.3,
+            latitude: 2.8796567,
+            longitude: 48.256756,
+          },
+        }
+        Object.defineProperty(navigator, 'geolocation', {
+          writable: true,
+          value: {
+            getCurrentPosition: jest.fn(resolve => resolve(geolocationResponse)),
+          },
+        })
+
+        // When
+        const returnedCoordinates = await getCurrentPosition(unvalidCoordinates)
+
+        // Then
+        expect(returnedCoordinates).toStrictEqual({
+          latitude: geolocationResponse.coords.latitude,
+          longitude: geolocationResponse.coords.longitude,
+        })
+      })
+
+      it('should return void coordinates when navigator support geolocation API and user blocked geolocation', async () => {
+        // Given
+        Object.defineProperty(navigator, 'geolocation', {
+          writable: true,
+          value: {
+            getCurrentPosition: jest.fn((resolve, reject) => reject('User denied Geolocation')),
+          },
+        })
+
+        // When
+        const returnedCoordinates = await getCurrentPosition(unvalidCoordinates)
+
+        // Then
+        expect(returnedCoordinates).toStrictEqual({ latitude: null, longitude: null })
+      })
+
+      it('should reject when navigator does not support geolocation API', async () => {
+        // Given
+        Object.defineProperty(navigator, 'geolocation', {
+          writable: true,
+          value: null,
+        })
+
+        // When
+        const promise = getCurrentPosition(unvalidCoordinates)
+
+        // Then
+        await expect(promise).rejects.toThrow('Geolocation not supported')
       })
     })
   })

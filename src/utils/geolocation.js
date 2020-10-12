@@ -85,3 +85,21 @@ export const isUserAllowedToSelectCriterion = (criterionKey, isGeolocationEnable
   }
   return true
 }
+
+const areValidCoordinates = coordinates =>
+  coordinates && coordinates.latitude && coordinates.longitude
+
+export const getCurrentPosition = coordinates => {
+  if (areValidCoordinates(coordinates)) {
+    return Promise.resolve(coordinates)
+  }
+  if (navigator.geolocation) {
+    return new Promise((resolve, reject) =>
+      navigator.geolocation.getCurrentPosition(resolve, reject)
+    )
+      .then(({ coords: { latitude, longitude } }) => ({ latitude, longitude }))
+      .catch(() => ({ latitude: null, longitude: null }))
+  } else {
+    return Promise.reject(new Error('Geolocation not supported'))
+  }
+}
