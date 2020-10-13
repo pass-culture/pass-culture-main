@@ -6,8 +6,8 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository, feature_queries
 
 
-def activate_an_offer(offer: OfferSQLEntity):
-    activation_data = {'isActive': True}
+def update_an_offer_active_status(offer: OfferSQLEntity, is_active_status: bool):
+    activation_data = {'isActive': is_active_status}
     offer.populate_from_dict(activation_data)
     offer.update_with_product_data(activation_data)
 

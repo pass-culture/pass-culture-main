@@ -9,19 +9,14 @@ from pcapi.validation.routes.offers import check_edition_for_allocine_offer_is_v
 
 
 def update_an_offer(offer: OfferSQLEntity, modifications: dict) -> OfferSQLEntity:
-    request_is_only_updating_isActive_status = _is_request_only_updating_isActive_status(modifications)
+    check_offer_is_editable(offer)
 
-    if request_is_only_updating_isActive_status:
-        return _update_offer_when_updating_isActive_field(offer, modifications)
+    if is_from_allocine(offer):
+        offer = _update_offer_for_allocine_offers(offer, modifications)
     else:
-        check_offer_is_editable(offer)
+        offer = _update_offer(offer, modifications)
 
-        if is_from_allocine(offer):
-            offer = _update_offer_for_allocine_offers(offer, modifications)
-        else:
-            offer = _update_offer(offer, modifications)
-
-        return offer
+    return offer
 
 
 def _update_offer(offer: OfferSQLEntity, modifications) -> OfferSQLEntity:
@@ -64,16 +59,3 @@ def _exclude_modifications_where_offer_value_wont_change(offer: OfferSQLEntity, 
             modifications_to_keep[field] = new_value
 
     return modifications_to_keep
-
-def _update_offer_when_updating_isActive_field(offer: OfferSQLEntity, modifications: dict) -> OfferSQLEntity:
-    offer.populate_from_dict(modifications)
-    offer.update_with_product_data(modifications)
-
-    repository.save(offer)
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
-
-    return offer
-
-def _is_request_only_updating_isActive_status(payload) -> bool:
-    return 'isActive' in payload and len(payload) == 1
