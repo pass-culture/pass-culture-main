@@ -1,3 +1,0 @@
-[console_scripts]
-pip-licenses = piplicenses:main
-

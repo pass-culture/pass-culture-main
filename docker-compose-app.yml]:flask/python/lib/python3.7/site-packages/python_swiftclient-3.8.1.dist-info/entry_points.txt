@@ -1,6 +1,0 @@
-[console_scripts]
-swift = swiftclient.shell:main
-
-[keystoneauth1.plugin]
-v1password = swiftclient.authv1:PasswordLoader
-
