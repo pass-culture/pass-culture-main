@@ -5,5 +5,7 @@ c.Spawner.environment = {
         'TESTING_FORM_ID': '{{ testing_form_id }}',
         'STAGING_FORM_ID': '{{ staging_form_id }}'
         'MATOMO_PROD': '{{ matomo_prod | to_json}}',
-        'MATOMO_STAGING': '{{ matomo_staging | to_json}}'
+        'MATOMO_STAGING': '{{ matomo_staging | to_json}}',
+        'PRODUCT_DATABASE_SSH': ' {{ product_database_ssh | to_json }}',
+        'PRODUCT_DATABASE_CONNECTION': ' {{ product_database_connection | to_json }}'
         }
