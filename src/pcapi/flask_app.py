@@ -29,6 +29,7 @@ if IS_DEV is False:
     )
 
 app = Flask(__name__, static_url_path='/static')
+
 login_manager = LoginManager()
 admin = Admin(name='pc Back Office', url='/pc/back-office',
               template_mode='bootstrap3')
@@ -74,6 +75,13 @@ def log_request_details(response):
     }
     json_logger = logging.getLogger('json')
     json_logger.info("request details", extra=request_data)
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["X-Content-Security-Policy"] = "default-src 'self'"
+    response.headers["Content-Security-Policy"] = "default-src 'self'"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "31536000; includeSubDomains; preload"
+
     return response
 
 
