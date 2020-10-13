@@ -291,14 +291,6 @@ class OfferEdition extends PureComponent {
     const formApiPath = `/offers/${offerId}`
     const title = 'Détails de l’offre'
 
-    let isDuoDefaultStatus
-
-    if (formInitialValues.isDuo === undefined) {
-      isDuoDefaultStatus = true
-    } else {
-      isDuoDefaultStatus = formInitialValues.isDuo
-    }
-
     const offererHasNoPhysicalVenues = offerer && get(venuesMatchingOfferType, 'length') === 0
 
     const displayDigitalOfferInformationMessage = !offerIsRefundable(selectedOfferType, venue)
@@ -558,7 +550,7 @@ class OfferEdition extends PureComponent {
                   <div className="select-duo-offer">
                     <input
                       className="offer-duo-checkbox input"
-                      defaultChecked={isDuoDefaultStatus}
+                      defaultChecked={formInitialValues.isDuo}
                       id="isDuo"
                       onClick={this.handleCheckIsDuo}
                       type="checkbox"
