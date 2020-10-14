@@ -15,6 +15,7 @@ from pcapi.repository.offer_queries import department_or_national_offers, \
     get_paginated_offer_ids_by_venue_id, \
     get_offers_by_ids, \
     get_paginated_expired_offer_ids, \
+    update_offers_is_active_status, \
     _build_bookings_quantity_subquery
 from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, \
     create_venue, create_provider
@@ -896,3 +897,23 @@ class GetPaginatedExpiredOfferIdsTest:
 
         # Then
         assert results == []
+
+class UpdateOffersIsActiveStatusTest:
+    @pytest.mark.usefixtures("db_session")
+    def should_update_is_active_status_for_given_offers_id_and_status(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_thing_product(venue=venue, is_active=False)
+        offer2 = create_offer_with_thing_product(venue=venue, is_active=False)
+        offer3 = create_offer_with_thing_product(venue=venue, is_active=False)
+        repository.save(offer1, offer2, offer3)
+        offers_id = [offer1.id, offer2.id]
+
+        # When
+        update_offers_is_active_status(offers_id=offers_id, is_active=True)
+
+        # Then
+        assert OfferSQLEntity.query.get(offer1.id).isActive == True
+        assert OfferSQLEntity.query.get(offer2.id).isActive == True
+        assert OfferSQLEntity.query.get(offer3.id).isActive == False

@@ -12,7 +12,7 @@ from pcapi.domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from pcapi.models import BookingSQLEntity, DiscoveryView, DiscoveryViewV3, \
     EventType, FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Offerer, SeenOffer, StockSQLEntity, ThingType, \
     UserSQLEntity, VenueSQLEntity
-from pcapi.models.db import Model
+from pcapi.models.db import Model, db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository.booking_queries import get_only_offer_ids_from_bookings
@@ -342,3 +342,9 @@ def get_paginated_expired_offer_ids(limit: int, page: int) -> List[tuple]:
         .offset(page * limit) \
         .limit(limit) \
         .all()
+
+def update_offers_is_active_status(offers_id: [int], is_active: bool) -> None:
+    OfferSQLEntity.query \
+        .filter(OfferSQLEntity.id.in_(offers_id)) \
+        .update({"isActive": is_active}, synchronize_session=False)
+    db.session.commit()
