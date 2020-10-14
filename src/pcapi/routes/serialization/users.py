@@ -1,10 +1,13 @@
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, Union
+from typing import Optional
 from datetime import datetime
 
-from pcapi.serialization.utils import to_camel
+from pydantic import BaseModel, EmailStr, Field
 
-class PatchUserBodyModel(BaseModel):
+from pcapi.serialization.utils import to_camel, humanize_field
+from pcapi.utils.date import format_into_utc_date
+
+
+class PatchUserBodyModel(BaseModel):  # pylint: disable=too-few-public-methods
     cultural_survey_id: Optional[str]
     cultural_survey_filled_date: Optional[str]
     department_code: Optional[str] = Field(None, alias="departementCode")
@@ -15,13 +18,13 @@ class PatchUserBodyModel(BaseModel):
     public_name: Optional[str]
     has_seen_tutorials: Optional[bool]
 
-    class Config:
+    class Config:  # pylint: disable=too-few-public-methods
         alias_generator = to_camel
         extra = "forbid"
 
 
-class PatchUserResponseModel(BaseModel):
-    id: Union[str, int]
+class PatchUserResponseModel(BaseModel):  # pylint: disable=too-few-public-methods
+    id: str
     email: EmailStr
     publicName: str
     postalCode: str
@@ -29,7 +32,7 @@ class PatchUserResponseModel(BaseModel):
     departementCode: str
     activity: Optional[str]
     address: Optional[str]
-    canBookFreeOffers: bool 
+    canBookFreeOffers: bool
     city: Optional[str]
     civility: Optional[str]
     dateCreated: datetime
@@ -42,7 +45,10 @@ class PatchUserResponseModel(BaseModel):
     lastName: Optional[str]
     needsToFillCulturalSurvey: bool
 
-    class Config:
+    _normalize_id = humanize_field("id")
+
+    class Config:  # pylint: disable=too-few-public-methods
+        json_encoders = {datetime: format_into_utc_date}
         orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True
