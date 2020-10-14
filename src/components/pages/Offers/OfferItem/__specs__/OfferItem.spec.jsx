@@ -2,6 +2,13 @@ import React from 'react'
 import { mount } from 'enzyme'
 import { MemoryRouter } from 'react-router'
 import OfferItem from '../OfferItem'
+import { fetchFromApiWithCredentials } from '../../../../../utils/fetch'
+
+jest.mock('../../../../../utils/fetch', () => {
+  return {
+    fetchFromApiWithCredentials: jest.fn().mockImplementation(() => Promise.resolve()),
+  }
+})
 
 describe('src | components | pages | Offers | OfferItem', () => {
   let props
@@ -88,7 +95,11 @@ describe('src | components | pages | Offers | OfferItem', () => {
           disableButton.invoke('onClick')()
 
           // then
-          expect(props.deactivateOffer).toHaveBeenCalledWith(eventOffer.id)
+          expect(fetchFromApiWithCredentials).toHaveBeenCalledWith(
+            '/offers/active-status',
+            'PATCH',
+            { offersActiveStatus: false, offersId: ['M4'] }
+          )
         })
 
         it('should activate when offer is not active', () => {
@@ -105,7 +116,11 @@ describe('src | components | pages | Offers | OfferItem', () => {
           disableButton.invoke('onClick')()
 
           // then
-          expect(props.activateOffer).toHaveBeenCalledWith(eventOffer.id)
+          expect(fetchFromApiWithCredentials).toHaveBeenCalledWith(
+            '/offers/active-status',
+            'PATCH',
+            { offersActiveStatus: true, offersId: ['M4'] }
+          )
         })
       })
 

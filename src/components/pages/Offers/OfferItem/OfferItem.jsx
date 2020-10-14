@@ -8,6 +8,7 @@ import { computeOfferStatus } from '../domain/computeOfferStatus'
 import { pluralize } from '../../../../utils/pluralize'
 import { OFFER_STATUS } from '../domain/offerStatus'
 import { isOfferFullyBooked } from '../domain/isOfferFullyBooked'
+import { fetchFromApiWithCredentials } from '../../../../utils/fetch'
 
 const OFFER_STATUS_PROPERTIES = {
   [OFFER_STATUS.INACTIVE]: {
@@ -37,14 +38,19 @@ const OfferItem = ({
   stocks,
   trackActivateOffer,
   trackDeactivateOffer,
-  updateOffersIsActiveStatus,
   venue,
 }) => {
   function handleOnDeactivateClick() {
     const { id, isActive } = offer || {}
-    updateOffersIsActiveStatus(id, !isActive).then(() => {
-      refreshOffers(false)
+    const body = {
+      offersId: [id],
+      offersActiveStatus: !isActive,
+    }
+
+    fetchFromApiWithCredentials('/offers/active-status', 'PATCH', body).then(() => {
+      refreshOffers({ shouldTriggerSpinner: false })
     })
+
     isActive ? trackDeactivateOffer(id) : trackActivateOffer(id)
   }
 
@@ -153,10 +159,10 @@ const OfferItem = ({
 
 OfferItem.propTypes = {
   offer: PropTypes.shape().isRequired,
+  refreshOffers: PropTypes.func.isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   trackActivateOffer: PropTypes.func.isRequired,
   trackDeactivateOffer: PropTypes.func.isRequired,
-  updateOffersIsActiveStatus: PropTypes.func.isRequired,
   venue: PropTypes.shape().isRequired,
 }
 

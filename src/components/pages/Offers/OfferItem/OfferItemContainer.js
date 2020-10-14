@@ -5,7 +5,6 @@ import OfferItem from './OfferItem'
 import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'
 import withTracking from '../../../hocs/withTracking'
-import { API_URL } from '../../../../utils/config'
 
 export const mapStateToProps = (state, ownProps) => {
   const { offer } = ownProps
@@ -29,13 +28,6 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     trackDeactivateOffer: offerId => {
       ownProps.tracking.trackEvent({ action: 'deactivateOffer', name: offerId })
     },
-    updateOffersIsActiveStatus: (id, isActive) =>
-      fetch(`${API_URL}/offers/active-status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ offersId: [id], offersActiveStatus: isActive }),
-        credentials: 'include',
-      }),
   }
 }
 

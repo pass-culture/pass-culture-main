@@ -33,7 +33,7 @@ class Offers extends PureComponent {
   }
 
   componentDidMount() {
-    this.getPaginatedOffersWithFilters(true)
+    this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
     fetchAllVenuesByProUser().then(venues =>
       this.setState({ venueOptions: formatAndOrderVenues(venues) })
     )
@@ -57,7 +57,10 @@ class Offers extends PureComponent {
     })
   }
 
-  loadAndUpdateOffers(loadOffers, nameSearchValue, selectedVenueId, page) {
+  loadAndUpdateOffers() {
+    const { loadOffers } = this.props
+    const { nameSearchValue, selectedVenueId, page } = this.state
+
     loadOffers({ nameSearchValue, selectedVenueId, page })
       .then(({ page, pageCount, offersCount }) => {
         this.setState(
@@ -79,17 +82,15 @@ class Offers extends PureComponent {
       })
   }
 
-  getPaginatedOffersWithFilters = shouldTriggerSpinner => {
-    const { loadTypes, loadOffers, saveSearchFilters, types } = this.props
+  getPaginatedOffersWithFilters = ({ shouldTriggerSpinner }) => {
+    const { loadTypes, types, saveSearchFilters } = this.props
     const { nameSearchValue, selectedVenueId, page } = this.state
     types.length === 0 && loadTypes()
     saveSearchFilters({ name: nameSearchValue, venueId: selectedVenueId, page })
 
-    shouldTriggerSpinner
-      ? this.setState({ isLoading: true }, () => {
-          this.loadAndUpdateOffers(loadOffers, nameSearchValue, selectedVenueId, page)
-        })
-      : this.loadAndUpdateOffers(loadOffers, nameSearchValue, selectedVenueId, page)
+    shouldTriggerSpinner && this.setState({ isLoading: true })
+
+    this.loadAndUpdateOffers()
   }
 
   handleOnSubmit = event => {
@@ -100,7 +101,7 @@ class Offers extends PureComponent {
         page: DEFAULT_PAGE,
       },
       () => {
-        this.getPaginatedOffersWithFilters(true)
+        this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
       }
     )
   }
@@ -116,14 +117,14 @@ class Offers extends PureComponent {
   onPreviousPageClick = () => {
     const { page } = this.state
     this.setState({ page: page - 1 }, () => {
-      this.getPaginatedOffersWithFilters(true)
+      this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
     })
   }
 
   onNextPageClick = () => {
     const { page } = this.state
     this.setState({ page: page + 1 }, () => {
-      this.getPaginatedOffersWithFilters(true)
+      this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
     })
   }
 
@@ -299,6 +300,10 @@ Offers.propTypes = {
   loadOffers: PropTypes.func.isRequired,
   loadTypes: PropTypes.func.isRequired,
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  query: PropTypes.shape({
+    change: PropTypes.func.isRequired,
+    parse: PropTypes.func.isRequired,
+  }).isRequired,
   saveSearchFilters: PropTypes.func.isRequired,
   venue: PropTypes.shape({
     name: PropTypes.string.isRequired,

@@ -11,7 +11,7 @@ describe('fetchFromApiWithCredentials', () => {
     fetch.resetMocks()
   })
 
-  it('should call API with given path with credentials', async () => {
+  it('should call API with given path, credentials, JSON Mime type and GET method by default', async () => {
     // Given
     const path = '/bookings/pro'
 
@@ -19,7 +19,47 @@ describe('fetchFromApiWithCredentials', () => {
     await fetchFromApiWithCredentials(path)
 
     // Then
-    expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, { credentials: 'include' })
+    expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      method: 'GET',
+    })
+  })
+
+  it('should call API with given method', async () => {
+    // Given
+    const path = '/bookings/pro'
+    const method = 'PATCH'
+
+    // When
+    await fetchFromApiWithCredentials(path, method)
+
+    // Then
+    expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH',
+    })
+  })
+
+  it('should add body to API call when provided', async () => {
+    // Given
+    const path = '/bookings/pro'
+    const method = 'PATCH'
+    const body = {
+      key: 'value',
+    }
+
+    // When
+    await fetchFromApiWithCredentials(path, method, body)
+
+    // Then
+    expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH',
+      body: '{"key":"value"}',
+    })
   })
 
   it('should add "/" at beginning of path if not present', async () => {
@@ -30,7 +70,11 @@ describe('fetchFromApiWithCredentials', () => {
     await fetchFromApiWithCredentials(path)
 
     // Then
-    expect(fetch).toHaveBeenCalledWith(`${API_URL}/${path}`, { credentials: 'include' })
+    expect(fetch).toHaveBeenCalledWith(`${API_URL}/${path}`, {
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      method: 'GET',
+    })
   })
 
   it('should return json if return status is ok', async () => {
