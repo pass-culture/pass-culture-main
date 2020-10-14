@@ -49,5 +49,5 @@ class AttrDict:
         self.warning = lambda *args: pc_logging(logging.WARNING, *args)
 
 
-json_logger = logging.getLogger('json')
 logger = AttrDict()
+json_logger = logging.getLogger('json')

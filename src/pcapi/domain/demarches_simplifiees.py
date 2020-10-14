@@ -24,7 +24,8 @@ FIELD_FOR_VENUE_WITHOUT_SIRET = "Si vous souhaitez renseigner les coordonn\u00e9
 
 
 class ApplicationDetail(object):
-    def __init__(self, siren: str, status: str, application_id: int, iban: str, bic: str, modification_date: datetime, siret: Optional[str] = None, venue_name: Optional[str] = None):
+    def __init__(self, siren: str, status: str, application_id: int, iban: str, bic: str, modification_date: datetime,
+                 siret: Optional[str] = None, venue_name: Optional[str] = None):
         self.siren = siren
         self.status = status
         self.application_id = application_id
@@ -36,7 +37,8 @@ class ApplicationDetail(object):
 
 
 def get_all_application_ids_for_demarche_simplifiee(
-        procedure_id: str, token: str, last_update: datetime = None, accepted_states: DmsApplicationStates = DmsApplicationStates
+        procedure_id: str, token: str, last_update: datetime = None,
+        accepted_states: DmsApplicationStates = DmsApplicationStates
 ) -> List[int]:
     current_page = 1
     number_of_pages = 1
@@ -50,7 +52,8 @@ def get_all_application_ids_for_demarche_simplifiee(
             f'[IMPORT DEMARCHES SIMPLIFIEES] page {current_page} of {number_of_pages}')
 
         applications_to_process = [application for application in api_response['dossiers'] if
-                                   _has_requested_state(application, accepted_states) and _was_last_updated_after(application, last_update)]
+                                   _has_requested_state(application, accepted_states) and _was_last_updated_after(
+                                       application, last_update)]
         logger.info(
             f'[IMPORT DEMARCHES SIMPLIFIEES] {len(applications_to_process)} applications to process')
         applications += applications_to_process
@@ -66,7 +69,8 @@ def get_all_application_ids_for_demarche_simplifiee(
 def get_closed_application_ids_for_demarche_simplifiee(
         procedure_id: str, token: str, last_update: datetime
 ) -> List[int]:
-    return get_all_application_ids_for_demarche_simplifiee(procedure_id, token, last_update, accepted_states=[DmsApplicationStates.closed])
+    return get_all_application_ids_for_demarche_simplifiee(procedure_id, token, last_update,
+                                                           accepted_states=[DmsApplicationStates.closed])
 
 
 def get_offerer_bank_information_application_details_by_application_id(application_id: str) -> ApplicationDetail:
@@ -120,7 +124,7 @@ def _has_requested_state(application: dict, states: datetime) -> bool:
 
 
 def _was_last_updated_after(application: dict, last_update: datetime = None) -> bool:
-    if(not last_update):
+    if (not last_update):
         return True
     return datetime.strptime(application['updated_at'], DATE_ISO_FORMAT) >= last_update
 
@@ -129,7 +133,7 @@ def _sort_applications_by_date(applications: List) -> List:
     return sorted(applications, key=lambda application: datetime.strptime(application['updated_at'], DATE_ISO_FORMAT))
 
 
-def _get_status_from_demarches_simplifiees_application_state(state: str) -> BankInformationStatus:
+def _get_status_from_demarches_simplifiees_application_state(state: str) -> Union[BankInformationStatus, None]:
     try:
         state = DmsApplicationStates[state]
     except KeyError:
@@ -148,7 +152,7 @@ def _get_status_from_demarches_simplifiees_application_state(state: str) -> Bank
         return BankInformationStatus.DRAFT
 
 
-def _find_value_in_fields(fields: List[Dict], value_name: str):
+def _find_value_in_fields(fields: List[Dict], value_name: str) -> dict:
     for field in fields:
         if field["type_de_champ"]["libelle"] == value_name:
             return field["value"]
