@@ -30,9 +30,6 @@ const OFFER_STATUS_PROPERTIES = {
 }
 
 const OfferItem = ({
-  activateOffer,
-  deactivateOffer,
-  location,
   offer,
   refreshOffers,
   stocks,

@@ -493,9 +493,9 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should have page value be removed when page value is first page', async () => {
       // given
       const wrapper = await mountOffers(props, store)
+      wrapper.update()
       const rightArrow = wrapper.find('img[alt="Aller à la page suivante"]').closest('button')
       const leftArrow = wrapper.find('img[alt="Aller à la page précédente"]').closest('button')
-      wrapper.update()
       rightArrow.invoke('onClick')()
 
       // When
