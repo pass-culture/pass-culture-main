@@ -2,14 +2,15 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import { isOfferFullyBooked } from 'components/pages/Offers/domain/isOfferFullyBooked'
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
-import { computeOfferStatus } from 'components/pages/Offers/domain/computeOfferStatus'
-import { pluralize } from 'utils/pluralize'
-import { OFFER_STATUS } from 'components/pages/Offers/domain/offerStatus'
-import { isOfferFullyBooked } from 'components/pages/Offers/domain/isOfferFullyBooked'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
 import { computeVenueDisplayName } from 'services/venuesService'
+import { pluralize } from 'utils/pluralize'
+
+import { computeOfferStatus } from '../domain/computeOfferStatus'
+import { OFFER_STATUS } from '../domain/offerStatus'
 
 const OFFER_STATUS_PROPERTIES = {
   [OFFER_STATUS.INACTIVE]: {
@@ -37,6 +38,8 @@ const OfferItem = ({
   trackActivateOffer,
   trackDeactivateOffer,
   venue,
+  isSelected,
+  selectOffer,
 }) => {
   function handleOnDeactivateClick() {
     const { id, isActive } = offer || {}
@@ -50,6 +53,10 @@ const OfferItem = ({
     })
 
     isActive ? trackDeactivateOffer(id) : trackActivateOffer(id)
+  }
+
+  function handleOnChangeSelected() {
+    selectOffer(offer.id, !isSelected)
   }
 
   const buildStocksDetail = (offer, stockSize) => {
@@ -86,6 +93,16 @@ const OfferItem = ({
 
   return (
     <tr className={`offer-item ${isOfferInactiveOrExpired ? 'inactive' : ''} offer-row`}>
+      <td className="select-column">
+        <input
+          checked={isSelected}
+          className="select-offer-checkbox"
+          data-testid={`select-offer-${offer.id}`}
+          id={`select-offer-${offer.id}`}
+          onChange={handleOnChangeSelected}
+          type="checkbox"
+        />
+      </td>
       <td className="thumb-column">
         <Thumb url={offer.thumbUrl} />
       </td>
@@ -155,9 +172,15 @@ const OfferItem = ({
   )
 }
 
+OfferItem.defaultProps = {
+  isSelected: false,
+}
+
 OfferItem.propTypes = {
+  isSelected: PropTypes.bool,
   offer: PropTypes.shape().isRequired,
   refreshOffers: PropTypes.func.isRequired,
+  selectOffer: PropTypes.func.isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   trackActivateOffer: PropTypes.func.isRequired,
   trackDeactivateOffer: PropTypes.func.isRequired,

@@ -1,6 +1,8 @@
 @mixin primary {
   @include button();
 
+  display: flex;
+  align-items: center;
   background-color: $primary;
   border: 3px solid $primary;
   border-radius: rem(24px);
@@ -9,6 +11,11 @@
   height: rem(40px);
   line-height: rem(34px);
   padding: 0 rem(16px);
+
+  img {
+    height: rem(25px);
+    margin-right: rem(4px);
+  }
 
   svg {
     height: rem(25px);

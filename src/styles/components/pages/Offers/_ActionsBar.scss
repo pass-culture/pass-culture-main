@@ -1,0 +1,16 @@
+.offers-actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .nb-offers-description {
+    display: inline-block;
+    min-width: rem(160px);
+  }
+
+  .actions-container {
+    display: flex;
+    flex: auto;
+    justify-content: space-around;
+  }
+}

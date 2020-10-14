@@ -1,7 +1,9 @@
 export const SAVE_SEARCH_FILTERS = 'SAVE_SEARCH_FILTERS'
+export const SET_SELECTED_OFFER_IDS = 'SET_SELECTED_OFFER_IDS'
 
 export const initialState = {
   searchFilters: {},
+  selectedOfferIds: [],
 }
 
 const offersReducers = (state = initialState, action) => {
@@ -13,19 +15,25 @@ const offersReducers = (state = initialState, action) => {
           filters[filterName] = action.filters[filterName]
         }
       })
-      return Object.assign({}, state, {
-        searchFilters: filters,
-      })
+      return { ...state, searchFilters: filters }
     }
+    case SET_SELECTED_OFFER_IDS:
+      return { ...state, selectedOfferIds: action.offerIds }
     default:
       return state
   }
 }
 
-export function saveSearchFilters(searchFilters) {
+export function saveSearchFilters(filters) {
   return {
-    searchFilters,
+    filters,
     type: SAVE_SEARCH_FILTERS,
+  }
+}
+export function setSelectedOfferIds(offerIds) {
+  return {
+    offerIds,
+    type: SET_SELECTED_OFFER_IDS,
   }
 }
 

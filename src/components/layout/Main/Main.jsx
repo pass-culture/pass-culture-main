@@ -6,6 +6,7 @@ import React, { PureComponent, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
+import ActionsBar from '../ActionsBar/'
 import HeaderContainer from '../Header/HeaderContainer'
 import NotificationContainer from '../Notification/NotificationContainer'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
@@ -74,6 +75,7 @@ class Main extends PureComponent {
 
   render() {
     const {
+      PageActionsBar,
       backTo,
       children,
       fullscreen,
@@ -150,6 +152,8 @@ class Main extends PureComponent {
           {footer}
         </Tag>
         <Modal key="modal" />
+        { PageActionsBar && <ActionsBar><PageActionsBar/></ActionsBar>}
+
       </Fragment>
     )
   }
@@ -157,6 +161,7 @@ class Main extends PureComponent {
 
 Main.defaultProps = {
   Tag: 'main',
+  PageActionsBar: null,
   backTo: null,
   fullscreen: false,
   handleDataRequest: null,
@@ -168,6 +173,7 @@ Main.defaultProps = {
 
 Main.propTypes = {
   Tag: PropTypes.string,
+  PageActionsBar: PropTypes.elementType,
   backTo: PropTypes.shape(),
   children: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   currentUser: PropTypes.shape().isRequired,

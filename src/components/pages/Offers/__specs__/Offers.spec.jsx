@@ -87,7 +87,8 @@ describe('src | components | pages | Offers | Offers', () => {
         parse,
       },
       setSelectedOfferIds: jest.fn(),
-      setActionsVisibility: jest.fn(),
+      showActionsBar: jest.fn(),
+      hideActionsBar: jest.fn(),
       venue: { name: 'Ma Venue', id: 'JI' },
     }
     fetchAllVenuesByProUser.mockResolvedValue(proVenues)
@@ -698,6 +699,35 @@ describe('src | components | pages | Offers | Offers', () => {
       wrapper.update()
       const rightArrow = wrapper.find('img[alt="Aller à la page suivante"]').closest('button')
       expect(rightArrow.prop('disabled')).toBe(true)
+    })
+  })
+
+  describe('offers selection', () => {
+    it('should display actionBar when at lest one offer is selected', async () => {
+      // Given
+      renderOffers(props, store)
+      let checkbox
+      await waitFor(() => (checkbox = screen.getByTestId('select-offer-N9')))
+
+      // When
+      fireEvent.click(checkbox)
+
+      // Then
+      await waitFor(() => expect(props.showActionsBar).toHaveBeenCalledWith())
+    })
+
+    it('should hide actionBar when all offers are unselected', async () => {
+      // Given
+      props.selectedOfferIds = ['N9']
+      renderOffers(props, store)
+      let checkbox
+      await waitFor(() => (checkbox = screen.getByTestId('select-offer-N9', { checked: true })))
+
+      // When
+      fireEvent.click(checkbox)
+
+      // Then
+      await waitFor(() => expect(props.hideActionsBar).toHaveBeenCalledWith())
     })
   })
 })

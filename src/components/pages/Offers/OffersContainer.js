@@ -4,7 +4,8 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import { withRequiredLogin } from 'components/hocs'
-import { SAVE_SEARCH_FILTERS } from 'store/reducers/offers'
+import { hideActionsBar, showActionsBar } from 'store/reducers/actionsBar'
+import { saveSearchFilters, setSelectedOfferIds } from 'store/reducers/offers'
 import { selectOffers } from 'store/selectors/data/offersSelectors'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
 import { ALL_OFFERS, ALL_VENUES } from './_constants'
@@ -17,6 +18,7 @@ export const mapStateToProps = state => {
     notification: state.notification,
     offers: selectOffers(state),
     searchFilters: state.offers.searchFilters,
+    selectedOfferIds: state.offers.selectedOfferIds,
   }
 }
 
@@ -50,7 +52,6 @@ export const mapDispatchToProps = dispatch => {
   }
   return {
     closeNotification: () => dispatch(closeNotification()),
-
     handleOnActivateAllVenueOffersClick: venueId => () => {
       dispatch(
         requestData({
@@ -63,7 +64,6 @@ export const mapDispatchToProps = dispatch => {
         })
       )
     },
-
     handleOnDeactivateAllVenueOffersClick: venueId => () => {
       dispatch(
         requestData({
@@ -76,16 +76,9 @@ export const mapDispatchToProps = dispatch => {
         })
       )
     },
-
-    saveSearchFilters: filters => {
-      dispatch({
-        type: SAVE_SEARCH_FILTERS,
-        filters,
-      })
-    },
-
-    loadOffers: filters =>
-      fetchFromApiWithCredentials(`/offers?${buildQueryParams(filters)}`).then(
+    hideActionsBar: () => dispatch(hideActionsBar()),
+    loadOffers: filters => {
+      return fetchFromApiWithCredentials(`/offers?${buildQueryParams(filters)}`).then(
         ({ offers, page, page_count: pageCount, total_count: offersCount }) => {
           dispatch({
             type: 'GET_PAGINATED_OFFERS',
@@ -94,7 +87,11 @@ export const mapDispatchToProps = dispatch => {
 
           return { page, pageCount, offersCount }
         }
-      ),
+      )
+    },
+    saveSearchFilters: (filters) => dispatch(saveSearchFilters(filters)),
+    setSelectedOfferIds: (selectedOfferIds) => dispatch(setSelectedOfferIds(selectedOfferIds)),
+    showActionsBar: () => dispatch(showActionsBar()),
   }
 }
 

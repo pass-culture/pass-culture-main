@@ -3,14 +3,16 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
-import { formatAndOrderVenues, fetchAllVenuesByProUser } from '../../../services/venuesService'
-import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
-import Select from '../../layout/inputs/Select'
-import TextInput from '../../layout/inputs/TextInput/TextInput'
-import Main from '../../layout/Main'
-import Spinner from '../../layout/Spinner'
-import Titles from '../../layout/Titles/Titles'
+import Select from 'components/layout/inputs/Select'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import Main from 'components/layout/Main'
+import Spinner from 'components/layout/Spinner'
+import Titles from 'components/layout/Titles/Titles'
+import { formatAndOrderVenues, fetchAllVenuesByProUser } from 'services/venuesService'
+import { mapApiToBrowser, translateQueryParamsToApiParams } from 'utils/translate'
+
 import { ALL_OFFERS, ALL_VENUES, ALL_VENUES_OPTION, DEFAULT_PAGE } from './_constants'
+import ActionsBar from './ActionsBar/'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
 
 class Offers extends PureComponent {
@@ -126,6 +128,24 @@ class Offers extends PureComponent {
     })
   }
 
+  selectOffer = (offerId, selected) => {
+    const { hideActionsBar, setSelectedOfferIds, selectedOfferIds, showActionsBar } = this.props
+
+    let newSelectedOfferIds = [...selectedOfferIds]
+    if (selected) {
+      newSelectedOfferIds.push(offerId)
+    } else {
+      const offerIdIndex = newSelectedOfferIds.indexOf(offerId)
+      newSelectedOfferIds.splice(offerIdIndex, 1)
+    }
+    setSelectedOfferIds(newSelectedOfferIds)
+    newSelectedOfferIds.length ? showActionsBar() : hideActionsBar()
+  }
+
+  getOffersActionsBar = () => {
+    return <ActionsBar refreshOffers={this.getPaginatedOffersWithFilters} />
+  }
+
   render() {
     const {
       currentUser,
@@ -133,6 +153,7 @@ class Offers extends PureComponent {
       handleOnActivateAllVenueOffersClick,
       offers,
       query,
+      selectedOfferIds,
     } = this.props
 
     const { isAdmin } = currentUser || {}
@@ -163,6 +184,7 @@ class Offers extends PureComponent {
 
     return (
       <Main
+        PageActionsBar={this.getOffersActionsBar}
         id="offers"
         name="offers"
       >
@@ -230,6 +252,7 @@ class Offers extends PureComponent {
                   <tr>
                     <th />
                     <th />
+                    <th />
                     <th>
                       {'Lieu'}
                     </th>
@@ -246,9 +269,11 @@ class Offers extends PureComponent {
                 <tbody className="offers-list">
                   {offers.map(offer => (
                     <OfferItemContainer
+                      isSelected={selectedOfferIds.includes(offer.id)}
                       key={offer.id}
                       offer={offer}
                       refreshOffers={this.getPaginatedOffersWithFilters}
+                      selectOffer={this.selectOffer}
                     />
                   ))}
                 </tbody>
@@ -287,6 +312,7 @@ class Offers extends PureComponent {
 }
 
 Offers.defaultProps = {
+  selectedOfferIds: [],
   venue: undefined,
 }
 
@@ -295,6 +321,7 @@ Offers.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   handleOnActivateAllVenueOffersClick: PropTypes.func.isRequired,
   handleOnDeactivateAllVenueOffersClick: PropTypes.func.isRequired,
+  hideActionsBar: PropTypes.func.isRequired,
   loadOffers: PropTypes.func.isRequired,
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   query: PropTypes.shape({
@@ -302,6 +329,9 @@ Offers.propTypes = {
     parse: PropTypes.func.isRequired,
   }).isRequired,
   saveSearchFilters: PropTypes.func.isRequired,
+  selectedOfferIds: PropTypes.arrayOf(PropTypes.string),
+  setSelectedOfferIds: PropTypes.func.isRequired,
+  showActionsBar: PropTypes.func.isRequired,
   venue: PropTypes.shape({
     name: PropTypes.string.isRequired,
   }),
