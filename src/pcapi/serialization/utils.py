@@ -1,15 +1,22 @@
-from pydantic import ValidationError
-from typing import Optional, Any
+from typing import Optional, Any, Union
+
+from pydantic import ValidationError, validator
 from flask import Response, Request
 
 from pcapi.models import ApiErrors
+from pcapi.utils.human_ids import humanize, dehumanize
+
 
 def to_camel(string: str) -> str:
     components = string.split("_")
     return components[0] + "".join(x.title() for x in components[1:])
 
+
 def before_handler(
-    request: Request, response: Response, pydantic_error: Optional[ValidationError], _: Any
+    request: Request,  # pylint: disable=unused-argument
+    response: Response,  # pylint: disable=unused-argument
+    pydantic_error: Optional[ValidationError],
+    _: Any,
 ) -> None:
     """Raises an ``ApiErrors` exception if input validation fails.
 
@@ -27,3 +34,32 @@ def before_handler(
             else:
                 api_errors.add_error(error["loc"][0], error["msg"])
         raise api_errors
+
+
+def humanize_id(id_to_humanize: Union[int, str]) -> str:
+    # This is because humanize_id will be called on a int the first time
+    # and then on ids already humanized. humanize can't work with string
+    if isinstance(id_to_humanize, int):
+        return humanize(id_to_humanize)
+
+    return str(id_to_humanize)
+
+
+def dehumanize_id(id_to_dehumanize: Optional[Union[int, str]]) -> Optional[int]:
+    if id_to_dehumanize is None:
+        return None
+
+    # This is because dehumanize_id will be called on a str the first time
+    # and then on ids already dehumanized. dehumanize can't work with int
+    if isinstance(id_to_dehumanize, str):
+        return dehumanize(id_to_dehumanize)
+
+    return int(id_to_dehumanize)
+
+
+def humanize_field(field_name: str) -> classmethod:
+    return validator(field_name, pre=True, allow_reuse=True)(humanize_id)
+
+
+def dehumanize_field(field_name: str) -> classmethod:
+    return validator(field_name, pre=True, allow_reuse=True)(dehumanize_id)
