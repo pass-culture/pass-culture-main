@@ -56,7 +56,7 @@ class GetMovieShowtimeListTest:
         # Then
         assert str(allocine_exception.value) == "Error connecting Allocine API for theater test_id"
 
-    @patch('pcapi.connectors.api_demarches_simplifiees.json_logger.info')
+    @patch('pcapi.connectors.api_allocine.json_logger.info')
     @patch('pcapi.connectors.api_allocine.requests.get')
     def test_tracks_calls_to_allocine_movies_showtimes(self, mocked_requests_get, json_logger_info):
         # Given
@@ -74,7 +74,7 @@ class GetMovieShowtimeListTest:
         json_logger_info.assert_called_with("Loading movie showtimes from Allocine",
                                             extra={'theater': theater_id, 'service': 'ApiAllocine'})
 
-    @patch('pcapi.connectors.api_demarches_simplifiees.json_logger.error')
+    @patch('pcapi.connectors.api_allocine.json_logger.error')
     @patch('pcapi.connectors.api_allocine.requests.get', side_effect=Exception)
     def test_tracks_api_connection_failure(self, mocked_requests_get, json_logger_error):
         # Given
@@ -90,7 +90,7 @@ class GetMovieShowtimeListTest:
         json_logger_error.assert_called_with("Error connecting to Allocine API",
                                              extra={'theater': theater_id, 'service': 'ApiAllocine'})
 
-    @patch('pcapi.connectors.api_demarches_simplifiees.json_logger.error')
+    @patch('pcapi.connectors.api_allocine.json_logger.error')
     @patch('pcapi.connectors.api_allocine.requests.get')
     def test_tracks_api_request_failure(self, request_get, json_logger_error):
         # Given
@@ -126,7 +126,7 @@ class GetMoviePosterFromAllocineTest:
         request_get.assert_called_once_with(poster_url)
         assert api_response == bytes()
 
-    @patch('pcapi.connectors.api_demarches_simplifiees.json_logger.info')
+    @patch('pcapi.connectors.api_allocine.json_logger.info')
     @patch('pcapi.connectors.api_allocine.requests.get')
     def test_tracks_calls_to_allocine_movie_poster(self, mocked_requests_get, json_logger_info):
         # Given
@@ -160,7 +160,7 @@ class GetMoviePosterFromAllocineTest:
                                        " https://fr.web.img6.acsta.net/pictures/19/10/23/15/11/3506165.jpg" \
                                        " with code 400"
 
-    @patch('pcapi.connectors.api_demarches_simplifiees.json_logger.error')
+    @patch('pcapi.connectors.api_allocine.json_logger.error')
     @patch('pcapi.connectors.api_allocine.requests.get')
     def test_tracks_failed_calls_to_allocine_movie_poster(self, mocked_requests_get, json_logger_error):
         # Given

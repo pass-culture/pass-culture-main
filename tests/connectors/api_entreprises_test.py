@@ -66,7 +66,7 @@ class GetByOffererTest:
 
     @patch('pcapi.connectors.api_entreprises.requests.get')
     @patch('pcapi.connectors.api_entreprises.json_logger.info')
-    def test_tracks_calls_to_api_entreprise(self, requests_get, json_logger_info):
+    def test_tracks_calls_to_api_entreprise(self, json_logger_info, requests_get):
         # Given
         siren = '732075312'
         offerer = create_offerer(siren=siren)

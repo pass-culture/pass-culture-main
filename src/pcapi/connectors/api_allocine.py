@@ -1,6 +1,6 @@
 import requests
 
-from utils.logger import json_logger
+from pcapi.utils.logger import json_logger
 
 API_ALLOCINE = "ApiAllocine"
 

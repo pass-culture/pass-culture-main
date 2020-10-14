@@ -45,8 +45,8 @@ class GetAllApplicationsForProcedureTest:
         assert str(
             exception.value) == 'Error getting API démarches simplifiées DATA for procedure_id: 1 and token 12345'
 
-    @patch('connectors.api_demarches_simplifiees.json_logger.info')
-    @patch('connectors.api_demarches_simplifiees.requests.get')
+    @patch('pcapi.connectors.api_demarches_simplifiees.json_logger.info')
+    @patch('pcapi.connectors.api_demarches_simplifiees.requests.get')
     def test_tracks_calls_to_API_with_params(self, requests_get, json_logger_info):
         # Given
         response_return_value = MagicMock(status_code=200, text='')
@@ -65,8 +65,8 @@ class GetAllApplicationsForProcedureTest:
                                             extra={'procedure_id': 1, 'page': 2,
                                                    'service': 'ApiDemarchesSimplifiees'})
 
-    @patch('connectors.api_demarches_simplifiees.json_logger.error')
-    @patch('connectors.api_demarches_simplifiees.requests.get')
+    @patch('pcapi.connectors.api_demarches_simplifiees.json_logger.error')
+    @patch('pcapi.connectors.api_demarches_simplifiees.requests.get')
     def test_tracks_calls_failure_to_API_with_params(self, requests_get, json_logger_error):
         # Given
         response_return_value = MagicMock(status_code=400, text='')

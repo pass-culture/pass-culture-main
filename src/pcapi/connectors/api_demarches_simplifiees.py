@@ -2,7 +2,7 @@ import requests
 from enum import Enum, \
     auto
 
-from utils.logger import json_logger
+from pcapi.utils.logger import json_logger
 
 API_DEMARCHES_SIMPLIFIES = "ApiDemarchesSimplifiees"
 
