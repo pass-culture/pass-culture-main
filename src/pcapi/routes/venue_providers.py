@@ -87,7 +87,4 @@ def _get_stock_provider_repository(provider_class) -> StockProviderRepository:
 
 
 def _run_first_synchronization(new_venue_provider: VenueProvider):
-    subprocess.Popen('python src/pcapi/scripts/pc.py update_providables'
-                     + ' --venue-provider-id %s' % str(new_venue_provider.id),
-                     shell=True,
-                     cwd=API_ROOT_PATH)
+    subprocess.Popen(['python', 'src/pcapi/scripts/pc.py', 'update_providables', '--venue-provider-id', str(new_venue_provider.id)])

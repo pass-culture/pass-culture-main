@@ -54,10 +54,11 @@ class Post:
             assert venue_provider.venueIdAtOfferProvider == '12345678912345'
             assert 'id' in response.json
             venue_provider_id = response.json['id']
-            mock_subprocess.assert_called_once_with('python src/pcapi/scripts/pc.py update_providables'
-                                                    + f' --venue-provider-id {dehumanize(venue_provider_id)}',
-                                                    cwd=API_ROOT_PATH,
-                                                    shell=True)
+            mock_subprocess.assert_called_once_with(['python',
+                                                     'src/pcapi/scripts/pc.py',
+                                                     'update_providables',
+                                                     '--venue-provider-id',
+                                                     str(dehumanize(venue_provider_id))])
 
         @pytest.mark.usefixtures("db_session")
         @patch('pcapi.routes.venue_providers.find_by_id')
