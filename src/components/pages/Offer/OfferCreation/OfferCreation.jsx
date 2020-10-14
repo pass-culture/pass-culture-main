@@ -270,9 +270,12 @@ class OfferCreation extends PureComponent {
     if (!isCreatedEntity) return
 
     const isEventType = get(selectedOfferType, 'type') === 'Event'
-    if (!isEventType) return
 
-    updateFormSetIsDuo(true)
+    if (isEventType) {
+      updateFormSetIsDuo(true)
+    } else {
+      updateFormSetIsDuo(false)
+    }
   }
 
   hasConditionalField(fieldName) {
