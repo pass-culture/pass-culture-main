@@ -1,3 +1,4 @@
+import contextlib
 import enum
 
 from sqlalchemy import String, Column, Enum
@@ -41,3 +42,45 @@ class Feature(PcObject, Model, DeactivableMixin):
     @property
     def nameKey(self):
         return str(self.name).replace('FeatureToggle.', '')
+
+
+@contextlib.contextmanager
+def override_features(**overrides):
+    """A context manager that temporarily enables and/or disables features.
+
+    It can also be used as a function decorator.
+
+    Usage:
+
+        with override_features(QR_CODE=False):
+            call_some_function()
+
+        @override_features(
+            SYNCHRONIZE_ALGOLIA=True,
+            QR_CODE=False,
+        )
+        def test_something():
+            pass  # [...]
+    """
+    state = {
+        feature.name: is_active
+        for feature, is_active in (
+            Feature.query
+            .filter(Feature.name.in_(overrides))
+            .with_entities(Feature.name, Feature.isActive)
+            .all()
+        )
+    }
+    # Yes, the following may perform multiple SQL queries. It's fine,
+    # we will probably not toggle thousands of features in each call.
+    apply_to_revert = {}
+    for name, status in overrides.items():
+        if status != state[name]:
+            apply_to_revert[name] = not status
+            Feature.query.filter_by(name=name).update({'isActive': status})
+
+    try:
+        yield
+    finally:
+        for name, status in apply_to_revert.items():
+            Feature.query.filter_by(name=name).update({'isActive': status})
