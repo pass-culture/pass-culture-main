@@ -21,6 +21,7 @@ from pcapi.repository.seen_offer_queries import remove_old_seen_offers
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
 from pcapi.scheduled_tasks.decorators import cron_context, cron_require_feature, \
     log_cron
+from pcapi.scheduled_tasks import utils
 from pcapi.scripts.beneficiary import old_remote_import, remote_import
 from pcapi.scripts.dashboard.write_dashboard import write_dashboard
 from pcapi.scripts.update_booking_used import \
@@ -140,6 +141,7 @@ if __name__ == '__main__':
 
     orm.configure_mappers()
     scheduler = BlockingScheduler()
+    utils.activate_sentry(scheduler)
 
     scheduler.add_job(synchronize_allocine_stocks, 'cron',
                       [app],

@@ -13,6 +13,7 @@ from pcapi.algolia.infrastructure.worker import process_multi_indexing
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks.decorators import log_cron, cron_context, cron_require_feature
+from pcapi.scheduled_tasks import utils
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, \
     batch_indexing_offers_in_algolia_by_venue, \
     batch_deleting_expired_offers_in_algolia, batch_processing_offer_ids_in_error
@@ -71,6 +72,7 @@ if __name__ == '__main__':
 
     orm.configure_mappers()
     scheduler = BlockingScheduler()
+    utils.activate_sentry(scheduler)
 
     scheduler.add_job(index_offers_in_algolia_by_offer, 'cron',
                       [app],

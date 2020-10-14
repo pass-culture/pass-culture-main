@@ -15,6 +15,8 @@ from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.scheduled_tasks.decorators import log_cron, cron_context, cron_require_feature
+from pcapi.scheduled_tasks import utils
+
 
 @log_cron
 @cron_context
@@ -53,6 +55,7 @@ if __name__ == '__main__':
 
     orm.configure_mappers()
     scheduler = BlockingScheduler()
+    utils.activate_sentry(scheduler)
 
     scheduler.add_job(synchronize_titelive_things, 'cron',
                       [app],
