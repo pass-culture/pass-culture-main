@@ -1,6 +1,5 @@
 from pcapi.domain.venues import is_algolia_indexing
 from pcapi.model_creators.generic_creators import create_offerer, create_venue
-from pcapi.routes.serialization import as_dict
 
 
 class IsAlgoliaIndexingTest:

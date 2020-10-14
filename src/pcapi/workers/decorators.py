@@ -1,9 +1,3 @@
-import os
-
-from functools import wraps
-from pcapi.models.db import db
-from flask import Flask
-from sqlalchemy import orm
 from functools import wraps
 from pcapi.utils.logger import logger
 from pcapi.workers.logger import build_job_log_message, JobStatus
