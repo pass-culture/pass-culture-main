@@ -9,6 +9,7 @@ import { pluralize } from 'utils/pluralize'
 import { OFFER_STATUS } from 'components/pages/Offers/domain/offerStatus'
 import { isOfferFullyBooked } from 'components/pages/Offers/domain/isOfferFullyBooked'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
+import { computeVenueDisplayName } from 'services/venuesService'
 
 const OFFER_STATUS_PROPERTIES = {
   [OFFER_STATUS.INACTIVE]: {
@@ -120,7 +121,7 @@ const OfferItem = ({
         </span>
       </td>
       <td className="venue-column">
-        {venue && (venue.publicName || venue.name)}
+        {venue && computeVenueDisplayName(venue)}
       </td>
       <td className="stock-column">
         {computeRemainingStockValue(stocks)}

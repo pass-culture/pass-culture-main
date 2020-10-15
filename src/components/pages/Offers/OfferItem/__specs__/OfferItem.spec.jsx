@@ -2,9 +2,9 @@ import React from 'react'
 import { mount } from 'enzyme'
 import { MemoryRouter } from 'react-router'
 import OfferItem from '../OfferItem'
-import { fetchFromApiWithCredentials } from '../../../../../utils/fetch'
+import { fetchFromApiWithCredentials } from 'utils/fetch'
 
-jest.mock('../../../../../utils/fetch', () => {
+jest.mock('utils/fetch', () => {
   return {
     fetchFromApiWithCredentials: jest.fn().mockImplementation(() => Promise.resolve()),
   }
@@ -201,6 +201,27 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       // then
       const venueName = wrapper.find({ children: 'lieu de ouf' })
+      expect(venueName).toHaveLength(1)
+    })
+
+    it('should display the offerer name with "- Offre numérique" when venue is virtual', () => {
+      // given
+      props.venue = {
+        isVirtual: true,
+        name: 'Gaumont Montparnasse',
+        offererName: 'Gaumont',
+        publicName: 'Gaumontparnasse',
+      }
+
+      // when
+      const wrapper = mount(
+        <MemoryRouter>
+          <OfferItem {...props} />
+        </MemoryRouter>
+      )
+
+      // then
+      const venueName = wrapper.find({ children: 'Gaumont - Offre numérique' })
       expect(venueName).toHaveLength(1)
     })
 

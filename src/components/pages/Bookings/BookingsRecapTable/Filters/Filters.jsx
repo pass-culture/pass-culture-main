@@ -2,8 +2,10 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
 import moment from 'moment'
-import { fetchAllVenuesByProUser } from '../../../../../services/venuesService'
-import formatAndOrderVenues from '../utils/formatAndOrderVenues'
+import {
+  formatAndOrderVenues,
+  fetchAllVenuesByProUser,
+} from '../../../../../services/venuesService'
 import FilterByOmniSearch from './FilterByOmniSearch'
 import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'

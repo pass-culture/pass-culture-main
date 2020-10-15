@@ -1,41 +1,141 @@
 import * as fetch from '../../utils/fetch'
-import { fetchAllVenuesByProUser } from '../venuesService'
+import {
+  formatAndOrderVenues,
+  fetchAllVenuesByProUser,
+  computeVenueDisplayName,
+} from '../venuesService'
 
-describe('src | services | venuesService', () => {
+describe('venuesService', () => {
   let mockJsonPromise
 
-  beforeEach(() => {
-    mockJsonPromise = Promise.resolve([{
-      id: 'AE',
-      name: 'Librairie Kléber',
-      isVirtual: false
-    }])
-    jest
-      .spyOn(fetch, 'fetchFromApiWithCredentials')
-      .mockImplementation(() => mockJsonPromise)
-  })
+  describe('fetchAllVenuesByProUser', () => {
+    beforeEach(() => {
+      mockJsonPromise = Promise.resolve([
+        {
+          id: 'AE',
+          name: 'Librairie Kléber',
+          isVirtual: false,
+        },
+      ])
+      jest.spyOn(fetch, 'fetchFromApiWithCredentials').mockImplementation(() => mockJsonPromise)
+    })
 
-  it('should return paginatedBookingsRecap value', async () => {
-    // When
-    const venues = await fetchAllVenuesByProUser()
+    it('should return paginatedBookingsRecap value', async () => {
+      // When
+      const venues = await fetchAllVenuesByProUser()
 
-    // Then
-    expect(venues).toHaveLength(1)
-    expect(venues[0]).toStrictEqual({
-      id: 'AE',
-      name: 'Librairie Kléber',
-      isVirtual: false
+      // Then
+      expect(venues).toHaveLength(1)
+      expect(venues[0]).toStrictEqual({
+        id: 'AE',
+        name: 'Librairie Kléber',
+        isVirtual: false,
+      })
+    })
+
+    it('should return empty paginatedBookingsRecap when an error occurred', async () => {
+      // Given
+      mockJsonPromise = Promise.reject('An error occured')
+
+      // When
+      const venues = await fetchAllVenuesByProUser()
+
+      // Then
+      expect(venues).toHaveLength(0)
     })
   })
 
-  it('should return empty paginatedBookingsRecap when an error occurred', async () => {
-    // Given
-    mockJsonPromise = Promise.reject('An error occured')
+  describe('formatAndOrderVenues', () => {
+    it('should sort venues alphabetically', () => {
+      // given
+      const venues = [
+        { id: 'AF', name: 'Librairie Fnac', offererName: 'gilbert Joseph', isVirtual: false },
+        { id: 'AE', name: 'Offre numérique', offererName: 'gilbert Joseph', isVirtual: true },
+      ]
 
-    // When
-    const venues = await fetchAllVenuesByProUser()
+      // when
+      const sortingValues = formatAndOrderVenues(venues)
 
-    // Then
-    expect(venues).toHaveLength(0)
+      // then
+      expect(sortingValues).toStrictEqual([
+        {
+          displayName: 'gilbert Joseph - Offre numérique',
+          id: 'AE',
+        },
+        {
+          displayName: 'Librairie Fnac',
+          id: 'AF',
+        },
+      ])
+    })
+
+    it('should format venue option with "offerer name - offre numérique" when venue is virtual', () => {
+      // given
+      const venues = [
+        { id: 'AE', name: 'Offre numérique', offererName: 'gilbert Joseph', isVirtual: true },
+      ]
+
+      // when
+      const formattedValues = formatAndOrderVenues(venues)
+
+      // then
+      expect(formattedValues).toStrictEqual([
+        {
+          displayName: 'gilbert Joseph - Offre numérique',
+          id: 'AE',
+        },
+      ])
+    })
+  })
+
+  describe('computeVenueDisplayName', () => {
+    it('should give venue name when venue is not virtual and has no public name', () => {
+      // given
+      const venue = {
+        id: 'AF',
+        name: 'Librairie Fnac',
+        offererName: 'gilbert Joseph',
+        isVirtual: false,
+      }
+
+      // when
+      const computedVenueDisplayName = computeVenueDisplayName(venue)
+
+      // then
+      expect(computedVenueDisplayName).toStrictEqual('Librairie Fnac')
+    })
+
+    it('should give venue public name when venue is not virtual and has a public name', () => {
+      // given
+      const venue = {
+        id: 'AF',
+        name: 'Librairie Fnac',
+        offererName: 'gilbert Joseph',
+        publicName: 'Ma petite librairie',
+        isVirtual: false,
+      }
+
+      // when
+      const computedVenueDisplayName = computeVenueDisplayName(venue)
+
+      // then
+      expect(computedVenueDisplayName).toStrictEqual('Ma petite librairie')
+    })
+
+    it('should give the offerer name with "- Offre numérique" when venue is virtual', () => {
+      // given
+      const venue = {
+        id: 'AF',
+        name: 'Librairie Fnac',
+        offererName: 'gilbert Joseph',
+        isVirtual: true,
+      }
+
+      // when
+      const computedVenueDisplayName = computeVenueDisplayName(venue)
+
+      // then
+      expect(computedVenueDisplayName).toStrictEqual('gilbert Joseph - Offre numérique')
+    })
   })
 })

@@ -29,7 +29,8 @@ const renderOffer = (props, store) => {
   )
 }
 
-jest.mock('../../../../services/venuesService', () => ({
+jest.mock('services/venuesService', () => ({
+  ...jest.requireActual('services/venuesService'),
   fetchAllVenuesByProUser: jest.fn(),
 }))
 describe('src | components | pages | Offers | Offers', () => {
