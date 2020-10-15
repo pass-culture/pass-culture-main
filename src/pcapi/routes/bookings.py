@@ -158,8 +158,7 @@ def patch_booking_by_token(token: str):
 @public_api.route('/v2/bookings/token/<token>', methods=['GET'])
 @login_or_api_key_required_v2
 def get_booking_by_token_v2(token: str):
-    app_authorization_api_key = _extract_api_key_from_request(request)
-    valid_api_key = find_api_key_by_value(app_authorization_api_key)
+    valid_api_key = _get_api_key_from_header(request)
     booking_token_upper_case = token.upper()
     booking = booking_queries.find_by(booking_token_upper_case)
     offerer_id = booking.stock.offer.venue.managingOffererId
@@ -209,8 +208,7 @@ def patch_booking_use_by_token(token: str):
 @private_api.route('/v2/bookings/cancel/token/<token>', methods=['PATCH'])
 @login_or_api_key_required_v2
 def patch_cancel_booking_by_token(token: str):
-    app_authorization_api_key = _extract_api_key_from_request(request)
-    valid_api_key = find_api_key_by_value(app_authorization_api_key)
+    valid_api_key = _get_api_key_from_header(request)
     token = token.upper()
     booking = booking_queries.find_by(token)
     offerer_id = booking.stock.offer.venue.managingOffererId
@@ -260,16 +258,6 @@ def _activate_user(user_to_activate: UserSQLEntity) -> None:
     user_to_activate.canBookFreeOffers = True
     deposit = create_initial_deposit(user_to_activate)
     repository.save(deposit)
-
-
-def _extract_api_key_from_request(received_request: Dict) -> Union[str, None]:
-    authorization_header = received_request.headers.get('Authorization', None)
-    headers_contains_api_key_authorization = authorization_header and 'Bearer' in authorization_header
-
-    if headers_contains_api_key_authorization:
-        return authorization_header.replace('Bearer ', '')
-    else:
-        return None
 
 
 def _get_api_key_from_header(received_request: Dict) -> ApiKey:
