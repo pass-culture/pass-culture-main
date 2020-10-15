@@ -1,3 +1,4 @@
+import traceback
 from typing import Any, \
     Callable
 
@@ -23,7 +24,7 @@ def _wrapper(request_func: Callable, method: str, url: str, **kwargs: Any) -> Re
         res = request_func(method=method, url=url, timeout=REQUEST_TIMEOUT_IN_SECOND,
                            hooks={'response': _log_call_to_external_service}, **kwargs)
     except Exception as exc:
-        json_logger.error("Call to external service failed", extra={'method': method, 'url': url, 'exception': exc})
+        json_logger.error("Call to external service failed", extra={'method': method, 'url': url, 'exception': traceback.extract_stack()})
         raise exc
 
     return res
