@@ -1,10 +1,8 @@
 from typing import Dict, \
     List
 
-import requests
-
 from pcapi.models import Offerer
-from pcapi.utils.logger import json_logger
+from pcapi.utils import requests
 
 
 class ApiEntrepriseException(Exception):
@@ -15,12 +13,7 @@ def get_by_offerer(offerer: Offerer) -> Dict:
     response = requests.get(f'https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/{offerer.siren}',
                             verify=False)
 
-    json_logger.info("Loading offerer by siren with entreprise API",
-                      extra={'siren': offerer.siren, 'service': 'ApiEntreprise'})
-
     if response.status_code != 200:
-        json_logger.error("Error getting API entreprise data",
-                          extra={'siren': offerer.siren, 'service': 'ApiEntreprise'})
         raise ApiEntrepriseException('Error getting API entreprise DATA for SIREN : {}'.format(offerer.siren))
 
     response_json = response.json()
