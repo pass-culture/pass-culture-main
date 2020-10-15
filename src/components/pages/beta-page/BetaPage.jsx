@@ -25,7 +25,7 @@ const BetaPage = ({ trackSignup }) => {
         <div className="bp-content">
           {'Tu as 18 ans et tu vis dans un\n'}
           <a
-            href="https://pass.culture.fr/#jeune"
+            href="https://pass.culture.fr/le-dispositif/"
             rel="noopener noreferrer"
             target="_blank"
           >
