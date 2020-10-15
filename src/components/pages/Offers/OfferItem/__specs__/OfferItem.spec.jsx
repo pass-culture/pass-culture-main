@@ -12,9 +12,6 @@ jest.mock('../../../../../utils/fetch', () => {
 
 describe('src | components | pages | Offers | OfferItem', () => {
   let props
-  let dispatch = jest.fn()
-  let refreshOffer = jest.fn()
-
   let eventOffer
 
   beforeEach(() => {
@@ -31,9 +28,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     }
 
     props = {
-      dispatch,
-      activateOffer: jest.fn().mockResolvedValue({}),
-      deactivateOffer: jest.fn(),
+      dispatch: jest.fn(),
       offer: eventOffer,
       location: {
         search: '?orderBy=offer.id+desc',
@@ -44,7 +39,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       },
       trackActivateOffer: jest.fn(),
       trackDeactivateOffer: jest.fn(),
-      refreshOffer,
+      refreshOffers: jest.fn(),
     }
   })
 
@@ -98,7 +93,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           expect(fetchFromApiWithCredentials).toHaveBeenCalledWith(
             '/offers/active-status',
             'PATCH',
-            { offersActiveStatus: false, offersId: ['M4'] }
+            { isActive: false, ids: ['M4'] }
           )
         })
 
@@ -119,7 +114,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           expect(fetchFromApiWithCredentials).toHaveBeenCalledWith(
             '/offers/active-status',
             'PATCH',
-            { offersActiveStatus: true, offersId: ['M4'] }
+            { isActive: true, ids: ['M4'] }
           )
         })
       })

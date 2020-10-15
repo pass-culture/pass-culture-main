@@ -62,21 +62,6 @@ describe('fetchFromApiWithCredentials', () => {
     })
   })
 
-  it('should add "/" at beginning of path if not present', async () => {
-    // Given
-    const path = 'bookings/pro'
-
-    // When
-    await fetchFromApiWithCredentials(path)
-
-    // Then
-    expect(fetch).toHaveBeenCalledWith(`${API_URL}/${path}`, {
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      method: 'GET',
-    })
-  })
-
   it('should return json if return status is ok', async () => {
     // Given
     const oneBooking = {

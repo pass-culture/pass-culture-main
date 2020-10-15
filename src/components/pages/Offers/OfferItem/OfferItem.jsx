@@ -2,13 +2,13 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import Icon from '../../../layout/Icon'
-import Thumb from '../../../layout/Thumb'
-import { computeOfferStatus } from '../domain/computeOfferStatus'
-import { pluralize } from '../../../../utils/pluralize'
-import { OFFER_STATUS } from '../domain/offerStatus'
-import { isOfferFullyBooked } from '../domain/isOfferFullyBooked'
-import { fetchFromApiWithCredentials } from '../../../../utils/fetch'
+import Icon from 'components/layout/Icon'
+import Thumb from 'components/layout/Thumb'
+import { computeOfferStatus } from 'components/pages/Offers/domain/computeOfferStatus'
+import { pluralize } from 'utils/pluralize'
+import { OFFER_STATUS } from 'components/pages/Offers/domain/offerStatus'
+import { isOfferFullyBooked } from 'components/pages/Offers/domain/isOfferFullyBooked'
+import { fetchFromApiWithCredentials } from 'utils/fetch'
 
 const OFFER_STATUS_PROPERTIES = {
   [OFFER_STATUS.INACTIVE]: {
@@ -40,8 +40,8 @@ const OfferItem = ({
   function handleOnDeactivateClick() {
     const { id, isActive } = offer || {}
     const body = {
-      offersId: [id],
-      offersActiveStatus: !isActive,
+      ids: [id],
+      isActive: !isActive,
     }
 
     fetchFromApiWithCredentials('/offers/active-status', 'PATCH', body).then(() => {
