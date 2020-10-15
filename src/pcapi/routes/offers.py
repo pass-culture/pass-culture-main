@@ -42,6 +42,7 @@ from pcapi.validation.routes.offers import check_has_venue_id, \
 @private_api.route('/offers', methods=['GET'])
 @login_required
 def list_offers() -> (str, int):
+    offerer_identifier = Identifier.from_scrambled_id(request.args.get('offererId'))
     venue_identifier = Identifier.from_scrambled_id(request.args.get('venueId'))
 
     if not current_user.isAdmin:
@@ -53,10 +54,17 @@ def list_offers() -> (str, int):
                 offerer_id=venue.managingOffererId
             )
             check_user_has_rights_on_offerer(user_offerer)
+        if offerer_identifier:
+            user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
+                user_id=current_user.id,
+                offerer_id=offerer_identifier.persisted
+            )
+            check_user_has_rights_on_offerer(user_offerer)
 
     offers_request_parameters = OffersRequestParameters(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
+        offerer_id=offerer_identifier,
         venue_id=venue_identifier,
         offers_per_page=int(request.args.get('paginate')) if request.args.get('paginate') else None,
         name_keywords=request.args.get('name'),

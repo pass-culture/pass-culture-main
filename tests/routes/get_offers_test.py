@@ -120,6 +120,7 @@ class Get:
             assert isinstance(expected_parameter, OffersRequestParameters)
             assert expected_parameter.user_id == user.id
             assert expected_parameter.user_is_admin == user.isAdmin
+            assert expected_parameter.offerer_id is None
             assert expected_parameter.venue_id == Identifier(venue.id)
             assert expected_parameter.offers_per_page == 20
             assert expected_parameter.name_keywords is None
