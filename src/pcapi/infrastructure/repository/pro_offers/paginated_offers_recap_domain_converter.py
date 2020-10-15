@@ -32,6 +32,7 @@ def _offer_recap_to_domain(offer_sql_entity: OfferSQLEntity) -> OfferRecap:
             venue_is_virtual=offer_sql_entity.venue.isVirtual,
             venue_managing_offerer_id=offer_sql_entity.venue.managingOffererId,
             venue_name=offer_sql_entity.venue.name,
+            venue_offerer_name=offer_sql_entity.venue.managingOfferer.name,
             venue_public_name=offer_sql_entity.venue.publicName,
             stocks=stocks
     )

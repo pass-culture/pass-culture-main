@@ -150,22 +150,3 @@ class GetByProIdentifierTest:
 
         # then
         assert len(found_venues) == 0
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_all_venues_of_pro_user_with_public_name_when_provided(self, app: object):
-        # given
-        pro_user = create_user()
-        offerer = create_offerer()
-        create_user_offerer(user=pro_user, offerer=offerer)
-        venue_1 = create_venue(name="Kléber", offerer=offerer, siret='12345678912345', public_name="Librairie Kléber")
-        venue_2 = create_venue(name="QG FNAC", offerer=offerer, siret='98765432198765')
-
-        repository.save(venue_1, venue_2)
-
-        # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
-
-        # then
-        assert len(found_venues) == 2
-        assert found_venues[0].name == 'Librairie Kléber'
-        assert found_venues[1].name == 'QG FNAC'

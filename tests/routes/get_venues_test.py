@@ -29,6 +29,7 @@ class Get:
                 'id': humanize(venue.id),
                 'name': venue_name,
                 'offererName': venue.managingOfferer.name,
+                'publicName': None,
                 'isVirtual': venue.isVirtual
             }
             assert response.json[0] == expected_venue

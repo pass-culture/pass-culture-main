@@ -26,6 +26,7 @@ def should_return_serialized_offers_with_relevant_informations():
             venue_managing_offerer_id=offerer_id,
             venue_name="La petite librairie",
             venue_public_name="Petite librairie",
+            venue_offerer_name="Gérant de petites librairies",
             stocks=[stock]
     )
     paginated_offers_recap = PaginatedOffersRecap(offers_recap=[offer],
@@ -57,6 +58,7 @@ def should_return_serialized_offers_with_relevant_informations():
             "isVirtual": False,
             "managingOffererId": offer.venue.managing_offerer_id.scrambled,
             "name": "La petite librairie",
+            'offererName': 'Gérant de petites librairies',
             "publicName": "Petite librairie",
         },
         "venueId": offer.venue.identifier.scrambled,
@@ -86,6 +88,7 @@ def should_return_pagination_details():
             venue_managing_offerer_id=offerer_id,
             venue_name="La petite librairie",
             venue_public_name="Petite librairie",
+            venue_offerer_name="Gérant de petites librairies",
             stocks=[stock]
     )
     current_page = 1

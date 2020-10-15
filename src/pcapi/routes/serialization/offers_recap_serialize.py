@@ -46,5 +46,6 @@ def _serialize_venue(venue: OfferRecapVenue) -> Dict:
         "isVirtual": venue.is_virtual,
         "managingOffererId": venue.managing_offerer_id.scrambled,
         "name": venue.name,
+        "offererName": venue.offerer_name,
         "publicName": venue.public_name,
     }

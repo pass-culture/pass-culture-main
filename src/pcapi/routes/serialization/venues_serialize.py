@@ -15,5 +15,6 @@ def serialize_venue_with_offerer_name(venue: VenueWithOffererName) -> Dict:
         'id': humanize(venue.identifier),
         'name': venue.name,
         'offererName': venue.offerer_name,
+        'publicName': venue.public_name,
         'isVirtual': venue.is_virtual,
     }
