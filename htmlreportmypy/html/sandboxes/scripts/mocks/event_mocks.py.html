@@ -1,0 +1,238 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../../../mypy-html.css">
+</head>
+<body>
+<h2>sandboxes.scripts.mocks.event_mocks</h2>
+<table>
+<caption>sandboxes/scripts/mocks/event_mocks.py</caption>
+<tbody><tr>
+<td class="table-lines"><pre><span id="L1" class="lineno"><a class="lineno" href="#L1">1</a></span>
+<span id="L2" class="lineno"><a class="lineno" href="#L2">2</a></span>
+<span id="L3" class="lineno"><a class="lineno" href="#L3">3</a></span>
+<span id="L4" class="lineno"><a class="lineno" href="#L4">4</a></span>
+<span id="L5" class="lineno"><a class="lineno" href="#L5">5</a></span>
+<span id="L6" class="lineno"><a class="lineno" href="#L6">6</a></span>
+<span id="L7" class="lineno"><a class="lineno" href="#L7">7</a></span>
+<span id="L8" class="lineno"><a class="lineno" href="#L8">8</a></span>
+<span id="L9" class="lineno"><a class="lineno" href="#L9">9</a></span>
+<span id="L10" class="lineno"><a class="lineno" href="#L10">10</a></span>
+<span id="L11" class="lineno"><a class="lineno" href="#L11">11</a></span>
+<span id="L12" class="lineno"><a class="lineno" href="#L12">12</a></span>
+<span id="L13" class="lineno"><a class="lineno" href="#L13">13</a></span>
+<span id="L14" class="lineno"><a class="lineno" href="#L14">14</a></span>
+<span id="L15" class="lineno"><a class="lineno" href="#L15">15</a></span>
+<span id="L16" class="lineno"><a class="lineno" href="#L16">16</a></span>
+<span id="L17" class="lineno"><a class="lineno" href="#L17">17</a></span>
+<span id="L18" class="lineno"><a class="lineno" href="#L18">18</a></span>
+<span id="L19" class="lineno"><a class="lineno" href="#L19">19</a></span>
+<span id="L20" class="lineno"><a class="lineno" href="#L20">20</a></span>
+<span id="L21" class="lineno"><a class="lineno" href="#L21">21</a></span>
+<span id="L22" class="lineno"><a class="lineno" href="#L22">22</a></span>
+<span id="L23" class="lineno"><a class="lineno" href="#L23">23</a></span>
+<span id="L24" class="lineno"><a class="lineno" href="#L24">24</a></span>
+<span id="L25" class="lineno"><a class="lineno" href="#L25">25</a></span>
+<span id="L26" class="lineno"><a class="lineno" href="#L26">26</a></span>
+<span id="L27" class="lineno"><a class="lineno" href="#L27">27</a></span>
+<span id="L28" class="lineno"><a class="lineno" href="#L28">28</a></span>
+<span id="L29" class="lineno"><a class="lineno" href="#L29">29</a></span>
+<span id="L30" class="lineno"><a class="lineno" href="#L30">30</a></span>
+<span id="L31" class="lineno"><a class="lineno" href="#L31">31</a></span>
+<span id="L32" class="lineno"><a class="lineno" href="#L32">32</a></span>
+<span id="L33" class="lineno"><a class="lineno" href="#L33">33</a></span>
+<span id="L34" class="lineno"><a class="lineno" href="#L34">34</a></span>
+<span id="L35" class="lineno"><a class="lineno" href="#L35">35</a></span>
+<span id="L36" class="lineno"><a class="lineno" href="#L36">36</a></span>
+<span id="L37" class="lineno"><a class="lineno" href="#L37">37</a></span>
+<span id="L38" class="lineno"><a class="lineno" href="#L38">38</a></span>
+<span id="L39" class="lineno"><a class="lineno" href="#L39">39</a></span>
+<span id="L40" class="lineno"><a class="lineno" href="#L40">40</a></span>
+<span id="L41" class="lineno"><a class="lineno" href="#L41">41</a></span>
+<span id="L42" class="lineno"><a class="lineno" href="#L42">42</a></span>
+<span id="L43" class="lineno"><a class="lineno" href="#L43">43</a></span>
+<span id="L44" class="lineno"><a class="lineno" href="#L44">44</a></span>
+<span id="L45" class="lineno"><a class="lineno" href="#L45">45</a></span>
+<span id="L46" class="lineno"><a class="lineno" href="#L46">46</a></span>
+<span id="L47" class="lineno"><a class="lineno" href="#L47">47</a></span>
+<span id="L48" class="lineno"><a class="lineno" href="#L48">48</a></span>
+<span id="L49" class="lineno"><a class="lineno" href="#L49">49</a></span>
+<span id="L50" class="lineno"><a class="lineno" href="#L50">50</a></span>
+<span id="L51" class="lineno"><a class="lineno" href="#L51">51</a></span>
+<span id="L52" class="lineno"><a class="lineno" href="#L52">52</a></span>
+<span id="L53" class="lineno"><a class="lineno" href="#L53">53</a></span>
+<span id="L54" class="lineno"><a class="lineno" href="#L54">54</a></span>
+<span id="L55" class="lineno"><a class="lineno" href="#L55">55</a></span>
+<span id="L56" class="lineno"><a class="lineno" href="#L56">56</a></span>
+<span id="L57" class="lineno"><a class="lineno" href="#L57">57</a></span>
+<span id="L58" class="lineno"><a class="lineno" href="#L58">58</a></span>
+<span id="L59" class="lineno"><a class="lineno" href="#L59">59</a></span>
+<span id="L60" class="lineno"><a class="lineno" href="#L60">60</a></span>
+<span id="L61" class="lineno"><a class="lineno" href="#L61">61</a></span>
+<span id="L62" class="lineno"><a class="lineno" href="#L62">62</a></span>
+<span id="L63" class="lineno"><a class="lineno" href="#L63">63</a></span>
+<span id="L64" class="lineno"><a class="lineno" href="#L64">64</a></span>
+<span id="L65" class="lineno"><a class="lineno" href="#L65">65</a></span>
+<span id="L66" class="lineno"><a class="lineno" href="#L66">66</a></span>
+<span id="L67" class="lineno"><a class="lineno" href="#L67">67</a></span>
+<span id="L68" class="lineno"><a class="lineno" href="#L68">68</a></span>
+<span id="L69" class="lineno"><a class="lineno" href="#L69">69</a></span>
+<span id="L70" class="lineno"><a class="lineno" href="#L70">70</a></span>
+<span id="L71" class="lineno"><a class="lineno" href="#L71">71</a></span>
+<span id="L72" class="lineno"><a class="lineno" href="#L72">72</a></span>
+<span id="L73" class="lineno"><a class="lineno" href="#L73">73</a></span>
+<span id="L74" class="lineno"><a class="lineno" href="#L74">74</a></span>
+<span id="L75" class="lineno"><a class="lineno" href="#L75">75</a></span>
+<span id="L76" class="lineno"><a class="lineno" href="#L76">76</a></span>
+<span id="L77" class="lineno"><a class="lineno" href="#L77">77</a></span>
+<span id="L78" class="lineno"><a class="lineno" href="#L78">78</a></span>
+<span id="L79" class="lineno"><a class="lineno" href="#L79">79</a></span>
+<span id="L80" class="lineno"><a class="lineno" href="#L80">80</a></span>
+<span id="L81" class="lineno"><a class="lineno" href="#L81">81</a></span>
+<span id="L82" class="lineno"><a class="lineno" href="#L82">82</a></span>
+<span id="L83" class="lineno"><a class="lineno" href="#L83">83</a></span>
+<span id="L84" class="lineno"><a class="lineno" href="#L84">84</a></span>
+<span id="L85" class="lineno"><a class="lineno" href="#L85">85</a></span>
+<span id="L86" class="lineno"><a class="lineno" href="#L86">86</a></span>
+<span id="L87" class="lineno"><a class="lineno" href="#L87">87</a></span>
+<span id="L88" class="lineno"><a class="lineno" href="#L88">88</a></span>
+<span id="L89" class="lineno"><a class="lineno" href="#L89">89</a></span>
+<span id="L90" class="lineno"><a class="lineno" href="#L90">90</a></span>
+<span id="L91" class="lineno"><a class="lineno" href="#L91">91</a></span>
+<span id="L92" class="lineno"><a class="lineno" href="#L92">92</a></span>
+<span id="L93" class="lineno"><a class="lineno" href="#L93">93</a></span>
+<span id="L94" class="lineno"><a class="lineno" href="#L94">94</a></span>
+<span id="L95" class="lineno"><a class="lineno" href="#L95">95</a></span>
+<span id="L96" class="lineno"><a class="lineno" href="#L96">96</a></span>
+<span id="L97" class="lineno"><a class="lineno" href="#L97">97</a></span>
+<span id="L98" class="lineno"><a class="lineno" href="#L98">98</a></span>
+<span id="L99" class="lineno"><a class="lineno" href="#L99">99</a></span>
+<span id="L100" class="lineno"><a class="lineno" href="#L100">100</a></span>
+<span id="L101" class="lineno"><a class="lineno" href="#L101">101</a></span>
+<span id="L102" class="lineno"><a class="lineno" href="#L102">102</a></span>
+<span id="L103" class="lineno"><a class="lineno" href="#L103">103</a></span>
+<span id="L104" class="lineno"><a class="lineno" href="#L104">104</a></span>
+<span id="L105" class="lineno"><a class="lineno" href="#L105">105</a></span>
+<span id="L106" class="lineno"><a class="lineno" href="#L106">106</a></span>
+<span id="L107" class="lineno"><a class="lineno" href="#L107">107</a></span>
+<span id="L108" class="lineno"><a class="lineno" href="#L108">108</a></span>
+<span id="L109" class="lineno"><a class="lineno" href="#L109">109</a></span>
+<span id="L110" class="lineno"><a class="lineno" href="#L110">110</a></span>
+<span id="L111" class="lineno"><a class="lineno" href="#L111">111</a></span>
+</pre></td>
+<td class="table-code"><pre><span class="line-precise" title="No Anys on this line!">MOCK_NAMES = [</span>
+<span class="line-precise" title="No Anys on this line!">    "Nekfeu versus Lordon",</span>
+<span class="line-precise" title="No Anys on this line!">    "Punk sous un cathodique",</span>
+<span class="line-precise" title="No Anys on this line!">    "This is Spartaaaaa",</span>
+<span class="line-precise" title="No Anys on this line!">    "C'est notre prooooojecteur",</span>
+<span class="line-precise" title="No Anys on this line!">    "La commune sans guillemin",</span>
+<span class="line-precise" title="No Anys on this line!">    "Avez-vous déjà vu ?",</span>
+<span class="line-precise" title="No Anys on this line!">    "Autant en emporte mon gilet",</span>
+<span class="line-precise" title="No Anys on this line!">    "Un lit sous une rivière",</span>
+<span class="line-precise" title="No Anys on this line!">    "Je ne sais pas ce que je dis",</span>
+<span class="line-precise" title="No Anys on this line!">    "Ne t'en fais, je fais de la purée",</span>
+<span class="line-precise" title="No Anys on this line!">    "Le narval au chaud",</span>
+<span class="line-precise" title="No Anys on this line!">    "Tap Tap Tap, patate",</span>
+<span class="line-precise" title="No Anys on this line!">    "Le chou c'est bon",</span>
+<span class="line-precise" title="No Anys on this line!">    "A quand l'augustinade",</span>
+<span class="line-precise" title="No Anys on this line!">    "Les islamo Bobobos",</span>
+<span class="line-precise" title="No Anys on this line!">    "Hamlet aux omelettes",</span>
+<span class="line-precise" title="No Anys on this line!">    "J'irais dormir loin de chez nous",</span>
+<span class="line-precise" title="No Anys on this line!">    "A fond le fond",</span>
+<span class="line-precise" title="No Anys on this line!">    "Calamars et crustacés",</span>
+<span class="line-precise" title="No Anys on this line!">    "Vous êtes de trop",</span>
+<span class="line-precise" title="No Anys on this line!">    "Résilience et compagnie",</span>
+<span class="line-precise" title="No Anys on this line!">    "Keynes, John-Maynard Keynes",</span>
+<span class="line-precise" title="No Anys on this line!">    "Sacré chaleur",</span>
+<span class="line-precise" title="No Anys on this line!">    "J’aime me beurrer la biscotte !",</span>
+<span class="line-precise" title="No Anys on this line!">    "Comment est votre blanquette ?",</span>
+<span class="line-precise" title="No Anys on this line!">    "Tu sais pas jouer Jack",</span>
+<span class="line-precise" title="No Anys on this line!">    "Il s'agirait de grandir",</span>
+<span class="line-precise" title="No Anys on this line!">    "Habile !",</span>
+<span class="line-precise" title="No Anys on this line!">    "On dira ce qu'on veut, la France ça reste le pays des 400 fromages",</span>
+<span class="line-precise" title="No Anys on this line!">    "Mais enfin, Armand...",</span>
+<span class="line-precise" title="No Anys on this line!">    "- C’est une bonne situation ça script ?",</span>
+<span class="line-precise" title="No Anys on this line!">    "Veni Péage Vinci",</span>
+<span class="line-precise" title="No Anys on this line!">    "Clavier sans moi tu es foutu",</span>
+<span class="line-precise" title="No Anys on this line!">    "Au fond de cette boîte, Larusso",</span>
+<span class="line-precise" title="No Anys on this line!">    "P1P2",</span>
+<span class="line-precise" title="No Anys on this line!">    "^^!-;",</span>
+<span class="line-precise" title="No Anys on this line!">    "^^Marcher !!-",</span>
+<span class="line-precise" title="No Anys on this line!">    "OOOOOOOOOOOOOOOO",</span>
+<span class="line-precise" title="No Anys on this line!">    "AAAAAAhhhhhhhh !!",</span>
+<span class="line-precise" title="No Anys on this line!">    "             Je",</span>
+<span class="line-precise" title="No Anys on this line!">    "            42",</span>
+<span class="line-precise" title="No Anys on this line!">    "A quoi ça sert si la température monte de toute façon ?",</span>
+<span class="line-precise" title="No Anys on this line!">    "Moi j'aimerais bien que les hackers russes soient gentils",</span>
+<span class="line-precise" title="No Anys on this line!">    "Et qu'on s'unisse tous pour empêcher la température",</span>
+<span class="line-precise" title="No Anys on this line!">    "Je veux mon jeu de go du Venezuela",</span>
+<span class="line-precise" title="No Anys on this line!">    "Et mes croissants au Nociatella",</span>
+<span class="line-precise" title="No Anys on this line!">    "On en a gros",</span>
+<span class="line-precise" title="No Anys on this line!">    "On en a très gros",</span>
+<span class="line-precise" title="No Anys on this line!">    "J'aimerais être considéré en tant que tel",</span>
+<span class="line-precise" title="No Anys on this line!">    "Comment comment ?"</span>
+<span class="line-empty" title="No Anys on this line!">]</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">MOCK_DESCRIPTIONS = [</span>
+<span class="line-precise" title="No Anys on this line!">    "Nous ne voyons pas les choses mêmes ; nous nous bornons, le plus souvent, à lire des étiquettes collées sur elles. Cette tendance, issue du besoin, s'est encore accentuée sous l'influence du langage. Car les mots (à l'exception des noms propres) désignent des genres. Le mot, qui ne note de la chose que sa fonction la plus commune et son aspect banal, s'insinue entre elle et nous.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Et ce ne sont pas seulement les objets extérieurs, ce sont aussi nos propres états d'âme qui se dérobent à nous dans ce qu'ils ont d'intime, de personnel, d'originalement vécu. Quand nous éprouvons de l'amour ou de la haine, quand nous nous sentons joyeux ou tristes, est-ce bien notre sentiment lui-même qui arrive à notre conscience avec les mille nuances fugitives et les mille résonances profondes qui en font quelque chose d'absolument nôtre ?",</span>
+<span class="line-precise" title="No Anys on this line!">    "Nous serions alors tous romanciers, tous poètes, tous musiciens. Mais, le plus souvent, nous n'apercevons de notre état d'âme que son déploiement extérieur. Nous ne saisissons de nos sentiments que leur aspect impersonnel, celui que le langage a pu noter une fois pour toutes parce qu'il est à peu près le même dans les mêmes conditions, pour tous les hommes.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Ainsi, jusque dans notre propre individu, l'individualité nous échappe. Nous nous mouvons parmi des généralités et des symboles, comme en un champ clos où notre force se mesure utilement avec d'autres forces ; et, fascinés par l'action, attirés par elle, pour notre plus grand bien, sur le terrain qu'elle s'est choisie, nous vivons dans une zone mitoyenne entre les choses et nous, extérieurement aux choses, extérieurement aussi à nous-mêmes.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Quant à l'espèce de spectacles, c'est nécessairement le plaisir qu'ils donnent et non leur utilité qui la détermine. Si l'utilité peut s'y trouver, à la bonne heure ; mais l'objet principal est de plaire, et pourvu que le peuple s'amuse, cet objet est assez rempli. Cela seul empêchera toujours qu'on ne puisse donner à ces sortes d'établissements tous les avantages dont ils seraient susceptibles, et c'est abuser beaucoup que de s'en former une idée de perfection qu'on ne saurait mettre en pratique sans rebuter ceux qu'on croit instruire.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Voilà d'où naît la diversité des spectacles, selon les goûts divers des nations. Un peuple intrépide, grave et cruel, veut des fêtes meurtrières et périlleuses, où brillent la valeur et le sang-froid. Un peuple féroce et bouillant veut du sang, des combats et des passions atroces. Un peuple voluptueux veut de la musique et des danses. Un peuple galant veut de l'amour et de la politesse. Un peuple badin veut de la plaisanterie et du ridicule. Trahit sua quemque voluptas . Il faut, pour leur plaire, des spectacles qui favorisent leurs penchants, au lieu qu'il en faudrait qui les modérassent.",</span>
+<span class="line-precise" title="No Anys on this line!">    "En politique, mon cher, vous le savez comme moi, il n'y a pas d'hommes, mais des idées ; pas de sentiments, mais des intérêts ; en politique, on ne tue pas un homme : on supprime un obstacle, voilà tout.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Les monomaniaques de tout poil, les gens qui sont possédés par une seule idée m'ont toujours spécialement intrigué, car plus un esprit se limite, plus il touche par ailleurs à l'infini.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Il n’y a pas d’opinion, si absurde soit-elle, que les hommes ne sont pas prêts à embrasser dès qu’ils peuvent pourvu qu’on puisse les convaincre que c’est une vue généralement admise. L’exemple affecte leur pensée et leurs actions. Ils sont comme des moutons, suivant celui qui porte le grelot où qu’il les mène : il est pour eux plus facile de mourir que de réfléchir.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Persuader consciemment l'inconscient, puis devenir ensuite inconscient de l'acte d'hypnose que l'on vient de perpétrer. La compréhension même du mot \"double pensée\" impliquait l'emploi de la double pensée.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Si jeune et accablé de ses richesses, que de tentations n'aura-t-il pas à subir ! Si l'on me demandait ce que je désirerais le plus au monde, ce serait d'être plus pauvre que le plus pauvre des mendiants.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Quand une lecture vous élève l'esprit, et qu'elle vous inspire des sentiments nobles et courageux, ne cherchez pas une autre règle pour juger l'ouvrage ; il est bon, et fait de main d'ouvrier."</span>
+<span class="line-empty" title="No Anys on this line!">    "Je n'ai jamais imaginé qu'on pût être à ce point hanté par une voix, par un cou, par des épaules, par des mains. Ce que je veux dire, c'est qu'elle avait des yeux où il faisait si bon vivre que je n'ai jamais su où aller depuis."</span>
+<span class="line-empty" title="No Anys on this line!">    "Il y en a qui ont le coeur si large qu'on y rentre sans frapper. Il y en a qui ont le coeur si frêle qu'on le brise d'un doigt.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Les vieux ne meurent pas, ils s'endorment un jour et dorment trop longtemps.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Il nous fallut bien du talent Pour être vieux sans être adultes",</span>
+<span class="line-precise" title="No Anys on this line!">    "C'est le tango des récompenses. Qui allaient à ceux qui ont la chance d'apprendre, dès leur enfance, tout ce qui ne leur servira pas.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Il y a des sentiments qu'on a à l'estomac",</span>
+<span class="line-precise" title="No Anys on this line!">    "Les gens qui ont bonne conscience ont souvent mauvaise mémoire",</span>
+<span class="line-precise" title="No Anys on this line!">    "Dehors, universelle, une inlassable pluie disait leur malheur. Enfermés dans la souricière d’amour, condamnés aux travaux d’amour à perpétuité, ils étaient couchés l’un près de l’autre, beaux, tendres aimants et sans but. Sans but.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Mon sourire, ce petit morceau déjà visible de mon squelette",</span>
+<span class="line-precise" title="No Anys on this line!">    "Si on veut connaître un peuple, il faut écouter sa musique.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Je ne suis ni Athénien, ni Grec, mais un citoyen du monde.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Vivre sans amour n'est pas vivre, et vivre dans l'amour sans souffrir est impossible.",</span>
+<span class="line-precise" title="No Anys on this line!">    "La colère est nécessaire ; on ne triomphe de rien sans elle, si elle ne remplit l'âme, si elle n'échauffe le coeur ; elle doit donc nous servir, non comme chef, mais comme soldat.",</span>
+<span class="line-precise" title="No Anys on this line!">    "L'amour commence par l'éblouissement d'une âme qui n'attendait rien et se clôt sur la déception d'un moi qui exige tout.",</span>
+<span class="line-precise" title="No Anys on this line!">    "L'état politique est vis-à-vis de la société civile dans un rapport aussi spiritualiste que le ciel par rapport à la terre.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Il n'y a rien ici",</span>
+<span class="line-precise" title="No Anys on this line!">    "- Vous savez, moi je ne crois pas qu’il y ait de bonne ou de mauvaise situation. Moi, si je devais résumer ma vie aujourd’hui avec vous, je dirais que c’est d’abord des rencontres. Des gens qui m’ont tendu la main, peut-être à un moment où je ne pouvais pas, où j’étais seul chez moi. Et c’est assez curieux de se dire que les hasards, les rencontres forgent une destinée... Parce que quand on a le goût de la chose, quand on a le goût de la chose bien faite, le beau geste, parfois on ne trouve pas l’interlocuteur en face je dirais, le miroir qui vous aide à avancer. Alors ça n’est pas mon cas, comme je disais là, puisque moi au contraire, j’ai pu : et je dis merci à la vie, je lui dis merci, je chante la vie, je danse la vie... je ne suis qu’amour ! Et finalement, quand beaucoup de gens aujourd’hui me disent « Mais comment fais-tu pour avoir cette humanité ? », et bien je leur réponds très simplement, je leur dis que c’est ce goût de l’amour ce goût donc qui m’a poussé aujourd’hui à entreprendre une construction mécanique, mais demain qui sait ? Peut-être simplement à me mettre au service de la communauté, à faire le don, le don de soi...",</span>
+<span class="line-precise" title="No Anys on this line!">    "Je trouve très raisonnable la croyance celtique que les âmes de ceux que nous avons perdus sont captives dans quelque être inférieur, dans une bête, un végétal, une chose inanimée, perdues en effet pour nous jusqu'au jour, qui pour beaucoup ne vient jamais, où nous nous trouvons passer près de l'arbre, entrer en possession de l'objet qui est leur prison. Alors elles tressaillent, nous appellent, et sitôt que nous les avons reconnues l'enchantement est brisé. Délivrées par nous, elles ont vaincu la mort et reviennent vivre avec nous.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Il en est ainsi de notre passé. C'est peine perdue que nous cherchions à l'évoquer, tous les efforts de notre intelligence sont inutiles. Il est caché hors de son domaine et de sa portée, en quelque objet matériel (en la sensation que nous donnerait cet objet matériel), que nous ne soupçonnons pas. Cet objet, il dépend du hasard que nous le rencontrions avant de mourir, ou que nous ne le rencontrions pas.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Il y avait déjà bien des années que, de Combray, tout ce qui n'était pas le théâtre et le drame de mon coucher, n'existait plus pour moi, quand un jour d'hiver, comme je rentrais à la maison, ma mère, voyant que j'avais froid, me proposa de me faire prendre, contre mon habitude, un peu de thé. Je refusai d'abord et, je ne sais pourquoi, me ravisai. Elle envoya chercher un de ces gâteaux courts et dodus appelés Petites madeleines qui semblent avoir été moulés dans la valve rainurée d'une coquille de Saint-Jacques.",</span>
+<span class="line-precise" title="No Anys on this line!">    "D'où avait pu me venir cette puissante joie ? Je sentais qu'elle était liée au goût du thé et du gâteau, mais qu'elle le dépassait infiniment, ne devait pas être de même nature. D'où venait-elle ? Que signifiait-elle ? Où l'appréhender ? Je bois une seconde gorgée où je ne trouve rien de plus que dans la première, une troisième qui m'apporte un peu moins que la seconde. Il est temps que je m'arrête, la vertu du breuvage semble diminuer.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Fabrice fut frappé de tous ces détails, ils lui serrèrent le cœur ; il paya ainsi le luxe magnifique et plein de fraîcheur qui éclatait dans son joli appartement du palais Sanseverina. Il était obligé d’entrer dans ce sale bureau et d’y paraître comme inférieur ; il allait subir un interrogatoire.",</span>
+<span class="line-precise" title="No Anys on this line!">    "L’employé qui tendit une main jaune pour prendre son passe-port était petit et noir, il portait un bijou de laiton à sa cravate. Ceci est un bourgeois de mauvaise humeur, se dit Fabrice ; le personnage parut excessivement surpris en lisant le passe-port, et cette lecture dura bien cinq minutes.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Il n'y a pas trop d'affectation dans le style, se dit Julien, cherchant par ses remarques littéraires à contenir la joie qui contractait ses joues et le forçait à rire malgré lui.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Quant à moi, ce n'est pas mal, ajouta-t-il en comprimant sa joie le plus possible. J'ai su conserver la dignité de mon caractère. Je n'ai point dit que j'aimais. Il se mit à étudier la forme des caractères ; mademoiselle de La Mole avait une jolie petite écriture anglaise. Il avait besoin d'une occupation physique pour se distraire d'une joie qui allait jusqu'au délire.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Une pensée vint frapper Julien comme une découverte, interrompre l'examen qu'il faisait de la lettre de Mathilde, et redoubler sa joie. Je l'emporte sur le marquis de Croisenois, s'écria-t-il, moi, qui ne dis que des choses sérieuses ! Et lui est si joli ! il a des moustaches, un charmant uniforme ; il trouve toujours à dire, juste au moment convenable, un mot spirituel et fin.",</span>
+<span class="line-precise" title="No Anys on this line!">    "— Je suis bien aise que vous ne partiez pas, lui dit le marquis, quand ils eurent fini de parler d'affaires, j'aime à vous voir. Julien sortit ; ce mot le gênait.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Et moi, je vais séduire sa fille ! rendre impossible peut-être ce mariage avec le marquis de Croisenois, qui fait le charme de son avenir : s'il n'est pas duc, du moins sa fille aura un tabouret. Julien eut l'idée de partir pour le Languedoc malgré la lettre de Mathilde, malgré l'explication donnée au marquis. Cet éclair de vertu disparut bien vite.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Et il se rappela quelques regards remplis de dédain, à lui adressés par madame de La Mole, et surtout par les dames ses amies.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Le plaisir de triompher du marquis de Croisenois vint achever la déroute de ce souvenir de vertu.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Le lendemain, je demandai à Albertine qui cela pouvait être. Car, stupidement, croyant qu’on ne peut aimer qu’une chose, jaloux de l’attitude d’Albertine à l’égard de Robert, j’étais rassuré quant aux femmes. Albertine me dit, je crois très sincèrement, qu’elle ne savait pas.",</span>
+<span class="line-precise" title="No Anys on this line!">    "On verra du reste pourquoi, pendant longtemps, je dus cesser de la chercher. Mais je ne l’ai pas oubliée. Il m’arrive souvent en pensant à elle d’être pris d’une folle envie.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Mais ces retours du désir nous forcent à réfléchir que, si on voulait retrouver ces jeunes filles-là avec le même plaisir, il faudrait revenir aussi à l’année, qui a été suivie depuis de dix autres pendant lesquelles la jeune fille s’est fanée.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Tout cela jusqu’au jour imprévu et triste comme une nuit d’hiver, où on ne cherche plus cette jeune fille-là, ni aucune autre, où trouver vous effraierait même. Car on ne se sent plus assez d’attraits pour plaire, ni de force pour aimer. Non pas, bien entendu, qu’on soit, au sens propre du mot, impuissant. Et quant à aimer, on aimerait plus que jamais. Mais on sent que c’est une trop grande entreprise pour le peu de forces qu’on garde.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Le repos éternel a déjà mis des intervalles où l’on ne peut sortir, ni parler. Mettre un pied sur la marche qu’il faut, c’est une réussite comme de ne pas manquer le saut périlleux. Être vu dans cet état par une jeune fille qu’on aime, même si l’on a gardé son visage et tous ses cheveux blonds de jeune homme !",</span>
+<span class="line-precise" title="No Anys on this line!">    "On ne peut plus assumer la fatigue de se mettre au pas de la jeunesse. Tant pis si le désir charnel redouble au lieu de s’amortir ! On fait venir pour lui une femme à qui l’on ne se souciera pas de plaire, qui ne partagera qu’un soir votre couche et qu’on ne reverra jamais.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Mademoiselle Albertine est partie ! Comme la souffrance va plus loin en psychologie que la psychologie ! Il y a un instant, en train de m’analyser, j’avais cru que cette séparation sans s’être revus était justement ce que je désirais, et comparant la médiocrité des plaisirs que me donnait Albertine à la richesse des désirs qu’elle me privait de réaliser, je m’étais trouvé subtil, j’avais conclu que je ne voulais plus la voir, que je ne l’aimais plus. Mais ces mots : « Mademoiselle Albertine est partie » venaient de produire dans mon cœur une souffrance telle que je ne pourrais pas y résister plus longtemps. Ainsi ce que j’avais cru n’être rien pour moi, c’était tout simplement toute ma vie.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Vaugoubert n’a pas eu à faire seulement aux intrigues de couloirs mais aux injures de folliculaires à gages qui plus tard, lâches comme l’est tout journaliste stipendié, ont été des premiers à demander l'aman, mais qui en attendant n’ont pas reculé à faire état, contre notre représentant, des ineptes accusations de gens sans aveu.",</span>
+<span class="line-precise" title="No Anys on this line!">    "J'avais douze ans ; elle en avait bien seize.",</span>
+<span class="line-precise" title="No Anys on this line!">    "Se souvient-on qu'il fut jadis des roses ?"</span>
+<span class="line-empty" title="No Anys on this line!">]</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">MOCK_ACTIVATION_NAME = "Activation de votre Pass Culture"</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">MOCK_ACTIVATION_DESCRIPTION = "Venez à ce rendez-vous pour activer l'argent de votre pass."</span>
+</pre></td>
+</tr></tbody>
+</table>
+</body>
+</html>

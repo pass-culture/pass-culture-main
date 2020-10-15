@@ -637,7 +637,7 @@ elif [[ "$CMD" == "python" ]]; then
 		RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && python -i src/pcapi/scripts/interact.py '"$CMD $*"'"'
 	else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-      scalingo -a "$SCALINGO_APP" run "python -i src/pcapi/scripts/interact.py"
+      scalingo -a "$SCALINGO_APP" run "python -i scripts/interact.py"
 		else
       scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" "python -i src/pcapi/scripts/interact.py"
 		fi
@@ -671,7 +671,7 @@ else
     RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && python src/pcapi/scripts/pc.py '"$CMD $*"'"'
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-      scalingo -a "$SCALINGO_APP" run 'python src/pcapi/scripts/pc.py '"$CMD $*"''
+      scalingo -a "$SCALINGO_APP" run 'python scripts/pc.py '"$CMD $*"''
     else
       scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" 'python src/pcapi/scripts/pc.py '"$CMD $*"''
     fi

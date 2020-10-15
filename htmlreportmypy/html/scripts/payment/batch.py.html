@@ -1,0 +1,180 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../../mypy-html.css">
+</head>
+<body>
+<h2>scripts.payment.batch</h2>
+<table>
+<caption>scripts/payment/batch.py</caption>
+<tbody><tr>
+<td class="table-lines"><pre><span id="L1" class="lineno"><a class="lineno" href="#L1">1</a></span>
+<span id="L2" class="lineno"><a class="lineno" href="#L2">2</a></span>
+<span id="L3" class="lineno"><a class="lineno" href="#L3">3</a></span>
+<span id="L4" class="lineno"><a class="lineno" href="#L4">4</a></span>
+<span id="L5" class="lineno"><a class="lineno" href="#L5">5</a></span>
+<span id="L6" class="lineno"><a class="lineno" href="#L6">6</a></span>
+<span id="L7" class="lineno"><a class="lineno" href="#L7">7</a></span>
+<span id="L8" class="lineno"><a class="lineno" href="#L8">8</a></span>
+<span id="L9" class="lineno"><a class="lineno" href="#L9">9</a></span>
+<span id="L10" class="lineno"><a class="lineno" href="#L10">10</a></span>
+<span id="L11" class="lineno"><a class="lineno" href="#L11">11</a></span>
+<span id="L12" class="lineno"><a class="lineno" href="#L12">12</a></span>
+<span id="L13" class="lineno"><a class="lineno" href="#L13">13</a></span>
+<span id="L14" class="lineno"><a class="lineno" href="#L14">14</a></span>
+<span id="L15" class="lineno"><a class="lineno" href="#L15">15</a></span>
+<span id="L16" class="lineno"><a class="lineno" href="#L16">16</a></span>
+<span id="L17" class="lineno"><a class="lineno" href="#L17">17</a></span>
+<span id="L18" class="lineno"><a class="lineno" href="#L18">18</a></span>
+<span id="L19" class="lineno"><a class="lineno" href="#L19">19</a></span>
+<span id="L20" class="lineno"><a class="lineno" href="#L20">20</a></span>
+<span id="L21" class="lineno"><a class="lineno" href="#L21">21</a></span>
+<span id="L22" class="lineno"><a class="lineno" href="#L22">22</a></span>
+<span id="L23" class="lineno"><a class="lineno" href="#L23">23</a></span>
+<span id="L24" class="lineno"><a class="lineno" href="#L24">24</a></span>
+<span id="L25" class="lineno"><a class="lineno" href="#L25">25</a></span>
+<span id="L26" class="lineno"><a class="lineno" href="#L26">26</a></span>
+<span id="L27" class="lineno"><a class="lineno" href="#L27">27</a></span>
+<span id="L28" class="lineno"><a class="lineno" href="#L28">28</a></span>
+<span id="L29" class="lineno"><a class="lineno" href="#L29">29</a></span>
+<span id="L30" class="lineno"><a class="lineno" href="#L30">30</a></span>
+<span id="L31" class="lineno"><a class="lineno" href="#L31">31</a></span>
+<span id="L32" class="lineno"><a class="lineno" href="#L32">32</a></span>
+<span id="L33" class="lineno"><a class="lineno" href="#L33">33</a></span>
+<span id="L34" class="lineno"><a class="lineno" href="#L34">34</a></span>
+<span id="L35" class="lineno"><a class="lineno" href="#L35">35</a></span>
+<span id="L36" class="lineno"><a class="lineno" href="#L36">36</a></span>
+<span id="L37" class="lineno"><a class="lineno" href="#L37">37</a></span>
+<span id="L38" class="lineno"><a class="lineno" href="#L38">38</a></span>
+<span id="L39" class="lineno"><a class="lineno" href="#L39">39</a></span>
+<span id="L40" class="lineno"><a class="lineno" href="#L40">40</a></span>
+<span id="L41" class="lineno"><a class="lineno" href="#L41">41</a></span>
+<span id="L42" class="lineno"><a class="lineno" href="#L42">42</a></span>
+<span id="L43" class="lineno"><a class="lineno" href="#L43">43</a></span>
+<span id="L44" class="lineno"><a class="lineno" href="#L44">44</a></span>
+<span id="L45" class="lineno"><a class="lineno" href="#L45">45</a></span>
+<span id="L46" class="lineno"><a class="lineno" href="#L46">46</a></span>
+<span id="L47" class="lineno"><a class="lineno" href="#L47">47</a></span>
+<span id="L48" class="lineno"><a class="lineno" href="#L48">48</a></span>
+<span id="L49" class="lineno"><a class="lineno" href="#L49">49</a></span>
+<span id="L50" class="lineno"><a class="lineno" href="#L50">50</a></span>
+<span id="L51" class="lineno"><a class="lineno" href="#L51">51</a></span>
+<span id="L52" class="lineno"><a class="lineno" href="#L52">52</a></span>
+<span id="L53" class="lineno"><a class="lineno" href="#L53">53</a></span>
+<span id="L54" class="lineno"><a class="lineno" href="#L54">54</a></span>
+<span id="L55" class="lineno"><a class="lineno" href="#L55">55</a></span>
+<span id="L56" class="lineno"><a class="lineno" href="#L56">56</a></span>
+<span id="L57" class="lineno"><a class="lineno" href="#L57">57</a></span>
+<span id="L58" class="lineno"><a class="lineno" href="#L58">58</a></span>
+<span id="L59" class="lineno"><a class="lineno" href="#L59">59</a></span>
+<span id="L60" class="lineno"><a class="lineno" href="#L60">60</a></span>
+<span id="L61" class="lineno"><a class="lineno" href="#L61">61</a></span>
+<span id="L62" class="lineno"><a class="lineno" href="#L62">62</a></span>
+<span id="L63" class="lineno"><a class="lineno" href="#L63">63</a></span>
+<span id="L64" class="lineno"><a class="lineno" href="#L64">64</a></span>
+<span id="L65" class="lineno"><a class="lineno" href="#L65">65</a></span>
+<span id="L66" class="lineno"><a class="lineno" href="#L66">66</a></span>
+<span id="L67" class="lineno"><a class="lineno" href="#L67">67</a></span>
+<span id="L68" class="lineno"><a class="lineno" href="#L68">68</a></span>
+<span id="L69" class="lineno"><a class="lineno" href="#L69">69</a></span>
+<span id="L70" class="lineno"><a class="lineno" href="#L70">70</a></span>
+<span id="L71" class="lineno"><a class="lineno" href="#L71">71</a></span>
+<span id="L72" class="lineno"><a class="lineno" href="#L72">72</a></span>
+<span id="L73" class="lineno"><a class="lineno" href="#L73">73</a></span>
+<span id="L74" class="lineno"><a class="lineno" href="#L74">74</a></span>
+</pre></td>
+<td class="table-code"><pre><span class="line-precise" title="No Anys on this line!">import os</span>
+<span class="line-precise" title="No Anys on this line!">from typing import List, Tuple</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">from models import Feature</span>
+<span class="line-precise" title="No Anys on this line!">from models.feature import FeatureToggle</span>
+<span class="line-precise" title="No Anys on this line!">from models.payment import Payment</span>
+<span class="line-precise" title="No Anys on this line!">from repository import feature_queries</span>
+<span class="line-precise" title="No Anys on this line!">from repository.payment_queries import get_payments_by_message_id</span>
+<span class="line-precise" title="No Anys on this line!">from scripts.payment.batch_steps import generate_new_payments, concatenate_payments_with_errors_and_retries, \</span>
+<span class="line-empty" title="No Anys on this line!">    send_transactions, send_payments_report, send_payments_details, send_wallet_balances, \</span>
+<span class="line-empty" title="No Anys on this line!">    set_not_processable_payments_with_bank_information_to_retry</span>
+<span class="line-precise" title="No Anys on this line!">from scripts.update_booking_used import update_booking_used_after_stock_occurrence</span>
+<span class="line-precise" title="No Anys on this line!">from utils.logger import logger</span>
+<span class="line-precise" title="No Anys on this line!">from utils.mailing import parse_email_addresses</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">def generate_and_send_payments(payment_message_id: str = None):</span>
+<span class="line-precise" title="No Anys on this line!">    PASS_CULTURE_IBAN = os.environ.get('PASS_CULTURE_IBAN', None)</span>
+<span class="line-precise" title="No Anys on this line!">    PASS_CULTURE_BIC = os.environ.get('PASS_CULTURE_BIC', None)</span>
+<span class="line-precise" title="No Anys on this line!">    PASS_CULTURE_REMITTANCE_CODE = os.environ.get('PASS_CULTURE_REMITTANCE_CODE', None)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">    TRANSACTIONS_RECIPIENTS = parse_email_addresses(os.environ.get('TRANSACTIONS_RECIPIENTS', None))</span>
+<span class="line-precise" title="No Anys on this line!">    PAYMENTS_REPORT_RECIPIENTS = parse_email_addresses(os.environ.get('PAYMENTS_REPORT_RECIPIENTS', None))</span>
+<span class="line-precise" title="No Anys on this line!">    PAYMENTS_DETAILS_RECIPIENTS = parse_email_addresses(os.environ.get('PAYMENTS_DETAILS_RECIPIENTS', None))</span>
+<span class="line-precise" title="No Anys on this line!">    WALLET_BALANCES_RECIPIENTS = parse_email_addresses(os.environ.get('WALLET_BALANCES_RECIPIENTS', None))</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">    logger.info('[BATCH][PAYMENTS] STEP 0 : validate bookings associated to outdated stocks')</span>
+<span class="line-precise" title="No Anys on this line!">    if feature_queries.is_active(FeatureToggle.UPDATE_BOOKING_USED):</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x2)">        update_booking_used_after_stock_occurrence()</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">    not_processable_payments, payments_to_send = generate_or_collect_payments(payment_message_id)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">    try:</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">        logger.info('[BATCH][PAYMENTS] STEP 3 : send transactions')</span>
+<span class="line-precise" title="No Anys on this line!">        send_transactions(</span>
+<span class="line-precise" title="No Anys on this line!">            payments_to_send, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE, TRANSACTIONS_RECIPIENTS</span>
+<span class="line-empty" title="No Anys on this line!">        )</span>
+<span class="line-precise" title="No Anys on this line!">    except Exception as e:</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">        logger.error('[BATCH][PAYMENTS] STEP 3', e)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">    try:</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">        logger.info('[BATCH][PAYMENTS] STEP 4 : send payments report')</span>
+<span class="line-precise" title="No Anys on this line!">        send_payments_report(payments_to_send + not_processable_payments, PAYMENTS_REPORT_RECIPIENTS)</span>
+<span class="line-precise" title="No Anys on this line!">    except Exception as e:</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">        logger.error('[BATCH][PAYMENTS] STEP 4', e)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">    try:</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">        logger.info('[BATCH][PAYMENTS] STEP 5 : send payments details')</span>
+<span class="line-precise" title="No Anys on this line!">        send_payments_details(payments_to_send, PAYMENTS_DETAILS_RECIPIENTS)</span>
+<span class="line-precise" title="No Anys on this line!">    except Exception as e:</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">        logger.error('[BATCH][PAYMENTS] STEP 5', e)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">    try:</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">        logger.info('[BATCH][PAYMENTS] STEP 6 : send wallet balances')</span>
+<span class="line-precise" title="No Anys on this line!">        send_wallet_balances(WALLET_BALANCES_RECIPIENTS)</span>
+<span class="line-precise" title="No Anys on this line!">    except Exception as e:</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">        logger.error('[BATCH][PAYMENTS] STEP 6', e)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">def generate_or_collect_payments(payment_message_id: str = None) -&gt; Tuple[List[Payment], List[Payment]]:</span>
+<span class="line-precise" title="No Anys on this line!">    if payment_message_id is None:</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">        logger.info('[BATCH][PAYMENTS] STEP 1 : generate payments')</span>
+<span class="line-precise" title="No Anys on this line!">        pending_payments, not_processable_payments = generate_new_payments()</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">        logger.info('[BATCH][PAYMENTS] STEP 2 : set NOT_PROCESSABLE payments to RETRY')</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x2)">        set_not_processable_payments_with_bank_information_to_retry()</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">        logger.info('[BATCH][PAYMENTS] STEP 2 Bis : collect payments in ERROR and RETRY statuses')</span>
+<span class="line-precise" title="No Anys on this line!">        payments_to_send = concatenate_payments_with_errors_and_retries(pending_payments)</span>
+<span class="line-empty" title="No Anys on this line!">    else:</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">        logger.info('[BATCH][PAYMENTS] STEP 1 Bis : collect payments corresponding to payment_message_id')</span>
+<span class="line-precise" title="No Anys on this line!">        not_processable_payments = []</span>
+<span class="line-precise" title="No Anys on this line!">        payments_to_send = get_payments_by_message_id(payment_message_id)</span>
+<span class="line-precise" title="No Anys on this line!">    return not_processable_payments, payments_to_send</span>
+</pre></td>
+</tr></tbody>
+</table>
+</body>
+</html>

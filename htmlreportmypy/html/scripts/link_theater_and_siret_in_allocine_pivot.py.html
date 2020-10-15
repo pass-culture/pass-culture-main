@@ -1,0 +1,39 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../mypy-html.css">
+</head>
+<body>
+<h2>scripts.link_theater_and_siret_in_allocine_pivot</h2>
+<table>
+<caption>scripts/link_theater_and_siret_in_allocine_pivot.py</caption>
+<tbody><tr>
+<td class="table-lines"><pre><span id="L1" class="lineno"><a class="lineno" href="#L1">1</a></span>
+<span id="L2" class="lineno"><a class="lineno" href="#L2">2</a></span>
+<span id="L3" class="lineno"><a class="lineno" href="#L3">3</a></span>
+<span id="L4" class="lineno"><a class="lineno" href="#L4">4</a></span>
+<span id="L5" class="lineno"><a class="lineno" href="#L5">5</a></span>
+<span id="L6" class="lineno"><a class="lineno" href="#L6">6</a></span>
+<span id="L7" class="lineno"><a class="lineno" href="#L7">7</a></span>
+<span id="L8" class="lineno"><a class="lineno" href="#L8">8</a></span>
+<span id="L9" class="lineno"><a class="lineno" href="#L9">9</a></span>
+</pre></td>
+<td class="table-code"><pre><span class="line-precise" title="No Anys on this line!">from models import AllocinePivot</span>
+<span class="line-precise" title="No Anys on this line!">from repository import repository</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">def link_theater_to_siret(siret: str, theater_id: str):</span>
+<span class="line-precise" title="Any Types on this line: 
+Unannotated (x1)">    allocine_pivot = AllocinePivot()</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x1)">    allocine_pivot.siret = siret</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x1)">    allocine_pivot.theaterId = theater_id</span>
+<span class="line-imprecise" title="Any Types on this line: 
+Unimported (x1)">    repository.save(allocine_pivot)</span>
+</pre></td>
+</tr></tbody>
+</table>
+</body>
+</html>

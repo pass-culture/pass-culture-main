@@ -1,0 +1,124 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../mypy-html.css">
+</head>
+<body>
+<h2>models.beneficiary_import_status</h2>
+<table>
+<caption>models/beneficiary_import_status.py</caption>
+<tbody><tr>
+<td class="table-lines"><pre><span id="L1" class="lineno"><a class="lineno" href="#L1">1</a></span>
+<span id="L2" class="lineno"><a class="lineno" href="#L2">2</a></span>
+<span id="L3" class="lineno"><a class="lineno" href="#L3">3</a></span>
+<span id="L4" class="lineno"><a class="lineno" href="#L4">4</a></span>
+<span id="L5" class="lineno"><a class="lineno" href="#L5">5</a></span>
+<span id="L6" class="lineno"><a class="lineno" href="#L6">6</a></span>
+<span id="L7" class="lineno"><a class="lineno" href="#L7">7</a></span>
+<span id="L8" class="lineno"><a class="lineno" href="#L8">8</a></span>
+<span id="L9" class="lineno"><a class="lineno" href="#L9">9</a></span>
+<span id="L10" class="lineno"><a class="lineno" href="#L10">10</a></span>
+<span id="L11" class="lineno"><a class="lineno" href="#L11">11</a></span>
+<span id="L12" class="lineno"><a class="lineno" href="#L12">12</a></span>
+<span id="L13" class="lineno"><a class="lineno" href="#L13">13</a></span>
+<span id="L14" class="lineno"><a class="lineno" href="#L14">14</a></span>
+<span id="L15" class="lineno"><a class="lineno" href="#L15">15</a></span>
+<span id="L16" class="lineno"><a class="lineno" href="#L16">16</a></span>
+<span id="L17" class="lineno"><a class="lineno" href="#L17">17</a></span>
+<span id="L18" class="lineno"><a class="lineno" href="#L18">18</a></span>
+<span id="L19" class="lineno"><a class="lineno" href="#L19">19</a></span>
+<span id="L20" class="lineno"><a class="lineno" href="#L20">20</a></span>
+<span id="L21" class="lineno"><a class="lineno" href="#L21">21</a></span>
+<span id="L22" class="lineno"><a class="lineno" href="#L22">22</a></span>
+<span id="L23" class="lineno"><a class="lineno" href="#L23">23</a></span>
+<span id="L24" class="lineno"><a class="lineno" href="#L24">24</a></span>
+<span id="L25" class="lineno"><a class="lineno" href="#L25">25</a></span>
+<span id="L26" class="lineno"><a class="lineno" href="#L26">26</a></span>
+<span id="L27" class="lineno"><a class="lineno" href="#L27">27</a></span>
+<span id="L28" class="lineno"><a class="lineno" href="#L28">28</a></span>
+<span id="L29" class="lineno"><a class="lineno" href="#L29">29</a></span>
+<span id="L30" class="lineno"><a class="lineno" href="#L30">30</a></span>
+<span id="L31" class="lineno"><a class="lineno" href="#L31">31</a></span>
+<span id="L32" class="lineno"><a class="lineno" href="#L32">32</a></span>
+<span id="L33" class="lineno"><a class="lineno" href="#L33">33</a></span>
+<span id="L34" class="lineno"><a class="lineno" href="#L34">34</a></span>
+<span id="L35" class="lineno"><a class="lineno" href="#L35">35</a></span>
+<span id="L36" class="lineno"><a class="lineno" href="#L36">36</a></span>
+<span id="L37" class="lineno"><a class="lineno" href="#L37">37</a></span>
+<span id="L38" class="lineno"><a class="lineno" href="#L38">38</a></span>
+<span id="L39" class="lineno"><a class="lineno" href="#L39">39</a></span>
+<span id="L40" class="lineno"><a class="lineno" href="#L40">40</a></span>
+<span id="L41" class="lineno"><a class="lineno" href="#L41">41</a></span>
+<span id="L42" class="lineno"><a class="lineno" href="#L42">42</a></span>
+<span id="L43" class="lineno"><a class="lineno" href="#L43">43</a></span>
+<span id="L44" class="lineno"><a class="lineno" href="#L44">44</a></span>
+<span id="L45" class="lineno"><a class="lineno" href="#L45">45</a></span>
+<span id="L46" class="lineno"><a class="lineno" href="#L46">46</a></span>
+<span id="L47" class="lineno"><a class="lineno" href="#L47">47</a></span>
+</pre></td>
+<td class="table-code"><pre><span class="line-precise" title="No Anys on this line!">import enum</span>
+<span class="line-precise" title="No Anys on this line!">from datetime import datetime</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="No Anys on this line!">from sqlalchemy import Column, DateTime, BigInteger, String, ForeignKey, Enum</span>
+<span class="line-any" title="No Anys on this line!">from sqlalchemy.orm import relationship</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">from models.db import Model</span>
+<span class="line-precise" title="No Anys on this line!">from models.pc_object import PcObject</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">class ImportStatus(enum.Enum):</span>
+<span class="line-precise" title="No Anys on this line!">    DUPLICATE = 'DUPLICATE'</span>
+<span class="line-precise" title="No Anys on this line!">    ERROR = 'ERROR'</span>
+<span class="line-precise" title="No Anys on this line!">    CREATED = 'CREATED'</span>
+<span class="line-precise" title="No Anys on this line!">    REJECTED = 'REJECTED'</span>
+<span class="line-precise" title="No Anys on this line!">    RETRY = 'RETRY'</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">class BeneficiaryImportStatus(PcObject, Model):</span>
+<span class="line-any" title="No Anys on this line!">    def __repr__(self):</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x4)">        author = self.author.publicName if self.author else 'import automatisé'</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x4)">        updated_at = datetime.strftime(self.date, '%d/%m/%Y')</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x12)">        return f"{self.status.value}, le {updated_at} par {author}"</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x5)">    status = Column(Enum(ImportStatus), nullable=False)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x4)">    date = Column(DateTime,</span>
+<span class="line-precise" title="No Anys on this line!">                  nullable=False,</span>
+<span class="line-precise" title="No Anys on this line!">                  default=datetime.utcnow)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x5)">    detail = Column(String(255), nullable=True)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x4)">    beneficiaryImportId = Column(BigInteger,</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x2)">                                 ForeignKey("beneficiary_import.id"),</span>
+<span class="line-precise" title="No Anys on this line!">                                 index=True,</span>
+<span class="line-precise" title="No Anys on this line!">                                 nullable=False)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x3)">    beneficiaryImport = relationship('BeneficiaryImport',</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x1)">                                     foreign_keys=[beneficiaryImportId],</span>
+<span class="line-precise" title="No Anys on this line!">                                     backref='statuses')</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x4)">    authorId = Column(BigInteger,</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x2)">                      ForeignKey("user.id"),</span>
+<span class="line-precise" title="No Anys on this line!">                      nullable=True)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x3)">    author = relationship('UserSQLEntity',</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x1)">                          foreign_keys=[authorId])</span>
+</pre></td>
+</tr></tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../mypy-html.css">
+</head>
+<body>
+<h2>scripts.pc</h2>
+<table>
+<caption>scripts/pc.py</caption>
+<tbody><tr>
+<td class="table-lines"><pre><span id="L1" class="lineno"><a class="lineno" href="#L1">1</a></span>
+<span id="L2" class="lineno"><a class="lineno" href="#L2">2</a></span>
+<span id="L3" class="lineno"><a class="lineno" href="#L3">3</a></span>
+<span id="L4" class="lineno"><a class="lineno" href="#L4">4</a></span>
+<span id="L5" class="lineno"><a class="lineno" href="#L5">5</a></span>
+<span id="L6" class="lineno"><a class="lineno" href="#L6">6</a></span>
+<span id="L7" class="lineno"><a class="lineno" href="#L7">7</a></span>
+<span id="L8" class="lineno"><a class="lineno" href="#L8">8</a></span>
+<span id="L9" class="lineno"><a class="lineno" href="#L9">9</a></span>
+<span id="L10" class="lineno"><a class="lineno" href="#L10">10</a></span>
+<span id="L11" class="lineno"><a class="lineno" href="#L11">11</a></span>
+<span id="L12" class="lineno"><a class="lineno" href="#L12">12</a></span>
+<span id="L13" class="lineno"><a class="lineno" href="#L13">13</a></span>
+<span id="L14" class="lineno"><a class="lineno" href="#L14">14</a></span>
+<span id="L15" class="lineno"><a class="lineno" href="#L15">15</a></span>
+<span id="L16" class="lineno"><a class="lineno" href="#L16">16</a></span>
+<span id="L17" class="lineno"><a class="lineno" href="#L17">17</a></span>
+<span id="L18" class="lineno"><a class="lineno" href="#L18">18</a></span>
+<span id="L19" class="lineno"><a class="lineno" href="#L19">19</a></span>
+<span id="L20" class="lineno"><a class="lineno" href="#L20">20</a></span>
+<span id="L21" class="lineno"><a class="lineno" href="#L21">21</a></span>
+<span id="L22" class="lineno"><a class="lineno" href="#L22">22</a></span>
+<span id="L23" class="lineno"><a class="lineno" href="#L23">23</a></span>
+<span id="L24" class="lineno"><a class="lineno" href="#L24">24</a></span>
+<span id="L25" class="lineno"><a class="lineno" href="#L25">25</a></span>
+<span id="L26" class="lineno"><a class="lineno" href="#L26">26</a></span>
+<span id="L27" class="lineno"><a class="lineno" href="#L27">27</a></span>
+<span id="L28" class="lineno"><a class="lineno" href="#L28">28</a></span>
+<span id="L29" class="lineno"><a class="lineno" href="#L29">29</a></span>
+<span id="L30" class="lineno"><a class="lineno" href="#L30">30</a></span>
+<span id="L31" class="lineno"><a class="lineno" href="#L31">31</a></span>
+<span id="L32" class="lineno"><a class="lineno" href="#L32">32</a></span>
+<span id="L33" class="lineno"><a class="lineno" href="#L33">33</a></span>
+<span id="L34" class="lineno"><a class="lineno" href="#L34">34</a></span>
+<span id="L35" class="lineno"><a class="lineno" href="#L35">35</a></span>
+<span id="L36" class="lineno"><a class="lineno" href="#L36">36</a></span>
+<span id="L37" class="lineno"><a class="lineno" href="#L37">37</a></span>
+<span id="L38" class="lineno"><a class="lineno" href="#L38">38</a></span>
+</pre></td>
+<td class="table-code"><pre><span class="line-empty" title="No Anys on this line!"># Loading variables should always be the first thing, before any other load</span>
+<span class="line-precise" title="No Anys on this line!">from load_environment_variables import load_environment_variables</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x2)">load_environment_variables()</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">import os</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">import redis</span>
+<span class="line-precise" title="No Anys on this line!">from flask import Flask</span>
+<span class="line-any" title="No Anys on this line!">from flask_script import Manager</span>
+<span class="line-any" title="No Anys on this line!">from mailjet_rest import Client</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">from models.db import db</span>
+<span class="line-precise" title="No Anys on this line!">from scripts.install import install_scripts</span>
+<span class="line-precise" title="No Anys on this line!">from utils.config import REDIS_URL</span>
+<span class="line-precise" title="No Anys on this line!">from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">app = Flask(__name__, template_folder='../templates')</span>
+<span class="line-precise" title="No Anys on this line!">app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')</span>
+<span class="line-precise" title="No Anys on this line!">app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x3)">db.init_app(app)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="No Anys on this line!">def create_app(env=None):</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x2)">    app.env = env</span>
+<span class="line-precise" title="No Anys on this line!">    return app</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x2)
+Unannotated (x2)
+Explicit (x1)">app.manager = Manager(create_app)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x2)">with app.app_context():</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x2)">    install_scripts()</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x2)
+Explicit (x1)">    app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x5)
+Explicit (x1)">    app.redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">if __name__ == "__main__":</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x3)">    app.manager.run()</span>
+</pre></td>
+</tr></tbody>
+</table>
+</body>
+</html>
