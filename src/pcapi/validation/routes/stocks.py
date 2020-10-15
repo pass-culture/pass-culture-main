@@ -27,17 +27,20 @@ def _is_stocks_provider_generated_offer(local_class: str) -> bool:
 
 
 def check_stock_is_updatable(stock: StockSQLEntity) -> None:
+    check_stock_is_not_imported(stock)
+
+    if stock.isEventExpired:
+        api_errors = ApiErrors()
+        api_errors.add_error('global', 'Les événements passés ne sont pas modifiables')
+        raise api_errors
+
+def check_stock_is_not_imported(stock: StockSQLEntity) -> None:
     local_class = stock.offer.lastProvider.localClass if stock.offer.lastProvider else ''
     is_from_provider = stock.offer.isFromProvider is True
 
     if is_from_provider and _is_stocks_provider_generated_offer(local_class):
         api_errors = ApiErrors()
         api_errors.add_error('global', 'Les offres importées ne sont pas modifiables')
-        raise api_errors
-
-    if stock.isEventExpired:
-        api_errors = ApiErrors()
-        api_errors.add_error('global', 'Les événements passés ne sont pas modifiables')
         raise api_errors
 
 

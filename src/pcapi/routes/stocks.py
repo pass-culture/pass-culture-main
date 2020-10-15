@@ -29,7 +29,7 @@ from pcapi.validation.routes.stocks import check_request_has_offer_id, \
     check_dates_are_allowed_on_new_stock, \
     check_dates_are_allowed_on_existing_stock, \
     check_stocks_are_editable_for_offer, check_stock_is_updatable, get_only_fields_with_value_to_be_updated, \
-    check_only_editable_fields_will_be_updated
+    check_only_editable_fields_will_be_updated, check_stock_is_not_imported
 
 search_models = [
     # Order is important
@@ -145,7 +145,7 @@ def delete_stock(id):
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     bookings = delete_stock_and_cancel_bookings(stock)
 
-    check_stock_is_updatable(stock)
+    check_stock_is_not_imported(stock)
 
     if bookings:
         try:

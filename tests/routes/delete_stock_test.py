@@ -59,6 +59,33 @@ class Delete:
             assert booking2 in bookings
 
         @pytest.mark.usefixtures("db_session")
+        def expect_booking_to_be_cancelled_when_stock_is_an_event_that_ended_less_than_two_days_ago(self, app):
+            # given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(
+                offerer,
+                venue,
+                beginning_datetime=NOW - timedelta(hours=47),
+                booking_limit_datetime=NOW - timedelta(days=6),
+                price=0
+            )
+            booking = create_booking(user, is_cancelled=False, stock=stock)
+
+            repository.save(user, stock, user_offerer, booking)
+
+            # when
+            response = TestClient(app.test_client()).with_auth('test@email.com') \
+                .delete('/stocks/' + humanize(stock.id))
+
+            # then
+            assert response.status_code == 200
+            booking_from_db = BookingSQLEntity.query.filter_by(isCancelled=True).one()
+            assert booking == booking_from_db
+
+        @pytest.mark.usefixtures("db_session")
         def when_stock_is_on_an_offer_from_allocine_provider(self, app):
             # Given
             allocine_provider = get_provider_by_local_class('AllocineStocks')
