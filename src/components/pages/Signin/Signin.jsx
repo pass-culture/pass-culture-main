@@ -84,7 +84,7 @@ class Signin extends PureComponent {
               <section>
                 <div className="text-container">
                   <h1>
-                    {'Bienvenue dans la version bêta du pass Culture pro.'}
+                    {'Bienvenue sur l\'espace dédié aux acteurs culturels'}
                   </h1>
                   <h2>
                     {'Et merci de votre participation pour nous aider à l’améliorer !'}
