@@ -1,0 +1,96 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../../../../mypy-html.css">
+</head>
+<body>
+<h2>sandboxes.scripts.creators.industrial.create_industrial_mediations</h2>
+<table>
+<caption>sandboxes/scripts/creators/industrial/create_industrial_mediations.py</caption>
+<tbody><tr>
+<td class="table-lines"><pre><span id="L1" class="lineno"><a class="lineno" href="#L1">1</a></span>
+<span id="L2" class="lineno"><a class="lineno" href="#L2">2</a></span>
+<span id="L3" class="lineno"><a class="lineno" href="#L3">3</a></span>
+<span id="L4" class="lineno"><a class="lineno" href="#L4">4</a></span>
+<span id="L5" class="lineno"><a class="lineno" href="#L5">5</a></span>
+<span id="L6" class="lineno"><a class="lineno" href="#L6">6</a></span>
+<span id="L7" class="lineno"><a class="lineno" href="#L7">7</a></span>
+<span id="L8" class="lineno"><a class="lineno" href="#L8">8</a></span>
+<span id="L9" class="lineno"><a class="lineno" href="#L9">9</a></span>
+<span id="L10" class="lineno"><a class="lineno" href="#L10">10</a></span>
+<span id="L11" class="lineno"><a class="lineno" href="#L11">11</a></span>
+<span id="L12" class="lineno"><a class="lineno" href="#L12">12</a></span>
+<span id="L13" class="lineno"><a class="lineno" href="#L13">13</a></span>
+<span id="L14" class="lineno"><a class="lineno" href="#L14">14</a></span>
+<span id="L15" class="lineno"><a class="lineno" href="#L15">15</a></span>
+<span id="L16" class="lineno"><a class="lineno" href="#L16">16</a></span>
+<span id="L17" class="lineno"><a class="lineno" href="#L17">17</a></span>
+<span id="L18" class="lineno"><a class="lineno" href="#L18">18</a></span>
+<span id="L19" class="lineno"><a class="lineno" href="#L19">19</a></span>
+<span id="L20" class="lineno"><a class="lineno" href="#L20">20</a></span>
+<span id="L21" class="lineno"><a class="lineno" href="#L21">21</a></span>
+<span id="L22" class="lineno"><a class="lineno" href="#L22">22</a></span>
+<span id="L23" class="lineno"><a class="lineno" href="#L23">23</a></span>
+<span id="L24" class="lineno"><a class="lineno" href="#L24">24</a></span>
+<span id="L25" class="lineno"><a class="lineno" href="#L25">25</a></span>
+<span id="L26" class="lineno"><a class="lineno" href="#L26">26</a></span>
+<span id="L27" class="lineno"><a class="lineno" href="#L27">27</a></span>
+<span id="L28" class="lineno"><a class="lineno" href="#L28">28</a></span>
+<span id="L29" class="lineno"><a class="lineno" href="#L29">29</a></span>
+<span id="L30" class="lineno"><a class="lineno" href="#L30">30</a></span>
+<span id="L31" class="lineno"><a class="lineno" href="#L31">31</a></span>
+<span id="L32" class="lineno"><a class="lineno" href="#L32">32</a></span>
+</pre></td>
+<td class="table-code"><pre><span class="line-precise" title="No Anys on this line!">from repository import repository</span>
+<span class="line-precise" title="No Anys on this line!">from sandboxes.scripts.utils.select import remove_every</span>
+<span class="line-precise" title="No Anys on this line!">from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets</span>
+<span class="line-precise" title="No Anys on this line!">from tests.model_creators.generic_creators import create_mediation</span>
+<span class="line-precise" title="No Anys on this line!">from utils.logger import logger</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">OFFERS_WITH_MEDIATION_REMOVE_MODULO = 5</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="No Anys on this line!">def create_industrial_mediations(offers_by_name):</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x2)">    logger.info('create_industrial_mediations')</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">    mediations_with_asset = {}</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">    mediations_by_name = {}</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x5)">    offer_items = list(offers_by_name.items())</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x6)">    offer_items_with_mediation = remove_every(offer_items, OFFERS_WITH_MEDIATION_REMOVE_MODULO)</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x3)">    for (offer_with_mediation_name, offer_with_mediation) in offer_items_with_mediation:</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x4)">        mediations_by_name[offer_with_mediation_name] = create_mediation(offer_with_mediation)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x4)
+Unimported (x1)">    repository.save(*mediations_by_name.values())</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x4)">    for mediation in mediations_by_name.values():</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x9)">        mediations_with_asset[mediation.id] = store_public_object_from_sandbox_assets(</span>
+<span class="line-any" title="No Anys on this line!">            "thumbs",</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">            mediation,</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x3)">            mediation.offer.type</span>
+<span class="line-empty" title="No Anys on this line!">        )</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x4)
+Unimported (x1)">    repository.save(*mediations_with_asset.values())</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x6)">    logger.info('created {} mediations'.format(len(mediations_by_name)))</span>
+</pre></td>
+</tr></tbody>
+</table>
+</body>
+</html>

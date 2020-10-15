@@ -1,0 +1,237 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../../mypy-html.css">
+</head>
+<body>
+<h2>routes.serialization.dictifier</h2>
+<table>
+<caption>routes/serialization/dictifier.py</caption>
+<tbody><tr>
+<td class="table-lines"><pre><span id="L1" class="lineno"><a class="lineno" href="#L1">1</a></span>
+<span id="L2" class="lineno"><a class="lineno" href="#L2">2</a></span>
+<span id="L3" class="lineno"><a class="lineno" href="#L3">3</a></span>
+<span id="L4" class="lineno"><a class="lineno" href="#L4">4</a></span>
+<span id="L5" class="lineno"><a class="lineno" href="#L5">5</a></span>
+<span id="L6" class="lineno"><a class="lineno" href="#L6">6</a></span>
+<span id="L7" class="lineno"><a class="lineno" href="#L7">7</a></span>
+<span id="L8" class="lineno"><a class="lineno" href="#L8">8</a></span>
+<span id="L9" class="lineno"><a class="lineno" href="#L9">9</a></span>
+<span id="L10" class="lineno"><a class="lineno" href="#L10">10</a></span>
+<span id="L11" class="lineno"><a class="lineno" href="#L11">11</a></span>
+<span id="L12" class="lineno"><a class="lineno" href="#L12">12</a></span>
+<span id="L13" class="lineno"><a class="lineno" href="#L13">13</a></span>
+<span id="L14" class="lineno"><a class="lineno" href="#L14">14</a></span>
+<span id="L15" class="lineno"><a class="lineno" href="#L15">15</a></span>
+<span id="L16" class="lineno"><a class="lineno" href="#L16">16</a></span>
+<span id="L17" class="lineno"><a class="lineno" href="#L17">17</a></span>
+<span id="L18" class="lineno"><a class="lineno" href="#L18">18</a></span>
+<span id="L19" class="lineno"><a class="lineno" href="#L19">19</a></span>
+<span id="L20" class="lineno"><a class="lineno" href="#L20">20</a></span>
+<span id="L21" class="lineno"><a class="lineno" href="#L21">21</a></span>
+<span id="L22" class="lineno"><a class="lineno" href="#L22">22</a></span>
+<span id="L23" class="lineno"><a class="lineno" href="#L23">23</a></span>
+<span id="L24" class="lineno"><a class="lineno" href="#L24">24</a></span>
+<span id="L25" class="lineno"><a class="lineno" href="#L25">25</a></span>
+<span id="L26" class="lineno"><a class="lineno" href="#L26">26</a></span>
+<span id="L27" class="lineno"><a class="lineno" href="#L27">27</a></span>
+<span id="L28" class="lineno"><a class="lineno" href="#L28">28</a></span>
+<span id="L29" class="lineno"><a class="lineno" href="#L29">29</a></span>
+<span id="L30" class="lineno"><a class="lineno" href="#L30">30</a></span>
+<span id="L31" class="lineno"><a class="lineno" href="#L31">31</a></span>
+<span id="L32" class="lineno"><a class="lineno" href="#L32">32</a></span>
+<span id="L33" class="lineno"><a class="lineno" href="#L33">33</a></span>
+<span id="L34" class="lineno"><a class="lineno" href="#L34">34</a></span>
+<span id="L35" class="lineno"><a class="lineno" href="#L35">35</a></span>
+<span id="L36" class="lineno"><a class="lineno" href="#L36">36</a></span>
+<span id="L37" class="lineno"><a class="lineno" href="#L37">37</a></span>
+<span id="L38" class="lineno"><a class="lineno" href="#L38">38</a></span>
+<span id="L39" class="lineno"><a class="lineno" href="#L39">39</a></span>
+<span id="L40" class="lineno"><a class="lineno" href="#L40">40</a></span>
+<span id="L41" class="lineno"><a class="lineno" href="#L41">41</a></span>
+<span id="L42" class="lineno"><a class="lineno" href="#L42">42</a></span>
+<span id="L43" class="lineno"><a class="lineno" href="#L43">43</a></span>
+<span id="L44" class="lineno"><a class="lineno" href="#L44">44</a></span>
+<span id="L45" class="lineno"><a class="lineno" href="#L45">45</a></span>
+<span id="L46" class="lineno"><a class="lineno" href="#L46">46</a></span>
+<span id="L47" class="lineno"><a class="lineno" href="#L47">47</a></span>
+<span id="L48" class="lineno"><a class="lineno" href="#L48">48</a></span>
+<span id="L49" class="lineno"><a class="lineno" href="#L49">49</a></span>
+<span id="L50" class="lineno"><a class="lineno" href="#L50">50</a></span>
+<span id="L51" class="lineno"><a class="lineno" href="#L51">51</a></span>
+<span id="L52" class="lineno"><a class="lineno" href="#L52">52</a></span>
+<span id="L53" class="lineno"><a class="lineno" href="#L53">53</a></span>
+<span id="L54" class="lineno"><a class="lineno" href="#L54">54</a></span>
+<span id="L55" class="lineno"><a class="lineno" href="#L55">55</a></span>
+<span id="L56" class="lineno"><a class="lineno" href="#L56">56</a></span>
+<span id="L57" class="lineno"><a class="lineno" href="#L57">57</a></span>
+<span id="L58" class="lineno"><a class="lineno" href="#L58">58</a></span>
+<span id="L59" class="lineno"><a class="lineno" href="#L59">59</a></span>
+<span id="L60" class="lineno"><a class="lineno" href="#L60">60</a></span>
+<span id="L61" class="lineno"><a class="lineno" href="#L61">61</a></span>
+<span id="L62" class="lineno"><a class="lineno" href="#L62">62</a></span>
+<span id="L63" class="lineno"><a class="lineno" href="#L63">63</a></span>
+<span id="L64" class="lineno"><a class="lineno" href="#L64">64</a></span>
+<span id="L65" class="lineno"><a class="lineno" href="#L65">65</a></span>
+<span id="L66" class="lineno"><a class="lineno" href="#L66">66</a></span>
+<span id="L67" class="lineno"><a class="lineno" href="#L67">67</a></span>
+<span id="L68" class="lineno"><a class="lineno" href="#L68">68</a></span>
+<span id="L69" class="lineno"><a class="lineno" href="#L69">69</a></span>
+<span id="L70" class="lineno"><a class="lineno" href="#L70">70</a></span>
+<span id="L71" class="lineno"><a class="lineno" href="#L71">71</a></span>
+<span id="L72" class="lineno"><a class="lineno" href="#L72">72</a></span>
+<span id="L73" class="lineno"><a class="lineno" href="#L73">73</a></span>
+<span id="L74" class="lineno"><a class="lineno" href="#L74">74</a></span>
+<span id="L75" class="lineno"><a class="lineno" href="#L75">75</a></span>
+<span id="L76" class="lineno"><a class="lineno" href="#L76">76</a></span>
+<span id="L77" class="lineno"><a class="lineno" href="#L77">77</a></span>
+<span id="L78" class="lineno"><a class="lineno" href="#L78">78</a></span>
+<span id="L79" class="lineno"><a class="lineno" href="#L79">79</a></span>
+<span id="L80" class="lineno"><a class="lineno" href="#L80">80</a></span>
+<span id="L81" class="lineno"><a class="lineno" href="#L81">81</a></span>
+<span id="L82" class="lineno"><a class="lineno" href="#L82">82</a></span>
+<span id="L83" class="lineno"><a class="lineno" href="#L83">83</a></span>
+<span id="L84" class="lineno"><a class="lineno" href="#L84">84</a></span>
+<span id="L85" class="lineno"><a class="lineno" href="#L85">85</a></span>
+<span id="L86" class="lineno"><a class="lineno" href="#L86">86</a></span>
+<span id="L87" class="lineno"><a class="lineno" href="#L87">87</a></span>
+<span id="L88" class="lineno"><a class="lineno" href="#L88">88</a></span>
+<span id="L89" class="lineno"><a class="lineno" href="#L89">89</a></span>
+<span id="L90" class="lineno"><a class="lineno" href="#L90">90</a></span>
+<span id="L91" class="lineno"><a class="lineno" href="#L91">91</a></span>
+<span id="L92" class="lineno"><a class="lineno" href="#L92">92</a></span>
+<span id="L93" class="lineno"><a class="lineno" href="#L93">93</a></span>
+<span id="L94" class="lineno"><a class="lineno" href="#L94">94</a></span>
+<span id="L95" class="lineno"><a class="lineno" href="#L95">95</a></span>
+<span id="L96" class="lineno"><a class="lineno" href="#L96">96</a></span>
+</pre></td>
+<td class="table-code"><pre><span class="line-precise" title="No Anys on this line!">from collections import OrderedDict</span>
+<span class="line-precise" title="No Anys on this line!">from functools import singledispatch</span>
+<span class="line-precise" title="No Anys on this line!">from typing import Iterable, Set, List</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="No Anys on this line!">from sqlalchemy.orm.collections import InstrumentedList</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">from domain.reimbursement import BookingReimbursement</span>
+<span class="line-precise" title="No Anys on this line!">from models.allocine_venue_provider import AllocineVenueProvider</span>
+<span class="line-precise" title="No Anys on this line!">from models.pc_object import PcObject</span>
+<span class="line-precise" title="No Anys on this line!">from models.venue_provider import VenueProvider</span>
+<span class="line-precise" title="No Anys on this line!">from routes.serialization.serializer import serialize</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="Any Types on this line: 
+Explicit (x2)">@singledispatch</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x3)
+Omitted Generics (x1)">def as_dict(value, column=None, includes: Iterable = ()):</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x4)
+Explicit (x2)">    return serialize(value, column=column)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">@as_dict.register(BookingReimbursement)</span>
+<span class="line-empty" title="No Anys on this line!">def _(booking_reimbursement, column=None, includes: Iterable = ()):</span>
+<span class="line-empty" title="No Anys on this line!">    dict_booking = as_dict(booking_reimbursement.booking, includes=includes)</span>
+<span class="line-empty" title="No Anys on this line!">    dict_booking['token'] = dict_booking['token'] if dict_booking['isUsed'] else None</span>
+<span class="line-empty" title="No Anys on this line!">    dict_booking['reimbursed_amount'] = booking_reimbursement.reimbursed_amount</span>
+<span class="line-empty" title="No Anys on this line!">    dict_booking['reimbursement_rule'] = booking_reimbursement.reimbursement.description</span>
+<span class="line-empty" title="No Anys on this line!">    return dict_booking</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">@as_dict.register(InstrumentedList)</span>
+<span class="line-empty" title="No Anys on this line!">def _(models, column=None, includes: Iterable = ()):</span>
+<span class="line-empty" title="No Anys on this line!">    not_deleted_objects = filter(lambda x: not x.is_soft_deleted(), models)</span>
+<span class="line-empty" title="No Anys on this line!">    return [as_dict(o, includes=includes) for o in not_deleted_objects]</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">@as_dict.register(AllocineVenueProvider)</span>
+<span class="line-empty" title="No Anys on this line!">def _(model, column=None, includes: Iterable = ()):</span>
+<span class="line-empty" title="No Anys on this line!">    result = OrderedDict()</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">    venue_provider_columns = VenueProvider.__table__.columns._data</span>
+<span class="line-empty" title="No Anys on this line!">    allocine_specific_columns = AllocineVenueProvider.__table__.columns._data</span>
+<span class="line-empty" title="No Anys on this line!">    allocine_venue_provider_columns = OrderedDict(venue_provider_columns.items()</span>
+<span class="line-empty" title="No Anys on this line!">                                                  + allocine_specific_columns.items())</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">    for key in _keys_to_serialize(model, includes):</span>
+<span class="line-empty" title="No Anys on this line!">        value = getattr(model, key)</span>
+<span class="line-empty" title="No Anys on this line!">        column = allocine_venue_provider_columns.get(key)</span>
+<span class="line-empty" title="No Anys on this line!">        result[key] = as_dict(value, column=column)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">    for join in _joins_to_serialize(includes):</span>
+<span class="line-empty" title="No Anys on this line!">        key = join['key']</span>
+<span class="line-empty" title="No Anys on this line!">        sub_includes = join.get('includes', set())</span>
+<span class="line-empty" title="No Anys on this line!">        value = getattr(model, key)</span>
+<span class="line-empty" title="No Anys on this line!">        result[key] = as_dict(value, includes=sub_includes)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">    return result</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-unanalyzed" title="No Anys on this line!">@as_dict.register(PcObject)</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x3)
+Omitted Generics (x1)">def _(model, column=None, includes: Iterable = ()):</span>
+<span class="line-unanalyzed" title="No Anys on this line!">    result = OrderedDict()</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-unanalyzed" title="No Anys on this line!">    for key in _keys_to_serialize(model, includes):</span>
+<span class="line-unanalyzed" title="No Anys on this line!">        value = getattr(model, key)</span>
+<span class="line-unanalyzed" title="No Anys on this line!">        columns = model.__class__.__table__.columns._data</span>
+<span class="line-unanalyzed" title="No Anys on this line!">        column = columns.get(key)</span>
+<span class="line-unanalyzed" title="No Anys on this line!">        result[key] = as_dict(value, column=column)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-unanalyzed" title="No Anys on this line!">    for join in _joins_to_serialize(includes):</span>
+<span class="line-unanalyzed" title="No Anys on this line!">        key = join['key']</span>
+<span class="line-unanalyzed" title="No Anys on this line!">        sub_includes = join.get('includes', set())</span>
+<span class="line-unanalyzed" title="No Anys on this line!">        value = getattr(model, key)</span>
+<span class="line-unanalyzed" title="No Anys on this line!">        result[key] = as_dict(value, includes=sub_includes)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-unanalyzed" title="No Anys on this line!">    return result</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-imprecise" title="Any Types on this line: 
+Omitted Generics (x3)">def _joins_to_serialize(includes: Iterable) -&gt; List[dict]:</span>
+<span class="line-any" title="Any Types on this line: 
+Omitted Generics (x4)
+Explicit (x2)">    dict_joins = filter(lambda a: isinstance(a, dict), includes)</span>
+<span class="line-imprecise" title="Any Types on this line: 
+Omitted Generics (x3)">    return list(dict_joins)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)
+Omitted Generics (x1)">def _keys_to_serialize(model, includes: Iterable) -&gt; Set[str]:</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x6)">    model_attributes = model.__mapper__.c.keys()</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x11)
+Omitted Generics (x3)">    return set(model_attributes).union(_included_properties(includes)) - _excluded_keys(includes)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-imprecise" title="Any Types on this line: 
+Omitted Generics (x1)">def _included_properties(includes: Iterable) -&gt; Set[str]:</span>
+<span class="line-any" title="Any Types on this line: 
+Omitted Generics (x4)
+Explicit (x2)">    string_keys = filter(lambda a: isinstance(a, str), includes)</span>
+<span class="line-any" title="Any Types on this line: 
+Omitted Generics (x6)
+Explicit (x1)">    included_keys = filter(lambda a: not a.startswith('-'), string_keys)</span>
+<span class="line-imprecise" title="Any Types on this line: 
+Omitted Generics (x1)">    return set(included_keys)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="No Anys on this line!">def _excluded_keys(includes):</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x4)
+Explicit (x2)">    string_keys = filter(lambda a: isinstance(a, str), includes)</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x5)
+Explicit (x1)">    excluded_keys = filter(lambda a: a.startswith('-'), string_keys)</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x4)
+Explicit (x9)">    cleaned_keys = map(lambda a: a[1:], excluded_keys)</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x2)">    return set(cleaned_keys)</span>
+</pre></td>
+</tr></tbody>
+</table>
+</body>
+</html>

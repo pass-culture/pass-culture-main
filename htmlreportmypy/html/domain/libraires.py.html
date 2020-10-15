@@ -1,0 +1,61 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../mypy-html.css">
+</head>
+<body>
+<h2>domain.libraires</h2>
+<table>
+<caption>domain/libraires.py</caption>
+<tbody><tr>
+<td class="table-lines"><pre><span id="L1" class="lineno"><a class="lineno" href="#L1">1</a></span>
+<span id="L2" class="lineno"><a class="lineno" href="#L2">2</a></span>
+<span id="L3" class="lineno"><a class="lineno" href="#L3">3</a></span>
+<span id="L4" class="lineno"><a class="lineno" href="#L4">4</a></span>
+<span id="L5" class="lineno"><a class="lineno" href="#L5">5</a></span>
+<span id="L6" class="lineno"><a class="lineno" href="#L6">6</a></span>
+<span id="L7" class="lineno"><a class="lineno" href="#L7">7</a></span>
+<span id="L8" class="lineno"><a class="lineno" href="#L8">8</a></span>
+<span id="L9" class="lineno"><a class="lineno" href="#L9">9</a></span>
+<span id="L10" class="lineno"><a class="lineno" href="#L10">10</a></span>
+<span id="L11" class="lineno"><a class="lineno" href="#L11">11</a></span>
+<span id="L12" class="lineno"><a class="lineno" href="#L12">12</a></span>
+<span id="L13" class="lineno"><a class="lineno" href="#L13">13</a></span>
+<span id="L14" class="lineno"><a class="lineno" href="#L14">14</a></span>
+<span id="L15" class="lineno"><a class="lineno" href="#L15">15</a></span>
+<span id="L16" class="lineno"><a class="lineno" href="#L16">16</a></span>
+<span id="L17" class="lineno"><a class="lineno" href="#L17">17</a></span>
+<span id="L18" class="lineno"><a class="lineno" href="#L18">18</a></span>
+<span id="L19" class="lineno"><a class="lineno" href="#L19">19</a></span>
+<span id="L20" class="lineno"><a class="lineno" href="#L20">20</a></span>
+</pre></td>
+<td class="table-code"><pre><span class="line-precise" title="No Anys on this line!">from datetime import datetime</span>
+<span class="line-precise" title="No Anys on this line!">from typing import Callable</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">from connectors.api_libraires import get_stocks_from_libraires_api, is_siret_registered</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">LIBRAIRES_STOCK_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="Any Types on this line: 
+Omitted Generics (x3)">def get_libraires_stock_information(siret: str, last_processed_isbn: str = '', modified_since: str = '',</span>
+<span class="line-precise" title="Any Types on this line: 
+Omitted Generics (x2)">                                    get_libraires_stocks: Callable = get_stocks_from_libraires_api) -&gt; iter:</span>
+<span class="line-any" title="Any Types on this line: 
+Omitted Generics (x5)">    api_response = get_libraires_stocks(siret, last_processed_isbn, modified_since)</span>
+<span class="line-any" title="Any Types on this line: 
+Omitted Generics (x3)
+Explicit (x1)">    return iter(api_response['stocks'])</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">def can_be_synchronized_with_libraires(siret: str) -&gt; bool:</span>
+<span class="line-precise" title="No Anys on this line!">    return is_siret_registered(siret)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">def read_last_modified_date(date: datetime) -&gt; str:</span>
+<span class="line-precise" title="No Anys on this line!">    return datetime.strftime(date, LIBRAIRES_STOCK_DATETIME_FORMAT) if date else ''</span>
+</pre></td>
+</tr></tbody>
+</table>
+</body>
+</html>

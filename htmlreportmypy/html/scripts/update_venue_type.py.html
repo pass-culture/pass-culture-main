@@ -1,0 +1,110 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../mypy-html.css">
+</head>
+<body>
+<h2>scripts.update_venue_type</h2>
+<table>
+<caption>scripts/update_venue_type.py</caption>
+<tbody><tr>
+<td class="table-lines"><pre><span id="L1" class="lineno"><a class="lineno" href="#L1">1</a></span>
+<span id="L2" class="lineno"><a class="lineno" href="#L2">2</a></span>
+<span id="L3" class="lineno"><a class="lineno" href="#L3">3</a></span>
+<span id="L4" class="lineno"><a class="lineno" href="#L4">4</a></span>
+<span id="L5" class="lineno"><a class="lineno" href="#L5">5</a></span>
+<span id="L6" class="lineno"><a class="lineno" href="#L6">6</a></span>
+<span id="L7" class="lineno"><a class="lineno" href="#L7">7</a></span>
+<span id="L8" class="lineno"><a class="lineno" href="#L8">8</a></span>
+<span id="L9" class="lineno"><a class="lineno" href="#L9">9</a></span>
+<span id="L10" class="lineno"><a class="lineno" href="#L10">10</a></span>
+<span id="L11" class="lineno"><a class="lineno" href="#L11">11</a></span>
+<span id="L12" class="lineno"><a class="lineno" href="#L12">12</a></span>
+<span id="L13" class="lineno"><a class="lineno" href="#L13">13</a></span>
+<span id="L14" class="lineno"><a class="lineno" href="#L14">14</a></span>
+<span id="L15" class="lineno"><a class="lineno" href="#L15">15</a></span>
+<span id="L16" class="lineno"><a class="lineno" href="#L16">16</a></span>
+<span id="L17" class="lineno"><a class="lineno" href="#L17">17</a></span>
+<span id="L18" class="lineno"><a class="lineno" href="#L18">18</a></span>
+<span id="L19" class="lineno"><a class="lineno" href="#L19">19</a></span>
+<span id="L20" class="lineno"><a class="lineno" href="#L20">20</a></span>
+<span id="L21" class="lineno"><a class="lineno" href="#L21">21</a></span>
+<span id="L22" class="lineno"><a class="lineno" href="#L22">22</a></span>
+<span id="L23" class="lineno"><a class="lineno" href="#L23">23</a></span>
+<span id="L24" class="lineno"><a class="lineno" href="#L24">24</a></span>
+<span id="L25" class="lineno"><a class="lineno" href="#L25">25</a></span>
+<span id="L26" class="lineno"><a class="lineno" href="#L26">26</a></span>
+<span id="L27" class="lineno"><a class="lineno" href="#L27">27</a></span>
+<span id="L28" class="lineno"><a class="lineno" href="#L28">28</a></span>
+<span id="L29" class="lineno"><a class="lineno" href="#L29">29</a></span>
+<span id="L30" class="lineno"><a class="lineno" href="#L30">30</a></span>
+<span id="L31" class="lineno"><a class="lineno" href="#L31">31</a></span>
+<span id="L32" class="lineno"><a class="lineno" href="#L32">32</a></span>
+<span id="L33" class="lineno"><a class="lineno" href="#L33">33</a></span>
+<span id="L34" class="lineno"><a class="lineno" href="#L34">34</a></span>
+<span id="L35" class="lineno"><a class="lineno" href="#L35">35</a></span>
+<span id="L36" class="lineno"><a class="lineno" href="#L36">36</a></span>
+<span id="L37" class="lineno"><a class="lineno" href="#L37">37</a></span>
+<span id="L38" class="lineno"><a class="lineno" href="#L38">38</a></span>
+<span id="L39" class="lineno"><a class="lineno" href="#L39">39</a></span>
+<span id="L40" class="lineno"><a class="lineno" href="#L40">40</a></span>
+</pre></td>
+<td class="table-code"><pre><span class="line-precise" title="No Anys on this line!">import csv</span>
+<span class="line-precise" title="No Anys on this line!">from typing import List</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">from repository import repository</span>
+<span class="line-precise" title="No Anys on this line!">from models import VenueSQLEntity, VenueType, ApiErrors</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x1)">def update_venue_type(file_path: str):</span>
+<span class="line-precise" title="No Anys on this line!">    updated_venue_count = 0</span>
+<span class="line-imprecise" title="Any Types on this line: 
+Omitted Generics (x3)">    venues_to_update = _read_venue_type_from_file(file_path)</span>
+<span class="line-precise" title="No Anys on this line!">    venue_ids_in_error = []</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-imprecise" title="Any Types on this line: 
+Omitted Generics (x2)">    for venue_to_update in venues_to_update:</span>
+<span class="line-any" title="Any Types on this line: 
+Omitted Generics (x2)">        venue_id = int(venue_to_update[0])</span>
+<span class="line-precise" title="Any Types on this line: 
+Unannotated (x1)">        venue = VenueSQLEntity.query.filter_by(id=venue_id).first()</span>
+<span class="line-precise" title="No Anys on this line!">        if venue:</span>
+<span class="line-any" title="Any Types on this line: 
+Omitted Generics (x3)">            venue_type_label = venue_to_update[1]</span>
+<span class="line-precise" title="Any Types on this line: 
+Unannotated (x1)">            venue_type = VenueType.query.filter_by(</span>
+<span class="line-any" title="Any Types on this line: 
+Omitted Generics (x1)">                label=venue_type_label).first()</span>
+<span class="line-precise" title="No Anys on this line!">            if venue_type:</span>
+<span class="line-precise" title="No Anys on this line!">                venue.venueTypeId = venue_type.id</span>
+<span class="line-empty" title="No Anys on this line!">                try:</span>
+<span class="line-imprecise" title="Any Types on this line: 
+Unimported (x1)">                    repository.save(venue)</span>
+<span class="line-precise" title="No Anys on this line!">                    updated_venue_count += 1</span>
+<span class="line-precise" title="Any Types on this line: 
+Omitted Generics (x2)">                except ApiErrors:</span>
+<span class="line-precise" title="No Anys on this line!">                    venue_ids_in_error.append(venue_id)</span>
+<span class="line-empty" title="No Anys on this line!">            else:</span>
+<span class="line-precise" title="No Anys on this line!">                print(</span>
+<span class="line-any" title="Any Types on this line: 
+Omitted Generics (x1)">                    f'venue type id not found for label : {venue_type_label} and venueId : {venue_id}')</span>
+<span class="line-empty" title="No Anys on this line!">        else:</span>
+<span class="line-precise" title="No Anys on this line!">            print(f'venue not found for id : {venue_id}')</span>
+<span class="line-precise" title="No Anys on this line!">    if venue_ids_in_error:</span>
+<span class="line-precise" title="No Anys on this line!">        print(f'Venues in error : {str(venue_ids_in_error)[1:-1]}')</span>
+<span class="line-precise" title="No Anys on this line!">    print(f'{updated_venue_count} venues have been updated')</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-imprecise" title="Any Types on this line: 
+Omitted Generics (x1)">def _read_venue_type_from_file(file_path: str) -&gt; List[tuple]:</span>
+<span class="line-imprecise" title="Any Types on this line: 
+Explicit (x2)">    with open(file_path, mode='r', newline='\n') as file:</span>
+<span class="line-any" title="Any Types on this line: 
+Explicit (x1)">        data = [tuple(line) for line in csv.reader(file, delimiter=';')]</span>
+<span class="line-precise" title="No Anys on this line!">        return data</span>
+</pre></td>
+</tr></tbody>
+</table>
+</body>
+</html>

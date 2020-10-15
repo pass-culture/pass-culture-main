@@ -1,0 +1,40 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../../mypy-html.css">
+</head>
+<body>
+<h2>domain.pro_offers.paginated_offers</h2>
+<table>
+<caption>domain/pro_offers/paginated_offers.py</caption>
+<tbody><tr>
+<td class="table-lines"><pre><span id="L1" class="lineno"><a class="lineno" href="#L1">1</a></span>
+<span id="L2" class="lineno"><a class="lineno" href="#L2">2</a></span>
+<span id="L3" class="lineno"><a class="lineno" href="#L3">3</a></span>
+<span id="L4" class="lineno"><a class="lineno" href="#L4">4</a></span>
+<span id="L5" class="lineno"><a class="lineno" href="#L5">5</a></span>
+<span id="L6" class="lineno"><a class="lineno" href="#L6">6</a></span>
+<span id="L7" class="lineno"><a class="lineno" href="#L7">7</a></span>
+<span id="L8" class="lineno"><a class="lineno" href="#L8">8</a></span>
+<span id="L9" class="lineno"><a class="lineno" href="#L9">9</a></span>
+<span id="L10" class="lineno"><a class="lineno" href="#L10">10</a></span>
+<span id="L11" class="lineno"><a class="lineno" href="#L11">11</a></span>
+</pre></td>
+<td class="table-code"><pre><span class="line-precise" title="No Anys on this line!">from typing import List</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">from models import OfferSQLEntity</span>
+<span class="line-precise" title="No Anys on this line!">from routes.serialization import as_dict</span>
+<span class="line-precise" title="No Anys on this line!">from utils.includes import OFFER_INCLUDES</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">class PaginatedOffers:</span>
+<span class="line-precise" title="No Anys on this line!">    def __init__(self, offers: List[OfferSQLEntity], total: int):</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x3)
+Explicit (x2)">        self.offers = [as_dict(offer, includes=OFFER_INCLUDES) for offer in offers]</span>
+<span class="line-precise" title="No Anys on this line!">        self.total = total</span>
+</pre></td>
+</tr></tbody>
+</table>
+</body>
+</html>

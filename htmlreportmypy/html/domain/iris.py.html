@@ -1,0 +1,57 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../mypy-html.css">
+</head>
+<body>
+<h2>domain.iris</h2>
+<table>
+<caption>domain/iris.py</caption>
+<tbody><tr>
+<td class="table-lines"><pre><span id="L1" class="lineno"><a class="lineno" href="#L1">1</a></span>
+<span id="L2" class="lineno"><a class="lineno" href="#L2">2</a></span>
+<span id="L3" class="lineno"><a class="lineno" href="#L3">3</a></span>
+<span id="L4" class="lineno"><a class="lineno" href="#L4">4</a></span>
+<span id="L5" class="lineno"><a class="lineno" href="#L5">5</a></span>
+<span id="L6" class="lineno"><a class="lineno" href="#L6">6</a></span>
+<span id="L7" class="lineno"><a class="lineno" href="#L7">7</a></span>
+<span id="L8" class="lineno"><a class="lineno" href="#L8">8</a></span>
+<span id="L9" class="lineno"><a class="lineno" href="#L9">9</a></span>
+<span id="L10" class="lineno"><a class="lineno" href="#L10">10</a></span>
+<span id="L11" class="lineno"><a class="lineno" href="#L11">11</a></span>
+<span id="L12" class="lineno"><a class="lineno" href="#L12">12</a></span>
+<span id="L13" class="lineno"><a class="lineno" href="#L13">13</a></span>
+<span id="L14" class="lineno"><a class="lineno" href="#L14">14</a></span>
+<span id="L15" class="lineno"><a class="lineno" href="#L15">15</a></span>
+<span id="L16" class="lineno"><a class="lineno" href="#L16">16</a></span>
+<span id="L17" class="lineno"><a class="lineno" href="#L17">17</a></span>
+</pre></td>
+<td class="table-code"><pre><span class="line-precise" title="No Anys on this line!">from typing import Callable</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">from models import VenueSQLEntity</span>
+<span class="line-precise" title="No Anys on this line!">from repository.iris_venues_queries import find_ids_of_irises_located_near_venue, insert_venue_in_iris_venue</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">MAXIMUM_DISTANCE_IN_METERS = 100000</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">def _link_venue_to_irises(venue: VenueSQLEntity) -&gt; None:</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x1)">    if not venue.isVirtual:</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x1)">        iris_ids_near_venue = find_ids_of_irises_located_near_venue(venue.id, MAXIMUM_DISTANCE_IN_METERS)</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x1)">        insert_venue_in_iris_venue(venue.id, iris_ids_near_venue)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="Any Types on this line: 
+Omitted Generics (x3)">def link_valid_venue_to_irises(venue: VenueSQLEntity, link_venue_to_irises: Callable = _link_venue_to_irises) -&gt; None:</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x2)
+Unimported (x2)">    if venue.isValidated and venue.managingOfferer.isValidated:</span>
+<span class="line-any" title="Any Types on this line: 
+Omitted Generics (x4)">        link_venue_to_irises(venue)</span>
+</pre></td>
+</tr></tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../mypy-html.css">
+</head>
+<body>
+<h2>models.venue_provider</h2>
+<table>
+<caption>models/venue_provider.py</caption>
+<tbody><tr>
+<td class="table-lines"><pre><span id="L1" class="lineno"><a class="lineno" href="#L1">1</a></span>
+<span id="L2" class="lineno"><a class="lineno" href="#L2">2</a></span>
+<span id="L3" class="lineno"><a class="lineno" href="#L3">3</a></span>
+<span id="L4" class="lineno"><a class="lineno" href="#L4">4</a></span>
+<span id="L5" class="lineno"><a class="lineno" href="#L5">5</a></span>
+<span id="L6" class="lineno"><a class="lineno" href="#L6">6</a></span>
+<span id="L7" class="lineno"><a class="lineno" href="#L7">7</a></span>
+<span id="L8" class="lineno"><a class="lineno" href="#L8">8</a></span>
+<span id="L9" class="lineno"><a class="lineno" href="#L9">9</a></span>
+<span id="L10" class="lineno"><a class="lineno" href="#L10">10</a></span>
+<span id="L11" class="lineno"><a class="lineno" href="#L11">11</a></span>
+<span id="L12" class="lineno"><a class="lineno" href="#L12">12</a></span>
+<span id="L13" class="lineno"><a class="lineno" href="#L13">13</a></span>
+<span id="L14" class="lineno"><a class="lineno" href="#L14">14</a></span>
+<span id="L15" class="lineno"><a class="lineno" href="#L15">15</a></span>
+<span id="L16" class="lineno"><a class="lineno" href="#L16">16</a></span>
+<span id="L17" class="lineno"><a class="lineno" href="#L17">17</a></span>
+<span id="L18" class="lineno"><a class="lineno" href="#L18">18</a></span>
+<span id="L19" class="lineno"><a class="lineno" href="#L19">19</a></span>
+<span id="L20" class="lineno"><a class="lineno" href="#L20">20</a></span>
+<span id="L21" class="lineno"><a class="lineno" href="#L21">21</a></span>
+<span id="L22" class="lineno"><a class="lineno" href="#L22">22</a></span>
+<span id="L23" class="lineno"><a class="lineno" href="#L23">23</a></span>
+<span id="L24" class="lineno"><a class="lineno" href="#L24">24</a></span>
+<span id="L25" class="lineno"><a class="lineno" href="#L25">25</a></span>
+<span id="L26" class="lineno"><a class="lineno" href="#L26">26</a></span>
+<span id="L27" class="lineno"><a class="lineno" href="#L27">27</a></span>
+<span id="L28" class="lineno"><a class="lineno" href="#L28">28</a></span>
+<span id="L29" class="lineno"><a class="lineno" href="#L29">29</a></span>
+<span id="L30" class="lineno"><a class="lineno" href="#L30">30</a></span>
+<span id="L31" class="lineno"><a class="lineno" href="#L31">31</a></span>
+<span id="L32" class="lineno"><a class="lineno" href="#L32">32</a></span>
+<span id="L33" class="lineno"><a class="lineno" href="#L33">33</a></span>
+<span id="L34" class="lineno"><a class="lineno" href="#L34">34</a></span>
+<span id="L35" class="lineno"><a class="lineno" href="#L35">35</a></span>
+<span id="L36" class="lineno"><a class="lineno" href="#L36">36</a></span>
+<span id="L37" class="lineno"><a class="lineno" href="#L37">37</a></span>
+<span id="L38" class="lineno"><a class="lineno" href="#L38">38</a></span>
+<span id="L39" class="lineno"><a class="lineno" href="#L39">39</a></span>
+<span id="L40" class="lineno"><a class="lineno" href="#L40">40</a></span>
+<span id="L41" class="lineno"><a class="lineno" href="#L41">41</a></span>
+<span id="L42" class="lineno"><a class="lineno" href="#L42">42</a></span>
+<span id="L43" class="lineno"><a class="lineno" href="#L43">43</a></span>
+<span id="L44" class="lineno"><a class="lineno" href="#L44">44</a></span>
+<span id="L45" class="lineno"><a class="lineno" href="#L45">45</a></span>
+<span id="L46" class="lineno"><a class="lineno" href="#L46">46</a></span>
+<span id="L47" class="lineno"><a class="lineno" href="#L47">47</a></span>
+<span id="L48" class="lineno"><a class="lineno" href="#L48">48</a></span>
+<span id="L49" class="lineno"><a class="lineno" href="#L49">49</a></span>
+<span id="L50" class="lineno"><a class="lineno" href="#L50">50</a></span>
+<span id="L51" class="lineno"><a class="lineno" href="#L51">51</a></span>
+<span id="L52" class="lineno"><a class="lineno" href="#L52">52</a></span>
+<span id="L53" class="lineno"><a class="lineno" href="#L53">53</a></span>
+<span id="L54" class="lineno"><a class="lineno" href="#L54">54</a></span>
+<span id="L55" class="lineno"><a class="lineno" href="#L55">55</a></span>
+<span id="L56" class="lineno"><a class="lineno" href="#L56">56</a></span>
+<span id="L57" class="lineno"><a class="lineno" href="#L57">57</a></span>
+<span id="L58" class="lineno"><a class="lineno" href="#L58">58</a></span>
+<span id="L59" class="lineno"><a class="lineno" href="#L59">59</a></span>
+<span id="L60" class="lineno"><a class="lineno" href="#L60">60</a></span>
+<span id="L61" class="lineno"><a class="lineno" href="#L61">61</a></span>
+<span id="L62" class="lineno"><a class="lineno" href="#L62">62</a></span>
+<span id="L63" class="lineno"><a class="lineno" href="#L63">63</a></span>
+<span id="L64" class="lineno"><a class="lineno" href="#L64">64</a></span>
+<span id="L65" class="lineno"><a class="lineno" href="#L65">65</a></span>
+<span id="L66" class="lineno"><a class="lineno" href="#L66">66</a></span>
+<span id="L67" class="lineno"><a class="lineno" href="#L67">67</a></span>
+<span id="L68" class="lineno"><a class="lineno" href="#L68">68</a></span>
+<span id="L69" class="lineno"><a class="lineno" href="#L69">69</a></span>
+<span id="L70" class="lineno"><a class="lineno" href="#L70">70</a></span>
+<span id="L71" class="lineno"><a class="lineno" href="#L71">71</a></span>
+</pre></td>
+<td class="table-code"><pre><span class="line-any" title="No Anys on this line!">from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, UniqueConstraint, case, select, and_, exists</span>
+<span class="line-any" title="No Anys on this line!">from sqlalchemy.orm import relationship, column_property</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">from models.db import Model</span>
+<span class="line-precise" title="No Anys on this line!">from models.deactivable_mixin import DeactivableMixin</span>
+<span class="line-precise" title="No Anys on this line!">from models.offer_sql_entity import OfferSQLEntity</span>
+<span class="line-precise" title="No Anys on this line!">from models.pc_object import PcObject</span>
+<span class="line-precise" title="No Anys on this line!">from models.providable_mixin import ProvidableMixin</span>
+<span class="line-precise" title="No Anys on this line!">from models.provider import Provider</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-precise" title="No Anys on this line!">class VenueProvider(PcObject,</span>
+<span class="line-empty" title="No Anys on this line!">                    Model,</span>
+<span class="line-empty" title="No Anys on this line!">                    ProvidableMixin,</span>
+<span class="line-empty" title="No Anys on this line!">                    DeactivableMixin):</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x4)">    venueId = Column(BigInteger,</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x2)">                     ForeignKey('venue.id'),</span>
+<span class="line-precise" title="No Anys on this line!">                     nullable=False)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x3)">    venue = relationship('VenueSQLEntity',</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x1)">                         foreign_keys=[venueId])</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x4)">    providerId = Column(BigInteger,</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x2)">                        ForeignKey('provider.id'),</span>
+<span class="line-precise" title="No Anys on this line!">                        index=True,</span>
+<span class="line-precise" title="No Anys on this line!">                        nullable=False)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x3)">    provider = relationship('Provider',</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x1)">                            foreign_keys=[providerId])</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x5)">    venueIdAtOfferProvider = Column(String(70))</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x4)">    lastSyncDate = Column(DateTime, nullable=True)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x5)">    syncWorkerId = Column(String(24), nullable=True)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x3)">    isFromAllocineProvider = column_property(</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x7)
+Unannotated (x1)">        exists(select([Provider.id]).</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x5)
+Unannotated (x1)">               where(and_(Provider.id == providerId,</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x2)
+Unannotated (x1)">                          Provider.localClass == 'AllocineStocks')</span>
+<span class="line-empty" title="No Anys on this line!">                     ))</span>
+<span class="line-empty" title="No Anys on this line!">    )</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-imprecise" title="Any Types on this line: 
+Unimported (x1)">    __mapper_args__ = {</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x2)">        "polymorphic_on": case([</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x1)">            (isFromAllocineProvider, "allocine_venue_provider"),</span>
+<span class="line-precise" title="No Anys on this line!">        ], else_="venue_provider"),</span>
+<span class="line-precise" title="No Anys on this line!">        "polymorphic_identity": "venue_provider"</span>
+<span class="line-empty" title="No Anys on this line!">    }</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-imprecise" title="Any Types on this line: 
+Unimported (x1)">    __table_args__ = (</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x2)">        UniqueConstraint(</span>
+<span class="line-precise" title="No Anys on this line!">            'venueId',</span>
+<span class="line-precise" title="No Anys on this line!">            'providerId',</span>
+<span class="line-precise" title="No Anys on this line!">            'venueIdAtOfferProvider',</span>
+<span class="line-precise" title="No Anys on this line!">            name='unique_venue_provider',</span>
+<span class="line-empty" title="No Anys on this line!">        ),</span>
+<span class="line-empty" title="No Anys on this line!">    )</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">    @staticmethod</span>
+<span class="line-any" title="No Anys on this line!">    def restize_integrity_error(internal_error):</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x3)">        if 'unique_venue_provider' in str(internal_error.orig):</span>
+<span class="line-any" title="No Anys on this line!">            return ['global', 'Votre lieu est déjà lié à cette source']</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x4)">        return PcObject.restize_integrity_error(internal_error)</span>
+<span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">    @property</span>
+<span class="line-any" title="No Anys on this line!">    def nOffers(self):</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x8)">        return OfferSQLEntity.query \</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x4)">            .filter(OfferSQLEntity.venueId == self.venueId) \</span>
+<span class="line-any" title="Any Types on this line: 
+Unannotated (x4)">            .filter(OfferSQLEntity.lastProviderId == self.providerId) \</span>
+<span class="line-empty" title="No Anys on this line!">            .count()</span>
+</pre></td>
+</tr></tbody>
+</table>
+</body>
+</html>
