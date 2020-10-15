@@ -14,7 +14,7 @@ import IneligibleUnderEighteen from './IneligibleUnderEighteen/IneligibleUnderEi
 import { RecaptchaNotice } from './RecaptchaNotice'
 import { useReCaptchaScript } from './utils/recaptcha'
 
-const EligibilityCheck = ({ history }) => {
+const EligibilityCheck = ({ history, trackEligibility }) => {
   useReCaptchaScript()
   const [postalCodeInputValue, setPostalCodeInputValue] = useState('')
   const [dateOfBirthInputValue, setDateOfBirthInputValue] = useState('')
@@ -75,6 +75,7 @@ const EligibilityCheck = ({ history }) => {
   switch (componentToRender) {
     case ELIGIBILITY_VALUES.ELIGIBLE:
       if (checkIfDepartmentIsEligible(postalCodeInputValue)) {
+        trackEligibility("Eligibilite - OK")
         return <Eligible />
       } else {
         if (history.location.hash !== '#departement-ineligible') {
@@ -82,6 +83,7 @@ const EligibilityCheck = ({ history }) => {
             hash: '#departement-ineligible',
           })
         }
+        trackEligibility("Eligibilite - WrongDepartment")
         return (
           <DepartmentEligibleSoon
             birthDate={dateOfBirthInputValue}
@@ -95,6 +97,7 @@ const EligibilityCheck = ({ history }) => {
           hash: '#trop-jeune',
         })
       }
+      trackEligibility("Eligibilite - TooYoung")
       return <IneligibleUnderEighteen />
     case ELIGIBILITY_VALUES.TOO_OLD:
       if (history.location.hash !== '#trop-age') {
@@ -102,8 +105,10 @@ const EligibilityCheck = ({ history }) => {
           hash: '#trop-age',
         })
       }
+      trackEligibility("Eligibilite - TooOld")
       return <IneligibleOverEighteen />
     case ELIGIBILITY_VALUES.SOON:
+      trackEligibility("Eligibilite - Soon")
       return (
         <AgeEligibleSoon
           birthDate={dateOfBirthInputValue}
@@ -177,6 +182,7 @@ const EligibilityCheck = ({ history }) => {
 
 EligibilityCheck.propTypes = {
   history: PropTypes.shape().isRequired,
+  trackEligibility: PropTypes.func.isRequired,
 }
 
 export default EligibilityCheck

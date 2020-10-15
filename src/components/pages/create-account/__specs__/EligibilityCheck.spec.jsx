@@ -24,10 +24,12 @@ jest.mock('../domain/checkIfDepartmentIsEligible', () => {
 
 describe('eligibility check page', () => {
   let props
+  let trackEligibility
   const getFullYear = Date.prototype.getFullYear
 
   beforeEach(() => {
     Date.prototype.getFullYear = () => 2020
+    trackEligibility = jest.fn()
     props = {
       history: {
         location: {
@@ -35,6 +37,7 @@ describe('eligibility check page', () => {
         },
         replace: jest.fn(),
       },
+      trackEligibility,
     }
   })
 
@@ -579,6 +582,174 @@ describe('eligibility check page', () => {
 
         // then
         expect(wrapper.find({ children: 'Le format de la date est incorrect.' })).toHaveLength(1)
+      })
+    })
+
+    describe('should track the eligibility result', () => {
+      beforeEach(() => {
+        checkIfDepartmentIsEligible.mockReturnValue(true)
+      })
+
+      it('with specific message when user is too old', () => {
+        // given
+        checkIfAgeIsEligible.mockReturnValue('tooOld')
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck {...props} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93170' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/1997' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
+        })
+        wrapper.update()
+
+        // then
+        expect(props.trackEligibility).toHaveBeenCalledWith('Eligibilite - TooOld')
+      })
+
+      it('with specific message when user is too young', () => {
+        // given
+        checkIfAgeIsEligible.mockReturnValue('tooYoung')
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck {...props} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2005' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
+        })
+        wrapper.update()
+
+        // then
+        expect(props.trackEligibility).toHaveBeenCalledWith('Eligibilite - TooYoung')
+      })
+
+      it('with specific message when user is almost of age', () => {
+        // given
+        checkIfAgeIsEligible.mockReturnValue('soon')
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck {...props} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2003' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
+        })
+        wrapper.update()
+
+        // then
+        expect(props.trackEligibility).toHaveBeenCalledWith('Eligibilite - Soon')
+      })
+
+      it('with specific message when department is not eligible yet', () => {
+        // given
+        checkIfDepartmentIsEligible.mockReturnValue(false)
+        checkIfAgeIsEligible.mockReturnValue('eligible')
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck {...props} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '11111' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/02/2002' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
+        })
+        wrapper.update()
+
+        // then
+        expect(props.trackEligibility).toHaveBeenCalledWith('Eligibilite - WrongDepartment')
+      })
+
+      it('with specific message user is eligible', () => {
+        // given
+        checkIfDepartmentIsEligible.mockReturnValue(true)
+        checkIfAgeIsEligible.mockReturnValue('eligible')
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck {...props} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '11111' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/02/2002' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
+        })
+        wrapper.update()
+
+        // then
+        expect(props.trackEligibility).toHaveBeenCalledWith('Eligibilite - OK')
       })
     })
   })
