@@ -20,7 +20,7 @@ def _log_call_to_external_service(response: Response, *args: Any, **kwargs: Any)
 
 def _wrapper(request_func: Callable, method: str, url: str, **kwargs: Any) -> Response:
     try:
-        res = request_func(method, url, timeout=REQUEST_TIMEOUT_IN_SECOND,
+        res = request_func(method=method, url=url, timeout=REQUEST_TIMEOUT_IN_SECOND,
                            hooks={'response': _log_call_to_external_service}, **kwargs)
     except Exception as exc:
         json_logger.error("Call to external service failed", extra={'method': method, 'url': url, 'exception': exc})

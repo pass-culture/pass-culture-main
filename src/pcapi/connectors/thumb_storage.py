@@ -1,9 +1,8 @@
 from typing import Callable
 
-import requests
-
 from pcapi.domain.mediations import DO_NOT_CROP, standardize_image
 from pcapi.models import ApiErrors
+from pcapi.utils import requests
 from pcapi.utils.logger import logger
 from pcapi.utils.object_storage import store_public_object
 
