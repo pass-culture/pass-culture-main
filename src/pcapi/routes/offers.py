@@ -91,8 +91,8 @@ def post_offer() -> (str, int):
 @expect_json_data
 def patch_offers_active_status() -> (str, int):
     payload = request.json
-    offers_new_active_status = payload.get('offersActiveStatus')
-    offers_id = [dehumanize(offer_id) for offer_id in payload.get('offersId')]
+    offers_new_active_status = payload.get('isActive')
+    offers_id = [dehumanize(offer_id) for offer_id in payload.get('ids')]
     update_offers_active_status(offers_id, offers_new_active_status)
 
     return '', 204

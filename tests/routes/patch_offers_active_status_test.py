@@ -23,8 +23,8 @@ class Patch:
             repository.save(offer1, offer2, user, user_offerer)
 
             json = {
-                'offersId': [humanize(offer1.id), humanize(offer2.id)],
-                'offersActiveStatus': True
+                'ids': [humanize(offer1.id), humanize(offer2.id)],
+                'isActive': True
             }
 
             # When
@@ -50,8 +50,8 @@ class Patch:
             repository.save(offer1, offer2, user, user_offerer)
 
             json = {
-                'offersId': [humanize(offer1.id), humanize(offer2.id)],
-                'offersActiveStatus': False
+                'ids': [humanize(offer1.id), humanize(offer2.id)],
+                'isActive': False
             }
 
             # When
