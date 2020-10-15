@@ -1,7 +1,5 @@
 /*
   X-Frame-Options: DENY
   X-XSS-Protection: 1; mode=block
-  X-Content-Security-Policy: default-src 'self'
-  Content-Security-Policy: default-src 'self'
   X-Content-Type-Options: nosniff
   Strict-Transport-Security: 31536000; includeSubDomains; preload
