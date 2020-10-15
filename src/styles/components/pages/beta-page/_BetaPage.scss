@@ -13,6 +13,7 @@
   font-style: italic;
   justify-content: center;
   padding: rem(23px);
+  z-index: 1; // prevent eligible department word not being clickable on desktops because of the logo
 }
 
 .bp-title {
