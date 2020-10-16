@@ -1,14 +1,14 @@
 export const SAVE_SEARCH_FILTERS = 'SAVE_SEARCH_FILTERS'
 
-const initialState = {
+export const initialState = {
   searchFilters: {},
 }
 
 const offersReducers = (state = initialState, action) => {
   switch (action.type) {
-    case SAVE_SEARCH_FILTERS:
+    case SAVE_SEARCH_FILTERS: {
       let filters = {}
-      Object.keys(action.filters).forEach((filterName) => {
+      Object.keys(action.filters).forEach(filterName => {
         if (action.filters[filterName]) {
           filters[filterName] = action.filters[filterName]
         }
@@ -16,6 +16,7 @@ const offersReducers = (state = initialState, action) => {
       return Object.assign({}, state, {
         searchFilters: filters,
       })
+    }
     default:
       return state
   }

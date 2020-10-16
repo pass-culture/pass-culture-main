@@ -1,6 +1,6 @@
 import { createDataReducer } from 'redux-saga-data'
 
-const initialState = {
+export const initialState = {
   bookings: [],
   events: [],
   features: [],

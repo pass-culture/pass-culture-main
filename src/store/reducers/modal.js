@@ -2,7 +2,7 @@ export const ASSIGN_MODAL_CONFIG = 'ASSIGN_MODAL_CONFIG'
 export const CLOSE_MODAL = 'CLOSE_MODAL'
 export const SHOW_MODAL = 'SHOW_MODAL'
 
-const initialState = {
+export const initialState = {
   $modal: null,
   config: { fromDirection: 'right' },
   isActive: false,

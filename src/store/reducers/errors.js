@@ -2,7 +2,7 @@ const MERGE_ERRORS = 'MERGE_ERRORS'
 const REMOVE_ERRORS = 'REMOVE_ERRORS'
 const RESET_ERRORS = 'RESET_ERRRORS'
 
-const initialState = {}
+export const initialState = {}
 
 const errors = (state = initialState, action) => {
   switch (action.type) {
