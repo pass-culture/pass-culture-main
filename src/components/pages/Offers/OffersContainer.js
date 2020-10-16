@@ -15,7 +15,6 @@ export const mapStateToProps = state => {
     lastTrackerMoment: lastTrackerMoment(state, 'offers'),
     notification: state.notification,
     offers: selectOffers(state),
-    types: state.data.types,
     searchFilters: state.offers.searchFilters,
   }
 }
@@ -93,10 +92,8 @@ export const mapDispatchToProps = dispatch => {
           })
 
           return { page, pageCount, offersCount }
-        },
+        }
       ),
-
-    loadTypes: () => dispatch(requestData({ apiPath: '/types' })),
   }
 }
 

@@ -84,7 +84,6 @@ describe('src | components | pages | Offers | Offers', () => {
       handleOnActivateAllVenueOffersClick: jest.fn(),
       handleOnDeactivateAllVenueOffersClick: jest.fn(),
       loadOffers: jest.fn().mockResolvedValue({ page: 1, pageCount: 2, offersCount: 5 }),
-      loadTypes: jest.fn(),
       saveSearchFilters: jest.fn(),
       offers: [
         {
@@ -96,7 +95,6 @@ describe('src | components | pages | Offers | Offers', () => {
         change,
         parse,
       },
-      types: [],
       venue: { name: 'Ma Venue', id: 'JI' },
     }
     fetchAllVenuesByProUser.mockResolvedValue(proVenues)

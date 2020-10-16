@@ -82,9 +82,8 @@ class Offers extends PureComponent {
   }
 
   getPaginatedOffersWithFilters = ({ shouldTriggerSpinner }) => {
-    const { loadTypes, types, saveSearchFilters } = this.props
+    const { saveSearchFilters } = this.props
     const { nameSearchValue, selectedVenueId, page } = this.state
-    types.length === 0 && loadTypes()
     saveSearchFilters({ name: nameSearchValue, venueId: selectedVenueId, page })
 
     shouldTriggerSpinner && this.setState({ isLoading: true })
@@ -297,7 +296,6 @@ Offers.propTypes = {
   handleOnActivateAllVenueOffersClick: PropTypes.func.isRequired,
   handleOnDeactivateAllVenueOffersClick: PropTypes.func.isRequired,
   loadOffers: PropTypes.func.isRequired,
-  loadTypes: PropTypes.func.isRequired,
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   query: PropTypes.shape({
     change: PropTypes.func.isRequired,
