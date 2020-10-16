@@ -1,9 +1,11 @@
+from flask import Flask
+
 from pcapi.flask_app import private_api, \
     public_api
 from pcapi.utils.config import IS_DEV
 
 
-def install_routes(app):
+def install_routes(app: Flask) -> None:
     import pcapi.routes.bank_informations
     import pcapi.routes.beneficiaries
     import pcapi.routes.bookings
@@ -13,6 +15,7 @@ def install_routes(app):
     import pcapi.routes.features
     import pcapi.routes.mediations
     import pcapi.routes.music_types
+    import pcapi.routes.native.v1.authentication
     import pcapi.routes.offers
     import pcapi.routes.offerers
     import pcapi.routes.signup

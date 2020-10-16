@@ -35,6 +35,7 @@ from pcapi.utils.logger import json_logger
 from pcapi.utils.mailing import MAILJET_API_KEY, \
     MAILJET_API_SECRET
 
+
 if IS_DEV is False:
     sentry_sdk.init(
         dsn="https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5",

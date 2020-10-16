@@ -20,6 +20,7 @@ from pcapi.repository.feature_queries import feature_request_profiling_enabled
 from pcapi.routes import install_routes
 from pcapi.utils.config import IS_DEV, \
     ENV
+from pcapi.routes.native.v1.blueprint import native_v1
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.logger import configure_json_logger, \
     disable_werkzeug_request_logs
@@ -60,6 +61,8 @@ with app.app_context():
     install_routes(app)
     install_documentation()
     install_admin_views(admin, db.session)
+
+    app.register_blueprint(native_v1, url_prefix='/native/v1')
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
