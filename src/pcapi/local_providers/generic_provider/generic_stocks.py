@@ -1,12 +1,17 @@
 from datetime import datetime
-from typing import Callable, List, Optional
+from typing import Callable, \
+    List, \
+    Optional
 
 from sqlalchemy import Sequence
 
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import OfferSQLEntity, StockSQLEntity, VenueProvider
-from pcapi.models.db import Model, db
+from pcapi.models import OfferSQLEntity, \
+    StockSQLEntity, \
+    VenueProvider
+from pcapi.models.db import Model, \
+    db
 from pcapi.repository import product_queries
 from pcapi.repository.booking_queries import count_not_cancelled_bookings_quantity_by_stock_id
 

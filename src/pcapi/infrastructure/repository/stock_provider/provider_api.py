@@ -1,6 +1,6 @@
 from typing import Dict
 
-import requests
+from pcapi.utils import requests
 
 
 class ProviderAPIException(Exception):

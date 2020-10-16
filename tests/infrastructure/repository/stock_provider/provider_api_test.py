@@ -1,7 +1,7 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, \
+    patch
 
 import pytest
-import requests
 
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI, ProviderAPIException
 
@@ -9,11 +9,12 @@ from pcapi.infrastructure.repository.stock_provider.provider_api import Provider
 class ProviderAPITest:
     class StocksTest:
         def setup_method(self):
-            requests.get = MagicMock()
             self.provider_api = ProviderAPI(api_url='http://example.com/stocks', name='ProviderAPI')
 
-        def should_raise_error_when_provider_api_request_fails(self):
+        @patch('pcapi.infrastructure.repository.stock_provider.provider_api.requests')
+        def should_raise_error_when_provider_api_request_fails(self, requests):
             # Given
+            requests.get = MagicMock()
             siret = '12345678912345'
             requests.get.return_value = MagicMock(status_code=400)
 
@@ -26,8 +27,10 @@ class ProviderAPITest:
 
             requests.get = MagicMock()
 
-        def should_return_empty_json_body_when_provider_returns_200_with_no_body(self):
+        @patch('pcapi.infrastructure.repository.stock_provider.provider_api.requests')
+        def should_return_empty_json_body_when_provider_returns_200_with_no_body(self, requests):
             # Given
+            requests.get = MagicMock()
             siret = '12345678912345'
             mock_response = MagicMock()
             mock_response.side_effect = ValueError
@@ -41,8 +44,10 @@ class ProviderAPITest:
 
             requests.get = MagicMock()
 
-        def should_call_provider_api_with_given_siret(self):
+        @patch('pcapi.infrastructure.repository.stock_provider.provider_api.requests')
+        def should_call_provider_api_with_given_siret(self, requests):
             # Given
+            requests.get = MagicMock()
             siret = '12345678912345'
             requests.get.return_value = MagicMock(status_code=200)
 
@@ -53,8 +58,10 @@ class ProviderAPITest:
             requests.get.assert_called_once_with(
                 url='http://example.com/stocks/12345678912345', params={'limit': '1000'}, headers={})
 
-        def should_call_provider_api_with_given_siret_and_last_processed_isbn(self):
+        @patch('pcapi.infrastructure.repository.stock_provider.provider_api.requests')
+        def should_call_provider_api_with_given_siret_and_last_processed_isbn(self,requests):
             # Given
+            requests.get = MagicMock()
             siret = '12345678912345'
             last_processed_isbn = '9780199536986'
             modified_since = ''
@@ -71,8 +78,10 @@ class ProviderAPITest:
                                                  },
                                                  headers={})
 
-        def should_call_provider_api_with_given_siret_and_last_modification_date(self):
+        @patch('pcapi.infrastructure.repository.stock_provider.provider_api.requests')
+        def should_call_provider_api_with_given_siret_and_last_modification_date(self, requests):
             # Given
+            requests.get = MagicMock()
             siret = '12345678912345'
             last_processed_isbn = ''
             modified_since = '2019-12-16T00:00:00'
@@ -89,8 +98,10 @@ class ProviderAPITest:
                                                  },
                                                  headers={})
 
-        def should_call_provider_api_with_given_all_parameters(self):
+        @patch('pcapi.infrastructure.repository.stock_provider.provider_api.requests')
+        def should_call_provider_api_with_given_all_parameters(self, requests):
             # Given
+            requests.get = MagicMock()
             siret = '12345678912345'
             last_processed_isbn = '9780199536986'
             modified_since = '2019-12-16T00:00:00'
@@ -108,8 +119,10 @@ class ProviderAPITest:
                                                  },
                                                  headers={})
 
-        def should_call_api_with_authentication_token_if_given(self):
+        @patch('pcapi.infrastructure.repository.stock_provider.provider_api.requests')
+        def should_call_api_with_authentication_token_if_given(self, requests):
             # Given
+            requests.get = MagicMock()
             siret = '12345678912345'
             last_processed_isbn = '9780199536986'
             modified_since = '2019-12-16T00:00:00'
@@ -132,11 +145,12 @@ class ProviderAPITest:
 
     class IsSiretRegisteredTest:
         def setup_method(self):
-            requests.get = MagicMock()
             self.provider_api = ProviderAPI(api_url='http://example.com/stocks', name='ProviderAPI')
 
-        def should_call_provider_api_with_given_siret(self):
+        @patch('pcapi.infrastructure.repository.stock_provider.provider_api.requests')
+        def should_call_provider_api_with_given_siret(self, requests):
             # Given
+            requests.get = MagicMock()
             siret = '12345678912345'
             requests.get.return_value = MagicMock(status_code=200)
 
@@ -146,8 +160,10 @@ class ProviderAPITest:
             # Then
             requests.get.assert_called_once_with(url='http://example.com/stocks/12345678912345', headers={})
 
-        def should_returns_true_if_api_returns_200(self):
+        @patch('pcapi.infrastructure.repository.stock_provider.provider_api.requests')
+        def should_returns_true_if_api_returns_200(self, requests):
             # Given
+            requests.get = MagicMock()
             siret = '12345678912345'
             requests.get.return_value = MagicMock(status_code=200)
 
@@ -157,8 +173,10 @@ class ProviderAPITest:
             # Then
             assert output is True
 
-        def should_returns_false_when_provider_api_request_fails(self):
+        @patch('pcapi.infrastructure.repository.stock_provider.provider_api.requests')
+        def should_returns_false_when_provider_api_request_fails(self, requests):
             # Given
+            requests.get = MagicMock()
             siret = '12345678912345'
             requests.get.return_value = MagicMock(status_code=400)
 
@@ -168,8 +186,10 @@ class ProviderAPITest:
             # Then
             assert output is False
 
-        def should_call_api_with_authentication_token_if_given(self):
+        @patch('pcapi.infrastructure.repository.stock_provider.provider_api.requests')
+        def should_call_api_with_authentication_token_if_given(self, requests):
             # Given
+            requests.get = MagicMock()
             siret = '12345678912345'
             self.provider_api = ProviderAPI(api_url='http://example.com/stocks', name='ProviderAPI',
                                             authentication_token="744563534")

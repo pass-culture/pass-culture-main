@@ -18,7 +18,7 @@ class RequestWrapperTest:
         _wrapper(mocked_request_function, 'GET', 'https://example.net')
 
         # then
-        mocked_request_function.assert_called_once_with(method='GET', url='https://example.net',timeout=2, hooks={'response': mock.ANY})
+        mocked_request_function.assert_called_once_with(method='GET', url='https://example.net',timeout=10, hooks={'response': mock.ANY})
 
     def test_should_propagate_any_exception(self):
         # given

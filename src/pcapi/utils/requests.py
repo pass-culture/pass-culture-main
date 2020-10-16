@@ -7,7 +7,7 @@ from requests import Response
 
 from pcapi.utils.logger import json_logger
 
-REQUEST_TIMEOUT_IN_SECOND = 2
+REQUEST_TIMEOUT_IN_SECOND = 10
 
 
 def _log_call_to_external_service(response: Response, *args: Any, **kwargs: Any) -> Response:
