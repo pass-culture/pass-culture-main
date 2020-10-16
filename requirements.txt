@@ -32,6 +32,7 @@ PyMemoize==1.0.3
 pytest-cov==2.10.1
 pytest-flask==1.0.0
 pytest-flask-sqlalchemy==1.0.2
+python-keystoneclient==3.22.0
 pytest-mock==3.3.1
 pytest-dotenv==0.5.2
 python-dotenv==0.14.0
