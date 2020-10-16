@@ -32,7 +32,6 @@ from pcapi.validation.routes.bookings import check_booking_is_not_already_cancel
     check_booking_token_is_keepable, \
     check_booking_token_is_usable, \
     check_email_and_offer_id_for_anonymous_user, \
-    check_has_stock_id, \
     check_is_not_activation_booking, \
     check_page_format_is_number
 from pcapi.validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
@@ -76,8 +75,6 @@ def get_booking(booking_id: int):
 @expect_json_data
 @spectree_serialize(response_model=PostBookingResponseModel, on_success_status=201)
 def create_booking(body: PostBookingBodyModel) -> PostBookingResponseModel:
-    check_has_stock_id(body.stock_id)
-
     booking_information = BookingInformation(
         dehumanize(body.stock_id),
         current_user.id,

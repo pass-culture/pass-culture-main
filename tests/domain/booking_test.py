@@ -28,7 +28,7 @@ from pcapi.validation.routes.bookings import \
     check_booking_is_not_used, \
     check_booking_token_is_usable, \
     check_booking_token_is_keepable, \
-    check_is_not_activation_booking, check_has_stock_id
+    check_is_not_activation_booking
 
 
 class CheckExpenseLimitsTest:

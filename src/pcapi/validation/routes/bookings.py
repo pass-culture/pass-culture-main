@@ -10,13 +10,6 @@ from pcapi.repository import payment_queries, venue_queries
 from pcapi.utils.rest import ensure_current_user_has_rights
 
 
-def check_has_stock_id(stock_id: int) -> None:
-    if stock_id is None:
-        api_errors = ApiErrors()
-        api_errors.add_error('stockId', "Vous devez préciser un identifiant d'offre")
-        raise api_errors
-
-
 def check_booking_token_is_usable(booking: BookingSQLEntity) -> None:
     resource_gone_error = ResourceGoneError()
     if booking.isUsed:
