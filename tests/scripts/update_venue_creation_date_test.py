@@ -35,7 +35,7 @@ class UpdateVenueCreationDateTest:
     @patch('pcapi.scripts.update_venue_creation_date.logger.info')
     @patch('pcapi.scripts.update_venue_creation_date._read_venue_creation_date_from_file')
     @pytest.mark.usefixtures("db_session")
-    def test_should_not_be_stuck_because_of_unexpected_error_and_print_a_list_of_errored_venues(self, stub_read_venue_date_creation_from_file, mock_logger_info, app):
+    def test_should_not_be_stuck_because_of_unexpected_errors_and_print_a_list_of_errored_venues(self, stub_read_venue_date_creation_from_file, mock_logger_info, app):
         # Given
         offerer = create_offerer(siren=None)
         venue1 = create_venue(offerer, name='Nice venue name', idx=121, siret='12345678912354')
@@ -43,6 +43,7 @@ class UpdateVenueCreationDateTest:
         repository.save(venue1, venue2)
 
         stub_read_venue_date_creation_from_file.return_value = [
+            ('1', '2018-12-17 11:22:26.690575'),
             ('121', '2018-12-17 11:22:26.690575'),
             ('99', '2018-12-17 11:22:26.690575')
         ]
@@ -55,7 +56,7 @@ class UpdateVenueCreationDateTest:
         updated_venue2 = VenueSQLEntity.query.filter_by(id=99).one()
         assert updated_venue1.dateCreated != datetime(2018, 12, 17, 11, 22, 26, 690575)
         assert updated_venue2.dateCreated != datetime(2018, 12, 17, 11, 22, 26, 690575)
-        assert mock_logger_info.call_args_list == [call("Venues in error : 121, 99"),
+        assert mock_logger_info.call_args_list == [call("Venues in error : 1, 121, 99"),
                                                    call("0 venues have been updated")]
 
     def test_read_venue_date_creation_from_file(self):
