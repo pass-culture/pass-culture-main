@@ -39,8 +39,7 @@ class MediationsManager extends PureComponent {
               <b>
                 {'spécificité du pass Culture'}
               </b>
-              {'. Prenez le'}
-              {'temps de les choisir avec soin !'}
+              {'. Prenez le temps de les choisir avec soin !'}
             </p>
           </div>
           <ul className="mediations-list">
