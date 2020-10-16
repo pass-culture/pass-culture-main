@@ -1,10 +1,11 @@
-from flask import current_app as app, jsonify
+from flask import jsonify
 
+from pcapi.flask_app import private_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.sandboxes.scripts import getters
 
 
-@app.route('/sandboxes/<module_name>/<getter_name>', methods=['GET'])
+@private_api.route('/sandboxes/<module_name>/<getter_name>', methods=['GET'])
 def get_sandbox(module_name, getter_name):
 
     if not hasattr(getters, module_name):

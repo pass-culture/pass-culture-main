@@ -1,20 +1,29 @@
-from flask import current_app as app, jsonify, request
-from flask_login import current_user, login_required
+from flask import current_app as app, \
+    jsonify, \
+    request
+from flask_login import current_user, \
+    login_required
 
+from pcapi.flask_app import private_api
 from pcapi.connectors import redis
-from pcapi.connectors.thumb_storage import read_thumb, create_thumb
+from pcapi.connectors.thumb_storage import read_thumb, \
+    create_thumb
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.mediation_sql_entity import MediationSQLEntity
 from pcapi.models.user_offerer import RightsType
-from pcapi.repository import repository, feature_queries
+from pcapi.repository import repository, \
+    feature_queries
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import MEDIATION_INCLUDES
-from pcapi.utils.rest import ensure_current_user_has_rights, load_or_404, expect_json_data
-from pcapi.validation.routes.mediations import check_thumb_in_request, check_thumb_quality
+from pcapi.utils.rest import ensure_current_user_has_rights, \
+    load_or_404, \
+    expect_json_data
+from pcapi.validation.routes.mediations import check_thumb_in_request, \
+    check_thumb_quality
 
 
-@app.route('/mediations', methods=['POST'])
+@private_api.route('/mediations', methods=['POST'])
 @login_required
 def create_mediation():
     check_thumb_in_request(files=request.files, form=request.form)
@@ -37,14 +46,14 @@ def create_mediation():
     return jsonify(as_dict(mediation)), 201
 
 
-@app.route('/mediations/<mediation_id>', methods=['GET'])
+@private_api.route('/mediations/<mediation_id>', methods=['GET'])
 @login_required
 def get_mediation(mediation_id):
     mediation = load_or_404(MediationSQLEntity, mediation_id)
     return jsonify(as_dict(mediation))
 
 
-@app.route('/mediations/<mediation_id>', methods=['PATCH'])
+@private_api.route('/mediations/<mediation_id>', methods=['PATCH'])
 @login_required
 @expect_json_data
 def update_mediation(mediation_id):

@@ -1,7 +1,10 @@
 from flask import current_app as app
-from flask import jsonify, request
-from flask_login import current_user, login_required
+from flask import jsonify, \
+    request
+from flask_login import current_user, \
+    login_required
 
+from pcapi.flask_app import private_api
 from pcapi.connectors import redis
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.iris import link_valid_venue_to_irises
@@ -13,15 +16,22 @@ from pcapi.domain.user_emails import \
     send_pro_user_waiting_for_validation_by_admin_email, \
     send_validation_confirmation_email_to_pro, \
     send_venue_validation_confirmation_email
-from pcapi.models import ApiErrors, Offerer, UserOfferer, VenueSQLEntity
-from pcapi.models.api_errors import ForbiddenError, ResourceNotFoundError
+from pcapi.models import ApiErrors, \
+    Offerer, \
+    UserOfferer, \
+    VenueSQLEntity
+from pcapi.models.api_errors import ForbiddenError, \
+    ResourceNotFoundError
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries, repository, user_offerer_queries, \
+from pcapi.repository import feature_queries, \
+    repository, \
+    user_offerer_queries, \
     user_queries
 from pcapi.repository.payment_queries import find_message_checksum
 from pcapi.repository.user_offerer_queries import count_pro_attached_to_offerer
 from pcapi.utils.config import IS_INTEGRATION
-from pcapi.utils.mailing import MailServiceException, send_raw_email
+from pcapi.utils.mailing import MailServiceException, \
+    send_raw_email
 from pcapi.validation.routes.users import \
     check_validation_token_has_been_already_used
 from pcapi.validation.routes.validate import check_valid_token_for_user_validation, \
@@ -29,7 +39,7 @@ from pcapi.validation.routes.validate import check_valid_token_for_user_validati
     check_venue_found
 
 
-@app.route("/validate/user-offerer/<token>", methods=["GET"])
+@private_api.route("/validate/user-offerer/<token>", methods=["GET"])
 def validate_offerer_attachment(token):
     check_validation_request(token)
     user_offerer = UserOfferer.query.filter_by(validationToken=token).first()
@@ -46,7 +56,7 @@ def validate_offerer_attachment(token):
     return "Validation du rattachement de la structure effectuée", 202
 
 
-@app.route("/validate/offerer/<token>", methods=["GET"])
+@private_api.route("/validate/offerer/<token>", methods=["GET"])
 def validate_new_offerer(token):
     check_validation_request(token)
     offerer = Offerer.query.filter_by(validationToken=token).first()
@@ -71,7 +81,7 @@ def validate_new_offerer(token):
     return "Validation effectuée", 202
 
 
-@app.route("/validate/venue/", methods=["GET"])
+@private_api.route("/validate/venue/", methods=["GET"])
 def validate_venue():
     token = request.args.get('token')
     check_validation_request(token)
@@ -91,7 +101,7 @@ def validate_venue():
     return "Validation effectuée", 202
 
 
-@app.route("/validate/user/<token>", methods=["PATCH"])
+@private_api.route("/validate/user/<token>", methods=["PATCH"])
 def validate_user(token):
     user_to_validate = user_queries.find_by_validation_token(token)
     check_valid_token_for_user_validation(user_to_validate)
@@ -126,7 +136,7 @@ def validate_user(token):
     return '', 204
 
 
-@app.route('/validate/payment_message', methods=['POST'])
+@private_api.route('/validate/payment_message', methods=['POST'])
 @login_required
 def certify_message_file_authenticity():
     if not current_user.isAdmin:

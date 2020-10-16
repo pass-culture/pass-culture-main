@@ -1,7 +1,9 @@
+from pcapi.flask_app import private_api, \
+    public_api
 from pcapi.utils.config import IS_DEV
 
 
-def install_routes():
+def install_routes(app):
     import pcapi.routes.bank_informations
     import pcapi.routes.beneficiaries
     import pcapi.routes.bookings
@@ -35,3 +37,6 @@ def install_routes():
 
     if IS_DEV:
         import pcapi.routes.sandboxes
+
+    app.register_blueprint(private_api)
+    app.register_blueprint(public_api)

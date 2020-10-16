@@ -8,7 +8,8 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from flask import Flask, \
-    jsonify
+    jsonify, \
+    Blueprint
 from flask.testing import FlaskClient
 from flask_login import LoginManager, login_user
 from mailjet_rest import Client
@@ -70,7 +71,7 @@ def app():
 
     install_activity()
     install_materialized_views()
-    install_routes()
+    install_routes(app)
     install_local_providers()
     app.mailjet_client = Mock()
     app.redis_client = Mock()
@@ -122,7 +123,7 @@ def _db(app):
 
     install_activity()
     install_materialized_views()
-    install_routes()
+    install_routes(app)
     install_local_providers()
     clean_all_database()
 

@@ -8,7 +8,7 @@ les différents _HTTP status codes_ que l'ont souhaite retourner.
 
 Par exemple :
 ```python
-@app.route("/users/current", methods=["GET"])
+@private_api.route("/users/current", methods=["GET"])
 @login_required
 def get_profile():
     user = as_dict(current_user, includes=USER_INCLUDES)
@@ -22,7 +22,7 @@ web services.
 
 Par exemple :
 ```python
-@app.route('/eventOccurrences', methods=['POST'])
+@private_api.route('/eventOccurrences', methods=['POST'])
 @login_or_api_key_required
 @expect_json_data
 def create_event_occurrence():

@@ -1,20 +1,24 @@
-from flask import current_app as app
 from flask import jsonify, request
-from flask_login import current_user, login_required
+from flask_login import current_user, \
+    login_required
 
+from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import list_favorites_of_beneficiary
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
-from pcapi.models import MediationSQLEntity, OfferSQLEntity, FavoriteSQLEntity
+from pcapi.models import MediationSQLEntity, \
+    OfferSQLEntity, \
+    FavoriteSQLEntity
 from pcapi.repository import repository
 from pcapi.repository.favorite_queries import find_favorite_for_offer_and_user
 from pcapi.routes.serialization import as_dict
-from pcapi.routes.serialization.favorites_serialize import serialize_favorite, serialize_favorites
+from pcapi.routes.serialization.favorites_serialize import serialize_favorite, \
+    serialize_favorites
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import load_or_404
 from pcapi.validation.routes.offers import check_offer_id_is_present_in_request
 
 
-@app.route('/favorites', methods=['POST'])
+@private_api.route('/favorites', methods=['POST'])
 @login_required
 def add_to_favorite():
     mediation = None
@@ -37,7 +41,7 @@ def add_to_favorite():
     return jsonify(serialize_favorite(favorite)), 201
 
 
-@app.route('/favorites/<offer_id>', methods=['DELETE'])
+@private_api.route('/favorites/<offer_id>', methods=['DELETE'])
 @login_required
 def delete_favorite(offer_id):
     dehumanized_offer_id = dehumanize(offer_id)
@@ -50,7 +54,7 @@ def delete_favorite(offer_id):
     return jsonify(as_dict(favorite)), 200
 
 
-@app.route('/favorites', methods=['GET'])
+@private_api.route('/favorites', methods=['GET'])
 @login_required
 def get_favorites():
     favorites = list_favorites_of_beneficiary.execute(current_user.id)

@@ -21,7 +21,7 @@ Utiliser le décorateurs `@feature_required(FeatureToggle.{le nom de la constant
 Exemple :
 
 ```python
-@app.route('/v2/recommendations', methods=['PUT'])
+@private_api.route('/v2/recommendations', methods=['PUT'])
 @login_required
 @feature_required(FeatureToggle.RECOMMENDATIONS_WITH_DISCOVERY_VIEW)
 @expect_json_datadefla route

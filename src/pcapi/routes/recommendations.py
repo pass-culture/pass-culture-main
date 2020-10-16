@@ -1,27 +1,34 @@
 from typing import Dict
 
 from flask import Request
-from flask import current_app as app
-from flask import jsonify, redirect, request
-from flask_login import current_user, login_required
+from flask import jsonify, \
+    redirect, \
+    request
+from flask_login import current_user, \
+    login_required
 
+from pcapi.flask_app import private_api
 from pcapi.domain.build_recommendations import move_requested_recommendation_first
 from pcapi.models import Recommendation
 from pcapi.models.feature import FeatureToggle
-from pcapi.recommendations_engine import create_recommendations_for_discovery, give_requested_recommendation_to_user
+from pcapi.recommendations_engine import create_recommendations_for_discovery, \
+    give_requested_recommendation_to_user
 from pcapi.recommendations_engine.recommendations import create_recommendations_for_discovery_v3
-from pcapi.repository import feature_queries, repository
+from pcapi.repository import feature_queries, \
+    repository
 from pcapi.repository.iris_venues_queries import get_iris_containing_user_location
 from pcapi.repository.recommendation_queries import update_read_recommendations
-from pcapi.routes.serialization.recommendation_serialize import serialize_recommendation, serialize_recommendations
+from pcapi.routes.serialization.recommendation_serialize import serialize_recommendation, \
+    serialize_recommendations
 from pcapi.utils.config import BLOB_SIZE
-from pcapi.utils.human_ids import dehumanize, dehumanize_ids_list
+from pcapi.utils.human_ids import dehumanize, \
+    dehumanize_ids_list
 from pcapi.utils.rest import expect_json_data
 
 DEFAULT_PAGE = 1
 
 
-@app.route('/recommendations/offers/<offer_id>', methods=['GET'])
+@private_api.route('/recommendations/offers/<offer_id>', methods=['GET'])
 @login_required
 def get_recommendation(offer_id):
     recommendation = give_requested_recommendation_to_user(
@@ -33,7 +40,7 @@ def get_recommendation(offer_id):
     return jsonify(serialize_recommendation(recommendation, user_id=current_user.id)), 200
 
 
-@app.route('/recommendations/<recommendation_id>', methods=['PATCH'])
+@private_api.route('/recommendations/<recommendation_id>', methods=['PATCH'])
 @login_required
 @expect_json_data
 def patch_recommendation(recommendation_id):
@@ -44,7 +51,7 @@ def patch_recommendation(recommendation_id):
     return jsonify(serialize_recommendation(recommendation, user_id=current_user.id)), 200
 
 
-@app.route('/recommendations/read', methods=['PUT'])
+@private_api.route('/recommendations/read', methods=['PUT'])
 @login_required
 @expect_json_data
 def put_read_recommendations():
@@ -58,17 +65,17 @@ def put_read_recommendations():
     return jsonify(serialize_recommendations(read_recommendations, user_id=current_user.id)), 200
 
 
-@app.route('/recommendations/v2', methods=['PUT'])
+@private_api.route('/recommendations/v2', methods=['PUT'])
 def put_recommendations_old_v2():
     return redirect("/recommendations", code=308)
 
 
-@app.route('/recommendations/v3', methods=['PUT'])
+@private_api.route('/recommendations/v3', methods=['PUT'])
 def put_recommendations_old_v3():
     return redirect("/recommendations", code=308)
 
 
-@app.route('/recommendations', methods=['PUT'])
+@private_api.route('/recommendations', methods=['PUT'])
 @login_required
 @expect_json_data
 def put_recommendations():

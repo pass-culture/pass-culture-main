@@ -1,10 +1,11 @@
-from flask import current_app as app, jsonify
+from flask import jsonify
 from flask_login import login_required
 
+from pcapi.flask_app import private_api
 from pcapi.domain.show_types import show_types
 
 
-@app.route('/showTypes', methods=['GET'])
+@private_api.route('/showTypes', methods=['GET'])
 @login_required
 def list_show_types():
     return jsonify(show_types), 200

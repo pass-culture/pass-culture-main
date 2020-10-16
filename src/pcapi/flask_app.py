@@ -3,27 +3,32 @@ import os
 import typing
 from datetime import datetime
 
+import flask.wrappers
 import redis
 import sentry_sdk
-from flask import Flask, g, request
-import flask.wrappers
+from flask import Flask, \
+    g, \
+    request, \
+    Blueprint
 from flask_admin import Admin
 from flask_cors import CORS
 from flask_login import LoginManager
 from mailjet_rest import Client
 from sentry_sdk.integrations.flask import FlaskIntegration
+from spectree import SpecTree
 from sqlalchemy import orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
-from spectree import SpecTree
 
 from pcapi.models.db import db
 from pcapi.repository.feature_queries import feature_request_profiling_enabled
-from pcapi.utils.config import IS_DEV, ENV
+from pcapi.serialization.utils import before_handler
+from pcapi.utils.config import IS_DEV, \
+    ENV
 from pcapi.utils.config import REDIS_URL
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
-from pcapi.utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
-from pcapi.serialization.utils import before_handler
+from pcapi.utils.mailing import MAILJET_API_KEY, \
+    MAILJET_API_SECRET
 
 if IS_DEV is False:
     sentry_sdk.init(
@@ -99,7 +104,7 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
 
 @app.teardown_request
 def remove_db_session(
-    exc: typing.Optional[Exception] = None, # pylint: disable=unused-argument
+        exc: typing.Optional[Exception] = None,  # pylint: disable=unused-argument
 ) -> None:
     try:
         db.session.remove()
@@ -111,10 +116,17 @@ admin.init_app(app)
 db.init_app(app)
 orm.configure_mappers()
 login_manager.init_app(app)
-cors = CORS(app,
-            resources={r"/*": {"origins": "*"}},
-            supports_credentials=True
-            )
+
+CORS_ALLOWED_ORIGIN = "http://localhost:*"
+
+public_api = Blueprint('Public API', __name__)
+private_api = Blueprint('Private API', __name__)
+CORS(private_api,
+     resources={
+         r"/*": {"origins": CORS_ALLOWED_ORIGIN}
+     },
+     supports_credentials=True
+     )
 
 app.url_map.strict_slashes = False
 

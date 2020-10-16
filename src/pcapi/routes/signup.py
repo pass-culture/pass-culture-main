@@ -1,10 +1,17 @@
-from flask import current_app as app, jsonify, request, redirect
+from flask import current_app as app, \
+    jsonify, \
+    request, \
+    redirect
 
+from pcapi.flask_app import private_api
 from pcapi.connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from pcapi.domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.user_emails import send_user_validation_email
-from pcapi.models import ApiErrors, Deposit, Offerer, UserSQLEntity
+from pcapi.models import ApiErrors, \
+    Deposit, \
+    Offerer, \
+    UserSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import RightsType
 from pcapi.models.venue_sql_entity import create_digital_venue
@@ -12,19 +19,23 @@ from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.config import IS_INTEGRATION
 from pcapi.utils.feature import feature_required
-from pcapi.utils.includes import BENEFICIARY_INCLUDES, USER_INCLUDES
+from pcapi.utils.includes import BENEFICIARY_INCLUDES, \
+    USER_INCLUDES
 from pcapi.utils.logger import logger
 from pcapi.utils.mailing import \
-    subscribe_newsletter, MailServiceException, send_raw_email
-from pcapi.validation.routes.users import check_valid_signup_webapp, check_valid_signup_pro
+    subscribe_newsletter, \
+    MailServiceException, \
+    send_raw_email
+from pcapi.validation.routes.users import check_valid_signup_webapp, \
+    check_valid_signup_pro
 
 
-@app.route("/users/signup", methods=["POST"])
+@private_api.route("/users/signup", methods=["POST"])
 def signup_old():
     return redirect("/users/signup/webapp", code=308)
 
 
-@app.route("/users/signup/webapp", methods=["POST"])
+@private_api.route("/users/signup/webapp", methods=["POST"])
 @feature_required(FeatureToggle.WEBAPP_SIGNUP)
 def signup_webapp():
     objects_to_save = []
@@ -55,7 +66,7 @@ def signup_webapp():
     return jsonify(as_dict(new_user, includes=BENEFICIARY_INCLUDES)), 201
 
 
-@app.route("/users/signup/pro", methods=["POST"])
+@private_api.route("/users/signup/pro", methods=["POST"])
 def signup_pro():
     objects_to_save = []
     app_origin_url = request.headers.get('origin')

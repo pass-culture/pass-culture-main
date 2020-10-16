@@ -1,6 +1,7 @@
-from flask import current_app as app, jsonify
+from flask import jsonify
 from flask_login import login_required
 
+from pcapi.flask_app import private_api
 from pcapi.local_providers import AllocineStocks
 from pcapi.models import VenueSQLEntity
 from pcapi.repository.allocine_pivot_queries import has_allocine_pivot_for_venue
@@ -10,7 +11,7 @@ from pcapi.routes.serialization import as_dict
 from pcapi.utils.rest import load_or_404
 
 
-@app.route('/providers', methods=['GET'])
+@private_api.route('/providers', methods=['GET'])
 @login_required
 def list_providers():
     providers = get_enabled_providers_for_pro()
@@ -23,7 +24,7 @@ def list_providers():
     return jsonify(result)
 
 
-@app.route('/providers/<venue_id>', methods=['GET'])
+@private_api.route('/providers/<venue_id>', methods=['GET'])
 @login_required
 def get_providers_by_venue(venue_id: str):
     venue = load_or_404(VenueSQLEntity, venue_id)

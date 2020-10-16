@@ -1,14 +1,21 @@
-from flask import current_app as app
 from flask import jsonify, request
-from flask_login import current_user, login_required
+from flask_login import current_user, \
+    login_required
 
+from pcapi.flask_app import private_api
 from pcapi.domain.admin_emails import send_offer_creation_notification_to_administration
-from pcapi.domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
+from pcapi.domain.create_offer import fill_offer_with_new_data, \
+    initialize_offer_from_product_id
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.infrastructure.container import list_offers_for_pro_user
-from pcapi.models import OfferSQLEntity, RightsType, VenueSQLEntity
+from pcapi.models import OfferSQLEntity, \
+    RightsType, \
+    VenueSQLEntity
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.repository import offer_queries, repository, user_offerer_queries, venue_queries
+from pcapi.repository import offer_queries, \
+    repository, \
+    user_offerer_queries, \
+    venue_queries
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from pcapi.routes.serialization.offers_serialize import serialize_offer
@@ -19,12 +26,20 @@ from pcapi.utils.config import PRO_URL
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFER_INCLUDES
 from pcapi.utils.mailing import send_raw_email
-from pcapi.utils.rest import ensure_current_user_has_rights, expect_json_data, load_or_404, load_or_raise_error, login_or_api_key_required
-from pcapi.validation.routes.offers import check_has_venue_id, check_offer_name_length_is_valid, check_offer_type_is_valid, check_user_has_rights_on_offerer, check_valid_edition, \
+from pcapi.utils.rest import ensure_current_user_has_rights, \
+    expect_json_data, \
+    load_or_404, \
+    load_or_raise_error, \
+    login_or_api_key_required
+from pcapi.validation.routes.offers import check_has_venue_id, \
+    check_offer_name_length_is_valid, \
+    check_offer_type_is_valid, \
+    check_user_has_rights_on_offerer, \
+    check_valid_edition, \
     check_venue_exists_when_requested
 
 
-@app.route('/offers', methods=['GET'])
+@private_api.route('/offers', methods=['GET'])
 @login_required
 def list_offers() -> (str, int):
     venue_identifier = Identifier.from_scrambled_id(request.args.get('venueId'))
@@ -52,14 +67,14 @@ def list_offers() -> (str, int):
     return serialize_offers_recap_paginated(paginated_offers), 200
 
 
-@app.route('/offers/<offer_id>', methods=['GET'])
+@private_api.route('/offers/<offer_id>', methods=['GET'])
 @login_required
 def get_offer(offer_id: int) -> (str, int):
     offer = load_or_404(OfferSQLEntity, offer_id)
     return jsonify(serialize_offer(offer, current_user)), 200
 
 
-@app.route('/offers', methods=['POST'])
+@private_api.route('/offers', methods=['POST'])
 @login_or_api_key_required
 @expect_json_data
 def post_offer() -> (str, int):
@@ -97,7 +112,7 @@ def patch_offers_active_status() -> (str, int):
 
     return '', 204
 
-@app.route('/offers/<offer_id>', methods=['PATCH'])
+@private_api.route('/offers/<offer_id>', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data
 def patch_offer(offer_id: str) -> (str, int):

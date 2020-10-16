@@ -1,26 +1,36 @@
-from flask import current_app as app, jsonify, request
-from flask_login import current_user, login_required, logout_user, login_user
+from flask import jsonify, \
+    request
+from flask_login import current_user, \
+    login_required, \
+    logout_user, \
+    login_user
 
-from pcapi.repository.user_queries import find_user_by_reset_password_token, find_user_by_email
-from pcapi.use_cases.update_user_informations import update_user_informations, AlterableUserInformations
+from pcapi.flask_app import private_api
+from pcapi.repository.user_queries import find_user_by_reset_password_token, \
+    find_user_by_email
 from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization.users import PatchUserBodyModel, \
+    PatchUserResponseModel
+from pcapi.serialization.decorator import spectree_serialize
+from pcapi.use_cases.update_user_informations import update_user_informations, \
+    AlterableUserInformations
 from pcapi.utils.credentials import get_user_with_credentials
 from pcapi.utils.includes import USER_INCLUDES
-from pcapi.utils.login_manager import stamp_session, discard_session
+from pcapi.utils.login_manager import stamp_session, \
+    discard_session
 from pcapi.utils.rest import expect_json_data, \
     login_or_api_key_required
 from pcapi.validation.routes.users import check_valid_signin
-from pcapi.serialization.decorator import spectree_serialize
-from pcapi.routes.serialization.users import PatchUserBodyModel, PatchUserResponseModel
 
-@app.route("/users/current", methods=["GET"])
+
+@private_api.route("/users/current", methods=["GET"])
 @login_required
 def get_profile():
     user = find_user_by_email(current_user.email)
     return jsonify(as_dict(user, includes=USER_INCLUDES)), 200
 
 
-@app.route("/users/token/<token>", methods=["GET"])
+@private_api.route("/users/token/<token>", methods=["GET"])
 def check_activation_token_exists(token):
     user = find_user_by_reset_password_token(token)
 
@@ -30,7 +40,7 @@ def check_activation_token_exists(token):
     return jsonify(), 200
 
 
-@app.route("/users/current", methods=["PATCH"])
+@private_api.route("/users/current", methods=["PATCH"])
 @login_or_api_key_required
 @expect_json_data
 @spectree_serialize(response_model=PatchUserResponseModel) # type: ignore
@@ -42,7 +52,7 @@ def patch_profile(body: PatchUserBodyModel) -> PatchUserResponseModel:
     return response_user_model
 
 
-@app.route("/users/signin", methods=["POST"])
+@private_api.route("/users/signin", methods=["POST"])
 def signin():
     json = request.get_json()
     identifier = json.get("identifier")
@@ -54,7 +64,7 @@ def signin():
     return jsonify(as_dict(user, includes=USER_INCLUDES)), 200
 
 
-@app.route("/users/signout", methods=["GET"])
+@private_api.route("/users/signout", methods=["GET"])
 @login_required
 def signout():
     discard_session()

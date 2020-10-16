@@ -1,24 +1,32 @@
-from flask import current_app as app, jsonify, request
+from flask import current_app as app, \
+    jsonify, \
+    request
 from flask_login import current_user
 
 from pcapi.connectors import redis
 from pcapi.domain.allocine import get_editable_fields_for_allocine_stocks
-from pcapi.domain.stocks import delete_stock_and_cancel_bookings, have_beginning_date_been_modified
+from pcapi.domain.stocks import delete_stock_and_cancel_bookings, \
+    have_beginning_date_been_modified
 from pcapi.domain.user_emails import send_batch_cancellation_emails_to_users, \
-    send_offerer_bookings_recap_email_after_offerer_cancellation, send_batch_stock_postponement_emails_to_users
+    send_offerer_bookings_recap_email_after_offerer_cancellation, \
+    send_batch_stock_postponement_emails_to_users
+from pcapi.flask_app import private_api
 from pcapi.models import Product
+from pcapi.models import VenueSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.mediation_sql_entity import MediationSQLEntity
 from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.user_offerer import RightsType
-from pcapi.models import VenueSQLEntity
-from pcapi.repository import offerer_queries, repository, feature_queries
+from pcapi.repository import offerer_queries, \
+    repository, \
+    feature_queries
 from pcapi.repository.booking_queries import find_not_cancelled_bookings_by_stock
 from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.repository.stock_queries import find_stocks_with_possible_filters
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.mailing import MailServiceException, send_raw_email
+from pcapi.utils.mailing import MailServiceException, \
+    send_raw_email
 from pcapi.utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     handle_rest_get_list, \
@@ -28,8 +36,11 @@ from pcapi.validation.routes.offers import check_offer_is_editable
 from pcapi.validation.routes.stocks import check_request_has_offer_id, \
     check_dates_are_allowed_on_new_stock, \
     check_dates_are_allowed_on_existing_stock, \
-    check_stocks_are_editable_for_offer, check_stock_is_updatable, get_only_fields_with_value_to_be_updated, \
-    check_only_editable_fields_will_be_updated, check_stock_is_not_imported
+    check_stock_is_not_imported, \
+    check_stocks_are_editable_for_offer, \
+    check_stock_is_updatable, \
+    get_only_fields_with_value_to_be_updated, \
+    check_only_editable_fields_will_be_updated
 
 search_models = [
     # Order is important
@@ -38,7 +49,7 @@ search_models = [
 ]
 
 
-@app.route('/stocks', methods=['GET'])
+@private_api.route('/stocks', methods=['GET'])
 @login_or_api_key_required
 def list_stocks():
     filters = request.args.copy()
@@ -47,10 +58,10 @@ def list_stocks():
                                 paginate=50)
 
 
-@app.route('/stocks/<stock_id>',
+@private_api.route('/stocks/<stock_id>',
            methods=['GET'],
            defaults={'mediation_id': None})
-@app.route('/stocks/<stock_id>/<mediation_id>', methods=['GET'])
+@private_api.route('/stocks/<stock_id>/<mediation_id>', methods=['GET'])
 @login_or_api_key_required
 def get_stock(stock_id, mediation_id):
     filters = request.args.copy()
@@ -69,7 +80,7 @@ def get_stock(stock_id, mediation_id):
         return jsonify(as_dict(stock))
 
 
-@app.route('/stocks', methods=['POST'])
+@private_api.route('/stocks', methods=['POST'])
 @login_or_api_key_required
 @expect_json_data
 def create_stock():
@@ -95,7 +106,7 @@ def create_stock():
     return jsonify(as_dict(new_stock)), 201
 
 
-@app.route('/stocks/<stock_id>', methods=['PATCH'])
+@private_api.route('/stocks/<stock_id>', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data
 def edit_stock(stock_id):
@@ -137,7 +148,7 @@ def edit_stock(stock_id):
     return jsonify(as_dict(stock)), 200
 
 
-@app.route('/stocks/<id>', methods=['DELETE'])
+@private_api.route('/stocks/<id>', methods=['DELETE'])
 @login_or_api_key_required
 def delete_stock(id):
     stock = load_or_404(StockSQLEntity, id)

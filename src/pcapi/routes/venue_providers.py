@@ -1,30 +1,39 @@
 import subprocess
 
-from flask import current_app as app
-from flask import jsonify, request
+from flask import jsonify, \
+    request
 from flask_login import login_required
 
 import pcapi.local_providers
+from pcapi.flask_app import private_api
 from pcapi.domain.stock_provider.stock_provider_repository import StockProviderRepository
-from pcapi.infrastructure.container import api_fnac_stocks, api_libraires_stocks, api_praxiel_stocks, api_titelive_stocks
-from pcapi.local_providers import FnacStocks, LibrairesStocks, PraxielStocks, AllocineStocks
+from pcapi.infrastructure.container import api_fnac_stocks, \
+    api_libraires_stocks, \
+    api_praxiel_stocks, \
+    api_titelive_stocks
+from pcapi.local_providers import FnacStocks, \
+    LibrairesStocks, \
+    PraxielStocks, \
+    AllocineStocks
 from pcapi.local_providers.titelive_stocks.titelive_stocks import TiteLiveStocks
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.venue_provider import VenueProvider
 from pcapi.repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
-from pcapi.repository.venue_queries import find_by_id
 from pcapi.repository.provider_queries import get_provider_enabled_for_pro_by_id
+from pcapi.repository.venue_queries import find_by_id
 from pcapi.routes.serialization import as_dict
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 from pcapi.use_cases.connect_venue_to_provider import connect_venue_to_provider
 from pcapi.utils.config import API_ROOT_PATH
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import VENUE_PROVIDER_INCLUDES
-from pcapi.utils.rest import expect_json_data, load_or_404
-from pcapi.validation.routes.venue_providers import check_existing_provider, check_new_venue_provider_information
+from pcapi.utils.rest import expect_json_data, \
+    load_or_404
+from pcapi.validation.routes.venue_providers import check_existing_provider, \
+    check_new_venue_provider_information
 
 
-@app.route('/venueProviders', methods=['GET'])
+@private_api.route('/venueProviders', methods=['GET'])
 @login_required
 def list_venue_providers():
     venue_id = request.args.get('venueId')
@@ -41,14 +50,14 @@ def list_venue_providers():
     ])
 
 
-@app.route('/venueProviders/<id>', methods=['GET'])
+@private_api.route('/venueProviders/<id>', methods=['GET'])
 @login_required
 def get_venue_provider(id):
     venue_provider = load_or_404(VenueProvider, id)
     return jsonify(as_dict(venue_provider, includes=VENUE_PROVIDER_INCLUDES))
 
 
-@app.route('/venueProviders', methods=['POST'])
+@private_api.route('/venueProviders', methods=['POST'])
 @login_required
 @expect_json_data
 def create_venue_provider():

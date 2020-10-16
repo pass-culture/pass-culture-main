@@ -84,22 +84,6 @@ class Get:
             assert response.json['hasPhysicalVenues'] is True
             assert response.json['hasOffers'] is True
 
-    class Returns400:
-        @pytest.mark.usefixtures("db_session")
-        def when_header_not_in_whitelist(self, app):
-            # Given
-            user = create_user(can_book_free_offers=True, email='e@mail.com', is_admin=False)
-            repository.save(user)
-
-            # When
-            response = TestClient(app.test_client()) \
-                .with_auth(email='e@mail.com') \
-                .get('/users/current', headers={'origin': 'random.header.fr'})
-
-            # Then
-            assert response.status_code == 400
-            assert response.json['global'] == ['Header non autorisé']
-
     class Returns401:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_not_logged_in(self, app):

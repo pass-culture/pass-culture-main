@@ -8,13 +8,18 @@ from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from pcapi.admin.install import install_admin_views
 from pcapi.documentation import install_documentation
-from pcapi.flask_app import app, db, admin
-from pcapi.local_providers.install import install_local_providers
+from pcapi.flask_app import app, \
+    db, \
+    admin
 from pcapi.load_environment_variables import load_environment_variables
-from pcapi.models.install import install_activity, install_features, install_materialized_views
+from pcapi.local_providers.install import install_local_providers
+from pcapi.models.install import install_activity, \
+    install_features, \
+    install_materialized_views
 from pcapi.repository.feature_queries import feature_request_profiling_enabled
 from pcapi.routes import install_routes
-from pcapi.utils.config import IS_DEV, ENV
+from pcapi.utils.config import IS_DEV, \
+    ENV
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.logger import configure_json_logger, \
     disable_werkzeug_request_logs
@@ -39,7 +44,7 @@ if feature_request_profiling_enabled():
 
 
 def install_login_manager() -> None:
-    import pcapi.utils.login_manager
+    pass
 
 
 with app.app_context():
@@ -52,7 +57,7 @@ with app.app_context():
         install_features()
 
     install_login_manager()
-    install_routes()
+    install_routes(app)
     install_documentation()
     install_admin_views(admin, db.session)
 

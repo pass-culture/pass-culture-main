@@ -3,19 +3,19 @@ import re
 from pcapi.utils.config import API_URL, ENV
 
 
-def check_origin_header_validity(header, endpoint, path):
-    endpoint_exceptions = _get_endpoint_exceptions()
-
-    if endpoint in endpoint_exceptions \
-            or 'back-office' in path:
-        return True
-
-    if not header:
-        return True
-
-    white_list = _get_origin_header_whitelist()
-    combined_white_list = "(" + ")|(".join(white_list) + ")"
-    return re.match(combined_white_list, header) is not None
+# def check_origin_header_validity(header, endpoint, path):
+#     endpoint_exceptions = _get_endpoint_exceptions()
+#
+#     if endpoint in endpoint_exceptions \
+#             or 'back-office' in path:
+#         return True
+#
+#     if not header:
+#         return True
+#
+#     white_list = _get_origin_header_whitelist()
+#     combined_white_list = "(" + ")|(".join(white_list) + ")"
+#     return re.match(combined_white_list, header) is not None
 
 
 def _get_origin_header_whitelist():

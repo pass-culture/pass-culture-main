@@ -1,6 +1,8 @@
-from flask import current_app as app, request
-from flask_login import current_user, login_required
+from flask import request
+from flask_login import current_user, \
+    login_required
 
+from pcapi.flask_app import private_api
 from pcapi.models.feature import FeatureToggle
 from pcapi.use_cases.save_offer_seen_by_beneficiary import save_seen_offer
 from pcapi.utils.feature import feature_required
@@ -9,7 +11,7 @@ from pcapi.utils.rest import expect_json_data
 from pcapi.validation.routes.seen_offers import check_payload_is_valid
 
 
-@app.route('/seen_offers', methods=['PUT'])
+@private_api.route('/seen_offers', methods=['PUT'])
 @feature_required(FeatureToggle.SAVE_SEEN_OFFERS)
 @login_required
 @expect_json_data

@@ -1,13 +1,21 @@
 from typing import List
 
-from flask import current_app as app, jsonify, request
-from flask_login import current_user, login_required
+from flask import current_app as app, \
+    jsonify, \
+    request
+from flask_login import current_user, \
+    login_required
 
+from pcapi.flask_app import private_api
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro, \
     send_pro_user_waiting_for_validation_by_admin_email
 from pcapi.infrastructure.container import list_offerers_for_pro_user
-from pcapi.models import Offerer, RightsType, UserSQLEntity, UserOfferer, ApiErrors
+from pcapi.models import Offerer, \
+    RightsType, \
+    UserSQLEntity, \
+    UserOfferer, \
+    ApiErrors
 from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_by_siren
@@ -15,7 +23,8 @@ from pcapi.routes.serialization import as_dict
 from pcapi.use_cases.list_offerers_for_pro_user import OfferersRequestParameters
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFERER_INCLUDES
-from pcapi.utils.mailing import MailServiceException, send_raw_email
+from pcapi.utils.mailing import MailServiceException, \
+    send_raw_email
 from pcapi.utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     load_or_404, \
@@ -33,7 +42,7 @@ def get_dict_offerers(offerers: List[Offerer]) -> list:
     return [as_dict(offerer, includes=OFFERER_INCLUDES) for offerer in offerers]
 
 
-@app.route('/offerers', methods=['GET'])
+@private_api.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
     keywords = request.args.get('keywords')
@@ -70,7 +79,7 @@ def list_offerers():
     return response, 200
 
 
-@app.route('/offerers/<id>', methods=['GET'])
+@private_api.route('/offerers/<id>', methods=['GET'])
 @login_required
 def get_offerer(id):
     ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
@@ -79,7 +88,7 @@ def get_offerer(id):
     return jsonify(get_dict_offerer(offerer)), 200
 
 
-@app.route('/offerers', methods=['POST'])
+@private_api.route('/offerers', methods=['POST'])
 @login_or_api_key_required
 @expect_json_data
 def create_offerer():
@@ -112,7 +121,7 @@ def create_offerer():
     return jsonify(get_dict_offerer(offerer)), 201
 
 
-@app.route('/offerers/<offererId>', methods=['PATCH'])
+@private_api.route('/offerers/<offererId>', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data
 def patch_offerer(offererId):

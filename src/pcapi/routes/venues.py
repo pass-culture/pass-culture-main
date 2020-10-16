@@ -1,9 +1,12 @@
 import copy
 
 from flask import current_app as app
-from flask import jsonify, request
-from flask_login import current_user, login_required
+from flask import jsonify, \
+    request
+from flask_login import current_user, \
+    login_required
 
+from pcapi.flask_app import private_api
 from pcapi.connectors import redis
 from pcapi.domain.iris import link_valid_venue_to_irises
 from pcapi.domain.offers import update_is_active_status
@@ -12,19 +15,23 @@ from pcapi.infrastructure.container import get_all_venues_by_pro_user
 from pcapi.models import VenueSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import RightsType
-from pcapi.repository import feature_queries, repository
+from pcapi.repository import feature_queries, \
+    repository
 from pcapi.repository.iris_venues_queries import delete_venue_from_iris_venues
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.venues_serialize import serialize_venues_with_offerer_name
 from pcapi.use_cases.create_venue import create_venue
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.includes import OFFER_INCLUDES, VENUE_INCLUDES
-from pcapi.utils.rest import ensure_current_user_has_rights, expect_json_data, \
+from pcapi.utils.includes import OFFER_INCLUDES, \
+    VENUE_INCLUDES
+from pcapi.utils.rest import ensure_current_user_has_rights, \
+    expect_json_data, \
     load_or_404
-from pcapi.validation.routes.venues import check_valid_edition, validate_coordinates
+from pcapi.validation.routes.venues import check_valid_edition, \
+    validate_coordinates
 
 
-@app.route('/venues/<venue_id>', methods=['GET'])
+@private_api.route('/venues/<venue_id>', methods=['GET'])
 @login_required
 def get_venue(venue_id):
     venue = load_or_404(VenueSQLEntity, venue_id)
@@ -32,14 +39,14 @@ def get_venue(venue_id):
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 
 
-@app.route('/venues', methods=['GET'])
+@private_api.route('/venues', methods=['GET'])
 @login_required
 def get_venues():
     venues = get_all_venues_by_pro_user.execute(pro_identifier=current_user.id, user_is_admin=current_user.isAdmin)
     return jsonify(serialize_venues_with_offerer_name(venues)), 200
 
 
-@app.route('/venues', methods=['POST'])
+@private_api.route('/venues', methods=['POST'])
 @login_required
 @expect_json_data
 def post_create_venue():
@@ -50,7 +57,7 @@ def post_create_venue():
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 201
 
 
-@app.route('/venues/<venue_id>', methods=['PATCH'])
+@private_api.route('/venues/<venue_id>', methods=['PATCH'])
 @login_required
 @expect_json_data
 def edit_venue(venue_id):
@@ -74,7 +81,7 @@ def edit_venue(venue_id):
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 
 
-@app.route('/venues/<venue_id>/offers/activate', methods=['PUT'])
+@private_api.route('/venues/<venue_id>/offers/activate', methods=['PUT'])
 @login_required
 def activate_venue_offers(venue_id):
     venue = load_or_404(VenueSQLEntity, venue_id)
@@ -87,7 +94,7 @@ def activate_venue_offers(venue_id):
     return jsonify([as_dict(offer, includes=OFFER_INCLUDES) for offer in activated_offers]), 200
 
 
-@app.route('/venues/<venue_id>/offers/deactivate', methods=['PUT'])
+@private_api.route('/venues/<venue_id>/offers/deactivate', methods=['PUT'])
 @login_required
 def deactivate_venue_offers(venue_id):
     venue = load_or_404(VenueSQLEntity, venue_id)

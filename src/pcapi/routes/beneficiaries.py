@@ -1,27 +1,35 @@
-from flask import jsonify, request, current_app as app
-from flask_login import current_user, login_required, login_user
+from flask import jsonify, \
+    request
+from flask_login import current_user, \
+    login_required, \
+    login_user
 
+from pcapi.flask_app import private_api
 from pcapi.domain.beneficiary.beneficiary_licence import is_licence_token_valid
 from pcapi.routes.serialization import as_dict
-from pcapi.use_cases.update_user_informations import update_user_informations, AlterableUserInformations
+from pcapi.use_cases.update_user_informations import update_user_informations, \
+    AlterableUserInformations
 from pcapi.utils.credentials import get_user_with_credentials
 from pcapi.utils.includes import BENEFICIARY_INCLUDES
 from pcapi.utils.login_manager import stamp_session
-from pcapi.utils.rest import expect_json_data, login_or_api_key_required
+from pcapi.utils.rest import expect_json_data, \
+    login_or_api_key_required
 from pcapi.validation.routes.beneficiaries import check_application_update_payload, \
-    check_verify_licence_token_payload, parse_application_id
-from pcapi.validation.routes.users import check_allowed_changes_for_user, check_valid_signin
+    check_verify_licence_token_payload, \
+    parse_application_id
+from pcapi.validation.routes.users import check_allowed_changes_for_user, \
+    check_valid_signin
 from pcapi.workers.beneficiary_job import beneficiary_job
 
 
-@app.route("/beneficiaries/current", methods=["GET"])
+@private_api.route("/beneficiaries/current", methods=["GET"])
 @login_required
 def get_beneficiary_profile():
     user = current_user._get_current_object()
     return jsonify(as_dict(user, includes=BENEFICIARY_INCLUDES)), 200
 
 
-@app.route('/beneficiaries/current', methods=['PATCH'])
+@private_api.route('/beneficiaries/current', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data
 def patch_beneficiary():
@@ -47,7 +55,7 @@ def patch_beneficiary():
     return jsonify(formattedUser), 200
 
 
-@app.route("/beneficiaries/signin", methods=["POST"])
+@private_api.route("/beneficiaries/signin", methods=["POST"])
 def signin_beneficiary():
     json = request.get_json()
     identifier = json.get("identifier")
@@ -59,7 +67,7 @@ def signin_beneficiary():
     return jsonify(), 200
 
 
-@app.route('/beneficiaries/licence_verify', methods=['POST'])
+@private_api.route('/beneficiaries/licence_verify', methods=['POST'])
 def verify_id_check_licence_token():
     check_verify_licence_token_payload(request)
 
@@ -72,7 +80,7 @@ def verify_id_check_licence_token():
     return '', 200
 
 
-@app.route('/beneficiaries/application_update', methods=['POST'])
+@private_api.route('/beneficiaries/application_update', methods=['POST'])
 def id_check_application_update():
     check_application_update_payload(request)
 
