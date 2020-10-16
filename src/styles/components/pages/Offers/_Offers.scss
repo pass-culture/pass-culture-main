@@ -76,7 +76,26 @@
     th {
       @include caption();
 
+      color: $black;
       padding: 0 rem(8px);
+    }
+
+    th.th-with-filter {
+      align-items: flex-start;
+      display: flex;
+      position: relative;
+
+      &>button {
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+
+      svg {
+        fill: $black;
+        margin-left: rem(12px);
+        margin-top: rem(3px);
+      }
     }
 
     tbody > tr {

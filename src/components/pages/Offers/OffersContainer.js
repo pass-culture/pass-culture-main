@@ -25,7 +25,7 @@ export const mapStateToProps = state => {
 
 const fetchOffererById = offererId => fetchFromApiWithCredentials(`/offerers/${offererId}`)
 
-const buildQueryParams = ({ nameSearchValue, selectedVenueId, offererId, page }) => {
+const buildQueryParams = ({ nameSearchValue, selectedVenueId, offererId, page, statusFilters }) => {
   const queryParams = []
 
   if (nameSearchValue !== ALL_OFFERS) {
@@ -42,6 +42,14 @@ const buildQueryParams = ({ nameSearchValue, selectedVenueId, offererId, page })
 
   if (page) {
     queryParams.push(`page=${page}`)
+  }
+
+  if (!statusFilters.active) {
+    queryParams.push(`active=false`)
+  }
+
+  if (!statusFilters.inactive) {
+    queryParams.push(`inactive=false`)
   }
 
   return queryParams.join('&')

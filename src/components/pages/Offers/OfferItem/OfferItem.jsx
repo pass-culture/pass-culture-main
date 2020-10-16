@@ -184,7 +184,12 @@ OfferItem.propTypes = {
   stocks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   trackActivateOffer: PropTypes.func.isRequired,
   trackDeactivateOffer: PropTypes.func.isRequired,
-  venue: PropTypes.shape().isRequired,
+  venue: PropTypes.shape({
+    isVirtual: PropTypes.bool.isRequired,
+    name: PropTypes.string,
+    offererName: PropTypes.string,
+    publicName: PropTypes.string,
+  }).isRequired,
 }
 
 export default OfferItem

@@ -8,12 +8,14 @@ import { MemoryRouter } from 'react-router'
 import { configureTestStore } from 'store/testUtils'
 import { fetchAllVenuesByProUser } from 'services/venuesService'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
+
 import {
   ALL_OFFERERS,
   ALL_OFFERS,
   ALL_VENUES,
   ALL_VENUES_OPTION,
   DEFAULT_PAGE,
+  EXCLUDING_STATUS_VALUE,
 } from '../_constants'
 import Offers from '../Offers'
 
@@ -40,6 +42,13 @@ const renderOffers = (props, store) => {
 jest.mock('services/venuesService', () => ({
   ...jest.requireActual('services/venuesService'),
   fetchAllVenuesByProUser: jest.fn(),
+}))
+
+jest.mock('store/selectors/data/venuesSelectors', () => ({
+  selectVenueById: jest.fn().mockReturnValue({
+    isVirtual: true,
+    offererName: 'Offerer name',
+  }),
 }))
 
 describe('src | components | pages | Offers | Offers', () => {
@@ -115,6 +124,10 @@ describe('src | components | pages | Offers | Offers', () => {
         page: DEFAULT_PAGE,
         selectedVenueId: ALL_VENUES,
         offererId: ALL_OFFERERS,
+        statusFilters: {
+          active: true,
+          inactive: true,
+        },
       })
     })
 
@@ -259,6 +272,60 @@ describe('src | components | pages | Offers | Offers', () => {
           expect(venueSelect).toBeInTheDocument()
         })
       })
+
+      describe('status filters', () => {
+        it('should not render status filters', async () => {
+          // Given
+          props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
+
+          // When
+          await renderOffers(props, store)
+
+          // Then
+          expect(screen.queryByText('Statut')).toBeInTheDocument()
+          expect(screen.queryByText('Afficher les statuts')).toBeNull()
+          expect(screen.queryByText('Active', { selector: 'label' })).toBeNull()
+          expect(screen.queryByText('Inactive', { selector: 'label' })).toBeNull()
+          expect(screen.queryByText('Appliquer', { selector: 'button' })).toBeNull()
+        })
+
+        it('should display status filters checked by default when clicking on "Statut" filter icon', async () => {
+          // Given
+          props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
+          await renderOffers(props, store)
+
+          // When
+          fireEvent.click(screen.queryByTitle('Filtrer les offres par statut'))
+
+          // Then
+          expect(screen.queryByText('Afficher les statuts')).toBeInTheDocument()
+          expect(screen.queryByLabelText('Active')).toBeChecked()
+          expect(screen.queryByLabelText('Inactive')).toBeChecked()
+          expect(screen.queryByText('Appliquer', { selector: 'button' })).toBeInTheDocument()
+        })
+
+        it('should filter offers given status filters when clicking on "Appliquer"', async () => {
+          // Given
+          props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
+          await renderOffers(props, store)
+          fireEvent.click(screen.queryByTitle('Filtrer les offres par statut'))
+          fireEvent.click(screen.queryByLabelText('Active'))
+
+          // When
+          fireEvent.click(screen.queryByText('Appliquer'))
+
+          // Then
+          expect(props.loadOffers).toHaveBeenLastCalledWith({
+            nameSearchValue: '',
+            page: 1,
+            selectedVenueId: 'all',
+            statusFilters: {
+              active: false,
+              inactive: true,
+            },
+          })
+        })
+      })
     })
   })
 
@@ -277,6 +344,10 @@ describe('src | components | pages | Offers | Offers', () => {
           page: DEFAULT_PAGE,
           selectedVenueId: ALL_VENUES,
           offererId: ALL_OFFERERS,
+          statusFilters: {
+            active: true,
+            inactive: true,
+          },
         })
       })
     })
@@ -298,6 +369,10 @@ describe('src | components | pages | Offers | Offers', () => {
           page: DEFAULT_PAGE,
           selectedVenueId: ALL_VENUES,
           offererId: ALL_OFFERERS,
+          statusFilters: {
+            active: true,
+            inactive: true,
+          },
         })
       })
     })
@@ -320,6 +395,10 @@ describe('src | components | pages | Offers | Offers', () => {
           page: DEFAULT_PAGE,
           selectedVenueId: proVenues[0].id,
           offererId: ALL_OFFERERS,
+          statusFilters: {
+            active: true,
+            inactive: true,
+          },
         })
       })
     })
@@ -475,6 +554,8 @@ describe('src | components | pages | Offers | Offers', () => {
           nom: null,
           page: 2,
           structure: null,
+          active: null,
+          inactive: null,
         })
       })
     })
@@ -499,6 +580,8 @@ describe('src | components | pages | Offers | Offers', () => {
           nom: null,
           page: null,
           structure: null,
+          active: null,
+          inactive: null,
         })
       })
     })
@@ -522,6 +605,8 @@ describe('src | components | pages | Offers | Offers', () => {
           nom: 'AnyWord',
           page: null,
           structure: null,
+          active: null,
+          inactive: null,
         })
       })
     })
@@ -542,6 +627,8 @@ describe('src | components | pages | Offers | Offers', () => {
           name: 'search string',
           offererId: ALL_OFFERERS,
           page: DEFAULT_PAGE,
+          active: false,
+          inactive: false,
         })
       })
     })
@@ -565,6 +652,8 @@ describe('src | components | pages | Offers | Offers', () => {
           nom: null,
           page: null,
           structure: null,
+          active: null,
+          inactive: null,
         })
       })
     })
@@ -587,6 +676,8 @@ describe('src | components | pages | Offers | Offers', () => {
           nom: null,
           page: null,
           structure: null,
+          active: null,
+          inactive: null,
         })
       })
     })
@@ -609,6 +700,51 @@ describe('src | components | pages | Offers | Offers', () => {
           nom: null,
           page: null,
           structure: null,
+          active: null,
+          inactive: null,
+        })
+      })
+    })
+
+    it('should have status value when user filters by status', async () => {
+      // Given
+      props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock' }]
+      await renderOffers(props, store)
+      fireEvent.click(screen.queryByTitle('Filtrer les offres par statut'))
+      fireEvent.click(screen.queryByLabelText('Inactive'))
+
+      // When
+      fireEvent.click(screen.queryByText('Appliquer'))
+
+      // Then
+      await waitFor(() => {
+        expect(props.query.change).toHaveBeenLastCalledWith({
+          lieu: null,
+          nom: null,
+          page: null,
+          active: null,
+          inactive: EXCLUDING_STATUS_VALUE,
+        })
+      })
+    })
+
+    it('should have status value be removed when user ask for all status', async () => {
+      // Given
+      props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock' }]
+      await renderOffers(props, store)
+      fireEvent.click(screen.queryByTitle('Filtrer les offres par statut'))
+
+      // When
+      fireEvent.click(screen.queryByText('Appliquer'))
+
+      // Then
+      await waitFor(() => {
+        expect(props.query.change).toHaveBeenLastCalledWith({
+          lieu: null,
+          nom: null,
+          page: null,
+          active: null,
+          inactive: null,
         })
       })
     })
@@ -694,6 +830,10 @@ describe('src | components | pages | Offers | Offers', () => {
         page: 2,
         selectedVenueId: ALL_VENUES,
         offererId: ALL_OFFERERS,
+        statusFilters: {
+          active: true,
+          inactive: true,
+        },
       })
     })
 
@@ -714,6 +854,10 @@ describe('src | components | pages | Offers | Offers', () => {
         page: DEFAULT_PAGE,
         selectedVenueId: ALL_VENUES,
         offererId: ALL_OFFERERS,
+        statusFilters: {
+          active: true,
+          inactive: true,
+        },
       })
     })
 

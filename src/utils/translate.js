@@ -90,6 +90,8 @@ export const mapBrowserToApi = {
   reservations: 'bookings',
   structure: 'offererId',
   stock: 'stockIdOrNew',
+  active: 'active',
+  inactive: 'inactive',
 }
 
 export const mapApiToBrowser = invert(mapBrowserToApi)

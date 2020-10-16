@@ -1,4 +1,3 @@
-import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,10 +7,12 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Main from 'components/layout/Main'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
+import { OffersStatusFilters } from 'components/pages/Offers/OffersStatusFilters/OffersStatusFilters'
+import { SVGFilter } from 'components/svg/SVGFilter'
 import { formatAndOrderVenues, fetchAllVenuesByProUser } from 'services/venuesService'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from 'utils/translate'
 
-import { ALL_OFFERS, ALL_VENUES, ALL_OFFERERS, ALL_VENUES_OPTION, DEFAULT_PAGE } from './_constants'
+import { ALL_OFFERS, ALL_VENUES, ALL_OFFERERS, ALL_VENUES_OPTION, DEFAULT_PAGE, EXCLUDING_STATUS_VALUE } from './_constants'
 import ActionsBar from './ActionsBar/'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
 
@@ -20,10 +21,12 @@ class Offers extends PureComponent {
     super(props)
 
     const {
+      active,
+      inactive,
       name: nameKeywords,
+      offererId,
       page,
       venueId: selectedVenueId,
-      offererId,
     } = translateQueryParamsToApiParams(props.query.parse())
 
     this.state = {
@@ -36,6 +39,11 @@ class Offers extends PureComponent {
       offerer: null,
       selectedVenueId: selectedVenueId || ALL_VENUES,
       venueOptions: [],
+      statusFilters: {
+        active: active !== EXCLUDING_STATUS_VALUE,
+        inactive: inactive !== EXCLUDING_STATUS_VALUE,
+      },
+      areStatusFiltersVisible: false,
     }
   }
 
@@ -60,21 +68,48 @@ class Offers extends PureComponent {
 
   updateUrlMatchingState = () => {
     const { query } = this.props
-    const { page, nameSearchValue, selectedVenueId, offererId } = this.state
+    const {
+      page,
+      nameSearchValue,
+      selectedVenueId,
+      offererId,
+      statusFilters,
+    } = this.state
 
     query.change({
       page: page === DEFAULT_PAGE ? null : page,
       [mapApiToBrowser.name]: nameSearchValue === ALL_OFFERS ? null : nameSearchValue,
       [mapApiToBrowser.venueId]: selectedVenueId === ALL_VENUES ? null : selectedVenueId,
       [mapApiToBrowser.offererId]: offererId === ALL_OFFERERS ? null : offererId,
+      [mapApiToBrowser.active]: statusFilters.active ? null : EXCLUDING_STATUS_VALUE,
+      [mapApiToBrowser.inactive]: statusFilters.inactive ? null : EXCLUDING_STATUS_VALUE,
     })
+  }
+
+  updateStatusFilters = (name, status) => {
+    const { statusFilters } = this.state
+    const numberOfCheckedFiltersBeforeUpdate = Object.keys(statusFilters).filter(
+      key => statusFilters[key]
+    ).length
+    const numberOfCheckedFiltersAfterUpdate = status
+      ? numberOfCheckedFiltersBeforeUpdate + 1
+      : numberOfCheckedFiltersBeforeUpdate - 1
+
+    if (numberOfCheckedFiltersAfterUpdate >= 1) {
+      this.setState({
+        statusFilters: {
+          ...statusFilters,
+          [name]: status,
+        },
+      })
+    }
   }
 
   loadAndUpdateOffers() {
     const { loadOffers } = this.props
-    const { nameSearchValue, selectedVenueId, offererId, page } = this.state
+    const { nameSearchValue, selectedVenueId, offererId, page, statusFilters } = this.state
 
-    loadOffers({ nameSearchValue, selectedVenueId, offererId, page })
+    loadOffers({ nameSearchValue, selectedVenueId, offererId, page, statusFilters })
       .then(({ page, pageCount, offersCount }) => {
         this.setState(
           {
@@ -97,8 +132,14 @@ class Offers extends PureComponent {
 
   getPaginatedOffersWithFilters = ({ shouldTriggerSpinner }) => {
     const { saveSearchFilters } = this.props
-    const { nameSearchValue, selectedVenueId, offererId, page } = this.state
-    saveSearchFilters({ name: nameSearchValue, venueId: selectedVenueId, offererId, page })
+    const { nameSearchValue, selectedVenueId, offererId, page, statusFilters } = this.state
+    saveSearchFilters({
+      name: nameSearchValue,
+      venueId: selectedVenueId,
+     offererId, page,
+      active: !statusFilters.active && EXCLUDING_STATUS_VALUE,
+      inactive: !statusFilters.inactive && EXCLUDING_STATUS_VALUE,
+    })
 
     shouldTriggerSpinner && this.setState({ isLoading: true })
 
@@ -171,6 +212,11 @@ class Offers extends PureComponent {
     return <ActionsBar refreshOffers={this.getPaginatedOffersWithFilters} />
   }
 
+  toggleStatusFiltersVisibility = () => {
+    const { areStatusFiltersVisible } = this.state
+    this.setState({ areStatusFiltersVisible: !areStatusFiltersVisible })
+  }
+
   render() {
     const {
       currentUser,
@@ -184,6 +230,7 @@ class Offers extends PureComponent {
     const { isAdmin } = currentUser || {}
     const { venueId } = translateQueryParamsToApiParams(query.parse())
     const {
+      areStatusFiltersVisible,
       nameSearchValue,
       offersCount,
       offerer,
@@ -191,6 +238,7 @@ class Offers extends PureComponent {
       pageCount,
       isLoading,
       selectedVenueId,
+      statusFilters,
       venueOptions,
     } = this.state
 
@@ -299,8 +347,23 @@ class Offers extends PureComponent {
                     <th>
                       {'Stock'}
                     </th>
-                    <th>
-                      {'Statut'}
+                    <th className="th-with-filter">
+                      <span>
+                        {'Statut'}
+                      </span>
+                      <button
+                        onClick={this.toggleStatusFiltersVisibility}
+                        type="button"
+                      >
+                        <SVGFilter alt="Filtrer les offres par statut" />
+                      </button>
+                      {areStatusFiltersVisible && (
+                        <OffersStatusFilters
+                          refreshOffers={this.handleOnSubmit}
+                          statusFilters={statusFilters}
+                          updateStatusFilters={this.updateStatusFilters}
+                        />
+                      )}
                     </th>
                     <th />
                     <th />
