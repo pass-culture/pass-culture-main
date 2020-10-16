@@ -1,15 +1,16 @@
 from datetime import datetime
+import pytest
 
 from pcapi.models import BookingSQLEntity
 from pcapi.repository import repository
 from pcapi.scripts.booking.cancel_bookings_of_events_from_file import _cancel_bookings_of_offers_from_rows
-from tests.conftest import clean_database
+from pcapi.repository.clean_database import clean_all_database
 from pcapi.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, create_booking, create_deposit
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 
 
 class CancelBookingsOfEventsFromFileTest:
-    def setup_method(self, app):
+    def setup_class(self):
         beneficiary = create_user()
         create_deposit(user=beneficiary)
         offerer_to_cancel = create_offerer(name="Librairie les petits parapluies gris", siren="123456789")
@@ -35,7 +36,10 @@ class CancelBookingsOfEventsFromFileTest:
             [offer_to_not_cancel.id, offerer_to_not_cancel.name, offer_to_not_cancel.name, "93000", "2020-06-20 18:00:12", 1, "Non", ""],
         ]
 
-    @clean_database
+    def teardown_class(self):
+        clean_all_database()
+
+    @pytest.mark.usefixtures("db_session")
     def test_should_cancel_bookings_of_selected_offers(self):
         # When
         _cancel_bookings_of_offers_from_rows(self.csv_rows)
@@ -47,7 +51,7 @@ class CancelBookingsOfEventsFromFileTest:
         assert saved_booking.isUsed is False
         assert saved_booking.dateUsed is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_cancel_bookings_of_unselected_offers(self):
         # When
         _cancel_bookings_of_offers_from_rows(self.csv_rows)
@@ -57,7 +61,7 @@ class CancelBookingsOfEventsFromFileTest:
         assert saved_booking.isCancelled is False
         assert saved_booking.cancellationDate is None
 
-    @clean_database
+    @pytest.mark.usefixtures("db_session")
     def test_should_not_cancel_bookings_of_specific_tokens(self):
         # When
         _cancel_bookings_of_offers_from_rows(self.csv_rows)
