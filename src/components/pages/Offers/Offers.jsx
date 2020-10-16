@@ -11,7 +11,7 @@ import Titles from 'components/layout/Titles/Titles'
 import { formatAndOrderVenues, fetchAllVenuesByProUser } from 'services/venuesService'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from 'utils/translate'
 
-import { ALL_OFFERS, ALL_VENUES, ALL_VENUES_OPTION, DEFAULT_PAGE } from './_constants'
+import { ALL_OFFERS, ALL_VENUES, ALL_OFFERERS, ALL_VENUES_OPTION, DEFAULT_PAGE } from './_constants'
 import ActionsBar from './ActionsBar/'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
 
@@ -19,15 +19,20 @@ class Offers extends PureComponent {
   constructor(props) {
     super(props)
 
-    const { name: nameKeywords, page, venueId: selectedVenueId } = translateQueryParamsToApiParams(
-      props.query.parse()
-    )
+    const {
+      name: nameKeywords,
+      page,
+      venueId: selectedVenueId,
+      offererId,
+    } = translateQueryParamsToApiParams(props.query.parse())
+
     this.state = {
       isLoading: false,
       nameSearchValue: nameKeywords || ALL_OFFERS,
       offersCount: 0,
       page: page || DEFAULT_PAGE,
       pageCount: null,
+      offererId: offererId || ALL_OFFERERS,
       selectedVenueId: selectedVenueId || ALL_VENUES,
       venueOptions: [],
     }
@@ -36,6 +41,7 @@ class Offers extends PureComponent {
   componentDidMount() {
     this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
     fetchAllVenuesByProUser().then(venues =>
+      // TODO if offererID filter by offererId
       this.setState({ venueOptions: formatAndOrderVenues(venues) })
     )
   }
@@ -60,9 +66,9 @@ class Offers extends PureComponent {
 
   loadAndUpdateOffers() {
     const { loadOffers } = this.props
-    const { nameSearchValue, selectedVenueId, page } = this.state
+    const { nameSearchValue, selectedVenueId, offererId, page } = this.state
 
-    loadOffers({ nameSearchValue, selectedVenueId, page })
+    loadOffers({ nameSearchValue, selectedVenueId, offererId, page })
       .then(({ page, pageCount, offersCount }) => {
         this.setState(
           {
@@ -104,6 +110,16 @@ class Offers extends PureComponent {
         this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
       }
     )
+  }
+
+  handleOnOffererClick = query => () => {
+    query.change({
+      [mapApiToBrowser.offererId]: null,
+      page: null,
+    })
+    this.setState({ offererId: ALL_OFFERERS }, () => {
+      this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
+    })
   }
 
   storeNameSearchValue = event => {
@@ -152,6 +168,7 @@ class Offers extends PureComponent {
       handleOnDeactivateAllVenueOffersClick,
       handleOnActivateAllVenueOffersClick,
       offers,
+      offerer,
       query,
       selectedOfferIds,
     } = this.props
@@ -192,6 +209,16 @@ class Offers extends PureComponent {
           action={actionLink}
           title="Offres"
         />
+        {offerer && (
+          <button
+            className="offerer-filter"
+            onClick={this.handleOnOffererClick(query)}
+            type="button"
+          >
+            {offerer.name}
+            <Icon svg="ico-close-b" />
+          </button>
+        )}
         <form onSubmit={this.handleOnSubmit}>
           <TextInput
             label="Nom de l’offre"

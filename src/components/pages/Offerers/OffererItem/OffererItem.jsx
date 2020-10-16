@@ -43,7 +43,13 @@ const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable
 
           {nOffers && nOffers > 0 ? (
             <li className="count-offers-action">
-              {pluralize(nOffers, 'offres')}
+              <Link
+                className="has-text-primary"
+                to={`/offres?structure=${id}`}
+              >
+                <Icon svg="ico-offres-r" />
+                {pluralize(nOffers, 'offres')}
+              </Link>
             </li>
           ) : (
             <li className="count-offers-action">

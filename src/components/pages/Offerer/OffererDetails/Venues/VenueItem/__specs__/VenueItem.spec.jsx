@@ -102,7 +102,7 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
 
         // then
         expect(navLink.at(1).text()).toBe('3 offres')
-        expect(navLink.at(1).prop('to')).toBe('/offres?lieu=AAA')
+        expect(navLink.at(1).prop('to')).toBe('/offres?lieu=AAA&structure=ABC')
       })
     })
 

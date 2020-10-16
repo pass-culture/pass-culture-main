@@ -8,8 +8,13 @@ import { MemoryRouter } from 'react-router'
 import { configureTestStore } from 'store/testUtils'
 import { fetchAllVenuesByProUser } from 'services/venuesService'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
-
-import { ALL_OFFERS, ALL_VENUES, ALL_VENUES_OPTION, DEFAULT_PAGE } from '../_constants'
+import {
+  ALL_OFFERERS,
+  ALL_OFFERS,
+  ALL_VENUES,
+  ALL_VENUES_OPTION,
+  DEFAULT_PAGE,
+} from '../_constants'
 import Offers from '../Offers'
 
 const mountOffers = (props, store) => {
@@ -108,6 +113,7 @@ describe('src | components | pages | Offers | Offers', () => {
         nameSearchValue: ALL_OFFERS,
         page: DEFAULT_PAGE,
         selectedVenueId: ALL_VENUES,
+        offererId: ALL_OFFERERS,
       })
     })
 
@@ -269,6 +275,7 @@ describe('src | components | pages | Offers | Offers', () => {
           nameSearchValue: ALL_OFFERS,
           page: DEFAULT_PAGE,
           selectedVenueId: ALL_VENUES,
+          offererId: ALL_OFFERERS,
         })
       })
     })
@@ -289,6 +296,7 @@ describe('src | components | pages | Offers | Offers', () => {
           nameSearchValue: 'Any word',
           page: DEFAULT_PAGE,
           selectedVenueId: ALL_VENUES,
+          offererId: ALL_OFFERERS,
         })
       })
     })
@@ -310,6 +318,7 @@ describe('src | components | pages | Offers | Offers', () => {
           nameSearchValue: ALL_OFFERS,
           page: DEFAULT_PAGE,
           selectedVenueId: proVenues[0].id,
+          offererId: ALL_OFFERERS,
         })
       })
     })
@@ -649,6 +658,7 @@ describe('src | components | pages | Offers | Offers', () => {
         nameSearchValue: ALL_OFFERS,
         page: 2,
         selectedVenueId: ALL_VENUES,
+        offererId: ALL_OFFERERS,
       })
     })
 
@@ -668,6 +678,7 @@ describe('src | components | pages | Offers | Offers', () => {
         nameSearchValue: ALL_OFFERS,
         page: DEFAULT_PAGE,
         selectedVenueId: ALL_VENUES,
+        offererId: ALL_OFFERERS,
       })
     })
 

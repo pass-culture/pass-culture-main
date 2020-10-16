@@ -8,25 +8,36 @@ import { hideActionsBar, showActionsBar } from 'store/reducers/actionsBar'
 import { saveSearchFilters, setSelectedOfferIds } from 'store/reducers/offers'
 import { selectOffers } from 'store/selectors/data/offersSelectors'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
-import { ALL_OFFERS, ALL_VENUES } from './_constants'
+import { ALL_OFFERS, ALL_VENUES, ALL_OFFERERS } from './_constants'
 import Offers from './Offers'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
+import { selectOffererById } from '../../../store/selectors/data/offerersSelectors'
+import { translateQueryParamsToApiParams } from '../../../utils/translate'
 
-export const mapStateToProps = state => {
+export const mapStateToProps = (state, { query }) => {
+  const queryParams = query.parse()
+  const apiQueryParams = translateQueryParamsToApiParams(queryParams)
+  const { offererId } = apiQueryParams
+
   return {
     lastTrackerMoment: lastTrackerMoment(state, 'offers'),
     notification: state.notification,
     offers: selectOffers(state),
     searchFilters: state.offers.searchFilters,
+    offerer: selectOffererById(state, offererId),
     selectedOfferIds: state.offers.selectedOfferIds,
   }
 }
 
-const buildQueryParams = ({ nameSearchValue, selectedVenueId, page }) => {
+const buildQueryParams = ({ nameSearchValue, selectedVenueId, offererId, page }) => {
   const queryParams = []
 
   if (nameSearchValue !== ALL_OFFERS) {
     queryParams.push(`name=${nameSearchValue}`)
+  }
+
+  if (offererId !== ALL_OFFERERS) {
+    queryParams.push(`offererId=${offererId}`)
   }
 
   if (selectedVenueId !== ALL_VENUES) {
