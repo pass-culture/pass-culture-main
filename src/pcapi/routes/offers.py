@@ -101,7 +101,7 @@ def post_offer() -> (str, int):
 
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 201
 
-@app.route('/offers/active-status', methods=['PATCH'])
+@private_api.route('/offers/active-status', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data
 def patch_offers_active_status() -> (str, int):
