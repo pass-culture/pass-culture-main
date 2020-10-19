@@ -62,11 +62,11 @@ describe('src | components | pages | Offerer | OfferCreation | OffererCreationCo
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
-          patch: {
+          payload: {
             text: 'my message',
             type: 'success',
           },
-          type: 'SHOW_NOTIFICATION',
+          type: 'SHOW_NOTIFICATION_V1',
         })
       })
     })

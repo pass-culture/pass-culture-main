@@ -1,4 +1,4 @@
-import { showNotification } from 'pass-culture-shared'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
@@ -79,7 +79,7 @@ export const mapDispatchToProps = (
       }
 
       dispatch(
-        showNotification({
+        showNotificationV1({
           text,
           type: 'danger',
         })
@@ -88,7 +88,7 @@ export const mapDispatchToProps = (
 
     handleSubmitRequestSuccess: () => {
       dispatch(
-        showNotification({
+        showNotificationV1({
           text: 'Lieu modifié avec succès !',
           type: 'success',
         })

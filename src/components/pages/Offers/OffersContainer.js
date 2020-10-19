@@ -1,4 +1,4 @@
-import { closeNotification, lastTrackerMoment, showNotification } from 'pass-culture-shared'
+import { lastTrackerMoment } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
@@ -9,6 +9,7 @@ import { selectOffers } from 'store/selectors/data/offersSelectors'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
 import { ALL_OFFERS, ALL_VENUES } from './_constants'
 import Offers from './Offers'
+import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
 
 export const mapStateToProps = state => {
   return {
@@ -40,7 +41,7 @@ const buildQueryParams = ({ nameSearchValue, selectedVenueId, page }) => {
 export const mapDispatchToProps = dispatch => {
   const showOffersActivationNotification = notificationMessage => {
     dispatch(
-      showNotification({
+      showNotificationV1({
         tag: 'offers-activation',
         text: notificationMessage,
         type: 'success',

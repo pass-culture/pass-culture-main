@@ -1,8 +1,7 @@
-import { showNotification } from 'pass-culture-shared'
-
 import state from 'components/utils/mocks/state'
 
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../OfferCreationContainer'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 describe('src | OfferCreationContainer', () => {
   let props
@@ -381,7 +380,7 @@ describe('src | OfferCreationContainer', () => {
 
         // then
         expect(dispatch).toHaveBeenCalledWith(
-          showNotification({
+          showNotificationV1({
             text:
               'Votre offre a bien été créée. Cette offre peut mettre quelques minutes pour être disponible dans l’application.',
             type: 'success',

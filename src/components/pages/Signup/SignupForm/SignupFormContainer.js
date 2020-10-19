@@ -1,5 +1,4 @@
 import get from 'lodash.get'
-import { closeNotification, showNotification } from 'pass-culture-shared'
 import { compose } from 'redux'
 import { removeWhitespaces } from 'react-final-form-utils'
 import { connect } from 'react-redux'
@@ -8,6 +7,7 @@ import { requestData } from 'redux-saga-data'
 
 import { removeErrors } from 'store/reducers/errors'
 import SignupForm from './SignupForm'
+import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
 
 const STATE_ERROR_NAME = 'user'
 
@@ -38,7 +38,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
 
   showNotification: (message, type) => {
     dispatch(
-      showNotification({
+      showNotificationV1({
         text: message,
         type: type,
       })

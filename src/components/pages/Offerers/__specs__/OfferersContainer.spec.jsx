@@ -277,7 +277,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
-          patch: {
+          payload: {
             tag: 'offerers',
             text:
               'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
@@ -285,7 +285,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
             url: '/offerers',
             urlLabel: 'Nouveau lieu',
           },
-          type: 'SHOW_NOTIFICATION',
+          type: 'SHOW_NOTIFICATION_V1',
         })
       })
     })

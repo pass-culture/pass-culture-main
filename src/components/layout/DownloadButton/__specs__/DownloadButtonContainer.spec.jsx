@@ -1,10 +1,10 @@
 import { mount } from 'enzyme'
-import { showNotification } from 'pass-culture-shared'
 import React from 'react'
 import { Provider } from 'react-redux'
 
 import { getStubStore } from '../../../../utils/stubStore'
 import DownloadButtonContainer from '../DownloadButtonContainer'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 global.fetch = url => {
   if (url.includes('reimbursements/csv')) {
@@ -66,7 +66,7 @@ describe('src | components | Layout | DownloadButtonContainer', () => {
     wrapper.find('button').simulate('click')
     setTimeout(() => {
       expect(store.dispatch).toHaveBeenCalledWith(
-        showNotification({
+        showNotificationV1({
           text: 'Il y a une erreur avec le chargement du fichier csv.',
           type: 'danger',
         })

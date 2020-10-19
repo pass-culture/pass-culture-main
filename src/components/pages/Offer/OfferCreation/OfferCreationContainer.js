@@ -18,10 +18,11 @@ import {
   selectVenuesByOffererIdAndOfferType,
 } from 'store/selectors/data/venuesSelectors'
 import { selectOfferers } from 'store/selectors/data/offerersSelectors'
-import { mergeForm, showNotification } from 'pass-culture-shared'
+import { mergeForm } from 'pass-culture-shared'
 import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
 import { selectProviders } from 'store/selectors/data/providersSelectors'
 import { selectOfferById } from 'store/selectors/data/offersSelectors'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -108,7 +109,7 @@ export const mapStateToProps = (state, ownProps) => {
 export const mapDispatchToProps = dispatch => ({
   showValidationNotification: () => {
     dispatch(
-      showNotification({
+      showNotificationV1({
         text:
           'Votre offre a bien été créée. Cette offre peut mettre quelques minutes pour être disponible dans l’application.',
         type: 'success',

@@ -1,4 +1,4 @@
-import { showNotification } from 'pass-culture-shared'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
@@ -92,7 +92,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       }
 
       dispatch(
-        showNotification({
+        showNotificationV1({
           text,
           type: 'danger',
         })
@@ -116,7 +116,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       }
 
       dispatch(
-        showNotification({
+        showNotificationV1({
           text: notificationMessage,
           type: 'success',
         })

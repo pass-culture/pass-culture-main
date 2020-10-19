@@ -1,11 +1,11 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import get from 'lodash.get'
-import { closeNotification } from 'pass-culture-shared'
 import React, { PureComponent } from 'react'
 import ReactTooltip from 'react-tooltip'
 
 import Icon from '../../layout/Icon'
+import { closeNotification } from 'store/reducers/notificationReducer'
 
 class Notification extends PureComponent {
   componentDidUpdate() {

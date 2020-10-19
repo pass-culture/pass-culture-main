@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 
 import DownloadButton from './DownloadButton'
-import { showNotification } from 'pass-culture-shared'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   const { filename, href, mimeType } = ownProps
@@ -31,7 +31,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         }
 
         dispatch(
-          showNotification({
+          showNotificationV1({
             text: 'Il y a une erreur avec le chargement du fichier csv.',
             type: 'danger',
           })
@@ -43,7 +43,4 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   }
 }
 
-export default connect(
-  null,
-  mapDispatchToProps
-)(DownloadButton)
+export default connect(null, mapDispatchToProps)(DownloadButton)

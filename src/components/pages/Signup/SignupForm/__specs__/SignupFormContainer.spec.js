@@ -1,5 +1,5 @@
 import { mapDispatchToProps } from '../SignupFormContainer'
-import { closeNotification, showNotification } from 'pass-culture-shared'
+import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
 
 describe('src | components | pages | Signup | SignupForm', () => {
   describe('mapDispatchToProps', () => {
@@ -151,7 +151,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
         // then
         expect(dispatch).toHaveBeenCalledWith(
-          showNotification({
+          showNotificationV1({
             text: messageText,
             type: messageType,
           })

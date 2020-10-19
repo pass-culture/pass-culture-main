@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import { requestData } from 'redux-saga-data'
-import { showNotification } from 'pass-culture-shared'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 import Titles from '../../layout/Titles/Titles'
 import Main from '../../layout/Main'
@@ -56,7 +56,7 @@ class Profil extends PureComponent {
     this.setState({ isLoading: false })
 
     dispatch(
-      showNotification({
+      showNotificationV1({
         text: 'Erreur lors de la mise à jour de vos informations.',
         type: 'fail',
       })
@@ -68,7 +68,7 @@ class Profil extends PureComponent {
     this.setState({ isLoading: false })
 
     dispatch(
-      showNotification({
+      showNotificationV1({
         text: 'Informations mises à jour avec succès.',
         type: 'success',
       })

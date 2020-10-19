@@ -1,7 +1,6 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { assignData, requestData } from 'redux-saga-data'
-import { closeNotification, showNotification } from 'pass-culture-shared'
 import { stringify } from 'query-string'
 
 import Offerers from './Offerers'
@@ -12,6 +11,7 @@ import { selectOfferers } from 'store/selectors/data/offerersSelectors'
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
 import {} from 'store/selectors/data/featuresSelectors'
 import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
+import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
 
 export const createApiPath = searchKeyWords => {
   let apiPath = OFFERERS_API_PATH
@@ -71,7 +71,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
 
   showNotification: url => {
     dispatch(
-      showNotification({
+      showNotificationV1({
         tag: 'offerers',
         text:
           'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',

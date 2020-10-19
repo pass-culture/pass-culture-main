@@ -1,9 +1,10 @@
-import { getRequestErrorStringFromErrors, showNotification } from 'pass-culture-shared'
+import { getRequestErrorStringFromErrors } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 import StocksProviderForm from './StocksProviderForm'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 export const mapDispatchToProps = dispatch => ({
   createVenueProvider: (handleFail, handleSuccess, payload) => {
@@ -19,7 +20,7 @@ export const mapDispatchToProps = dispatch => ({
   },
   notify: errors => {
     dispatch(
-      showNotification({
+      showNotificationV1({
         text: getRequestErrorStringFromErrors(errors),
         type: 'danger',
       })

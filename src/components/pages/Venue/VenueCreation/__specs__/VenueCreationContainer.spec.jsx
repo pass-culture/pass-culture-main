@@ -185,7 +185,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
   })
 
   describe('handleSubmitRequest', () => {
-    it('should call patch method with proper params', function() {
+    it('should call patch method with proper params', function () {
       // given
       const formValues = {
         comment: 'Commentaire',
@@ -242,8 +242,8 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
 
       // then
       expect(dispatch.mock.calls[0][0]).toStrictEqual({
-        patch: { text: 'Some text', type: 'success' },
-        type: 'SHOW_NOTIFICATION',
+        payload: { text: 'Some text', type: 'success' },
+        type: 'SHOW_NOTIFICATION_V1',
       })
     })
   })

@@ -1,7 +1,7 @@
 import React from 'react'
-import { closeNotification } from 'pass-culture-shared'
 import { CREATION } from '../../hocs/withFrenchQueryRouter'
 import { Link } from 'react-router-dom'
+import { closeNotification } from 'store/reducers/notificationReducer'
 
 const handleOnClick = dispatch => () => dispatch(closeNotification())
 const NotificationMessage = ({ venueId, offererId, dispatch }) => {

@@ -395,8 +395,8 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
 
       // then
       expect(dispatch.mock.calls[0][0]).toStrictEqual({
-        patch: { text: 'Lieu modifié avec succès !', type: 'success' },
-        type: 'SHOW_NOTIFICATION',
+        payload: { text: 'Lieu modifié avec succès !', type: 'success' },
+        type: 'SHOW_NOTIFICATION_V1',
       })
     })
   })

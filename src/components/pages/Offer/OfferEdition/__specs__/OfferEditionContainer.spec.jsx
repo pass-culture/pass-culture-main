@@ -1,8 +1,8 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../OfferEditionContainer'
 import state from '../../../../utils/mocks/state'
-import { showNotification } from 'pass-culture-shared'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
-describe('components | OfferEdition | OfferEditionContainer ', () => {
+describe('components | OfferEdition | OfferEditionContainer', () => {
   let props
 
   beforeEach(() => {
@@ -438,7 +438,7 @@ describe('components | OfferEdition | OfferEditionContainer ', () => {
 
         // then
         expect(dispatch).toHaveBeenCalledWith(
-          showNotification({
+          showNotificationV1({
             text:
               'Votre offre a bien été modifiée. Cette offre peut mettre quelques minutes pour être disponible dans l’application.',
             type: 'success',

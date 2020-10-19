@@ -2,7 +2,7 @@ import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
-import { showNotification } from 'pass-culture-shared'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 import Mediation from './Mediation'
 import { withRequiredLogin } from '../../hocs'
@@ -50,7 +50,7 @@ export const mapDispatchToProps = dispatch => {
     },
     showOfferModificationErrorNotification: error => {
       dispatch(
-        showNotification({
+        showNotificationV1({
           text: error,
           type: 'fail',
         })
@@ -58,7 +58,7 @@ export const mapDispatchToProps = dispatch => {
     },
     showOfferModificationValidationNotification: () => {
       dispatch(
-        showNotification({
+        showNotificationV1({
           tag: 'mediations-manager',
           text:
             'Votre offre a bien été modifiée. Cette offre peut mettre quelques minutes pour être disponible dans l’application.',

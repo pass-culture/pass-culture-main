@@ -69,12 +69,12 @@ describe('src | components | pages | Signup | validation', () => {
       // then
       const notifySuccessCall = dispatch.mock.calls[1][0]
       expect(notifySuccessCall).toStrictEqual({
-        patch: {
+        payload: {
           text:
             'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.',
           type: 'success',
         },
-        type: 'SHOW_NOTIFICATION',
+        type: 'SHOW_NOTIFICATION_V1',
       })
     })
   })
@@ -99,11 +99,11 @@ describe('src | components | pages | Signup | validation', () => {
       // then
       const notifyFailureCall = dispatch.mock.calls[1][0]
       expect(notifyFailureCall).toStrictEqual({
-        patch: {
+        payload: {
           text: ['error1', 'error2'],
           type: 'danger',
         },
-        type: 'SHOW_NOTIFICATION',
+        type: 'SHOW_NOTIFICATION_V1',
       })
     })
   })

@@ -105,11 +105,11 @@ describe('src | components | pages | MediationContainer', () => {
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
-        patch: {
+        payload: {
           text: 'my error',
           type: 'fail',
         },
-        type: 'SHOW_NOTIFICATION',
+        type: 'SHOW_NOTIFICATION_V1',
       })
     })
   })
@@ -124,13 +124,13 @@ describe('src | components | pages | MediationContainer', () => {
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
-        patch: {
+        payload: {
           tag: 'mediations-manager',
           text:
             'Votre offre a bien été modifiée. Cette offre peut mettre quelques minutes pour être disponible dans l’application.',
           type: 'success',
         },
-        type: 'SHOW_NOTIFICATION',
+        type: 'SHOW_NOTIFICATION_V1',
       })
     })
   })

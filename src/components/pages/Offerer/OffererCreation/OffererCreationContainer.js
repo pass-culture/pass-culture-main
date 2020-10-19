@@ -1,4 +1,3 @@
-import { closeNotification, showNotification } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
@@ -8,6 +7,7 @@ import OffererCreation from './OffererCreation'
 import { withRequiredLogin } from '../../../hocs'
 import withTracking from '../../../hocs/withTracking'
 import { removeWhitespaces } from 'react-final-form-utils'
+import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
 
 export const mapDispatchToProps = (dispatch, ownProps) => ({
   createNewOfferer: (payload, onHandleFail, onHandleSuccess) => {
@@ -24,7 +24,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
   },
   showNotification: (message, type) => {
     dispatch(
-      showNotification({
+      showNotificationV1({
         text: message,
         type: type,
       })
@@ -52,9 +52,5 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 export default compose(
   withTracking('Offerer'),
   withRequiredLogin,
-  connect(
-    null,
-    mapDispatchToProps,
-    mergeProps
-  )
+  connect(null, mapDispatchToProps, mergeProps)
 )(OffererCreation)

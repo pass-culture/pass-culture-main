@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { Icon, Modal, resetForm, showNotification, Spinner } from 'pass-culture-shared'
+import { Icon, Modal, resetForm, Spinner } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
@@ -8,6 +8,7 @@ import ReactTooltip from 'react-tooltip'
 
 import HeaderContainer from '../Header/HeaderContainer'
 import NotificationContainer from '../Notification/NotificationContainer'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 class Main extends PureComponent {
   constructor() {
@@ -64,7 +65,7 @@ class Main extends PureComponent {
     this.setState({ loading: false })
 
     dispatch(
-      showNotification({
+      showNotificationV1({
         type: 'danger',
         text: get(payload, 'errors.0.global') || 'Erreur de chargement',
       })

@@ -1,12 +1,13 @@
-import { getRequestErrorStringFromErrors, showNotification } from 'pass-culture-shared'
+import { getRequestErrorStringFromErrors } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import AllocineProviderForm from './AllocineProviderForm'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
-export const mapDispatchToProps = (dispatch) => {
+export const mapDispatchToProps = dispatch => {
   return {
     createVenueProvider: (handleFail, handleSuccess, payload) => {
       dispatch(
@@ -21,7 +22,7 @@ export const mapDispatchToProps = (dispatch) => {
     },
     notify: errors => {
       dispatch(
-        showNotification({
+        showNotificationV1({
           text: getRequestErrorStringFromErrors(errors),
           type: 'fail',
         })
@@ -30,10 +31,4 @@ export const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default compose(
-  withRouter,
-  connect(
-    null,
-    mapDispatchToProps
-  )
-)(AllocineProviderForm)
+export default compose(withRouter, connect(null, mapDispatchToProps))(AllocineProviderForm)

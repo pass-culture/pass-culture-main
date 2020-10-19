@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
-import { showNotification } from 'pass-culture-shared'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { requestData } from 'redux-saga-data'
 
 class SignupValidation extends PureComponent {
@@ -33,7 +33,7 @@ class SignupValidation extends PureComponent {
 
       const { dispatch } = this.props
       dispatch(
-        showNotification({
+        showNotificationV1({
           text: errors.global,
           type: 'danger',
         })
@@ -46,7 +46,7 @@ class SignupValidation extends PureComponent {
       const { dispatch } = this.props
 
       dispatch(
-        showNotification({
+        showNotificationV1({
           text:
             'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.',
           type: 'success',
@@ -64,8 +64,8 @@ SignupValidation.propTypes = {
   dispatch: PropTypes.func.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
-      token: PropTypes.string.isRequired
-    })
+      token: PropTypes.string.isRequired,
+    }),
   }).isRequired,
 }
 

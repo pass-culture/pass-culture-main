@@ -69,11 +69,11 @@ describe('src | components | pages | Venue | VenueProviderManager | form | Alloc
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
-          patch: {
+          payload: {
             text: 'error',
             type: 'fail',
           },
-          type: 'SHOW_NOTIFICATION',
+          type: 'SHOW_NOTIFICATION_V1',
         })
       })
     })
