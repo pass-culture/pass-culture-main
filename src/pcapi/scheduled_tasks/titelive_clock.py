@@ -2,16 +2,11 @@
 from pcapi.load_environment_variables import load_environment_variables
 load_environment_variables()
 
-
-import os
-
 from apscheduler.schedulers.blocking import BlockingScheduler
-from flask import Flask
-from sqlalchemy import orm
 
+from pcapi.flask_app import app
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.venue_provider_worker import update_venues_for_specific_provider
-from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.scheduled_tasks.decorators import log_cron, cron_context, cron_require_feature
@@ -48,12 +43,6 @@ def synchronize_titelive_stocks(app):
 
 
 if __name__ == '__main__':
-    app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db.init_app(app)
-
-    orm.configure_mappers()
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
 

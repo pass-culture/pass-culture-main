@@ -5,14 +5,11 @@ load_environment_variables()
 import os
 
 from apscheduler.schedulers.blocking import BlockingScheduler
-from flask import Flask
-from mailjet_rest import Client
-from sqlalchemy import orm
 
+from pcapi.flask_app import app
 from pcapi.local_providers.provider_manager import \
     synchronize_venue_providers_for_provider
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
-from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import discovery_view_queries, discovery_view_v3_queries, feature_queries
 from pcapi.repository.feature_queries import feature_write_dashboard_enabled, feature_clean_seen_offers_enabled
@@ -26,7 +23,6 @@ from pcapi.scripts.beneficiary import old_remote_import, remote_import
 from pcapi.scripts.dashboard.write_dashboard import write_dashboard
 from pcapi.scripts.update_booking_used import \
     update_booking_used_after_stock_occurrence
-from pcapi.utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
 
 DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID',
                                                                    None)
@@ -129,17 +125,10 @@ def pc_clean_discovery_views(app) -> None:
 
 
 if __name__ == '__main__':
-    app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db.init_app(app)
-    app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
-
     discovery_view_refresh_frequency = os.environ.get('RECO_VIEW_REFRESH_FREQUENCY', '*')
     old_seen_offers_delete_frequency = os.environ.get('SEEN_OFFERS_DELETE_FREQUENCY', '*')
     clean_discovery_frequency = os.environ.get('CLEAN_DISCOVERY_FREQUENCY', '*')
 
-    orm.configure_mappers()
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
 

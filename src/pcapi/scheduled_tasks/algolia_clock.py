@@ -4,20 +4,18 @@ load_environment_variables()
 
 import os
 
-import redis
 from apscheduler.schedulers.blocking import BlockingScheduler
-from flask import Flask
-from sqlalchemy import orm
+
+from pcapi.flask_app import app
 
 from pcapi.algolia.infrastructure.worker import process_multi_indexing
-from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks.decorators import log_cron, cron_context, cron_require_feature
 from pcapi.scheduled_tasks import utils
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, \
     batch_indexing_offers_in_algolia_by_venue, \
     batch_deleting_expired_offers_in_algolia, batch_processing_offer_ids_in_error
-from pcapi.utils.config import REDIS_URL
+
 
 @log_cron
 @cron_context
@@ -55,12 +53,6 @@ def index_offers_in_error_in_algolia_by_offer(app):
 
 
 if __name__ == '__main__':
-    app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)
-    db.init_app(app)
-
     algolia_cron_indexing_offers_by_offer_frequency = os.environ.get(
         'ALGOLIA_CRON_INDEXING_OFFERS_BY_OFFER_FREQUENCY', '*')
     algolia_cron_indexing_offers_by_venue_frequency = os.environ.get(
@@ -70,7 +62,6 @@ if __name__ == '__main__':
     algolia_cron_indexing_offers_in_error_by_offer_frequency = os.environ.get(
         'ALGOLIA_CRON_INDEXING_OFFERS_IN_ERROR_BY_OFFER_FREQUENCY', '10')
 
-    orm.configure_mappers()
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
 
