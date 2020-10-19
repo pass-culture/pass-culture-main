@@ -1,8 +1,9 @@
 import logging
 from datetime import datetime
 
-from pcapi.utils.config import LOG_LEVEL
 from pythonjsonlogger import jsonlogger
+
+from pcapi.utils.config import LOG_LEVEL
 
 
 def disable_werkzeug_request_logs() -> None:
@@ -11,7 +12,7 @@ def disable_werkzeug_request_logs() -> None:
 
 
 def configure_json_logger() -> None:
-    json_logger = logging.getLogger('json')
+    json_logger = logging.getLogger(__name__)
 
     log_handler = logging.StreamHandler()
     formatter = CustomJsonFormatter('%(timestamp) %(level) %(message)')
@@ -21,8 +22,8 @@ def configure_json_logger() -> None:
 
 
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
-    def add_fields(self, log_record: dict, record: dict, message_dict: dict) -> None:
-        super(CustomJsonFormatter, self).add_fields(log_record, record, message_dict)
+    def add_fields(self, log_record: dict, record: logging.LogRecord, message_dict: dict) -> None:
+        super().add_fields(log_record, record, message_dict)
 
         log_record['timestamp'] = datetime \
             .fromtimestamp(record.__dict__.get('created')) \
@@ -50,4 +51,4 @@ class AttrDict:
 
 
 logger = AttrDict()
-json_logger = logging.getLogger('json')
+json_logger = logging.getLogger(__name__)

@@ -124,7 +124,7 @@ def _has_requested_state(application: dict, states: datetime) -> bool:
 
 
 def _was_last_updated_after(application: dict, last_update: datetime = None) -> bool:
-    if (not last_update):
+    if not last_update:
         return True
     return datetime.strptime(application['updated_at'], DATE_ISO_FORMAT) >= last_update
 

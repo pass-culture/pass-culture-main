@@ -10,24 +10,19 @@ from pcapi.utils.logger import json_logger
 REQUEST_TIMEOUT_IN_SECOND = 10
 
 
-def _log_call_to_external_service(response: Response, *args: Any, **kwargs: Any) -> Response:
-    json_logger.info("External service called", extra={
-        'url': response.url,
-        'statusCode': response.status_code,
-        'duration': response.elapsed.total_seconds(),
-    })
-    return response
-
-
 def _wrapper(request_func: Callable, method: str, url: str, **kwargs: Any) -> Response:
     try:
-        res = request_func(method=method, url=url, timeout=REQUEST_TIMEOUT_IN_SECOND,
-                           hooks={'response': _log_call_to_external_service}, **kwargs)
+        response = request_func(method=method, url=url, timeout=REQUEST_TIMEOUT_IN_SECOND, **kwargs)
+        json_logger.info("External service called", extra={
+            'url': response.url,
+            'statusCode': response.status_code,
+            'duration': response.elapsed.total_seconds(),
+        })
     except Exception as exc:
-        json_logger.error("Call to external service failed", extra={'method': method, 'url': url, 'exception': traceback.extract_stack()})
+        json_logger.exception("Call to external service failed with %s", exc, extra={'method': method, 'url': url})
         raise exc
 
-    return res
+    return response
 
 
 def get(url: str, **kwargs: Any) -> Response:

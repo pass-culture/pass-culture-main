@@ -1,4 +1,3 @@
-import logging
 import os
 import re
 import typing
@@ -32,6 +31,7 @@ from pcapi.utils.config import IS_DEV, \
 from pcapi.utils.config import REDIS_URL
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
+from pcapi.utils.logger import json_logger
 from pcapi.utils.mailing import MAILJET_API_KEY, \
     MAILJET_API_SECRET
 
@@ -95,7 +95,7 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         "size": response.headers.get('Content-Length', type=int),
         "from": "flask"
     }
-    json_logger = logging.getLogger('json')
+
     json_logger.info("request details", extra=request_data)
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["X-Content-Security-Policy"] = "default-src 'self'"
