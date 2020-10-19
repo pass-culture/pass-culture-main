@@ -1,15 +1,18 @@
 import logging
 import os
+import typing
 from datetime import datetime
 
 import redis
 import sentry_sdk
 from flask import Flask, g, request
+import flask.wrappers
 from flask_admin import Admin
 from flask_cors import CORS
 from flask_login import LoginManager
 from mailjet_rest import Client
 from sentry_sdk.integrations.flask import FlaskIntegration
+from sqlalchemy import orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from spectree import SpecTree
 
@@ -43,8 +46,10 @@ if feature_request_profiling_enabled():
     profiling_restrictions = [
         int(os.environ.get('PROFILE_REQUESTS_LINES_LIMIT', 100))]
     app.config['PROFILE'] = True
-    app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
-                                      restrictions=profiling_restrictions)
+    app.wsgi_app = ProfilerMiddleware(  # type: ignore
+        app.wsgi_app,
+        restrictions=profiling_restrictions,
+    )
 
 app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
 app.json_encoder = EnumJSONEncoder
@@ -62,12 +67,12 @@ app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
 
 
 @app.before_request
-def before_request():
+def before_request() -> None:
     g.start = datetime.utcnow()
 
 
 @app.after_request
-def log_request_details(response):
+def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Response:
     request_duration = datetime.utcnow() - g.start
     request_duration_in_milliseconds = round(request_duration.total_seconds() * 1000, 2)
     request_data = {
@@ -93,7 +98,9 @@ def log_request_details(response):
 
 
 @app.teardown_request
-def remove_db_session(exc):
+def remove_db_session(
+    exc: typing.Optional[Exception] = None, # pylint: disable=unused-argument
+) -> None:
     try:
         db.session.remove()
     except AttributeError:
@@ -102,6 +109,7 @@ def remove_db_session(exc):
 
 admin.init_app(app)
 db.init_app(app)
+orm.configure_mappers()
 login_manager.init_app(app)
 cors = CORS(app,
             resources={r"/*": {"origins": "*"}},
