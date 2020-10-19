@@ -1,11 +1,32 @@
 from datetime import datetime
+from enum import Enum
 from typing import List, Dict
 
 from pcapi.models import BookingSQLEntity, StockSQLEntity, ApiErrors
 
+class LocalProviderNames(Enum):
+    titelive = 'TiteLiveStocks'
+    titeliveThings = 'TiteLiveThings'
+    fnac = 'FnacStocks'
+    libraires = 'LibrairesStocks'
+    praxiel = 'PraxielStocks'
+
+
+def check_stock_is_not_imported(stock: StockSQLEntity):
+    local_class = stock.offer.lastProvider.localClass if stock.offer.lastProvider else ''
+    is_from_provider = stock.offer.isFromProvider is True
+
+    if is_from_provider and _is_stocks_provider_generated_offer(local_class):
+        api_errors = ApiErrors()
+        api_errors.add_error('global', 'Les offres importées ne sont pas modifiables')
+        raise api_errors
+
+
 
 def delete_stock_and_cancel_bookings(stock: StockSQLEntity) -> List[BookingSQLEntity]:
     unused_bookings = []
+
+    check_stock_is_not_imported(stock)
 
     if _is_thing(stock):
         stock.isSoftDeleted = True
@@ -49,6 +70,12 @@ def _deserialize_datetime(value):
 
     return datetime_value
 
+def _is_stocks_provider_generated_offer(local_class: str) -> bool:
+    print(local_class)
+    for local_provider in LocalProviderNames:
+        if local_provider.value == local_class:
+            return True
+    return False
 
 class TooLateToDeleteError(ApiErrors):
     def __init__(self):

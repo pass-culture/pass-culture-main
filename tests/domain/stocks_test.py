@@ -5,7 +5,9 @@ from freezegun import freeze_time
 
 from pcapi.domain.stocks import delete_stock_and_cancel_bookings, TooLateToDeleteError, \
     have_beginning_date_been_modified
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock
+from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_provider
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from pcapi.models import ApiErrors
 
 user1 = create_user()
 user2 = create_user()
@@ -18,6 +20,8 @@ class DeleteStockAndCancelBookingsTest:
     class WhenProductIsAThing:
         def setup_method(self, method):
             self.stock = create_stock(is_soft_deleted=False)
+            offer = create_offer_with_thing_product(venue=None, last_provider_id=None)
+            self.stock.offer = offer
 
         def test_the_stock_is_soft_deleted(self):
             # when
@@ -62,6 +66,8 @@ class DeleteStockAndCancelBookingsTest:
             def setup_method(self, method):
                 now = datetime.utcnow()
                 self.stock = create_stock(beginning_datetime=now - timedelta(days=1), is_soft_deleted=False)
+                offer = create_offer_with_event_product(venue=None, last_provider_id=None)
+                self.stock.offer = offer
 
             def test_the_stock_is_soft_deleted(self):
                 # when
@@ -103,6 +109,8 @@ class DeleteStockAndCancelBookingsTest:
             def setup_method(self, method):
                 now = datetime.utcnow()
                 self.stock = create_stock(beginning_datetime=now - timedelta(days=4), is_soft_deleted=False)
+                offer = create_offer_with_event_product(venue=None, last_provider_id=None)
+                self.stock.offer = offer
 
             def test_the_stock_is_not_soft_deleted(self):
                 # when
@@ -125,6 +133,35 @@ class DeleteStockAndCancelBookingsTest:
 
                     # then
                     assert all(map(lambda b: not b.isCancelled, bookings))
+
+        class WhenOfferIsImported:
+            def setup_method(self, method):
+                self.stock = create_stock(is_soft_deleted=False)
+
+            def test_the_stock_is_not_soft_deleted(self):
+                # given
+                provider = create_provider(local_class='TiteLiveStocks', idx=1)
+                offer = create_offer_with_event_product(venue=None, last_provider_id=1, last_provider=provider)
+                self.stock.offer = offer
+
+                # when
+                with pytest.raises(ApiErrors):
+                    delete_stock_and_cancel_bookings(self.stock)
+
+                # then
+                assert not self.stock.isSoftDeleted
+
+            def test_the_stock_is_soft_deleted(self):
+                # given
+                provider = create_provider(local_class='AllocineStocks', idx=1)
+                offer = create_offer_with_event_product(venue=None, last_provider_id=1, last_provider=provider)
+                self.stock.offer = offer
+
+                # when
+                delete_stock_and_cancel_bookings(self.stock)
+
+                # then
+                assert self.stock.isSoftDeleted
 
 
 class CheckDateHaveBeenModifiedTest:
