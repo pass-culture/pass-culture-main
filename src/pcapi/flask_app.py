@@ -117,16 +117,23 @@ db.init_app(app)
 orm.configure_mappers()
 login_manager.init_app(app)
 
-CORS_ALLOWED_ORIGIN = "http://localhost:*"
-
 public_api = Blueprint('Public API', __name__)
+CORS(
+    public_api,
+    resources={
+        r"/*": {"origins": "*"}
+    },
+    supports_credentials=True
+)
+
 private_api = Blueprint('Private API', __name__)
-CORS(private_api,
-     resources={
-         r"/*": {"origins": CORS_ALLOWED_ORIGIN}
-     },
-     supports_credentials=True
-     )
+CORS(
+    private_api,
+    resources={
+        r"/*": {"origins": os.environ.get('CORS_ALLOWED_ORIGIN')}
+    },
+    supports_credentials=True
+)
 
 app.url_map.strict_slashes = False
 
