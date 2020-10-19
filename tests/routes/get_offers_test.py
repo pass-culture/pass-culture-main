@@ -1,15 +1,16 @@
 import secrets
 from unittest.mock import patch
 
-from tests.conftest import TestClient
 import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 
 from pcapi.domain.identifier.identifier import Identifier
+from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
+from pcapi.model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.repository import repository
 from pcapi.use_cases.list_offers_for_pro_user import OffersRequestParameters
+from tests.conftest import TestClient
 from pcapi.utils.human_ids import humanize
 
 
@@ -126,6 +127,31 @@ class Get:
             assert expected_parameter.offers_per_page == 20
             assert expected_parameter.name_keywords is None
             assert expected_parameter.page == 1
+            assert isinstance(expected_parameter.status_filters, OffersStatusFilters)
+            assert expected_parameter.status_filters.exclude_active == False
+            assert expected_parameter.status_filters.exclude_inactive == False
+
+        @pytest.mark.usefixtures("db_session")
+        @patch('pcapi.routes.offers.list_offers_for_pro_user.execute')
+        def test_results_are_filtered_by_given_status(self, list_offers_mock, app):
+            # given
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            repository.save(user_offerer)
+
+            # when
+            response = TestClient(app.test_client()) \
+                .with_auth(email=user.email).get('/offers?active=false&inactive=false')
+
+            # then
+            assert response.status_code == 200
+            list_offers_mock.assert_called_once()
+            expected_parameter = list_offers_mock.call_args[0][0]
+            assert isinstance(expected_parameter, OffersRequestParameters)
+            assert isinstance(expected_parameter.status_filters, OffersStatusFilters)
+            assert expected_parameter.status_filters.exclude_active == True
+            assert expected_parameter.status_filters.exclude_inactive == True
 
         @pytest.mark.usefixtures("db_session")
         @patch('pcapi.routes.offers.list_offers_for_pro_user.execute')

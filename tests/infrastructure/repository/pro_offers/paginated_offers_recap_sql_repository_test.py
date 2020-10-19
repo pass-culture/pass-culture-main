@@ -1,10 +1,13 @@
 import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_product_with_event_type, create_product_with_thing_type
 
 from pcapi.domain.identifier.identifier import Identifier
+from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
-from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
+from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import \
+    PaginatedOffersSQLRepository
+from pcapi.model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, \
+    create_product_with_event_type, create_product_with_thing_type
 from pcapi.repository import repository
 
 
@@ -24,10 +27,10 @@ class PaginatedOfferSQLRepositoryTest:
 
         # When
         paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=user.id,
-                user_is_admin=user.isAdmin,
-                offers_per_page=requested_offers_per_page,
-                page=requested_page
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
+            offers_per_page=requested_offers_per_page,
+            page=requested_page
         )
 
         # Then
@@ -54,10 +57,10 @@ class PaginatedOfferSQLRepositoryTest:
 
         # When
         paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=user.id,
-                user_is_admin=user.isAdmin,
-                offers_per_page=requested_offers_per_page,
-                page=requested_page
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
+            offers_per_page=requested_offers_per_page,
+            page=requested_page
         )
 
         # Then
@@ -77,10 +80,10 @@ class PaginatedOfferSQLRepositoryTest:
 
         # When
         paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=user.id,
-                user_is_admin=user.isAdmin,
-                page=1,
-                offers_per_page=10
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
+            page=1,
+            offers_per_page=10
         )
 
         # Then
@@ -173,3 +176,56 @@ class PaginatedOfferSQLRepositoryTest:
         # then
         assert paginated_offers.total_offers == 1
         assert paginated_offers.offers[0].name == offer_from_wanted_offerer.name
+
+    class StatusFiltersTest:
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offers_filtered_by_active_status(self, app):
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            inactive_offer = create_offer_with_thing_product(venue, is_active=False)
+            active_offer = create_offer_with_thing_product(venue, is_active=True)
+            repository.save(user_offerer, inactive_offer, active_offer)
+            requested_page = 1
+            requested_offers_per_page = 2
+
+            # when
+            paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=user.id,
+                user_is_admin=user.isAdmin,
+                offers_per_page=requested_offers_per_page,
+                page=requested_page,
+                status_filters=OffersStatusFilters(exclude_active=True)
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(inactive_offer.id) in offers_id
+            assert Identifier(active_offer.id) not in offers_id
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offers_filtered_by_inactive_status(self, app):
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            inactive_offer = create_offer_with_thing_product(venue, is_active=False)
+            active_offer = create_offer_with_thing_product(venue, is_active=True)
+            repository.save(user_offerer, inactive_offer, active_offer)
+            requested_page = 1
+            requested_offers_per_page = 2
+
+            # when
+            paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=user.id,
+                user_is_admin=user.isAdmin,
+                offers_per_page=requested_offers_per_page,
+                page=requested_page,
+                status_filters=OffersStatusFilters(exclude_inactive=True)
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(inactive_offer.id) not in offers_id
+            assert Identifier(active_offer.id) in offers_id

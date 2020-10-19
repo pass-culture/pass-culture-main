@@ -1,6 +1,7 @@
 from typing import Optional
 
 from pcapi.domain.identifier.identifier import Identifier
+from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.domain.pro_offers.paginated_offers_recap_repository import PaginatedOffersRepository
@@ -17,7 +18,8 @@ class OffersRequestParameters(object):
                  venue_id: Optional[Identifier],
                  offers_per_page: Optional[int],
                  page: Optional[int],
-                 name_keywords: Optional[str] = None):
+                 name_keywords: Optional[str] = None,
+                 status_filters: OffersStatusFilters = OffersStatusFilters()):
         self.user_id = user_id
         self.user_is_admin = user_is_admin
         self.offerer_id = offerer_id
@@ -25,6 +27,7 @@ class OffersRequestParameters(object):
         self.offers_per_page = offers_per_page or self.DEFAULT_OFFERS_PER_PAGE
         self.page = page or self.DEFAULT_PAGE
         self.name_keywords = name_keywords
+        self.status_filters = status_filters
 
 
 class ListOffersForProUser:
@@ -38,6 +41,7 @@ class ListOffersForProUser:
                 offerer_id=offers_request_parameters.offerer_id,
                 offers_per_page=offers_request_parameters.offers_per_page,
                 venue_id=offers_request_parameters.venue_id,
-                name_keywords=offers_request_parameters.name_keywords,
                 page=offers_request_parameters.page,
+                name_keywords=offers_request_parameters.name_keywords,
+                status_filters=offers_request_parameters.status_filters,
         )

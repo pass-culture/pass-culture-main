@@ -7,6 +7,7 @@ from pcapi.domain.admin_emails import send_offer_creation_notification_to_admini
 from pcapi.domain.create_offer import fill_offer_with_new_data, \
     initialize_offer_from_product_id
 from pcapi.domain.identifier.identifier import Identifier
+from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.infrastructure.container import list_offers_for_pro_user
 from pcapi.models import OfferSQLEntity, \
     RightsType, \
@@ -60,6 +61,10 @@ def list_offers() -> (str, int):
             )
             check_user_has_rights_on_offerer(user_offerer)
 
+    status_filters = OffersStatusFilters(
+        exclude_active=request.args.get('active') == 'false',
+        exclude_inactive=request.args.get('inactive') == 'false'
+    )
 
     offers_request_parameters = OffersRequestParameters(
         user_id=current_user.id,
@@ -69,6 +74,7 @@ def list_offers() -> (str, int):
         offers_per_page=int(request.args.get('paginate')) if request.args.get('paginate') else None,
         name_keywords=request.args.get('name'),
         page=int(request.args.get('page')) if request.args.get('page') else None,
+        status_filters=status_filters
     )
     paginated_offers = list_offers_for_pro_user.execute(offers_request_parameters)
 
@@ -109,6 +115,7 @@ def post_offer() -> (str, int):
 
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 201
 
+
 @private_api.route('/offers/active-status', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data
@@ -119,6 +126,7 @@ def patch_offers_active_status() -> (str, int):
     update_offers_active_status(offers_id, offers_new_active_status)
 
     return '', 204
+
 
 @private_api.route('/offers/<offer_id>', methods=['PATCH'])
 @login_or_api_key_required

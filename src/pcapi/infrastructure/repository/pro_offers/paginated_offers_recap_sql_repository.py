@@ -2,7 +2,7 @@ import math
 from typing import Optional
 
 from pcapi.domain.identifier.identifier import Identifier
-
+from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.domain.pro_offers.paginated_offers_recap_repository import PaginatedOffersRepository
 from pcapi.domain.ts_vector import create_filter_on_ts_vector_matching_all_keywords
@@ -17,8 +17,10 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
                                                             page: Optional[int],
                                                             offers_per_page: int,
                                                             offerer_id: Optional[Identifier] = None,
+                                                            status_filters: OffersStatusFilters = OffersStatusFilters(),
                                                             venue_id: Optional[Identifier] = None,
-                                                            name_keywords: Optional[str] = None) -> PaginatedOffersRecap:
+                                                            name_keywords: Optional[str] = None
+                                                            ) -> PaginatedOffersRecap:
         query = OfferSQLEntity.query.join(VenueSQLEntity)
         if venue_id is not None:
             query = query.filter(OfferSQLEntity.venueId == venue_id.persisted)
@@ -30,6 +32,12 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
                 .join(UserOfferer) \
                 .filter(UserOfferer.userId == user_id) \
                 .filter(UserOfferer.validationToken == None)
+        if status_filters.exclude_active:
+            query = query \
+                .filter(OfferSQLEntity.isActive != True)
+        if status_filters.exclude_inactive:
+            query = query \
+                .filter(OfferSQLEntity.isActive != False)
         if name_keywords is not None:
             name_keywords_filter = create_filter_on_ts_vector_matching_all_keywords(OfferSQLEntity.__name_ts_vector__, name_keywords)
             query = query.filter(name_keywords_filter)
