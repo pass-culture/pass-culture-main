@@ -7,7 +7,7 @@ import ReactTooltip from 'react-tooltip'
 import Icon from '../../layout/Icon'
 import { closeNotification } from 'store/reducers/notificationReducer'
 
-class Notification extends PureComponent {
+class NotificationV1 extends PureComponent {
   componentDidUpdate() {
     const { notification } = this.props
     if (get(notification, 'tooltip')) {
@@ -98,15 +98,15 @@ class Notification extends PureComponent {
   }
 }
 
-Notification.defaultProps = {
+NotificationV1.defaultProps = {
   isFullscreen: false,
   notification: null,
 }
 
-Notification.propTypes = {
+NotificationV1.propTypes = {
   dispatch: PropTypes.func.isRequired,
   isFullscreen: PropTypes.bool,
   notification: PropTypes.shape(),
 }
 
-export default Notification
+export default NotificationV1

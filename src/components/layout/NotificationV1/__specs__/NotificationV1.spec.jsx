@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import Icon from '../../../layout/Icon'
-import Notification from '../Notification'
+import NotificationV1 from '../NotificationV1'
 
 describe('src | components | layout | Notification', () => {
   let props
@@ -27,7 +27,7 @@ describe('src | components | layout | Notification', () => {
         }
 
         // when
-        const wrapper = shallow(<Notification {...props} />)
+        const wrapper = shallow(<NotificationV1 {...props} />)
         const link = wrapper.find('a')
         const icon = wrapper.find(Icon)
         const firstDiv = wrapper.find('div').at(0)
@@ -55,7 +55,7 @@ describe('src | components | layout | Notification', () => {
         }
 
         // when
-        const wrapper = shallow(<Notification {...props} />)
+        const wrapper = shallow(<NotificationV1 {...props} />)
         const link = wrapper.find('a')
         const icon = wrapper.find(Icon)
         const firstDiv = wrapper.find('div').at(0)
@@ -81,7 +81,7 @@ describe('src | components | layout | Notification', () => {
         }
 
         // when
-        const wrapper = shallow(<Notification {...props} />)
+        const wrapper = shallow(<NotificationV1 {...props} />)
         wrapper.find('button').simulate('click')
         const expected = { type: 'CLOSE_NOTIFICATION' }
 
@@ -104,7 +104,7 @@ describe('src | components | layout | Notification', () => {
         }
 
         // when
-        const wrapper = shallow(<Notification {...props} />)
+        const wrapper = shallow(<NotificationV1 {...props} />)
         const icon = wrapper.find(Icon)
         const spans = wrapper.find('span')
         const button = wrapper.find('button')

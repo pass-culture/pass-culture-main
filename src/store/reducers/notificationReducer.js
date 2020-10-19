@@ -12,6 +12,8 @@ export const notificationReducer = (state = initialState, action) => {
     case SHOW_NOTIFICATION_V1:
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return { version: 1, ...action.payload }
+    case SHOW_NOTIFICATION_V2:
+      return { version: 2, ...action.payload }
     default:
       return state
   }
@@ -25,4 +27,9 @@ export const closeNotification = () => ({
 export const showNotificationV1 = payload => ({
   payload,
   type: SHOW_NOTIFICATION_V1,
+})
+
+export const showNotificationV2 = payload => ({
+  payload,
+  type: SHOW_NOTIFICATION_V2,
 })

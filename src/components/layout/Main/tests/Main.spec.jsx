@@ -5,7 +5,7 @@ import Main from '../Main'
 import ReactTooltip from 'react-tooltip'
 import { Modal, Spinner } from 'pass-culture-shared'
 import HeaderContainer from '../../Header/HeaderContainer'
-import NotificationContainer from '../../Notification/NotificationContainer'
+import NotificationContainer from '../../NotificationV1/NotificationV1Container'
 import { NavLink } from 'react-router-dom'
 
 describe('src | components | layout | Main', () => {
