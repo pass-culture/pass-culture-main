@@ -1,16 +1,23 @@
 import traceback
-from typing import Tuple, Dict
+from typing import Tuple, \
+    Dict
 
 import simplejson as json
-from flask import current_app as app, jsonify, request
-from werkzeug.exceptions import NotFound, MethodNotAllowed
+from flask import current_app as app, \
+    jsonify, \
+    request
+from werkzeug.exceptions import NotFound, \
+    MethodNotAllowed
 
-from pcapi.domain.identifier.identifier import NonStricltyPositiveIdentifierException, NonProperlyFormattedScrambledId
+from pcapi.domain.identifier.identifier import NonProperlyFormattedScrambledId
 from pcapi.domain.stocks import TooLateToDeleteError
 from pcapi.domain.user_activation import AlreadyActivatedException
-from pcapi.models.api_errors import ApiErrors, ResourceGoneError, ResourceNotFoundError, ForbiddenError, DecimalCastError, \
+from pcapi.models.api_errors import ApiErrors, \
+    ResourceGoneError, \
+    ResourceNotFoundError, \
+    ForbiddenError, \
+    DecimalCastError, \
     DateTimeCastError
-from pcapi.routes.before_request import InvalidOriginHeader
 from pcapi.utils.human_ids import NonDehumanizableId
 
 
@@ -42,14 +49,6 @@ def restize_resource_gone_error(error: ResourceGoneError) -> Tuple[Dict, int]:
 @app.errorhandler(ResourceNotFoundError)
 def restize_booking_not_found_error(error: ResourceNotFoundError) -> Tuple[Dict, int]:
     return jsonify(error.errors), error.status_code or 404
-
-
-@app.errorhandler(InvalidOriginHeader)
-def restize_invalid_header_exception(error: InvalidOriginHeader) -> Tuple[Dict, int]:
-    e = ApiErrors()
-    e.add_error('global',
-                'Header non autorisé')
-    return jsonify(e.errors), 400
 
 
 @app.errorhandler(Exception)
