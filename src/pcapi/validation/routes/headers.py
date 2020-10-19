@@ -1,6 +1,5 @@
-import re
-
-from pcapi.utils.config import API_URL, ENV
+from pcapi.utils.config import API_URL, \
+    ENV
 
 
 # def check_origin_header_validity(header, endpoint, path):
@@ -62,7 +61,7 @@ def _get_endpoint_exceptions():
             'get_all_offerers_with_venue', 'get_pending_validation',
             'get_export_venues', 'get_export_offerers', 'get_bookings_csv',
             'list_features', 'show_dashboard_page', 'get_users_stats', ''
-            'patch_booking_use_by_token',
+                                                                       'patch_booking_use_by_token',
             'get_booking_by_token_v2',
             'patch_booking_keep_by_token',
             'api_documentation',

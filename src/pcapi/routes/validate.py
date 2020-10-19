@@ -4,7 +4,8 @@ from flask import jsonify, \
 from flask_login import current_user, \
     login_required
 
-from pcapi.flask_app import private_api
+from pcapi.flask_app import private_api, \
+    public_api
 from pcapi.connectors import redis
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.iris import link_valid_venue_to_irises
@@ -39,7 +40,7 @@ from pcapi.validation.routes.validate import check_valid_token_for_user_validati
     check_venue_found
 
 
-@private_api.route("/validate/user-offerer/<token>", methods=["GET"])
+@public_api.route("/validate/user-offerer/<token>", methods=["GET"])
 def validate_offerer_attachment(token):
     check_validation_request(token)
     user_offerer = UserOfferer.query.filter_by(validationToken=token).first()
@@ -56,7 +57,7 @@ def validate_offerer_attachment(token):
     return "Validation du rattachement de la structure effectuée", 202
 
 
-@private_api.route("/validate/offerer/<token>", methods=["GET"])
+@public_api.route("/validate/offerer/<token>", methods=["GET"])
 def validate_new_offerer(token):
     check_validation_request(token)
     offerer = Offerer.query.filter_by(validationToken=token).first()
@@ -81,7 +82,7 @@ def validate_new_offerer(token):
     return "Validation effectuée", 202
 
 
-@private_api.route("/validate/venue/", methods=["GET"])
+@public_api.route("/validate/venue/", methods=["GET"])
 def validate_venue():
     token = request.args.get('token')
     check_validation_request(token)

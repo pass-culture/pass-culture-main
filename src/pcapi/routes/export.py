@@ -13,7 +13,8 @@ from flask_login import current_user, \
     login_required
 
 import pcapi.models
-from pcapi.flask_app import private_api
+from pcapi.flask_app import private_api, \
+    public_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.pc_object import PcObject
 from pcapi.repository import offerer_queries
@@ -27,7 +28,7 @@ from pcapi.validation.routes.exports import check_user_is_admin, \
     check_get_offerers_params
 
 
-@private_api.route('/exports/models', methods=['GET'])
+@public_api.route('/exports/models', methods=['GET'])
 def list_export_urls():
     _check_token()
     return "\n".join([request.host_url + 'exports/models/' + model_name
@@ -35,7 +36,7 @@ def list_export_urls():
                       for model_name in filter(_is_exportable, pcapi.models.__all__)])
 
 
-@private_api.route('/exports/models/<model_name>', methods=['GET'])
+@public_api.route('/exports/models/<model_name>', methods=['GET'])
 def export_table(model_name):
     _check_token()
     ae = ApiErrors()
@@ -77,7 +78,7 @@ def export_table(model_name):
                      as_attachment=True)
 
 
-@private_api.route('/exports/offerers_siren', methods=['GET'])
+@public_api.route('/exports/offerers_siren', methods=['GET'])
 def get_all_offerers_with_managing_user_information():
     _check_token()
 
@@ -89,7 +90,7 @@ def get_all_offerers_with_managing_user_information():
     return _make_csv_response(file_name, headers, result)
 
 
-@private_api.route('/exports/offerers_siren_with_venue', methods=['GET'])
+@public_api.route('/exports/offerers_siren_with_venue', methods=['GET'])
 def get_all_offerers_with_managing_user_information_and_venue():
     _check_token()
 
@@ -101,7 +102,7 @@ def get_all_offerers_with_managing_user_information_and_venue():
     return _make_csv_response(file_name, headers, result)
 
 
-@private_api.route('/exports/offerers_siren_with_not_virtual_venue', methods=['GET'])
+@public_api.route('/exports/offerers_siren_with_not_virtual_venue', methods=['GET'])
 def get_all_offerers_with_managing_user_information_and_not_virtual_venue():
     _check_token()
 
@@ -113,7 +114,7 @@ def get_all_offerers_with_managing_user_information_and_not_virtual_venue():
     return _make_csv_response(file_name, headers, result)
 
 
-@private_api.route('/exports/offerers_with_venue', methods=['GET'])
+@public_api.route('/exports/offerers_with_venue', methods=['GET'])
 def get_all_offerers_with_venue():
     _check_token()
 
@@ -124,7 +125,7 @@ def get_all_offerers_with_venue():
     return _make_csv_response(file_name, headers, result)
 
 
-@private_api.route('/exports/pending_validation', methods=['GET'])
+@public_api.route('/exports/pending_validation', methods=['GET'])
 @login_required
 def get_pending_validation():
     check_user_is_admin(current_user)
@@ -137,7 +138,7 @@ def get_pending_validation():
     return jsonify(result), 200
 
 
-@private_api.route('/exports/venues', methods=['POST'])
+@public_api.route('/exports/venues', methods=['POST'])
 @login_required
 @expect_json_data
 def get_export_venues():
@@ -169,7 +170,7 @@ def get_export_venues():
     return jsonify([as_dict(venue) for venue in venues]), 200
 
 
-@private_api.route('/exports/offerers', methods=['POST'])
+@public_api.route('/exports/offerers', methods=['POST'])
 @login_required
 @expect_json_data
 def get_export_offerers():

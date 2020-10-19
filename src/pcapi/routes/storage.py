@@ -7,7 +7,8 @@ from flask import jsonify, \
 from flask_login import login_required
 
 import pcapi.models
-from pcapi.flask_app import private_api
+from pcapi.flask_app import private_api, \
+    public_api
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.models import RightsType
 from pcapi.repository import repository
@@ -25,7 +26,7 @@ GENERIC_STORAGE_MODEL_NAMES = [
 ]
 
 
-@private_api.route('/storage/<bucketId>/<path:objectId>')
+@public_api.route('/storage/<bucketId>/<path:objectId>')
 def send_storage_file(bucketId, objectId):
     path = local_path(bucketId, objectId)
     type_path = str(path) + ".type"

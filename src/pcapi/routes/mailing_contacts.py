@@ -1,12 +1,13 @@
 from flask import request
 
-from pcapi.flask_app import private_api
+from pcapi.flask_app import private_api, \
+    public_api
 from pcapi.utils.rest import expect_json_data
 from pcapi.validation.routes.mailing_contacts import validate_save_mailing_contact_request
 from pcapi.workers.mailing_contacts_job import mailing_contacts_job
 
 
-@private_api.route('/mailing-contacts', methods=['POST'])
+@public_api.route('/mailing-contacts', methods=['POST'])
 @expect_json_data
 def save_mailing_contact():
     json = request.get_json()

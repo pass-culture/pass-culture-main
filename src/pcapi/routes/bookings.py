@@ -6,7 +6,8 @@ from flask import jsonify, request
 from flask_login import current_user, login_required
 from spectree import Response
 
-from pcapi.flask_app import private_api
+from pcapi.flask_app import private_api, \
+    public_api
 from pcapi.connectors import redis
 from pcapi.domain.user_activation import create_initial_deposit, is_activation_booking
 from pcapi.domain.user_emails import send_activation_email
@@ -106,7 +107,7 @@ def cancel_booking(booking_id: str):
     return jsonify(serialize_domain_booking(booking)), 200
 
 
-@private_api.route('/bookings/token/<token>', methods=['GET'])
+@public_api.route('/bookings/token/<token>', methods=['GET'])
 def get_booking_by_token(token: str):
     email = request.args.get('email', None)
     offer_id = dehumanize(request.args.get('offer_id', None))
@@ -128,7 +129,7 @@ def get_booking_by_token(token: str):
     return '', 204
 
 
-@private_api.route('/bookings/token/<token>', methods=['PATCH'])
+@public_api.route('/bookings/token/<token>', methods=['PATCH'])
 def patch_booking_by_token(token: str):
     email = request.args.get('email', None)
     offer_id = dehumanize(request.args.get('offer_id', None))
@@ -154,7 +155,7 @@ def patch_booking_by_token(token: str):
     return '', 204
 
 
-@private_api.route('/v2/bookings/token/<token>', methods=['GET'])
+@public_api.route('/v2/bookings/token/<token>', methods=['GET'])
 @login_or_api_key_required_v2
 def get_booking_by_token_v2(token: str):
     app_authorization_api_key = _extract_api_key_from_request(request)
@@ -177,7 +178,7 @@ def get_booking_by_token_v2(token: str):
     return jsonify(response), 200
 
 
-@private_api.route('/v2/bookings/use/token/<token>', methods=['PATCH'])
+@public_api.route('/v2/bookings/use/token/<token>', methods=['PATCH'])
 @login_or_api_key_required_v2
 def patch_booking_use_by_token(token: str):
     booking_token_upper_case = token.upper()
@@ -229,7 +230,7 @@ def patch_cancel_booking_by_token(token: str):
     return '', 204
 
 
-@private_api.route('/v2/bookings/keep/token/<token>', methods=['PATCH'])
+@public_api.route('/v2/bookings/keep/token/<token>', methods=['PATCH'])
 @login_or_api_key_required_v2
 def patch_booking_keep_by_token(token: str):
     booking_token_upper_case = token.upper()

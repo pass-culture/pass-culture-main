@@ -1,18 +1,26 @@
-import os
 from datetime import datetime
 from unittest.mock import patch
 
-from pcapi.models import VenueSQLEntity, Offerer
+import pytest
+
+from pcapi.model_creators.activity_creators import create_venue_activity, \
+    save_all_activities
+from pcapi.model_creators.generic_creators import create_user, \
+    create_offerer, \
+    create_venue, \
+    create_user_offerer, \
+    create_bank_information
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer, \
+    create_stock_from_event_occurrence, \
+    create_stock_with_thing_offer, \
+    create_offer_with_event_product, \
+    create_event_occurrence
+from pcapi.models import VenueSQLEntity, \
+    Offerer
 from pcapi.repository import repository
 from pcapi.routes.serialization import serialize
-import pytest
-from tests.conftest import TestClient
-from pcapi.model_creators.activity_creators import create_venue_activity, save_all_activities
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
-    create_bank_information
-from pcapi.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
-    create_stock_with_thing_offer, create_offer_with_event_product, create_event_occurrence
 from pcapi.utils.human_ids import humanize
+from tests.conftest import TestClient
 
 fake_export_token = 'fake'
 

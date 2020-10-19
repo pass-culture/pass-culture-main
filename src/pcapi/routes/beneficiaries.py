@@ -4,7 +4,8 @@ from flask_login import current_user, \
     login_required, \
     login_user
 
-from pcapi.flask_app import private_api
+from pcapi.flask_app import private_api, \
+    public_api
 from pcapi.domain.beneficiary.beneficiary_licence import is_licence_token_valid
 from pcapi.routes.serialization import as_dict
 from pcapi.use_cases.update_user_informations import update_user_informations, \
@@ -67,7 +68,7 @@ def signin_beneficiary():
     return jsonify(), 200
 
 
-@private_api.route('/beneficiaries/licence_verify', methods=['POST'])
+@public_api.route('/beneficiaries/licence_verify', methods=['POST'])
 def verify_id_check_licence_token():
     check_verify_licence_token_payload(request)
 
@@ -80,7 +81,7 @@ def verify_id_check_licence_token():
     return '', 200
 
 
-@private_api.route('/beneficiaries/application_update', methods=['POST'])
+@public_api.route('/beneficiaries/application_update', methods=['POST'])
 def id_check_application_update():
     check_application_update_payload(request)
 
