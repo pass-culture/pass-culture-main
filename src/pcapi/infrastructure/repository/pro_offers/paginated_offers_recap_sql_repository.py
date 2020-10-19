@@ -19,16 +19,14 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
                                                             offerer_id: Optional[Identifier] = None,
                                                             venue_id: Optional[Identifier] = None,
                                                             name_keywords: Optional[str] = None) -> PaginatedOffersRecap:
-        query = OfferSQLEntity.query
+        query = OfferSQLEntity.query.join(VenueSQLEntity)
         if venue_id is not None:
             query = query.filter(OfferSQLEntity.venueId == venue_id.persisted)
         if offerer_id is not None:
             query = query \
-                .join(VenueSQLEntity) \
                 .filter(VenueSQLEntity.managingOffererId == offerer_id.persisted)
         if not user_is_admin:
             query = query \
-                .join(VenueSQLEntity) \
                 .join(Offerer) \
                 .join(UserOfferer) \
                 .filter(UserOfferer.userId == user_id) \

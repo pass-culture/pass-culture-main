@@ -1,5 +1,7 @@
 import pytest
 
+from pcapi.domain.identifier.identifier import Identifier
+
 from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
 from pcapi.infrastructure.repository.venue.venue_with_offerer_name import \
     venue_with_offerer_name_domain_converter
@@ -30,7 +32,7 @@ class GetByProIdentifierTest:
         expected_venue_2 = venue_with_offerer_name_domain_converter.to_domain(venue_2)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, None)
 
         # then
         assert len(found_venues) == 2
@@ -53,7 +55,7 @@ class GetByProIdentifierTest:
         expected_venue_2 = venue_with_offerer_name_domain_converter.to_domain(venue_2)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(admin_user.id, True)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(admin_user.id, True, None)
 
         # then
         assert len(found_venues) == 2
@@ -70,7 +72,7 @@ class GetByProIdentifierTest:
         repository.save(user_offerer)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, None)
 
         # then
         assert found_venues == []
@@ -90,7 +92,7 @@ class GetByProIdentifierTest:
         expected_venue_2 = venue_with_offerer_name_domain_converter.to_domain(venue_2)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, None)
 
         # then
         assert len(found_venues) == 2
@@ -113,7 +115,7 @@ class GetByProIdentifierTest:
         expected_venue = venue_with_offerer_name_domain_converter.to_domain(venue_of_validated_offerer)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, None)
 
         # then
         assert len(found_venues) == 1
@@ -130,7 +132,7 @@ class GetByProIdentifierTest:
         repository.save(venue)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, None)
 
         # then
         assert len(found_venues) == 0
@@ -146,7 +148,27 @@ class GetByProIdentifierTest:
         repository.save(venue)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, None)
 
         # then
         assert len(found_venues) == 0
+
+    @pytest.mark.usefixtures("db_session")
+    def test_returns_venues_filtered_by_offerer_id_when_provided(self, app: object):
+        # given
+        pro_user = create_user()
+        offerer = create_offerer(idx=1)
+        offerer2 = create_offerer(idx=2, siren='5654367')
+        create_user_offerer(user=pro_user, offerer=offerer)
+        create_user_offerer(user=pro_user, offerer=offerer2)
+        venue_1 = create_venue(name="Kléber", offerer=offerer, siret='12345678912345', public_name="Librairie Kléber")
+        venue_2 = create_venue(name="QG FNAC", offerer=offerer2, siret='98765432198765')
+
+        repository.save(venue_1, venue_2)
+
+        # when
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, Identifier(1))
+
+        # then
+        assert len(found_venues) == 1
+        assert found_venues[0].name == 'Kléber'

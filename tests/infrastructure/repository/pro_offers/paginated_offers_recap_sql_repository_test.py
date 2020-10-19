@@ -145,3 +145,31 @@ class PaginatedOfferSQLRepositoryTest:
         offers_id = [offer.identifier for offer in paginated_offers.offers]
         assert Identifier(offer_matching_requested_name.id) in offers_id
         assert Identifier(offer_not_matching_requested_name.id) not in offers_id
+
+    @pytest.mark.usefixtures("db_session")
+    def test_returns_offers_filtered_by_offerer_id_when_provided(self, app: object):
+        # given
+        pro_user = create_user()
+        offerer = create_offerer()
+        offerer2 = create_offerer(siren='981237')
+        user_offerer = create_user_offerer(pro_user, offerer)
+        user_offerer2 = create_user_offerer(pro_user, offerer2)
+        venue = create_venue(offerer)
+        venue2 = create_venue(offerer2, siret='12345678912387')
+        offer1 = create_offer_with_thing_product(venue=venue, thing_name='Returned offer')
+        offer2 = create_offer_with_thing_product(venue=venue2, thing_name='Not returned offer')
+
+        repository.save(user_offerer, user_offerer2, offer1, offer2)
+
+        # When
+        paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
+            user_id=pro_user.id,
+            user_is_admin=pro_user.isAdmin,
+            page=1,
+            offers_per_page=1,
+            offerer_id=Identifier(offerer.id)
+        )
+
+        # then
+        assert paginated_offers.total_offers == 1
+        assert paginated_offers.offers[0].name == 'Returned offer'

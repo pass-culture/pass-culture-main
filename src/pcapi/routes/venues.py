@@ -8,6 +8,7 @@ from flask_login import current_user, \
 
 from pcapi.flask_app import private_api
 from pcapi.connectors import redis
+from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.iris import link_valid_venue_to_irises
 from pcapi.domain.offers import update_is_active_status
 from pcapi.domain.venues import is_algolia_indexing
@@ -42,7 +43,9 @@ def get_venue(venue_id):
 @private_api.route('/venues', methods=['GET'])
 @login_required
 def get_venues():
-    venues = get_all_venues_by_pro_user.execute(pro_identifier=current_user.id, user_is_admin=current_user.isAdmin)
+    offerer_identifier = Identifier.from_scrambled_id(request.args.get('offererId'))
+
+    venues = get_all_venues_by_pro_user.execute(pro_identifier=current_user.id, user_is_admin=current_user.isAdmin, offerer_id=offerer_identifier)
     return jsonify(serialize_venues_with_offerer_name(venues)), 200
 
 

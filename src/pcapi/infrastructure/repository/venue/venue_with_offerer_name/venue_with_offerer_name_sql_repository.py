@@ -1,4 +1,7 @@
 from typing import List
+from typing import Optional
+
+from pcapi.domain.identifier.identifier import Identifier
 
 from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
 from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name_repository import \
@@ -9,7 +12,7 @@ from pcapi.models import VenueSQLEntity, Offerer, UserOfferer, UserSQLEntity
 
 
 class VenueWithOffererNameSQLRepository(VenueWithOffererNameRepository):
-    def get_by_pro_identifier(self, pro_identifier: int, user_is_admin: bool,) -> List[VenueWithOffererName]:
+    def get_by_pro_identifier(self, pro_identifier: int, user_is_admin: bool, offerer_id: Optional[Identifier] = None,) -> List[VenueWithOffererName]:
         query = VenueSQLEntity.query
 
         if not user_is_admin:
@@ -19,6 +22,9 @@ class VenueWithOffererNameSQLRepository(VenueWithOffererNameRepository):
                 .join(UserOfferer, UserOfferer.offererId == Offerer.id) \
                 .filter(UserOfferer.validationToken == None) \
                 .filter(UserOfferer.userId == pro_identifier)
+
+        if offerer_id:
+            query = query.filter(VenueSQLEntity.managingOffererId == offerer_id.persisted)
 
         venue_sql_entities = query \
             .order_by(VenueSQLEntity.name) \
