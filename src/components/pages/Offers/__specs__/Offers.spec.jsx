@@ -95,6 +95,7 @@ describe('src | components | pages | Offers | Offers', () => {
       showActionsBar: jest.fn(),
       hideActionsBar: jest.fn(),
       venue: { name: 'Ma Venue', id: 'JI' },
+      getOfferer: jest.fn(),
     }
     fetchAllVenuesByProUser.mockResolvedValue(proVenues)
   })
@@ -536,8 +537,8 @@ describe('src | components | pages | Offers | Offers', () => {
         expect(props.saveSearchFilters).toHaveBeenCalledWith({
           venueId: ALL_VENUES,
           name: 'search string',
-          page: DEFAULT_PAGE,
-        })
+          offererId: '',
+        page: DEFAULT_PAGE,})
       })
     })
 
@@ -563,7 +564,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
     })
 
-    it('should have venue value when user filter by venue', async () => {
+    it('should have venue value when user filters by venue', async () => {
       // Given
       renderOffers(props, store)
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
@@ -584,7 +585,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
     })
 
-    it('should have venue value be removed when user ask for all venues', async () => {
+    it('should have venue value be removed when user asks for all venues', async () => {
       // Given
       renderOffers(props, store)
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
@@ -602,6 +603,44 @@ describe('src | components | pages | Offers | Offers', () => {
           nom: null,
           page: null,
         })
+      })
+    })
+
+    it('should have offerer filter', async () => {
+      // Given
+      props.query.parse.mockReturnValueOnce({ structure: 'A4' })
+      props.getOfferer.mockResolvedValueOnce({ name: 'La structure' })
+
+      // When
+      const wrapper = await mountOffers(props, store)
+
+      // Then
+      wrapper.update()
+      const offererFilter = wrapper
+        .find('button')
+        .findWhere(node => node.text() === 'La structure')
+        .first()
+      expect(offererFilter).toHaveLength(1)
+    })
+
+    it('should have offerer value be removed when user removes offerer filter', async () => {
+      // Given
+      props.query.parse.mockReturnValueOnce({ structure: 'A4' })
+      props.getOfferer.mockResolvedValueOnce({ name: 'La structure' })
+      const wrapper = await mountOffers(props, store)
+      wrapper.update()
+      const offererFilter = wrapper
+        .find('button')
+        .findWhere(node => node.text() === 'La structure')
+        .first()
+
+      // When
+      offererFilter.invoke('onClick')()
+
+      // Then
+      expect(props.query.change).toHaveBeenCalledWith({
+        page: null,
+        structure: null,
       })
     })
   })

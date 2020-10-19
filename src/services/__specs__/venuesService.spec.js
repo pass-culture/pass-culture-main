@@ -4,6 +4,7 @@ import {
   fetchAllVenuesByProUser,
   computeVenueDisplayName,
 } from '../venuesService'
+import { fetchFromApiWithCredentials } from '../../utils/fetch'
 
 describe('venuesService', () => {
   let mockJsonPromise
@@ -31,6 +32,22 @@ describe('venuesService', () => {
         name: 'Librairie Kléber',
         isVirtual: false,
       })
+    })
+
+    it('should call api with offererId in query params when given', async () => {
+      // When
+      await fetchAllVenuesByProUser('A4')
+
+      // Then
+      expect(fetchFromApiWithCredentials).toHaveBeenCalledWith('/venues?offererId=A4')
+    })
+
+    it('should not add offererId in query params when not given', async () => {
+      // When
+      await fetchAllVenuesByProUser()
+
+      // Then
+      expect(fetchFromApiWithCredentials).toHaveBeenCalledWith('/venues')
     })
 
     it('should return empty paginatedBookingsRecap when an error occurred', async () => {

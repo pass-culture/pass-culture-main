@@ -1,7 +1,9 @@
 import { fetchFromApiWithCredentials } from 'utils/fetch'
 
-export const fetchAllVenuesByProUser = () => {
-  return fetchFromApiWithCredentials('/venues').catch(() => [])
+export const fetchAllVenuesByProUser = offererId => {
+  const apiUrl = offererId ? `/venues?offererId=${offererId}` : '/venues'
+
+  return fetchFromApiWithCredentials(apiUrl).catch(() => [])
 }
 
 export const computeVenueDisplayName = venue => {

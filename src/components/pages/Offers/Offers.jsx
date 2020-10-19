@@ -43,17 +43,14 @@ class Offers extends PureComponent {
     const { offererId } = this.state
     const { getOfferer } = this.props
 
+    if (offererId) {
+      getOfferer(offererId).then(offerer => this.setState({ offerer }))
+    }
+
     this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
-    fetchAllVenuesByProUser().then(venues =>
-      // TODO if offererID filter by offererId
+    fetchAllVenuesByProUser(offererId).then(venues =>
       this.setState({ venueOptions: formatAndOrderVenues(venues) })
     )
-
-    if (offererId) {
-      getOfferer(offererId).then(offerer => {
-        this.setState({ offerer })
-      })
-    }
   }
 
   componentWillUnmount() {
@@ -101,8 +98,8 @@ class Offers extends PureComponent {
 
   getPaginatedOffersWithFilters = ({ shouldTriggerSpinner }) => {
     const { saveSearchFilters } = this.props
-    const { nameSearchValue, selectedVenueId, page } = this.state
-    saveSearchFilters({ name: nameSearchValue, venueId: selectedVenueId, page })
+    const { nameSearchValue, selectedVenueId, offererId, page } = this.state
+    saveSearchFilters({ name: nameSearchValue, venueId: selectedVenueId, offererId, page })
 
     shouldTriggerSpinner && this.setState({ isLoading: true })
 
@@ -129,6 +126,9 @@ class Offers extends PureComponent {
     })
     this.setState({ offererId: ALL_OFFERERS, offerer: undefined }, () => {
       this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
+      fetchAllVenuesByProUser().then(venues =>
+        this.setState({ venueOptions: formatAndOrderVenues(venues) })
+      )
     })
   }
 
