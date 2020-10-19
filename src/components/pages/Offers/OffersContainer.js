@@ -11,22 +11,20 @@ import { fetchFromApiWithCredentials } from 'utils/fetch'
 import { ALL_OFFERS, ALL_VENUES, ALL_OFFERERS } from './_constants'
 import Offers from './Offers'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
-import { selectOffererById } from '../../../store/selectors/data/offerersSelectors'
-import { translateQueryParamsToApiParams } from '../../../utils/translate'
 
-export const mapStateToProps = (state, { query }) => {
-  const queryParams = query.parse()
-  const apiQueryParams = translateQueryParamsToApiParams(queryParams)
-  const { offererId } = apiQueryParams
-
+export const mapStateToProps = state => {
   return {
     lastTrackerMoment: lastTrackerMoment(state, 'offers'),
     notification: state.notification,
     offers: selectOffers(state),
     searchFilters: state.offers.searchFilters,
-    offerer: selectOffererById(state, offererId),
+    getOfferer: fetchOffererById,
     selectedOfferIds: state.offers.selectedOfferIds,
   }
+}
+
+const fetchOffererById = offererId => {
+  return fetchFromApiWithCredentials(`/offerers/${offererId}`)
 }
 
 const buildQueryParams = ({ nameSearchValue, selectedVenueId, offererId, page }) => {

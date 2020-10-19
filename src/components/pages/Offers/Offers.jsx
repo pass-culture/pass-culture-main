@@ -33,17 +33,27 @@ class Offers extends PureComponent {
       page: page || DEFAULT_PAGE,
       pageCount: null,
       offererId: offererId || ALL_OFFERERS,
+      offerer: undefined,
       selectedVenueId: selectedVenueId || ALL_VENUES,
       venueOptions: [],
     }
   }
 
   componentDidMount() {
+    const { offererId } = this.state
+    const { getOfferer } = this.props
+
     this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
     fetchAllVenuesByProUser().then(venues =>
       // TODO if offererID filter by offererId
       this.setState({ venueOptions: formatAndOrderVenues(venues) })
     )
+
+    if (offererId) {
+      getOfferer(offererId).then(offerer => {
+        this.setState({ offerer })
+      })
+    }
   }
 
   componentWillUnmount() {
@@ -117,7 +127,7 @@ class Offers extends PureComponent {
       [mapApiToBrowser.offererId]: null,
       page: null,
     })
-    this.setState({ offererId: ALL_OFFERERS }, () => {
+    this.setState({ offererId: ALL_OFFERERS, offerer: undefined }, () => {
       this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
     })
   }
@@ -168,7 +178,6 @@ class Offers extends PureComponent {
       handleOnDeactivateAllVenueOffersClick,
       handleOnActivateAllVenueOffersClick,
       offers,
-      offerer,
       query,
       selectedOfferIds,
     } = this.props
@@ -178,6 +187,7 @@ class Offers extends PureComponent {
     const {
       nameSearchValue,
       offersCount,
+      offerer,
       page,
       pageCount,
       isLoading,
