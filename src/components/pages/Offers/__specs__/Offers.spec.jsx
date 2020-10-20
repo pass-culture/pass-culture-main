@@ -538,7 +538,8 @@ describe('src | components | pages | Offers | Offers', () => {
           venueId: ALL_VENUES,
           name: 'search string',
           offererId: '',
-        page: DEFAULT_PAGE,})
+          page: DEFAULT_PAGE,
+        })
       })
     })
 
@@ -612,30 +613,22 @@ describe('src | components | pages | Offers | Offers', () => {
       props.getOfferer.mockResolvedValueOnce({ name: 'La structure' })
 
       // When
-      const wrapper = await mountOffers(props, store)
+      renderOffers(props, store)
 
       // Then
-      wrapper.update()
-      const offererFilter = wrapper
-        .find('button')
-        .findWhere(node => node.text() === 'La structure')
-        .first()
-      expect(offererFilter).toHaveLength(1)
+      await waitFor(() => expect(screen.queryByText('La structure')).not.toBeNull())
     })
 
     it('should have offerer value be removed when user removes offerer filter', async () => {
       // Given
       props.query.parse.mockReturnValueOnce({ structure: 'A4' })
       props.getOfferer.mockResolvedValueOnce({ name: 'La structure' })
-      const wrapper = await mountOffers(props, store)
-      wrapper.update()
-      const offererFilter = wrapper
-        .find('button')
-        .findWhere(node => node.text() === 'La structure')
-        .first()
+      renderOffers(props, store)
 
       // When
-      offererFilter.invoke('onClick')()
+      await waitFor(() => {
+        fireEvent.click(screen.getByText('La structure'))
+      })
 
       // Then
       expect(props.query.change).toHaveBeenCalledWith({
