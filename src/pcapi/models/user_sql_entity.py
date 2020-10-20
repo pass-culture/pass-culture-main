@@ -213,7 +213,7 @@ class UserSQLEntity(PcObject,
 
     @property
     def needsToSeeTutorials(self):
-        return self.canBookFreeOffers and self.hasSeenTutorials is False
+        return self.canBookFreeOffers and not self.hasSeenTutorials
 
     @property
     def hasOffers(self):
