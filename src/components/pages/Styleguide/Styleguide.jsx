@@ -7,6 +7,7 @@ import StyleguideInputText from './StyleguideElements/StyleguideInputText'
 import StyleguideAgenda from './StyleguideAgenda'
 import StyleguideTitle from './StyleguideTitles'
 import StyleguideTitles from './StyleguideElements/StyleguideTitles'
+import StyleguideSelect from './StyleguideElements/StyleguideSelect'
 
 const Styleguide = () => (
   <Main name="styleguide">
@@ -30,6 +31,12 @@ const Styleguide = () => (
       componentName="Inputs"
     />
     <StyleguideInputText />
+
+    <StyleguideTitle
+      className="sg-select"
+      componentName="Select"
+    />
+    <StyleguideSelect />
   </Main>
 )
 
