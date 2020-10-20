@@ -17,7 +17,10 @@ jest.mock('../domain/checkIfAgeIsEligible', () => {
 })
 
 jest.mock('../domain/checkIfDepartmentIsEligible', () => {
+  const originalModule = jest.requireActual('../domain/checkIfDepartmentIsEligible')
+
   return {
+    ...originalModule,
     checkIfDepartmentIsEligible: jest.fn(),
   }
 })
@@ -243,6 +246,7 @@ describe('eligibility check page', () => {
 
       it("should check if department is eligible based on user's postal code", () => {
         // given
+        checkIfAgeIsEligible.mockReturnValue('eligible')
         const wrapper = mount(
           <MemoryRouter>
             <EligibilityCheck {...props} />

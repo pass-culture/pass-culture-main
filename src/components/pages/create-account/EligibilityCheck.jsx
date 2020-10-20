@@ -5,7 +5,10 @@ import InputMask from 'react-input-mask'
 import BackLink from '../../layout/Header/BackLink/BackLink'
 import Icon from '../../layout/Icon/Icon'
 import { checkIfAgeIsEligible, ELIGIBILITY_VALUES } from './domain/checkIfAgeIsEligible'
-import { checkIfDepartmentIsEligible } from './domain/checkIfDepartmentIsEligible'
+import {
+  checkIfDepartmentIsEligible,
+  DEPARTMENT_ELIGIBILITY_VALUES,
+} from './domain/checkIfDepartmentIsEligible'
 import Eligible from './Eligible/Eligible'
 import { AgeEligibleSoon } from './EligibleSoon/AgeEligibleSoon'
 import { DepartmentEligibleSoon } from './EligibleSoon/DepartmentEligibleSoon'
@@ -67,37 +70,43 @@ const EligibilityCheck = ({ history, trackEligibility }) => {
 
       setHasAnErrorMessage(false)
       const ageEligibilityValue = checkIfAgeIsEligible(dateOfBirthInputValue)
-      setComponentToRender(ageEligibilityValue)
+
+      if (ageEligibilityValue === ELIGIBILITY_VALUES.ELIGIBLE) {
+        const departmentEligibilityValue = checkIfDepartmentIsEligible(postalCodeInputValue)
+          ? DEPARTMENT_ELIGIBILITY_VALUES.ELIGIBLE
+          : DEPARTMENT_ELIGIBILITY_VALUES.NOT_ELIGIBLE
+        setComponentToRender(departmentEligibilityValue)
+      } else {
+        setComponentToRender(ageEligibilityValue)
+      }
     },
-    [dateOfBirthInputValue]
+    [dateOfBirthInputValue, postalCodeInputValue]
   )
 
   switch (componentToRender) {
-    case ELIGIBILITY_VALUES.ELIGIBLE:
-      if (checkIfDepartmentIsEligible(postalCodeInputValue)) {
-        trackEligibility("Eligibilite - OK")
-        return <Eligible />
-      } else {
-        if (history.location.hash !== '#departement-ineligible') {
-          history.replace({
-            hash: '#departement-ineligible',
-          })
-        }
-        trackEligibility("Eligibilite - WrongDepartment")
-        return (
-          <DepartmentEligibleSoon
-            birthDate={dateOfBirthInputValue}
-            postalCode={postalCodeInputValue}
-          />
-        )
+    case DEPARTMENT_ELIGIBILITY_VALUES.ELIGIBLE:
+      trackEligibility('Eligibilite - OK')
+      return <Eligible />
+    case DEPARTMENT_ELIGIBILITY_VALUES.NOT_ELIGIBLE:
+      if (history.location.hash !== '#departement-ineligible') {
+        history.replace({
+          hash: '#departement-ineligible',
+        })
       }
+      trackEligibility('Eligibilite - WrongDepartment')
+      return (
+        <DepartmentEligibleSoon
+          birthDate={dateOfBirthInputValue}
+          postalCode={postalCodeInputValue}
+        />
+      )
     case ELIGIBILITY_VALUES.TOO_YOUNG:
       if (history.location.hash !== '#trop-jeune') {
         history.replace({
           hash: '#trop-jeune',
         })
       }
-      trackEligibility("Eligibilite - TooYoung")
+      trackEligibility('Eligibilite - TooYoung')
       return <IneligibleUnderEighteen />
     case ELIGIBILITY_VALUES.TOO_OLD:
       if (history.location.hash !== '#trop-age') {
@@ -105,10 +114,10 @@ const EligibilityCheck = ({ history, trackEligibility }) => {
           hash: '#trop-age',
         })
       }
-      trackEligibility("Eligibilite - TooOld")
+      trackEligibility('Eligibilite - TooOld')
       return <IneligibleOverEighteen />
     case ELIGIBILITY_VALUES.SOON:
-      trackEligibility("Eligibilite - Soon")
+      trackEligibility('Eligibilite - Soon')
       return (
         <AgeEligibleSoon
           birthDate={dateOfBirthInputValue}

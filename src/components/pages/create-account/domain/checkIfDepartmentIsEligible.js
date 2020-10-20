@@ -1,5 +1,10 @@
 import { eligibleDepartments } from './eligibleDepartments'
 
+export const DEPARTMENT_ELIGIBILITY_VALUES = {
+  ELIGIBLE: 'department eligible',
+  NOT_ELIGIBLE: 'department not eligible',
+}
+
 export const checkIfDepartmentIsEligible = postalCode => {
   const metropolisDepartmentCode = postalCode.substr(0, 2)
   const overseasDepartmentCode = postalCode.substr(0, 3)
