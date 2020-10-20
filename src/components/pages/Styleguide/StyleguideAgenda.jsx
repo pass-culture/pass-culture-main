@@ -27,6 +27,14 @@ const StyleguideAgenda = () => {
           {'Inputs texte'}
         </a>
       </li>
+      <li>
+        <a
+          className="tertiary-link"
+          href="#sg-select"
+        >
+          {'Select'}
+        </a>
+      </li>
     </ul>
   )
 }
