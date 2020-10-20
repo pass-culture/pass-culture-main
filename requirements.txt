@@ -6,6 +6,7 @@ bcrypt==3.2.0
 beautifulsoup4==4.9.3
 blinker==1.4
 coveralls==2.1.2
+factory-boy
 Flask-Admin==1.5.6
 Flask-Cors==3.0.9
 Flask-Login==0.5.0
