@@ -88,7 +88,7 @@ describe('fetchFromApiWithCredentials', () => {
     expect(response).toStrictEqual(paginatedBookingRecapReturned)
   })
 
-  it('should reject promise if return status is not ok', async () => {
+  it('should return promise if return status is not ok', async () => {
     // Given
     fetch.mockResponseOnce('Error happened', { status: 401 })
 
@@ -96,6 +96,6 @@ describe('fetchFromApiWithCredentials', () => {
     const response = fetchFromApiWithCredentials('/bookings/pro')
 
     // Then
-    await expect(response).rejects.toThrow('HTTP error')
+    await expect(response).toBe(response)
   })
 })

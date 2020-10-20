@@ -1,58 +1,34 @@
+import { fetchFromApiWithCredentials } from 'utils/fetch'
 import { mapDispatchToProps, mergeProps } from '../DeskContainer'
 
+jest.mock('utils/fetch', () => ({
+  fetchFromApiWithCredentials: jest.fn().mockImplementation(() => Promise.resolve()),
+}))
+
 describe('src | DeskContainer', () => {
-  let dispatch
+  it('should retrive a booking with a token given', () => {
+    // given
+    const { getBooking } = mapDispatchToProps(jest.fn())
 
-  beforeEach(() => {
-    dispatch = jest.fn()
+    // when
+    getBooking('ABCDEF')
+
+    // then
+    expect(fetchFromApiWithCredentials).toHaveBeenCalledWith('/v2/bookings/token/ABCDEF')
   })
 
-  describe('getBookingFromCode', () => {
-    it('should dispatch an action with the expected parameters', () => {
-      // given
-      const { getBookingFromCode } = mapDispatchToProps(dispatch)
-      const handleSuccess = jest.fn()
-      const handleFail = jest.fn()
+  it('should valid a booking with a token given', () => {
+    // given
+    const { validateBooking } = mapDispatchToProps(jest.fn())
 
-      // when
-      getBookingFromCode('ABCDEF', handleSuccess, handleFail)
+    // when
+    validateBooking('ABCDEF')
 
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        config: {
-          apiPath: '/v2/bookings/token/ABCDEF',
-          handleFail,
-          handleSuccess,
-          method: 'GET',
-          stateKey: 'deskBookings',
-        },
-        type: 'REQUEST_DATA_GET_DESKBOOKINGS',
-      })
-    })
-  })
-
-  describe('validateBooking', () => {
-    it('should dispatch an action with the expected parameters', () => {
-      // given
-      const { validateBooking } = mapDispatchToProps(dispatch)
-      const handleSuccess = jest.fn()
-      const handleFail = jest.fn()
-
-      // when
-      validateBooking('ABCDEF', handleSuccess, handleFail)
-
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        config: {
-          apiPath: '/v2/bookings/use/token/ABCDEF',
-          handleFail,
-          handleSuccess,
-          method: 'PATCH',
-          stateKey: 'deskBookings',
-        },
-        type: 'REQUEST_DATA_PATCH_DESKBOOKINGS',
-      })
-    })
+    // then
+    expect(fetchFromApiWithCredentials).toHaveBeenCalledWith(
+      '/v2/bookings/use/token/ABCDEF',
+      'PATCH'
+    )
   })
 
   describe('mergeProps', () => {
@@ -60,7 +36,7 @@ describe('src | DeskContainer', () => {
       // given
       const stateProps = {}
       const dispatchProps = {
-        getBookingFromCode: () => {},
+        getBooking: () => {},
       }
       const ownProps = {
         match: {
@@ -73,7 +49,7 @@ describe('src | DeskContainer', () => {
 
       // then
       expect(mergedProps).toStrictEqual({
-        getBookingFromCode: expect.any(Function),
+        getBooking: expect.any(Function),
         trackValidateBookingSuccess: expect.any(Function),
       })
     })

@@ -55,6 +55,8 @@ const dataAndOffersRecapReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'GET_PAGINATED_OFFERS':
       return { ...state, ...paginatedOffersRecapNormalizer(action.payload) }
+    case 'GET_DESK_BOOKINGS':
+      return { ...state, ...{ deskBookings: [action.payload] } }
     default:
       return dataReducer(state, action)
   }

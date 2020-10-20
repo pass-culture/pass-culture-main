@@ -1,10 +1,9 @@
+import Titles from 'components/layout/Titles/Titles'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { getRequestErrorStringFromErrors } from 'pass-culture-shared'
 import { Link } from 'react-router-dom'
-import DeskState from './DeskState/DeskState'
 import Main from '../../layout/Main'
-import Titles from '../../layout/Titles/Titles'
+import DeskState from './DeskState/DeskState'
 
 const CODE_MAX_LENGTH = 6
 const CODE_REGEX_VALIDATION = /[^a-z0-9]/i
@@ -13,7 +12,6 @@ const CODE_ENTER = 'CODE_ENTER'
 const CODE_TYPING = 'CODE_TYPING'
 
 const CODE_SYNTAX_INVALID = 'CODE_SYNTAX_INVALID'
-const CODE_ALREADY_USED = 'CODE_ALREADY_USED'
 const CODE_VERIFICATION_IN_PROGRESS = 'CODE_VERIFICATION_IN_PROGRESS'
 const CODE_VERIFICATION_SUCCESS = 'CODE_VERIFICATION_SUCCESS'
 const CODE_VERIFICATION_FAILED = 'CODE_VERIFICATION_FAILED'
@@ -41,55 +39,25 @@ class Desk extends React.PureComponent {
     this.textInput.current.focus()
   }
 
-  handleSuccessWhenGetBookingFromCode = (state, action) => {
-    const { payload } = action
-    const booking = payload.datum
-
-    const status = booking.isValidated ? CODE_ALREADY_USED : CODE_VERIFICATION_SUCCESS
-
-    this.setState({ booking, status })
-  }
-
-  handleFailWhenGetBookingFromCode = (state, action) => {
-    const {
-      payload: { errors },
-    } = action
-
-    this.setState({
-      status: CODE_VERIFICATION_FAILED,
-      message: getRequestErrorStringFromErrors(errors),
-    })
-  }
-
-  handleSuccessWhenValidateBooking = code => {
-    const { trackValidateBookingSuccess } = this.props
-    this.setState({ status: CODE_REGISTERING_SUCCESS })
-    trackValidateBookingSuccess(code)
-  }
-
-  handleFailWhenValidateBooking = (state, action) => {
-    const {
-      payload: { errors },
-    } = action
-
-    this.setState({
-      status: CODE_REGISTERING_FAILED,
-      message: getRequestErrorStringFromErrors(errors),
-    })
-  }
-
   handleCodeChange = event => {
-    const { getBookingFromCode } = this.props
+    const { getBooking } = this.props
     const code = event.target.value.toUpperCase()
     const status = this.getStatusFromCode(code)
     this.setState({ code, status })
 
     if (status === CODE_VERIFICATION_IN_PROGRESS) {
-      getBookingFromCode(
-        code,
-        this.handleSuccessWhenGetBookingFromCode,
-        this.handleFailWhenGetBookingFromCode
-      )
+      getBooking(code)
+        .then(booking => {
+          this.setState({ booking, status: CODE_VERIFICATION_SUCCESS })
+        })
+        .catch(error => {
+          error.json().then(body => {
+            this.setState({
+              status: CODE_VERIFICATION_FAILED,
+              message: body[Object.keys(body)[0]],
+            })
+          })
+        })
     }
   }
 
@@ -112,11 +80,21 @@ class Desk extends React.PureComponent {
   handleCodeRegistration = code => {
     const { validateBooking } = this.props
     this.setState({ status: CODE_REGISTERING_IN_PROGRESS, code: '' })
-    validateBooking(
-      code,
-      this.handleSuccessWhenValidateBooking(code),
-      this.handleFailWhenValidateBooking
-    )
+
+    validateBooking(code)
+      .then(() => {
+        const { trackValidateBookingSuccess } = this.props
+        this.setState({ status: CODE_REGISTERING_SUCCESS })
+        trackValidateBookingSuccess(code)
+      })
+      .catch(error => {
+        error.json().then(body => {
+          this.setState({
+            status: CODE_REGISTERING_FAILED,
+            message: body[Object.keys(body)[0]],
+          })
+        })
+      })
   }
 
   getValuesFromStatus = status => {
@@ -125,7 +103,7 @@ class Desk extends React.PureComponent {
 
     switch (status) {
       case CODE_TYPING:
-        message = `Caractères restants: ${CODE_MAX_LENGTH - code.length}/${CODE_MAX_LENGTH}`
+        message = `Caractères restants : ${CODE_MAX_LENGTH - code.length}/${CODE_MAX_LENGTH}`
         level = 'pending'
         break
       case CODE_SYNTAX_INVALID:
@@ -135,10 +113,6 @@ class Desk extends React.PureComponent {
       case CODE_VERIFICATION_IN_PROGRESS:
         message = 'Vérification...'
         level = 'pending'
-        break
-      case CODE_ALREADY_USED:
-        message = 'Ce coupon est déjà enregistré'
-        level = 'error'
         break
       case CODE_VERIFICATION_SUCCESS:
         message = 'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
@@ -192,14 +166,17 @@ class Desk extends React.PureComponent {
           {'Enregistrez les codes de réservations présentés par les porteurs du pass.'}
         </p>
         <div className="section form">
-          <p className="subtitle">
+          <label
+            className="subtitle"
+            htmlFor="token"
+          >
             {'Scannez un code-barres ou saisissez-le ci-dessous :'}
-          </p>
+          </label>
 
           <input
             className="input is-undefined"
+            id="token"
             maxLength={CODE_MAX_LENGTH}
-            name="code"
             onChange={this.handleCodeChange}
             ref={this.textInput}
             type="text"
@@ -231,7 +208,7 @@ class Desk extends React.PureComponent {
 }
 
 Desk.propTypes = {
-  getBookingFromCode: PropTypes.func.isRequired,
+  getBooking: PropTypes.func.isRequired,
   trackValidateBookingSuccess: PropTypes.func.isRequired,
   validateBooking: PropTypes.func.isRequired,
 }

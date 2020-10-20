@@ -12,7 +12,7 @@ export const fetchFromApiWithCredentials = (path, method, body) => {
   }
 
   return fetch(`${API_URL}${path}`, init).then(response => {
-    if (!response.ok) throw Error('HTTP error')
+    if (!response.ok) throw response
     if (response.status !== NO_CONTENT_STATUS) {
       return response.json()
     }

@@ -1,47 +1,29 @@
-import Desk from './Desk'
-import { compose } from 'redux'
+import { withRequiredLogin, withTracking } from 'components/hocs'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { fetchFromApiWithCredentials } from 'utils/fetch'
+import Desk from './Desk'
 
-import { withRequiredLogin } from '../../hocs'
-import { requestData } from 'redux-saga-data'
-import withTracking from '../../hocs/withTracking'
+export const mapDispatchToProps = dispatch => ({
+  getBooking: code =>
+    fetchFromApiWithCredentials(`/v2/bookings/token/${code}`).then(booking => {
+      dispatch({
+        type: 'GET_DESK_BOOKINGS',
+        payload: booking,
+      })
 
-export const mapDispatchToProps = dispatch => {
-  return {
-    getBookingFromCode: (code, handleSuccess, handleFail) => {
-      dispatch(
-        requestData({
-          apiPath: `/v2/bookings/token/${code}`,
-          handleSuccess: handleSuccess,
-          handleFail: handleFail,
-          stateKey: 'deskBookings',
-          method: 'GET',
-        })
-      )
-    },
-    validateBooking: (code, handleSuccess, handleFail) => {
-      dispatch(
-        requestData({
-          apiPath: `/v2/bookings/use/token/${code}`,
-          handleFail: handleFail,
-          handleSuccess: handleSuccess,
-          stateKey: 'deskBookings',
-          method: 'PATCH',
-        })
-      )
-    },
-  }
-}
+      return booking
+    }),
+  validateBooking: code => fetchFromApiWithCredentials(`/v2/bookings/use/token/${code}`, 'PATCH'),
+})
 
-export const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  return {
-    ...stateProps,
-    ...dispatchProps,
-    trackValidateBookingSuccess: code => {
-      ownProps.tracking.trackEvent({ action: 'validateBooking', name: code })
-    },
-  }
-}
+export const mergeProps = (stateProps, dispatchProps, ownProps) => ({
+  ...stateProps,
+  ...dispatchProps,
+  trackValidateBookingSuccess: code => {
+    ownProps.tracking.trackEvent({ action: 'validateBooking', name: code })
+  },
+})
 
 export default compose(
   withTracking('Desk'),

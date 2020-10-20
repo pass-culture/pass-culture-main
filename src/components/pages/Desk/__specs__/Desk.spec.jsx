@@ -1,414 +1,234 @@
-import { shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+import { getStubStore } from 'utils/stubStore'
 import Desk from '../Desk'
 
-import DeskState from '../DeskState/DeskState'
+const renderDesk = props => {
+  const stubbedStore = getStubStore({
+    data: (
+      state = {
+        users: [{ publicName: 'USER' }],
+        offerers: [{}],
+      }
+    ) => state,
+    modal: (
+      state = {
+        config: {},
+      }
+    ) => state,
+  })
 
-describe('src | components | pages | Desk | Desk ', () => {
-  const options = {
-    disableLifecycleMethods: true,
-  }
-  let getBookingFromCode
-  let validateBooking
+  render(
+    <Provider store={stubbedStore}>
+      <MemoryRouter>
+        <Desk {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
+}
+
+describe('src | components | Desk', () => {
   let props
-  let trackValidateBookingSuccess
 
   beforeEach(() => {
-    getBookingFromCode = jest.fn()
-    trackValidateBookingSuccess = jest.fn()
-    validateBooking = jest.fn()
-
     props = {
-      getBookingFromCode,
-      trackValidateBookingSuccess,
-      validateBooking,
+      getBooking: jest.fn(),
+      trackValidateBookingSuccess: jest.fn(),
+      validateBooking: jest.fn(),
     }
   })
 
-  it('should render Desk component with default state', () => {
+  it('should display title and a description', () => {
     // when
-    const wrapper = shallow(<Desk {...props} />, options)
+    renderDesk(props)
 
     // then
-    expect(wrapper.state('booking')).toBeNull()
-    expect(wrapper.state('code')).toBe('')
-    expect(wrapper.state('status')).toBe('CODE_ENTER')
+    const title = screen.getByText('Guichet', { selector: 'h1' })
+    const description = screen.getByText(
+      'Enregistrez les codes de réservations présentés par les porteurs du pass.'
+    )
+    expect(title).toBeInTheDocument()
+    expect(description).toBeInTheDocument()
   })
 
-  describe('render', () => {
-    describe('desk status', () => {
-      it('should render DeskState component with proper props when status is enter a code', () => {
-        // when
-        const wrapper = shallow(<Desk {...props} />, options)
+  it('should display a message when input is empty', () => {
+    // given
+    renderDesk(props)
+    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
 
-        // then
-        const deskState = wrapper.find(DeskState)
-        expect(deskState).toHaveLength(1)
-        expect(deskState.prop('message')).toBe('Saisissez un code')
-        expect(deskState.prop('booking')).toBeNull()
-        expect(deskState.prop('level')).toBe('pending')
-      })
+    // when
+    fireEvent.change(tokenInput, { target: { value: '' } })
 
-      it('should render DeskState component with proper props when status is typing a code', () => {
-        // when
-        const wrapper = shallow(<Desk {...props} />, options)
-        wrapper.setState({ status: 'CODE_TYPING' })
-
-        // then
-        const deskState = wrapper.find(DeskState)
-        expect(deskState).toHaveLength(1)
-        expect(deskState.prop('message')).toBe('Caractères restants: 6/6')
-        expect(deskState.prop('booking')).toBeNull()
-        expect(deskState.prop('level')).toBe('pending')
-      })
-
-      it('should render DeskState component with proper props when status is invalid', () => {
-        // when
-        const wrapper = shallow(<Desk {...props} />, options)
-        wrapper.setState({ status: 'CODE_SYNTAX_INVALID' })
-
-        // then
-        const deskState = wrapper.find(DeskState)
-        expect(deskState).toHaveLength(1)
-        expect(deskState.prop('message')).toBe('Caractères valides : de A à Z et de 0 à 9')
-        expect(deskState.prop('booking')).toBeNull()
-        expect(deskState.prop('level')).toBe('error')
-      })
-
-      it('should render DeskState component with proper props when status is verification', () => {
-        // when
-        const wrapper = shallow(<Desk {...props} />, options)
-        wrapper.setState({ status: 'CODE_VERIFICATION_IN_PROGRESS' })
-
-        // then
-        const deskState = wrapper.find(DeskState)
-        expect(deskState).toHaveLength(1)
-        expect(deskState.prop('message')).toBe('Vérification...')
-        expect(deskState.prop('booking')).toBeNull()
-        expect(deskState.prop('level')).toBe('pending')
-      })
-
-      it('should render DeskState component with proper props when status is code already used', () => {
-        // when
-        const wrapper = shallow(<Desk {...props} />, options)
-        wrapper.setState({ status: 'CODE_ALREADY_USED', booking: {} })
-
-        // then
-        const deskState = wrapper.find(DeskState)
-        expect(deskState).toHaveLength(1)
-        expect(deskState.prop('message')).toBe('Ce coupon est déjà enregistré')
-        expect(deskState.prop('booking')).toStrictEqual({})
-        expect(deskState.prop('level')).toBe('error')
-      })
-
-      it('should render DeskState component with proper props when status is code ok', () => {
-        // when
-        const wrapper = shallow(<Desk {...props} />, options)
-        wrapper.setState({ status: 'CODE_VERIFICATION_SUCCESS', booking: {} })
-
-        // then
-        const deskState = wrapper.find(DeskState)
-        expect(deskState).toHaveLength(1)
-        expect(deskState.prop('message')).toBe(
-          'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
-        )
-        expect(deskState.prop('booking')).toStrictEqual({})
-        expect(deskState.prop('level')).toBe('pending')
-      })
-
-      it('should render DeskState component with proper props when status is code registering', () => {
-        // when
-        const wrapper = shallow(<Desk {...props} />, options)
-        wrapper.setState({
-          status: 'CODE_REGISTERING_IN_PROGRESS',
-          booking: {},
-        })
-
-        // then
-        const deskState = wrapper.find(DeskState)
-        expect(deskState).toHaveLength(1)
-        expect(deskState.prop('message')).toBe('Enregistrement en cours...')
-        expect(deskState.prop('booking')).toStrictEqual({})
-        expect(deskState.prop('level')).toBe('pending')
-      })
-
-      it('should render DeskState component with proper props when status is code registered', () => {
-        // when
-        const wrapper = shallow(<Desk {...props} />, options)
-        wrapper.setState({ status: 'CODE_REGISTERING_SUCCESS', booking: {} })
-
-        // then
-        const deskState = wrapper.find(DeskState)
-        expect(deskState).toHaveLength(1)
-        expect(deskState.prop('message')).toBe('Enregistrement réussi !')
-        expect(deskState.prop('booking')).toStrictEqual({})
-        expect(deskState.prop('level')).toBe('success')
-      })
-
-      it('should render DeskState component with proper props when status is code verification failed', () => {
-        // when
-        const wrapper = shallow(<Desk {...props} />, options)
-        wrapper.setState({
-          status: 'CODE_VERIFICATION_FAILED',
-          booking: {},
-          message: 'fake message',
-        })
-
-        // then
-        const deskState = wrapper.find(DeskState)
-        expect(deskState).toHaveLength(1)
-        expect(deskState.prop('message')).toBe('fake message')
-        expect(deskState.prop('booking')).toStrictEqual({})
-        expect(deskState.prop('level')).toBe('error')
-      })
-
-      it('should render DeskState component with proper props when status is code registering failed', () => {
-        // when
-        const wrapper = shallow(<Desk {...props} />, options)
-        wrapper.setState({
-          status: 'CODE_REGISTERING_FAILED',
-          booking: {},
-          message: 'fake message',
-        })
-
-        // then
-        const deskState = wrapper.find(DeskState)
-        expect(deskState).toHaveLength(1)
-        expect(deskState.prop('message')).toBe('fake message')
-        expect(deskState.prop('booking')).toStrictEqual({})
-        expect(deskState.prop('level')).toBe('error')
-      })
-    })
-
-    describe('validate button', () => {
-      it('should render a button which is disabled by default when code is not ok', () => {
-        // when
-        const wrapper = shallow(<Desk {...props} />, options)
-
-        // then
-        const button = wrapper.find('button')
-        expect(button).toHaveLength(1)
-        expect(button.prop('disabled')).toBe(true)
-        expect(button.prop('className')).toBe('primary-button')
-        expect(button.prop('type')).toBe('submit')
-        expect(button.prop('onClick')).toStrictEqual(expect.any(Function))
-      })
-
-      it('should render a button which is enabled when code is ok', () => {
-        // when
-        const wrapper = shallow(<Desk {...props} />, options)
-        wrapper.setState({ status: 'CODE_VERIFICATION_SUCCESS' })
-
-        // then
-        const button = wrapper.find('button')
-        expect(button).toHaveLength(1)
-        expect(button.prop('disabled')).toBe(false)
-      })
-    })
+    // then
+    expect(screen.getByText('Valider', { selector: 'button' })).toBeDisabled()
+    expect(screen.getByText('Saisissez un code')).toBeInTheDocument()
   })
 
-  describe('functions', () => {
-    describe('handleSuccessWhenGetBookingFromCode', () => {
-      it('should update state status to code already used when a booking is retrieved and is validated', () => {
-        // given
-        const wrapper = shallow(<Desk {...props} />, options)
-        const booking = {
-          isValidated: true,
-        }
-        const state = {}
-        const action = {
-          payload: {
-            datum: booking,
-          },
-        }
+  it('should display a message when is typing a token', () => {
+    // given
+    renderDesk(props)
+    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
 
-        // when
-        wrapper.instance().handleSuccessWhenGetBookingFromCode(state, action)
+    // when
+    fireEvent.change(tokenInput, { target: { value: 'ABCDE' } })
 
-        // then
-        expect(wrapper.state('status')).toBe('CODE_ALREADY_USED')
-        expect(wrapper.state('booking')).toBe(booking)
+    // then
+    expect(screen.getByText('Valider', { selector: 'button' })).toBeDisabled()
+    expect(screen.getByText('Caractères restants : 1/6')).toBeInTheDocument()
+  })
+
+  it('should display a message when token is invalid', () => {
+    // given
+    renderDesk(props)
+    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+
+    // when
+    fireEvent.change(tokenInput, { target: { value: 'ù^`@' } })
+
+    // then
+    expect(screen.getByText('Valider', { selector: 'button' })).toBeDisabled()
+    expect(screen.getByText('Caractères valides : de A à Z et de 0 à 9')).toBeInTheDocument()
+  })
+
+  it('should display a message when token is checked', async () => {
+    // given
+    jest.spyOn(props, 'getBooking').mockImplementation(() => Promise.resolve())
+    renderDesk(props)
+    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+
+    // when
+    fireEvent.change(tokenInput, { target: { value: 'ABCDEF' } })
+
+    // then
+    expect(screen.getByText('Vérification...')).toBeInTheDocument()
+    const submitButton = await screen.findByText('Valider', { selector: 'button' })
+    expect(submitButton).toBeEnabled()
+  })
+
+  it('should display a message when token is valid', async () => {
+    // given
+    jest.spyOn(props, 'getBooking').mockImplementation(() =>
+      Promise.resolve({
+        datetime: null,
+        offerName: 'Fake offer',
+        userName: 'Fake user name',
       })
+    )
+    renderDesk(props)
+    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
 
-      it('should update state status to code ok when a booking is not validated', () => {
-        // given
-        const wrapper = shallow(<Desk {...props} />, options)
-        const booking = {
-          isValidated: false,
-        }
-        const state = {}
-        const action = {
-          payload: {
-            datum: booking,
-          },
-        }
+    // when
+    fireEvent.change(tokenInput, { target: { value: '100001' } })
 
-        // when
-        wrapper.instance().handleSuccessWhenGetBookingFromCode(state, action)
+    // then
+    const responseFromApi = await screen.findByText(
+      'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
+    )
+    expect(responseFromApi).toBeInTheDocument()
+    const label1 = await screen.findByText('Utilisateur :')
+    expect(label1).toBeInTheDocument()
+    const value1 = await screen.findByText('Fake user name')
+    expect(value1).toBeInTheDocument()
+    const label2 = await screen.findByText('Offre :')
+    expect(label2).toBeInTheDocument()
+    const value2 = await screen.findByText('Fake offer')
+    expect(value2).toBeInTheDocument()
+    const label3 = await screen.findByText('Date de l’offre :')
+    expect(label3).toBeInTheDocument()
+    const value3 = await screen.findByText('Permanent')
+    expect(value3).toBeInTheDocument()
+  })
 
-        // then
-        expect(wrapper.state('status')).toBe('CODE_VERIFICATION_SUCCESS')
-        expect(wrapper.state('booking')).toBe(booking)
+  it('should display an error message when token is failed', async () => {
+    // given
+    jest
+      .spyOn(props, 'getBooking')
+      .mockImplementation(() =>
+        Promise.reject({ json: jest.fn(() => Promise.resolve({ booking: 'error message' })) })
+      )
+    renderDesk(props)
+    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+
+    // when
+    fireEvent.change(tokenInput, { target: { value: '100001' } })
+
+    // then
+    const errorMessage = await screen.findByText('error message')
+    expect(errorMessage).toBeInTheDocument()
+  })
+
+  it('should display a message when booking is registering', async () => {
+    // given
+    jest.spyOn(props, 'getBooking').mockImplementation(() =>
+      Promise.resolve({
+        datetime: null,
+        offerName: 'Fake offer',
+        userName: 'Fake user name',
       })
-    })
+    )
+    jest.spyOn(props, 'validateBooking').mockImplementation(() => Promise.resolve())
+    renderDesk(props)
+    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+    const submitButton = screen.getByText('Valider', { selector: 'button' })
+    await waitFor(() => fireEvent.change(tokenInput, { target: { value: '100001' } }))
 
-    describe('handleFailWhenGetBookingFromCode', () => {
-      it('should update state with code verification failed status and error message when booking retrieval failed', () => {
-        // given
-        const wrapper = shallow(<Desk {...props} />, options)
-        const state = {}
-        const action = {
-          payload: {
-            errors: [{ 1: 'error1' }, { 2: 'error2' }],
-          },
-        }
+    // when
+    fireEvent.click(submitButton)
 
-        // when
-        wrapper.instance().handleFailWhenGetBookingFromCode(state, action)
+    // then
+    expect(screen.getByText('Enregistrement en cours...')).toBeInTheDocument()
+  })
 
-        // then
-        expect(wrapper.state('status')).toBe('CODE_VERIFICATION_FAILED')
-        expect(wrapper.state('message')).toBe('error1 error2')
+  it('should display a message when booking is registered', async () => {
+    // given
+    jest.spyOn(props, 'getBooking').mockImplementation(() =>
+      Promise.resolve({
+        datetime: null,
+        offerName: 'Fake offer',
+        userName: 'Fake user name',
       })
-    })
+    )
+    jest.spyOn(props, 'validateBooking').mockImplementation(() => Promise.resolve())
+    renderDesk(props)
+    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+    const submitButton = screen.getByText('Valider', { selector: 'button' })
+    await waitFor(() => fireEvent.change(tokenInput, { target: { value: '100001' } }))
 
-    describe('validateBooking', () => {
-      it('should dispatch an action to validate booking using code', () => {
-        // given
-        const wrapper = shallow(<Desk {...props} />, options)
+    // when
+    fireEvent.click(submitButton)
 
-        // when
-        wrapper.instance().handleCodeRegistration('ABCDEF')
-        //wrapper.instance().handleSuccessWhenValidateBookin = jest.fn()
+    // then
+    const responseFromApi = await screen.findByText('Enregistrement réussi !')
+    expect(responseFromApi).toBeInTheDocument()
+  })
 
-        // then
-        expect(props.validateBooking).toHaveBeenCalledWith(
-          'ABCDEF',
-          undefined,
-          expect.any(Function)
-        )
+  it('should display an error message when the booking is registering failed', async () => {
+    // given
+    jest.spyOn(props, 'getBooking').mockImplementation(() =>
+      Promise.resolve({
+        datetime: null,
+        offerName: 'Fake offer',
+        userName: 'Fake user name',
       })
-    })
+    )
+    jest
+      .spyOn(props, 'validateBooking')
+      .mockImplementation(() =>
+        Promise.reject({ json: jest.fn(() => Promise.resolve({ booking: 'error message' })) })
+      )
+    renderDesk(props)
+    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+    const submitButton = screen.getByText('Valider', { selector: 'button' })
+    await waitFor(() => fireEvent.change(tokenInput, { target: { value: '100001' } }))
 
-    describe('handleSuccessWhenValidateBooking', () => {
-      it('should update state status to code registered when code is registered successfully', () => {
-        // given
-        const wrapper = shallow(<Desk {...props} />, options)
+    // when
+    fireEvent.click(submitButton)
 
-        // when
-        wrapper.instance().handleSuccessWhenValidateBooking()
-
-        // then
-        expect(wrapper.state('status')).toBe('CODE_REGISTERING_SUCCESS')
-      })
-    })
-
-    describe('handleFailWhenValidateBooking', () => {
-      it('should update state with code registering failed status and error message when code is not validated successfully', () => {
-        // given
-        const wrapper = shallow(<Desk {...props} />, options)
-        const state = {}
-        const action = {
-          payload: {
-            errors: [{ 1: 'error1' }, { 2: 'error2' }],
-          },
-        }
-
-        // when
-        wrapper.instance().handleFailWhenValidateBooking(state, action)
-
-        // then
-        expect(wrapper.state('status')).toBe('CODE_REGISTERING_FAILED')
-        expect(wrapper.state('message')).toBe('error1 error2')
-      })
-    })
-
-    describe('handleCodeChange', () => {
-      it('should update status to code enter when code from input is empty', () => {
-        // given
-        const wrapper = shallow(<Desk {...props} />, options)
-        const event = {
-          target: {
-            value: '',
-          },
-        }
-
-        // when
-        wrapper.instance().handleCodeChange(event)
-
-        // then
-        expect(wrapper.state('status')).toBe('CODE_ENTER')
-      })
-
-      it('should update status to code invalid when code from input is composed of invalid characters', () => {
-        // given
-        const wrapper = shallow(<Desk {...props} />, options)
-        const event = {
-          target: {
-            value: 'ù^^``',
-          },
-        }
-
-        // when
-        wrapper.instance().handleCodeChange(event)
-
-        // then
-        expect(wrapper.state('status')).toBe('CODE_SYNTAX_INVALID')
-      })
-
-      it('should update status to code typing when code from input is lesser than 6 characters', () => {
-        // given
-        const wrapper = shallow(<Desk {...props} />, options)
-        const event = {
-          target: {
-            value: 'ABCDE',
-          },
-        }
-
-        // when
-        wrapper.instance().handleCodeChange(event)
-
-        // then
-        expect(wrapper.state('status')).toBe('CODE_TYPING')
-      })
-
-      it('should update status to code verification when code respects format and number of characters', () => {
-        // given
-        const wrapper = shallow(<Desk {...props} />, options)
-        const event = {
-          target: {
-            value: 'ABCDEF',
-          },
-        }
-
-        // when
-        wrapper.instance().handleCodeChange(event)
-
-        // then
-        expect(wrapper.state('status')).toBe('CODE_VERIFICATION_IN_PROGRESS')
-      })
-
-      it('should retrieve a booking information using code from input', () => {
-        // given
-        const wrapper = shallow(<Desk {...props} />, options)
-        const event = {
-          target: {
-            value: 'ABCDEF',
-          },
-        }
-        const input = wrapper.find('input')
-
-        // when
-        input.simulate('change', event)
-
-        // then
-        expect(wrapper.state('status')).toBe('CODE_VERIFICATION_IN_PROGRESS')
-        expect(props.getBookingFromCode).toHaveBeenCalledWith(
-          'ABCDEF',
-          expect.any(Function),
-          expect.any(Function)
-        )
-      })
-    })
+    // then
+    const responseFromApi = await screen.findByText('error message')
+    expect(responseFromApi).toBeInTheDocument()
   })
 })
