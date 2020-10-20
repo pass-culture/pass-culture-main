@@ -11,7 +11,7 @@ def modify_allocine_price_rule_for_venue_by_id(venue_id: int, new_price: Decimal
     if allocine_venue_provider is not None:
         _modify_allocine_price_rule_for_venue(allocine_venue_provider, new_price)
     else:
-        logger.info("Venue priceRule not updated: no allocine venue provider found for this venue")
+        logger.info("This venue is not yet synchronized with Allocine")
 
 
 def modify_allocine_price_rule_for_venue_by_siret(venue_siret: str, new_price: Decimal) -> None:
@@ -20,7 +20,7 @@ def modify_allocine_price_rule_for_venue_by_siret(venue_siret: str, new_price: D
     if allocine_venue_provider is not None:
         _modify_allocine_price_rule_for_venue(allocine_venue_provider, new_price)
     else:
-        logger.info("Venue priceRule not updated: no allocine venue provider found for this venue")
+        logger.info("This venue is not yet synchronized with Allocine")
 
 
 def _modify_allocine_price_rule_for_venue(allocine_venue_provider: AllocineVenueProvider, new_price: Decimal) -> None:
@@ -29,5 +29,3 @@ def _modify_allocine_price_rule_for_venue(allocine_venue_provider: AllocineVenue
         venue_provider_price_rule.price = new_price
         repository.save(venue_provider_price_rule)
         logger.info("Venue priceRule updated")
-    else:
-        logger.info("Venue priceRule not updated: no venue provider pricerule found for this venue")
