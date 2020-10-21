@@ -16,7 +16,7 @@ const actionsBarReducers = (state = initialState, action) => {
 export const hideActionsBar = () => {
   return {
     type: SET_ACTIONS_BAR_VISIBILITY,
-    actionsBarVisibility: true,
+    actionsBarVisibility: false,
   }
 }
 export const showActionsBar = () => {

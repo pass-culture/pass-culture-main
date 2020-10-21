@@ -15,7 +15,7 @@ export const mapStateToProps = state => {
 
 export const mapDispatchToProps = dispatch => {
   return {
-    hideActionsBar: () => dispatch(hideActionsBar),
+    hideActionsBar: () => dispatch(hideActionsBar()),
     setSelectedOfferIds: selectedOfferIds => dispatch(setSelectedOfferIds(selectedOfferIds)),
   }
 }
