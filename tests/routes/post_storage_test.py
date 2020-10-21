@@ -1,13 +1,19 @@
 from io import BytesIO
+from pathlib import Path
+
+import pytest
 
 from pcapi.repository import repository
-import pytest
-from tests.conftest import TestClient
-from tests.files.images import ONE_PIXEL_PNG
 from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
     create_mediation
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.utils.human_ids import humanize
+
+import tests
+from tests.conftest import TestClient
+
+
+TEST_IMAGE_PATH = Path(tests.__path__[0]) / 'files' / 'pixel.png'
 
 
 class Post:
@@ -26,10 +32,11 @@ class Post:
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.post(
-                '/storage/thumb/%s/%s/%s' % ('mediations', humanize(mediation.id), '0'),
-                files={'file': (BytesIO(ONE_PIXEL_PNG), '1.png')}
-            )
+            with open(TEST_IMAGE_PATH, 'rb') as fp:
+                response = auth_request.post(
+                    '/storage/thumb/%s/%s/%s' % ('mediations', humanize(mediation.id), '0'),
+                    files={'file': (fp, '1.png')}
+                )
 
             # then
             assert response.status_code == 200
@@ -69,10 +76,11 @@ class Post:
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.post(
-                '/storage/thumb/%s/%s/%s' % ('mediations', humanize(mediation.id), '0'),
-                files={'file': (BytesIO(ONE_PIXEL_PNG), '1.png')}
-            )
+            with open(TEST_IMAGE_PATH, 'rb') as fp:
+                response = auth_request.post(
+                    '/storage/thumb/%s/%s/%s' % ('mediations', humanize(mediation.id), '0'),
+                    files={'file': (fp, '1.png')}
+                )
 
             # then
             assert response.status_code == 403

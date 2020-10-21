@@ -3,15 +3,19 @@ from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-from pcapi.repository import repository
 import pytest
-from tests.conftest import clean_database, TestClient
-from tests.files.images import ONE_PIXEL_PNG
+
+from pcapi.repository import repository
 from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.utils.human_ids import humanize
 
+import tests
+from tests.conftest import clean_database, TestClient
+
+
 MODULE_PATH = Path(os.path.dirname(os.path.realpath(__file__)))
+TEST_IMAGE_PATH = Path(tests.__path__[0]) / 'files' / 'pixel.png'
 
 
 class Post:
@@ -156,16 +160,16 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             repository.save(user, venue, user_offerer)
 
-            data = {
-                'offerId': humanize(offer.id),
-                'offererId': humanize(offerer.id),
-                'thumb': (BytesIO(ONE_PIXEL_PNG), '')
-            }
-
             # when
-            response = TestClient(app.test_client()) \
-                .with_auth(email=user.email) \
-                .post('/mediations', form=data)
+            with open(TEST_IMAGE_PATH, 'rb') as fp:
+                data = {
+                    'offerId': humanize(offer.id),
+                    'offererId': humanize(offerer.id),
+                    'thumb': (fp, '')
+                }
+                response = TestClient(app.test_client()) \
+                    .with_auth(email=user.email) \
+                    .post('/mediations', form=data)
 
             # then
             assert response.status_code == 400
