@@ -4,7 +4,7 @@ describe('src | selectors | notification', () => {
   describe('notificationV1Selector', () => {
     it('should return null when no notification is stored', () => {
       // given
-      const state = { notification: null }
+      const state = { notification: {} }
 
       // when
       const notification = notificationV1Selector(state)
@@ -37,18 +37,18 @@ describe('src | selectors | notification', () => {
   })
 
   describe('notificationV2Selector', () => {
-    it('should return null when no notification is stored', () => {
+    it('should return empty state when no notification is stored', () => {
       // given
-      const state = { notification: null }
+      const state = { notification: {} }
 
       // when
       const notification = notificationV2Selector(state)
 
       // then
-      expect(notification).toBeNull()
+      expect(notification).toStrictEqual({})
     })
 
-    it('should return null when V1 notification is stored', () => {
+    it('should return empty state when V1 notification is stored', () => {
       // given
       const state = { notification: { type: 'success', text: 'My success message', version: 1 } }
 
@@ -56,7 +56,7 @@ describe('src | selectors | notification', () => {
       const notification = notificationV2Selector(state)
 
       // then
-      expect(notification).toBeNull()
+      expect(notification).toStrictEqual({})
     })
 
     it('should return notification details when V2 notification is stored', () => {

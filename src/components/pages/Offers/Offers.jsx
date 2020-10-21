@@ -13,14 +13,14 @@ import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'services/venuesSe
 import { mapApiToBrowser, translateQueryParamsToApiParams } from 'utils/translate'
 
 import {
+  ALL_OFFERERS,
   ALL_OFFERS,
   ALL_VENUES,
-  ALL_OFFERERS,
   ALL_VENUES_OPTION,
   DEFAULT_PAGE,
   EXCLUDING_STATUS_VALUE,
 } from './_constants'
-import ActionsBar from './ActionsBar/'
+import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
 
 class Offers extends PureComponent {
@@ -106,7 +106,7 @@ class Offers extends PureComponent {
   canInteractWithCheckbox(status, statusFilters) {
     const minimumNumberOfCheckedFilters = 1
     const numberOfCheckedFiltersBeforeInteraction = Object.keys(statusFilters).filter(
-      key => statusFilters[key]
+      key => statusFilters[key],
     ).length
     const numberOfCheckedFiltersAfterInteraction = status
       ? numberOfCheckedFiltersBeforeInteraction + 1
@@ -132,7 +132,7 @@ class Offers extends PureComponent {
           },
           () => {
             this.updateUrlMatchingState()
-          }
+          },
         )
       })
       .catch(() => {
@@ -161,7 +161,7 @@ class Offers extends PureComponent {
 
   fetchAndFormatVenues = offererId => {
     fetchAllVenuesByProUser(offererId).then(venues =>
-      this.setState({ venueOptions: formatAndOrderVenues(venues) })
+      this.setState({ venueOptions: formatAndOrderVenues(venues) }),
     )
   }
 
@@ -175,7 +175,7 @@ class Offers extends PureComponent {
       },
       () => {
         this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
-      }
+      },
     )
   }
 
@@ -223,7 +223,7 @@ class Offers extends PureComponent {
   }
 
   getOffersActionsBar = () => {
-    return <ActionsBar refreshOffers={this.getPaginatedOffersWithFilters} />
+    return <ActionsBarContainer refreshOffers={this.getPaginatedOffersWithFilters} />
   }
 
   toggleStatusFiltersVisibility = () => {
@@ -392,15 +392,15 @@ class Offers extends PureComponent {
                   </tr>
                 </thead>
                 <tbody className="offers-list">
-                  {offers.map(offer => (
-                    <OfferItemContainer
-                      isSelected={selectedOfferIds.includes(offer.id)}
-                      key={offer.id}
-                      offer={offer}
-                      refreshOffers={this.getPaginatedOffersWithFilters}
-                      selectOffer={this.selectOffer}
-                    />
-                  ))}
+                {offers.map(offer => (
+                  <OfferItemContainer
+                    isSelected={selectedOfferIds.includes(offer.id)}
+                    key={offer.id}
+                    offer={offer}
+                    refreshOffers={this.getPaginatedOffersWithFilters}
+                    selectOffer={this.selectOffer}
+                  />
+                ))}
                 </tbody>
               </table>
               <div className="pagination">

@@ -6,6 +6,7 @@ import { hideActionsBar } from 'store/reducers/actionsBar'
 import { setSelectedOfferIds } from 'store/reducers/offers'
 
 import ActionsBar from './ActionsBar'
+import { showNotificationV2 } from 'store/reducers/notificationReducer'
 
 export const mapStateToProps = state => {
   return {
@@ -17,6 +18,13 @@ export const mapDispatchToProps = dispatch => {
   return {
     hideActionsBar: () => dispatch(hideActionsBar()),
     setSelectedOfferIds: selectedOfferIds => dispatch(setSelectedOfferIds(selectedOfferIds)),
+    showSuccessNotification: text =>
+      dispatch(
+        showNotificationV2({
+          type: 'success',
+          text,
+        })
+      ),
   }
 }
 
