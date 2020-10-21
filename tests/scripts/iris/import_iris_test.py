@@ -19,7 +19,7 @@ def test_read_iris_shape_file_should_read_shape_file_and_return_correct_data_in_
     # then
     assert list(iris_df.columns) == ['CODE_IRIS', 'geometry']
     assert iris_df.shape[0] == 1
-    assert iris_df.crs == {'init': 'epsg:4326'}
+    assert iris_df.crs.name == 'WGS 84'
 
 
 def test_fill_iris_from_should_return_iris(app):
