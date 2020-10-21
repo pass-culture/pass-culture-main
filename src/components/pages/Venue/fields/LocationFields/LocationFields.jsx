@@ -6,6 +6,8 @@ import HiddenField from '../../../../layout/form/fields/HiddenField'
 import NumberField from '../../../../layout/form/fields/NumberField'
 import TextField from '../../../../layout/form/fields/TextField'
 
+const COORDINATE_ACCURACY = 0.00001
+
 const LocationFields = ({
   fieldReadOnlyBecauseFrozenFormSiret,
   form,
@@ -57,6 +59,7 @@ const LocationFields = ({
           name="latitude"
           readOnly={fieldIsFrozen}
           required
+          step={COORDINATE_ACCURACY}
         />
         <NumberField
           className="vp-field"
@@ -65,6 +68,7 @@ const LocationFields = ({
           name="longitude"
           readOnly={fieldIsFrozen}
           required
+          step={COORDINATE_ACCURACY}
         />
       </div>
     </div>

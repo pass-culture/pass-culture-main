@@ -38,10 +38,12 @@ class TextField extends PureComponent {
       renderInner,
       renderValue,
       required,
+      step,
       title,
       type,
     } = this.props
     const inputType = readOnly ? 'text' : type
+    const stepValue = inputType === 'number' ? step : undefined
     const inputValue = getInputValue(inputType, input.value)
     return (
       <div
@@ -83,6 +85,7 @@ class TextField extends PureComponent {
                 readOnly={readOnly}
                 ref={this.handleRef}
                 required={!!required}
+                step={stepValue}
                 title={title}
                 type={inputType}
                 value={inputValue}
@@ -132,6 +135,7 @@ TextField.defaultProps = {
     return null
   },
   required: false,
+  step: 0.01,
   title: '',
   type: 'text',
   validate: null,
@@ -153,6 +157,7 @@ TextField.propTypes = {
   renderInner: PropTypes.func,
   renderValue: PropTypes.func,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
+  step: PropTypes.number,
   title: PropTypes.string,
   type: PropTypes.string,
   validate: PropTypes.func,
