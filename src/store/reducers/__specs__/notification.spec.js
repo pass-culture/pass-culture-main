@@ -1,9 +1,9 @@
 import {
   CLOSE_NOTIFICATION,
-  closeNotification,
-  notificationReducer,
   SHOW_NOTIFICATION_V1,
   SHOW_NOTIFICATION_V2,
+  closeNotification,
+  notificationReducer,
   showNotificationV1,
   showNotificationV2,
 } from 'store/reducers/notificationReducer'
@@ -23,7 +23,7 @@ describe('src | reducers | notification', () => {
       const state = notificationReducer(initialState, action)
 
       // then
-      expect(state).toBeNull()
+      expect(state).toStrictEqual({})
     })
   })
 

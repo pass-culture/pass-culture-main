@@ -4,7 +4,7 @@ import React from 'react'
 import Icon from '../../../layout/Icon'
 import NotificationV1 from '../NotificationV1'
 
-describe('src | components | layout | Notification', () => {
+describe('src | components | layout | NotificationV1', () => {
   let props
   let dispatch
 
@@ -12,7 +12,7 @@ describe('src | components | layout | Notification', () => {
     dispatch = jest.fn()
     props = {
       dispatch,
-      notification: {},
+      notification: null,
     }
   })
 

@@ -9,6 +9,7 @@ import ReactTooltip from 'react-tooltip'
 import ActionsBar from '../ActionsBar/'
 import HeaderContainer from 'components/layout/Header/HeaderContainer'
 import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
+import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 class Main extends PureComponent {
@@ -151,6 +152,7 @@ class Main extends PureComponent {
           )}
           {footer}
         </Tag>
+        <NotificationV2Container />
         <Modal key="modal" />
         { PageActionsBar && <ActionsBar><PageActionsBar/></ActionsBar>}
 

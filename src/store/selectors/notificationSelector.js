@@ -1,14 +1,14 @@
 export const notificationV1Selector = state => {
-  if (state.notification) {
-    return state.notification.version === 1 ? state.notification : null
+  if (state.notification && state.notification.version === 1) {
+    return state.notification
   } else {
     return null
   }
 }
 export const notificationV2Selector = state => {
-  if (state.notification) {
-    return state.notification.version === 2 ? state.notification : null
+  if (state.notification && state.notification.version === 2) {
+    return state.notification
   } else {
-    return null
+    return {}
   }
 }

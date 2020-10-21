@@ -3,7 +3,7 @@ export const CLOSE_NOTIFICATION = 'CLOSE_NOTIFICATION'
 export const SHOW_NOTIFICATION_V1 = 'SHOW_NOTIFICATION_V1'
 export const SHOW_NOTIFICATION_V2 = 'SHOW_NOTIFICATION_V2'
 
-const initialState = null
+const initialState = {}
 
 export const notificationReducer = (state = initialState, action) => {
   switch (action.type) {

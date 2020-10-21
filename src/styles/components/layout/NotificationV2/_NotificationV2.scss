@@ -1,0 +1,54 @@
+.notification-v2 {
+  align-items: center;
+  border-radius: rem(80px);
+  bottom: 0;
+  display: flex;
+  left: 50%;
+  padding: rem(16px) rem(24px);
+  position: fixed;
+  transform: translateX(-50%);
+  text-align: center;
+  visibility: hidden;
+  z-index: 100;
+
+  &.show {
+    visibility: visible;
+    opacity: 1;
+    transition: all 400ms ease-out;
+    transform: translateX(-50%) translateY(- rem(30px));
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    &.show {
+      visibility: visible;
+      opacity: 1;
+      transition: none;
+      transform: translateX(-50%) translateY(- rem(30px));
+    }
+  }
+
+  &.hide {
+    opacity: 0;
+    transition: all 400ms ease-in;
+    transform: translateX(-50%) translateY(100%);
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    &.hide {
+      opacity: 0;
+      transition: none;
+      transform: translateX(-50%) translateY(100%);
+    }
+  }
+
+  &.is-success {
+    background-color: $green-valid;
+    color: $white;
+  }
+
+  img {
+    height: rem(40px);
+    padding-right: rem(8px);
+    width: rem(40px);
+  }
+}

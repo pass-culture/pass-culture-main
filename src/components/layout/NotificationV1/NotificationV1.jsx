@@ -27,7 +27,7 @@ class NotificationV1 extends PureComponent {
     let png
     let svg
     if (type === 'success') {
-      svg = 'picto-check-solid-green-S'
+      svg = 'ico-notification-success-green'
     } else if (type === 'warning') {
       png = 'picto-warning-solid-orange-S'
     } else if (type === 'info') {
