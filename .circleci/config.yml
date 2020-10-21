@@ -40,6 +40,7 @@ jobs:
           name: Install pcapi Python package
           command: |
               venv/bin/pip install -e .
+              venv/bin/pip freeze
       - run:
           name: Check for alembic multiple heads
           command: |
