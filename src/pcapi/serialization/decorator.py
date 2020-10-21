@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import Callable, Any
 from spectree import Response as SpectreeResponse
 
-from pcapi.flask_app import api
+from pcapi.flask_app import api as default_api
 from pcapi.routes.serialization.serializer import serialize
 
 
@@ -33,6 +33,7 @@ def spectree_serialize(
     response_by_alias: bool = True,
     exclude_none: bool = False,
     on_success_status: int = 200,
+    api = default_api,
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
 
