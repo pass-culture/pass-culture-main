@@ -29,6 +29,7 @@
   }
 
   .offers-list-actions {
+    display: flex;
     border-bottom: 1px solid $grey-dark;
     font-size: 0.8rem;
     margin-bottom: rem(16px);
@@ -42,7 +43,6 @@
 
     button:first-child {
       border-right: 1px solid $grey-dark;
-      padding-right: rem(8px);
     }
   }
 
@@ -59,7 +59,7 @@
       border-bottom: 1px solid $grey-medium;
 
       td {
-        padding: rem(16px) rem(8px);
+        padding: rem(16px) rem(10px);
         vertical-align: middle;
       }
 
