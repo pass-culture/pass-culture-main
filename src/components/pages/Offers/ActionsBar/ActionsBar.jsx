@@ -24,6 +24,7 @@ const ActionsBar = props => {
     await fetchFromApiWithCredentials('/offers/active-status', 'PATCH', body)
     refreshOffers({ shouldTriggerSpinner: false })
     trackActivateOffers(selectedOfferIds)
+    handleClose()
   }
   async function handleDeactivate() {
     const body = {
@@ -33,6 +34,7 @@ const ActionsBar = props => {
     await fetchFromApiWithCredentials('/offers/active-status', 'PATCH', body)
     refreshOffers({ shouldTriggerSpinner: false })
     trackDeactivateOffers(selectedOfferIds)
+    handleClose()
   }
   function handleClose() {
     setSelectedOfferIds([])

@@ -10,7 +10,7 @@ const renderActionsBar = props => {
   return render(<ActionsBar {...props} />)
 }
 
-jest.spyOn(fetchUtils, 'fetchFromApiWithCredentials')
+jest.spyOn(fetchUtils, 'fetchFromApiWithCredentials').mockImplementation(() => Promise.resolve())
 
 describe('src | components | pages | Offers | ActionsBar', () => {
   let props
@@ -25,7 +25,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     }
   })
 
-  it('should activate selected offers on click on "Activer" button', () => {
+  it('should activate selected offers on click on "Activer" button', async () => {
     // given
     renderActionsBar(props)
     const activateButton = screen.queryByText('Activer')
@@ -41,7 +41,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     fireEvent.click(activateButton)
 
     // then
-    waitFor(() => {
+    await waitFor(() => {
       expect(fetchUtils.fetchFromApiWithCredentials).toHaveBeenLastCalledWith(
         '/offers/active-status',
         'PATCH',
@@ -54,7 +54,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     })
   })
 
-  it('should deactivate selected offers on click on "Désactiver" button', () => {
+  it('should deactivate selected offers on click on "Désactiver" button', async () => {
     // given
     renderActionsBar(props)
     const activateButton = screen.queryByText('Désactiver')
@@ -70,7 +70,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     fireEvent.click(activateButton)
 
     // then
-    waitFor(() => {
+    await waitFor(() => {
       expect(fetchUtils.fetchFromApiWithCredentials).toHaveBeenLastCalledWith(
         '/offers/active-status',
         'PATCH',
