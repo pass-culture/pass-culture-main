@@ -219,14 +219,18 @@ class Offers extends PureComponent {
           title="Offres"
         />
         {offerer && (
-          <button
-            className="offerer-filter"
-            onClick={this.handleOnOffererClick}
-            type="button"
-          >
+          <span className="offerer-filter">
             {offerer.name}
-            <Icon svg="ico-close-b" />
-          </button>
+            <button
+              onClick={this.handleOnOffererClick}
+              type="button"
+            >
+              <Icon
+                alt="Supprimer le filtre"
+                svg="ico-close-b"
+              />
+            </button>
+          </span>
         )}
         <form onSubmit={this.handleOnSubmit}>
           <TextInput

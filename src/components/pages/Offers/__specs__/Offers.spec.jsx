@@ -633,7 +633,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // When
       await waitFor(() => {
-        fireEvent.click(screen.getByText('La structure'))
+        fireEvent.click(screen.getByAltText('Supprimer le filtre'))
       })
 
       // Then

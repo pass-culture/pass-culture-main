@@ -2,17 +2,21 @@
   .offerer-filter {
     @include caption();
 
-    align-items: center;
     background-color: $notification-info;
     border: none;
     border-radius: 24px;
-    cursor: pointer;
     display: flex;
+    height: rem(32px);
     margin-bottom: rem(16px);
     justify-content: space-between;
     padding: rem(5px) rem(15px);
+    width: max-content;
 
-    img {
+    button {
+      align-self: center;
+      background: none;
+      border: none;
+      cursor: pointer;
       height: rem(14px);
       margin-left: rem(8px);
       width: rem(14px);
