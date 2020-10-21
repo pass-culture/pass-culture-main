@@ -454,8 +454,9 @@ class OfferEdition extends PureComponent {
               </div>
             )}
           </div>
-          {offerFromLocalProvider && (
+          {offerFromLocalProvider && offer && (
             <LocalProviderInformation
+              offerId={offer.id}
               offererId={offererId}
               providerName={offer.lastProvider.name.toLowerCase()}
             />
