@@ -33,7 +33,7 @@ class Offers extends PureComponent {
       page: page || DEFAULT_PAGE,
       pageCount: null,
       offererId: offererId || ALL_OFFERERS,
-      offerer: undefined,
+      offerer: null,
       selectedVenueId: selectedVenueId || ALL_VENUES,
       venueOptions: [],
     }
@@ -43,14 +43,12 @@ class Offers extends PureComponent {
     const { offererId } = this.state
     const { getOfferer } = this.props
 
-    if (offererId) {
+    if (offererId !== ALL_OFFERERS) {
       getOfferer(offererId).then(offerer => this.setState({ offerer }))
     }
 
     this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
-    fetchAllVenuesByProUser(offererId).then(venues =>
-      this.setState({ venueOptions: formatAndOrderVenues(venues) })
-    )
+    this.fetchAndFormatVenues(offererId)
   }
 
   componentWillUnmount() {
@@ -62,12 +60,13 @@ class Offers extends PureComponent {
 
   updateUrlMatchingState = () => {
     const { query } = this.props
-    const { page, nameSearchValue, selectedVenueId } = this.state
+    const { page, nameSearchValue, selectedVenueId, offererId } = this.state
 
     query.change({
       page: page === DEFAULT_PAGE ? null : page,
       [mapApiToBrowser.name]: nameSearchValue === ALL_OFFERS ? null : nameSearchValue,
       [mapApiToBrowser.venueId]: selectedVenueId === ALL_VENUES ? null : selectedVenueId,
+      [mapApiToBrowser.offererId]: offererId === ALL_OFFERERS ? null : offererId,
     })
   }
 
@@ -106,6 +105,12 @@ class Offers extends PureComponent {
     this.loadAndUpdateOffers()
   }
 
+  fetchAndFormatVenues = offererId => {
+    fetchAllVenuesByProUser(offererId).then(venues =>
+      this.setState({ venueOptions: formatAndOrderVenues(venues) })
+    )
+  }
+
   handleOnSubmit = event => {
     event.preventDefault()
 
@@ -119,16 +124,10 @@ class Offers extends PureComponent {
     )
   }
 
-  handleOnOffererClick = query => () => {
-    query.change({
-      [mapApiToBrowser.offererId]: null,
-      page: null,
-    })
-    this.setState({ offererId: ALL_OFFERERS, offerer: undefined }, () => {
+  handleOnOffererClick = () => {
+    this.setState({ offererId: ALL_OFFERERS, offerer: null, page: DEFAULT_PAGE }, () => {
       this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
-      fetchAllVenuesByProUser().then(venues =>
-        this.setState({ venueOptions: formatAndOrderVenues(venues) })
-      )
+      this.fetchAndFormatVenues()
     })
   }
 
@@ -222,7 +221,7 @@ class Offers extends PureComponent {
         {offerer && (
           <button
             className="offerer-filter"
-            onClick={this.handleOnOffererClick(query)}
+            onClick={this.handleOnOffererClick}
             type="button"
           >
             {offerer.name}

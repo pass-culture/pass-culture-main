@@ -95,7 +95,7 @@ describe('src | components | pages | Offers | Offers', () => {
       showActionsBar: jest.fn(),
       hideActionsBar: jest.fn(),
       venue: { name: 'Ma Venue', id: 'JI' },
-      getOfferer: jest.fn(),
+      getOfferer: jest.fn().mockResolvedValue({}),
     }
     fetchAllVenuesByProUser.mockResolvedValue(proVenues)
   })
@@ -474,6 +474,7 @@ describe('src | components | pages | Offers | Offers', () => {
           lieu: null,
           nom: null,
           page: 2,
+          structure: null,
         })
       })
     })
@@ -497,6 +498,7 @@ describe('src | components | pages | Offers | Offers', () => {
           lieu: null,
           nom: null,
           page: null,
+          structure: null,
         })
       })
     })
@@ -519,6 +521,7 @@ describe('src | components | pages | Offers | Offers', () => {
           lieu: null,
           nom: 'AnyWord',
           page: null,
+          structure: null,
         })
       })
     })
@@ -537,7 +540,7 @@ describe('src | components | pages | Offers | Offers', () => {
         expect(props.saveSearchFilters).toHaveBeenCalledWith({
           venueId: ALL_VENUES,
           name: 'search string',
-          offererId: '',
+          offererId: ALL_OFFERERS,
           page: DEFAULT_PAGE,
         })
       })
@@ -561,6 +564,7 @@ describe('src | components | pages | Offers | Offers', () => {
           lieu: null,
           nom: null,
           page: null,
+          structure: null,
         })
       })
     })
@@ -582,6 +586,7 @@ describe('src | components | pages | Offers | Offers', () => {
           lieu: proVenues[0].id,
           nom: null,
           page: null,
+          structure: null,
         })
       })
     })
@@ -603,11 +608,12 @@ describe('src | components | pages | Offers | Offers', () => {
           lieu: null,
           nom: null,
           page: null,
+          structure: null,
         })
       })
     })
 
-    it('should have offerer filter', async () => {
+    it('should have offerer filter when user filters by offerer', async () => {
       // Given
       props.query.parse.mockReturnValueOnce({ structure: 'A4' })
       props.getOfferer.mockResolvedValueOnce({ name: 'La structure' })
@@ -631,10 +637,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
 
       // Then
-      expect(props.query.change).toHaveBeenCalledWith({
-        page: null,
-        structure: null,
-      })
+      expect(screen.queryByText('La structure')).toBeNull()
     })
   })
 

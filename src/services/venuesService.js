@@ -1,7 +1,9 @@
 import { fetchFromApiWithCredentials } from 'utils/fetch'
+import { ALL_OFFERERS } from '../components/pages/Offers/_constants'
 
 export const fetchAllVenuesByProUser = offererId => {
-  const apiUrl = offererId ? `/venues?offererId=${offererId}` : '/venues'
+  const apiUrl =
+    offererId && offererId !== ALL_OFFERERS ? `/venues?offererId=${offererId}` : '/venues'
 
   return fetchFromApiWithCredentials(apiUrl).catch(() => [])
 }

@@ -201,10 +201,11 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
           </Router>
         )
 
-        const offersCount = wrapper.find({ children: '0 offre' })
-
         // then
+        const offersCount = wrapper.find({ children: '0 offre' })
+        const offersLink = offersCount.find('a')
         expect(offersCount).toHaveLength(1)
+        expect(offersLink).toHaveLength(0)
       })
     })
 

@@ -23,9 +23,7 @@ export const mapStateToProps = state => {
   }
 }
 
-const fetchOffererById = offererId => {
-  return fetchFromApiWithCredentials(`/offerers/${offererId}`)
-}
+const fetchOffererById = offererId => fetchFromApiWithCredentials(`/offerers/${offererId}`)
 
 const buildQueryParams = ({ nameSearchValue, selectedVenueId, offererId, page }) => {
   const queryParams = []
