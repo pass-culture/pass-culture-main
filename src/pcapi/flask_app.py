@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import typing
 from datetime import datetime
 
@@ -134,7 +135,7 @@ private_api = Blueprint('Private API', __name__)
 CORS(
     private_api,
     resources={
-        r"/*": {"origins": os.environ.get('CORS_ALLOWED_ORIGIN')}
+        r"/*": {"origins": re.compile(os.environ.get('CORS_ALLOWED_ORIGIN'))}
     },
     supports_credentials=True
 )
