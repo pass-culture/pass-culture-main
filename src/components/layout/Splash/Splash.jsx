@@ -11,6 +11,7 @@ const duration = 1000
 const defaultStyle = {
   opacity: 0,
   transition: `opacity ${duration}ms ease-in-out`,
+  zIndex: 2, // This is for the splash to be above the beta page text (.bp-main)
 }
 
 const transitionStyles = {
