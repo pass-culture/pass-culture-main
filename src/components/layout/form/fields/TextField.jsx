@@ -1,5 +1,7 @@
+/* eslint react/destructuring-assignment: 0 */
+/* eslint react/function-component-definition: 0 */
 import classnames from 'classnames'
-import React, { PureComponent } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 import { composeValidators, createParseNumberValue } from 'react-final-form-utils'
@@ -17,103 +19,76 @@ function getInputValue(inputType, value) {
   return value
 }
 
-class TextField extends PureComponent {
-  handleRef = _e => {
-    this.inputElement = _e
-  }
-
-  renderField = ({ input, meta }) => {
-    const {
-      autoComplete,
-      className,
-      disabled,
-      id,
-      innerClassName,
-      label,
-      min,
-      name,
-      onBlur,
-      placeholder,
-      readOnly,
-      renderInner,
-      renderValue,
-      required,
-      step,
-      title,
-      type,
-    } = this.props
-    const inputType = readOnly ? 'text' : type
-    const stepValue = inputType === 'number' ? step : undefined
-    const inputValue = getInputValue(inputType, input.value)
-    return (
-      <div
-        className={classnames('field text-field', className, {
-          'is-label-aligned': label,
-          'is-read-only': readOnly,
-        })}
-        id={id}
-      >
-        {label && (
-          <label
-            className={classnames('field-label')}
-            htmlFor={name}
-          >
-            <span>
+function TextField(props) {
+  const inputType = props.readOnly ? 'text' : props.type
+  const stepValue = inputType === 'number' ? props.step : undefined
+  return (
+    <Field
+      format={props.format}
+      name={props.name}
+      parse={props.parse || createParseNumberValue(props.type)}
+      validate={composeValidators(props.validate, getRequiredValidate(props.required, props.type))}
+    >
+      {({ input, meta }) => (
+        <div
+          className={classnames('field text-field', props.className, {
+            'is-label-aligned': props.label,
+            'is-read-only': props.readOnly,
+          })}
+          id={props.id}
+        >
+          {props.label && (
+            <label
+              className={classnames('field-label')}
+              htmlFor={props.name}
+            >
               <span>
-                {label}
-              </span>
-              {required && !readOnly && (
-                <span className="field-asterisk">
-                  {'*'}
+                <span>
+                  {props.label}
                 </span>
-              )}
-            </span>
-          </label>
-        )}
-        <div className="field-control">
-          <div className="field-value flex-columns items-center">
-            <div className={classnames('field-inner flex-columns items-center', innerClassName)}>
-              <input
-                id={name}
-                {...input}
-                autoComplete={autoComplete}
-                className={`field-input field-${type}`}
-                disabled={disabled || readOnly}
-                min={min}
-                onBlur={onBlur}
-                placeholder={readOnly ? '' : placeholder}
-                readOnly={readOnly}
-                ref={this.handleRef}
-                required={!!required}
-                step={stepValue}
-                title={title}
-                type={inputType}
-                value={inputValue}
-              />
-              {renderInner()}
+                {props.required && !props.readOnly && (
+                  <span className="field-asterisk">
+                    {'*'}
+                  </span>
+                )}
+              </span>
+            </label>
+          )}
+          <div className="field-control">
+            <div className="field-value flex-columns items-center">
+              <div
+                className={classnames(
+                  'field-inner flex-columns items-center',
+                  props.innerClassName
+                )}
+              >
+                <input
+                  id={props.name}
+                  {...input}
+                  autoComplete={props.autoComplete}
+                  className={`field-input field-${props.type}`}
+                  disabled={props.disabled || props.readOnly}
+                  min={props.min}
+                  onBlur={props.onBlur}
+                  placeholder={props.readOnly ? '' : props.placeholder}
+                  readOnly={props.readOnly}
+                  required={!!props.required}
+                  step={stepValue}
+                  title={props.title}
+                  type={inputType}
+                  value={getInputValue(inputType, input.value)}
+                />
+                {props.renderInner()}
+              </div>
+              {props.renderValue()}
             </div>
-            {renderValue()}
+            <FieldErrors meta={meta} />
           </div>
-          <FieldErrors meta={meta} />
+          <div />
         </div>
-        <div />
-      </div>
-    )
-  }
-
-  render() {
-    const { format, name, parse, required, type, validate } = this.props
-
-    return (
-      <Field
-        format={format}
-        name={name}
-        parse={parse || createParseNumberValue(type)}
-        render={this.renderField}
-        validate={composeValidators(validate, getRequiredValidate(required, type))}
-      />
-    )
-  }
+      )}
+    </Field>
+  )
 }
 
 TextField.defaultProps = {
