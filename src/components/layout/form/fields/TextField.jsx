@@ -18,33 +18,6 @@ function getInputValue(inputType, value) {
 }
 
 class TextField extends PureComponent {
-  componentDidMount() {
-    const { type, isDecimal } = this.props
-    if (type === 'number') {
-      this.preventEnteringInvalidChars(isDecimal)
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.keypressListener) {
-      this.inputElement.removeEventListener(this.keypressListener)
-    }
-  }
-
-  preventEnteringInvalidChars = isDecimal => {
-    this.keypressListener = this.inputElement.addEventListener('keypress', event => {
-      const validCharacters = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
-
-      if (isDecimal) {
-        validCharacters.push(',', '.')
-      }
-
-      if (!validCharacters.includes(event.key)) {
-        event.preventDefault()
-      }
-    })
-  }
-
   handleRef = _e => {
     this.inputElement = _e
   }
@@ -70,7 +43,6 @@ class TextField extends PureComponent {
     } = this.props
     const inputType = readOnly ? 'text' : type
     const inputValue = getInputValue(inputType, input.value)
-
     return (
       <div
         className={classnames('field text-field', className, {
@@ -148,16 +120,15 @@ TextField.defaultProps = {
   format: null,
   id: null,
   innerClassName: null,
-  isDecimal: true,
   label: '',
   onBlur: null,
   parse: null,
   placeholder: '',
   readOnly: false,
-  renderInner: function() {
+  renderInner: function () {
     return null
   },
-  renderValue: function() {
+  renderValue: function () {
     return null
   },
   required: false,
@@ -173,7 +144,6 @@ TextField.propTypes = {
   format: PropTypes.func,
   id: PropTypes.string,
   innerClassName: PropTypes.string,
-  isDecimal: PropTypes.bool,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   onBlur: PropTypes.func,
