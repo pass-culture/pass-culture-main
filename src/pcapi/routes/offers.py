@@ -46,20 +46,20 @@ def list_offers() -> (str, int):
     venue_identifier = Identifier.from_scrambled_id(request.args.get('venueId'))
 
     if not current_user.isAdmin:
+        offerer_id = None
         if venue_identifier:
             venue = venue_queries.find_by_id(venue_identifier.persisted)
             check_venue_exists_when_requested(venue, venue_identifier)
-            user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
-                user_id=current_user.id,
-                offerer_id=venue.managingOffererId
-            )
-            check_user_has_rights_on_offerer(user_offerer)
+            offerer_id = venue.managingOffererId
         if offerer_identifier:
+            offerer_id = offerer_identifier.persisted
+        if offerer_id is not None:
             user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
                 user_id=current_user.id,
-                offerer_id=offerer_identifier.persisted
+                offerer_id=offerer_id
             )
             check_user_has_rights_on_offerer(user_offerer)
+
 
     offers_request_parameters = OffersRequestParameters(
         user_id=current_user.id,

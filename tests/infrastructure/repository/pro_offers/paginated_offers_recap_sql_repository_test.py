@@ -150,16 +150,16 @@ class PaginatedOfferSQLRepositoryTest:
     def test_returns_offers_filtered_by_offerer_id_when_provided(self, app: object):
         # given
         pro_user = create_user()
-        offerer = create_offerer()
-        offerer2 = create_offerer(siren='981237')
-        user_offerer = create_user_offerer(pro_user, offerer)
-        user_offerer2 = create_user_offerer(pro_user, offerer2)
-        venue = create_venue(offerer)
-        venue2 = create_venue(offerer2, siret='12345678912387')
-        offer1 = create_offer_with_thing_product(venue=venue, thing_name='Returned offer')
-        offer2 = create_offer_with_thing_product(venue=venue2, thing_name='Not returned offer')
+        wanted_offerer = create_offerer()
+        unwanted_offerer = create_offerer(siren='981237')
+        create_user_offerer(pro_user, wanted_offerer)
+        create_user_offerer(pro_user, unwanted_offerer)
+        venue_from_wanted_offerer = create_venue(wanted_offerer)
+        venue_from_unwanted_offerer = create_venue(unwanted_offerer, siret='12345678912387')
+        offer_from_wanted_offerer = create_offer_with_thing_product(venue=venue_from_wanted_offerer, thing_name='Returned offer')
+        offer_from_unwanted_offerer = create_offer_with_thing_product(venue=venue_from_unwanted_offerer, thing_name='Not returned offer')
 
-        repository.save(user_offerer, user_offerer2, offer1, offer2)
+        repository.save(offer_from_wanted_offerer, offer_from_unwanted_offerer)
 
         # When
         paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
@@ -167,9 +167,9 @@ class PaginatedOfferSQLRepositoryTest:
             user_is_admin=pro_user.isAdmin,
             page=1,
             offers_per_page=1,
-            offerer_id=Identifier(offerer.id)
+            offerer_id=Identifier(wanted_offerer.id)
         )
 
         # then
         assert paginated_offers.total_offers == 1
-        assert paginated_offers.offers[0].name == 'Returned offer'
+        assert paginated_offers.offers[0].name == offer_from_wanted_offerer.name

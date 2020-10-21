@@ -23,8 +23,7 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
         if venue_id is not None:
             query = query.filter(OfferSQLEntity.venueId == venue_id.persisted)
         if offerer_id is not None:
-            query = query \
-                .filter(VenueSQLEntity.managingOffererId == offerer_id.persisted)
+            query = query.filter(VenueSQLEntity.managingOffererId == offerer_id.persisted)
         if not user_is_admin:
             query = query \
                 .join(Offerer) \

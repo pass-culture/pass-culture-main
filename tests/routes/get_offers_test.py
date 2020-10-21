@@ -10,6 +10,7 @@ from pcapi.domain.identifier.identifier import Identifier
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
 from pcapi.repository import repository
 from pcapi.use_cases.list_offers_for_pro_user import OffersRequestParameters
+from pcapi.utils.human_ids import humanize
 
 
 class Get:
@@ -122,6 +123,33 @@ class Get:
             assert expected_parameter.user_is_admin == user.isAdmin
             assert expected_parameter.offerer_id is None
             assert expected_parameter.venue_id == Identifier(venue.id)
+            assert expected_parameter.offers_per_page == 20
+            assert expected_parameter.name_keywords is None
+            assert expected_parameter.page == 1
+
+        @pytest.mark.usefixtures("db_session")
+        @patch('pcapi.routes.offers.list_offers_for_pro_user.execute')
+        def test_results_are_filtered_by_given_offerer_id(self, list_offers_mock, app):
+            # given
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            repository.save(user_offerer, venue)
+
+            # when
+            response = TestClient(app.test_client()) \
+                .with_auth(email=user.email).get('/offers?offererId=' + humanize(offerer.id))
+
+            # then
+            assert response.status_code == 200
+            list_offers_mock.assert_called_once()
+            expected_parameter = list_offers_mock.call_args[0][0]
+            assert isinstance(expected_parameter, OffersRequestParameters)
+            assert expected_parameter.user_id == user.id
+            assert expected_parameter.user_is_admin == user.isAdmin
+            assert expected_parameter.offerer_id == Identifier(offerer.id)
+            assert expected_parameter.venue_id is None
             assert expected_parameter.offers_per_page == 20
             assert expected_parameter.name_keywords is None
             assert expected_parameter.page == 1

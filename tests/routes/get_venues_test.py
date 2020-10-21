@@ -59,6 +59,30 @@ class Get:
             first_returned_venue = response.json[0]
             assert first_returned_venue['name'] == 'Contes et légendes'
 
+
+        @pytest.mark.usefixtures("db_session")
+        def test_filters_by_offerer_id_when_given(self, app):
+            # given
+            wanted_offerer = create_offerer()
+            unwanted_offerer = create_offerer(siren='234565')
+            user = create_user(email='user.pro@test.com')
+            create_user_offerer(user, wanted_offerer)
+            create_user_offerer(user, unwanted_offerer)
+            wanted_venue = create_venue(wanted_offerer)
+            unwanted_venue = create_venue(unwanted_offerer, siret='54321987654321')
+            repository.save(wanted_venue, unwanted_venue)
+
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+
+            # when
+            response = auth_request.get('/venues?offererId=' + humanize(wanted_offerer.id))
+
+            # then
+            assert response.status_code == 200
+            assert len(response.json) == 1
+            assert response.json[0]['id'] == humanize(wanted_venue.id)
+
+
     class Returns403:
         @pytest.mark.usefixtures("db_session")
         def when_current_user_doesnt_have_rights(self, app):

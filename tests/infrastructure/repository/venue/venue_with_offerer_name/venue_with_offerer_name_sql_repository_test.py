@@ -32,7 +32,7 @@ class GetByProIdentifierTest:
         expected_venue_2 = venue_with_offerer_name_domain_converter.to_domain(venue_2)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, None)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
 
         # then
         assert len(found_venues) == 2
@@ -55,7 +55,7 @@ class GetByProIdentifierTest:
         expected_venue_2 = venue_with_offerer_name_domain_converter.to_domain(venue_2)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(admin_user.id, True, None)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(admin_user.id, True)
 
         # then
         assert len(found_venues) == 2
@@ -72,7 +72,7 @@ class GetByProIdentifierTest:
         repository.save(user_offerer)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, None)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
 
         # then
         assert found_venues == []
@@ -92,7 +92,7 @@ class GetByProIdentifierTest:
         expected_venue_2 = venue_with_offerer_name_domain_converter.to_domain(venue_2)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, None)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
 
         # then
         assert len(found_venues) == 2
@@ -115,7 +115,7 @@ class GetByProIdentifierTest:
         expected_venue = venue_with_offerer_name_domain_converter.to_domain(venue_of_validated_offerer)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, None)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
 
         # then
         assert len(found_venues) == 1
@@ -132,7 +132,7 @@ class GetByProIdentifierTest:
         repository.save(venue)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, None)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
 
         # then
         assert len(found_venues) == 0
@@ -148,7 +148,7 @@ class GetByProIdentifierTest:
         repository.save(venue)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, None)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
 
         # then
         assert len(found_venues) == 0
@@ -157,18 +157,18 @@ class GetByProIdentifierTest:
     def test_returns_venues_filtered_by_offerer_id_when_provided(self, app: object):
         # given
         pro_user = create_user()
-        offerer = create_offerer(idx=1)
-        offerer2 = create_offerer(idx=2, siren='5654367')
-        create_user_offerer(user=pro_user, offerer=offerer)
-        create_user_offerer(user=pro_user, offerer=offerer2)
-        venue_1 = create_venue(name="Kléber", offerer=offerer, siret='12345678912345', public_name="Librairie Kléber")
-        venue_2 = create_venue(name="QG FNAC", offerer=offerer2, siret='98765432198765')
+        wanted_offerer = create_offerer(idx=1)
+        unwanted_offerer = create_offerer(idx=2, siren='5654367')
+        create_user_offerer(user=pro_user, offerer=wanted_offerer)
+        create_user_offerer(user=pro_user, offerer=unwanted_offerer)
+        venue_from_wanted_offerer = create_venue(name="Kléber", offerer=wanted_offerer, siret='12345678912345', public_name="Librairie Kléber")
+        venue_from_unwanted_offerer = create_venue(name="QG FNAC", offerer=unwanted_offerer, siret='98765432198765')
 
-        repository.save(venue_1, venue_2)
+        repository.save(venue_from_wanted_offerer, venue_from_unwanted_offerer)
 
         # when
         found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, Identifier(1))
 
         # then
         assert len(found_venues) == 1
-        assert found_venues[0].name == 'Kléber'
+        assert found_venues[0].name == venue_from_wanted_offerer.name
