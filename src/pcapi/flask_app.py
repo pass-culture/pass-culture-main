@@ -3,6 +3,10 @@ import os
 import typing
 from datetime import datetime
 
+# Loading variables should always be the first thing, before any other load
+from pcapi.load_environment_variables import load_environment_variables
+load_environment_variables()
+
 import flask.wrappers
 import redis
 import sentry_sdk
