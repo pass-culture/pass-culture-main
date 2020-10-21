@@ -1,7 +1,12 @@
 import PropTypes from 'prop-types'
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 
-export const OffersStatusFilters = ({ refreshOffers, statusFilters, updateStatusFilters }) => {
+export const OffersStatusFilters = ({
+  refreshOffers,
+  statusFilters,
+  toggle,
+  updateStatusFilters,
+}) => {
   const handleStatusFilterChange = useCallback(
     event => {
       updateStatusFilters(event.target.name, event.target.checked)
@@ -9,8 +14,34 @@ export const OffersStatusFilters = ({ refreshOffers, statusFilters, updateStatus
     [updateStatusFilters]
   )
 
+  const onClickOutside = useCallback(
+    event => {
+      const { target } = event
+
+      if (modalRef.current && !modalRef.current.contains(target)) {
+        event.preventDefault()
+        event.stopPropagation()
+        toggle()
+      }
+    },
+    [toggle]
+  )
+
+  const modalRef = useRef(null)
+
+  useEffect(() => {
+    document.body.addEventListener('click', onClickOutside)
+
+    return () => {
+      document.removeEventListener('click', onClickOutside)
+    }
+  }, [onClickOutside])
+
   return (
-    <div className="offers-status-filters">
+    <div
+      className="offers-status-filters"
+      ref={modalRef}
+    >
       <div className="osf-title">
         {'Afficher les statuts'}
       </div>
@@ -49,5 +80,6 @@ OffersStatusFilters.propTypes = {
     active: PropTypes.bool.isRequired,
     inactive: PropTypes.bool.isRequired,
   }).isRequired,
+  toggle: PropTypes.func.isRequired,
   updateStatusFilters: PropTypes.func.isRequired,
 }

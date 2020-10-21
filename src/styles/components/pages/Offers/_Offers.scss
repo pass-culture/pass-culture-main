@@ -87,14 +87,19 @@
 
       &>button {
         background: none;
-        border: none;
         cursor: pointer;
+        outline: none;
+        border-radius: 2px;
+        border: 2px solid transparent;
+
+        &:focus {
+          border-color: $primary;
+        }
       }
 
       svg {
         fill: $black;
-        margin-left: rem(12px);
-        margin-top: rem(3px);
+        margin: rem(3px) rem(12px) 0;
       }
     }
 

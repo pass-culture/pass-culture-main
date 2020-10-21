@@ -355,12 +355,13 @@ class Offers extends PureComponent {
                         onClick={this.toggleStatusFiltersVisibility}
                         type="button"
                       >
-                        <SVGFilter alt="Filtrer les offres par statut" />
+                        <SVGFilter alt="Afficher ou masquer les filtres par statut" />
                       </button>
                       {areStatusFiltersVisible && (
                         <OffersStatusFilters
                           refreshOffers={this.handleOnSubmit}
                           statusFilters={statusFilters}
+                          toggle={this.toggleStatusFiltersVisibility}
                           updateStatusFilters={this.updateStatusFilters}
                         />
                       )}
