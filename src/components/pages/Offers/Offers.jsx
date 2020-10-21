@@ -29,6 +29,9 @@ class Offers extends PureComponent {
       venueId: selectedVenueId,
     } = translateQueryParamsToApiParams(props.query.parse())
 
+    const isFilteredByActiveStatus = active === EXCLUDING_STATUS_VALUE
+    const isFilteredByInactiveStatus = inactive === EXCLUDING_STATUS_VALUE
+
     this.state = {
       isLoading: false,
       nameSearchValue: nameKeywords || ALL_OFFERS,
@@ -40,10 +43,11 @@ class Offers extends PureComponent {
       selectedVenueId: selectedVenueId || ALL_VENUES,
       venueOptions: [],
       statusFilters: {
-        active: active !== EXCLUDING_STATUS_VALUE,
-        inactive: inactive !== EXCLUDING_STATUS_VALUE,
+        active: !isFilteredByActiveStatus,
+        inactive: !isFilteredByInactiveStatus,
       },
       areStatusFiltersVisible: false,
+      isFilteredByStatus: isFilteredByActiveStatus || isFilteredByInactiveStatus,
     }
   }
 
@@ -108,6 +112,7 @@ class Offers extends PureComponent {
   loadAndUpdateOffers() {
     const { loadOffers } = this.props
     const { nameSearchValue, selectedVenueId, offererId, page, statusFilters } = this.state
+    const isFilteredByStatus = !statusFilters.active || !statusFilters.inactive
 
     loadOffers({ nameSearchValue, selectedVenueId, offererId, page, statusFilters })
       .then(({ page, pageCount, offersCount }) => {
@@ -117,6 +122,7 @@ class Offers extends PureComponent {
             offersCount,
             page,
             pageCount,
+            isFilteredByStatus,
           },
           () => {
             this.updateUrlMatchingState()
@@ -158,6 +164,7 @@ class Offers extends PureComponent {
     this.setState(
       {
         page: DEFAULT_PAGE,
+        areStatusFiltersVisible: false,
       },
       () => {
         this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
@@ -236,6 +243,7 @@ class Offers extends PureComponent {
       offerer,
       page,
       pageCount,
+      isFilteredByStatus,
       isLoading,
       selectedVenueId,
       statusFilters,
@@ -355,7 +363,10 @@ class Offers extends PureComponent {
                         onClick={this.toggleStatusFiltersVisibility}
                         type="button"
                       >
-                        <SVGFilter alt="Afficher ou masquer les filtres par statut" />
+                        <SVGFilter
+                          active={isFilteredByStatus}
+                          alt="Afficher ou masquer les filtres par statut"
+                        />
                       </button>
                       {areStatusFiltersVisible && (
                         <OffersStatusFilters

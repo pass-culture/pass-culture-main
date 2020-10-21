@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-export const SVGFilter = ({ alt }) => (
+export const SVGFilter = ({ alt, active }) => (
   <svg
     height="16"
     viewBox="0 0 16 16"
@@ -24,7 +24,7 @@ export const SVGFilter = ({ alt }) => (
           />
           <path
             d="M4.5 12.65c.47 0 .85.38.85.85 0 .433-.324.79-.743.843l-.107.007H1c-.47 0-.85-.38-.85-.85 0-.433.324-.79.743-.843L1 12.65h3.5zm4.5-5c.47 0 .85.38.85.85 0 .433-.324.79-.743.843L9 9.35H1c-.47 0-.85-.38-.85-.85 0-.433.324-.79.743-.843L1 7.65h8zm5.5-5c.47 0 .85.38.85.85 0 .433-.324.79-.743.843l-.107.007H1c-.47 0-.85-.38-.85-.85 0-.433.324-.79.743-.843L1 2.65h13.5z"
-            fill="#151515"
+            fill={active ? '#eb0055' : '#151515'}
             transform="translate(-900 -526) translate(900 526)"
           />
         </g>
@@ -33,9 +33,11 @@ export const SVGFilter = ({ alt }) => (
   </svg>
 )
 SVGFilter.defaultProps = {
-  alt: ''
+  active: false,
+  alt: '',
 }
 
 SVGFilter.propTypes = {
-  alt: PropTypes.string
+  active: PropTypes.bool,
+  alt: PropTypes.string,
 }
