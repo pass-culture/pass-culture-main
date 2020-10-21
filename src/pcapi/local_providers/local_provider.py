@@ -1,6 +1,6 @@
 import traceback
 from abc import abstractmethod
-from collections import Iterator
+from collections.abc import Iterator
 from datetime import datetime
 from pprint import pprint
 
