@@ -58,7 +58,7 @@ const ActionsBar = props => {
 
       <div className="actions-container">
         <button
-          className="primary-button"
+          className="primary-button with-icon"
           onClick={handleDeactivate}
           type="button"
         >
@@ -66,7 +66,7 @@ const ActionsBar = props => {
           {'Désactiver'}
         </button>
         <button
-          className="primary-button"
+          className="primary-button with-icon"
           onClick={handleActivate}
           type="button"
         >
