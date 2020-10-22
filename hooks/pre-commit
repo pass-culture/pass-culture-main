@@ -14,13 +14,13 @@ for FILE in $STAGED_FILES; do
 done
 
 echo -e "\033[0;96mRunning mypy for type checking\033[0m\n"
-docker exec pc-flask mypy /opt/services/flaskapp/src/$LINTED_FILES  --pretty
+mypy $LINTED_FILES --pretty
 if [[ "$?" != 0 ]]; then
   counter=$((counter + 1))
 fi
 
 echo -e "\n\033[0;96mRunning pylint for code linting\033[0m\n"
-docker exec pc-flask pylint /opt/services/flaskapp/src/$LINTED_FILES --output-format="colorized" --score=no
+pylint $LINTED_FILES --output-format="colorized" --score=no
 if [[ "$?" != 0 ]]; then
   counter=$((counter + 1))
 fi
