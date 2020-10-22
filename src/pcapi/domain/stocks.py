@@ -71,7 +71,6 @@ def _deserialize_datetime(value):
     return datetime_value
 
 def _is_stocks_provider_generated_offer(local_class: str) -> bool:
-    print(local_class)
     for local_provider in LocalProviderNames:
         if local_provider.value == local_class:
             return True
