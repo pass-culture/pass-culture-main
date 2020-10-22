@@ -1,14 +1,15 @@
-import React from 'react'
 import { shallow } from 'enzyme'
 import { Field, Form, showModal } from 'pass-culture-shared'
+import React from 'react'
 
-import OfferEdition from '../OfferEdition'
-import MediationsManager from '../../MediationsManager/MediationsManagerContainer'
-import Titles from '../../../../layout/Titles/Titles'
+import Titles from 'components/layout/Titles/Titles'
+
 import LocalProviderInformation from '../../LocalProviderInformation/LocalProviderInformationContainer'
-import { VenueName } from '../VenueName'
-import { OffererName } from '../OffererName'
+import MediationsManager from '../../MediationsManager/MediationsManagerContainer'
 import StocksManagerContainer from '../../StocksManager/StocksManagerContainer'
+import OfferEdition from '../OfferEdition'
+import { OffererName } from '../OffererName'
+import { VenueName } from '../VenueName'
 
 describe('components | OfferEdition', () => {
   let dispatch

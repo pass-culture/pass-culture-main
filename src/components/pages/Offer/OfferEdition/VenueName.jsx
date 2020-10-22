@@ -1,5 +1,5 @@
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
 
 export const VenueName = ({ name }) => (
   <div className="field field-select is-horizontal readonly">
