@@ -7,6 +7,7 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from 'components/layout/inputs/TextInputWithIcon/TextInputWithIcon'
 import Logo from 'components/layout/Logo'
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 
@@ -73,6 +74,7 @@ class Signin extends PureComponent {
         fullscreen
         name="sign-in"
       >
+        <PageTitle title="Se connecter" />
         <div className="logo-side">
           <Logo
             noLink
@@ -85,7 +87,7 @@ class Signin extends PureComponent {
               <section>
                 <div className="text-container">
                   <h1>
-                    {'Bienvenue sur l\'espace dédié aux acteurs culturels'}
+                    {'Bienvenue sur l’espace dédié aux acteurs culturels'}
                   </h1>
                   <h2>
                     {'Et merci de votre participation pour nous aider à l’améliorer !'}

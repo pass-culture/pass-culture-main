@@ -4,6 +4,7 @@ import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
@@ -188,6 +189,7 @@ class VenueCreation extends PureComponent {
         handleDataRequest={noop}
         name="venue"
       >
+        <PageTitle title="Créer un lieu" />
         <Titles
           subtitle={initialName}
           title="Lieu"

@@ -18,13 +18,14 @@ import Insert from 'components/layout/Insert/Insert'
 import Main from 'components/layout/Main'
 import OfferPreviewLink from 'components/layout/OfferPreviewLink/OfferPreviewLink'
 import { webappOfferUrl } from 'components/layout/OfferPreviewLink/webappOfferUrl'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import { OFFERERS_API_PATH } from 'config/apiPaths'
 import { CGU_URL } from 'utils/config'
+import { musicOptions, showOptions } from 'utils/edd'
+import { pluralize } from 'utils/pluralize'
 import { translateApiParamsToQueryParams } from 'utils/translate'
 
-import { musicOptions, showOptions } from '../../../../utils/edd'
-import { pluralize } from '../../../../utils/pluralize'
 import { isAllocineOffer, isOfferFromStockProvider } from '../domain/localProvider'
 import offerIsRefundable from '../domain/offerIsRefundable'
 import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
@@ -380,6 +381,8 @@ class OfferCreation extends PureComponent {
       />
     )
 
+    const pageTitle = !isCreatedEntity && offer ? 'Détails de votre offre' : 'Créer une offre'
+
     return (
       <Main
         backTo={{ path: this.computeOffersUrl(), label: 'Offres' }}
@@ -387,6 +390,7 @@ class OfferCreation extends PureComponent {
         id="offer"
         name="offer"
       >
+        <PageTitle title={pageTitle} />
         <Titles
           action={actionLink}
           subtitle={offerName && offerName}

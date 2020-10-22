@@ -7,6 +7,7 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from 'components/layout/inputs/TextInputWithIcon/TextInputWithIcon'
 import Logo from 'components/layout/Logo'
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 class LostPassword extends PureComponent {
   constructor(props) {
@@ -112,6 +113,7 @@ class LostPassword extends PureComponent {
         fullscreen
         name="sign-in"
       >
+        <PageTitle title="Mot de passe perdu" />
         <div className="logo-side">
           <Logo
             noLink

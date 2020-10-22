@@ -13,6 +13,7 @@ import { version } from '../../../../package.json'
 
 
 import { isValidEmail } from './domain/isValidEmail'
+import PageTitle from '../../layout/PageTitle/PageTitle'
 
 class Profil extends PureComponent {
   constructor(props) {
@@ -151,6 +152,7 @@ class Profil extends PureComponent {
         backTo={backTo}
         name="profile"
       >
+        <PageTitle title="Modifier votre profil" />
         <Titles title="Profil" />
         {this.renderForm()}
         <hr />

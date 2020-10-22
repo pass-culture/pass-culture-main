@@ -3,11 +3,13 @@ import React from 'react'
 import CsvTableButtonContainer from 'components/layout/CsvTableButton/CsvTableButtonContainer'
 import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import { API_URL } from 'utils/config'
 
 const Reimbursements = () => (
   <Main name="reimbursements">
+    <PageTitle title="Vos remboursements" />
     <Titles title="Remboursements" />
     <p className="advice">
       {'Téléchargez le récapitulatif des remboursements de vos offres.'}

@@ -1,6 +1,7 @@
 import React from 'react'
 
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
 import StyleguideAgenda from './StyleguideAgenda'
@@ -12,6 +13,7 @@ import StyleguideTitle from './StyleguideTitles'
 
 const Styleguide = () => (
   <Main name="styleguide">
+    <PageTitle title="Guide des styles" />
     <Titles title="Styleguide" />
     <StyleguideAgenda />
 

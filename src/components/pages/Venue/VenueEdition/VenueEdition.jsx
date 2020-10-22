@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
 import BankInformation from '../fields/BankInformationFields/BankInformationFields'
@@ -20,7 +21,6 @@ import bindGetSuggestionsToLongitude from './../fields/LocationFields/decorators
 import LocationFields from './../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from './../fields/LocationFields/utils/positions'
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
-
 
 const noop = () => {}
 
@@ -166,10 +166,15 @@ class VenueEdition extends PureComponent {
     const {
       venue,
       match: {
-        params: { offererId },
+        params: { offererId, venueId },
       },
       offerer,
+      query,
     } = this.props
+
+    const { readOnly } = query.context({
+      id: venueId,
+    })
 
     const { name: offererName } = offerer || {}
     const { id: initialId, isVirtual: initialIsVirtual, name: initialName } = venue || {}
@@ -177,6 +182,8 @@ class VenueEdition extends PureComponent {
     const decorators = [bindGetSuggestionsToLatitude, bindGetSuggestionsToLongitude]
 
     const showForm = !initialIsVirtual && typeof offerer !== 'undefined'
+
+    const pageTitle = readOnly ? 'Détails de votre lieu' : 'Modifier votre lieu'
 
     const actionLink = !!initialId && (
       <Link
@@ -199,6 +206,7 @@ class VenueEdition extends PureComponent {
         handleDataRequest={noop}
         name="venue"
       >
+        <PageTitle title={pageTitle} />
         <Titles
           action={actionLink}
           subtitle={initialName}

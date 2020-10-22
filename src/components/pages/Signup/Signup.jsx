@@ -4,6 +4,7 @@ import { Route, Switch } from 'react-router-dom/umd/react-router-dom'
 
 import Logo from 'components/layout/Logo'
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 import SignupConfirmationContainer from './SignupConfirmation/SignupConfirmationContainer'
 import SignupFormContainer from './SignupForm/SignupFormContainer'
@@ -14,6 +15,7 @@ const Signup = ({ location }) => {
       fullscreen
       name="sign-up"
     >
+      <PageTitle title="S’inscrire" />
       <div className="logo-side">
         <Logo
           noLink

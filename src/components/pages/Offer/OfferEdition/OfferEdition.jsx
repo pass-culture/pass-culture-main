@@ -18,6 +18,7 @@ import Insert from 'components/layout/Insert/Insert'
 import Main from 'components/layout/Main'
 import OfferPreviewLink from 'components/layout/OfferPreviewLink/OfferPreviewLink'
 import { webappOfferUrl } from 'components/layout/OfferPreviewLink/webappOfferUrl'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import { OFFERERS_API_PATH } from 'config/apiPaths'
 import { CGU_URL } from 'utils/config'
@@ -308,6 +309,7 @@ class OfferEdition extends PureComponent {
         id="offer"
         name="offer"
       >
+        <PageTitle title="Modifier votre offre" />
         <Titles
           action={actionLink}
           subtitle={offerName && offerName}

@@ -22,6 +22,7 @@ import {
 } from './_constants'
 import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
+import PageTitle from '../../layout/PageTitle/PageTitle'
 
 class Offers extends PureComponent {
   constructor(props) {
@@ -277,6 +278,7 @@ class Offers extends PureComponent {
         id="offers"
         name="offers"
       >
+        <PageTitle title="Vos offres" />
         <Titles
           action={actionLink}
           title="Offres"

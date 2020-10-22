@@ -4,6 +4,7 @@ import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
 import { bindAddressAndDesignationFromSiren } from './decorators/bindSirenFieldToDesignation'
@@ -49,6 +50,7 @@ class OffererCreation extends PureComponent {
         backTo={{ label: 'Structures juridiques', path: '/structures' }}
         name="offerer"
       >
+        <PageTitle title="Créer une structure" />
         <Titles title="Structure" />
 
         <Form

@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react'
 
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { fetchBookingsRecapByPage } from 'repository/bookingsRecapService'
@@ -56,6 +57,7 @@ class BookingsRecap extends PureComponent {
 
     return (
       <Main name="bookings-v2">
+        <PageTitle title="Vos réservations" />
         <Titles title="Réservations" />
         {bookingsRecap.length > 0 ? (
           <BookingsRecapTable

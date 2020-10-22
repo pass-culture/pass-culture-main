@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Main from 'components/layout/Main'
 import Titles from 'components/layout/Titles/Titles'
@@ -167,6 +168,7 @@ class Desk extends Component {
 
     return (
       <Main name="desk">
+        <PageTitle title="Guichet" />
         <Titles title="Guichet" />
         <p className="advice">
           {

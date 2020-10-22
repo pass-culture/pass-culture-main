@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import Icon from 'components/layout/Icon'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { selectOfferers } from 'store/selectors/data/offerersSelectors'
@@ -18,7 +19,6 @@ import OffererItemContainer from './OffererItem/OffererItemContainer'
 import PendingOffererItem from './OffererItem/PendingOffererItem'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
-
 
 class Offerers extends PureComponent {
   constructor(props) {
@@ -197,6 +197,7 @@ class Offerers extends PureComponent {
         id="offerers"
         name="offerers"
       >
+        <PageTitle title="Vos structures juridiques" />
         <Titles
           action={actionLink}
           title={sectionTitle}

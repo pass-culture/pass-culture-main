@@ -1,6 +1,7 @@
 import React from 'react'
 
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 import Card from './Card/Card'
 
@@ -9,6 +10,7 @@ const Home = () => (
     name="home"
     whiteHeader
   >
+    <PageTitle title="Accueil" />
     <div className="home-cards columns">
       <Card
         navLink="/guichet"

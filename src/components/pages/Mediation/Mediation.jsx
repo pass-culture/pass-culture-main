@@ -9,6 +9,7 @@ import Titles from 'components/layout/Titles/Titles'
 import UploadThumbContainer from 'components/layout/UploadThumb/UploadThumbContainer'
 
 import CanvasTools from '../../../utils/canvas'
+import PageTitle from '../../layout/PageTitle/PageTitle'
 
 const IMAGE_UPLOAD_SIZE = 400
 const IMAGE_UPLOAD_BORDER = 25
@@ -377,6 +378,7 @@ class Mediation extends PureComponent {
         handleDataRequest={this.onHandleDataRequest}
         name="mediation"
       >
+        <PageTitle title="Ajouter une accroche" />
         <Titles title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`} />
         <p className="advice">
           {'Ajoutez un visuel marquant pour mettre en avant cette offre.'}

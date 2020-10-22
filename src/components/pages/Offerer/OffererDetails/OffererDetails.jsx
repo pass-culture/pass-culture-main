@@ -7,6 +7,7 @@ import Titles from 'components/layout/Titles/Titles'
 import BankInformation from './BankInformation/BankInformation'
 import { Offerer } from './Offerer'
 import VenuesContainer from './Venues/VenuesContainer'
+import PageTitle from '../../../layout/PageTitle/PageTitle'
 
 class OffererDetails extends PureComponent {
   componentDidMount() {
@@ -21,6 +22,7 @@ class OffererDetails extends PureComponent {
         backTo={{ label: 'Structures juridiques', path: '/structures' }}
         name="offerer"
       >
+        <PageTitle title="Détails de votre structure" />
         <Titles
           subtitle={offerer.name}
           title="Structure"

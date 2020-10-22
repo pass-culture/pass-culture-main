@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react'
 
 import Header from '../Header/Header'
 import Spinner from '../Spinner'
+import PageTitle from '../PageTitle/PageTitle'
 
 class CsvTable extends PureComponent {
   constructor(props) {
@@ -39,6 +40,7 @@ class CsvTable extends PureComponent {
 
     return (
       <React.Fragment>
+        <PageTitle title="Liste de vos remboursements" />
         <Header
           isSmall
           name={publicName}
