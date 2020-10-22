@@ -331,7 +331,6 @@ describe('src | components | pages | Offers | Offers', () => {
           props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
           await renderOffers(props, store)
           fireEvent.click(screen.queryByTitle('Afficher ou masquer les filtres par statut'))
-          fireEvent.click(screen.queryByLabelText('Active'))
 
           // When
           fireEvent.click(screen.queryByText('5 offres'))

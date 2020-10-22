@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef } from 'react'
 
-export const OffersStatusFilters = ({
+export const OffersStatusFiltersModal = ({
   refreshOffers,
   statusFilters,
-  toggle,
+  toggleModalVisibility,
   updateStatusFilters,
 }) => {
+  const modalRef = useRef(null)
+
   const handleStatusFilterChange = useCallback(
     event => {
       updateStatusFilters(event.target.name, event.target.checked)
@@ -21,19 +23,18 @@ export const OffersStatusFilters = ({
       if (modalRef.current && !modalRef.current.contains(target)) {
         event.preventDefault()
         event.stopPropagation()
-        toggle()
+
+        toggleModalVisibility()
       }
     },
-    [toggle]
+    [toggleModalVisibility]
   )
-
-  const modalRef = useRef(null)
 
   useEffect(() => {
     document.body.addEventListener('click', onClickOutside)
 
     return () => {
-      document.removeEventListener('click', onClickOutside)
+      document.body.removeEventListener('click', onClickOutside)
     }
   }, [onClickOutside])
 
@@ -74,12 +75,12 @@ export const OffersStatusFilters = ({
   )
 }
 
-OffersStatusFilters.propTypes = {
+OffersStatusFiltersModal.propTypes = {
   refreshOffers: PropTypes.func.isRequired,
   statusFilters: PropTypes.shape({
     active: PropTypes.bool.isRequired,
     inactive: PropTypes.bool.isRequired,
   }).isRequired,
-  toggle: PropTypes.func.isRequired,
+  toggleModalVisibility: PropTypes.func.isRequired,
   updateStatusFilters: PropTypes.func.isRequired,
 }

@@ -6,7 +6,7 @@ input[type="checkbox"] {
   cursor: pointer;
   font-size: inherit;
   height: $body-line-height;
-  margin-right: 0.5rem;
+  margin-right: rem(8px);
   outline: none;
   padding: 0;
   position: relative;

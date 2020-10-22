@@ -8,9 +8,9 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Main from 'components/layout/Main'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
-import { OffersStatusFilters } from 'components/pages/Offers/OffersStatusFilters/OffersStatusFilters'
+import { OffersStatusFiltersModal } from 'components/pages/Offers/OffersStatusFiltersModal/OffersStatusFiltersModal'
 import { SVGFilter } from 'components/svg/SVGFilter'
-import { formatAndOrderVenues, fetchAllVenuesByProUser } from 'services/venuesService'
+import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'services/venuesService'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from 'utils/translate'
 
 import {
@@ -99,14 +99,7 @@ class Offers extends PureComponent {
 
   updateStatusFilters = (name, status) => {
     const { statusFilters } = this.state
-    const numberOfCheckedFiltersBeforeUpdate = Object.keys(statusFilters).filter(
-      key => statusFilters[key]
-    ).length
-    const numberOfCheckedFiltersAfterUpdate = status
-      ? numberOfCheckedFiltersBeforeUpdate + 1
-      : numberOfCheckedFiltersBeforeUpdate - 1
-
-    if (numberOfCheckedFiltersAfterUpdate >= 1) {
+    if (this.canInteractWithCheckbox(status, statusFilters)) {
       this.setState({
         statusFilters: {
           ...statusFilters,
@@ -114,6 +107,18 @@ class Offers extends PureComponent {
         },
       })
     }
+  }
+
+  canInteractWithCheckbox(status, statusFilters) {
+    const minimumNumberOfCheckedFilters = 1
+    const numberOfCheckedFiltersBeforeInteraction = Object.keys(statusFilters).filter(
+      key => statusFilters[key]
+    ).length
+    const numberOfCheckedFiltersAfterInteraction = status
+      ? numberOfCheckedFiltersBeforeInteraction + 1
+      : numberOfCheckedFiltersBeforeInteraction - 1
+
+    return numberOfCheckedFiltersAfterInteraction >= minimumNumberOfCheckedFilters
   }
 
   loadAndUpdateOffers() {
@@ -376,10 +381,10 @@ class Offers extends PureComponent {
                         />
                       </button>
                       {areStatusFiltersVisible && (
-                        <OffersStatusFilters
+                        <OffersStatusFiltersModal
                           refreshOffers={this.handleOnSubmit}
                           statusFilters={statusFilters}
-                          toggle={this.toggleStatusFiltersVisibility}
+                          toggleModalVisibility={this.toggleStatusFiltersVisibility}
                           updateStatusFilters={this.updateStatusFilters}
                         />
                       )}
