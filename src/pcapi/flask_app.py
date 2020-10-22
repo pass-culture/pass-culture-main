@@ -8,16 +8,17 @@ from pcapi.load_environment_variables import load_environment_variables
 load_environment_variables()
 
 import flask.wrappers
-import redis
-import sentry_sdk
 from flask import Flask, \
     g, \
     request, \
     Blueprint
 from flask_admin import Admin
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
 from mailjet_rest import Client
+import redis
+import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from spectree import SpecTree
 from sqlalchemy import orm
@@ -75,6 +76,11 @@ app.config['REMEMBER_COOKIE_DURATION'] = 90 * 24 * 3600
 app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
+app.config['JWT_SECRET_KEY'] = os.environ.get(
+    'JWT_SECRET_KEY', 'baheon0UIX2li3katood7RotTiedez3bUF8xohtheex1eeBithee9AopePhom5vi',
+)
+
+jwt = JWTManager(app)
 
 
 @app.before_request

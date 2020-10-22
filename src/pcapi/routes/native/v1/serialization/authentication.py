@@ -7,4 +7,4 @@ class SigninRequestModel(BaseModel):
 
 
 class SigninResponseModel(BaseModel):
-    pass
+    access_token: str

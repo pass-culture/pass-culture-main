@@ -10,6 +10,7 @@ factory-boy
 Flask==1.1.*
 Flask-Admin==1.5.6
 Flask-Cors==3.0.9
+Flask-JWT-Extended==3.24.1
 Flask-Login==0.5.0
 Flask-Script==2.0.6
 Flask-SQLAlchemy==2.4.4
@@ -29,6 +30,7 @@ Pillow==7.2.0
 PostgreSQL-Audit==0.10.0
 pydantic[email]==1.6.1
 pygsheets==2.0.3.1
+PyJWT==1.7.1
 pylint==2.6.0
 PyMemoize==1.0.3
 pytest-cov==2.10.1
