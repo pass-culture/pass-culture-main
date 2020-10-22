@@ -179,7 +179,7 @@ class PaginatedOfferSQLRepositoryTest:
 
     class StatusFiltersTest:
         @pytest.mark.usefixtures("db_session")
-        def should_return_offers_filtered_by_active_status(self, app):
+        def should_return_offers_filtering_out_active_status(self, app):
             user = create_user()
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
@@ -205,7 +205,7 @@ class PaginatedOfferSQLRepositoryTest:
             assert Identifier(active_offer.id) not in offers_id
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_offers_filtered_by_inactive_status(self, app):
+        def should_return_offers_filtering_out_inactive_status(self, app):
             user = create_user()
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
