@@ -4,13 +4,13 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import { withRequiredLogin } from 'components/hocs'
+import { saveSearchFilters, setSelectedOfferIds } from 'store/offers/actions'
+import { selectOffers } from 'store/offers/selectors'
+import { loadOffers } from 'store/offers/thunks'
 import { hideActionsBar, showActionsBar } from 'store/reducers/actionsBar'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
-import { saveSearchFilters, setSelectedOfferIds } from 'store/reducers/offers'
-import { selectOffers } from 'store/selectors/data/offersSelectors'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
 
-import { ALL_OFFERS, ALL_VENUES, ALL_OFFERERS } from './_constants'
 import Offers from './Offers'
 
 export const mapStateToProps = state => {
@@ -25,36 +25,6 @@ export const mapStateToProps = state => {
 }
 
 const fetchOffererById = offererId => fetchFromApiWithCredentials(`/offerers/${offererId}`)
-
-const buildQueryParams = ({ nameSearchValue, selectedVenueId, offererId, page, statusFilters }) => {
-  const queryParams = []
-
-  if (nameSearchValue !== ALL_OFFERS) {
-    queryParams.push(`name=${nameSearchValue}`)
-  }
-
-  if (offererId !== ALL_OFFERERS) {
-    queryParams.push(`offererId=${offererId}`)
-  }
-
-  if (selectedVenueId !== ALL_VENUES) {
-    queryParams.push(`venueId=${selectedVenueId}`)
-  }
-
-  if (page) {
-    queryParams.push(`page=${page}`)
-  }
-
-  if (!statusFilters.active) {
-    queryParams.push(`active=false`)
-  }
-
-  if (!statusFilters.inactive) {
-    queryParams.push(`inactive=false`)
-  }
-
-  return queryParams.join('&')
-}
 
 export const mapDispatchToProps = dispatch => {
   const showOffersActivationNotification = notificationMessage => {
@@ -93,20 +63,9 @@ export const mapDispatchToProps = dispatch => {
       )
     },
     hideActionsBar: () => dispatch(hideActionsBar()),
-    loadOffers: filters => {
-      return fetchFromApiWithCredentials(`/offers?${buildQueryParams(filters)}`).then(
-        ({ offers, page, page_count: pageCount, total_count: offersCount }) => {
-          dispatch({
-            type: 'GET_PAGINATED_OFFERS',
-            payload: offers,
-          })
-
-          return { page, pageCount, offersCount }
-        }
-      )
-    },
-    saveSearchFilters: (filters) => dispatch(saveSearchFilters(filters)),
-    setSelectedOfferIds: (selectedOfferIds) => dispatch(setSelectedOfferIds(selectedOfferIds)),
+    loadOffers: filters => dispatch(loadOffers(filters)),
+    saveSearchFilters: filters => dispatch(saveSearchFilters(filters)),
+    setSelectedOfferIds: selectedOfferIds => dispatch(setSelectedOfferIds(selectedOfferIds)),
     showActionsBar: () => dispatch(showActionsBar()),
   }
 }

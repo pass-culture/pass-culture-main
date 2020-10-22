@@ -1,12 +1,12 @@
-export const SAVE_SEARCH_FILTERS = 'SAVE_SEARCH_FILTERS'
-export const SET_SELECTED_OFFER_IDS = 'SET_SELECTED_OFFER_IDS'
+import { SAVE_SEARCH_FILTERS, SET_OFFERS, SET_SELECTED_OFFER_IDS } from './actions'
 
 export const initialState = {
+  list: [],
   searchFilters: {},
   selectedOfferIds: [],
 }
 
-const offersReducers = (state = initialState, action) => {
+export const offersReducer = (state = initialState, action) => {
   switch (action.type) {
     case SAVE_SEARCH_FILTERS: {
       let filters = {}
@@ -19,22 +19,9 @@ const offersReducers = (state = initialState, action) => {
     }
     case SET_SELECTED_OFFER_IDS:
       return { ...state, selectedOfferIds: action.offerIds }
+    case SET_OFFERS:
+      return { ...state, list: action.offers }
     default:
       return state
   }
 }
-
-export function saveSearchFilters(filters) {
-  return {
-    filters,
-    type: SAVE_SEARCH_FILTERS,
-  }
-}
-export function setSelectedOfferIds(offerIds) {
-  return {
-    offerIds,
-    type: SET_SELECTED_OFFER_IDS,
-  }
-}
-
-export default offersReducers

@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react'
 import Main from 'components/layout/Main'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
-import { fetchBookingsRecapByPage } from 'services/bookingsRecapService'
+import { fetchBookingsRecapByPage } from 'repository/bookingsRecapService'
 
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
@@ -37,7 +37,7 @@ class BookingsRecap extends PureComponent {
 
   loadData = () => {
     this.setState({
-      isLoading:false
+      isLoading: false,
     })
   }
 
@@ -62,8 +62,10 @@ class BookingsRecap extends PureComponent {
             bookingsRecap={bookingsRecap}
             isLoading={isLoading}
           />
+        ) : isLoading ? (
+          <Spinner />
         ) : (
-          isLoading ? <Spinner /> : <NoBookingsMessage />
+          <NoBookingsMessage />
         )}
       </Main>
     )

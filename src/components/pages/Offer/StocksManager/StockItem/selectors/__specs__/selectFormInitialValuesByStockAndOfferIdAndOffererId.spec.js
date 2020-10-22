@@ -22,8 +22,10 @@ describe('src | components | pages | Offer | StocksManager | StockItem | selecto
     }
     const state = {
       data: {
-        offers: [{ id: offerId, isThing: true, isEvent: false }],
         stocks: [stock],
+      },
+      offers: {
+        list: [{ id: offerId, isThing: true, isEvent: false }],
       },
     }
 
@@ -68,8 +70,10 @@ describe('src | components | pages | Offer | StocksManager | StockItem | selecto
     }
     const state = {
       data: {
-        offers: [{ id: offerId, isThing: true, isEvent: true }],
         stocks: [stock],
+      },
+      offers: {
+        list: [{ id: offerId, isThing: true, isEvent: true }],
       },
     }
 

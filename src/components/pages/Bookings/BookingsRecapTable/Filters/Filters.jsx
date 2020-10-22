@@ -3,7 +3,7 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import { formatAndOrderVenues, fetchAllVenuesByProUser } from 'services/venuesService'
+import { formatAndOrderVenues, fetchAllVenuesByProUser } from 'repository/venuesService'
 
 import {
   ALL_BOOKING_STATUS,

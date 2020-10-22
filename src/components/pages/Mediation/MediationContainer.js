@@ -3,15 +3,13 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-
 import { withRequiredLogin } from 'components/hocs'
+import { selectOfferById } from 'store/offers/selectors'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { selectMediationById } from 'store/selectors/data/mediationsSelectors'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
-import { selectOfferById } from 'store/selectors/data/offersSelectors'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'
-
-import { mediationNormalizer, offerNormalizer } from '../../../utils/normalizers'
+import { mediationNormalizer, offerNormalizer } from 'utils/normalizers'
 
 import Mediation from './Mediation'
 

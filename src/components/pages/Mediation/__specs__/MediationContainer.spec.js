@@ -196,7 +196,6 @@ describe('src | components | pages | MediationContainer', () => {
       // given
       const state = {
         data: {
-          offers: [],
           venues: {
             find: jest.fn(),
           },
@@ -206,6 +205,9 @@ describe('src | components | pages | MediationContainer', () => {
           mediations: {
             find: jest.fn(),
           },
+        },
+        offers: {
+          list: [],
         },
       }
 

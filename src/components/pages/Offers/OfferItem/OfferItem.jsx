@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
 import { isOfferFullyBooked } from 'components/pages/Offers/domain/isOfferFullyBooked'
-import { computeVenueDisplayName } from 'services/venuesService'
+import { computeVenueDisplayName } from 'repository/venuesService'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
 import { pluralize } from 'utils/pluralize'
 

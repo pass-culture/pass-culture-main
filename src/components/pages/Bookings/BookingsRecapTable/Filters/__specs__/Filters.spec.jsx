@@ -1,17 +1,17 @@
 import { mount, shallow } from 'enzyme'
 import React from 'react'
 
-import { fetchAllVenuesByProUser } from 'services/venuesService'
+import { fetchAllVenuesByProUser } from 'repository/venuesService'
 
-import { ALL_VENUES, EMPTY_FILTER_VALUE } from '../_constants'
+import Filters from '../Filters'
 import FilterByBookingPeriod from '../FilterByBookingPeriod'
 import FilterByEventDate from '../FilterByEventDate'
 import FilterByOmniSearch from '../FilterByOmniSearch'
 import FilterByVenue from '../FilterByVenue'
-import Filters from '../Filters'
+import { ALL_VENUES, EMPTY_FILTER_VALUE } from '../_constants'
 
-jest.mock('services/venuesService', () => ({
-  ...jest.requireActual('services/venuesService'),
+jest.mock('repository/venuesService', () => ({
+  ...jest.requireActual('repository/venuesService'),
   fetchAllVenuesByProUser: jest.fn(),
 }))
 jest.mock('lodash.debounce', () => jest.fn(callback => callback))

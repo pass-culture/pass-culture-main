@@ -3,7 +3,7 @@ import React from 'react'
 
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
-import * as bookingRecapsService from 'services/bookingsRecapService'
+import * as bookingRecapsService from 'repository/bookingsRecapService'
 
 import BookingsRecap from '../BookingsRecap'
 import BookingsRecapTable from '../BookingsRecapTable/BookingsRecapTable'
@@ -170,5 +170,4 @@ describe('components | BookingsRecap', () => {
     const spinner = wrapper.find(Spinner)
     expect(spinner).toHaveLength(1)
   })
-
 })

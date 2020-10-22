@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 
-import { selectOfferById } from 'store/selectors/data/offersSelectors'
+import { selectOfferById } from 'store/offers/selectors'
 
 import { getProviderInfo } from './getProviderInfo'
 import LocalProviderInformation from './LocalProviderInformation'

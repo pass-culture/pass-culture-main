@@ -1,7 +1,7 @@
 import moment from 'moment'
 import createCachedSelector from 're-reselect'
 
-import { selectOfferById } from 'store/selectors/data/offersSelectors'
+import { selectOfferById } from 'store/offers/selectors'
 import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
 
 import {

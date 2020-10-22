@@ -5,7 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { fetchAllVenuesByProUser } from 'services/venuesService'
+import { fetchAllVenuesByProUser } from 'repository/venuesService'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
@@ -39,8 +39,8 @@ const renderOffers = (props, store) => {
   )
 }
 
-jest.mock('services/venuesService', () => ({
-  ...jest.requireActual('services/venuesService'),
+jest.mock('repository/venuesService', () => ({
+  ...jest.requireActual('repository/venuesService'),
   fetchAllVenuesByProUser: jest.fn(),
 }))
 

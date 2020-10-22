@@ -2,9 +2,9 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import withTracking from 'components/hocs/withTracking'
+import { setSelectedOfferIds } from 'store/offers/actions'
 import { hideActionsBar } from 'store/reducers/actionsBar'
 import { showNotificationV2 } from 'store/reducers/notificationReducer'
-import { setSelectedOfferIds } from 'store/reducers/offers'
 
 import ActionsBar from './ActionsBar'
 

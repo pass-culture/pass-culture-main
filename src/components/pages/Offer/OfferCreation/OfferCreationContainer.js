@@ -5,10 +5,10 @@ import { compose } from 'redux'
 
 import { withRequiredLogin } from 'components/hocs'
 import withTracking from 'components/hocs/withTracking'
+import { selectOfferById } from 'store/offers/selectors'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectOfferers } from 'store/selectors/data/offerersSelectors'
-import { selectOfferById } from 'store/selectors/data/offersSelectors'
 import { selectProductById } from 'store/selectors/data/productsSelectors'
 import { selectProviders } from 'store/selectors/data/providersSelectors'
 import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
@@ -17,12 +17,11 @@ import {
   selectVenueById,
   selectVenuesByOffererIdAndOfferType,
 } from 'store/selectors/data/venuesSelectors'
+import { selectMusicSubOptionsByMusicType } from 'utils/selectMusicSubOptionsByMusicType'
+import selectShowSubOptionsByShowType from 'utils/selectShowSubOptionsByShowType'
 
-import { selectMusicSubOptionsByMusicType } from '../../../../utils/selectMusicSubOptionsByMusicType'
-import selectShowSubOptionsByShowType from '../../../../utils/selectShowSubOptionsByShowType'
 import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from '../selectors/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
 import selectTypeByIsVenueVirtualAndOfferTypeValue from '../selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
-
 
 import OfferCreation from './OfferCreation'
 

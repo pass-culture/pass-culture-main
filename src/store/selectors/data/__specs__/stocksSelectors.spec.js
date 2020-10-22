@@ -6,8 +6,10 @@ describe('src | selectors | selectStocksByOfferId', () => {
     const offerId = 'M4'
     const state = {
       data: {
-        offers: [],
         stocks: [],
+      },
+      offers: {
+        offers: [],
       },
     }
 
@@ -23,18 +25,6 @@ describe('src | selectors | selectStocksByOfferId', () => {
     const offerId = 'M4'
     const state = {
       data: {
-        offers: [
-          {
-            id: 'M4',
-            isEvent: true,
-            isThing: false,
-          },
-          {
-            id: 'NE',
-            isEvent: false,
-            isThing: true,
-          },
-        ],
         stocks: [
           {
             id: 'MU',
@@ -50,6 +40,20 @@ describe('src | selectors | selectStocksByOfferId', () => {
             id: 'M9',
             beginningDatetime: new Date('2019-11-23 20:00:00'),
             offerId: 'M4',
+          },
+        ],
+      },
+      offers: {
+        list: [
+          {
+            id: 'M4',
+            isEvent: true,
+            isThing: false,
+          },
+          {
+            id: 'NE',
+            isEvent: false,
+            isThing: true,
           },
         ],
       },

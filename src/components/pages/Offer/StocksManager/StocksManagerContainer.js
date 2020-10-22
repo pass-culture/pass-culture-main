@@ -3,13 +3,12 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import withFrenchQueryRouter from 'components/hocs/withFrenchQueryRouter'
-import { selectOfferById } from 'store/selectors/data/offersSelectors'
+import { selectOfferById } from 'store/offers/selectors'
 import { selectProductById } from 'store/selectors/data/productsSelectors'
 import { selectProviderById } from 'store/selectors/data/providersSelectors'
 import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
 
 import StocksManager from './StocksManager'
-
 
 export const mapStateToProps = (state, ownProps) => {
   const { offerId } = ownProps

@@ -1,11 +1,13 @@
 import { createDataReducer } from 'redux-saga-data'
 
+const SET_STOCKS = 'SET_STOCKS'
+const SET_VENUES = 'SET_VENUES'
+
 export const initialState = {
   bookings: [],
   events: [],
   features: [],
   mediations: [],
-  offers: [],
   offerers: [],
   providers: [],
   stocks: [],
@@ -20,41 +22,22 @@ export const initialState = {
 
 const dataReducer = createDataReducer(initialState)
 
-const paginatedOffersRecapNormalizer = offersRecap => {
-  const stocks = []
-  const venues = []
+export const setStocks = stocks => ({
+  stocks,
+  type: SET_STOCKS,
+})
 
-  const offers = offersRecap.map(offer => {
-    const { stocks: offerStocks, venue: offerVenue, ...offerWithoutStocksAndVenue } = offer
-    stocks.push(...offerStocks)
-    venues.push(offerVenue)
-
-    return offerWithoutStocksAndVenue
-  })
-
-  const uniqueVenues = venues.reduce((accumulator, venue) => {
-    const isVenueAlreadyAccumulated = accumulator.some(
-      accumulatedVenue => accumulatedVenue.id === venue.id
-    )
-
-    if (!isVenueAlreadyAccumulated) {
-      accumulator.push(venue)
-    }
-
-    return accumulator
-  }, [])
-
-  return {
-    offers: offers,
-    stocks: stocks,
-    venues: uniqueVenues,
-  }
-}
+export const setVenues = venues => ({
+  venues,
+  type: SET_VENUES,
+})
 
 const dataAndOffersRecapReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'GET_PAGINATED_OFFERS':
-      return { ...state, ...paginatedOffersRecapNormalizer(action.payload) }
+    case SET_VENUES:
+      return { ...state, ...{ venues: action.venues } }
+    case SET_STOCKS:
+      return { ...state, ...{ stocks: action.stocks } }
     case 'GET_DESK_BOOKINGS':
       return { ...state, ...{ deskBookings: [action.payload] } }
     default:

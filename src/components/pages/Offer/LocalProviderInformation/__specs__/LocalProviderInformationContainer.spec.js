@@ -11,8 +11,8 @@ describe('src | LocalProviderInformationContainer', () => {
 
   beforeEach(() => {
     state = {
-      data: {
-        offers: [
+      offers: {
+        list: [
           {
             id: 'UU',
             name: 'Super Livre',

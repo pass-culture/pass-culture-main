@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 
+import { selectOfferById } from 'store/offers/selectors'
 import { selectMediationsByOfferId } from 'store/selectors/data/mediationsSelectors'
-import { selectOfferById } from 'store/selectors/data/offersSelectors'
 
 import MediationsManager from './MediationsManager'
 

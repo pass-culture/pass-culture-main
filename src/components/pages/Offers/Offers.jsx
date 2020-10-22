@@ -9,7 +9,7 @@ import Main from 'components/layout/Main'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { OffersStatusFiltersModal } from 'components/pages/Offers/OffersStatusFiltersModal/OffersStatusFiltersModal'
-import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'services/venuesService'
+import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'repository/venuesService'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from 'utils/translate'
 
 import {
@@ -106,7 +106,7 @@ class Offers extends PureComponent {
   canInteractWithCheckbox(status, statusFilters) {
     const minimumNumberOfCheckedFilters = 1
     const numberOfCheckedFiltersBeforeInteraction = Object.keys(statusFilters).filter(
-      key => statusFilters[key],
+      key => statusFilters[key]
     ).length
     const numberOfCheckedFiltersAfterInteraction = status
       ? numberOfCheckedFiltersBeforeInteraction + 1
@@ -132,7 +132,7 @@ class Offers extends PureComponent {
           },
           () => {
             this.updateUrlMatchingState()
-          },
+          }
         )
       })
       .catch(() => {
@@ -161,7 +161,7 @@ class Offers extends PureComponent {
 
   fetchAndFormatVenues = offererId => {
     fetchAllVenuesByProUser(offererId).then(venues =>
-      this.setState({ venueOptions: formatAndOrderVenues(venues) }),
+      this.setState({ venueOptions: formatAndOrderVenues(venues) })
     )
   }
 
@@ -175,7 +175,7 @@ class Offers extends PureComponent {
       },
       () => {
         this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
-      },
+      }
     )
   }
 

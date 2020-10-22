@@ -25,13 +25,6 @@ const buildStore = (store = {}) => {
   return getStubStore({
     data: (
       state = {
-        offers: [
-          {
-            id: '6GD',
-            name: 'Super Livre',
-            lastProvider: null,
-          },
-        ],
         offerers: [],
         mediations: [],
         users: [currentUser],
@@ -45,6 +38,13 @@ const buildStore = (store = {}) => {
     ) => (store.modal ? { ...state, ...store.modal } : state),
     offers: (
       state = {
+        list: [
+          {
+            id: '6GD',
+            name: 'Super Livre',
+            lastProvider: null,
+          },
+        ],
         searchFilters: {},
       }
     ) => (store.offers ? { ...state, ...store.offers } : state),
@@ -707,7 +707,7 @@ describe('src | OfferCreation', () => {
           thumbUrl: 'http://localhost/image/6GD',
         }
         props.offer = offer
-        store = buildStore({ data: { offers: [offer] } })
+        store = buildStore({ offers: { list: [offer] } })
 
         // when
         const wrapper = getMountedOfferCreationWrapper(props, store)
@@ -777,7 +777,7 @@ describe('src | OfferCreation', () => {
             },
           }
           props.offer = offer
-          store = buildStore({ data: { offers: [offer] } })
+          store = buildStore({ offers: { list: [offer] } })
 
           // when
           const wrapper = getMountedOfferCreationWrapper(props, store)

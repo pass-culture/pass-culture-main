@@ -1,7 +1,7 @@
 import moment from 'moment'
 import createCachedSelector from 're-reselect'
 
-import { selectOfferById } from './offersSelectors'
+import { selectOfferById } from '../../offers/selectors'
 
 export const selectStocksByOfferId = createCachedSelector(
   state => state.data.stocks,

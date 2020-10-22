@@ -4,12 +4,12 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import withFrenchQueryRouter from 'components/hocs/withFrenchQueryRouter'
+import { selectOfferById } from 'store/offers/selectors'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
-import { selectOfferById } from 'store/selectors/data/offersSelectors'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'
+import { getTimezone } from 'utils/timezone'
+import { translateQueryParamsToApiParams } from 'utils/translate'
 
-import { getTimezone } from '../../../../../utils/timezone'
-import { translateQueryParamsToApiParams } from '../../../../../utils/translate'
 import Offer from '../ValueObjects/Offer'
 
 import selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone from './selectors/selectFormInitialValuesByStockAndOfferIdAndOffererId'

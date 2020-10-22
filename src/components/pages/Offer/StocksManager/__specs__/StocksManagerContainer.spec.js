@@ -7,10 +7,12 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
   beforeEach(() => {
     state = {
       data: {
-        offers: [{ id: 'A1', isEvent: true, isThing: false, productId: 'B1' }],
         providers: [],
         products: [{ id: 'B1', lastProviderId: 'C1' }],
         stocks: [{ offerId: 'A1' }],
+      },
+      offers: {
+        list: [{ id: 'A1', isEvent: true, isThing: false, productId: 'B1' }],
       },
     }
     props = {
@@ -61,8 +63,8 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
     describe('isStockCreationAllowed', () => {
       it('should be true when offer is an event', () => {
         // given
-        state.data.offers[0].isEvent = true
-        state.data.offers[0].isThing = false
+        state.offers.list[0].isEvent = true
+        state.offers.list[0].isThing = false
 
         // when
         const result = mapStateToProps(state, props)
@@ -73,8 +75,8 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
 
       it('should be true when there is no stock', () => {
         // given
-        state.data.offers[0].isEvent = false
-        state.data.offers[0].isThing = true
+        state.offers.list[0].isEvent = false
+        state.offers.list[0].isThing = true
         state.data.stocks = []
 
         // when
@@ -86,8 +88,8 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
 
       it('should be false when offer is a thing and there is one stock', () => {
         // given
-        state.data.offers[0].isEvent = false
-        state.data.offers[0].isThing = true
+        state.offers.list[0].isEvent = false
+        state.offers.list[0].isThing = true
         state.data.stocks = [{ offerId: 'A1' }]
 
         // when
