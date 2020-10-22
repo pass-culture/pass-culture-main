@@ -83,16 +83,6 @@ def find_from_recommendation(recommendation: Recommendation, user_id: int) -> Li
         .all()
 
 
-def is_offer_already_booked_by_user(user_id: int, offer: OfferSQLEntity) -> bool:
-    return Booking.query \
-               .filter_by(userId=user_id) \
-               .filter_by(isCancelled=False) \
-               .join(StockSQLEntity) \
-               .join(OfferSQLEntity) \
-               .filter(OfferSQLEntity.id == offer.id) \
-               .count() > 0
-
-
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
     query = Booking.query.filter_by(token=token)
 
@@ -118,12 +108,6 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
         raise errors
 
     return booking
-
-
-def find_by_id(booking_id: int) -> Booking:
-    return Booking.query \
-        .filter_by(id=booking_id) \
-        .first_or_404()
 
 
 def find_by_pro_user_id(user_id: int, page: int = 1, per_page_limit: int = 1000) -> BookingsRecapPaginated:
