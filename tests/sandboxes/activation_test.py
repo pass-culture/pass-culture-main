@@ -18,7 +18,7 @@ def test_save_activation_sandbox(app):
 
     # then
     assert_created_counts(
-        BookingSQLEntity=0,
+        Booking=0,
         Deposit=0,
         MediationSQLEntity=0,
         OfferSQLEntity=1,

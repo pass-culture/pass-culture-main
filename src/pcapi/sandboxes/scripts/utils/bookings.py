@@ -1,4 +1,4 @@
-from pcapi.models import BookingSQLEntity
+from pcapi.models import Booking
 
 def find_offer_compatible_with_bookings(offer_with_stock_id_tuples, bookings):
     compatible_offer = None
@@ -10,7 +10,7 @@ def find_offer_compatible_with_bookings(offer_with_stock_id_tuples, bookings):
     return compatible_offer
 
 def get_cancellable_bookings_for_user(user):
-    query = BookingSQLEntity.query.filter_by(
+    query = Booking.query.filter_by(
         userId=user.id
     )
     bookings = [b for b in query.all() if b.isUserCancellable]

@@ -1,4 +1,4 @@
-from pcapi.core.bookings.models import BookingSQLEntity
+from pcapi.core.bookings.models import Booking
 from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.recommendation import Recommendation
 from pcapi.models.user_sql_entity import UserSQLEntity
@@ -39,7 +39,7 @@ def get_existing_webapp_user_with_at_least_one_recommendation():
 
 def get_existing_webapp_user_with_bookings():
     query = keep_only_webapp_users(UserSQLEntity.query)
-    query = query.join(BookingSQLEntity)
+    query = query.join(Booking)
     user = query.first()
 
     return {

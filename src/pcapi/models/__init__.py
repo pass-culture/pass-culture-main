@@ -5,7 +5,7 @@ from pcapi.models.bank_information import BankInformation
 from pcapi.models.beneficiary_import import BeneficiaryImport, BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus, \
     ImportStatus
-from pcapi.core.bookings.models import BookingSQLEntity
+from pcapi.core.bookings.models import Booking
 from pcapi.models.criterion import Criterion
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.deposit import Deposit
@@ -74,7 +74,7 @@ __all__ = (
     'BookFormat',
     'NeedsValidationMixin',
     'ProvidableMixin',
-    'BookingSQLEntity',
+    'Booking',
     'MediationSQLEntity',
     'StockSQLEntity',
     'Offerer',
@@ -127,7 +127,7 @@ models = (
     FavoriteSQLEntity,
     Feature,
     StockSQLEntity,
-    BookingSQLEntity,
+    Booking,
     VenueProvider,
     AllocineVenueProvider,
     AllocineVenueProviderPriceRule,

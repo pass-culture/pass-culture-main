@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 import pcapi.core.bookings.repository as booking_repository
-from pcapi.models import BookingSQLEntity, Recommendation
+from pcapi.models import Booking, Recommendation
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import RECOMMENDATION_INCLUDES
@@ -41,11 +41,11 @@ def add_offer_and_stock_information(serialized_recommendation: Dict) -> None:
         serialized_recommendation['offer']['stocks'][index]['remainingQuantity'] = 'unlimited'
 
 
-def _serialize_bookings(bookings: List[BookingSQLEntity]) -> List[Dict]:
+def _serialize_bookings(bookings: List[Booking]) -> List[Dict]:
     return list(map(as_dict, bookings))
 
 
-def _get_bookings_by_offer(bookings: List[BookingSQLEntity]) -> Dict:
+def _get_bookings_by_offer(bookings: List[Booking]) -> Dict:
     bookings_by_offer = {}
 
     for booking in bookings:

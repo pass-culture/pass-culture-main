@@ -1,7 +1,7 @@
 from typing import List
 
 from pcapi.local_providers import AllocineStocks
-from pcapi.models import BookingSQLEntity, OfferSQLEntity, UserSQLEntity
+from pcapi.models import Booking, OfferSQLEntity, UserSQLEntity
 
 
 def update_is_active_status(offers: List[OfferSQLEntity], status: bool) -> List[OfferSQLEntity]:

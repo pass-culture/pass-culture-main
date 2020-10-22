@@ -3,7 +3,7 @@ from typing import List
 
 from sqlalchemy import Date, cast
 
-from pcapi.models import BookingSQLEntity, Payment, ApiErrors, PaymentStatus
+from pcapi.models import Booking, Payment, ApiErrors, PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.utils.logger import logger
@@ -40,21 +40,21 @@ def cancel_banned_bookings() -> None:
     logger.info("[CANCEL BANNED BOOKINGS] END")
 
 
-def get_bookings_banned_and_sent() -> List[BookingSQLEntity]:
-    reimbursed_bookings_on_wanted_date = BookingSQLEntity.query \
-        .join(Payment, Payment.bookingId == BookingSQLEntity.id) \
+def get_bookings_banned_and_sent() -> List[Booking]:
+    reimbursed_bookings_on_wanted_date = Booking.query \
+        .join(Payment, Payment.bookingId == Booking.id) \
         .join(PaymentStatus, PaymentStatus.paymentId == Payment.id) \
         .filter(PaymentStatus.status == TransactionStatus.SENT) \
         .filter(cast(PaymentStatus.date, Date) == WANTED_SENT_DATE)
 
-    banned_bookings_on_wanted_date = BookingSQLEntity.query \
-        .join(Payment, Payment.bookingId == BookingSQLEntity.id) \
+    banned_bookings_on_wanted_date = Booking.query \
+        .join(Payment, Payment.bookingId == Booking.id) \
         .join(PaymentStatus, PaymentStatus.paymentId == Payment.id) \
         .filter(PaymentStatus.status == TransactionStatus.BANNED) \
         .filter(cast(PaymentStatus.date, Date) == WANTED_BANNED_DATE)
 
-    currently_banned_bookings = BookingSQLEntity.query \
-        .join(Payment, Payment.bookingId == BookingSQLEntity.id) \
+    currently_banned_bookings = Booking.query \
+        .join(Payment, Payment.bookingId == Booking.id) \
         .filter(Payment.currentStatus == TransactionStatus.BANNED)
 
     return reimbursed_bookings_on_wanted_date \

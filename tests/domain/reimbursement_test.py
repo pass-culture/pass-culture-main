@@ -5,7 +5,7 @@ from freezegun import freeze_time
 
 from pcapi.domain.reimbursement import ReimbursementRules, find_all_booking_reimbursements, ReimbursementRule, CURRENT_RULES, \
     NEW_RULES
-from pcapi.models import BookingSQLEntity, ThingType
+from pcapi.models import Booking, ThingType
 from pcapi.model_creators.specific_creators import create_booking_for_thing, create_booking_for_event
 
 
@@ -479,7 +479,7 @@ class ReimbursementRuleIsActiveTest:
         def is_relevant(self, booking, **kwargs):
             return True
 
-    booking = BookingSQLEntity()
+    booking = Booking()
 
     def test_is_active_if_valid_from_is_none_and_valid_until_is_none(self):
         # given

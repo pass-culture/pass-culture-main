@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch
 
 from pcapi.admin.base_configuration import BaseAdminView
-from pcapi.models import BookingSQLEntity
+from pcapi.models import Booking
 
 fake_db_session = [Mock()]
 
@@ -14,7 +14,7 @@ class BaseAdminViewTest:
     class DefaultConfigurationTest:
         def test_model_in_admin_view_is_not_deletable(self):
             # when
-            view = DummyAdminView(BookingSQLEntity, fake_db_session)
+            view = DummyAdminView(Booking, fake_db_session)
 
             # then
             assert view.can_delete is False, \
@@ -22,7 +22,7 @@ class BaseAdminViewTest:
 
         def test_model_in_admin_view_is_not_creatable(self):
             # when
-            view = DummyAdminView(BookingSQLEntity, fake_db_session)
+            view = DummyAdminView(Booking, fake_db_session)
 
             # then
             assert view.can_create is False, \
@@ -30,7 +30,7 @@ class BaseAdminViewTest:
 
         def test_model_in_admin_view_is_not_editable_by_default(self):
             # when
-            view = DummyAdminView(BookingSQLEntity, fake_db_session)
+            view = DummyAdminView(Booking, fake_db_session)
 
             # then
             assert view.can_edit is False, \
@@ -43,7 +43,7 @@ class BaseAdminViewTest:
             current_user.is_authenticated = False
 
             # when
-            view = DummyAdminView(BookingSQLEntity, fake_db_session)
+            view = DummyAdminView(Booking, fake_db_session)
 
             # then
             assert view.is_accessible() is False
@@ -55,7 +55,7 @@ class BaseAdminViewTest:
             current_user.isAdmin = False
 
             # when
-            view = DummyAdminView(BookingSQLEntity, fake_db_session)
+            view = DummyAdminView(Booking, fake_db_session)
 
             # then
             assert view.is_accessible() is False
@@ -67,7 +67,7 @@ class BaseAdminViewTest:
             current_user.isAdmin = True
 
             # when
-            view = DummyAdminView(BookingSQLEntity, fake_db_session)
+            view = DummyAdminView(Booking, fake_db_session)
 
             # then
             assert view.is_accessible() is True

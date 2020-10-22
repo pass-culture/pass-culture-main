@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from pcapi.models import BookingSQLEntity
+from pcapi.models import Booking
 from pcapi.repository import repository
 from pcapi.scripts.booking.correct_bookings_status import get_bookings_cancelled_during_quarantine_with_payment, \
     correct_booking_status
@@ -120,7 +120,7 @@ class CorrectBookingStatusTest:
         correct_booking_status()
 
         # Then
-        corrected_booking = BookingSQLEntity.query.get(booking.id)
+        corrected_booking = Booking.query.get(booking.id)
         assert corrected_booking.isCancelled is False
         assert corrected_booking.cancellationDate is None
         assert corrected_booking.isUsed is True
@@ -153,7 +153,7 @@ class CorrectBookingStatusTest:
         correct_booking_status()
 
         # Then
-        corrected_booking = BookingSQLEntity.query.get(booking.id)
+        corrected_booking = Booking.query.get(booking.id)
         assert corrected_booking.isCancelled is False
         assert corrected_booking.cancellationDate is None
         assert corrected_booking.isUsed is True
@@ -187,7 +187,7 @@ class CorrectBookingStatusTest:
         correct_booking_status()
 
         # Then
-        not_modified_booking = BookingSQLEntity.query.get(booking.id)
+        not_modified_booking = Booking.query.get(booking.id)
         assert not_modified_booking.isCancelled is True
         assert not_modified_booking.cancellationDate is not None
         assert not_modified_booking.isUsed is False

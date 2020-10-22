@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Dict
 
-from pcapi.models import BookingSQLEntity, StockSQLEntity, ApiErrors
+from pcapi.models import Booking, StockSQLEntity, ApiErrors
 
 class LocalProviderNames(Enum):
     titelive = 'TiteLiveStocks'
@@ -23,7 +23,7 @@ def check_stock_is_not_imported(stock: StockSQLEntity):
 
 
 
-def delete_stock_and_cancel_bookings(stock: StockSQLEntity) -> List[BookingSQLEntity]:
+def delete_stock_and_cancel_bookings(stock: StockSQLEntity) -> List[Booking]:
     unused_bookings = []
 
     check_stock_is_not_imported(stock)

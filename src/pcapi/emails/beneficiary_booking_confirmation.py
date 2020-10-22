@@ -1,6 +1,6 @@
 from typing import Dict
 
-from pcapi.core.bookings.models import BookingSQLEntity
+from pcapi.core.bookings.models import Booking
 from pcapi.models.offer_type import ProductType
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.utils.date import get_date_formatted_for_email, get_time_formatted_for_email, utc_datetime_to_department_timezone
@@ -8,7 +8,7 @@ from pcapi.utils.human_ids import humanize
 from pcapi.utils.mailing import DEV_EMAIL_ADDRESS, SUPPORT_EMAIL_ADDRESS, format_environment_for_email
 
 
-def retrieve_data_for_beneficiary_booking_confirmation_email(booking: BookingSQLEntity) -> Dict:
+def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -> Dict:
     stock = booking.stock
     offer = stock.offer
     venue = offer.venue

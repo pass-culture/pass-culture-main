@@ -2,7 +2,7 @@ import urllib.parse
 
 import pytest
 
-from pcapi.models import EventType, ThingType, Deposit, BookingSQLEntity, UserSQLEntity
+from pcapi.models import EventType, ThingType, Deposit, Booking, UserSQLEntity
 from pcapi.repository import repository
 from tests.conftest import TestClient
 import pcapi.core.bookings.factories as bookings_factories
@@ -29,7 +29,7 @@ class Returns204:
             response = TestClient(app.test_client()).patch(url)
 
             assert response.status_code == 204
-            booking = BookingSQLEntity.query.one()
+            booking = Booking.query.one()
             assert booking.isUsed
 
     class WhenUserIsLoggedIn:
@@ -43,7 +43,7 @@ class Returns204:
             response = TestClient(app.test_client()).with_auth('pro@example.com').patch(url)
 
             assert response.status_code == 204
-            booking = BookingSQLEntity.query.one()
+            booking = Booking.query.one()
             assert booking.isUsed
 
         def expect_booking_with_token_in_lower_case_to_be_used(self, app):
@@ -56,7 +56,7 @@ class Returns204:
             response = TestClient(app.test_client()).with_auth('pro@example.com').patch(url)
 
             assert response.status_code == 204
-            booking = BookingSQLEntity.query.one()
+            booking = Booking.query.one()
             assert booking.isUsed
 
         def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
@@ -70,7 +70,7 @@ class Returns204:
             response = client.patch(url, headers={'origin': 'http://random_header.fr'})
 
             assert response.status_code == 204
-            booking = BookingSQLEntity.query.one()
+            booking = Booking.query.one()
             assert booking.isUsed
 
         # FIXME: what is the purpose of this test? Are we testing that
@@ -90,7 +90,7 @@ class Returns204:
             response = client.patch(url, headers={'origin': 'http://random_header.fr'})
 
             assert response.status_code == 204
-            booking = BookingSQLEntity.query.one()
+            booking = Booking.query.one()
             assert booking.isUsed
 
     class WhenUserIsAdmin:
@@ -200,7 +200,7 @@ class Returns403:  # Forbidden
         # Then
         assert response.status_code == 403
         assert response.json['global'] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
-        assert BookingSQLEntity.query.get(booking_id).isUsed is False
+        assert Booking.query.get(booking_id).isUsed is False
 
     def when_user_is_not_admin_and_tries_to_patch_activation_offer(self, app):
         # Given
@@ -262,7 +262,7 @@ class Returns404:
 
             # Then
             assert response.status_code == 404
-            assert BookingSQLEntity.query.get(booking_id).isUsed is False
+            assert Booking.query.get(booking_id).isUsed is False
 
         def when_email_has_special_characters_but_is_not_url_encoded(self, app):
             # Given
@@ -302,7 +302,7 @@ class Returns404:
 
             # Then
             assert response.status_code == 404
-            assert BookingSQLEntity.query.get(booking_id).isUsed is False
+            assert Booking.query.get(booking_id).isUsed is False
 
 
 @pytest.mark.usefixtures("db_session")
@@ -355,7 +355,7 @@ class Returns410:  # Gone
         # Then
         assert response.status_code == 410
         assert response.json['booking'] == ['Cette réservation a été annulée']
-        assert BookingSQLEntity.query.get(booking_id).isUsed is False
+        assert Booking.query.get(booking_id).isUsed is False
 
     def when_booking_has_been_validated_already(self, app):
         # Given
@@ -377,4 +377,4 @@ class Returns410:  # Gone
         # Then
         assert response.status_code == 410
         assert response.json['booking'] == ['Cette réservation a déjà été validée']
-        assert BookingSQLEntity.query.get(booking_id).isUsed is True
+        assert Booking.query.get(booking_id).isUsed is True

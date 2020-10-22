@@ -1,4 +1,4 @@
-from pcapi.core.bookings.models import BookingSQLEntity
+from pcapi.core.bookings.models import Booking
 from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.user_sql_entity import UserSQLEntity
@@ -17,7 +17,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_o
                  .filter(VenueSQLEntity.offers.any(~OfferSQLEntity.stocks.any()))
     query = query.join(OfferSQLEntity) \
                  .join(StockSQLEntity) \
-                 .filter(StockSQLEntity.bookings.any(BookingSQLEntity.isUsed == False))
+                 .filter(StockSQLEntity.bookings.any(Booking.isUsed == False))
     user = query.first()
 
     for uo in user.UserOfferers:

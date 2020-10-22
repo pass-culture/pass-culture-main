@@ -3,7 +3,7 @@ from decimal import Decimal
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import EventType, BookingSQLEntity
+from pcapi.models import EventType, Booking
 from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
@@ -34,7 +34,7 @@ class Returns204:
             )
 
             assert response.status_code == 204
-            booking = BookingSQLEntity.query.one()
+            booking = Booking.query.one()
             assert not booking.isUsed
             assert booking.dateUsed is None
 
@@ -53,7 +53,7 @@ class Returns204:
             )
 
             assert response.status_code == 204
-            booking = BookingSQLEntity.query.one()
+            booking = Booking.query.one()
             assert not booking.isUsed
             assert booking.dateUsed is None
 
@@ -68,7 +68,7 @@ class Returns204:
             response = TestClient(app.test_client()).with_auth('pro@example.com').patch(url)
 
             assert response.status_code == 204
-            booking = BookingSQLEntity.query.one()
+            booking = Booking.query.one()
             assert not booking.isUsed
             assert booking.dateUsed is None
 
@@ -82,7 +82,7 @@ class Returns204:
             response = TestClient(app.test_client()).with_auth('pro@example.com').patch(url)
 
             assert response.status_code == 204
-            booking = BookingSQLEntity.query.one()
+            booking = Booking.query.one()
             assert not booking.isUsed
             assert booking.dateUsed is None
 
@@ -101,7 +101,7 @@ class Returns204:
             response = TestClient(app.test_client()).with_auth('pro@example.com').patch(url)
 
             assert response.status_code == 204
-            booking = BookingSQLEntity.query.one()
+            booking = Booking.query.one()
             assert not booking.isUsed
             assert booking.dateUsed is None
 
@@ -209,7 +209,7 @@ class Returns403:
             assert response.status_code == 403
             assert response.json['user'] == [
                 "Vous n'avez pas les droits suffisants pour valider cette contremarque."]
-            assert BookingSQLEntity.query.get(booking.id).isUsed is False
+            assert Booking.query.get(booking.id).isUsed is False
 
         @pytest.mark.usefixtures("db_session")
         def when_user_tries_to_patch_activation_offer(self, app):
@@ -234,7 +234,7 @@ class Returns403:
 
             # Then
             assert response.status_code == 403
-            assert BookingSQLEntity.query.get(booking.id).isUsed is False
+            assert Booking.query.get(booking.id).isUsed is False
             assert response.json['booking'] == [
                 "Impossible d'annuler une offre d'activation"]
 
@@ -369,7 +369,7 @@ class Returns410:
             # Then
             assert response.status_code == 410
             assert response.json['booking'] == ['Cette réservation a été annulée']
-            assert BookingSQLEntity.query.get(booking.id).isUsed is True
+            assert Booking.query.get(booking.id).isUsed is True
 
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_booking_has_not_been_validated_already(self, app):
@@ -391,7 +391,7 @@ class Returns410:
             # Then
             assert response.status_code == 410
             assert response.json['booking'] == ["Cette réservation n'a pas encore été validée"]
-            assert BookingSQLEntity.query.get(booking.id).isUsed is False
+            assert Booking.query.get(booking.id).isUsed is False
 
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_booking_payment_exists(self, app):
@@ -415,7 +415,7 @@ class Returns410:
             # Then
             assert response.status_code == 410
             assert response.json['payment'] == ["Le remboursement est en cours de traitement"]
-            assert BookingSQLEntity.query.get(booking.id).isUsed is True
+            assert Booking.query.get(booking.id).isUsed is True
 
     class WithApiKeyAuthTest:
         @pytest.mark.usefixtures("db_session")
@@ -453,7 +453,7 @@ class Returns410:
             # Then
             assert response.status_code == 410
             assert response.json['booking'] == ['Cette réservation a été annulée']
-            assert BookingSQLEntity.query.get(booking.id).isUsed is True
+            assert Booking.query.get(booking.id).isUsed is True
 
         @pytest.mark.usefixtures("db_session")
         def when_api_key_is_provided_and_booking_has_not_been_validated_already(self, app):
@@ -484,7 +484,7 @@ class Returns410:
             # Then
             assert response.status_code == 410
             assert response.json['booking'] == ["Cette réservation n'a pas encore été validée"]
-            assert BookingSQLEntity.query.get(booking.id).isUsed is False
+            assert Booking.query.get(booking.id).isUsed is False
 
         @pytest.mark.usefixtures("db_session")
         def when_api_key_is_provided_and_booking_payment_exists(self, app):
@@ -518,4 +518,4 @@ class Returns410:
             # Then
             assert response.status_code == 410
             assert response.json['payment'] == ["Le remboursement est en cours de traitement"]
-            assert BookingSQLEntity.query.get(booking.id).isUsed is True
+            assert Booking.query.get(booking.id).isUsed is True

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from pcapi.models import BookingSQLEntity, Provider
+from pcapi.models import Booking, Provider
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
 import pytest
@@ -54,7 +54,7 @@ class Delete:
 
             # then
             assert response.status_code == 200
-            bookings = BookingSQLEntity.query.filter_by(isCancelled=True).all()
+            bookings = Booking.query.filter_by(isCancelled=True).all()
             assert booking1 in bookings
             assert booking2 in bookings
 
@@ -82,7 +82,7 @@ class Delete:
 
             # then
             assert response.status_code == 200
-            booking_from_db = BookingSQLEntity.query.filter_by(isCancelled=True).one()
+            booking_from_db = Booking.query.filter_by(isCancelled=True).one()
             assert booking == booking_from_db
 
         @pytest.mark.usefixtures("db_session")

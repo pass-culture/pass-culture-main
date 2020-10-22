@@ -18,7 +18,7 @@ from pcapi.models.versioned_mixin import VersionedMixin
 from pcapi.utils.human_ids import humanize
 
 
-class BookingSQLEntity(PcObject, Model, VersionedMixin):
+class Booking(PcObject, Model, VersionedMixin):
     __tablename__ = 'booking'
 
     id = Column(BigInteger,
@@ -154,7 +154,7 @@ class ActivationUser:
         "Contremarque d'activation",
     ]
 
-    def __init__(self, booking: BookingSQLEntity):
+    def __init__(self, booking: Booking):
         self.first_name = booking.user.firstName
         self.last_name = booking.user.lastName
         self.email = booking.user.email
@@ -169,7 +169,7 @@ class ActivationUser:
         ]
 
 
-BookingSQLEntity.trig_ddl = """
+Booking.trig_ddl = """
     DROP FUNCTION IF EXISTS get_wallet_balance(user_id BIGINT);
 
     CREATE OR REPLACE FUNCTION get_wallet_balance(user_id BIGINT, only_used_bookings BOOLEAN)
@@ -232,11 +232,11 @@ BookingSQLEntity.trig_ddl = """
     ON booking
     FOR EACH ROW EXECUTE PROCEDURE check_booking()
     """
-event.listen(BookingSQLEntity.__table__,
+event.listen(Booking.__table__,
              'after_create',
-             DDL(BookingSQLEntity.trig_ddl))
+             DDL(Booking.trig_ddl))
 
-BookingSQLEntity.trig_update_cancellationDate_on_isCancelled_ddl = """
+Booking.trig_update_cancellationDate_on_isCancelled_ddl = """
     CREATE OR REPLACE FUNCTION save_cancellation_date()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -257,6 +257,6 @@ BookingSQLEntity.trig_update_cancellationDate_on_isCancelled_ddl = """
     EXECUTE PROCEDURE save_cancellation_date()
     """
 
-event.listen(BookingSQLEntity.__table__,
+event.listen(Booking.__table__,
              'after_create',
-             DDL(BookingSQLEntity.trig_update_cancellationDate_on_isCancelled_ddl))
+             DDL(Booking.trig_update_cancellationDate_on_isCancelled_ddl))

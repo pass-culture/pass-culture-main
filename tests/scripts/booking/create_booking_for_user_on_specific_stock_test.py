@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from pcapi.models import ThingType, BookingSQLEntity
+from pcapi.models import ThingType, Booking
 from pcapi.repository import repository
 from pcapi.scripts.booking.create_booking_for_user_on_specific_stock import create_booking_for_user_on_specific_stock_bypassing_capping_limits
 import pytest
@@ -30,5 +30,5 @@ class CreateBookingForUserOnSpecificStockBypassingCappingLimitsTest:
         create_booking_for_user_on_specific_stock_bypassing_capping_limits(user.id, new_stock.id)
 
         # Then
-        assert BookingSQLEntity.query.filter_by(stockId=new_stock.id, userId=user.id).one() is not None
+        assert Booking.query.filter_by(stockId=new_stock.id, userId=user.id).one() is not None
         mocked_redis.add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=new_offer.id)

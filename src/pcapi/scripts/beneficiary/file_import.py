@@ -8,7 +8,7 @@ import pcapi.core.bookings.repository as booking_repository
 from pcapi.domain.admin_emails import send_users_activation_report
 from pcapi.domain.password import generate_reset_token, random_password
 from pcapi.domain.user_activation import generate_activation_users_csv
-from pcapi.models import UserSQLEntity, BookingSQLEntity, StockSQLEntity
+from pcapi.models import UserSQLEntity, Booking, StockSQLEntity
 from pcapi.core.bookings.models import ActivationUser
 from pcapi.models.user_sql_entity import hash_password
 from pcapi.repository import repository
@@ -38,7 +38,7 @@ def create_users_with_activation_bookings(
         csv_rows: List[List[str]], stock: StockSQLEntity, existing_tokens: Set[str],
         find_user: Callable = find_user_by_email,
         find_activation_booking: Callable = booking_repository.find_user_activation_booking
-) -> List[BookingSQLEntity]:
+) -> List[Booking]:
     bookings = []
     for row in csv_rows:
         user = find_user(row[EMAIL_COLUMN_INDEX])
@@ -61,8 +61,8 @@ def create_users_with_activation_bookings(
     return bookings
 
 
-def create_booking_for(user: UserSQLEntity, stock: StockSQLEntity, token: str) -> BookingSQLEntity:
-    booking = BookingSQLEntity()
+def create_booking_for(user: UserSQLEntity, stock: StockSQLEntity, token: str) -> Booking:
+    booking = Booking()
     booking.stock = stock
     booking.user = user
     booking.quantity = 1
@@ -121,7 +121,7 @@ def split_rows_in_chunks_with_no_duplicated_emails(csv_reader: Iterable, chunk_s
     return chunked_rows
 
 
-def export_created_data(bookings: List[BookingSQLEntity]):
+def export_created_data(bookings: List[Booking]):
     users = map(lambda b: ActivationUser(b), bookings)
     csv = generate_activation_users_csv(users)
 
@@ -176,7 +176,7 @@ def run(csv_file_path: str) -> None:
     logger.info('[STEP 3] Décompte des objets')
     logger.info('Users en BDD -> %s' % UserSQLEntity.query.count())
     logger.info('Users créés ou mis à jour -> %s' % total)
-    logger.info('Bookings en BDD -> %s\n' % BookingSQLEntity.query.count())
+    logger.info('Bookings en BDD -> %s\n' % Booking.query.count())
     logger.info('Bookings créés ou existants -> %s' % len(existing_tokens))
 
     logger.info('[STEP 4] Envoi des comptes créés par mail')

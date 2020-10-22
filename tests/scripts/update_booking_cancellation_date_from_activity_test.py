@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.models import BookingSQLEntity
+from pcapi.models import Booking
 from pcapi.models.db import db
 from pcapi.repository import repository
 from pcapi.scripts.update_booking_cancellation_date_from_activity import update_booking_cancellation_date_from_activity
@@ -32,9 +32,9 @@ class UpdateBookingCancellationDateFromActivityTest:
         update_booking_cancellation_date_from_activity()
 
         # Then
-        count_of_cancelled_booking_without_cancellation_date = BookingSQLEntity.query.filter(
-            (BookingSQLEntity.cancellationDate == None),
-            (BookingSQLEntity.isCancelled == True)
+        count_of_cancelled_booking_without_cancellation_date = Booking.query.filter(
+            (Booking.cancellationDate == None),
+            (Booking.isCancelled == True)
         ).count()
 
         assert count_of_cancelled_booking_without_cancellation_date == 0

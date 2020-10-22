@@ -4,7 +4,7 @@ import urllib.parse
 import pytest
 
 from tests.conftest import TestClient
-from pcapi.models import EventType, ThingType, Deposit, BookingSQLEntity, UserSQLEntity
+from pcapi.models import EventType, ThingType, Deposit, Booking, UserSQLEntity
 from pcapi.repository import repository
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
@@ -34,7 +34,7 @@ class Returns204:  # No Content
         response = TestClient(app.test_client()).with_auth('pro@example.com').patch(url)
 
         assert response.status_code == 204
-        booking = bookings_models.BookingSQLEntity.query.one()
+        booking = bookings_models.Booking.query.one()
         assert booking.isUsed
         assert booking.dateUsed is not None
 
@@ -49,7 +49,7 @@ class Returns204:  # No Content
         response = client.patch(url, headers={'origin': 'http://random_header.fr'})
 
         assert response.status_code == 204
-        booking = bookings_models.BookingSQLEntity.query.one()
+        booking = bookings_models.Booking.query.one()
         assert booking.isUsed
 
     # FIXME: what is the purpose of this test? Are we testing that
@@ -69,7 +69,7 @@ class Returns204:  # No Content
         response = client.patch(url, headers={'origin': 'http://random_header.fr'})
 
         assert response.status_code == 204
-        booking = bookings_models.BookingSQLEntity.query.one()
+        booking = bookings_models.Booking.query.one()
         assert booking.isUsed
 
     def when_user_patching_is_global_admin_is_activation_event_and_no_deposit_for_booking_user(self, app):
@@ -151,7 +151,7 @@ class Returns403:  # Forbidden
         assert response.status_code == 403
         assert response.json['global'] == [
             "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
-        assert not BookingSQLEntity.query.get(booking_id).isUsed
+        assert not Booking.query.get(booking_id).isUsed
 
     @pytest.mark.usefixtures("db_session")
     def when_booking_beginning_datetime_in_more_than_72_hours(self, app):
@@ -221,7 +221,7 @@ class Returns404:
 
         # Then
         assert response.status_code == 404
-        assert BookingSQLEntity.query.get(booking_id).isUsed == False
+        assert Booking.query.get(booking_id).isUsed == False
 
     @pytest.mark.usefixtures("db_session")
     def when_booking_user_email_with_special_character_not_url_encoded(self, app):
@@ -265,7 +265,7 @@ class Returns404:
 
         # Then
         assert response.status_code == 404
-        assert not BookingSQLEntity.query.get(booking_id).isUsed
+        assert not Booking.query.get(booking_id).isUsed
 
 
 class Returns405:  # Method Not Allowed
@@ -322,7 +322,7 @@ class Returns410:  # Gone
         # Then
         assert response.status_code == 410
         assert response.json['booking'] == ['Cette réservation a été annulée']
-        assert not BookingSQLEntity.query.get(booking_id).isUsed
+        assert not Booking.query.get(booking_id).isUsed
 
     @pytest.mark.usefixtures("db_session")
     def when_booking_already_validated(self, app):
@@ -347,4 +347,4 @@ class Returns410:  # Gone
         # Then
         assert response.status_code == 410
         assert response.json['booking'] == ['Cette réservation a déjà été validée']
-        assert BookingSQLEntity.query.get(booking_id).isUsed
+        assert Booking.query.get(booking_id).isUsed

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from pcapi.models import BookingSQLEntity
+from pcapi.models import Booking
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.scripts.booking.cancel_banned_bookings import cancel_banned_bookings
@@ -33,7 +33,7 @@ class CancelBannedBookingsTest:
         cancel_banned_bookings()
 
         # Then
-        corrected_booking = BookingSQLEntity.query.get(booking.id)
+        corrected_booking = Booking.query.get(booking.id)
         assert corrected_booking.isCancelled is False
         assert corrected_booking.cancellationDate is None
         assert corrected_booking.isUsed is True
@@ -50,7 +50,7 @@ class CancelBannedBookingsTest:
         cancel_banned_bookings()
 
         # Then
-        corrected_booking = BookingSQLEntity.query.get(booking.id)
+        corrected_booking = Booking.query.get(booking.id)
         assert corrected_booking.isCancelled is False
         assert corrected_booking.cancellationDate is None
         assert corrected_booking.isUsed is True
@@ -67,7 +67,7 @@ class CancelBannedBookingsTest:
         cancel_banned_bookings()
 
         # Then
-        corrected_booking = BookingSQLEntity.query.get(booking.id)
+        corrected_booking = Booking.query.get(booking.id)
         assert corrected_booking.isCancelled is False
         assert corrected_booking.cancellationDate is None
         assert corrected_booking.isUsed is True
@@ -85,7 +85,7 @@ class CancelBannedBookingsTest:
         cancel_banned_bookings()
 
         # Then
-        corrected_booking = BookingSQLEntity.query.get(booking.id)
+        corrected_booking = Booking.query.get(booking.id)
         assert corrected_booking.isCancelled is False
         assert corrected_booking.cancellationDate is None
         assert corrected_booking.isUsed is True
@@ -105,7 +105,7 @@ class CancelBannedBookingsTest:
         cancel_banned_bookings()
 
         # Then
-        corrected_booking = BookingSQLEntity.query.get(booking.id)
+        corrected_booking = Booking.query.get(booking.id)
         assert corrected_booking.isCancelled is False
         assert corrected_booking.cancellationDate is None
         assert corrected_booking.isUsed is True
@@ -123,7 +123,7 @@ class CancelBannedBookingsTest:
         cancel_banned_bookings()
 
         # Then
-        corrected_booking = BookingSQLEntity.query.get(booking.id)
+        corrected_booking = Booking.query.get(booking.id)
         assert corrected_booking.isCancelled is False
         assert corrected_booking.cancellationDate is None
         assert corrected_booking.isUsed is True
@@ -142,7 +142,7 @@ class CancelBannedBookingsTest:
         cancel_banned_bookings()
 
         # Then
-        corrected_booking = BookingSQLEntity.query.get(booking.id)
+        corrected_booking = Booking.query.get(booking.id)
         assert corrected_booking.isCancelled is True
         assert corrected_booking.cancellationDate is not None
         assert corrected_booking.isUsed is False

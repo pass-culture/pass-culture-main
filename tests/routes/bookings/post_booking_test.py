@@ -24,7 +24,7 @@ class Returns201:
         client = TestClient(app.test_client()).with_auth(user.email)
         response = client.post('/bookings', json=data)
 
-        booking = bookings_models.BookingSQLEntity.query.one()
+        booking = bookings_models.Booking.query.one()
         assert response.status_code == 201
         assert response.json == {
             'amount': 10.0,
@@ -58,4 +58,4 @@ class Returns400:
         assert response.status_code == 400
         assert response.json['stock'] == ["Ce stock n'est pas réservable"]
 
-        assert bookings_models.BookingSQLEntity.query.first() is None
+        assert bookings_models.Booking.query.first() is None

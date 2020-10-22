@@ -27,7 +27,7 @@ class Payment(PcObject, Model):
                        index=True,
                        nullable=False)
 
-    booking = relationship('BookingSQLEntity',
+    booking = relationship('Booking',
                            foreign_keys=[bookingId],
                            backref='payments')
 

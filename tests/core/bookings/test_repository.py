@@ -12,7 +12,7 @@ from pcapi.model_creators.specific_creators import create_offer_with_event_produ
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap, EventBookingRecap
 from pcapi.repository import repository
-from pcapi.models import BookingSQLEntity, EventType, ThingType
+from pcapi.models import Booking, EventType, ThingType
 from pcapi.models.api_errors import ApiErrors, ResourceNotFoundError
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY
@@ -529,8 +529,8 @@ class SaveBookingTest:
         repository.save(booking)
 
         # Then
-        assert BookingSQLEntity.query.filter_by(isCancelled=False).count() == 1
-        assert BookingSQLEntity.query.filter_by(isCancelled=True).count() == 1
+        assert Booking.query.filter_by(isCancelled=False).count() == 1
+        assert Booking.query.filter_by(isCancelled=True).count() == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_raises_too_many_bookings_error_when_not_enough_stocks(self, app: fixture):

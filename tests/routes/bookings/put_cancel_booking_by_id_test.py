@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from pcapi.models import BookingSQLEntity
+from pcapi.models import Booking
 from pcapi.repository import repository
 from tests.conftest import TestClient
 import pytest
@@ -33,7 +33,7 @@ class Put:
 
             # Then
             assert response.status_code == 200
-            assert BookingSQLEntity.query.get(booking.id).isCancelled
+            assert Booking.query.get(booking.id).isCancelled
             assert response.json == {'amount': 10.0,
                                      'completedUrl': None,
                                      'id': humanize(booking.id),
@@ -62,7 +62,7 @@ class Put:
             # Then
             assert response.status_code == 400
             assert response.json['booking'] == ["Impossible d'annuler une réservation consommée"]
-            assert not BookingSQLEntity.query.get(booking.id).isCancelled
+            assert not Booking.query.get(booking.id).isCancelled
 
     class Returns404:
         @pytest.mark.usefixtures("db_session")
@@ -81,7 +81,7 @@ class Put:
 
             # Then
             assert response.status_code == 404
-            assert not BookingSQLEntity.query.get(booking.id).isCancelled
+            assert not Booking.query.get(booking.id).isCancelled
 
         @pytest.mark.usefixtures("db_session")
         def when_the_booking_does_not_exist(self, app):

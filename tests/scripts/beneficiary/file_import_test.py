@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 
-from pcapi.models import UserSQLEntity, BookingSQLEntity
+from pcapi.models import UserSQLEntity, Booking
 from pcapi.scripts.beneficiary.file_import import fill_user_from, \
     create_booking_for, \
     create_users_with_activation_bookings, \
@@ -190,7 +190,7 @@ class CreateUsersWithActivationBookingsTest:
         offer = create_offer_with_thing_product(venue=venue)
         stock = create_stock(offer=offer)
         self.find_user_query.side_effect = [None, None, None]
-        self.find_activation_booking.side_effect = [None, None, BookingSQLEntity()]
+        self.find_activation_booking.side_effect = [None, None, Booking()]
         existing_tokens = set()
 
         # when

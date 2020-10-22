@@ -1,4 +1,4 @@
-from pcapi.models import ApiKey, BookingSQLEntity
+from pcapi.models import ApiKey, Booking
 from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
@@ -46,7 +46,7 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            updated_booking = BookingSQLEntity.query.first()
+            updated_booking = Booking.query.first()
             assert updated_booking.isCancelled
 
         @pytest.mark.usefixtures("db_session")
@@ -79,7 +79,7 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            updated_booking = BookingSQLEntity.query.first()
+            updated_booking = Booking.query.first()
             assert updated_booking.isCancelled
 
     class Returns401:
@@ -227,7 +227,7 @@ class Patch:
                 # Then
                 assert response.status_code == 403
                 assert response.json['global'] == ["Impossible d\'annuler une réservation consommée"]
-                updated_booking = BookingSQLEntity.query.first()
+                updated_booking = Booking.query.first()
                 assert updated_booking.isUsed
                 assert updated_booking.isCancelled is False
 

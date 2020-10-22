@@ -1,7 +1,7 @@
 import csv
 from typing import List, Iterable
 
-from pcapi.models import BookingSQLEntity, StockSQLEntity, OfferSQLEntity, ApiErrors
+from pcapi.models import Booking, StockSQLEntity, OfferSQLEntity, ApiErrors
 from pcapi.repository import repository
 from pcapi.utils.logger import logger
 
@@ -70,10 +70,10 @@ def _is_not_flagged_for_cancellation(row: List[str]) -> bool:
     return row[CANCELATION_FLAG_COLUMN_INDEX] == NO_FLAG
 
 
-def _get_bookings_from_offer(offer_id: int) -> List[BookingSQLEntity]:
-    return BookingSQLEntity.query \
-        .filter(BookingSQLEntity.token.notin_(BOOKINGS_TOKEN_NOT_TO_UPDATE)) \
-        .join(StockSQLEntity, StockSQLEntity.id == BookingSQLEntity.stockId) \
+def _get_bookings_from_offer(offer_id: int) -> List[Booking]:
+    return Booking.query \
+        .filter(Booking.token.notin_(BOOKINGS_TOKEN_NOT_TO_UPDATE)) \
+        .join(StockSQLEntity, StockSQLEntity.id == Booking.stockId) \
         .join(OfferSQLEntity, OfferSQLEntity.id == StockSQLEntity.offerId) \
         .filter(OfferSQLEntity.id == offer_id) \
         .all()

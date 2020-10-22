@@ -5,7 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
 from pcapi.connectors import redis
-from pcapi.models import StockSQLEntity, BookingSQLEntity
+from pcapi.models import StockSQLEntity, Booking
 from pcapi.repository import repository
 
 
@@ -21,12 +21,12 @@ def update_stock_quantity_for_negative_remaining_quantity(application: Flask) ->
 
 def _get_stocks_with_negative_remaining_quantity() -> List[StockSQLEntity]:
     stock_alias = aliased(StockSQLEntity)
-    booking_subquery = BookingSQLEntity.query \
-        .filter(BookingSQLEntity.stockId == stock_alias.id) \
-        .filter(BookingSQLEntity.isCancelled == False) \
-        .with_entities(func.sum(BookingSQLEntity.quantity).label('remainingQuantity'),
-                       BookingSQLEntity.stockId.label('stockId')) \
-        .group_by(BookingSQLEntity.stockId) \
+    booking_subquery = Booking.query \
+        .filter(Booking.stockId == stock_alias.id) \
+        .filter(Booking.isCancelled == False) \
+        .with_entities(func.sum(Booking.quantity).label('remainingQuantity'),
+                       Booking.stockId.label('stockId')) \
+        .group_by(Booking.stockId) \
         .subquery()
 
     stocks = StockSQLEntity.query \
@@ -74,7 +74,7 @@ def _get_old_remaining_quantity(stock: StockSQLEntity) -> int:
 
 def _get_stocks_to_check(page: int = 0, page_size: int = 100) -> List[StockSQLEntity]:
     return StockSQLEntity.query \
-        .join(BookingSQLEntity) \
+        .join(Booking) \
         .filter(StockSQLEntity.quantity != None) \
         .filter(StockSQLEntity.isSoftDeleted == False) \
         .filter(StockSQLEntity.hasBeenMigrated == None) \

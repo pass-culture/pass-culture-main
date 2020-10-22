@@ -9,7 +9,7 @@ from flask import current_app as app, render_template
 
 from pcapi.connectors import api_entreprises
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.models import BookingSQLEntity, OfferSQLEntity, Offerer, StockSQLEntity, UserSQLEntity, UserOfferer, VenueSQLEntity
+from pcapi.models import Booking, OfferSQLEntity, Offerer, StockSQLEntity, UserSQLEntity, UserOfferer, VenueSQLEntity
 from pcapi.models.email import EmailStatus
 from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
 from pcapi.repository.email_queries import save
@@ -85,7 +85,7 @@ def build_pc_pro_offer_link(offer: OfferSQLEntity) -> str:
            f'&structure={humanize(offer.venue.managingOffererId)}'
 
 
-def extract_users_information_from_bookings(bookings: List[BookingSQLEntity]) -> List[dict]:
+def extract_users_information_from_bookings(bookings: List[Booking]) -> List[dict]:
     users_keys = ('firstName', 'lastName', 'email', 'contremarque')
     users_properties = [[booking.user.firstName, booking.user.lastName, booking.user.email, booking.token] for booking
                         in bookings]
@@ -104,7 +104,7 @@ def format_environment_for_email() -> str:
     return '' if IS_PROD else f'-{ENV}'
 
 
-def format_booking_date_for_email(booking: BookingSQLEntity) -> str:
+def format_booking_date_for_email(booking: Booking) -> str:
     if booking.stock.offer.isEvent:
         date_in_tz = get_event_datetime(booking.stock)
         offer_date = date_in_tz.strftime("%d-%b-%Y")
@@ -112,7 +112,7 @@ def format_booking_date_for_email(booking: BookingSQLEntity) -> str:
     return ''
 
 
-def format_booking_hours_for_email(booking: BookingSQLEntity) -> str:
+def format_booking_hours_for_email(booking: Booking) -> str:
     if booking.stock.offer.isEvent:
         date_in_tz = get_event_datetime(booking.stock)
         event_hour = date_in_tz.hour
@@ -148,7 +148,7 @@ def make_validation_email_object(offerer: Offerer, user_offerer: UserOfferer,
     }
 
 
-def make_offerer_driven_cancellation_email_for_offerer(booking: BookingSQLEntity) -> Dict:
+def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict:
     stock_name = booking.stock.offer.product.name
     venue = booking.stock.offer.venue
     user_name = booking.user.publicName

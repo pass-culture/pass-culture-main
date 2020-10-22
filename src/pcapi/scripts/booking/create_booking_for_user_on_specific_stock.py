@@ -23,9 +23,9 @@ def create_booking_for_user_on_specific_stock_bypassing_capping_limits(user_id: 
     validation.check_can_book_free_offer(user, stock)
     validation.check_stock_is_bookable(stock)
 
-    booking = models.BookingSQLEntity()
+    booking = models.Booking()
     # FIXME: this is not right. PcObject's constructor should allow
-    # `BookingSQLEntity(stock=stock, ...)`
+    # `Booking(stock=stock, ...)`
     booking.userId = user.id
     booking.stockId = stock.id
     booking.amount = stock.price

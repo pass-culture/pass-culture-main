@@ -1,6 +1,6 @@
 import datetime
 
-from pcapi.core.bookings.models import BookingSQLEntity
+from pcapi.core.bookings.models import Booking
 import pcapi.domain.expenses as payments_api
 from pcapi.domain import user_activation
 from pcapi.models import api_errors
@@ -31,7 +31,7 @@ def check_offer_already_booked(user, offer):
     """Raise ``OfferIsAlreadyBooked`` if the user already booked this offer."""
     if (
         db.session.query(
-            BookingSQLEntity.query
+            Booking.query
             .filter_by(
                 user=user,
                 isCancelled=False,
@@ -131,7 +131,7 @@ def check_is_usable(booking):
 
 
 # FIXME: should not raise exceptions from `api_errors` (see above for details).
-def check_is_not_activation_booking(booking: BookingSQLEntity) -> None:
+def check_is_not_activation_booking(booking: Booking) -> None:
     if user_activation.is_activation_booking(booking):
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error('booking', "Impossible d'annuler une offre d'activation")
@@ -139,7 +139,7 @@ def check_is_not_activation_booking(booking: BookingSQLEntity) -> None:
 
 
 # FIXME: should not raise exceptions from `api_errors` (see above for details).
-def check_can_be_mark_as_unused(booking: BookingSQLEntity) -> None:
+def check_can_be_mark_as_unused(booking: Booking) -> None:
     if not booking.isUsed:
         gone = api_errors.ResourceGoneError()
         gone.add_error('booking', "Cette réservation n'a pas encore été validée")

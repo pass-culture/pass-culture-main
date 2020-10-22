@@ -4,7 +4,7 @@ from typing import List
 from sqlalchemy import and_
 from sqlalchemy.sql.expression import select
 
-from pcapi.models import BookingSQLEntity, FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Recommendation
+from pcapi.models import Booking, FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Recommendation
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.db import db
 from pcapi.repository import mediation_queries
@@ -66,14 +66,14 @@ def delete_useless_recommendations(limit: int = 500000) -> None:
     favorite_query = (select([FavoriteSQLEntity.offerId])).alias('favorite_query')
     is_unread = Recommendation.dateRead == None
     is_older_than_one_week = Recommendation.dateCreated < EIGHT_DAYS_AGO
-    has_no_booking = BookingSQLEntity.recommendationId == None
+    has_no_booking = Booking.recommendationId == None
     not_favorite_predicate = Recommendation.offerId.notin_(favorite_query)
 
     connection = db.engine.connect()
 
     query = select([Recommendation.id]). \
         select_from(Recommendation.__table__
-                    .join(BookingSQLEntity, Recommendation.id == BookingSQLEntity.recommendationId, True)) \
+                    .join(Booking, Recommendation.id == Booking.recommendationId, True)) \
         .where(
         and_(is_unread,
              is_older_than_one_week,

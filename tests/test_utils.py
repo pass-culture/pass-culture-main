@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from shapely.geometry import Polygon
 
-from pcapi.models import BookingSQLEntity
+from pcapi.models import Booking
 from pcapi.models.feature import Feature, FeatureToggle
 from pcapi.repository import repository
 
@@ -16,11 +16,11 @@ def deactivate_feature(feature_toggle: FeatureToggle):
 
 def create_mocked_bookings(num_bookings: int,
                            venue_email: str,
-                           name: str = 'Offer name') -> List[BookingSQLEntity]:
+                           name: str = 'Offer name') -> List[Booking]:
     bookings = []
 
     for counter in range(num_bookings):
-        booking = Mock(spec=BookingSQLEntity)
+        booking = Mock(spec=Booking)
         booking.user.email = 'user_email%s' % counter
         booking.user.firstName = 'First %s' % counter
         booking.user.lastName = 'Last %s' % counter

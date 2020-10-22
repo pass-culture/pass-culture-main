@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from pcapi.models import OfferSQLEntity, BookingSQLEntity
+from pcapi.models import OfferSQLEntity, Booking
 from pcapi.repository import repository
 from pcapi.scripts.update_offer_and_booking_status import _read_booking_tokens_from_file, \
     update_offer_and_booking_status
@@ -60,7 +60,7 @@ class UpdateOfferAndBookingStatusTest:
         update_offer_and_booking_status('fake/path')
 
         # Then
-        bookings = BookingSQLEntity.query.order_by(BookingSQLEntity.id.asc()).all()
+        bookings = Booking.query.order_by(Booking.id.asc()).all()
         assert not bookings[0].isCancelled
         assert bookings[1].isCancelled
 

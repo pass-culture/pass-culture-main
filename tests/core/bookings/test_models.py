@@ -56,7 +56,7 @@ def test_booking_completed_url_gets_normalized():
 @pytest.mark.usefixtures("db_session")
 def test_too_many_bookings_postgresql_exception():
     booking1 = factories.BookingFactory(stock__quantity=1)
-    booking2 = models.BookingSQLEntity()
+    booking2 = models.Booking()
     booking2.user = users_factories.UserFactory()
     booking2.stock = booking1.stock
     booking2.quantity = 1

@@ -5,7 +5,7 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription impo
     BeneficiaryPreSubscription
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
     CantRegisterBeneficiary
-from pcapi.core.bookings.models import BookingSQLEntity
+from pcapi.core.bookings.models import Booking
 from pcapi.emails.beneficiary_activation import get_activation_email_data
 from pcapi.emails.beneficiary_booking_cancellation import \
     make_beneficiary_booking_cancellation_email_data
@@ -37,7 +37,7 @@ from pcapi.emails.user_notification_after_stock_update import \
     retrieve_data_to_warn_user_after_stock_update_affecting_booking
 from pcapi.emails.user_reset_password import \
     retrieve_data_for_reset_password_user_email
-from pcapi.models import BookingSQLEntity, Offerer, UserOfferer, UserSQLEntity, \
+from pcapi.models import Booking, Offerer, UserOfferer, UserSQLEntity, \
     VenueSQLEntity
 from pcapi.repository.user_queries import find_all_emails_of_user_offerers_admins
 from pcapi.utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
@@ -46,7 +46,7 @@ from pcapi.utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
     make_user_validation_email, make_venue_validated_email
 
 
-def send_booking_recap_emails(booking: BookingSQLEntity, send_email: Callable[..., bool]) -> None:
+def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool]) -> None:
     recipients = [ADMINISTRATION_EMAIL_ADDRESS]
     booking_email = booking.stock.offer.bookingEmail
     if booking_email:
@@ -56,24 +56,24 @@ def send_booking_recap_emails(booking: BookingSQLEntity, send_email: Callable[..
     send_email(data=data)
 
 
-def send_booking_confirmation_email_to_beneficiary(booking: BookingSQLEntity, send_email: Callable[..., bool]) -> None:
+def send_booking_confirmation_email_to_beneficiary(booking: Booking, send_email: Callable[..., bool]) -> None:
     data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
     send_email(data=data)
 
 
-def send_beneficiary_booking_cancellation_email(booking: BookingSQLEntity, send_email: Callable[..., bool]) -> None:
+def send_beneficiary_booking_cancellation_email(booking: Booking, send_email: Callable[..., bool]) -> None:
     data = make_beneficiary_booking_cancellation_email_data(booking)
     send_email(data=data)
 
 
-def send_user_driven_cancellation_email_to_offerer(booking: BookingSQLEntity, send_email: Callable[..., bool]) -> None:
+def send_user_driven_cancellation_email_to_offerer(booking: Booking, send_email: Callable[..., bool]) -> None:
     recipients = _build_recipients_list(booking)
     data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(
         booking, recipients)
     send_email(data=data)
 
 
-def send_offerer_driven_cancellation_email_to_offerer(booking: BookingSQLEntity,
+def send_offerer_driven_cancellation_email_to_offerer(booking: Booking,
                                                       send_email: Callable[..., bool]) -> None:
     offerer_email = booking.stock.offer.bookingEmail
     recipients = []
@@ -86,7 +86,7 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: BookingSQLEntity,
     send_email(data=email)
 
 
-def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: BookingSQLEntity,
+def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: Booking,
                                                                send_email: Callable[..., bool]) -> None:
     data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(
         booking)
@@ -120,13 +120,13 @@ def send_attachment_validation_email_to_pro_offerer(user_offerer: UserOfferer, s
     send_email(data=data)
 
 
-def send_batch_cancellation_emails_to_users(bookings: List[BookingSQLEntity], send_email: Callable[..., bool]) -> None:
+def send_batch_cancellation_emails_to_users(bookings: List[Booking], send_email: Callable[..., bool]) -> None:
     for booking in bookings:
         send_warning_to_beneficiary_after_pro_booking_cancellation(
             booking, send_email)
 
 
-def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: List[BookingSQLEntity],
+def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: List[Booking],
                                                                  send_email: Callable[..., bool]) -> None:
     recipients = _build_recipients_list(bookings[0])
     data = retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(
@@ -134,7 +134,7 @@ def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: List[
     send_email(data=data)
 
 
-def send_booking_cancellation_emails_to_user_and_offerer(booking: BookingSQLEntity, is_offerer_cancellation: bool,
+def send_booking_cancellation_emails_to_user_and_offerer(booking: Booking, is_offerer_cancellation: bool,
                                                          is_user_cancellation: bool, send_email: Callable[..., bool]) -> None:
     if is_user_cancellation:
         send_beneficiary_booking_cancellation_email(booking, send_email)
@@ -172,13 +172,13 @@ def send_activation_email(user: Union[UserSQLEntity, Beneficiary], send_email: C
     send_email(data=data)
 
 
-def send_batch_stock_postponement_emails_to_users(bookings: List[BookingSQLEntity],
+def send_batch_stock_postponement_emails_to_users(bookings: List[Booking],
                                                   send_email: Callable[..., bool]) -> None:
     for booking in bookings:
         send_booking_postponement_emails_to_users(booking, send_email)
 
 
-def send_booking_postponement_emails_to_users(booking: BookingSQLEntity, send_email: Callable[..., bool]) -> None:
+def send_booking_postponement_emails_to_users(booking: Booking, send_email: Callable[..., bool]) -> None:
     data = retrieve_data_to_warn_user_after_stock_update_affecting_booking(
         booking)
     send_email(data=data)
@@ -195,7 +195,7 @@ def send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscri
     send_email(data=data)
 
 
-def _build_recipients_list(booking: BookingSQLEntity) -> str:
+def _build_recipients_list(booking: Booking) -> str:
     recipients = []
     offerer_booking_email = booking.stock.offer.bookingEmail
     if offerer_booking_email:

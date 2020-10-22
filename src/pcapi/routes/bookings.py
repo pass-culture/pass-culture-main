@@ -7,7 +7,7 @@ from flask_login import current_user, login_required
 from spectree import Response
 
 from pcapi.flask_app import private_api, public_api
-from pcapi.core.bookings.models import BookingSQLEntity
+from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.validation as bookings_validation
 import pcapi.core.bookings.repository as booking_repository
@@ -69,7 +69,7 @@ def get_bookings():
 @private_api.route('/bookings/<booking_id>', methods=['GET'])
 @login_required
 def get_booking(booking_id: int):
-    booking = BookingSQLEntity.query.filter_by(id=dehumanize(booking_id)).first_or_404()
+    booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
 
     return jsonify(as_dict(booking, includes=WEBAPP_GET_BOOKING_INCLUDES)), 200
 
@@ -101,7 +101,7 @@ def create_booking(body: PostBookingBodyModel) -> PostBookingResponseModel:
 @private_api.route('/bookings/<booking_id>/cancel', methods=['PUT'])
 @login_required
 def cancel_booking(booking_id: str):
-    booking = BookingSQLEntity.query.filter_by(id=dehumanize(booking_id)).first_or_404()
+    booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
 
     bookings_api.cancel_booking_by_beneficiary(current_user, booking)
 
@@ -252,7 +252,7 @@ def _get_api_key_from_header(received_request: Dict) -> ApiKey:
     return find_api_key_by_value(app_authorization_api_key)
 
 
-def _create_response_to_get_booking_by_token(booking: BookingSQLEntity) -> Dict:
+def _create_response_to_get_booking_by_token(booking: Booking) -> Dict:
     offer_name = booking.stock.offer.product.name
     date = None
     offer = booking.stock.offer

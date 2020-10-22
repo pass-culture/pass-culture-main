@@ -4,7 +4,7 @@ from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBoo
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
 from pcapi.infrastructure.repository.beneficiary_bookings import stock_domain_converter, active_mediation_domain_converter
-from pcapi.models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, OfferSQLEntity, VenueSQLEntity, MediationSQLEntity, Product
+from pcapi.models import Booking, UserSQLEntity, StockSQLEntity, OfferSQLEntity, VenueSQLEntity, MediationSQLEntity, Product
 
 
 class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
@@ -94,31 +94,31 @@ def _get_stocks_information(offers_ids: List[int]) -> List[object]:
 
 def _get_bookings_information(beneficiary_id: int) -> List[object]:
     offer_activation_types = ['ThingType.ACTIVATION', 'EventType.ACTIVATION']
-    return BookingSQLEntity.query \
-        .join(UserSQLEntity, UserSQLEntity.id == BookingSQLEntity.userId) \
-        .join(StockSQLEntity, StockSQLEntity.id == BookingSQLEntity.stockId) \
+    return Booking.query \
+        .join(UserSQLEntity, UserSQLEntity.id == Booking.userId) \
+        .join(StockSQLEntity, StockSQLEntity.id == Booking.stockId) \
         .join(OfferSQLEntity) \
         .join(Product, OfferSQLEntity.productId == Product.id) \
         .join(VenueSQLEntity) \
-        .filter(BookingSQLEntity.userId == beneficiary_id) \
+        .filter(Booking.userId == beneficiary_id) \
         .filter(OfferSQLEntity.type.notin_(offer_activation_types)) \
-        .distinct(BookingSQLEntity.stockId) \
-        .order_by(BookingSQLEntity.stockId,
-                  BookingSQLEntity.isCancelled,
-                  BookingSQLEntity.dateCreated.desc()
+        .distinct(Booking.stockId) \
+        .order_by(Booking.stockId,
+                  Booking.isCancelled,
+                  Booking.dateCreated.desc()
                   ) \
-        .with_entities(BookingSQLEntity.amount,
-                       BookingSQLEntity.cancellationDate,
-                       BookingSQLEntity.dateCreated,
-                       BookingSQLEntity.dateUsed,
-                       BookingSQLEntity.id,
-                       BookingSQLEntity.isCancelled,
-                       BookingSQLEntity.isUsed,
-                       BookingSQLEntity.quantity,
-                       BookingSQLEntity.recommendationId,
-                       BookingSQLEntity.stockId,
-                       BookingSQLEntity.token,
-                       BookingSQLEntity.userId,
+        .with_entities(Booking.amount,
+                       Booking.cancellationDate,
+                       Booking.dateCreated,
+                       Booking.dateUsed,
+                       Booking.id,
+                       Booking.isCancelled,
+                       Booking.isUsed,
+                       Booking.quantity,
+                       Booking.recommendationId,
+                       Booking.stockId,
+                       Booking.token,
+                       Booking.userId,
                        OfferSQLEntity.id.label("offerId"),
                        OfferSQLEntity.name,
                        OfferSQLEntity.type,

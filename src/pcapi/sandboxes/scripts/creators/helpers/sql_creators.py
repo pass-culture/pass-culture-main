@@ -5,7 +5,7 @@ import random
 from typing import Optional, List, Dict
 
 from pcapi.models import UserSQLEntity, Deposit, Offerer, UserOfferer, RightsType, VenueSQLEntity, OfferSQLEntity, Product, Provider, \
-    EventType, StockSQLEntity, ThingType, BookingSQLEntity, Recommendation, MediationSQLEntity, PaymentMessage, Payment
+    EventType, StockSQLEntity, ThingType, Booking, Recommendation, MediationSQLEntity, PaymentMessage, Payment
 from pcapi.models.payment_status import TransactionStatus, PaymentStatus
 from pcapi.utils.token import random_token
 
@@ -412,8 +412,8 @@ def create_booking(user: UserSQLEntity,
                    recommendation: Recommendation = None,
                    stock: StockSQLEntity = None,
                    token: str = None,
-                   venue: VenueSQLEntity = None) -> BookingSQLEntity:
-    booking = BookingSQLEntity()
+                   venue: VenueSQLEntity = None) -> Booking:
+    booking = Booking()
     offerer = create_offerer(siren='987654321', address='Test address', city='Test city', postal_code='93000',
                              name='Test name')
     if venue is None:
@@ -457,7 +457,7 @@ def create_payment_message(checksum: str = None,
     return payment_message
 
 
-def create_payment(booking: BookingSQLEntity,
+def create_payment(booking: Booking,
                    offerer: Offerer,
                    amount: int = 10,
                    author: str = 'test author',

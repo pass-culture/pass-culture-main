@@ -9,7 +9,7 @@ from pcapi.utils.human_ids import humanize
 
 
 # FIXME: This class reimplements (with minor variations) methods of
-# the `BookingSQLEntity` model. We should get rid of it.
+# the `Booking` model. We should get rid of it.
 class BeneficiaryBooking:
     def __init__(self,
                  amount: int,

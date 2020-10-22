@@ -1,13 +1,13 @@
 from typing import Dict, List
 
-from pcapi.models import BookingSQLEntity
+from pcapi.models import Booking
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS, DEV_EMAIL_ADDRESS, format_booking_hours_for_email, \
     build_pc_pro_offer_link, format_environment_for_email, \
     format_booking_date_for_email
 
 
-def retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings: List[BookingSQLEntity],
+def retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings: List[Booking],
                                                                           recipients: str) -> Dict:
     booking = bookings[0]
     stock = booking.stock
@@ -41,7 +41,7 @@ def retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookin
     }
 
 
-def _extract_users_information_from_bookings_list(bookings: List[BookingSQLEntity]) -> List[dict]:
+def _extract_users_information_from_bookings_list(bookings: List[Booking]) -> List[dict]:
     users_keys = ('firstName', 'lastName', 'email', 'countermark')
     users_properties = [[booking.user.firstName, booking.user.lastName, booking.user.email, booking.token] for booking
                         in bookings]

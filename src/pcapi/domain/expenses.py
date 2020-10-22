@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import Dict, List
 
-from pcapi.core.bookings.models import BookingSQLEntity
+from pcapi.core.bookings.models import Booking
 from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.offer_type import ThingType
 
@@ -28,7 +28,7 @@ SUBVENTION_PHYSICAL_THINGS = Decimal(200)
 SUBVENTION_DIGITAL_THINGS = Decimal(200)
 
 
-def get_expenses(bookings: List[BookingSQLEntity]) -> Dict:
+def get_expenses(bookings: List[Booking]) -> Dict:
     total_expenses = _compute_booking_expenses(bookings)
     physical_expenses = _compute_booking_expenses(bookings, _get_bookings_of_physical_things)
     digital_expenses = _compute_booking_expenses(bookings, _get_bookings_of_digital_things)
@@ -40,13 +40,13 @@ def get_expenses(bookings: List[BookingSQLEntity]) -> Dict:
     }
 
 
-def _compute_booking_expenses(bookings: List[BookingSQLEntity], get_bookings=lambda booking: booking) -> Decimal:
+def _compute_booking_expenses(bookings: List[Booking], get_bookings=lambda booking: booking) -> Decimal:
     bookings_to_sum = filter(lambda booking: not booking.isCancelled, get_bookings(bookings))
     expenses = map(lambda booking: booking.total_amount, bookings_to_sum)
     return Decimal(sum(expenses))
 
 
-def _get_bookings_of_digital_things(bookings: List[BookingSQLEntity]) -> List[BookingSQLEntity]:
+def _get_bookings_of_digital_things(bookings: List[Booking]) -> List[Booking]:
     match = []
     for booking in bookings:
         offer = booking.stock.offer
@@ -56,7 +56,7 @@ def _get_bookings_of_digital_things(bookings: List[BookingSQLEntity]) -> List[Bo
     return match
 
 
-def _get_bookings_of_physical_things(bookings: List[BookingSQLEntity]) -> List[BookingSQLEntity]:
+def _get_bookings_of_physical_things(bookings: List[Booking]) -> List[Booking]:
     match = []
     for booking in bookings:
         offer = booking.stock.offer

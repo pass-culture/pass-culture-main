@@ -10,7 +10,7 @@ from . import models
 
 class BookingFactory(BaseFactory):
     class Meta:
-        model = models.BookingSQLEntity
+        model = models.Booking
 
     stock = factory.SubFactory(offers_factories.StockFactory)
     quantity = 1

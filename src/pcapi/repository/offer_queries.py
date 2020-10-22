@@ -9,7 +9,7 @@ from sqlalchemy.sql import selectable
 from sqlalchemy.sql.elements import BinaryExpression
 
 from pcapi.domain.departments import ILE_DE_FRANCE_DEPT_CODES
-from pcapi.models import BookingSQLEntity, DiscoveryView, DiscoveryViewV3, \
+from pcapi.models import Booking, DiscoveryView, DiscoveryViewV3, \
     EventType, FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Offerer, SeenOffer, StockSQLEntity, ThingType, \
     UserSQLEntity, VenueSQLEntity
 from pcapi.models.db import Model, db
@@ -158,7 +158,7 @@ def get_active_offers_ids_query(user, departement_codes=[ALL_DEPARTMENTS_CODE], 
 
 
 def _exclude_booked_and_favorite(active_offers_query, user):
-    booked_offer_ids = BookingSQLEntity.query.filter_by(userId=user.id).join(StockSQLEntity).with_entities(
+    booked_offer_ids = Booking.query.filter_by(userId=user.id).join(StockSQLEntity).with_entities(
         'stock."offerId"').subquery()
     favorite_offer_ids = FavoriteSQLEntity.query.filter_by(userId=user.id).with_entities('"offerId"').subquery()
     not_booked_predicate = ~OfferSQLEntity.id.in_(booked_offer_ids)
@@ -213,11 +213,11 @@ def _offer_has_bookable_stocks():
 
 def _build_bookings_quantity_subquery():
     stock_alias = aliased(StockSQLEntity)
-    bookings_quantity = BookingSQLEntity.query \
+    bookings_quantity = Booking.query \
         .join(stock_alias) \
-        .filter(BookingSQLEntity.isCancelled == False) \
-        .group_by(BookingSQLEntity.stockId) \
-        .with_entities(func.sum(BookingSQLEntity.quantity).label('quantity'), BookingSQLEntity.stockId.label('stockId')) \
+        .filter(Booking.isCancelled == False) \
+        .group_by(Booking.stockId) \
+        .with_entities(func.sum(Booking.quantity).label('quantity'), Booking.stockId.label('stockId')) \
         .subquery()
     return bookings_quantity
 

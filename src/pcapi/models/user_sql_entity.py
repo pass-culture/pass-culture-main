@@ -16,7 +16,7 @@ from sqlalchemy.orm import relationship, joinedload
 from sqlalchemy.sql import expression
 
 from pcapi.domain.expenses import get_expenses
-from pcapi.core.bookings.models import BookingSQLEntity
+from pcapi.core.bookings.models import Booking
 from pcapi.models.db import Model, db
 from pcapi.models.deposit import Deposit
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
@@ -175,12 +175,12 @@ class UserSQLEntity(PcObject,
         self.resetPasswordTokenValidityLimit = None
 
     def bookings_query(self):
-        return db.session.query(BookingSQLEntity).with_parent(self)
+        return db.session.query(Booking).with_parent(self)
 
     @property
     def expenses(self):
         bookings = self.bookings_query().options(
-            joinedload(BookingSQLEntity.stock).
+            joinedload(Booking.stock).
             joinedload(StockSQLEntity.offer)).all()
         return get_expenses(bookings)
 

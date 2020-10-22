@@ -5,7 +5,7 @@ from pcapi.domain.payments import create_payment_for_booking
 from pcapi.domain.reimbursement import BookingReimbursement, ReimbursementRules
 from pcapi.scripts.cancel_bookings_during_quarantine import cancel_booking_status_for_events_happening_during_quarantine
 import pytest
-from pcapi.models import BookingSQLEntity
+from pcapi.models import Booking
 from pcapi.repository import repository
 from pcapi.model_creators.generic_creators import create_user, create_stock, create_booking, create_venue, \
     create_offerer
@@ -35,7 +35,7 @@ class UpdateBookingDuringQuarantineTest:
         cancel_booking_status_for_events_happening_during_quarantine()
 
         # Then
-        booking = BookingSQLEntity.query.one()
+        booking = Booking.query.one()
         assert booking.isUsed is False
         assert booking.dateUsed is None
 
@@ -61,7 +61,7 @@ class UpdateBookingDuringQuarantineTest:
         cancel_booking_status_for_events_happening_during_quarantine()
 
         # Then
-        booking = BookingSQLEntity.query.one()
+        booking = Booking.query.one()
         assert booking.isUsed is True
         assert booking.dateUsed == date_used
 
@@ -92,7 +92,7 @@ class UpdateBookingDuringQuarantineTest:
         cancel_booking_status_for_events_happening_during_quarantine()
 
         # Then
-        bookings = BookingSQLEntity.query.all()
+        bookings = Booking.query.all()
 
         assert bookings[0].isUsed is True
         assert bookings[0].dateUsed == date_used

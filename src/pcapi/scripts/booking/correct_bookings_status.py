@@ -1,6 +1,6 @@
 from typing import List
 
-from pcapi.models import BookingSQLEntity, Payment, ApiErrors
+from pcapi.models import Booking, Payment, ApiErrors
 from pcapi.repository import repository
 
 EXCLUDED_TOKENS = ['2QLYYA', 'BMTUME', 'LUJ9AM', 'DA8YLU', 'Q46YHM']
@@ -31,10 +31,10 @@ def correct_booking_status() -> None:
     print("[BOOKINGS UPDATE] END")
 
 
-def get_bookings_cancelled_during_quarantine_with_payment() -> List[BookingSQLEntity]:
-    return BookingSQLEntity.query \
-        .join(Payment, Payment.bookingId == BookingSQLEntity.id) \
+def get_bookings_cancelled_during_quarantine_with_payment() -> List[Booking]:
+    return Booking.query \
+        .join(Payment, Payment.bookingId == Booking.id) \
         .filter(Payment.id != None) \
-        .filter(BookingSQLEntity.isCancelled == True) \
-        .filter(BookingSQLEntity.token.notin_(EXCLUDED_TOKENS)) \
+        .filter(Booking.isCancelled == True) \
+        .filter(Booking.token.notin_(EXCLUDED_TOKENS)) \
         .all()

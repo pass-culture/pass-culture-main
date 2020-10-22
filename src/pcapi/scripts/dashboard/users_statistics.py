@@ -6,7 +6,7 @@ from sqlalchemy.orm import Query
 
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.repository.user_queries as user_repository
-from pcapi.models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, OfferSQLEntity, ThingType, EventType
+from pcapi.models import Booking, UserSQLEntity, StockSQLEntity, OfferSQLEntity, ThingType, EventType
 from pcapi.models.db import db
 
 
@@ -53,18 +53,18 @@ def get_non_cancelled_bookings_by_user_departement() -> pandas.DataFrame:
 
 
 def _query_amount_spent_by_departement(departement_code: str) -> Query:
-    query = db.session.query(func.sum(BookingSQLEntity.amount * BookingSQLEntity.quantity))
+    query = db.session.query(func.sum(Booking.amount * Booking.quantity))
 
     if departement_code:
         query = query.join(UserSQLEntity) \
             .filter(UserSQLEntity.departementCode == departement_code)
 
-    query = query.join(StockSQLEntity, StockSQLEntity.id == BookingSQLEntity.stockId) \
+    query = query.join(StockSQLEntity, StockSQLEntity.id == Booking.stockId) \
         .join(OfferSQLEntity) \
         .filter(OfferSQLEntity.type != str(ThingType.ACTIVATION)) \
         .filter(OfferSQLEntity.type != str(EventType.ACTIVATION))
 
-    return query.filter(BookingSQLEntity.isCancelled == False)
+    return query.filter(Booking.isCancelled == False)
 
 
 def _query_get_non_cancelled_bookings_by_user_departement() -> List[Tuple[str, int]]:

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Query
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
-from pcapi.models import BeneficiaryImport, BeneficiaryImportStatus, BookingSQLEntity, \
+from pcapi.models import BeneficiaryImport, BeneficiaryImportStatus, Booking, \
     EventType, ImportStatus, OfferSQLEntity, Offerer, RightsType, StockSQLEntity, \
     ThingType, UserSQLEntity, UserOfferer, BeneficiaryImportSources
 from pcapi.models.db import db
@@ -33,7 +33,7 @@ def count_users_by_email(email: str) -> int:
 
 
 def _query_user_having_booked() -> Query:
-    return UserSQLEntity.query.join(BookingSQLEntity) \
+    return UserSQLEntity.query.join(Booking) \
         .join(StockSQLEntity) \
         .join(OfferSQLEntity) \
         .filter(OfferSQLEntity.type != str(ThingType.ACTIVATION)) \

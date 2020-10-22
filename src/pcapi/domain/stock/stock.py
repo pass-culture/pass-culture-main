@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 
-from pcapi.models import BookingSQLEntity
+from pcapi.models import Booking
 from pcapi.models.offer_sql_entity import OfferSQLEntity
 
 
@@ -14,7 +14,7 @@ class Stock(object):
                  beginning_datetime: Optional[datetime] = None,
                  booking_limit_datetime: Optional[datetime] = None,
                  is_soft_deleted: bool = False,
-                 bookings: List[BookingSQLEntity] = []):
+                 bookings: List[Booking] = []):
         self.identifier = identifier
         self.quantity = quantity
         self.beginningDatetime: datetime = beginning_datetime

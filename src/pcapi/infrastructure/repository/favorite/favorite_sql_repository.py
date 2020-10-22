@@ -5,7 +5,7 @@ from sqlalchemy.orm import joinedload
 from pcapi.domain.favorite.favorite import Favorite
 from pcapi.domain.favorite.favorite_repository import FavoriteRepository
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
-from pcapi.models import FavoriteSQLEntity, OfferSQLEntity, StockSQLEntity, VenueSQLEntity, BookingSQLEntity
+from pcapi.models import FavoriteSQLEntity, OfferSQLEntity, StockSQLEntity, VenueSQLEntity, Booking
 
 
 class FavoriteSQLRepository(FavoriteRepository):
@@ -39,11 +39,11 @@ class FavoriteSQLRepository(FavoriteRepository):
         bookings = OfferSQLEntity.query \
             .filter(OfferSQLEntity.id.in_(offer_ids)) \
             .join(StockSQLEntity) \
-            .join(BookingSQLEntity) \
-            .filter(BookingSQLEntity.userId == beneficiary_identifier) \
-            .filter(BookingSQLEntity.isCancelled == False) \
+            .join(Booking) \
+            .filter(Booking.userId == beneficiary_identifier) \
+            .filter(Booking.isCancelled == False) \
             .with_entities(
-                BookingSQLEntity.id.label('booking_id'),
+                Booking.id.label('booking_id'),
                 OfferSQLEntity.id.label('offer_id'),
                 StockSQLEntity.id.label('stock_id')
         ) \

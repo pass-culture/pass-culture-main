@@ -9,7 +9,7 @@ import qrcode.image.svg
 from PIL import Image
 
 from pcapi.connectors import redis
-from pcapi.core.bookings.models import BookingSQLEntity
+from pcapi.core.bookings.models import Booking
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.recommendation import Recommendation
 from pcapi.models.stock_sql_entity import StockSQLEntity
@@ -35,7 +35,7 @@ def book_offer(
     stock: StockSQLEntity,
     quantity: int,
     recommendation: Recommendation = None,
-) -> BookingSQLEntity:
+) -> Booking:
     """Return a booking or raise an exception if it's not possible."""
     validation.check_can_book_free_offer(beneficiary, stock)
     validation.check_offer_already_booked(beneficiary, stock.offer)
@@ -43,8 +43,8 @@ def book_offer(
     validation.check_stock_is_bookable(stock)
 
     # FIXME: this is not right. PcOject's constructor should allow to
-    # call it with `BookingSQLEntity(stock=stock, ...)`
-    booking = BookingSQLEntity()
+    # call it with `Booking(stock=stock, ...)`
+    booking = Booking()
     # FIXME (dbaty, 2020-10-20): if we directly set relations (for
     # example with `booking.user = beneficiary`) instead of foreign keys,
     # the session tries to add the object when `get_user_expenses()`
@@ -79,7 +79,7 @@ def book_offer(
     return booking
 
 
-def cancel_booking_by_beneficiary(user: UserSQLEntity, booking: BookingSQLEntity) -> None:
+def cancel_booking_by_beneficiary(user: UserSQLEntity, booking: Booking) -> None:
     if not user.canBookFreeOffers:
         raise RuntimeError(
             "Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user
@@ -106,20 +106,20 @@ def cancel_booking_by_beneficiary(user: UserSQLEntity, booking: BookingSQLEntity
         redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
 
 
-def cancel_booking_by_offerer(booking: BookingSQLEntity) -> None:
+def cancel_booking_by_offerer(booking: Booking) -> None:
     validation.check_offerer_can_cancel_booking(booking)
     booking.isCancelled = True
     repository.save(booking)
 
 
-def mark_as_used(booking: BookingSQLEntity) -> None:
+def mark_as_used(booking: Booking) -> None:
     validation.check_is_usable(booking)
     booking.isUsed = True
     booking.dateUsed = datetime.datetime.utcnow()
     repository.save(booking)
 
 
-def mark_as_unused(booking: BookingSQLEntity) -> None:
+def mark_as_unused(booking: Booking) -> None:
     validation.check_is_not_activation_booking(booking)
     validation.check_can_be_mark_as_unused(booking)
     booking.isUsed = False

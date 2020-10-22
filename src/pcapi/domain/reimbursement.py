@@ -4,20 +4,20 @@ from decimal import Decimal
 from enum import Enum
 from typing import List
 
-from pcapi.models import BookingSQLEntity, ThingType
+from pcapi.models import Booking, ThingType
 
 MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
 MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
 
 
 class ReimbursementRule(ABC):
-    def is_active(self, booking: BookingSQLEntity) -> bool:
+    def is_active(self, booking: Booking) -> bool:
         valid_from = self.valid_from if self.valid_from else MIN_DATETIME
         valid_until = self.valid_until if self.valid_until else MAX_DATETIME
         return valid_from < booking.dateCreated < valid_until
 
     @abstractmethod
-    def is_relevant(self, booking: BookingSQLEntity, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         pass
 
     @property
@@ -40,7 +40,7 @@ class ReimbursementRule(ABC):
     def description(self) -> str:
         pass
 
-    def apply(self, booking: BookingSQLEntity) -> Decimal:
+    def apply(self, booking: Booking) -> Decimal:
         return Decimal(booking.total_amount * self.rate)
 
 
@@ -50,7 +50,7 @@ class DigitalThingsReimbursement(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: BookingSQLEntity, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         offer = booking.stock.offer
         book_offer = offer.type == str(ThingType.LIVRE_EDITION)
         cinema_card_offer = offer.type == str(ThingType.CINEMA_CARD)
@@ -64,7 +64,7 @@ class PhysicalOffersReimbursement(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: BookingSQLEntity, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         offer = booking.stock.offer
         book_offer = offer.type == str(ThingType.LIVRE_EDITION)
         cinema_card_offer = offer.type == str(ThingType.CINEMA_CARD)
@@ -78,7 +78,7 @@ class MaxReimbursementByOfferer(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: BookingSQLEntity, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         if booking.stock.offer.product.isDigital:
             return False
         else:
@@ -91,7 +91,7 @@ class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: BookingSQLEntity, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         if booking.stock.offer.product.isDigital:
             return False
         else:
@@ -104,7 +104,7 @@ class ReimbursementRateByVenueBetween40000And150000(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: BookingSQLEntity, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         if booking.stock.offer.product.isDigital:
             return False
         else:
@@ -117,7 +117,7 @@ class ReimbursementRateByVenueAbove150000(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: BookingSQLEntity, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         if booking.stock.offer.product.isDigital:
             return False
         else:
@@ -130,7 +130,7 @@ class ReimbursementRateForBookAbove20000(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: BookingSQLEntity, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         if booking.stock.offer.type == str(ThingType.LIVRE_EDITION) \
                 and kwargs['cumulative_value'] > 20000:
             return True
@@ -171,13 +171,13 @@ class AppliedReimbursement:
 
 
 class BookingReimbursement:
-    def __init__(self, booking: BookingSQLEntity, reimbursement: ReimbursementRules, reimbursed_amount: Decimal):
+    def __init__(self, booking: Booking, reimbursement: ReimbursementRules, reimbursed_amount: Decimal):
         self.booking = booking
         self.reimbursement = reimbursement
         self.reimbursed_amount = reimbursed_amount
 
 
-def find_all_booking_reimbursements(bookings: List[BookingSQLEntity],
+def find_all_booking_reimbursements(bookings: List[Booking],
                                     active_rules: List[ReimbursementRules]) -> List[BookingReimbursement]:
     reimbursements = []
     cumulative_bookings_value_by_year = {}
@@ -199,7 +199,7 @@ def find_all_booking_reimbursements(bookings: List[BookingSQLEntity],
     return reimbursements
 
 
-def determine_elected_rule(booking: BookingSQLEntity, potential_rules: List[AppliedReimbursement]) -> AppliedReimbursement:
+def determine_elected_rule(booking: Booking, potential_rules: List[AppliedReimbursement]) -> AppliedReimbursement:
     if any(map(lambda r: r.rule == ReimbursementRules.BOOK_REIMBURSEMENT, potential_rules)):
         elected_rule = AppliedReimbursement(ReimbursementRules.BOOK_REIMBURSEMENT,
                                             ReimbursementRules.BOOK_REIMBURSEMENT.value.apply(booking))
@@ -208,7 +208,7 @@ def determine_elected_rule(booking: BookingSQLEntity, potential_rules: List[Appl
     return elected_rule
 
 
-def _find_potential_rules(booking: BookingSQLEntity,
+def _find_potential_rules(booking: Booking,
                           rules: List[ReimbursementRules],
                           cumulative_bookings_value: Decimal) -> List:
     relevant_rules = []
