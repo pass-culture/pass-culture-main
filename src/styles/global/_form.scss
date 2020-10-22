@@ -17,48 +17,6 @@ textarea.textarea {
   }
 }
 
-input[type=checkbox] {
-  @extend .input;
-
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  -o-appearance: none;
-  border: 2px solid $grey-dark;
-  border-radius: 4px;
-  margin-right: 0.5rem;
-  width: $body-line-height;
-  height: $body-line-height;
-  padding: 0;
-  outline: none;
-
-  &:focus {
-    border-color: $primary;
-  }
-
-  &:active,
-  &:checked {
-    background-color: $grey-dark;
-
-    &:focus {
-      background-color: $primary;
-    }
-
-    &::after {
-      content: "";
-      background-repeat: no-repeat;
-      background-image: url(/icons/checkbox-check.svg);
-      background-position: center;
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
-  }
-
-  &:disabled {
-    border: 2px solid $grey-dark;
-  }
-}
-
 :not(output):-moz-ui-invalid {
   box-shadow: none;
 }

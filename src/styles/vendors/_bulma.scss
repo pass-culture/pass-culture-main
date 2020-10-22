@@ -25,9 +25,7 @@
 }
 
 .input:focus,
-.input:hover,
-input:focus[type="checkbox"],
-input:hover[type="checkbox"],
+.input:hover:not([type="checkbox"]),
 .textarea:focus,
 .textarea:hover,
 .select select:focus,
