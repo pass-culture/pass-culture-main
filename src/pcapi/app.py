@@ -45,7 +45,7 @@ if feature_request_profiling_enabled():
 
 
 def install_login_manager() -> None:
-    pass
+    import pcapi.utils.login_manager
 
 
 with app.app_context():
