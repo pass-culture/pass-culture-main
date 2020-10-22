@@ -317,6 +317,7 @@ describe('src | components | pages | Offers | Offers', () => {
           // Then
           expect(props.loadOffers).toHaveBeenLastCalledWith({
             nameSearchValue: '',
+            offererId: 'all',
             page: 1,
             selectedVenueId: 'all',
             statusFilters: {
@@ -737,6 +738,7 @@ describe('src | components | pages | Offers | Offers', () => {
           page: null,
           active: null,
           inactive: EXCLUDING_STATUS_VALUE,
+          structure: null,
         })
       })
     })
@@ -758,6 +760,7 @@ describe('src | components | pages | Offers | Offers', () => {
           page: null,
           active: null,
           inactive: null,
+          structure: null,
         })
       })
     })
