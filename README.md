@@ -6,64 +6,108 @@ C'est tout le framework du Pass Culture!
 
 ### Install
 
-Il vous faudra une machine UNIX.
+#### Installer les bibliothèques
 
-Installer:
+- Docker
+  - [docker](https://docs.docker.com/install/) (testé avec 19.03.12)
+  - [docker-compose](https://docs.docker.com/compose/install/#install-compose) (testé avec 1.26.2)
+- [NVM](https://github.com/creationix/nvm) (Node Version Manager)
+  - `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash`
+- [Node](https://nodejs.org/en/download/)
+  - `nvm install` dans un répertoire front
+- [Yarn](https://yarnpkg.com/lang/fr/docs/install/)
+  - Install [HomeBrew](https://brew.sh/index_fr) (MacOS)
+  - `brew install yarn --ignore-dependencies` (MacOS)
+  - `sudo` (Linux)
+- GPG (outil de (dé)chiffrement)
+  - [GPG Suite](https://gpgtools.org/) (MacOS)
+  - `sudo apt install gpg` (Linux)
 
-- [docker](https://docs.docker.com/install/)
-- [docker-compose](https://docs.docker.com/compose/install/#install-compose)
-- [yarn](https://yarnpkg.com/fr/) voir le README dans le dépot https://github.com/betagouv/pass-culture-browser/
+#### Pour MacOS spécifiquement
 
-Mais spécialement, en plus pour macosx:
+- CoreUtils
+  - `brew install coreutils`
 
-- brew install coreutils
+#### Installer les CLI
 
-Enfin pour tout le monde:
+- Netlify
+  - `npm install -g netlify-cli@1.2.3`
+- Scalingo
+  - `curl -O https://cli-dl.scalingo.io/install && bash install`
+  - Renseigner ensuite dans l'interface Scalingo la clé SSH publique du device
+
+**Il vous faudra une clé SSH sur votre profil GitHub pour pouvoir cloner le repository.**
+
+#### Installer l'ensemble des projets
+
+1. `git clone git@github.com:pass-culture/pass-culture-main.git pass-culture-main`
+2. `cd pass-culture-main`
+3. `git submodule update --init --recursive`
+4. `./pc symlink`
+5. `pc install`
+
+### Lancer les applications
+
+#### API
+
+- `pc start-backend`
+- Tester `http://localhost/apidoc/swagger#/default` et vous devriez accéder au swagger
+- `pc sandbox -n industrial` (pour peupler la BDD)
+
+#### L'application web
+
+- `pc start-webapp`
+- `http://localhost:3000/` devrait être lancé et fonctionnel
+
+- Connectez-vous avec `pctest.jeune93.has-booked-some@btmx.fr` et `user@AZERTY123`
+
+#### Le portail pro
+
+- `pc start-pro`
+- `http://localhost:3001/` devrait être lancé et fonctionnel
+- Connectez-vous avec `pctest.admin93.0@btmx.fr` et `user@AZERTY123`
+
+### Configurer son IDE et installer l'API localement
+
+1. Importer le projet pass-culture/api
+2. Importer le projet pass-culture/webapp
+3. Importer le projet pass-culture/pro
+
+Les actions suivantes sont requises afin de faire fonctionner l'API et de pouvoir lancer les `hooks` de `pre-commit`
+
+- installer Python 3.7 (via le marketplace)
+- monter un virtualenv ([lien](https://docs.python.org/3/library/venv.html)) afin d'avoir un environnement isolé et contextualisé pour les besoins de l'API
+
+- exécuter les commandes suivantes :
+
+  1. `cd pass-culture-main/api`
+  2. `python3 -m venv venv`
+  3. `source venv/bin/activate`
+  4. `pip install -r requirements.txt`
+  5. `pip install -e .`
+  6. `python -m nltk.downloader punkt stopwords`
+  7. `pc start-backend`
+  8. `pc test-backend`
 
 ```bash
-./pc symlink
+1. curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+2. python3 [get-pip.py](http://get-pip.py/)
+3. sudo /usr/bin/easy_install virtualenv
 ```
 
-puis
+Puis exécuter la suite des commandes ci dessus avec pip3.
 
-```bash
-./pc symlink
-pc install
-```
+### Exécution des tests (API, WebApp, Pro)
 
-### Init
-
-Pour vérifier les tests:
-
-```bash
-pc test-backend
-```
-
-Pour avoir une database de jeu:
-
-```bash
-pc sandbox -n industrial
-```
-
-### Démarrage
-
-Pour lancer l'API:
-
-```bash
-pc start-backend
-```
-
-Pour lancer l'appli webapp:
-
-```bash
-pc start-webapp
-```
-
-Pour lancer le portail pro:
-
-```bash
-pc start-pro
-```
+- Point d'attention : l'API et le pro doivent être lancés pour pouvoir lancer les tests
+- API
+  1. `pc start-backend`
+  2. `pc test-backend` (permet de lancer tous les tests de l'API)
+  3. `pc test-backend <path_to_test_file> -k <test_name>` (permet de lancer des tests spécifiques)
+  4. `pc test-backend <path_to_test_file> -x <test_name>` (permet de lancer des tests spécifiques et d'arrêter l'exécution au premier test fail)
+- WEBAPP / PRO
+  1. `yarn test:unit`
+  2. `yarn test:cafe` (attention, il doit y avoir des données dans la sandbox au préalable `pc sandbox -n industrial`)
 
 ## Développeurs.ses
 
@@ -71,7 +115,7 @@ pc start-pro
 
 Pour pouvoir lancer les `hooks` de `pre-commit` sur le projet API, il faut installer l'environnement python en local.
 
-- installer Python 3.6 et `pip`
+- installer Python 3.7 et `pip`
 - monter un [virtualenv](https://python-guide-pt-br.readthedocs.io/fr/latest/dev/virtualenvs.html) afin d'avoir un environnement isolé et contextualisé pour les besoins de l'API
   1. `pip install virtualenv`
   2. `cd pass-culture-main/api`
