@@ -19,6 +19,11 @@
   "parser": "babel-eslint",
   "rules": {
     "indent": ["error", 2, {"ignoredNodes": ["JSXElement"],  "offsetTernaryExpressions": true, "SwitchCase": 1 }],
+    "import/order": ["error", {
+      "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+      "newlines-between": "always",
+      "alphabetize": { "order": "asc", "caseInsensitive": true }
+    }],
     "jest/no-hooks": "off",
     "jest/prefer-expect-assertions": "off",
     "jest/prefer-inline-snapshots": "off",
