@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
+import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Main from 'components/layout/Main'
@@ -12,7 +13,13 @@ import { SVGFilter } from 'components/svg/SVGFilter'
 import { formatAndOrderVenues, fetchAllVenuesByProUser } from 'services/venuesService'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from 'utils/translate'
 
-import { ALL_OFFERS, ALL_VENUES, ALL_OFFERERS, ALL_VENUES_OPTION, DEFAULT_PAGE, EXCLUDING_STATUS_VALUE } from './_constants'
+import {
+  ALL_OFFERS,
+  ALL_VENUES,
+ ALL_OFFERERS, ALL_VENUES_OPTION,
+  DEFAULT_PAGE,
+  EXCLUDING_STATUS_VALUE,
+} from './_constants'
 import ActionsBar from './ActionsBar/'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
 
