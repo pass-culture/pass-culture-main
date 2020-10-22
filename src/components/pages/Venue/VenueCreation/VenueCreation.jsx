@@ -1,21 +1,23 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
-import { getCanSubmit, parseSubmitErrors, removeWhitespaces } from 'react-final-form-utils'
-import Main from '../../../layout/Main'
-import Titles from '../../../layout/Titles/Titles'
+import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
+
+import Main from 'components/layout/Main'
+import Titles from 'components/layout/Titles/Titles'
+
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
-
+import BankInformation from '../fields/BankInformationFields/BankInformationFields'
 import bindGetSiretInformationToSiret from '../fields/IdentifierFields/decorators/bindGetSiretInformationToSiret'
 import IdentifierFields from '../fields/IdentifierFields/IdentifierFields'
 import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
 import bindGetSuggestionsToLongitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
 import LocationFields from '../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
-import VenueType from '../ValueObjects/VenueType'
-import BankInformation from '../fields/BankInformationFields/BankInformationFields'
+import { formatSiret } from '../siret/formatSiret'
 import VenueLabel from '../ValueObjects/VenueLabel'
+import VenueType from '../ValueObjects/VenueType'
 
 const noop = () => {}
 
@@ -108,7 +110,7 @@ class VenueCreation extends PureComponent {
       siret: formSiret,
     } = values
 
-    const siretValidOnCreation = formSiret && removeWhitespaces(formSiret).length === 14
+    const siretValidOnCreation = formSiret && formatSiret(formSiret).length === 14
 
     return (
       <form

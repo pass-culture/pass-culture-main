@@ -1,19 +1,25 @@
+import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-
-import siretValidate from './validators/siretValidate'
-import Icon from '../../../../layout/Icon'
-import HiddenField from '../../../../layout/form/fields/HiddenField'
-import TextareaField from '../../../../layout/form/fields/TextareaField'
-import TextField from '../../../../layout/form/fields/TextField'
-import { formatSiret } from '../../siret/formatSiret'
-import ReactTooltip from 'react-tooltip'
-import { removeWhitespaces } from 'react-final-form-utils'
 import { Field } from 'react-final-form'
-import VenueType from '../../ValueObjects/VenueType'
-import classnames from 'classnames'
+import { removeWhitespaces } from 'react-final-form-utils'
+import ReactTooltip from 'react-tooltip'
+
+import HiddenField from 'components/layout/form/fields/HiddenField'
+import TextareaField from 'components/layout/form/fields/TextareaField'
+import TextField from 'components/layout/form/fields/TextField'
+import Icon from 'components/layout/Icon'
+
+import { formatSiret } from '../../siret/formatSiret'
 import VenueLabel from '../../ValueObjects/VenueLabel'
+import VenueType from '../../ValueObjects/VenueType'
+
 import getLabelFromList from './utils/getLabelFromList'
+import siretValidate from './validators/siretValidate'
+
+const parseSiret = value => {
+  return value.replace(/[^[0-9]/g, '')
+}
 
 class IdentifierFields extends PureComponent {
   componentDidUpdate() {
@@ -68,9 +74,9 @@ class IdentifierFields extends PureComponent {
   commentValidate = comment => {
     const { formSiret } = this.props
 
-    const siretWithoutWhiteSpaces = removeWhitespaces(formSiret)
+    const formatedSiret = removeWhitespaces(formSiret)
 
-    if (siretWithoutWhiteSpaces && siretWithoutWhiteSpaces.length === 14) {
+    if (formatedSiret && formatedSiret.length === 14) {
       return ''
     }
     if (comment === undefined || comment === '') {
@@ -125,6 +131,7 @@ class IdentifierFields extends PureComponent {
             format={formatSiret}
             label={siretLabel}
             name="siret"
+            parse={parseSiret}
             readOnly={readOnly || initialSiret !== null}
             renderValue={this.handleRenderValue(fieldReadOnlyBecauseFrozenFormSiret, readOnly)}
             type="siret"
