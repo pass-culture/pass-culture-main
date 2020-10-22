@@ -3,6 +3,7 @@ from random import randint
 from pcapi.models import EventType
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
 from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, \
     create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
@@ -10,14 +11,16 @@ from pcapi.model_creators.specific_creators import create_offer_with_event_produ
 
 
 class Sirene():
-    def __init__(self):
+    def __init__(self) -> None:
         self.siret = str(randint(00000000000000, 99999999999999))
         self.siren = self.siret[0:9]
 
 
-def save_allocine_sandbox():
+def save_allocine_sandbox() -> None:
 
     sirene = Sirene()
+
+    create_industrial_admin_users()
 
     user = create_user(
         first_name='Didier',
