@@ -1,14 +1,11 @@
 """ credentials """
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.db import auto_close_db_transaction
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository.user_queries import find_user_by_email
 
 
 def get_user_with_credentials(identifier: str, password: str) -> UserSQLEntity:
-
-    with auto_close_db_transaction():
-        user = find_user_by_email(identifier)
+    user = find_user_by_email(identifier)
 
     errors = ApiErrors()
     errors.status_code = 401
