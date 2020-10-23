@@ -4,7 +4,7 @@ import BankInformation from '../BankInformationFields'
 import { BicIbanFields } from '../BicIbanFields'
 import { ApplicationBanner } from '../ApplicationBanner'
 
-jest.mock('../../../../../../utils/config', () => ({
+jest.mock('utils/config', () => ({
   DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL:
     'link/to/venue/demarchesSimplifiees/procedure',
 }))

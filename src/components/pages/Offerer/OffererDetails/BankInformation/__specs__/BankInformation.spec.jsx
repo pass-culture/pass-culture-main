@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 import BankInformation from '../BankInformation'
 import { Offerer } from '../../Offerer'
 
-jest.mock('../../../../../../utils/config', () => ({
+jest.mock('utils/config', () => ({
   DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:
     'link/to/offerer/demarchesSimplifiees/procedure',
 }))

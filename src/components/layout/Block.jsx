@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { ROOT_PATH } from '../../utils/config'
+import { ROOT_PATH } from 'utils/config'
 
 const Block = ({ cancelText, confirmText, text, onConfirmation, onCancel }) => (
   <div className="confirm-change">

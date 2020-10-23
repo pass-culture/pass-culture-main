@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom'
 
 import Icon from '../Icon'
 import Logo from '../Logo'
-import { HELP_PAGE_URL, STYLEGUIDE_ACTIVE } from '../../../utils/config'
+import { HELP_PAGE_URL, STYLEGUIDE_ACTIVE } from 'utils/config'
 
 class Header extends PureComponent {
   constructor() {

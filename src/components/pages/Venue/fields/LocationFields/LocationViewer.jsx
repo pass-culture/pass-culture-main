@@ -10,7 +10,7 @@ import getSuggestionsFromAddressAndMaxSuggestions from './selectors/getSuggestio
 import getSuggestionsFromLatitudeAndLongitude from './selectors/getSuggestionsFromLatitudeAndLongitude'
 import sanitizeCoordinates from './utils/sanitizeCoordinates'
 import { FRANCE_POSITION } from './utils/positions'
-import { ROOT_PATH } from '../../../../../utils/config'
+import { ROOT_PATH } from 'utils/config'
 
 const markerIcon = new LeafletIcon({
   iconUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,

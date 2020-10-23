@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-import { ROOT_PATH } from '../../utils/config'
+import { ROOT_PATH } from 'utils/config'
 
 const Logo = ({ className, noLink, whiteHeader, signPage }) => {
   let src

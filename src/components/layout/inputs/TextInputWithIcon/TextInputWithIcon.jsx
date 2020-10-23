@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { ROOT_PATH } from '../../../../utils/config'
+import { ROOT_PATH } from 'utils/config'
 import TextInputError from '../Errors/TextInputError'
 
 const TextInputWithIcon = ({

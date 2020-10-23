@@ -1,5 +1,5 @@
 import React from 'react'
-import { ROOT_PATH } from '../../../../utils/config'
+import { ROOT_PATH } from 'utils/config'
 
 const Unavailable = () => {
   return (

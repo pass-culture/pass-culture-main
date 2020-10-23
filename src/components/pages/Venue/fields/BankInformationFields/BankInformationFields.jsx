@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL } from '../../../../../utils/config'
+import { DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 import React, { Fragment } from 'react'
 import Icon from 'components/layout/Icon'
 import { BicIbanFields } from './BicIbanFields'
