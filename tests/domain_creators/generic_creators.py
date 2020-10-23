@@ -1,13 +1,12 @@
 from datetime import datetime
 from typing import Optional
 
-from pcapi.domain.favorite.favorite import Favorite
-
 from pcapi.domain.beneficiary.beneficiary import Beneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
-from pcapi.domain.booking_recap.booking_recap import ThingBookingRecap, EventBookingRecap, BookBookingRecap
-from pcapi.models import OfferSQLEntity, MediationSQLEntity
+from pcapi.domain.booking_recap.booking_recap import BookBookingRecap, EventBookingRecap, ThingBookingRecap
+from pcapi.domain.favorite.favorite import Favorite
+from pcapi.models import MediationSQLEntity, OfferSQLEntity
 
 
 def create_domain_beneficiary(identifier: int = None,
@@ -74,6 +73,7 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
                                       booking_is_used: bool = False,
                                       booking_is_cancelled: bool = False,
                                       booking_is_reimbursed: bool = False,
+                                      booking_is_confirmed: bool = False,
                                       payment_date: Optional[datetime] = None,
                                       cancellation_date: Optional[datetime] = None,
                                       date_used: Optional[datetime] = None,
@@ -96,8 +96,10 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
                 booking_is_used=booking_is_used,
                 booking_is_cancelled=booking_is_cancelled,
                 booking_is_reimbursed=booking_is_reimbursed,
+                booking_is_confirmed=booking_is_confirmed,
                 payment_date=payment_date,
                 cancellation_date=cancellation_date,
+                confirmation_date=None,
                 date_used=date_used,
                 venue_identifier=venue_identifier,
                 venue_name=venue_name,
@@ -117,8 +119,10 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
             booking_is_used=booking_is_used,
             booking_is_cancelled=booking_is_cancelled,
             booking_is_reimbursed=booking_is_reimbursed,
+            booking_is_confirmed=booking_is_confirmed,
             payment_date=payment_date,
             cancellation_date=cancellation_date,
+            confirmation_date=None,
             date_used=date_used,
             venue_identifier=venue_identifier,
             venue_name=venue_name,
@@ -128,6 +132,7 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
 
 def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
                                       cancellation_date: Optional[datetime] = None,
+                                      confirmation_date: Optional[datetime] = None,
                                       date_used: Optional[datetime] = None,
                                       offer_identifier: int = 1,
                                       offer_name: str = "Le cirque du Soleil",
@@ -142,6 +147,7 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
                                       booking_is_used: bool = False,
                                       booking_is_cancelled: bool = False,
                                       booking_is_reimbursed: bool = False,
+                                      booking_is_confirmed: bool = False,
                                       event_beginning_datetime: datetime = datetime(2020, 5, 26, 20, 30, 0, 0),
                                       venue_identifier: int = 1,
                                       venue_name="Librairie Kléber",
@@ -159,10 +165,12 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
             booking_is_duo=booking_is_duo,
             booking_is_used=booking_is_used,
             booking_is_cancelled=booking_is_cancelled,
+            booking_is_confirmed=booking_is_confirmed,
             booking_is_reimbursed=booking_is_reimbursed,
             event_beginning_datetime=event_beginning_datetime,
             venue_identifier=venue_identifier,
             cancellation_date=cancellation_date,
+            confirmation_date=confirmation_date,
             payment_date=payment_date,
             date_used=date_used,
             venue_name=venue_name,

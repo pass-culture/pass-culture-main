@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 
 class BookingRecapHistory:
@@ -7,7 +8,13 @@ class BookingRecapHistory:
         self.booking_date = booking_date
 
 
-class BookingRecapValidatedHistory(BookingRecapHistory):
+class BookingRecapConfirmedHistory(BookingRecapHistory):
+    def __init__(self, confirmation_date: Optional[datetime], **kwargs):
+        super().__init__(**kwargs)
+        self.date_confirmed = confirmation_date
+
+
+class BookingRecapValidatedHistory(BookingRecapConfirmedHistory):
     def __init__(self, date_used: datetime, **kwargs):
         super().__init__(**kwargs)
         self.date_used = date_used

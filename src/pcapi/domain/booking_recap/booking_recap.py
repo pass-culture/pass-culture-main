@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory, BookingRecapValidatedHistory, \
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory, BookingRecapHistory, BookingRecapValidatedHistory, \
     BookingRecapCancelledHistory, BookingRecapReimbursedHistory
 
 
@@ -11,6 +11,7 @@ class BookingRecapStatus(Enum):
     validated = 'validated'
     cancelled = 'cancelled'
     reimbursed = 'reimbursed'
+    confirmed = 'confirmed'
 
 
 class BookingRecap:
@@ -24,8 +25,10 @@ class BookingRecap:
                  booking_is_used: bool,
                  booking_is_cancelled: bool,
                  booking_is_reimbursed: bool,
+                 booking_is_confirmed: bool,
                  booking_amount: float,
                  cancellation_date: Optional[datetime],
+                 confirmation_date: Optional[datetime],
                  payment_date: Optional[datetime],
                  date_used: Optional[datetime],
                  offer_identifier: int,
@@ -45,6 +48,7 @@ class BookingRecap:
         self.booking_is_used = booking_is_used
         self.booking_is_cancelled = booking_is_cancelled
         self.booking_is_reimbursed = booking_is_reimbursed
+        self.booking_is_confirmed = booking_is_confirmed
         self.offer_identifier = offer_identifier
         self.offer_name = offer_name
         self.offerer_name = offerer_name
@@ -52,6 +56,7 @@ class BookingRecap:
         self.booking_status_history = self.build_status_history(
             booking_date=booking_date,
             cancellation_date=cancellation_date,
+            confirmation_date=confirmation_date,
             payment_date=payment_date,
             date_used=date_used)
         self.venue_name = venue_name
@@ -74,6 +79,8 @@ class BookingRecap:
     def booking_status(self) -> BookingRecapStatus:
         if self.booking_is_reimbursed:
             return BookingRecapStatus.reimbursed
+        if self.booking_is_confirmed:
+            return BookingRecapStatus.confirmed
         if self.booking_is_cancelled:
             return BookingRecapStatus.cancelled
         if self.booking_is_used:
@@ -84,11 +91,13 @@ class BookingRecap:
     def build_status_history(self,
                              booking_date: datetime,
                              cancellation_date: datetime,
+                             confirmation_date: datetime,
                              payment_date: datetime,
                              date_used: datetime) -> BookingRecapHistory:
         if self.booking_is_reimbursed:
             return BookingRecapReimbursedHistory(
                 booking_date=booking_date,
+                confirmation_date=confirmation_date,
                 payment_date=payment_date,
                 date_used=date_used
             )
@@ -97,9 +106,15 @@ class BookingRecap:
                 booking_date=booking_date,
                 cancellation_date=cancellation_date
             )
+        if self.booking_is_confirmed:
+            return BookingRecapConfirmedHistory(
+                booking_date=booking_date,
+                confirmation_date=confirmation_date,
+            )
         if self.booking_is_used:
             return BookingRecapValidatedHistory(
                 booking_date=booking_date,
+                confirmation_date=confirmation_date,
                 date_used=date_used
             )
         else:

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from pcapi.domain.booking_recap.booking_recap import BookingRecapStatus
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory, BookingRecapValidatedHistory, \
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory, BookingRecapHistory, BookingRecapValidatedHistory, \
     BookingRecapReimbursedHistory, BookingRecapCancelledHistory
 from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
 
@@ -14,6 +14,7 @@ class BookingRecapTest:
                 booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=False,
                     booking_is_cancelled=False,
+                    booking_is_confirmed=False,
                     booking_is_reimbursed=False)
 
                 # When
@@ -34,6 +35,33 @@ class BookingRecapTest:
 
                 # Then
                 assert booking_recap_status == BookingRecapStatus.validated
+
+            def test_should_return_validated_status_when_booking_is_for_a_thing_and_not_cancellable(self):
+                # Given
+                booking_recap = create_domain_thing_booking_recap(
+                    booking_is_used=True,
+                    booking_is_cancelled=False,
+                    booking_is_reimbursed=False)
+
+                # When
+                booking_recap_status = booking_recap.booking_status
+
+                # Then
+                assert booking_recap_status == BookingRecapStatus.validated
+
+            def test_should_return_confirmed_status_when_booking_is_for_an_event_and_and_not_cancellable(self):
+                # Given
+                booking_recap = create_domain_event_booking_recap(
+                    booking_is_used=False,
+                    booking_is_cancelled=False,
+                    booking_is_confirmed=True,
+                    booking_is_reimbursed=False)
+
+                # When
+                booking_recap_status = booking_recap.booking_status
+
+                # Then
+                assert booking_recap_status == BookingRecapStatus.confirmed
 
             def test_should_return_cancelled_status_when_booking_is_cancelled_but_not_used(self):
                 # Given
@@ -200,6 +228,20 @@ class BookingRecapTest:
             assert isinstance(booking_recap_history, BookingRecapValidatedHistory)
             assert booking_recap_history.booking_date == datetime(2020, 1, 4)
             assert booking_recap_history.date_used == datetime(2020, 1, 5)
+
+        def test_should_return_booking_recap_history_with_confirmation(self):
+            # Given
+            booking_recap = create_domain_event_booking_recap(booking_token='ABCDE', booking_is_used=True,
+                                                              booking_is_cancelled=False, booking_amount=12,
+                                                              booking_is_confirmed=True,
+                                                              booking_date=datetime(2020, 1, 4),
+                                                              date_used=datetime(2020, 1, 5))
+
+            # When
+            booking_recap_history = booking_recap.booking_status_history
+
+            # Then
+            assert isinstance(booking_recap_history, BookingRecapConfirmedHistory)
 
         def test_should_return_booking_recap_history_with_payment(self):
             # Given
