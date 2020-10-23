@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Component } from 'react'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Main from 'components/layout/Main'
@@ -7,38 +7,29 @@ import Titles from 'components/layout/Titles/Titles'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 const TOKEN_MAX_LENGTH = 6
-const CODE_REGEX_VALIDATION = /[^a-z0-9]/i
+const TOKEN_SYNTAX_VALID = /[^a-z0-9]/i
 
-const CODE_ENTER = 'CODE_ENTER'
-const CODE_TYPING = 'CODE_TYPING'
+const CHAR_REMAINING = 'CHAR_REMAINING'
+const SYNTAX_INVALID = 'SYNTAX_INVALID'
+const VERIFICATION_IN_PROGRESS = 'VERIFICATION_IN_PROGRESS'
+const VERIFICATION_SUCCESS = 'VERIFICATION_SUCCESS'
+const VERIFICATION_FAILED = 'VERIFICATION_FAILED'
+const REGISTERING_IN_PROGRESS = 'REGISTERING_IN_PROGRESS'
+const REGISTERING_SUCCESS = 'REGISTERING_SUCCESS'
+const REGISTERING_FAILED = 'REGISTERING_FAILED'
 
-const CODE_SYNTAX_INVALID = 'CODE_SYNTAX_INVALID'
-const CODE_VERIFICATION_IN_PROGRESS = 'CODE_VERIFICATION_IN_PROGRESS'
-const CODE_VERIFICATION_SUCCESS = 'CODE_VERIFICATION_SUCCESS'
-const CODE_VERIFICATION_FAILED = 'CODE_VERIFICATION_FAILED'
-const CODE_REGISTERING_IN_PROGRESS = 'CODE_REGISTERING_IN_PROGRESS'
-const CODE_REGISTERING_SUCCESS = 'CODE_REGISTERING_SUCCESS'
-const CODE_REGISTERING_FAILED = 'CODE_REGISTERING_FAILED'
+const displayBookingDate = booking =>
+  !booking.date
+    ? 'Permanent'
+    : formatLocalTimeDateString(booking.date, booking.venueDepartementCode)
 
-const displayBookingDate = booking => {
-  if (!booking) {
-    return null
-  }
-
-  if (!booking.date) {
-    return 'Permanent'
-  }
-
-  return formatLocalTimeDateString(booking.date, booking.venueDepartementCode)
-}
-
-class Desk extends React.PureComponent {
+class Desk extends Component {
   constructor(props) {
     super(props)
+
     this.state = {
       booking: null,
-      isDisplayBooking: false,
-      status: CODE_ENTER,
+      status: '',
       token: '',
     }
   }
@@ -46,22 +37,21 @@ class Desk extends React.PureComponent {
   isValidToken = event => {
     const { getBooking } = this.props
     const token = event.target.value.toUpperCase()
-    const status = this.getStatusFromCode(token)
-    this.setState({ isDisplayBooking: false, status, token })
+    const status = this.getStatusFromToken(token)
+    this.setState({ booking: null, status, token })
 
-    if (status === CODE_VERIFICATION_IN_PROGRESS) {
+    if (status === VERIFICATION_IN_PROGRESS) {
       getBooking(token)
         .then(booking => {
           this.setState({
-            isDisplayBooking: true,
             booking,
-            status: CODE_VERIFICATION_SUCCESS,
+            status: VERIFICATION_SUCCESS,
           })
         })
         .catch(error => {
           error.json().then(body => {
             this.setState({
-              status: CODE_VERIFICATION_FAILED,
+              status: VERIFICATION_FAILED,
               message: body[Object.keys(body)[0]],
             })
           })
@@ -69,37 +59,37 @@ class Desk extends React.PureComponent {
     }
   }
 
-  getStatusFromCode = token => {
+  getStatusFromToken = token => {
     if (token === '') {
-      return CODE_ENTER
+      return ''
     }
 
-    if (token.match(CODE_REGEX_VALIDATION) !== null) {
-      return CODE_SYNTAX_INVALID
+    if (token.match(TOKEN_SYNTAX_VALID) !== null) {
+      return SYNTAX_INVALID
     }
 
     if (token.length < TOKEN_MAX_LENGTH) {
-      return CODE_TYPING
+      return CHAR_REMAINING
     }
 
-    return CODE_VERIFICATION_IN_PROGRESS
+    return VERIFICATION_IN_PROGRESS
   }
 
-  registrationOfToken = event => {
+  registrationOfToken = token => event => {
+    event.preventDefault()
     const { validateBooking } = this.props
-    this.setState({ status: CODE_REGISTERING_IN_PROGRESS, token: '' })
-    const token = event.target.value
+    this.setState({ status: REGISTERING_IN_PROGRESS })
 
     validateBooking(token)
       .then(() => {
         const { trackValidateBookingSuccess } = this.props
-        this.setState({ status: CODE_REGISTERING_SUCCESS })
+        this.setState({ status: REGISTERING_SUCCESS })
         trackValidateBookingSuccess(token)
       })
       .catch(error => {
         error.json().then(body => {
           this.setState({
-            status: CODE_REGISTERING_FAILED,
+            status: REGISTERING_FAILED,
             message: body[Object.keys(body)[0]],
           })
         })
@@ -107,55 +97,48 @@ class Desk extends React.PureComponent {
   }
 
   getValuesFromStatus = status => {
-    let { booking, message, token } = this.state
-    let level
+    let { message, token } = this.state
+    let level = ''
 
     switch (status) {
-      case CODE_TYPING:
+      case CHAR_REMAINING:
         message = `Caractères restants : ${TOKEN_MAX_LENGTH - token.length}/${TOKEN_MAX_LENGTH}`
-        level = 'pending'
         break
-      case CODE_SYNTAX_INVALID:
+      case SYNTAX_INVALID:
         message = 'Caractères valides : de A à Z et de 0 à 9'
         level = 'error'
         break
-      case CODE_VERIFICATION_IN_PROGRESS:
+      case VERIFICATION_IN_PROGRESS:
         message = 'Vérification...'
-        level = 'pending'
         break
-      case CODE_VERIFICATION_SUCCESS:
+      case VERIFICATION_SUCCESS:
         message = 'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
-        level = 'pending'
         break
-      case CODE_REGISTERING_IN_PROGRESS:
+      case REGISTERING_IN_PROGRESS:
         message = 'Enregistrement en cours...'
-        level = 'pending'
         break
-      case CODE_REGISTERING_SUCCESS:
+      case REGISTERING_SUCCESS:
         message = 'Enregistrement réussi !'
-        level = 'success'
         break
-      case CODE_VERIFICATION_FAILED:
+      case VERIFICATION_FAILED:
         level = 'error'
         break
-      case CODE_REGISTERING_FAILED:
+      case REGISTERING_FAILED:
         level = 'error'
         break
       default:
         message = 'Saisissez une contremarque'
-        level = 'pending'
     }
 
     return {
-      booking,
       level,
       message,
     }
   }
 
   render() {
-    const { isDisplayBooking, status, token } = this.state
-    const { booking, level, message } = this.getValuesFromStatus(status)
+    const { booking, status, token } = this.state
+    const { level, message } = this.getValuesFromStatus(status)
 
     return (
       <Main name="desk">
@@ -163,7 +146,7 @@ class Desk extends React.PureComponent {
         <p className="advice">
           {'Enregistrez les contremarques de réservations présentés par les porteurs du pass.'}
         </p>
-        <div className="form">
+        <form>
           <TextInput
             label="Contremarque"
             maxLength={TOKEN_MAX_LENGTH}
@@ -174,48 +157,66 @@ class Desk extends React.PureComponent {
             value={token}
           />
 
-          {isDisplayBooking && (
-            <div className="booking-summary">
+          {booking && (
+            <div
+              aria-live="polite"
+              aria-relevant="all"
+              className="booking-summary"
+            >
               <div>
-                {'Utilisateur : '}
-                <span>
+                <div className="desk-label">
+                  {'Utilisateur : '}
+                </div>
+                <div className="desk-value">
                   {booking.userName}
-                </span>
+                </div>
               </div>
               <div>
-                {'Offre : '}
-                <span>
+                <div className="desk-label">
+                  {'Offre : '}
+                </div>
+                <div className="desk-value">
                   {booking.offerName}
-                </span>
+                </div>
               </div>
               <div>
-                {'Date de l’offre : '}
-                <span>
+                <div className="desk-label">
+                  {'Date de l’offre : '}
+                </div>
+                <div className="desk-value">
                   {displayBookingDate(booking)}
-                </span>
+                </div>
               </div>
               <div>
-                {'Prix : '}
-                <span>
+                <div className="desk-label">
+                  {'Prix : '}
+                </div>
+                <div className="desk-value">
                   {`${booking.price} €`}
-                </span>
+                </div>
               </div>
             </div>
           )}
 
-          <button
-            className="primary-button"
-            disabled={status !== CODE_VERIFICATION_SUCCESS}
-            onClick={this.registrationOfToken}
-            type="submit"
-          >
-            {'Valider la contremarque'}
-          </button>
+          <div className="desk-button">
+            <button
+              className="primary-button"
+              disabled={status !== VERIFICATION_SUCCESS}
+              onClick={this.registrationOfToken(token)}
+              type="submit"
+            >
+              {'Valider la contremarque'}
+            </button>
+          </div>
 
-          <div className={`desk-message ${level}`}>
+          <div
+            aria-live="assertive"
+            aria-relevant="all"
+            className={`desk-message ${level}`}
+          >
             {message}
           </div>
-        </div>
+        </form>
       </Main>
     )
   }

@@ -1,11 +1,3 @@
-.field-sep {
-  border-top: 1px solid $grey-medium;
-  height: rem(16px);
-  left: 0;
-  position: absolute;
-  right: 0;
-}
-
 .field-group {
   display: table;
   margin-bottom: 1rem;
@@ -14,46 +6,6 @@
 
 .field-control {
   padding: rem(8px) 0;
-}
-
-.form {
-  @extend .box;
-
-  padding: rem(36px);
-  position: relative;
-
-  &.flex-columns {
-    .field-group {
-      margin-bottom: 0;
-
-      .field-control {
-        @extend .col-50;
-
-        margin-left: auto;
-        margin-right: auto;
-        padding-bottom: 0;
-        padding-top: 0;
-
-        @media (min-width: $tablet) {
-          margin-left: inherit;
-          margin-right: inherit;
-          width: 100%;
-        }
-      }
-    }
-  }
-}
-
-.form-footer {
-  height: $footer-height;
-  min-height: $footer-height;
-  max-height: $footer-height;
-
-  button {
-    background-color: transparent;
-    border: 0;
-    outline: none !important;
-  }
 }
 
 .field-label {
