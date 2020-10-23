@@ -39,6 +39,7 @@ input[type="checkbox"] {
     &:disabled {
       background-color: $grey-medium;
       border-color: $grey-medium;
+      cursor: not-allowed;
       opacity: 1;
     }
   }

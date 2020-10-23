@@ -32,6 +32,7 @@ const OFFER_STATUS_PROPERTIES = {
 }
 
 const OfferItem = ({
+  areAllOffersSelected,
   offer,
   refreshOffers,
   stocks,
@@ -98,6 +99,7 @@ const OfferItem = ({
           checked={isSelected}
           className="select-offer-checkbox"
           data-testid={`select-offer-${offer.id}`}
+          disabled={areAllOffersSelected}
           id={`select-offer-${offer.id}`}
           onChange={handleOnChangeSelected}
           type="checkbox"

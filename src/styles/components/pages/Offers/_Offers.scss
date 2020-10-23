@@ -90,6 +90,17 @@
       padding: 0 rem(8px);
     }
 
+    .th-checkbox {
+      margin: 0;
+      padding: 0;
+      position: absolute;
+
+      input {
+        font-size: 1rem;
+        margin-right: rem(26px);
+      }
+    }
+
     th.th-with-filter {
       position: relative;
 

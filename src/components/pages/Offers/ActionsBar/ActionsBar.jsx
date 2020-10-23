@@ -24,6 +24,9 @@ const ActionsBar = props => {
     showSuccessNotification,
     trackActivateOffers,
     trackDeactivateOffers,
+    toggleSelectAllCheckboxes,
+    allOffersLength,
+    areAllOffersSelected,
   } = props
 
   const nbSelectedOffers = selectedOfferIds.length
@@ -31,6 +34,7 @@ const ActionsBar = props => {
   const handleClose = useCallback(() => {
     setSelectedOfferIds([])
     hideActionsBar()
+    toggleSelectAllCheckboxes()
   }, [hideActionsBar, setSelectedOfferIds])
 
   const handleActivate = useCallback(async () => {
@@ -74,10 +78,18 @@ const ActionsBar = props => {
     trackDeactivateOffers,
   ])
 
-  const computeSelectedOffersLabel = () =>
-    nbSelectedOffers > 1
-      ? `${nbSelectedOffers} offres sélectionnées`
-      : `${nbSelectedOffers} offre sélectionnée`
+  const computeSelectedOffersLabel = () => {
+    if (areAllOffersSelected) {
+      return allOffersLength > 1
+        ? `${allOffersLength} offres sélectionnées`
+        : `${allOffersLength} offre sélectionnée`
+    }
+
+    if (nbSelectedOffers > 1) {
+      return `${nbSelectedOffers} offres sélectionnées`
+    }
+    return `${nbSelectedOffers} offre sélectionnée`
+  }
 
   return (
     <div
