@@ -22,7 +22,7 @@ import Main from 'components/layout/Main'
 import { musicOptions, showOptions } from '../../../../utils/edd'
 import { offerNormalizer } from '../../../../utils/normalizers'
 
-import { OFFERERS_API_PATH } from '../../../../config/apiPaths'
+import { OFFERERS_API_PATH } from 'config/apiPaths'
 import { CGU_URL } from '../../../../utils/config'
 
 import { getDurationInHours, getDurationInMinutes } from '../utils/duration'

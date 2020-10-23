@@ -8,7 +8,7 @@ import { withRequiredLogin } from 'components/hocs'
 import { offererNormalizer } from '../../../utils/normalizers'
 import { selectOfferers } from 'store/selectors/data/offerersSelectors'
 
-import { OFFERERS_API_PATH } from '../../../config/apiPaths'
+import { OFFERERS_API_PATH } from 'config/apiPaths'
 import {} from 'store/selectors/data/featuresSelectors'
 import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
