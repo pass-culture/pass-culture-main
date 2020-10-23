@@ -4,7 +4,7 @@ import { assignData, requestData } from 'redux-saga-data'
 import { stringify } from 'query-string'
 
 import Offerers from './Offerers'
-import { withRequiredLogin } from '../../hocs'
+import { withRequiredLogin } from 'components/hocs'
 import { offererNormalizer } from '../../../utils/normalizers'
 import { selectOfferers } from 'store/selectors/data/offerersSelectors'
 

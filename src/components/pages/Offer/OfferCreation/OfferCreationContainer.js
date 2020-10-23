@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import OfferCreation from './OfferCreation'
-import { withRequiredLogin } from '../../../hocs'
-import withTracking from '../../../hocs/withTracking'
+import { withRequiredLogin } from 'components/hocs'
+import withTracking from 'components/hocs/withTracking'
 
 import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from '../selectors/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'

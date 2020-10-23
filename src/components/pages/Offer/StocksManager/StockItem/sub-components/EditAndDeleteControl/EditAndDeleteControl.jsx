@@ -3,7 +3,7 @@ import React, { Fragment, PureComponent } from 'react'
 import { Portal } from 'react-portal'
 
 import DeleteDialog from '../DeleteDialog/DeleteDialog'
-import withFrenchQueryRouter from '../../../../../../hocs/withFrenchQueryRouter'
+import withFrenchQueryRouter from 'components/hocs/withFrenchQueryRouter'
 import Icon from 'components/layout/Icon'
 import { errorKeyToFrenchKey } from '../../utils/utils'
 

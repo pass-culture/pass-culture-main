@@ -1,4 +1,4 @@
 import SubmitAndCancelControl from './SubmitAndCancelControl'
-import withFrenchQueryRouter from '../../../../../../hocs/withFrenchQueryRouter'
+import withFrenchQueryRouter from 'components/hocs/withFrenchQueryRouter'
 
 export default withFrenchQueryRouter(SubmitAndCancelControl)

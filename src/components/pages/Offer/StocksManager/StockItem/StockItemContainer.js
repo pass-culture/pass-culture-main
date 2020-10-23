@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import StockItem from './StockItem'
-import withFrenchQueryRouter from '../../../../hocs/withFrenchQueryRouter'
+import withFrenchQueryRouter from 'components/hocs/withFrenchQueryRouter'
 import selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone from './selectors/selectFormInitialValuesByStockAndOfferIdAndOffererId'
 import { translateQueryParamsToApiParams } from '../../../../../utils/translate'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'

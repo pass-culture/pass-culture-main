@@ -1,5 +1,5 @@
 import React from 'react'
-import { CREATION } from '../../hocs/withFrenchQueryRouter'
+import { CREATION } from 'components/hocs/withFrenchQueryRouter'
 import { Link } from 'react-router-dom'
 import { closeNotification } from 'store/reducers/notificationReducer'
 

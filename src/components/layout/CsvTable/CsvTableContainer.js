@@ -1,6 +1,6 @@
 import { compose } from 'redux'
 import CsvTable from './CsvTable'
-import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
+import withRequiredLogin from 'components/hocs/with-login/withRequiredLogin'
 import csvConverter from '../CsvTableButton/utils/csvConverter'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'

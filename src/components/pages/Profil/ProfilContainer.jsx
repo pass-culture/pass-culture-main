@@ -2,7 +2,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
-import { withRequiredLogin } from '../../hocs'
+import { withRequiredLogin } from 'components/hocs'
 import Profil from './Profil'
 
 export const mapStateToProps = state => ({

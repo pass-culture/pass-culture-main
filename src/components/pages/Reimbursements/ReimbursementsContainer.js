@@ -1,4 +1,4 @@
 import Reimbursements from './Reimbursements'
-import { withRequiredLogin } from '../../hocs'
+import { withRequiredLogin } from 'components/hocs'
 
 export default withRequiredLogin(Reimbursements)

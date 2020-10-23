@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import OfferItem from './OfferItem'
 import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'
-import withTracking from '../../../hocs/withTracking'
+import withTracking from 'components/hocs/withTracking'
 
 export const mapStateToProps = (state, ownProps) => {
   const { offer } = ownProps

@@ -5,7 +5,7 @@ import { requestData } from 'redux-saga-data'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 import Mediation from './Mediation'
-import { withRequiredLogin } from '../../hocs'
+import { withRequiredLogin } from 'components/hocs'
 import { selectMediationById } from 'store/selectors/data/mediationsSelectors'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'
