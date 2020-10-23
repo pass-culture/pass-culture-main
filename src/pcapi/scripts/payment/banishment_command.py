@@ -22,6 +22,6 @@ def ban_payments(message_id: str, raw_payment_ids_to_ban: str):
     try:
         payment_ids_to_ban = parse_raw_payments_ids(raw_payment_ids_to_ban)
     except ValueError:
-        logger.error('Les identifiants de paiement doivent être au format "111,222,333"')
+        logger.exception('Les identifiants de paiement doivent être au format "111,222,333"')
     else:
         do_ban_payments(message_id, payment_ids_to_ban)

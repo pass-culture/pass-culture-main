@@ -144,7 +144,7 @@ def _process_creation(error_messages: List[str], information: Dict, new_benefici
         try:
             send_activation_email(new_beneficiary, send_raw_email)
         except MailServiceException as mail_service_exception:
-            logger.error(
+            logger.exception(
                 f"Email send_activation_email failure for application {information['application_id']} - Procedure {procedure_id}", mail_service_exception)
 
 

@@ -103,7 +103,7 @@ def create_offerer():
         try:
             send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
         except MailServiceException as mail_service_exception:
-            app.logger.error('[send_ongoing_offerer_attachment_information_email_to_pro] '
+            app.logger.exception('[send_ongoing_offerer_attachment_information_email_to_pro] '
                              'Mail service failure', mail_service_exception)
     else:
         offerer = Offerer()
@@ -138,7 +138,7 @@ def _send_to_pro_offer_validation_in_progress_email(user: UserSQLEntity, offerer
     try:
         send_pro_user_waiting_for_validation_by_admin_email(user, send_raw_email, offerer)
     except MailServiceException as mail_service_exception:
-        app.logger.error('[send_pro_user_waiting_for_validation_by_admin_email] '
+        app.logger.exception('[send_pro_user_waiting_for_validation_by_admin_email] '
                          'Mail service failure', mail_service_exception)
 
 
@@ -146,5 +146,5 @@ def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: 
     try:
         maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
     except MailServiceException as mail_service_exception:
-        app.logger.error('[maybe_send_offerer_validation_email] '
+        app.logger.exception('[maybe_send_offerer_validation_email] '
                          'Mail service failure', mail_service_exception)

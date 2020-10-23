@@ -149,6 +149,6 @@ def _process_venue_provider(client: Redis, provider_id: str, venue_provider_id: 
                 logger.info(
                     f'[ALGOLIA] processing of offers for (venue {venue_id} / provider {provider_id}) finished!')
     except Exception as error:
-        logger.error(f'[ALGOLIA] processing of offers for (venue {venue_id} / provider {provider_id}) failed! {error}')
+        logger.exception(f'[ALGOLIA] processing of offers for (venue {venue_id} / provider {provider_id}) failed! {error}')
     finally:
         delete_venue_provider_currently_in_sync(client=client, venue_provider_id=venue_provider_id)

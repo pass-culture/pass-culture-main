@@ -86,7 +86,7 @@ def _process_adding(pipeline: Pipeline, client: Redis, offer_ids: List[int], add
         pipeline.execute()
         pipeline.reset()
     except AlgoliaException as error:
-        logger.error(f'[ALGOLIA] error when adding objects {error}')
+        logger.exception(f'[ALGOLIA] error when adding objects {error}')
         add_offer_ids_in_error(client=client, offer_ids=offer_ids)
         pipeline.reset()
         pass
@@ -99,5 +99,5 @@ def _process_deleting(client: Redis, offer_ids_to_delete: List[int]) -> None:
         delete_indexed_offers(client=client, offer_ids=offer_ids_to_delete)
         logger.info(f'[ALGOLIA] {len(offer_ids_to_delete)} objects were deleted from index!')
     except AlgoliaException as error:
-        logger.error(f'[ALGOLIA] error when deleting objects {error}')
+        logger.exception(f'[ALGOLIA] error when deleting objects {error}')
         add_offer_ids_in_error(client=client, offer_ids=offer_ids_to_delete)

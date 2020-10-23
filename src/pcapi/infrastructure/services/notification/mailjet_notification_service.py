@@ -17,13 +17,13 @@ class MailjetNotificationService(NotificationService):
         try:
             send_booking_recap_emails(booking, send_raw_email)
         except MailServiceException as error:
-            logger.error('Mail service failure', error)
+            logger.exception('Mail service failure', error)
 
     def send_booking_confirmation_to_beneficiary(self, booking: Booking) -> None:
         try:
             send_booking_confirmation_email_to_beneficiary(booking, send_raw_email)
         except MailServiceException as error:
-            logger.error('Mail service failure', error)
+            logger.exception('Mail service failure', error)
 
     def send_booking_cancellation_emails_to_user_and_offerer(self,
                                                              booking: Booking,
@@ -36,7 +36,7 @@ class MailjetNotificationService(NotificationService):
                                                                  is_user_cancellation,
                                                                  send_raw_email)
         except MailServiceException as error:
-            logger.error('Mail service failure', error)
+            logger.exception('Mail service failure', error)
 
 
     def create_mailing_contact(self, beneficiary_contact: BeneficiaryContact) -> None:

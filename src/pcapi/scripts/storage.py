@@ -13,6 +13,9 @@ from pcapi.utils.storage_utils import do_list_content, \
     do_local_backup_prod_container
 
 
+# FIXME (dbaty): review error handling in this mmodule. Do we really
+# want to print here? Should we not use `logger.exception()` instead?
+
 @app.manager.option('-f',
                     '--folder',
                     help='Destination folder name')

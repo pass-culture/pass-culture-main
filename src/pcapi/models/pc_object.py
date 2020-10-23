@@ -1,5 +1,4 @@
 import re
-import traceback
 import uuid
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
@@ -89,8 +88,7 @@ class PcObject:
 
     @staticmethod
     def restize_global_error(global_error):
-        logger.error("UNHANDLED ERROR : ")
-        traceback.print_exc()
+        logger.exception("UNHANDLED ERROR : %s", global_error)
         return ["global",
                 "Une erreur technique s'est produite. Elle a été notée, et nous allons investiguer au plus vite."]
 

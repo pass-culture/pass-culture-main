@@ -50,7 +50,7 @@ def _cancel_bookings_of_offers_from_rows(csv_rows: Iterable) -> None:
             logger.info(f"[CANCEL BOOKINGS OF EVENTS FROM FILE] Annulation des réservations de l'offre '{offer_name}' d'id {offer_id} réussie")
             offers_successful.append(offer_id)
         except ApiErrors as error:
-            logger.error(f"[CANCEL BOOKINGS OF EVENTS FROM FILE] {error.errors} pour l'offre d'id {offer_id}")
+            logger.exception(f"[CANCEL BOOKINGS OF EVENTS FROM FILE] {error.errors} pour l'offre d'id {offer_id}")
             offers_in_error.append(offer_id)
 
     logger.info(f"[CANCEL BOOKINGS OF EVENTS FROM FILE] {len(offers_successful)} OFFRES ANNULÉES")

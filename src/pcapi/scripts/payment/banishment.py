@@ -16,7 +16,7 @@ def do_ban_payments(message_id: str, payment_ids_to_ban: List[int]):
     try:
         banned_payments, retry_payments = apply_banishment(matching_payments, payment_ids_to_ban)
     except UnmatchedPayments as e:
-        logger.error('Le message "%s" ne contient pas les paiements : %s.'
+        logger.exception('Le message "%s" ne contient pas les paiements : %s.'
                      '\nAucun paiement n\'a été mis à jour.' % (message_id, e.payment_ids))
     else:
         if banned_payments:

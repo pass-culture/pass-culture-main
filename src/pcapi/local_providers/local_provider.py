@@ -1,8 +1,6 @@
-import traceback
 from abc import abstractmethod
 from collections.abc import Iterator
 from datetime import datetime
-from pprint import pprint
 
 from pcapi.models.feature import FeatureToggle
 from pcapi.validation.models import entity_validator
@@ -203,10 +201,7 @@ class LocalProvider(Iterator):
                         self.log_provider_event(
                             LocalProviderEventType.SyncError, e.__class__.__name__)
                         self.erroredThumbs += 1
-                        logger.info('ERROR during handle thumb: ' +
-                                    e.__class__.__name__ + ' ' + str(e))
-                        traceback.print_tb(e.__traceback__)
-                        pprint(vars(e))
+                        logger.info('ERROR during handle thumb: %s', e, exc_info=True)
                     pc_object_has_new_thumbs = pc_object.thumbCount != initial_thumb_count
                     if pc_object_has_new_thumbs:
                         errors = entity_validator.validate(pc_object)

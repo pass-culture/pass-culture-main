@@ -136,7 +136,7 @@ def edit_stock(stock_id):
             try:
                 send_batch_stock_postponement_emails_to_users(bookings, send_email=send_raw_email)
             except MailServiceException as mail_service_exception:
-                app.logger.error('Email service failure', mail_service_exception)
+                app.logger.exception('Email service failure', mail_service_exception)
 
     repository.save(stock)
 
@@ -159,7 +159,7 @@ def delete_stock(id):
             send_batch_cancellation_emails_to_users(bookings, send_raw_email)
             send_offerer_bookings_recap_email_after_offerer_cancellation(bookings, send_raw_email)
         except MailServiceException as e:
-            app.logger.error('Mail service failure', e)
+            app.logger.exception('Mail service failure', e)
 
     repository.save(stock, *bookings)
 

@@ -1,6 +1,4 @@
-import traceback
-from typing import Any, \
-    Callable
+from typing import Any, Callable
 
 import requests
 from requests import Response

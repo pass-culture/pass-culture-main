@@ -61,7 +61,7 @@ def signup_webapp():
         try:
             subscribe_newsletter(new_user)
         except MailServiceException as e:
-            app.logger.error('Mail service failure', e)
+            app.logger.exception('Mail service failure', e)
 
     return jsonify(as_dict(new_user, includes=BENEFICIARY_INCLUDES)), 201
 
@@ -99,7 +99,7 @@ def signup_pro():
         send_user_validation_email(new_user, send_raw_email, app_origin_url, is_webapp=False)
         subscribe_newsletter(new_user)
     except MailServiceException:
-        logger.error('Mail service failure')
+        logger.exception('Mail service failure')
 
     return jsonify(as_dict(new_user, includes=USER_INCLUDES)), 201
 
@@ -145,7 +145,7 @@ def _get_departement_code_when_authorized_or_error(authorized_emails, departemen
     email_index = _get_email_index_in_spreadsheet_or_error(authorized_emails)
     departement_code = departement_codes[email_index]
     if departement_code.strip() == '':
-        logger.error("[ERROR] Missing departement code in users spreadsheet for "
+        logger.exception("[ERROR] Missing departement code in users spreadsheet for "
                      + request.json['email'])
 
         e = ApiErrors()

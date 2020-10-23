@@ -52,7 +52,7 @@ def validate_offerer_attachment(token):
     try:
         send_attachment_validation_email_to_pro_offerer(user_offerer, send_raw_email)
     except MailServiceException as mail_service_exception:
-        app.logger.error('Email service failure', mail_service_exception)
+        app.logger.exception('Email service failure', mail_service_exception)
 
     return "Validation du rattachement de la structure effectuée", 202
 
@@ -78,7 +78,7 @@ def validate_new_offerer(token):
     try:
         send_validation_confirmation_email_to_pro(offerer, send_raw_email)
     except MailServiceException as mail_service_exception:
-        app.logger.error('Email service failure', mail_service_exception)
+        app.logger.exception('Email service failure', mail_service_exception)
     return "Validation effectuée", 202
 
 
@@ -97,7 +97,7 @@ def validate_venue():
     try:
         send_venue_validation_confirmation_email(venue, send_raw_email)
     except MailServiceException as mail_service_exception:
-        app.logger.error('Email service failure', mail_service_exception)
+        app.logger.exception('Email service failure', mail_service_exception)
 
     return "Validation effectuée", 202
 
@@ -125,13 +125,13 @@ def validate_user(token):
             try:
                 send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
             except MailServiceException as mail_service_exception:
-                app.logger.error('[send_ongoing_offerer_attachment_information_email_to_pro] '
+                app.logger.exception('[send_ongoing_offerer_attachment_information_email_to_pro] '
                                  'Email service failure', mail_service_exception)
         else:
             try:
                 send_pro_user_waiting_for_validation_by_admin_email(user_to_validate, send_raw_email, offerer)
             except MailServiceException as mail_service_exception:
-                app.logger.error('[send_pro_user_waiting_for_validation_by_admin_email] '
+                app.logger.exception('[send_pro_user_waiting_for_validation_by_admin_email] '
                                  'Email service failure', mail_service_exception)
 
     return '', 204
@@ -164,7 +164,7 @@ def _ask_for_validation(offerer: Offerer, user_offerer: UserOfferer):
         maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
 
     except MailServiceException as mail_service_exception:
-        app.logger.error('Email service failure', mail_service_exception)
+        app.logger.exception('Email service failure', mail_service_exception)
 
 
 def _validate_offerer(offerer: Offerer, user_offerer: UserOfferer):

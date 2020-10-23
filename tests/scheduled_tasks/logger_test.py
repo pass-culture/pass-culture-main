@@ -1,5 +1,3 @@
-import traceback
-
 from pcapi.scheduled_tasks.logger import build_cron_log_message, CronStatus
 
 
@@ -31,16 +29,3 @@ class CronLoggerMessageBuilderTest():
 
         # Then
         assert 'status=ended duration=245' in message
-
-    def test_should_contain_stacktrace_attribute_if_needed(self):
-        # When
-        try:
-            raise Exception('Failed to execute')
-        except Exception:
-            trace = traceback.format_exc()
-            message = build_cron_log_message(name='generation_du_document_xml',
-                                             status=CronStatus.FAILED,
-                                             traceback=trace)
-
-        # Then
-        assert "status=failed stacktrace=Traceback (most recent call last): " in message

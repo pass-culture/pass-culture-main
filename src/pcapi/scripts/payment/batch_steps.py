@@ -140,7 +140,7 @@ def send_payments_details(payments: List[Payment], recipients: List[str]) -> Non
         try:
             send_payment_details_email(csv, recipients, send_raw_email)
         except MailServiceException as exception:
-            logger.error(
+            logger.exception(
                 '[BATCH][PAYMENTS] Error while sending payment details email to MailJet', exception)
 
 
@@ -156,7 +156,7 @@ def send_wallet_balances(recipients: List[str]) -> None:
     try:
         send_wallet_balances_email(csv, recipients, send_raw_email)
     except MailServiceException as exception:
-        logger.error(
+        logger.exception(
             '[BATCH][PAYMENTS] Error while sending users wallet balances email to MailJet', exception)
 
 
@@ -187,7 +187,7 @@ def send_payments_report(payments: List[Payment], recipients: List[str]) -> None
         send_payments_report_emails(
             not_processable_csv, error_csv, groups, recipients, send_raw_email)
     except MailServiceException as exception:
-        logger.error(
+        logger.exception(
             '[BATCH][PAYMENTS] Error while sending payments reports to MailJet', exception)
 
 

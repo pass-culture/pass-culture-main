@@ -1,4 +1,3 @@
-import traceback
 from typing import Tuple, \
     Dict
 
@@ -53,14 +52,14 @@ def restize_booking_not_found_error(error: ResourceNotFoundError) -> Tuple[Dict,
 
 @app.errorhandler(Exception)
 def internal_error(error: Exception) -> Tuple[Dict, int]:
-    tb = traceback.format_exc()
-    app.logger.error('500 on %s %s — %s',
-                     request.method, request.url, tb)
+    app.logger.exception(
+        'Unexpected error on method=%s url=%s: %s', request.method, request.url, error
+    )
     errors = ApiErrors()
     errors.add_error('global',
                      "Il semble que nous ayons des problèmes techniques :("
                      + " On répare ça au plus vite.")
-    return jsonify(errors.errors), 500
+    return jsonify(errors.exceptions), 500
 
 
 @app.errorhandler(MethodNotAllowed)

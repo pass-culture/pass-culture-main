@@ -31,7 +31,7 @@ def add_offer_id(client: Redis, offer_id: int) -> None:
         client.rpush(RedisBucket.REDIS_LIST_OFFER_IDS_NAME.value, offer_id)
         logger.debug(f'[REDIS] offer id "{humanize(offer_id)}" was added')
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
 
 
 def add_venue_id(client: Redis, venue_id: int) -> None:
@@ -39,7 +39,7 @@ def add_venue_id(client: Redis, venue_id: int) -> None:
         client.rpush(RedisBucket.REDIS_LIST_VENUE_IDS_NAME.value, venue_id)
         logger.debug(f'[REDIS] venue id "{humanize(venue_id)}" was added')
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
 
 
 def send_venue_provider_data_to_redis(venue_provider) -> None:
@@ -58,7 +58,7 @@ def _add_venue_provider(client: Redis, venue_provider) -> None:
         client.rpush(RedisBucket.REDIS_LIST_VENUE_PROVIDERS_NAME.value, venue_provider_as_string)
         logger.debug('[REDIS] venue provider was added')
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
 
 
 def get_offer_ids(client: Redis) -> List[int]:
@@ -66,7 +66,7 @@ def get_offer_ids(client: Redis) -> List[int]:
         offer_ids = client.lrange(RedisBucket.REDIS_LIST_OFFER_IDS_NAME.value, 0, REDIS_OFFER_IDS_CHUNK_SIZE)
         return offer_ids
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
         return []
 
 
@@ -75,7 +75,7 @@ def get_venue_ids(client: Redis) -> List[int]:
         venue_ids = client.lrange(RedisBucket.REDIS_LIST_VENUE_IDS_NAME.value, 0, REDIS_VENUE_IDS_CHUNK_SIZE)
         return venue_ids
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
         return []
 
 
@@ -85,7 +85,7 @@ def get_venue_providers(client: Redis) -> List[dict]:
                                                   REDIS_VENUE_PROVIDERS_CHUNK_SIZE)
         return [json.loads(venue_provider) for venue_provider in venue_providers_as_string]
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
         return []
 
 
@@ -94,7 +94,7 @@ def delete_offer_ids(client: Redis) -> None:
         client.ltrim(RedisBucket.REDIS_LIST_OFFER_IDS_NAME.value, REDIS_OFFER_IDS_CHUNK_SIZE, -1)
         logger.debug('[REDIS] offer ids were deleted')
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
 
 
 def delete_venue_ids(client: Redis) -> None:
@@ -102,7 +102,7 @@ def delete_venue_ids(client: Redis) -> None:
         client.ltrim(RedisBucket.REDIS_LIST_VENUE_IDS_NAME.value, REDIS_VENUE_IDS_CHUNK_SIZE, -1)
         logger.debug('[REDIS] venue ids were deleted')
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
 
 
 def delete_venue_providers(client: Redis) -> None:
@@ -110,7 +110,7 @@ def delete_venue_providers(client: Redis) -> None:
         client.ltrim(RedisBucket.REDIS_LIST_VENUE_PROVIDERS_NAME.value, REDIS_VENUE_PROVIDERS_CHUNK_SIZE, -1)
         logger.debug('[REDIS] venues providers were deleted')
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
 
 
 def add_to_indexed_offers(pipeline: Pipeline, offer_id: int, offer_details: dict) -> None:
@@ -119,7 +119,7 @@ def add_to_indexed_offers(pipeline: Pipeline, offer_id: int, offer_details: dict
         pipeline.hset(RedisBucket.REDIS_HASHMAP_INDEXED_OFFERS_NAME.value, offer_id, offer_details_as_string)
         logger.debug(f'[REDIS] "{offer_id}" was added to indexed offers')
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
 
 
 def delete_indexed_offers(client: Redis, offer_ids: List[int]) -> None:
@@ -127,7 +127,7 @@ def delete_indexed_offers(client: Redis, offer_ids: List[int]) -> None:
         client.hdel(RedisBucket.REDIS_HASHMAP_INDEXED_OFFERS_NAME.value, *offer_ids)
         logger.debug(f'[REDIS] "{len(offer_ids)}" were deleted from indexed offers')
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
 
 
 def check_offer_exists(client: Redis, offer_id: int) -> bool:
@@ -135,7 +135,7 @@ def check_offer_exists(client: Redis, offer_id: int) -> bool:
         offer_exist = client.hexists(RedisBucket.REDIS_HASHMAP_INDEXED_OFFERS_NAME.value, offer_id)
         return offer_exist
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
         return False
 
 
@@ -147,7 +147,7 @@ def get_offer_details(client: Redis, offer_id: int) -> Dict:
             return json.loads(offer_details)
         return dict()
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
         return dict()
 
 
@@ -156,7 +156,7 @@ def delete_all_indexed_offers(client: Redis) -> None:
         client.delete(RedisBucket.REDIS_HASHMAP_INDEXED_OFFERS_NAME.value)
         logger.debug(f'[REDIS] indexed offers were deleted')
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
 
 
 def add_venue_provider_currently_in_sync(client: Redis, venue_provider_id: int, container_id: str) -> None:
@@ -164,7 +164,7 @@ def add_venue_provider_currently_in_sync(client: Redis, venue_provider_id: int, 
         client.hset(RedisBucket.REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME.value, venue_provider_id, container_id)
         logger.debug(f'[REDIS] venue provider "{venue_provider_id}" in container {container_id} was added.')
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
 
 
 def delete_venue_provider_currently_in_sync(client: Redis, venue_provider_id: int) -> None:
@@ -173,14 +173,14 @@ def delete_venue_provider_currently_in_sync(client: Redis, venue_provider_id: in
         client.hdel(RedisBucket.REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME.value, venue_provider_id)
         logger.debug(f'[REDIS] venue provider "{venue_provider_id}" in container {container_id} was deleted.')
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
 
 
 def get_number_of_venue_providers_currently_in_sync(client: Redis) -> int:
     try:
         return client.hlen(RedisBucket.REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME.value)
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
         return 0
 
 
@@ -189,7 +189,7 @@ def add_offer_ids_in_error(client: Redis, offer_ids: List[int]) -> None:
         client.rpush(RedisBucket.REDIS_LIST_OFFER_IDS_IN_ERROR_NAME.value, offer_ids)
         logger.debug(f'[REDIS] {len(offer_ids)} in error were added')
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
 
 
 def get_offer_ids_in_error(client: Redis) -> List[int]:
@@ -197,7 +197,7 @@ def get_offer_ids_in_error(client: Redis) -> List[int]:
         offer_ids = client.lrange(RedisBucket.REDIS_LIST_OFFER_IDS_IN_ERROR_NAME.value, 0, REDIS_OFFER_IDS_CHUNK_SIZE)
         return offer_ids
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')
         return []
 
 
@@ -206,4 +206,4 @@ def delete_offer_ids_in_error(client: Redis) -> None:
         client.ltrim(RedisBucket.REDIS_LIST_OFFER_IDS_IN_ERROR_NAME.value, REDIS_OFFER_IDS_IN_ERROR_CHUNK_SIZE, -1)
         logger.debug('[REDIS] offer ids in error were deleted')
     except redis.exceptions.RedisError as error:
-        logger.error(f'[REDIS] {error}')
+        logger.exception(f'[REDIS] {error}')

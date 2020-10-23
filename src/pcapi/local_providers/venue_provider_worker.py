@@ -35,5 +35,5 @@ def do_sync_venue_provider(venue_provider: VenueProvider):
         logger.info(f"[VenueProviderWorker] VenueProvider {venue_provider.venueIdAtOfferProvider}"
                     f" synchro in container {container_id}")
     except ScalingoApiException as error:
-        logger.error(f"[VenueProviderWorker] Error synchronizing VenueProvider {venue_provider.venueIdAtOfferProvider}"
+        logger.exception(f"[VenueProviderWorker] Error synchronizing VenueProvider {venue_provider.venueIdAtOfferProvider}"
                      f" with errors: {error}")

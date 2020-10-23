@@ -47,9 +47,7 @@ class DoUpdateTest:
 
         # Then
         mock_remove_worker_id.assert_called_once_with(provider_mock)
-        mock_build_cron_log_message.assert_called_once_with(name='MagicMock',
-                                                            status=ANY,
-                                                            traceback=ANY)
+        mock_build_cron_log_message.assert_called_once_with(name='MagicMock', status=ANY)
 
 
 class RemoveWorkerIdAfterVenueProviderSyncErrorTest:
@@ -169,9 +167,7 @@ class SynchronizeVenueProviderTest:
         synchronize_venue_provider(venue_provider, 10)
 
         # Then
-        mock_build_cron_log_message.assert_called_once_with(name='mock_init_provider',
-                                                            status=ANY,
-                                                            traceback=ANY)
+        mock_build_cron_log_message.assert_called_once_with(name='mock_init_provider', status=ANY)
 
 
 class SynchronizeVenueProvidersForProviderTest:

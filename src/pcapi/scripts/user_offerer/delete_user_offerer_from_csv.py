@@ -58,7 +58,7 @@ def _delete_user_offerers_from_rows(csv_rows: Iterable) -> None:
             )
             user_offerers_successful.append(user_offerer_id)
         except ApiErrors as error:
-            logger.error(
+            logger.exception(
                 f"[DELETE USER_OFFERERS FROM FILE] {error.errors} pour le rattachement avec le user d'id {user_id} et l'offerer d'id {offerer_id}"
             )
             user_offerers_in_error.append(user_offerer_id)

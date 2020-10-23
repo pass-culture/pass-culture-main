@@ -50,5 +50,5 @@ def _run_indexing(client: Redis, venue_provider: Dict):
         logger.info(f"[ALGOLIA][Worker] Indexing offers from VenueProvider {venue_provider_id}"
                     f" in container {container_id}")
     except ScalingoApiException as error:
-        logger.error(f"[ALGOLIA][Worker] Error indexing offers from VenueProvider {venue_provider_id}"
+        logger.exception(f"[ALGOLIA][Worker] Error indexing offers from VenueProvider {venue_provider_id}"
                      f" with errors: {error}")

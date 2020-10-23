@@ -58,13 +58,13 @@ def post_for_password_token():
         try:
             send_reset_password_email_to_user(user, send_raw_email)
         except MailServiceException as mail_service_exception:
-            app.logger.error('[send_reset_password_email_to_user] '
+            app.logger.exception('[send_reset_password_email_to_user] '
                              'Mail service failure', mail_service_exception)
     else:
         try:
             send_reset_password_email_to_pro(user, send_raw_email)
         except MailServiceException as mail_service_exception:
-            app.logger.error('[send_reset_password_email_to_pro] '
+            app.logger.exception('[send_reset_password_email_to_pro] '
                              'Mail service failure', mail_service_exception)
 
     return '', 204

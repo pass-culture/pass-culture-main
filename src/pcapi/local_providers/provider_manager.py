@@ -1,4 +1,3 @@
-import traceback
 from typing import Callable, Optional
 
 import pcapi.local_providers
@@ -16,10 +15,8 @@ def synchronize_data_for_provider(provider_name: str, limit: Optional[int] = Non
         provider = provider_class()
         do_update(provider, limit)
     except Exception:
-        formatted_traceback = traceback.format_exc()
-        logger.error(build_cron_log_message(name=provider_name,
-                                            status=CronStatus.FAILED,
-                                            traceback=formatted_traceback))
+        logger.exception(build_cron_log_message(name=provider_name,
+                                                status=CronStatus.FAILED))
 
 
 def synchronize_venue_providers_for_provider(provider_id: int, limit: Optional[int] = None) -> None:
@@ -33,10 +30,8 @@ def do_update(provider: LocalProvider, limit: Optional[int]):
         provider.updateObjects(limit)
     except Exception:
         _remove_worker_id_after_venue_provider_sync_error(provider)
-        formatted_traceback = traceback.format_exc()
-        logger.error(build_cron_log_message(name=provider.__class__.__name__,
-                                            status=CronStatus.STARTED,
-                                            traceback=formatted_traceback))
+        logger.exception(build_cron_log_message(name=provider.__class__.__name__,
+                                            status=CronStatus.STARTED))
 
 
 def _remove_worker_id_after_venue_provider_sync_error(provider: LocalProvider):
@@ -56,7 +51,5 @@ def synchronize_venue_provider(venue_provider: VenueProvider, limit: Optional[in
         provider = provider_class(venue_provider)
         do_update(provider, limit)
     except Exception:
-        formatted_traceback = traceback.format_exc()
-        logger.error(build_cron_log_message(name=provider_class.__name__,
-                                            status=CronStatus.FAILED,
-                                            traceback=formatted_traceback))
+        logger.exception(build_cron_log_message(name=provider_class.__name__,
+                                            status=CronStatus.FAILED))

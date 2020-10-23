@@ -26,7 +26,7 @@ def read_thumb(files=None, form=None):
         try:
             return _fetch_image(form['thumbUrl'])
         except ValueError as value_error:
-            logger.error(value_error)
+            logger.exception(value_error)
             raise ApiErrors({'thumbUrl': ["L'adresse saisie n'est pas valide"]})
 
 
@@ -81,7 +81,7 @@ def _fetch_image(thumb_url: str) -> bytes:
     try:
         response = requests.get(thumb_url)
     except Exception as error:
-        logger.error(error)
+        logger.exception(error)
         raise ApiErrors({'thumbUrl': ["Impossible de télécharger l'image à cette adresse"]})
     content_type = response.headers['Content-type']
     is_an_image = content_type.split('/')[0] == 'image'
