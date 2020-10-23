@@ -1,11 +1,14 @@
+import '@testing-library/jest-dom'
 import { shallow } from 'enzyme'
 import React from 'react'
-import IdentifierFields from '../IdentifierFields'
-import TextareaField from '../../../../../layout/form/fields/TextareaField'
-import TextField from '../../../../../layout/form/fields/TextField'
 import { Field } from 'react-final-form'
-import VenueType from '../../../ValueObjects/VenueType'
+
+import TextareaField from 'components/layout/form/fields/TextareaField'
+import TextField from 'components/layout/form/fields/TextField'
+
 import VenueLabel from '../../../ValueObjects/VenueLabel'
+import VenueType from '../../../ValueObjects/VenueType'
+import IdentifierFields from '../IdentifierFields'
 
 describe('src | components | pages | Venue | fields | IdentifierFields', () => {
   let props
