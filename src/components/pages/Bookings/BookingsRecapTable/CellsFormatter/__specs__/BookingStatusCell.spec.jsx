@@ -3,6 +3,7 @@ import React from 'react'
 
 import Icon from 'components/layout/Icon'
 
+
 import BookingStatusCell from '../BookingStatusCell'
 import BookingStatusCellHistory from '../BookingStatusCellHistory'
 
@@ -52,7 +53,7 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
     expect(icon.props()).toStrictEqual({
       alt: '',
       png: null,
-      svg: 'ico-status-validated',
+      svg: 'ico-status-double-validated',
     })
   })
 

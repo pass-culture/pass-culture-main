@@ -7,7 +7,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     historyClassName: 'bs-history-validated',
     statusClassName: 'booking-status-validated',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    svgIconFilename: 'ico-status-validated',
+    svgIconFilename: 'ico-status-double-validated',
   },
   {
     id: 'cancelled',
@@ -40,7 +40,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     historyClassName: 'bs-history-confirmed',
     statusClassName: 'booking-status-confirmed',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    svgIconFilename: 'ico-status-validated', // todo missing svg
+    svgIconFilename: 'ico-status-double-validated',
   },
 ]
 
