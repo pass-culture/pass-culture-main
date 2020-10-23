@@ -75,7 +75,7 @@ describe('src | components | Desk', () => {
     fireEvent.change(tokenInput, { target: { value: '' } })
 
     // then
-    expect(screen.getByText('Valider', { selector: 'button' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Valider la contremarque' })).toBeDisabled()
     expect(screen.getByText('Saisissez une contremarque')).toBeInTheDocument()
   })
 
@@ -88,7 +88,7 @@ describe('src | components | Desk', () => {
     fireEvent.change(tokenInput, { target: { value: 'ABCDE' } })
 
     // then
-    expect(screen.getByText('Valider', { selector: 'button' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Valider la contremarque' })).toBeDisabled()
     expect(screen.getByText('Caractères restants : 1/6')).toBeInTheDocument()
   })
 
@@ -101,7 +101,7 @@ describe('src | components | Desk', () => {
     fireEvent.change(tokenInput, { target: { value: 'ù^`@' } })
 
     // then
-    expect(screen.getByText('Valider', { selector: 'button' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Valider la contremarque' })).toBeDisabled()
     expect(screen.getByText('Caractères valides : de A à Z et de 0 à 9')).toBeInTheDocument()
   })
 
@@ -116,7 +116,7 @@ describe('src | components | Desk', () => {
 
     // then
     expect(screen.getByText('Vérification...')).toBeInTheDocument()
-    const submitButton = await screen.findByText('Valider', { selector: 'button' })
+    const submitButton = await screen.findByRole('button', { name: 'Valider la contremarque' })
     expect(submitButton).toBeEnabled()
   })
 
@@ -184,7 +184,7 @@ describe('src | components | Desk', () => {
     jest.spyOn(props, 'validateBooking').mockImplementation(() => Promise.resolve())
     renderDesk(props)
     const tokenInput = screen.getByLabelText('Contremarque')
-    const submitButton = screen.getByText('Valider', { selector: 'button' })
+    const submitButton = screen.getByRole('button', { name: 'Valider la contremarque' })
     await waitFor(() => fireEvent.change(tokenInput, { target: { value: '100001' } }))
 
     // when
@@ -206,7 +206,7 @@ describe('src | components | Desk', () => {
     jest.spyOn(props, 'validateBooking').mockImplementation(() => Promise.resolve())
     renderDesk(props)
     const tokenInput = screen.getByLabelText('Contremarque')
-    const submitButton = screen.getByText('Valider', { selector: 'button' })
+    const submitButton = screen.getByRole('button', { name: 'Valider la contremarque' })
     await waitFor(() => fireEvent.change(tokenInput, { target: { value: '100001' } }))
 
     // when
@@ -233,7 +233,7 @@ describe('src | components | Desk', () => {
       )
     renderDesk(props)
     const tokenInput = screen.getByLabelText('Contremarque')
-    const submitButton = screen.getByText('Valider', { selector: 'button' })
+    const submitButton = screen.getByRole('button', { name: 'Valider la contremarque' })
     await waitFor(() => fireEvent.change(tokenInput, { target: { value: '100001' } }))
 
     // when

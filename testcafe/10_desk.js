@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
-import { getPathname } from './helpers/location'
+
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 
@@ -18,7 +18,6 @@ test('je peux valider une contremarque', async t => {
   const codeInput = Selector('.form input[type="text"]')
   const state = Selector('.form .state')
   const stateText = Selector('.form .state span')
-  const exitlink = Selector('#exitlink')
   const registerButton = Selector('.form button[type="submit"]')
 
   await t
@@ -38,7 +37,4 @@ test('je peux valider une contremarque', async t => {
     .click(registerButton)
     .expect(state.classNames)
     .contains('success')
-    .click(exitlink)
-    .expect(getPathname())
-    .eql('/accueil')
 })

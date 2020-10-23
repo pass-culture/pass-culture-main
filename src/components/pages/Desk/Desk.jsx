@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Link } from 'react-router-dom'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Main from 'components/layout/Main'
@@ -30,10 +29,6 @@ class Desk extends React.PureComponent {
       token: '',
       status: CODE_ENTER,
     }
-  }
-
-  handleOnClick = token => () => {
-    this.handleCodeRegistration(token)
   }
 
   isValidToken = event => {
@@ -74,9 +69,10 @@ class Desk extends React.PureComponent {
     return CODE_VERIFICATION_IN_PROGRESS
   }
 
-  handleCodeRegistration = token => {
+  registrationOfToken = event => {
     const { validateBooking } = this.props
     this.setState({ status: CODE_REGISTERING_IN_PROGRESS, token: '' })
+    const token = event.target.value
 
     validateBooking(token)
       .then(() => {
@@ -176,21 +172,13 @@ class Desk extends React.PureComponent {
           <button
             className="primary-button"
             disabled={status !== CODE_VERIFICATION_SUCCESS}
-            onClick={this.handleOnClick(token)}
+            onClick={this.registrationOfToken}
             type="submit"
           >
-            {'Valider'}
+            {'Valider la contremarque'}
           </button>
 
           {this.renderChildComponent()}
-
-          <Link
-            className="primary-link"
-            id="exitlink"
-            to="/accueil"
-          >
-            {'Terminer'}
-          </Link>
         </div>
       </Main>
     )

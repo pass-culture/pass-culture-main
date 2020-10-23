@@ -6,13 +6,6 @@
       width: rem(328px);
     }
 
-    button {
-      border-radius: 1.125em;
-      font-size: rem(30px);
-      height: rem(72px);
-      margin-left: rem(20px);
-    }
-
     .state {
       @include dotted($primary);
 
@@ -58,10 +51,5 @@
   .subtitle {
     display: block;
     font-size: $size-medium;
-  }
-
-  #exitlink {
-    margin-top: rem(-70px);
-    float: right;
   }
 }
