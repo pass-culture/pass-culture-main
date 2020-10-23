@@ -109,7 +109,7 @@ class BookingRecap:
         if self.booking_is_confirmed:
             return BookingRecapConfirmedHistory(
                 booking_date=booking_date,
-                confirmation_date=confirmation_date,
+                confirmation_date=date_used,  # devnote: temporary waiting for business rule to be implemented
             )
         if self.booking_is_used:
             return BookingRecapValidatedHistory(

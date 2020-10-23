@@ -1,5 +1,5 @@
-from datetime import date, datetime
 import math
+from datetime import date, datetime
 from typing import List, Optional, Set
 
 from dateutil import tz
@@ -7,13 +7,13 @@ from sqlalchemy import cast, Date, desc, func, text
 from sqlalchemy.orm import Query, joinedload, selectinload
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
+import pcapi.domain.expenses
+from pcapi.core.bookings.models import Booking
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap, BookingRecap, EventBookingRecap, ThingBookingRecap
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
-import pcapi.domain.expenses
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import UserOfferer, VenueSQLEntity
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.core.bookings.models import Booking
 from pcapi.models.db import db
 from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.offer_type import EventType, ThingType
@@ -322,6 +322,7 @@ def _serialize_thing_booking_recap(booking: AbstractKeyedTuple) -> ThingBookingR
         booking_date=_serialize_date_with_timezone(date_without_timezone=booking.bookingDate, booking=booking),
         booking_is_used=booking.isUsed,
         booking_is_cancelled=booking.isCancelled,
+        booking_is_confirmed=False,  # devnote: temporary waiting for business rule to be implemented
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
         venue_identifier=booking.venueId,
@@ -329,6 +330,7 @@ def _serialize_thing_booking_recap(booking: AbstractKeyedTuple) -> ThingBookingR
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
         cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate,
                                                         booking=booking),
+        confirmation_date=None,  # devnote: temporary waiting for business rule to be implemented
         venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
         venue_is_virtual=booking.venueIsVirtual
     )
@@ -348,6 +350,7 @@ def _serialize_book_booking_recap(booking: AbstractKeyedTuple) -> BookBookingRec
         booking_date=_serialize_date_with_timezone(date_without_timezone=booking.bookingDate, booking=booking),
         booking_is_used=booking.isUsed,
         booking_is_cancelled=booking.isCancelled,
+        booking_is_confirmed=False,  # devnote: temporary waiting for business rule to be implemented
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
         venue_identifier=booking.venueId,
@@ -355,6 +358,7 @@ def _serialize_book_booking_recap(booking: AbstractKeyedTuple) -> BookBookingRec
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
         cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate,
                                                         booking=booking),
+        confirmation_date=None,  # devnote: temporary waiting for business rule to be implemented
         venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
         venue_is_virtual=booking.venueIsVirtual
     )
@@ -373,6 +377,7 @@ def _serialize_event_booking_recap(booking: AbstractKeyedTuple) -> EventBookingR
         booking_date=_serialize_date_with_timezone(date_without_timezone=booking.bookingDate, booking=booking),
         booking_is_used=booking.isUsed,
         booking_is_cancelled=booking.isCancelled,
+        booking_is_confirmed=False,  # devnote: temporary waiting for business rule to be implemented
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
         event_beginning_datetime=_apply_departement_timezone(
@@ -380,6 +385,7 @@ def _serialize_event_booking_recap(booking: AbstractKeyedTuple) -> EventBookingR
             departement_code=booking.venueDepartementCode
         ),
         date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
+        confirmation_date=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),   # devnote: temporary waiting for business rule to be implemented
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
         cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate,
                                                         booking=booking),

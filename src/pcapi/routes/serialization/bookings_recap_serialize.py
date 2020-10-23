@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 from pcapi.domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, BookBookingRecap, BookingRecapStatus
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory, BookingRecapValidatedHistory, \
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory, BookingRecapHistory, BookingRecapValidatedHistory, \
     BookingRecapCancelledHistory, BookingRecapReimbursedHistory
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.utils.date import format_into_timezoned_date
@@ -35,6 +35,14 @@ def _serialize_booking_status_history(booking_status_history: BookingRecapHistor
         BookingRecapStatus.booked,
         booking_status_history.booking_date
     )]
+    # devnote : BookingRecapConfirmedHistory "and condition" is temporary while business rule is not implemented
+    if isinstance(booking_status_history, BookingRecapConfirmedHistory) and booking_status_history.date_confirmed is not None:
+        serialized_booking_status_history.append(
+            _serialize_booking_status_info(
+                BookingRecapStatus.confirmed,
+                booking_status_history.date_confirmed  # devnote : temporary while business rule is not implemented
+            )
+        )
     if isinstance(booking_status_history, BookingRecapValidatedHistory):
         serialized_booking_status_history.append(
             _serialize_booking_status_info(
@@ -42,6 +50,7 @@ def _serialize_booking_status_history(booking_status_history: BookingRecapHistor
                 booking_status_history.date_used
             )
         )
+
     if isinstance(booking_status_history, BookingRecapCancelledHistory):
         serialized_booking_status_history.append(
             _serialize_booking_status_info(
