@@ -3,16 +3,16 @@ import React from 'react'
 
 import { SVGOffers } from '../svg/SVGOffers'
 
-const Thumb = ({ url }) => {
+const Thumb = ({ url, alt = '' }) => {
   return url ? (
     <img
-      alt=""
+      alt={alt}
       className="offer-thumb"
       src={url}
     />
   ) : (
     <div className="default-thumb">
-      <SVGOffers />
+      <SVGOffers alt={alt} />
     </div>
   )
 }

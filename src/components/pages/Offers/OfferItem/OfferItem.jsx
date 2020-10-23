@@ -106,7 +106,10 @@ const OfferItem = ({
         />
       </td>
       <td className="thumb-column">
-        <Thumb url={offer.thumbUrl} />
+        <Thumb
+          alt="Miniature d'offre"
+          url={offer.thumbUrl}
+        />
       </td>
       <td className="title-column">
         <Link

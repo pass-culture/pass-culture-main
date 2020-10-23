@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const SVGOffers = () => (
+export const SVGOffers = ({ alt = '' }) => (
   <svg
     height="40px"
     version="1.1"
@@ -8,6 +8,11 @@ export const SVGOffers = () => (
     width="39px"
     xmlns="http://www.w3.org/2000/svg"
   >
+    {alt && (
+      <title>
+        {alt}
+      </title>
+    )}
     <g
       fill="none"
       fillRule="evenodd"

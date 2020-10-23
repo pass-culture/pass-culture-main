@@ -1,10 +1,18 @@
-import { mount } from 'enzyme'
+import '@testing-library/jest-dom'
+import { within } from '@testing-library/dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
 
-import { fetchFromApiWithCredentials } from 'utils/fetch'
-
 import OfferItem from '../OfferItem'
+
+const renderOfferItem = props => {
+  return render(
+    <MemoryRouter>
+      <OfferItem {...props} />
+    </MemoryRouter>
+  )
+}
 
 jest.mock('utils/fetch', () => {
   return {
@@ -35,8 +43,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
       location: {
         search: '?orderBy=offer.id+desc',
       },
+      selectOffer: jest.fn(),
       stocks: [],
       venue: {
+        isVirtual: false,
         name: 'Paris',
       },
       trackActivateOffer: jest.fn(),
@@ -49,105 +59,50 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('thumb Component', () => {
       it('should render an image with url from offer when offer has a thumb url', () => {
         // when
-        const wrapper = mount(
-          <MemoryRouter>
-            <OfferItem {...props} />
-          </MemoryRouter>
-        )
+        renderOfferItem(props)
 
         // then
-        const thumbImage = wrapper.find('img').first()
-        expect(thumbImage.prop('src')).toBe(eventOffer.thumbUrl)
+        expect(screen.getByAltText("Miniature d'offre")).toHaveAttribute('src', eventOffer.thumbUrl)
       })
 
       it('should render an image with an empty url when offer does not have a thumb url', () => {
         // given
-        eventOffer.thumbUrl = null
+        props.offer.thumbUrl = null
 
-        const wrapper = mount(
-          <MemoryRouter>
-            <OfferItem {...props} />
-          </MemoryRouter>
-        )
         // when
-        const thumbDefaultImage = wrapper.find('svg')
+        renderOfferItem(props)
 
         // then
-        expect(thumbDefaultImage).toHaveLength(1)
+        expect(screen.getByText("Miniature d'offre")).toBeInTheDocument()
       })
     })
 
     describe('action buttons', () => {
-      describe('switch activate', () => {
-        it('should deactivate when offer is active', () => {
-          // given
-          const wrapper = mount(
-            <MemoryRouter>
-              <OfferItem {...props} />
-            </MemoryRouter>
-          )
-          const disableButton = wrapper.find('button')
-
-          // when
-          disableButton.invoke('onClick')()
-
-          // then
-          expect(fetchFromApiWithCredentials).toHaveBeenCalledWith(
-            '/offers/active-status',
-            'PATCH',
-            { isActive: false, ids: ['M4'] }
-          )
-        })
-
-        it('should activate when offer is not active', () => {
-          // given
-          eventOffer.isActive = false
-          const wrapper = mount(
-            <MemoryRouter>
-              <OfferItem {...props} />
-            </MemoryRouter>
-          )
-          const disableButton = wrapper.find('button')
-
-          // when
-          disableButton.invoke('onClick')()
-
-          // then
-          expect(fetchFromApiWithCredentials).toHaveBeenCalledWith(
-            '/offers/active-status',
-            'PATCH',
-            { isActive: true, ids: ['M4'] }
-          )
-        })
-      })
-
       describe('edit offer link', () => {
         it('should be displayed when offer is editable', () => {
           // when
-          const wrapper = mount(
-            <MemoryRouter>
-              <OfferItem {...props} />
-            </MemoryRouter>
-          )
+          renderOfferItem(props)
 
           // then
-          const editOfferLink = wrapper.find(`a[href="/offres/${eventOffer.id}/edition"]`)
-          expect(editOfferLink).toHaveLength(1)
+          const links = screen.getAllByRole('link')
+          expect(links[links.length - 1]).toHaveAttribute(
+            'href',
+            `/offres/${eventOffer.id}/edition`
+          )
         })
 
         it('should not be displayed when offer is no editable', () => {
           props.offer.isEditable = false
 
           // when
-          const wrapper = mount(
-            <MemoryRouter>
-              <OfferItem {...props} />
-            </MemoryRouter>
-          )
+          renderOfferItem(props)
 
           // then
-          const editOfferLink = wrapper.find(`a[href="/offres/${props.offer.id}/edition"]`)
-          expect(editOfferLink).toHaveLength(0)
+          const links = screen.getAllByRole('link')
+          expect(links[links.length - 1]).not.toHaveAttribute(
+            'href',
+            `/offres/${eventOffer.id}/edition`
+          )
         })
       })
     })
@@ -155,17 +110,13 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('offer title', () => {
       it('should contain a link with the offer name and details link', () => {
         // when
-        const wrapper = mount(
-          <MemoryRouter>
-            <OfferItem {...props} />
-          </MemoryRouter>
-        )
+        renderOfferItem(props)
 
         // then
-        const titleLink = wrapper.find(`a[href="/offres/${props.offer.id}"]`)
-        expect(titleLink).toHaveLength(1)
-        expect(titleLink.prop('title')).toBe("Afficher le détail de l'offre")
-        expect(titleLink.text()).toBe(eventOffer.name)
+        const offerTitle = screen.queryByText(props.offer.name, 'a')
+        expect(offerTitle).toBeInTheDocument()
+        expect(offerTitle).toHaveAttribute('href', `/offres/${props.offer.id}`)
+        expect(offerTitle).toHaveAttribute('title', "Afficher le détail de l'offre")
       })
     })
 
@@ -176,15 +127,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
       }
 
       // when
-      const wrapper = mount(
-        <MemoryRouter>
-          <OfferItem {...props} />
-        </MemoryRouter>
-      )
+      renderOfferItem(props)
 
       // then
-      const venueName = wrapper.find({ children: 'Paris' })
-      expect(venueName).toHaveLength(1)
+      expect(screen.queryByText(props.venue.name)).toBeInTheDocument()
     })
 
     it('should display the venue public name when is given', () => {
@@ -195,15 +141,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
       }
 
       // when
-      const wrapper = mount(
-        <MemoryRouter>
-          <OfferItem {...props} />
-        </MemoryRouter>
-      )
+      renderOfferItem(props)
 
       // then
-      const venueName = wrapper.find({ children: 'lieu de ouf' })
-      expect(venueName).toHaveLength(1)
+      expect(screen.queryByText(props.venue.publicName)).toBeInTheDocument()
     })
 
     it('should display the offerer name with "- Offre numérique" when venue is virtual', () => {
@@ -216,29 +157,19 @@ describe('src | components | pages | Offers | OfferItem', () => {
       }
 
       // when
-      const wrapper = mount(
-        <MemoryRouter>
-          <OfferItem {...props} />
-        </MemoryRouter>
-      )
+      renderOfferItem(props)
 
       // then
-      const venueName = wrapper.find({ children: 'Gaumont - Offre numérique' })
-      expect(venueName).toHaveLength(1)
+      expect(screen.queryByText('Gaumont - Offre numérique')).toBeInTheDocument()
     })
 
     describe('offer remaining quantity', () => {
       it('should be 0 when offer has no stock', () => {
         // when
-        const wrapper = mount(
-          <MemoryRouter>
-            <OfferItem {...props} />
-          </MemoryRouter>
-        )
+        renderOfferItem(props)
 
         // then
-        const remainingQuantity = wrapper.find({ children: 0 })
-        expect(remainingQuantity).toHaveLength(1)
+        expect(screen.queryByText('0')).toBeInTheDocument()
       })
 
       it('should be the sum of offer stocks remaining quantity', () => {
@@ -250,15 +181,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        const wrapper = mount(
-          <MemoryRouter>
-            <OfferItem {...props} />
-          </MemoryRouter>
-        )
+        renderOfferItem(props)
 
         // then
-        const remainingQuantity = wrapper.find({ children: 5 })
-        expect(remainingQuantity).toHaveLength(1)
+        expect(screen.queryByText('5')).toBeInTheDocument()
       })
 
       it('should be "illimité" when at least one stock is unlimited', () => {
@@ -266,33 +192,23 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 'unlimited' }]
 
         // when
-        const wrapper = mount(
-          <MemoryRouter>
-            <OfferItem {...props} />
-          </MemoryRouter>
-        )
+        renderOfferItem(props)
 
         // then
-        const remainingQuantity = wrapper.find({ children: 'Illimité' })
-        expect(remainingQuantity).toHaveLength(1)
+        expect(screen.queryByText('Illimité')).toBeInTheDocument()
       })
     })
 
     describe('when offer is an event product', () => {
-      it('should display the correct text "2 dates" on the link redirecting to the offer management', () => {
+      it('should display the correct text "2 dates"', () => {
         // given
         props.stocks = [{ remainingQuantity: 'unlimited' }, { remainingQuantity: 'unlimited' }]
 
         // when
-        const wrapper = mount(
-          <MemoryRouter>
-            <OfferItem {...props} />
-          </MemoryRouter>
-        )
+        renderOfferItem(props)
 
         // then
-        const stockLink = wrapper.find(`a[href="/offres/${props.offer.id}?gestion"]`)
-        expect(stockLink.text()).toBe('2 dates')
+        expect(screen.queryByText('2 dates')).toBeInTheDocument()
       })
 
       it('should not display a warning when no stocks are sold out', () => {
@@ -300,17 +216,11 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.stocks = [{ remainingQuantity: 'unlimited' }, { remainingQuantity: 13 }]
 
         // when
-        const wrapper = mount(
-          <MemoryRouter>
-            <OfferItem {...props} />
-          </MemoryRouter>
-        )
+        renderOfferItem(props)
 
         // then
-        const numberOfStocksDescription = wrapper
-          .find(`a[href="/offres/${props.offer.id}?gestion"]`)
-          .parent()
-        expect(numberOfStocksDescription.find('img')).toHaveLength(0)
+        const numberOfStocks = screen.getByText('2 dates').closest('span')
+        expect(within(numberOfStocks).queryByRole('img')).not.toBeInTheDocument()
       })
 
       it('should not display a warning when all stocks are sold out', () => {
@@ -318,17 +228,11 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 0 }]
 
         // when
-        const wrapper = mount(
-          <MemoryRouter>
-            <OfferItem {...props} />
-          </MemoryRouter>
-        )
+        renderOfferItem(props)
 
         // then
-        const numberOfStocksDescription = wrapper
-          .find(`a[href="/offres/${props.offer.id}?gestion"]`)
-          .parent()
-        expect(numberOfStocksDescription.find('img')).toHaveLength(0)
+        const numberOfStocks = screen.getByText('2 dates').closest('span')
+        expect(within(numberOfStocks).queryByRole('img')).not.toBeInTheDocument()
       })
 
       it('should display a warning with number of stocks sold out when at least one stock is sold out', () => {
@@ -336,24 +240,15 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 'unlimited' }]
 
         // when
-        const wrapper = mount(
-          <MemoryRouter>
-            <OfferItem {...props} />
-          </MemoryRouter>
-        )
+        renderOfferItem(props)
 
         // then
-        const numberOfStocksWrapper = wrapper
-          .find(`a[href="/offres/${props.offer.id}?gestion"]`)
-          .parents()
-          .at(1)
-
-        const numberOfStocksDescription = numberOfStocksWrapper
-          .findWhere(node => node.text() === '1 date épuisée')
-          .first()
-
-        expect(numberOfStocksWrapper.find('img')).toHaveLength(2)
-        expect(numberOfStocksDescription).toHaveLength(1)
+        const numberOfStocks = screen.getByText('2 dates').closest('span')
+        expect(within(numberOfStocks).queryAllByRole('img')[0]).toHaveAttribute(
+          'src',
+          expect.stringContaining('ico-warning-stocks')
+        )
+        expect(within(numberOfStocks).queryByText('1 date épuisée')).toBeInTheDocument()
       })
 
       it('should pluralize number of stocks sold out when at least two stocks are sold out', () => {
@@ -365,42 +260,11 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        const wrapper = mount(
-          <MemoryRouter>
-            <OfferItem {...props} />
-          </MemoryRouter>
-        )
+        renderOfferItem(props)
 
         // then
-        const numberOfStocksDescription = wrapper
-          .findWhere(node => node.text() === '2 dates épuisées')
-          .first()
-
-        expect(numberOfStocksDescription).toHaveLength(1)
-      })
-    })
-
-    describe('when offer is a thing product', () => {
-      let thingOffer
-      beforeEach(() => {
-        thingOffer = Object.assign(eventOffer, { isThing: true, isOffer: false })
-        props.offer = thingOffer
-      })
-
-      it('should display the correct text "1 prix" on the link redirecting to the offer management', () => {
-        // given
-        props.stocks = [{ remainingQuantity: 'unlimited' }]
-
-        // when
-        const wrapper = mount(
-          <MemoryRouter>
-            <OfferItem {...props} />
-          </MemoryRouter>
-        )
-
-        // then
-        const stockLink = wrapper.find(`a[href="/offres/${props.offer.id}?gestion"]`)
-        expect(stockLink.text()).toBe('1 prix')
+        const numberOfStocks = screen.getByText('3 dates').closest('span')
+        expect(within(numberOfStocks).queryByText('2 dates épuisées')).toBeInTheDocument()
       })
     })
 
@@ -409,79 +273,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.stocks = [{ remainingQuantity: 0 }]
 
       // when
-      const wrapper = mount(
-        <MemoryRouter>
-          <OfferItem {...props} />
-        </MemoryRouter>
-      )
+      renderOfferItem(props)
 
       // then
-      const soldOutOfferStatus = wrapper.findWhere(node => node.text() === 'épuisée').first()
-      expect(soldOutOfferStatus).toHaveLength(1)
-    })
-
-    it('should be selectable by default', () => {
-      // when
-      const wrapper = mount(
-        <MemoryRouter>
-          <OfferItem {...props} />
-        </MemoryRouter>
-      )
-
-      // then
-      const selectOfferCheckbox = wrapper.find('input[type="checkbox"]')
-      console.log(selectOfferCheckbox.debug())
-      expect(selectOfferCheckbox.prop('disabled')).toBe(false)
-    })
-
-    it('should not be selectable given prop', () => {
-      // given
-      props.disabled = true
-
-      // when
-      const wrapper = mount(
-        <MemoryRouter>
-          <OfferItem {...props} />
-        </MemoryRouter>
-      )
-
-      // then
-      const selectOfferCheckbox = wrapper.find('input[type="checkbox"]')
-      expect(selectOfferCheckbox.prop('disabled')).toBe(true)
-    })
-  })
-
-  describe('event tracking', () => {
-    it('should track deactivate offer when offer is active', () => {
-      // given
-      const wrapper = mount(
-        <MemoryRouter>
-          <OfferItem {...props} />
-        </MemoryRouter>
-      )
-      // when
-      const deactivateOfferButton = wrapper.find({ children: 'Désactiver' })
-      deactivateOfferButton.invoke('onClick')()
-
-      // then
-      expect(props.trackDeactivateOffer).toHaveBeenCalledWith(eventOffer.id)
-    })
-
-    it('should track activate offer when offer is inactive', () => {
-      // given
-      eventOffer.isActive = false
-
-      const wrapper = mount(
-        <MemoryRouter>
-          <OfferItem {...props} />
-        </MemoryRouter>
-      )
-      // when
-      const activateOfferButton = wrapper.find({ children: 'Activer' })
-      activateOfferButton.invoke('onClick')()
-
-      // then
-      expect(props.trackActivateOffer).toHaveBeenCalledWith(eventOffer.id)
+      expect(screen.queryByText('épuisée')).toBeInTheDocument()
     })
   })
 })
