@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef } from 'react'
 
+import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
+import { ALL_STATUS } from 'components/pages/Offers/_constants'
+
 export const OffersStatusFiltersModal = ({
   refreshOffers,
-  statusFilters,
+  status,
   toggleModalVisibility,
   updateStatusFilters,
 }) => {
@@ -11,9 +14,9 @@ export const OffersStatusFiltersModal = ({
 
   const handleStatusFilterChange = useCallback(
     event => {
-      updateStatusFilters(event.target.name, event.target.checked)
+      updateStatusFilters(event.target.value)
     },
-    [updateStatusFilters]
+    [updateStatusFilters],
   )
 
   const onClickOutside = useCallback(
@@ -27,7 +30,7 @@ export const OffersStatusFiltersModal = ({
         toggleModalVisibility()
       }
     },
-    [toggleModalVisibility]
+    [toggleModalVisibility],
   )
 
   useEffect(() => {
@@ -46,24 +49,41 @@ export const OffersStatusFiltersModal = ({
       <div className="osf-title">
         {'Afficher les statuts'}
       </div>
-      <label>
-        <input
-          checked={statusFilters.active}
-          name="active"
-          onChange={handleStatusFilterChange}
-          type="checkbox"
-        />
-        {'Active'}
-      </label>
-      <label>
-        <input
-          checked={statusFilters.inactive}
-          name="inactive"
-          onChange={handleStatusFilterChange}
-          type="checkbox"
-        />
-        {'Inactive'}
-      </label>
+      <RadioInput
+        checked={status === ALL_STATUS}
+        label="Tous"
+        name="status"
+        onChange={handleStatusFilterChange}
+        value={ALL_STATUS}
+      />
+      <RadioInput
+        checked={status === 'active'}
+        label="Active"
+        name="status"
+        onChange={handleStatusFilterChange}
+        value="active"
+      />
+      <RadioInput
+        checked={status === 'inactive'}
+        label="Inactive"
+        name="status"
+        onChange={handleStatusFilterChange}
+        value="inactive"
+      />
+      <RadioInput
+        checked={status === 'soldOut'}
+        label="Épuisée"
+        name="status"
+        onChange={handleStatusFilterChange}
+        value="soldOut"
+      />
+      <RadioInput
+        checked={status === 'expired'}
+        label="Expirée"
+        name="status"
+        onChange={handleStatusFilterChange}
+        value="expired"
+      />
       <button
         className="primary-button"
         onClick={refreshOffers}
@@ -77,10 +97,7 @@ export const OffersStatusFiltersModal = ({
 
 OffersStatusFiltersModal.propTypes = {
   refreshOffers: PropTypes.func.isRequired,
-  statusFilters: PropTypes.shape({
-    active: PropTypes.bool.isRequired,
-    inactive: PropTypes.bool.isRequired,
-  }).isRequired,
+  status: PropTypes.string.isRequired,
   toggleModalVisibility: PropTypes.func.isRequired,
   updateStatusFilters: PropTypes.func.isRequired,
 }

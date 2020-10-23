@@ -13,12 +13,12 @@ import { queryByTextTrimHtml } from 'utils/testHelpers'
 import {
   ALL_OFFERERS,
   ALL_OFFERS,
+  ALL_STATUS,
   ALL_VENUES,
   ALL_VENUES_OPTION,
   ALL_TYPES,
   ALL_TYPES_OPTION,
   DEFAULT_PAGE,
-  EXCLUDING_STATUS_VALUE,
 } from '../_constants'
 import Offers from '../Offers'
 
@@ -133,10 +133,7 @@ describe('src | components | pages | Offers | Offers', () => {
         selectedVenueId: ALL_VENUES,
         selectedTypeId: ALL_TYPES,
         offererId: ALL_OFFERERS,
-        statusFilters: {
-          active: true,
-          inactive: true,
-        },
+        status: ALL_STATUS,
       })
     })
 
@@ -320,8 +317,7 @@ describe('src | components | pages | Offers | Offers', () => {
         })
       })
 
-      // eslint-disable-next-line jest/no-disabled-tests
-      describe.skip('status filters', () => {
+      describe('status filters', () => {
         it('should not render status filters', async () => {
           // Given
           props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
@@ -331,48 +327,65 @@ describe('src | components | pages | Offers | Offers', () => {
 
           // Then
           expect(screen.queryByText('Statut')).toBeInTheDocument()
-          expect(screen.queryByText('Afficher les statuts')).toBeNull()
-          expect(screen.queryByText('Active', { selector: 'label' })).toBeNull()
-          expect(screen.queryByText('Inactive', { selector: 'label' })).toBeNull()
-          expect(screen.queryByText('Appliquer', { selector: 'button' })).toBeNull()
+          expect(screen.queryByText('Afficher les statuts')).not.toBeInTheDocument()
+          expect(screen.queryByLabelText('Tous')).not.toBeInTheDocument()
+          expect(screen.queryByLabelText('Active')).not.toBeInTheDocument()
+          expect(screen.queryByLabelText('Inactive')).not.toBeInTheDocument()
+          expect(screen.queryByLabelText('Épuisée')).not.toBeInTheDocument()
+          expect(screen.queryByLabelText('Expirée')).not.toBeInTheDocument()
+          expect(screen.queryByLabelText('Appliquer')).not.toBeInTheDocument()
         })
 
-        it('should display status filters checked by default when clicking on "Statut" filter icon', async () => {
+        it('should disable status filters when user is admin', async () => {
+          // Given
+          props.currentUser.isAdmin = true
+          props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
+
+          // When
+          await renderOffers(props, store)
+
+          // Then
+          expect(
+            screen.queryByAltText('Afficher ou masquer les filtres par statut')
+          ).not.toBeInTheDocument()
+        })
+
+        it('should display status filters with "Tous" as default value when clicking on "Statut" filter icon', async () => {
           // Given
           props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
           await renderOffers(props, store)
 
           // When
-          fireEvent.click(screen.queryByAltText('Afficher ou masquer les filtres par statut'))
+          fireEvent.click(screen.getByAltText('Afficher ou masquer les filtres par statut'))
 
           // Then
           expect(screen.queryByText('Afficher les statuts')).toBeInTheDocument()
-          expect(screen.queryByLabelText('Active')).toBeChecked()
-          expect(screen.queryByLabelText('Inactive')).toBeChecked()
+          expect(screen.getByLabelText('Tous')).toBeChecked()
+          expect(screen.getByLabelText('Active')).not.toBeChecked()
+          expect(screen.getByLabelText('Inactive')).not.toBeChecked()
+          expect(screen.getByLabelText('Épuisée')).not.toBeChecked()
+          expect(screen.getByLabelText('Expirée')).not.toBeChecked()
           expect(screen.queryByText('Appliquer', { selector: 'button' })).toBeInTheDocument()
         })
 
-        it('should filter offers given status filters when clicking on "Appliquer"', async () => {
+        it('should filter offers given status filter when clicking on "Appliquer"', async () => {
           // Given
           props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
           await renderOffers(props, store)
-          fireEvent.click(screen.queryByAltText('Afficher ou masquer les filtres par statut'))
-          fireEvent.click(screen.queryByLabelText('Active'))
+          fireEvent.click(screen.getByAltText('Afficher ou masquer les filtres par statut'))
+          fireEvent.click(screen.getByLabelText('Expirée'))
 
           // When
-          fireEvent.click(screen.queryByText('Appliquer'))
+          fireEvent.click(screen.getByText('Appliquer'))
 
           // Then
           expect(props.loadOffers).toHaveBeenLastCalledWith({
             nameSearchValue: '',
-            offererId: 'all',
+            offererId: ALL_OFFERERS,
             page: 1,
-            selectedVenueId: 'all',
+            selectedVenueId: ALL_VENUES,
             selectedTypeId: ALL_TYPES,
-            statusFilters: {
-              active: false,
-              inactive: true,
-            },
+            status: 'expired',
           })
         })
 
@@ -380,10 +393,10 @@ describe('src | components | pages | Offers | Offers', () => {
           // Given
           props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
           await renderOffers(props, store)
-          fireEvent.click(screen.queryByAltText('Afficher ou masquer les filtres par statut'))
+          fireEvent.click(screen.getByAltText('Afficher ou masquer les filtres par statut'))
 
           // When
-          fireEvent.click(screen.queryByText('5 offres'))
+          fireEvent.click(screen.getByText('5 offres'))
 
           // Then
           expect(screen.queryByText('Afficher les statuts')).toBeNull()
@@ -408,10 +421,7 @@ describe('src | components | pages | Offers | Offers', () => {
           selectedVenueId: ALL_VENUES,
           selectedTypeId: ALL_TYPES,
           offererId: ALL_OFFERERS,
-          statusFilters: {
-            active: true,
-            inactive: true,
-          },
+          status: 'all',
         })
       })
     })
@@ -434,10 +444,7 @@ describe('src | components | pages | Offers | Offers', () => {
           selectedVenueId: ALL_VENUES,
           selectedTypeId: ALL_TYPES,
           offererId: ALL_OFFERERS,
-          statusFilters: {
-            active: true,
-            inactive: true,
-          },
+          status: 'all',
         })
       })
     })
@@ -461,10 +468,7 @@ describe('src | components | pages | Offers | Offers', () => {
           selectedVenueId: proVenues[0].id,
           selectedTypeId: ALL_TYPES,
           offererId: ALL_OFFERERS,
-          statusFilters: {
-            active: true,
-            inactive: true,
-          },
+          status: ALL_STATUS,
         })
       })
     })
@@ -488,10 +492,7 @@ describe('src | components | pages | Offers | Offers', () => {
           selectedVenueId: proVenues[0].id,
           selectedTypeId: ALL_TYPES,
           offererId: ALL_OFFERERS,
-          statusFilters: {
-            active: true,
-            inactive: true,
-          },
+          status: 'all',
         })
       })
     })
@@ -545,8 +546,7 @@ describe('src | components | pages | Offers | Offers', () => {
           nom: null,
           page: 2,
           structure: null,
-          active: null,
-          inactive: null,
+          statut: null,
         })
       })
     })
@@ -572,8 +572,7 @@ describe('src | components | pages | Offers | Offers', () => {
           nom: null,
           page: null,
           structure: null,
-          active: null,
-          inactive: null,
+          statut: null,
         })
       })
     })
@@ -598,8 +597,7 @@ describe('src | components | pages | Offers | Offers', () => {
           nom: 'AnyWord',
           page: null,
           structure: null,
-          active: null,
-          inactive: null,
+          statut: null,
         })
       })
     })
@@ -621,8 +619,7 @@ describe('src | components | pages | Offers | Offers', () => {
           name: 'search string',
           offererId: ALL_OFFERERS,
           page: DEFAULT_PAGE,
-          active: false,
-          inactive: false,
+          status: ALL_STATUS,
         })
       })
     })
@@ -647,8 +644,7 @@ describe('src | components | pages | Offers | Offers', () => {
           nom: null,
           page: null,
           structure: null,
-          active: null,
-          inactive: null,
+          statut: null,
         })
       })
     })
@@ -672,8 +668,7 @@ describe('src | components | pages | Offers | Offers', () => {
           nom: null,
           page: null,
           structure: null,
-          active: null,
-          inactive: null,
+          statut: null,
         })
       })
     })
@@ -702,22 +697,20 @@ describe('src | components | pages | Offers | Offers', () => {
           nom: null,
           page: null,
           structure: null,
-          active: null,
-          inactive: null,
+          statut: null,
         })
       })
     })
 
-    // eslint-disable-next-line jest/no-disabled-tests
-    it.skip('should have status value when user filters by status', async () => {
+    it('should have status value when user filters by status', async () => {
       // Given
       props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock' }]
       await renderOffers(props, store)
-      fireEvent.click(screen.queryByAltText('Afficher ou masquer les filtres par statut'))
-      fireEvent.click(screen.queryByLabelText('Inactive'))
+      fireEvent.click(screen.getByAltText('Afficher ou masquer les filtres par statut'))
+      fireEvent.click(screen.getByLabelText('Épuisée'))
 
       // When
-      fireEvent.click(screen.queryByText('Appliquer'))
+      fireEvent.click(screen.getByText('Appliquer'))
 
       // Then
       await waitFor(() => {
@@ -726,19 +719,18 @@ describe('src | components | pages | Offers | Offers', () => {
           categorie: null,
           nom: null,
           page: null,
-          active: null,
-          inactive: EXCLUDING_STATUS_VALUE,
+          statut: 'epuisee',
           structure: null,
         })
       })
     })
 
-    // eslint-disable-next-line jest/no-disabled-tests
-    it.skip('should have status value be removed when user ask for all status', async () => {
+    it('should have status value be removed when user ask for all status', async () => {
       // Given
       props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock' }]
       await renderOffers(props, store)
       fireEvent.click(screen.queryByAltText('Afficher ou masquer les filtres par statut'))
+      fireEvent.click(screen.queryByLabelText('Tous'))
 
       // When
       fireEvent.click(screen.queryByText('Appliquer'))
@@ -750,8 +742,7 @@ describe('src | components | pages | Offers | Offers', () => {
           categorie: null,
           nom: null,
           page: null,
-          active: null,
-          inactive: null,
+          statut: null,
           structure: null,
         })
       })
@@ -875,10 +866,7 @@ describe('src | components | pages | Offers | Offers', () => {
         selectedVenueId: ALL_VENUES,
         selectedTypeId: ALL_TYPES,
         offererId: ALL_OFFERERS,
-        statusFilters: {
-          active: true,
-          inactive: true,
-        },
+        status: ALL_STATUS,
       })
     })
 
@@ -900,10 +888,7 @@ describe('src | components | pages | Offers | Offers', () => {
         selectedVenueId: ALL_VENUES,
         selectedTypeId: ALL_TYPES,
         offererId: ALL_OFFERERS,
-        statusFilters: {
-          active: true,
-          inactive: true,
-        },
+        status: ALL_STATUS,
       })
     })
 

@@ -12,17 +12,17 @@ import Titles from 'components/layout/Titles/Titles'
 import { OffersStatusFiltersModal } from 'components/pages/Offers/OffersStatusFiltersModal/OffersStatusFiltersModal'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'repository/venuesService'
-import { mapApiToBrowser, translateQueryParamsToApiParams } from 'utils/translate'
+import { mapApiToBrowser, mapBrowserToApi, translateQueryParamsToApiParams } from 'utils/translate'
 
 import {
   ALL_OFFERERS,
   ALL_OFFERS,
+  ALL_STATUS,
   ALL_VENUES,
   ALL_VENUES_OPTION,
   ALL_TYPES,
   ALL_TYPES_OPTION,
   DEFAULT_PAGE,
-  EXCLUDING_STATUS_VALUE,
 } from './_constants'
 import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
@@ -32,17 +32,13 @@ class Offers extends PureComponent {
     super(props)
 
     const {
-      active,
-      inactive,
       name: nameKeywords,
       offererId,
       page,
       venueId: selectedVenueId,
       typeId: selectedTypeId,
+      status,
     } = translateQueryParamsToApiParams(props.query.parse())
-
-    const isFilteredByActiveStatus = active === EXCLUDING_STATUS_VALUE
-    const isFilteredByInactiveStatus = inactive === EXCLUDING_STATUS_VALUE
 
     this.state = {
       isLoading: false,
@@ -55,13 +51,10 @@ class Offers extends PureComponent {
       selectedVenueId: selectedVenueId || ALL_VENUES,
       selectedTypeId: selectedTypeId || ALL_TYPES,
       venueOptions: [],
-      statusFilters: {
-        active: !isFilteredByActiveStatus,
-        inactive: !isFilteredByInactiveStatus,
-      },
+      status: mapBrowserToApi[status] || ALL_STATUS,
+      isFilteredByStatus: Boolean(status),
       areStatusFiltersVisible: false,
       areAllOffersSelected: false,
-      isFilteredByStatus: isFilteredByActiveStatus || isFilteredByInactiveStatus,
       typeOptions: [],
     }
   }
@@ -91,14 +84,7 @@ class Offers extends PureComponent {
 
   updateUrlMatchingState = () => {
     const { query } = this.props
-    const {
-      nameSearchValue,
-      offererId,
-      page,
-      selectedVenueId,
-      selectedTypeId,
-      statusFilters,
-    } = this.state
+    const { nameSearchValue, offererId, page, selectedVenueId, selectedTypeId, status } = this.state
 
     query.change({
       page: page === DEFAULT_PAGE ? null : page,
@@ -106,8 +92,7 @@ class Offers extends PureComponent {
       [mapApiToBrowser.venueId]: selectedVenueId === ALL_VENUES ? null : selectedVenueId,
       [mapApiToBrowser.typeId]: selectedTypeId === ALL_TYPES ? null : selectedTypeId,
       [mapApiToBrowser.offererId]: offererId === ALL_OFFERERS ? null : offererId,
-      [mapApiToBrowser.active]: statusFilters.active ? null : EXCLUDING_STATUS_VALUE,
-      [mapApiToBrowser.inactive]: statusFilters.inactive ? null : EXCLUDING_STATUS_VALUE,
+      [mapApiToBrowser.status]: status === ALL_STATUS ? null : mapApiToBrowser[status],
     })
   }
 
@@ -123,43 +108,15 @@ class Offers extends PureComponent {
     })
   }
 
-  updateStatusFilters = (name, status) => {
-    const { statusFilters } = this.state
-    if (this.canInteractWithCheckbox(status, statusFilters)) {
-      this.setState({
-        statusFilters: {
-          ...statusFilters,
-          [name]: status,
-        },
-      })
-    }
-  }
-
-  canInteractWithCheckbox(status, statusFilters) {
-    const minimumNumberOfCheckedFilters = 1
-    const numberOfCheckedFiltersBeforeInteraction = Object.keys(statusFilters).filter(
-      key => statusFilters[key]
-    ).length
-    const numberOfCheckedFiltersAfterInteraction = status
-      ? numberOfCheckedFiltersBeforeInteraction + 1
-      : numberOfCheckedFiltersBeforeInteraction - 1
-
-    return numberOfCheckedFiltersAfterInteraction >= minimumNumberOfCheckedFilters
+  updateStatusFilters = selectedStatus => {
+    this.setState({ status: selectedStatus })
   }
 
   loadAndUpdateOffers() {
     const { loadOffers } = this.props
-    const {
-      nameSearchValue,
-      selectedVenueId,
-      selectedTypeId,
-      offererId,
-      page,
-      statusFilters,
-    } = this.state
-    const isFilteredByStatus = !statusFilters.active || !statusFilters.inactive
+    const { nameSearchValue, selectedVenueId, selectedTypeId, offererId, page, status } = this.state
 
-    loadOffers({ nameSearchValue, selectedVenueId, selectedTypeId, offererId, page, statusFilters })
+    loadOffers({ nameSearchValue, selectedVenueId, selectedTypeId, offererId, page, status })
       .then(({ page, pageCount, offersCount }) => {
         this.setState(
           {
@@ -167,7 +124,7 @@ class Offers extends PureComponent {
             offersCount,
             page,
             pageCount,
-            isFilteredByStatus,
+            isFilteredByStatus: status !== ALL_STATUS,
           },
           () => {
             this.updateUrlMatchingState()
@@ -183,22 +140,14 @@ class Offers extends PureComponent {
 
   getPaginatedOffersWithFilters = ({ shouldTriggerSpinner }) => {
     const { saveSearchFilters } = this.props
-    const {
-      nameSearchValue,
-      offererId,
-      page,
-      selectedVenueId,
-      selectedTypeId,
-      statusFilters,
-    } = this.state
+    const { nameSearchValue, offererId, page, selectedVenueId, selectedTypeId, status } = this.state
     saveSearchFilters({
       name: nameSearchValue,
       venueId: selectedVenueId,
       typeId: selectedTypeId,
       offererId,
       page,
-      active: !statusFilters.active && EXCLUDING_STATUS_VALUE,
-      inactive: !statusFilters.inactive && EXCLUDING_STATUS_VALUE,
+      status: status,
     })
 
     shouldTriggerSpinner && this.setState({ isLoading: true })
@@ -322,7 +271,7 @@ class Offers extends PureComponent {
       isLoading,
       selectedVenueId,
       selectedTypeId,
-      statusFilters,
+      status,
       typeOptions,
       venueOptions,
       areAllOffersSelected,
@@ -341,8 +290,6 @@ class Offers extends PureComponent {
         </span>
       </Link>
     ) : null
-
-    const statusFilterEnabled = false
 
     return (
       <Main
@@ -439,7 +386,7 @@ class Offers extends PureComponent {
                     <th>
                       {'Stock'}
                     </th>
-                    {!statusFilterEnabled ? (
+                    {isAdmin ? (
                       <th>
                         {'Statut'}
                       </th>
@@ -463,7 +410,7 @@ class Offers extends PureComponent {
                         {areStatusFiltersVisible && (
                           <OffersStatusFiltersModal
                             refreshOffers={this.handleOnSubmit}
-                            statusFilters={statusFilters}
+                            status={status}
                             toggleModalVisibility={this.toggleStatusFiltersVisibility}
                             updateStatusFilters={this.updateStatusFilters}
                           />

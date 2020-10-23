@@ -3,6 +3,7 @@ import {
   ALL_OFFERERS,
   ALL_VENUES,
   ALL_TYPES,
+  ALL_STATUS,
   DEFAULT_PAGE,
 } from 'components/pages/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
@@ -20,8 +21,9 @@ export const loadFilteredOffers = async ({
   selectedVenueId = ALL_VENUES,
   selectedTypeId = ALL_TYPES,
   page = DEFAULT_PAGE,
+  status = ALL_STATUS,
 }) => {
-  const body = createRequestBody(nameSearchValue, offererId, selectedVenueId, selectedTypeId, page)
+  const body = createRequestBody(nameSearchValue, offererId, selectedVenueId, selectedTypeId, page, status)
   const queryParams = new URLSearchParams(body).toString()
   return client.get(`/offers?${queryParams}`)
 }
@@ -36,9 +38,10 @@ export const updateOffersActiveStatus = (
     page = DEFAULT_PAGE,
     ids = [],
     isActive,
+    status = ALL_STATUS,
   }
 ) => {
-  const formattedBody = createRequestBody(name, offererId, venueId, typeId, page)
+  const formattedBody = createRequestBody(name, offererId, venueId, typeId, page, status)
 
   if (areAllOffersSelected) {
     return client.patch('/offers/all-active-status', { ...formattedBody, isActive })
@@ -47,7 +50,7 @@ export const updateOffersActiveStatus = (
   return client.patch('/offers/active-status', { ids, isActive })
 }
 
-const createRequestBody = (nameSearchValue, offererId, selectedVenueId, selectedTypeId, page) => {
+const createRequestBody = (nameSearchValue, offererId, selectedVenueId, selectedTypeId, page, status) => {
   const body = {}
   if (nameSearchValue !== ALL_OFFERS) {
     body.name = nameSearchValue
@@ -63,6 +66,9 @@ const createRequestBody = (nameSearchValue, offererId, selectedVenueId, selected
   }
   if (page) {
     body.page = page
+  }
+  if (status !== ALL_STATUS) {
+    body.status = status
   }
 
   return body

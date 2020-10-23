@@ -9,7 +9,7 @@ import {
   SubmitButton,
 } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
-import React, { PureComponent, Fragment } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 import ReactToolTip from 'react-tooltip'
 import { requestData } from 'redux-saga-data'
@@ -20,11 +20,12 @@ import OfferPreviewLink from 'components/layout/OfferPreviewLink/OfferPreviewLin
 import { webappOfferUrl } from 'components/layout/OfferPreviewLink/webappOfferUrl'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
+import { ALL_STATUS } from 'components/pages/Offers/_constants'
 import { OFFERERS_API_PATH } from 'config/apiPaths'
 import { CGU_URL } from 'utils/config'
 import { musicOptions, showOptions } from 'utils/edd'
 import { pluralize } from 'utils/pluralize'
-import { translateApiParamsToQueryParams } from 'utils/translate'
+import { mapApiToBrowser, translateApiParamsToQueryParams } from 'utils/translate'
 
 import { isAllocineOffer, isOfferFromStockProvider } from '../domain/localProvider'
 import offerIsRefundable from '../domain/offerIsRefundable'
@@ -303,12 +304,18 @@ class OfferCreation extends PureComponent {
 
   computeOffersUrl = () => {
     const { offersSearchFilters } = this.props
-    let queryString = new URLSearchParams(
-      translateApiParamsToQueryParams(offersSearchFilters)
+    const { status } = offersSearchFilters
+    const searchFiltersParams = { ...offersSearchFilters }
+
+    if (status && status !== ALL_STATUS) {
+      searchFiltersParams.status = mapApiToBrowser[status]
+    }
+
+    const queryString = new URLSearchParams(
+      translateApiParamsToQueryParams(searchFiltersParams)
     ).toString()
 
-    queryString = queryString.length ? `?${queryString}` : ''
-    return `/offres${queryString}`
+    return queryString ? `/offres?${queryString}` : '/offres'
   }
 
   render() {

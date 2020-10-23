@@ -1,0 +1,72 @@
+.input-radio {
+  appearance: none;
+  border: 2px solid $grey-dark;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: inherit;
+  height: $body-line-height;
+  margin-right: rem(8px);
+  outline: none;
+  padding: 0;
+  position: relative;
+  vertical-align: middle;
+  width: $body-line-height;
+
+  &:checked {
+    &::after {
+      background-color: $grey-dark;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-radius: 50%;
+      content: "";
+      height: 60%;
+      left: rem(3px);
+      position: absolute;
+      top: rem(3px);
+      width: 60%;
+    }
+
+    &:hover {
+      border-color: $primary;
+
+      &::after {
+        background-color: $primary;
+      }
+    }
+
+    &:focus {
+      border-color: $primary-dark;
+
+      &::after {
+        background-color: $primary-dark;
+      }
+    }
+
+    &:disabled {
+      border-color: $grey-medium;
+      opacity: 1;
+      cursor: not-allowed;
+
+      &::after {
+        background-color: $grey-medium;
+      }
+    }
+  }
+
+  &:not(:checked) {
+    background-color: $white;
+
+    &:hover {
+      border-color: $primary;
+    }
+
+    &:focus {
+      border-color: $primary-dark;
+    }
+
+    &:disabled {
+      border-color: $grey-medium;
+      opacity: 1;
+    }
+  }
+}

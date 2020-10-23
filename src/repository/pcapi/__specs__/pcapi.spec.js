@@ -1,6 +1,6 @@
+import { ALL_OFFERS, ALL_STATUS, ALL_VENUES } from 'components/pages/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 
-import { ALL_OFFERS, ALL_VENUES } from '../../../components/pages/Offers/_constants'
 import { loadFilteredOffers, updateOffersActiveStatus } from '../pcapi'
 
 jest.mock('repository/pcapi/pcapiClient', () => ({
@@ -69,7 +69,7 @@ describe('pcapi', () => {
 
     it('should call offers route with "page=1" when provided filters are defaults', async () => {
       // Given
-      const filters = { nameSearchValue: ALL_OFFERS, selectedVenueId: ALL_VENUES }
+      const filters = { nameSearchValue: ALL_OFFERS, selectedVenueId: ALL_VENUES, status: ALL_STATUS }
 
       // When
       await loadFilteredOffers(filters)
@@ -80,14 +80,13 @@ describe('pcapi', () => {
 
     it('should call offers route with filters when provided', async () => {
       // Given
-      const statusFilters = { active: false, inactive: false }
-      const filters = { nameSearchValue: 'OCS', selectedVenueId: 'AA', page: 2, statusFilters }
+      const filters = { nameSearchValue: 'OCS', selectedVenueId: 'AA', page: 2, status: 'expired' }
 
       // When
       await loadFilteredOffers(filters)
 
       // Then
-      expect(client.get).toHaveBeenCalledWith('/offers?name=OCS&venueId=AA&page=2')
+      expect(client.get).toHaveBeenCalledWith('/offers?name=OCS&venueId=AA&page=2&status=expired')
     })
   })
 

@@ -85,7 +85,7 @@ export const mapBrowserToApi = {
   categorie: 'typeId',
   de: 'from',
   lieu: 'venueId',
-  [`mots-cles`]: 'keywords',
+  ['mots-cles']: 'keywords',
   nom: 'name',
   remboursements: 'reimbursements',
   reservations: 'bookings',
@@ -93,6 +93,9 @@ export const mapBrowserToApi = {
   stock: 'stockIdOrNew',
   active: 'active',
   inactive: 'inactive',
+  epuisee: 'soldOut',
+  expiree: 'expired',
+  statut: 'status',
 }
 
 export const mapApiToBrowser = invert(mapBrowserToApi)
