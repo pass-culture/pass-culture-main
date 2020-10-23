@@ -59,7 +59,7 @@ describe('src | components | Desk', () => {
   it('should display a message when input is empty', () => {
     // given
     renderDesk(props)
-    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+    const tokenInput = screen.getByLabelText('Contremarque')
 
     // when
     fireEvent.change(tokenInput, { target: { value: '' } })
@@ -72,7 +72,7 @@ describe('src | components | Desk', () => {
   it('should display a message when is typing a token', () => {
     // given
     renderDesk(props)
-    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+    const tokenInput = screen.getByLabelText('Contremarque')
 
     // when
     fireEvent.change(tokenInput, { target: { value: 'ABCDE' } })
@@ -85,7 +85,7 @@ describe('src | components | Desk', () => {
   it('should display a message when token is invalid', () => {
     // given
     renderDesk(props)
-    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+    const tokenInput = screen.getByLabelText('Contremarque')
 
     // when
     fireEvent.change(tokenInput, { target: { value: 'ù^`@' } })
@@ -99,7 +99,7 @@ describe('src | components | Desk', () => {
     // given
     jest.spyOn(props, 'getBooking').mockImplementation(() => Promise.resolve())
     renderDesk(props)
-    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+    const tokenInput = screen.getByLabelText('Contremarque')
 
     // when
     fireEvent.change(tokenInput, { target: { value: 'ABCDEF' } })
@@ -120,7 +120,7 @@ describe('src | components | Desk', () => {
       })
     )
     renderDesk(props)
-    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+    const tokenInput = screen.getByLabelText('Contremarque')
 
     // when
     fireEvent.change(tokenInput, { target: { value: '100001' } })
@@ -152,7 +152,7 @@ describe('src | components | Desk', () => {
         Promise.reject({ json: jest.fn(() => Promise.resolve({ booking: 'error message' })) })
       )
     renderDesk(props)
-    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+    const tokenInput = screen.getByLabelText('Contremarque')
 
     // when
     fireEvent.change(tokenInput, { target: { value: '100001' } })
@@ -173,7 +173,7 @@ describe('src | components | Desk', () => {
     )
     jest.spyOn(props, 'validateBooking').mockImplementation(() => Promise.resolve())
     renderDesk(props)
-    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+    const tokenInput = screen.getByLabelText('Contremarque')
     const submitButton = screen.getByText('Valider', { selector: 'button' })
     await waitFor(() => fireEvent.change(tokenInput, { target: { value: '100001' } }))
 
@@ -195,7 +195,7 @@ describe('src | components | Desk', () => {
     )
     jest.spyOn(props, 'validateBooking').mockImplementation(() => Promise.resolve())
     renderDesk(props)
-    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+    const tokenInput = screen.getByLabelText('Contremarque')
     const submitButton = screen.getByText('Valider', { selector: 'button' })
     await waitFor(() => fireEvent.change(tokenInput, { target: { value: '100001' } }))
 
@@ -222,7 +222,7 @@ describe('src | components | Desk', () => {
         Promise.reject({ json: jest.fn(() => Promise.resolve({ booking: 'error message' })) })
       )
     renderDesk(props)
-    const tokenInput = screen.getByLabelText('Scannez un code-barres ou saisissez-le ci-dessous :')
+    const tokenInput = screen.getByLabelText('Contremarque')
     const submitButton = screen.getByText('Valider', { selector: 'button' })
     await waitFor(() => fireEvent.change(tokenInput, { target: { value: '100001' } }))
 

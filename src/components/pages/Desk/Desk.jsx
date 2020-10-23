@@ -172,7 +172,7 @@ class Desk extends React.PureComponent {
             className="subtitle"
             htmlFor="token"
           >
-            {'Scannez un code-barres ou saisissez-le ci-dessous :'}
+            {'Contremarque'}
           </label>
 
           <input
