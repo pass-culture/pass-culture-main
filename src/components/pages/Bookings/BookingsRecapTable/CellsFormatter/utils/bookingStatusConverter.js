@@ -34,6 +34,14 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     dateFormat: FORMAT_DD_MM_YYYY,
     svgIconFilename: 'ico-status-reimbursed',
   },
+  {
+    id: 'confirmed',
+    status: 'confirmé',
+    historyClassName: 'bs-history-confirmed',
+    statusClassName: 'booking-status-confirmed',
+    dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
+    svgIconFilename: 'ico-status-validated', // todo missing svg
+  },
 ]
 
 export function getBookingStatusDisplayInformations(bookingStatus) {

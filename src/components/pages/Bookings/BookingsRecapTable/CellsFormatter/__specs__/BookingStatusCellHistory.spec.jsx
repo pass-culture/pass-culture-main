@@ -41,6 +41,10 @@ describe('cellsFormatter | BookingsStatusCellHistory', () => {
           status: 'reimbursed',
           date: '2020-01-06T20:31:12+01:00',
         },
+        {
+          status: 'confirmed',
+          date: '2020-01-06T20:31:12+01:00',
+        },
       ],
     }
 
@@ -49,7 +53,7 @@ describe('cellsFormatter | BookingsStatusCellHistory', () => {
 
     // Then
     const bookingStatusesElements = wrapper.find('li')
-    expect(bookingStatusesElements).toHaveLength(3)
+    expect(bookingStatusesElements).toHaveLength(4)
   })
 
   it('should render only date and not time for reimbursed status history', () => {

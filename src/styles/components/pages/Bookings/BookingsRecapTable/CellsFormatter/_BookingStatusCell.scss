@@ -101,6 +101,10 @@
       background-color: $grey-dark;
     }
 
+    &.bs-history-confirmed {
+      background-color: $black;
+    }
+
     &.bs-history-reimbursed {
       background-color: $green-valid;
     }
