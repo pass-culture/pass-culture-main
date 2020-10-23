@@ -3,7 +3,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import MediationsManager from '../MediationsManager'
-import { SVGStars } from '../../../../svg/SVGStars'
+import { SVGStars } from 'components/svg/SVGStars'
 
 describe('src | MediationsManager', () => {
   let props
