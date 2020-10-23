@@ -1,8 +1,10 @@
 import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
+import { Provider } from 'react-redux'
 
-import NotificationV2 from '../NotificationV2'
+import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
+import { configureTestStore } from 'store/testUtils'
 
 jest.mock('../_constants', () => ({
   NOTIFICATION_SHOW_DURATION: 10,
@@ -12,8 +14,10 @@ jest.mock('../_constants', () => ({
 describe('src | components | layout | NotificationV2', () => {
   let props
   let hideNotification
+  let store
 
   beforeEach(() => {
+    store = configureTestStore()
     hideNotification = jest.fn()
     props = {
       hideNotification,
@@ -21,40 +25,69 @@ describe('src | components | layout | NotificationV2', () => {
     }
   })
 
-  describe('success notification', () => {
-    it('should display given text with correct icon', () => {
-      // given
-      props.notification = {
-        text: 'Mon petit succès',
-        type: 'success',
-      }
+  const renderNotificationV2 = (props, store) => {
+    return render(
+      <Provider store={store}>
+        <NotificationV2Container {...props} />
+      </Provider>
+    )
+  }
 
-      // when
-      render(<NotificationV2 {...props} />)
+  it('should display given text with correct icon', () => {
+    // given
+    const sentNotification = {
+      text: 'Mon petit succès',
+      type: 'success',
+      version: 2,
+    }
+    store = configureTestStore({ notification: sentNotification })
 
-      // then
-      expect(screen.getByText(props.notification.text)).toBeInTheDocument()
-      expect(screen.getByText(props.notification.text).closest('div')).toHaveClass('show')
-      expect(screen.getByRole('img')).toHaveAttribute(
-        'src',
-        expect.stringContaining('ico-notification-success-white')
-      )
+    // when
+    renderNotificationV2(props, store)
+
+    // then
+    const notification = screen.getByText(sentNotification.text)
+    expect(notification).toBeInTheDocument()
+    expect(notification).toHaveClass('show')
+    expect(screen.getByRole('img')).toHaveAttribute(
+      'src',
+      expect.stringContaining('ico-notification-success-white')
+    )
+  })
+
+  it('should hide notification after fixed show duration', async () => {
+    // given
+    const sentNotification = {
+      text: 'Mon petit succès',
+      type: 'success',
+      version: 2,
+    }
+    store = configureTestStore({ notification: sentNotification })
+
+    // when
+    renderNotificationV2(props, store)
+
+    // then
+    await waitFor(() => {
+      expect(screen.getByText(sentNotification.text)).toHaveClass('hide')
     })
+  })
 
-    it('should hide notification popup after NOTIFICATION_SHOW_DURATION', async () => {
-      // given
-      props.notification = {
-        text: 'Mon petit succès',
-        type: 'success',
-      }
+  it('should remove notification after fixed show and transition duration', async () => {
+    // given
+    const sentNotification = {
+      text: 'Mon petit succès',
+      type: 'success',
+      version: 2,
+    }
+    store = configureTestStore({ notification: sentNotification })
 
-      // when
-      render(<NotificationV2 {...props} />)
+    // when
+    renderNotificationV2(props, store)
 
-      // then
-      await waitFor(() => {
-        expect(screen.getByText(props.notification.text).closest('div')).toHaveClass('hide')
-      })
+    // then
+    await waitFor(() => {
+      expect(screen.queryByText(sentNotification.text)).not.toBeInTheDocument()
     })
   })
 })

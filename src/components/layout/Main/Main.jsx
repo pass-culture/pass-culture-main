@@ -154,16 +154,19 @@ class Main extends PureComponent {
         </Tag>
         <NotificationV2Container />
         <Modal key="modal" />
-        { PageActionsBar && <ActionsBar><PageActionsBar/></ActionsBar>}
-
+        { PageActionsBar && (
+          <ActionsBar>
+            <PageActionsBar />
+          </ActionsBar>
+        )}
       </Fragment>
     )
   }
 }
 
 Main.defaultProps = {
-  Tag: 'main',
   PageActionsBar: null,
+  Tag: 'main',
   backTo: null,
   fullscreen: false,
   handleDataRequest: null,
@@ -174,8 +177,8 @@ Main.defaultProps = {
 }
 
 Main.propTypes = {
-  Tag: PropTypes.string,
   PageActionsBar: PropTypes.elementType,
+  Tag: PropTypes.string,
   backTo: PropTypes.shape(),
   children: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   currentUser: PropTypes.shape().isRequired,

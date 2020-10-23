@@ -1,8 +1,8 @@
 import { connect } from 'react-redux'
 
-import NotificationV2 from './NotificationV2'
+import NotificationV2 from 'components/layout/NotificationV2/NotificationV2'
+import { closeNotification } from 'store/reducers/notificationReducer'
 import { notificationV2Selector } from 'store/selectors/notificationSelector'
-import { closeNotification } from '../../../store/reducers/notificationReducer'
 
 const mapStateToProps = state => ({
   notification: notificationV2Selector(state),

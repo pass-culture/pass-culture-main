@@ -1,7 +1,4 @@
 import {
-  CLOSE_NOTIFICATION,
-  SHOW_NOTIFICATION_V1,
-  SHOW_NOTIFICATION_V2,
   closeNotification,
   notificationReducer,
   showNotificationV1,
@@ -59,35 +56,5 @@ describe('src | reducers | notification', () => {
       // then
       expect(state).toStrictEqual({ version: 2, ...notificationMessage })
     })
-  })
-})
-
-describe('src | actions', () => {
-  const payload = {
-    text: 'Votre structure a bien été enregistrée, elle est en cours de validation.',
-    type: 'success',
-  }
-
-  it('closeNotification', () => {
-    const expected = {
-      type: CLOSE_NOTIFICATION,
-    }
-    expect(closeNotification()).toStrictEqual(expected)
-  })
-
-  it('showNotificationV1', () => {
-    const expected = {
-      payload,
-      type: SHOW_NOTIFICATION_V1,
-    }
-    expect(showNotificationV1(payload)).toStrictEqual(expected)
-  })
-
-  it('showNotificationV2', () => {
-    const expected = {
-      payload,
-      type: SHOW_NOTIFICATION_V2,
-    }
-    expect(showNotificationV2(payload)).toStrictEqual(expected)
   })
 })

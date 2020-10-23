@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
@@ -28,7 +28,12 @@ const ActionsBar = props => {
 
   const nbSelectedOffers = selectedOfferIds.length
 
-  async function handleActivate() {
+  const handleClose = useCallback(() => {
+    setSelectedOfferIds([])
+    hideActionsBar()
+  }, [hideActionsBar, setSelectedOfferIds])
+
+  const handleActivate = useCallback(async () => {
     const body = {
       ids: selectedOfferIds,
       isActive: true,
@@ -40,9 +45,16 @@ const ActionsBar = props => {
     handleClose()
     trackActivateOffers(selectedOfferIds)
     handleClose()
-  }
+  }, [
+    selectedOfferIds,
+    refreshOffers,
+    showSuccessNotification,
+    nbSelectedOffers,
+    handleClose,
+    trackActivateOffers,
+  ])
 
-  async function handleDeactivate() {
+  const handleDeactivate = useCallback(async () => {
     const body = {
       ids: selectedOfferIds,
       isActive: false,
@@ -53,18 +65,19 @@ const ActionsBar = props => {
     handleClose()
     trackDeactivateOffers(selectedOfferIds)
     handleClose()
-  }
+  }, [
+    selectedOfferIds,
+    refreshOffers,
+    showSuccessNotification,
+    nbSelectedOffers,
+    handleClose,
+    trackDeactivateOffers,
+  ])
 
-  function handleClose() {
-    setSelectedOfferIds([])
-    hideActionsBar()
-  }
-
-  function computeSelectedOffersLabel() {
-    return nbSelectedOffers > 1
+  const computeSelectedOffersLabel = () =>
+    nbSelectedOffers > 1
       ? `${nbSelectedOffers} offres sélectionnées`
       : `${nbSelectedOffers} offre sélectionnée`
-  }
 
   return (
     <div

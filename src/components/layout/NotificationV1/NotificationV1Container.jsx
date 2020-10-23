@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 
-import NotificationV1 from './NotificationV1'
+import NotificationV1 from 'components/layout/NotificationV1/NotificationV1'
 import { notificationV1Selector } from 'store/selectors/notificationSelector'
 
 const mapStateToProps = state => ({

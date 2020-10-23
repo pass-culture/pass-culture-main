@@ -33,9 +33,28 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     renderActionsBar(props)
 
     // then
-    expect(screen.queryByText('Activer')).toBeInTheDocument()
-    expect(screen.queryByText('Désactiver')).toBeInTheDocument()
-    expect(screen.queryByText('Annuler')).toBeInTheDocument()
+    expect(screen.getByText('Activer')).toBeInTheDocument()
+    expect(screen.getByText('Désactiver')).toBeInTheDocument()
+    expect(screen.getByText('Annuler')).toBeInTheDocument()
+  })
+
+  it('should say of many offers are selected when only 1 offer is selected', () => {
+    // given
+    props.selectedOfferIds = ['testId']
+
+    // when
+    renderActionsBar(props)
+
+    // then
+    expect(screen.queryByText('1 offre sélectionnée')).toBeInTheDocument()
+  })
+
+  it('should say of many offers are selected when more than 1 offer are selected', () => {
+    // when
+    renderActionsBar(props)
+
+    // then
+    expect(screen.queryByText('2 offres sélectionnées')).toBeInTheDocument()
   })
 
   describe('on click on "Activer" button', () => {
@@ -76,7 +95,21 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       })
     })
 
-    it('should show success notificiation with correct message', async () => {
+    it('should show notification with success message when only 1 offer is activated', async () => {
+      // given
+      props.selectedOfferIds = ['testId']
+      renderActionsBar(props)
+
+      // when
+      fireEvent.click(screen.queryByText('Activer'))
+
+      // then
+      await waitFor(() => {
+        expect(props.showSuccessNotification).toHaveBeenCalledWith('1 offre a bien été activée')
+      })
+    })
+
+    it('should show notification with success message when more than 1 offer are activated', async () => {
       // given
       renderActionsBar(props)
 
@@ -128,7 +161,21 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       })
     })
 
-    it('should show success notificiation with correct message', async () => {
+    it('should show success notificiation with correct message when only 1 offer is deactivated', async () => {
+      // given
+      props.selectedOfferIds = ['testId']
+      renderActionsBar(props)
+
+      // when
+      fireEvent.click(screen.queryByText('Désactiver'))
+
+      // then
+      await waitFor(() => {
+        expect(props.showSuccessNotification).toHaveBeenCalledWith('1 offre a bien été désactivée')
+      })
+    })
+
+    it('should show success notificiation with correct message when more than 1 offer are deactivated', async () => {
       // given
       renderActionsBar(props)
 

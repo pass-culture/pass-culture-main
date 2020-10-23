@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 
 import Icon from 'components/layout/Icon'
+
 import { NOTIFICATION_SHOW_DURATION, NOTIFICATION_TRANSITION_DURATION } from './_constants'
 
 const NotificationV2 = ({ hideNotification, notification }) => {
@@ -32,9 +33,7 @@ const NotificationV2 = ({ hideNotification, notification }) => {
   return (
     <div className={`notification-v2 is-${type || 'info'} ${isVisible ? 'show' : 'hide'}`}>
       <Icon svg={svg} />
-      <span>
-        {text}
-      </span>
+      {text}
     </div>
   )
 }

@@ -1,12 +1,14 @@
 import { shallow } from 'enzyme'
-import React from 'react'
-
-import Main from '../Main'
-import ReactTooltip from 'react-tooltip'
 import { Modal, Spinner } from 'pass-culture-shared'
-import HeaderContainer from '../../Header/HeaderContainer'
-import NotificationContainer from '../../NotificationV1/NotificationV1Container'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
+import ReactTooltip from 'react-tooltip'
+
+import HeaderContainer from '../../Header/HeaderContainer'
+import NotificationV1Container from '../../NotificationV1/NotificationV1Container'
+import NotificationV2Container from '../../NotificationV2/NotificationV2Container'
+import Main from '../Main'
+
 
 describe('src | components | layout | Main', () => {
   describe('render', () => {
@@ -55,7 +57,17 @@ describe('src | components | layout | Main', () => {
         const wrapper = shallow(<Main {...props} />)
 
         // Then
-        expect(wrapper.find(NotificationContainer).prop('isFullscreen')).toBe(true)
+        expect(wrapper.find(NotificationV1Container).prop('isFullscreen')).toBe(true)
+      })
+      it('should render the new notification container', () => {
+        // Given
+        props.fullscreen = true
+
+        // When
+        const wrapper = shallow(<Main {...props} />)
+
+        // Then
+        expect(wrapper.find(NotificationV2Container)).toHaveLength(1)
       })
     })
 
@@ -92,6 +104,16 @@ describe('src | components | layout | Main', () => {
 
         // Then
         expect(wrapper.find(Spinner)).toHaveLength(1)
+      })
+      it('should render the new notification container', () => {
+        // Given
+        props.fullscreen = false
+
+        // When
+        const wrapper = shallow(<Main {...props} />)
+
+        // Then
+        expect(wrapper.find(NotificationV2Container)).toHaveLength(1)
       })
     })
   })
