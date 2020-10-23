@@ -1,6 +1,7 @@
 import React from 'react'
-import { CREATION } from 'components/hocs/withFrenchQueryRouter'
 import { Link } from 'react-router-dom'
+
+import { CREATION } from 'components/hocs/withFrenchQueryRouter'
 import { closeNotification } from 'store/reducers/notificationReducer'
 
 const handleOnClick = dispatch => () => dispatch(closeNotification())

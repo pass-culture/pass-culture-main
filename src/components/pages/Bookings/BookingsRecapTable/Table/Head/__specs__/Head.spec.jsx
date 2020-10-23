@@ -1,7 +1,10 @@
-import React from 'react'
 import { shallow } from 'enzyme'
-import Head from '../Head'
+import React from 'react'
+
 import Icon from 'components/layout/Icon'
+
+import Head from '../Head'
+
 
 describe('components | pages | Table | Head', () => {
   it('should render one line with all columns', () => {

@@ -1,9 +1,11 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { withNotRequiredLogin } from 'components/hocs'
-import Signin from './Signin'
-import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 import { requestData } from 'redux-saga-data'
+
+import { withNotRequiredLogin } from 'components/hocs'
+import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
+
+import Signin from './Signin'
 
 export const mapStateToProps = state => {
   return {

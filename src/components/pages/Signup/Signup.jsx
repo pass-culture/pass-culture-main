@@ -2,10 +2,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Route, Switch } from 'react-router-dom/umd/react-router-dom'
 
-import SignupFormContainer from './SignupForm/SignupFormContainer'
-import SignupConfirmationContainer from './SignupConfirmation/SignupConfirmationContainer'
 import Logo from 'components/layout/Logo'
 import Main from 'components/layout/Main'
+
+import SignupConfirmationContainer from './SignupConfirmation/SignupConfirmationContainer'
+import SignupFormContainer from './SignupForm/SignupFormContainer'
 
 const Signup = ({ location }) => {
   return (

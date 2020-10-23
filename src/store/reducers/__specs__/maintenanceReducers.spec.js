@@ -1,4 +1,5 @@
 import * as config from 'utils/config'
+
 import maintenanceReducer from '../maintenanceReducer'
 
 describe('src | Reducers | Maintenance Reducer', () => {

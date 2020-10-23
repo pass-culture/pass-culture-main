@@ -1,5 +1,4 @@
 import get from 'lodash.get'
-import PropTypes from 'prop-types'
 import {
   Field,
   Form,
@@ -9,32 +8,31 @@ import {
   showModal,
   SubmitButton,
 } from 'pass-culture-shared'
-
+import PropTypes from 'prop-types'
 import React, { PureComponent, Fragment } from 'react'
-import ReactToolTip from 'react-tooltip'
 import { Link } from 'react-router-dom'
+import ReactToolTip from 'react-tooltip'
 import { requestData } from 'redux-saga-data'
 
-import MediationsManager from '../MediationsManager/MediationsManagerContainer'
-import StocksManagerContainer from '../StocksManager/StocksManagerContainer'
-import Titles from 'components/layout/Titles/Titles'
+import Insert from 'components/layout/Insert/Insert'
 import Main from 'components/layout/Main'
-import { musicOptions, showOptions } from '../../../../utils/edd'
-import { offerNormalizer } from '../../../../utils/normalizers'
-
+import OfferPreviewLink from 'components/layout/OfferPreviewLink/OfferPreviewLink'
+import { webappOfferUrl } from 'components/layout/OfferPreviewLink/webappOfferUrl'
+import Titles from 'components/layout/Titles/Titles'
 import { OFFERERS_API_PATH } from 'config/apiPaths'
 import { CGU_URL } from 'utils/config'
-
-import { getDurationInHours, getDurationInMinutes } from '../utils/duration'
-import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
-import { webappOfferUrl } from 'components/layout/OfferPreviewLink/webappOfferUrl'
-import OfferPreviewLink from 'components/layout/OfferPreviewLink/OfferPreviewLink'
-import Insert from 'components/layout/Insert/Insert'
-
-import offerIsRefundable from '../domain/offerIsRefundable'
-import { isAllocineOffer, isOfferFromStockProvider } from '../domain/localProvider'
-import { pluralize } from '../../../../utils/pluralize'
 import { translateApiParamsToQueryParams } from 'utils/translate'
+
+import { musicOptions, showOptions } from '../../../../utils/edd'
+import { offerNormalizer } from '../../../../utils/normalizers'
+import { pluralize } from '../../../../utils/pluralize'
+import { isAllocineOffer, isOfferFromStockProvider } from '../domain/localProvider'
+import offerIsRefundable from '../domain/offerIsRefundable'
+import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
+import MediationsManager from '../MediationsManager/MediationsManagerContainer'
+import StocksManagerContainer from '../StocksManager/StocksManagerContainer'
+import { getDurationInHours, getDurationInMinutes } from '../utils/duration'
+
 
 const DURATION_LIMIT_TIME = 100
 

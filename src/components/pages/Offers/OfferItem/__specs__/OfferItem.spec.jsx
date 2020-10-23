@@ -1,8 +1,10 @@
-import React from 'react'
 import { mount } from 'enzyme'
+import React from 'react'
 import { MemoryRouter } from 'react-router'
-import OfferItem from '../OfferItem'
+
 import { fetchFromApiWithCredentials } from 'utils/fetch'
+
+import OfferItem from '../OfferItem'
 
 jest.mock('utils/fetch', () => {
   return {

@@ -1,5 +1,6 @@
 import { shallow } from 'enzyme/build'
 import React from 'react'
+
 import BookingDateCell from '../BookingDateCell'
 
 describe('components | BookingsDateCell', () => {

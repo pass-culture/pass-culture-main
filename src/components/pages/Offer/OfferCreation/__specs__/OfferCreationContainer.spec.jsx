@@ -1,7 +1,7 @@
 import state from 'components/utils/mocks/state'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../OfferCreationContainer'
-import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 describe('src | OfferCreationContainer', () => {
   let props

@@ -1,10 +1,11 @@
-import { compose } from 'redux'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
 
-import OfferItem from './OfferItem'
+import withTracking from 'components/hocs/withTracking'
 import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'
-import withTracking from 'components/hocs/withTracking'
+
+import OfferItem from './OfferItem'
 
 export const mapStateToProps = (state, ownProps) => {
   const { offer } = ownProps

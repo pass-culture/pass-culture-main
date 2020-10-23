@@ -1,5 +1,5 @@
-import { OFFER_STATUS } from './offerStatus'
 import { isOfferFullyBooked } from './isOfferFullyBooked'
+import { OFFER_STATUS } from './offerStatus'
 
 export const computeOfferStatus = (offer, stocks) => {
   if (!offer.isActive) return OFFER_STATUS.INACTIVE

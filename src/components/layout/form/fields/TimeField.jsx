@@ -1,6 +1,6 @@
 import classnames from 'classnames'
-import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 import ReactTimeInput from 'react-time-input'

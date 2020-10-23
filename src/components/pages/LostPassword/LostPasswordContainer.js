@@ -1,8 +1,10 @@
 import { searchSelector } from 'pass-culture-shared'
 import { connect } from 'react-redux'
-import LostPassword from './LostPassword'
-import { requestData } from 'redux-saga-data'
 import { compose } from 'redux'
+import { requestData } from 'redux-saga-data'
+
+import LostPassword from './LostPassword'
+
 
 export const mapStateToProps = (state, ownProps) => {
   const userErrors = state.errors.user || []

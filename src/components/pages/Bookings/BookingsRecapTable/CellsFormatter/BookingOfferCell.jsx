@@ -1,8 +1,9 @@
-import React from 'react'
 import PropTypes from 'prop-types'
-import BookingOfferCellForThing from './BookingOfferCellForThing'
-import BookingOfferCellForEvent from './BookingOfferCellForEvent'
+import React from 'react'
+
 import BookingOfferCellForBook from './BookingOfferCellForBook'
+import BookingOfferCellForEvent from './BookingOfferCellForEvent'
+import BookingOfferCellForThing from './BookingOfferCellForThing'
 
 const BookingOfferCell = ({ offer }) => {
   let component

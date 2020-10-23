@@ -5,14 +5,15 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import Insert from 'components/layout/Insert/Insert'
-import Titles from 'components/layout/Titles/Titles'
 import OfferPreviewLink from 'components/layout/OfferPreviewLink/OfferPreviewLink'
+import Titles from 'components/layout/Titles/Titles'
 import LocalProviderInformation from 'components/pages/Offer/LocalProviderInformation/LocalProviderInformationContainer'
 import MediationsManager from 'components/pages/Offer/MediationsManager/MediationsManagerContainer'
 import StocksManagerContainer from 'components/pages/Offer/StocksManager/StocksManagerContainer'
-import OfferCreation from '../OfferCreation'
 import { showModal } from 'store/reducers/modal'
 import { getStubStore } from 'utils/stubStore'
+
+import OfferCreation from '../OfferCreation'
 
 const buildStore = (store = {}) => {
   const currentUser = {

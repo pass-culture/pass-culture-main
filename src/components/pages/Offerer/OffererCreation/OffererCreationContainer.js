@@ -1,13 +1,14 @@
+import { removeWhitespaces } from 'react-final-form-utils'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import OffererCreation from './OffererCreation'
 
 import { withRequiredLogin } from 'components/hocs'
 import withTracking from 'components/hocs/withTracking'
-import { removeWhitespaces } from 'react-final-form-utils'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
+
+import OffererCreation from './OffererCreation'
 
 export const mapDispatchToProps = (dispatch, ownProps) => ({
   createNewOfferer: (payload, onHandleFail, onHandleSuccess) => {

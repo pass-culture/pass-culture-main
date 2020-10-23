@@ -6,11 +6,12 @@ import React, { PureComponent, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
-import ActionsBar from '../ActionsBar/'
 import HeaderContainer from 'components/layout/Header/HeaderContainer'
 import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
 import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
+
+import ActionsBar from '../ActionsBar/'
 
 class Main extends PureComponent {
   constructor() {

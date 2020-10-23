@@ -1,28 +1,30 @@
 import get from 'lodash.get'
+import { mergeForm } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import OfferCreation from './OfferCreation'
 import { withRequiredLogin } from 'components/hocs'
 import withTracking from 'components/hocs/withTracking'
-
-import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from '../selectors/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
+import { selectOfferers } from 'store/selectors/data/offerersSelectors'
+import { selectOfferById } from 'store/selectors/data/offersSelectors'
 import { selectProductById } from 'store/selectors/data/productsSelectors'
-import { selectMusicSubOptionsByMusicType } from '../../../../utils/selectMusicSubOptionsByMusicType'
-import selectShowSubOptionsByShowType from '../../../../utils/selectShowSubOptionsByShowType'
+import { selectProviders } from 'store/selectors/data/providersSelectors'
+import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
 import { selectTypesByIsVenueVirtual } from 'store/selectors/data/typesSelectors'
-import selectTypeByIsVenueVirtualAndOfferTypeValue from '../selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
 import {
   selectVenueById,
   selectVenuesByOffererIdAndOfferType,
 } from 'store/selectors/data/venuesSelectors'
-import { selectOfferers } from 'store/selectors/data/offerersSelectors'
-import { mergeForm } from 'pass-culture-shared'
-import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
-import { selectProviders } from 'store/selectors/data/providersSelectors'
-import { selectOfferById } from 'store/selectors/data/offersSelectors'
-import { showNotificationV1 } from 'store/reducers/notificationReducer'
+
+import { selectMusicSubOptionsByMusicType } from '../../../../utils/selectMusicSubOptionsByMusicType'
+import selectShowSubOptionsByShowType from '../../../../utils/selectShowSubOptionsByShowType'
+import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from '../selectors/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
+import selectTypeByIsVenueVirtualAndOfferTypeValue from '../selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
+
+
+import OfferCreation from './OfferCreation'
 
 export const mapStateToProps = (state, ownProps) => {
   const {

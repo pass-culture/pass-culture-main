@@ -8,7 +8,7 @@ const history = {
   push: jest.fn(),
 }
 
-describe('src | components | pages | Venue | controls | ModifyOrCancelControl ', () => {
+describe('src | components | pages | Venue | controls | ModifyOrCancelControl', () => {
   describe('mount', () => {
     it('should redirect to offerer page and reset form when click on cancel creation form', async() => {
       await new Promise(done => {

@@ -1,8 +1,8 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
-import PropTypes from 'prop-types'
 
 const Card = ({ svg, title, text, navLink }) => (
   <NavLink

@@ -1,9 +1,12 @@
-import { compose } from 'redux'
-import CsvTable from './CsvTable'
-import withRequiredLogin from 'components/hocs/with-login/withRequiredLogin'
-import csvConverter from '../CsvTableButton/utils/csvConverter'
-import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
+import { compose } from 'redux'
+
+import withRequiredLogin from 'components/hocs/with-login/withRequiredLogin'
+
+import csvConverter from '../CsvTableButton/utils/csvConverter'
+
+import CsvTable from './CsvTable'
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   const { location } = ownProps

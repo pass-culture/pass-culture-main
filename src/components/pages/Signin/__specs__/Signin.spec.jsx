@@ -1,10 +1,11 @@
 import { shallow, mount } from 'enzyme'
 import React from 'react'
-import { MemoryRouter } from 'react-router'
 import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
 
 import GenericError from 'components/layout/errors/GenericError'
 import configureStore from 'store'
+
 import Signin from '../Signin'
 
 describe('src | components | pages | Signin | Signin', () => {

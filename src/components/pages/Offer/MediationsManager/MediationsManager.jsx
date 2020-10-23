@@ -1,10 +1,11 @@
 import get from 'lodash.get'
+import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
-import MediationItem from './MediationItem/MediationItem'
-import PropTypes from 'prop-types'
 import { SVGStars } from "../../../svg/SVGStars"
+
+import MediationItem from './MediationItem/MediationItem'
 
 class MediationsManager extends PureComponent {
   hasAtLeastOneActiveMediation() {

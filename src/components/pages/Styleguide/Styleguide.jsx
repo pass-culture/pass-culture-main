@@ -2,12 +2,13 @@ import React from 'react'
 
 import Main from 'components/layout/Main'
 import Titles from 'components/layout/Titles/Titles'
+
+import StyleguideAgenda from './StyleguideAgenda'
 import StyleguideButtons from './StyleguideElements/StyleguideButtons'
 import StyleguideInputText from './StyleguideElements/StyleguideInputText'
-import StyleguideAgenda from './StyleguideAgenda'
-import StyleguideTitle from './StyleguideTitles'
-import StyleguideTitles from './StyleguideElements/StyleguideTitles'
 import StyleguideSelect from './StyleguideElements/StyleguideSelect'
+import StyleguideTitles from './StyleguideElements/StyleguideTitles'
+import StyleguideTitle from './StyleguideTitles'
 
 const Styleguide = () => (
   <Main name="styleguide">

@@ -1,10 +1,11 @@
 import { shallow } from 'enzyme'
-
-import ProductFields from '../ProductFields'
 import React from 'react'
+
+import DateField from 'components/layout/form/fields/DateField/DateField'
 import HiddenField from 'components/layout/form/fields/HiddenField'
 import NumberField from 'components/layout/form/fields/NumberField'
-import DateField from 'components/layout/form/fields/DateField/DateField'
+
+import ProductFields from '../ProductFields'
 
 describe('src | ProductFields', () => {
   let props

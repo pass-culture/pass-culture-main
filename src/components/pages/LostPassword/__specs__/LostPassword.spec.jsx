@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router'
 
 import GenericError from 'components/layout/errors/GenericError'
 import configureStore from 'store'
+
 import LostPassword from '../LostPassword'
 
 describe('src | components | pages | LostPassword', () => {

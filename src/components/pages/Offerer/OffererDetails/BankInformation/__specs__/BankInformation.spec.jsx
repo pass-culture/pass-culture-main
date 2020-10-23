@@ -1,14 +1,15 @@
-import React from 'react'
 import { shallow } from 'enzyme'
-import BankInformation from '../BankInformation'
+import React from 'react'
+
 import { Offerer } from '../../Offerer'
+import BankInformation from '../BankInformation'
 
 jest.mock('utils/config', () => ({
   DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:
     'link/to/offerer/demarchesSimplifiees/procedure',
 }))
 
-describe('src | Offerer | BankInformation ', () => {
+describe('src | Offerer | BankInformation', () => {
   it('should render instruction block when banking information are not provided', () => {
     // Given
     const offererWithoutBankInformation = new Offerer({

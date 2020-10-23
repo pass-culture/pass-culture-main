@@ -1,7 +1,9 @@
-import { withRequiredLogin, withTracking } from 'components/hocs'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+
+import { withRequiredLogin, withTracking } from 'components/hocs'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
+
 import Desk from './Desk'
 
 export const mapDispatchToProps = dispatch => ({

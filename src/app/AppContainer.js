@@ -1,8 +1,10 @@
-import { compose } from 'redux'
-import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
-import { App } from './App'
+import { withRouter } from 'react-router'
+import { compose } from 'redux'
+
 import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
+
+import { App } from './App'
 
 export function mapStateToProps(state) {
   return {

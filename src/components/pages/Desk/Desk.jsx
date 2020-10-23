@@ -1,8 +1,10 @@
-import Titles from 'components/layout/Titles/Titles'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
+
 import Main from 'components/layout/Main'
+import Titles from 'components/layout/Titles/Titles'
+
 import DeskState from './DeskState/DeskState'
 
 const CODE_MAX_LENGTH = 6

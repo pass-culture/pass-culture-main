@@ -3,9 +3,15 @@ import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { Link } from 'react-router-dom'
+
 import Icon from 'components/layout/Icon'
 import Main from 'components/layout/Main'
 import Titles from 'components/layout/Titles/Titles'
+
+import BankInformation from '../fields/BankInformationFields/BankInformationFields'
+import VenueLabel from '../ValueObjects/VenueLabel'
+import VenueType from '../ValueObjects/VenueType'
+
 import ModifyOrCancelControl from './../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from './../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 import IdentifierFields from './../fields/IdentifierFields/IdentifierFields'
@@ -14,9 +20,7 @@ import bindGetSuggestionsToLongitude from './../fields/LocationFields/decorators
 import LocationFields from './../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from './../fields/LocationFields/utils/positions'
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
-import BankInformation from '../fields/BankInformationFields/BankInformationFields'
-import VenueType from '../ValueObjects/VenueType'
-import VenueLabel from '../ValueObjects/VenueLabel'
+
 
 const noop = () => {}
 

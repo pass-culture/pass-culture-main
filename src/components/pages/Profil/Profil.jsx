@@ -1,13 +1,17 @@
-import React, { PureComponent } from 'react'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react'
 import { requestData } from 'redux-saga-data'
+
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import Main from 'components/layout/Main'
+import Titles from 'components/layout/Titles/Titles'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
-import Titles from 'components/layout/Titles/Titles'
-import Main from 'components/layout/Main'
+
 import { version } from '../../../../package.json'
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
+
+
 import { isValidEmail } from './domain/isValidEmail'
 
 class Profil extends PureComponent {

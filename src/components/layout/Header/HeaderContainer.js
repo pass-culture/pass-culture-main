@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
+
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import Header from './Header'

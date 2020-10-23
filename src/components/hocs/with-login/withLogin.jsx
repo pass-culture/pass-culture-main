@@ -1,9 +1,9 @@
-import { requestData } from 'redux-saga-data'
 
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-
 import { connect } from 'react-redux'
+import { requestData } from 'redux-saga-data'
+
 import { selectCurrentUser, resolveCurrentUser } from 'store/selectors/data/usersSelectors'
 
 export default (config = {}) => WrappedComponent => {

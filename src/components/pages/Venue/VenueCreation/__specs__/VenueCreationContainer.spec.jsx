@@ -1,7 +1,7 @@
-import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueCreationContainer'
 import { venueNormalizer } from '../../../../../utils/normalizers'
-import VenueType from '../../ValueObjects/VenueType'
 import VenueLabel from '../../ValueObjects/VenueLabel'
+import VenueType from '../../ValueObjects/VenueType'
+import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueCreationContainer'
 
 jest.mock('../../Notification', () => {
   return jest.fn().mockImplementation(() => 'Some text')

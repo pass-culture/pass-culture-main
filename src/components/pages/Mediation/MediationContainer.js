@@ -2,16 +2,18 @@ import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
-import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
-import Mediation from './Mediation'
+
 import { withRequiredLogin } from 'components/hocs'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { selectMediationById } from 'store/selectors/data/mediationsSelectors'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
+import { selectOfferById } from 'store/selectors/data/offersSelectors'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'
 
 import { mediationNormalizer, offerNormalizer } from '../../../utils/normalizers'
-import { selectOfferById } from 'store/selectors/data/offersSelectors'
+
+import Mediation from './Mediation'
 
 export const mapStateToProps = (state, ownProps) => {
   const {

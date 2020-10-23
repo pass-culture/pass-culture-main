@@ -4,12 +4,13 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
 
+import withRequiredLogin from '../withRequiredLogin'
+
 import {
   configureTestStore,
   configureFetchCurrentUserWithLoginFail,
 } from './configure'
 import OnMountCaller from './OnMountCaller'
-import withRequiredLogin from '../withRequiredLogin'
 
 const Test = () => null
 const RequiredLoginTest = withRequiredLogin(Test)

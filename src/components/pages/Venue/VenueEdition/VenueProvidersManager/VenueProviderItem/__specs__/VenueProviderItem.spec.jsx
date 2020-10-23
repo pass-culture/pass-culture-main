@@ -1,6 +1,8 @@
 import { shallow } from 'enzyme'
 import React from 'react'
+
 import Icon from 'components/layout/Icon'
+
 import VenueProviderItem from '../VenueProviderItem'
 
 describe('src | components | pages | Venue | VenueProvidersManager | VenueProviderItem', () => {

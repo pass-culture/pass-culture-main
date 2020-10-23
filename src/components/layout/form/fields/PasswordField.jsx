@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
+
 import Icon from '../../Icon'
 import TextInputWithIcon from '../../inputs/TextInputWithIcon/TextInputWithIcon'
-import PropTypes from 'prop-types'
 
 export const isNotValid = value => {
   return !value

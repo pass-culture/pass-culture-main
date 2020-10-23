@@ -1,12 +1,13 @@
+import createDecorator from 'final-form-calculate'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
-import createDecorator from 'final-form-calculate'
 
 import Main from 'components/layout/Main'
+import Titles from 'components/layout/Titles/Titles'
+
 import { bindAddressAndDesignationFromSiren } from './decorators/bindSirenFieldToDesignation'
 import OffererCreationForm from './OffererCreationForm/OffererCreationForm'
-import Titles from 'components/layout/Titles/Titles'
 
 class OffererCreation extends PureComponent {
   componentWillUnmount() {

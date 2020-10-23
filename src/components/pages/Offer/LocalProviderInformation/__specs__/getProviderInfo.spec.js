@@ -1,5 +1,5 @@
-import { getProviderInfo } from '../getProviderInfo'
 import { PROVIDER_ICONS } from '../../../../utils/providers'
+import { getProviderInfo } from '../getProviderInfo'
 
 describe('src | getProviderInfo', () => {
   describe('when offer came from Tite live', () => {

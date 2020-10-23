@@ -1,5 +1,6 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+
 import { BicIbanFields } from '../BicIbanFields'
 
 jest.mock('utils/config', () => ({
@@ -7,7 +8,7 @@ jest.mock('utils/config', () => ({
     'link/to/venue/demarchesSimplifiees/procedure',
 }))
 
-describe('src | Venue | BicIbanFields ', () => {
+describe('src | Venue | BicIbanFields', () => {
   it('should display bank informations', () => {
     const props = {
       bic: '123 456 789',

@@ -1,8 +1,9 @@
 import { connect } from 'react-redux'
 
-import LocalProviderInformation from './LocalProviderInformation'
-import { getProviderInfo } from './getProviderInfo'
 import { selectOfferById } from 'store/selectors/data/offersSelectors'
+
+import { getProviderInfo } from './getProviderInfo'
+import LocalProviderInformation from './LocalProviderInformation'
 
 export const mapStateToProps = (state, ownProps) => {
   const { offerId, providerName, offererId } = ownProps

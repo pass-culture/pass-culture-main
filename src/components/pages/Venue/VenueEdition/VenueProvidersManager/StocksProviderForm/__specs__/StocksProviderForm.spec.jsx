@@ -1,6 +1,7 @@
 import { mount } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
+
 import StocksProviderForm from '../StocksProviderForm'
 
 describe('src | StocksProviderForm', () => {

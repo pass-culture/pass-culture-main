@@ -2,6 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
+
 import NotificationV1 from '../NotificationV1'
 
 describe('src | components | layout | NotificationV1', () => {

@@ -1,5 +1,5 @@
-import { removeWhitespaces } from 'react-final-form-utils'
 import createCachedSelector from 're-reselect'
+import { removeWhitespaces } from 'react-final-form-utils'
 
 export const validateSiretSize = siret => {
   if (siret.length < 14) {

@@ -1,14 +1,15 @@
 import moment from 'moment'
 import createCachedSelector from 're-reselect'
 
+import { selectOfferById } from 'store/selectors/data/offersSelectors'
+import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
+
 import {
   DEFAULT_BEGINNING_DATE_TIME_HOURS,
   DEFAULT_BEGINNING_DATE_TIME_MINUTES,
   getDatetimeOneDayAfter,
   getDatetimeAtSpecificHoursAndMinutes,
 } from '../utils/utils'
-import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
-import { selectOfferById } from 'store/selectors/data/offersSelectors'
 
 function mapArgsToCacheKey(state, stock, offerId, offererId) {
   return `${(stock && stock.id) || ''}${offerId || ''}/${offererId || ''}`

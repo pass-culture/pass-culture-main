@@ -1,7 +1,7 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux'
 import createSagaMiddleware from 'redux-saga'
-import { all } from 'redux-saga/effects'
 import { createDataReducer, watchDataActions } from 'redux-saga-data'
+import { all } from 'redux-saga/effects'
 
 export const configureTestStore = () => {
   const sagaMiddleware = createSagaMiddleware()

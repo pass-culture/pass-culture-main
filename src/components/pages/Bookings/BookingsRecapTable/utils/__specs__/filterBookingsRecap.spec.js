@@ -1,5 +1,5 @@
-import filterBookingsRecap from '../filterBookingsRecap'
 import { EMPTY_FILTER_VALUE } from '../../Filters/_constants'
+import filterBookingsRecap from '../filterBookingsRecap'
 
 const bookingRecapBuilder = ({
   stock_offer_name = 'Merlin enchanteur',

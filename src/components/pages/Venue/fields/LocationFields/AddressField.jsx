@@ -1,12 +1,13 @@
 import classnames from 'classnames'
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
 import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 
-import LocationViewer from './LocationViewer'
 import FieldErrors from 'components/layout/form/FieldErrors'
 import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
+
+import LocationViewer from './LocationViewer'
 
 const updateLocationFields = (form, { isLocationFrozen }) => location => {
   form.batch(() => {
@@ -32,7 +33,7 @@ export const addressFieldRender = ({
   readOnly,
   required,
   addressProps,
-}) => function({ input, meta }) {
+}) => ({ input, meta }) => {
   return (
     <div
       className={classnames('field text-field', className, {

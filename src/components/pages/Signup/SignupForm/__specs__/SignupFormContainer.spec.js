@@ -1,5 +1,6 @@
-import { mapDispatchToProps } from '../SignupFormContainer'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
+
+import { mapDispatchToProps } from '../SignupFormContainer'
 
 describe('src | components | pages | Signup | SignupForm', () => {
   describe('mapDispatchToProps', () => {

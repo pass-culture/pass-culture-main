@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
-import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { requestData } from 'redux-saga-data'
+
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 class SignupValidation extends PureComponent {
   componentDidMount() {

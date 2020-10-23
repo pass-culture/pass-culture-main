@@ -1,7 +1,9 @@
-import React from 'react'
 import { mount } from 'enzyme'
-import NoMatch from '../NoMatch'
+import React from 'react'
 import { MemoryRouter } from 'react-router'
+
+import NoMatch from '../NoMatch'
+
 
 describe('src | components | pages | NoMatch', () => {
   it('should display a message notifying the user they are on a wrong path and add a link to home', () => {

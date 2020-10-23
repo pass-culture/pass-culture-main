@@ -1,12 +1,12 @@
-import { compose } from 'redux'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
 
 import withTracking from 'components/hocs/withTracking'
 import { hideActionsBar } from 'store/reducers/actionsBar'
+import { showNotificationV2 } from 'store/reducers/notificationReducer'
 import { setSelectedOfferIds } from 'store/reducers/offers'
 
 import ActionsBar from './ActionsBar'
-import { showNotificationV2 } from 'store/reducers/notificationReducer'
 
 export const mapStateToProps = state => {
   return {

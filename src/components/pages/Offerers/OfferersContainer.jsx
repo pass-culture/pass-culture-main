@@ -1,17 +1,17 @@
+import { stringify } from 'query-string'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { assignData, requestData } from 'redux-saga-data'
-import { stringify } from 'query-string'
 
-import Offerers from './Offerers'
 import { withRequiredLogin } from 'components/hocs'
-import { offererNormalizer } from '../../../utils/normalizers'
-import { selectOfferers } from 'store/selectors/data/offerersSelectors'
-
 import { OFFERERS_API_PATH } from 'config/apiPaths'
 import {} from 'store/selectors/data/featuresSelectors'
-import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
+import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
+import { selectOfferers } from 'store/selectors/data/offerersSelectors'
+import { offererNormalizer } from 'utils/normalizers'
+
+import Offerers from './Offerers'
 
 export const createApiPath = searchKeyWords => {
   let apiPath = OFFERERS_API_PATH

@@ -1,6 +1,7 @@
-import React from 'react'
-import * as PropTypes from 'prop-types'
 import moment from 'moment'
+import * as PropTypes from 'prop-types'
+import React from 'react'
+
 import { getBookingStatusDisplayInformations } from './utils/bookingStatusConverter'
 
 const BookingStatusCellHistory = ({ bookingStatusHistory }) => {

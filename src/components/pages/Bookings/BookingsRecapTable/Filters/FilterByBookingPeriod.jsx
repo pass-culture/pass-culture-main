@@ -1,9 +1,10 @@
-import React from 'react'
 import moment from 'moment/moment'
-import InputWithCalendar from './InputWithCalendar'
-import DatePicker from 'react-datepicker'
 import PropTypes from 'prop-types'
+import React from 'react'
+import DatePicker from 'react-datepicker'
+
 import { EMPTY_FILTER_VALUE } from './_constants'
+import InputWithCalendar from './InputWithCalendar'
 
 const FilterByBookingPeriod = ({
   isDisabled,
@@ -43,11 +44,11 @@ const FilterByBookingPeriod = ({
         <div className="fw-booking-date-begin-picker">
           <DatePicker
             className="fw-booking-date-input"
-            customInput={
+            customInput={(
               <InputWithCalendar
                 customClass={`field-date-only field-date-begin ${isDisabled ? 'disabled' : ''}`}
               />
-            }
+            )}
             disabled={isDisabled}
             dropdownMode="select"
             maxDate={selectedBookingEndingDate}
@@ -61,11 +62,11 @@ const FilterByBookingPeriod = ({
         <div className="fw-booking-date-end-picker">
           <DatePicker
             className="fw-booking-date-input"
-            customInput={
+            customInput={(
               <InputWithCalendar
                 customClass={`field-date-only field-date-end ${isDisabled ? 'disabled' : ''}`}
               />
-            }
+            )}
             disabled={isDisabled}
             dropdownMode="select"
             maxDate={moment()}

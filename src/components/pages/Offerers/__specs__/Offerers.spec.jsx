@@ -1,11 +1,12 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+import { Link } from 'react-router-dom'
 
-import Offerers from '../Offerers'
+import Titles from 'components/layout/Titles/Titles'
+
 import OffererItemContainer from '../OffererItem/OffererItemContainer'
 import PendingOffererItem from '../OffererItem/PendingOffererItem'
-import { Link } from 'react-router-dom'
-import Titles from 'components/layout/Titles/Titles'
+import Offerers from '../Offerers'
 
 describe('src | components | Offerers', () => {
   let props

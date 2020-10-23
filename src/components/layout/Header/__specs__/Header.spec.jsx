@@ -1,8 +1,8 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
-import Header from '../Header'
 import Icon from '../../Icon'
+import Header from '../Header'
 
 describe('src | components | Layout | Header', () => {
   let props

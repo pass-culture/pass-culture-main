@@ -1,6 +1,8 @@
-import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
+import React, { Component, Fragment } from 'react'
+
 import Icon from 'components/layout/Icon'
+
 import { getBookingStatusDisplayInformations } from '../CellsFormatter/utils/bookingStatusConverter'
 
 class FilterByBookingStatus extends Component {

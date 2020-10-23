@@ -1,6 +1,7 @@
-import React from 'react'
-import PropTypes from 'prop-types'
 import moment from 'moment'
+import PropTypes from 'prop-types'
+import React from 'react'
+
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from '../../../../../utils/date'
 
 const BookingDateCell = ({ bookingDate }) => {

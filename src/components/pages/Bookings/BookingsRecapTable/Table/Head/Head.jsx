@@ -1,5 +1,6 @@
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
+
 import Icon from 'components/layout/Icon'
 
 const IS_MULTI_SORT_ACTIVATED = false

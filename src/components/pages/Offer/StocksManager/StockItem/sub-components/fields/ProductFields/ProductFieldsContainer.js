@@ -1,6 +1,7 @@
-import { connect } from 'react-redux'
-import ProductFields from './ProductFields'
 import { assignModalConfig } from 'pass-culture-shared'
+import { connect } from 'react-redux'
+
+import ProductFields from './ProductFields'
 
 export const mapDispatchToProps = dispatch => {
   return {

@@ -1,6 +1,5 @@
-import moment from 'moment-timezone'
-
 import createDecorator from 'final-form-calculate'
+import moment from 'moment-timezone'
 import createCachedSelector from 're-reselect'
 
 const mapArgsToCacheKey = ({ isEvent, timezone }) => `${isEvent || ''} ${timezone || ''}`

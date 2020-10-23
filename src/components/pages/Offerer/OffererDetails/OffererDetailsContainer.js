@@ -1,16 +1,18 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-
-import OffererDetails from './OffererDetails'
-import { makeOffererComponentValueObject } from './OffererFactory'
+import { requestData } from 'redux-saga-data'
 
 import { withRequiredLogin } from 'components/hocs'
 import withTracking from 'components/hocs/withTracking'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
-import { selectPhysicalVenuesByOffererId } from 'store/selectors/data/venuesSelectors'
 import { selectUserOffererByOffererIdAndUserIdAndRightsType } from 'store/selectors/data/userOfferersSelectors'
-import { requestData } from 'redux-saga-data'
+import { selectPhysicalVenuesByOffererId } from 'store/selectors/data/venuesSelectors'
+
+
 import { offererNormalizer } from '../../../../utils/normalizers'
+
+import OffererDetails from './OffererDetails'
+import { makeOffererComponentValueObject } from './OffererFactory'
 
 export const mapStateToProps = (state, ownProps) => {
   const { currentUser, match } = ownProps

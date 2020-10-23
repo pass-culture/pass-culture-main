@@ -4,18 +4,21 @@ import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { Link } from 'react-router-dom'
 
-import { selectOfferers } from 'store/selectors/data/offerersSelectors'
-import { mapApiToBrowser } from '../../../utils/translate'
-import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
-import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
-import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 import Icon from 'components/layout/Icon'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Main from 'components/layout/Main'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import { selectOfferers } from 'store/selectors/data/offerersSelectors'
+
+import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
+import { mapApiToBrowser } from '../../../utils/translate'
+
 import OffererItemContainer from './OffererItem/OffererItemContainer'
 import PendingOffererItem from './OffererItem/PendingOffererItem'
+import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
+import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
+
 
 class Offerers extends PureComponent {
   constructor(props) {

@@ -1,6 +1,6 @@
 import classnames from 'classnames'
-import PropTypes from 'prop-types'
 import get from 'lodash.get'
+import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import ReactTooltip from 'react-tooltip'
 

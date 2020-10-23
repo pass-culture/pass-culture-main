@@ -1,6 +1,7 @@
-import React, { PureComponent } from 'react'
-import Header from '../Header/Header'
 import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react'
+
+import Header from '../Header/Header'
 import Spinner from '../Spinner'
 
 class CsvTable extends PureComponent {

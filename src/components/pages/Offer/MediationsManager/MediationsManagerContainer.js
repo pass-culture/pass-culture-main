@@ -1,8 +1,9 @@
 import { connect } from 'react-redux'
 
-import MediationsManager from './MediationsManager'
 import { selectMediationsByOfferId } from 'store/selectors/data/mediationsSelectors'
 import { selectOfferById } from 'store/selectors/data/offersSelectors'
+
+import MediationsManager from './MediationsManager'
 
 export const mapStateToProps = (state, ownProps) => {
   const { offerId } = ownProps

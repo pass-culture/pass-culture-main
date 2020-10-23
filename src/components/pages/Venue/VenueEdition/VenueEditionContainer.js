@@ -1,18 +1,21 @@
-import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
-import { selectOffererById } from 'store/selectors/data/offerersSelectors'
-import { selectVenueById } from 'store/selectors/data/venuesSelectors'
-import { offererNormalizer, venueNormalizer } from '../../../../utils/normalizers'
+
 import { withRequiredLogin } from 'components/hocs'
 import withTracking from 'components/hocs/withTracking'
-import VenueEdition from './VenueEdition'
-import { selectVenueTypes } from 'store/selectors/data/venueTypesSelectors'
-import VenueType from '../ValueObjects/VenueType'
-import { formatVenuePayload } from '../utils/formatVenuePayload'
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
+import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectVenueLabels } from 'store/selectors/data/venueLabelsSelectors'
+import { selectVenueById } from 'store/selectors/data/venuesSelectors'
+import { selectVenueTypes } from 'store/selectors/data/venueTypesSelectors'
+
+import { offererNormalizer, venueNormalizer } from '../../../../utils/normalizers'
+import { formatVenuePayload } from '../utils/formatVenuePayload'
 import VenueLabel from '../ValueObjects/VenueLabel'
+import VenueType from '../ValueObjects/VenueType'
+
+import VenueEdition from './VenueEdition'
 
 export const mapStateToProps = (
   state,

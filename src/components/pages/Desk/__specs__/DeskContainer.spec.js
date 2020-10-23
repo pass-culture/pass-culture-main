@@ -1,4 +1,5 @@
 import { fetchFromApiWithCredentials } from 'utils/fetch'
+
 import { mapDispatchToProps, mergeProps } from '../DeskContainer'
 
 jest.mock('utils/fetch', () => ({

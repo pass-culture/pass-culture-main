@@ -1,8 +1,9 @@
-import React from 'react'
-import InputWithCalendar from './InputWithCalendar'
 import PropTypes from 'prop-types'
+import React from 'react'
 import DatePicker from 'react-datepicker'
+
 import { EMPTY_FILTER_VALUE } from './_constants'
+import InputWithCalendar from './InputWithCalendar'
 
 const FilterByEventDate = ({ isDisabled, updateFilters, selectedOfferDate }) => {
   function handleOfferDateChange(offerDate) {

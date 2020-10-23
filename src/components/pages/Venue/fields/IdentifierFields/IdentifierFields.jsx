@@ -5,10 +5,10 @@ import { Field } from 'react-final-form'
 import { removeWhitespaces } from 'react-final-form-utils'
 import ReactTooltip from 'react-tooltip'
 
-import Icon from 'components/layout/Icon'
 import HiddenField from 'components/layout/form/fields/HiddenField'
 import TextareaField from 'components/layout/form/fields/TextareaField'
 import TextField from 'components/layout/form/fields/TextField'
+import Icon from 'components/layout/Icon'
 
 import { formatSiret } from '../../siret/formatSiret'
 import VenueLabel from '../../ValueObjects/VenueLabel'

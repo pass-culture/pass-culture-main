@@ -1,8 +1,8 @@
 import classnames from 'classnames'
+import PropTypes from 'prop-types'
 import React, { PureComponent, Fragment } from 'react'
 import Textarea from 'react-autosize-textarea'
 import { Field } from 'react-final-form'
-import PropTypes from 'prop-types'
 import { composeValidators } from 'react-final-form-utils'
 
 import FieldErrors from '../FieldErrors'

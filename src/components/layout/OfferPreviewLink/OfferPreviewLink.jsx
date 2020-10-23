@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+
 import Icon from '../Icon'
 
 const OfferPreviewLink = ({ offerWebappUrl, onClick }) => (

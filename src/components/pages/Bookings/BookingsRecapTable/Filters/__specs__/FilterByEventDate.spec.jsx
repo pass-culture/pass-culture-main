@@ -1,8 +1,9 @@
-import FilterByEventDate from '../FilterByEventDate.jsx'
-import React from 'react'
 import { shallow } from 'enzyme'
 import moment from 'moment/moment'
+import React from 'react'
+
 import { EMPTY_FILTER_VALUE } from '../_constants'
+import FilterByEventDate from '../FilterByEventDate.jsx'
 
 describe('components | FilterByEventDate', () => {
   let props

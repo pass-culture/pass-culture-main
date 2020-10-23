@@ -1,6 +1,6 @@
+import get from 'lodash.get'
 import createCachedSelector from 're-reselect'
 import { createSelector } from 'reselect'
-import get from 'lodash.get'
 
 export const selectVenues = state => get(state, 'data.venues', [])
 

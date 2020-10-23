@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 import ReturnOrSubmitControl from '../ReturnOrSubmitControl'
 
-describe('src | components | pages | Venue | controls | ReturnOrSubmitControl ', () => {
+describe('src | components | pages | Venue | controls | ReturnOrSubmitControl', () => {
   let props
 
   beforeEach(() => {

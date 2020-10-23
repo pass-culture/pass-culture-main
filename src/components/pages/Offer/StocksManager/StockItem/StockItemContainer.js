@@ -1,17 +1,19 @@
 import createCachedSelector from 're-reselect'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { requestData } from 'redux-saga-data'
 
-import StockItem from './StockItem'
 import withFrenchQueryRouter from 'components/hocs/withFrenchQueryRouter'
-import selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone from './selectors/selectFormInitialValuesByStockAndOfferIdAndOffererId'
-import { translateQueryParamsToApiParams } from '../../../../../utils/translate'
-import { selectVenueById } from 'store/selectors/data/venuesSelectors'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectOfferById } from 'store/selectors/data/offersSelectors'
-import { requestData } from 'redux-saga-data'
-import Offer from '../ValueObjects/Offer'
+import { selectVenueById } from 'store/selectors/data/venuesSelectors'
+
 import { getTimezone } from '../../../../../utils/timezone'
+import { translateQueryParamsToApiParams } from '../../../../../utils/translate'
+import Offer from '../ValueObjects/Offer'
+
+import selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone from './selectors/selectFormInitialValuesByStockAndOfferIdAndOffererId'
+import StockItem from './StockItem'
 
 export const selectTimezoneByVenueIdAndOffererId = createCachedSelector(
   selectVenueById,

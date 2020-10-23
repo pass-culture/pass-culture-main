@@ -1,8 +1,9 @@
-import React from 'react'
 import PropTypes from 'prop-types'
-import Paginate from './Paginate/Paginate'
-import Head from './Head/Head'
+import React from 'react'
+
 import Body from './Body/Body'
+import Head from './Head/Head'
+import Paginate from './Paginate/Paginate'
 
 class Table extends React.Component {
   goToNextPage = () => {

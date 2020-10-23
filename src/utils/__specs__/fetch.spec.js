@@ -1,6 +1,7 @@
-import { fetchFromApiWithCredentials } from '../fetch'
-import { API_URL } from '../config'
 import fetch from 'jest-fetch-mock'
+
+import { API_URL } from '../config'
+import { fetchFromApiWithCredentials } from '../fetch'
 
 describe('fetchFromApiWithCredentials', () => {
   beforeEach(() => {

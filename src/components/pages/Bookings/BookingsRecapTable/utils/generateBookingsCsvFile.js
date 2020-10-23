@@ -1,4 +1,5 @@
 import moment from 'moment'
+
 import { FORMAT_DD_MM_YYYY_HH_mm } from '../../../../../utils/date'
 import { getBookingStatusDisplayInformations } from '../CellsFormatter/utils/bookingStatusConverter'
 

@@ -2,8 +2,9 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import MediationsManager from '../MediationsManager'
 import { SVGStars } from 'components/svg/SVGStars'
+
+import MediationsManager from '../MediationsManager'
 
 describe('src | MediationsManager', () => {
   let props

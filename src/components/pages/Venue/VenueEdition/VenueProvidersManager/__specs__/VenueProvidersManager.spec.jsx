@@ -2,6 +2,7 @@ import { mount } from 'enzyme'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
+
 import { getStubStore } from '../../../../../../utils/stubStore'
 import AllocineProviderFormContainer from '../AllocineProviderForm/AllocineProviderFormContainer'
 import StocksProviderForm from '../StocksProviderForm/StocksProviderForm'

@@ -2,11 +2,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { isOfferFullyBooked } from 'components/pages/Offers/domain/isOfferFullyBooked'
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
-import { fetchFromApiWithCredentials } from 'utils/fetch'
+import { isOfferFullyBooked } from 'components/pages/Offers/domain/isOfferFullyBooked'
 import { computeVenueDisplayName } from 'services/venuesService'
+import { fetchFromApiWithCredentials } from 'utils/fetch'
 import { pluralize } from 'utils/pluralize'
 
 import { computeOfferStatus } from '../domain/computeOfferStatus'

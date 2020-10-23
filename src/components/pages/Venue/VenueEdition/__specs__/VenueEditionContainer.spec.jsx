@@ -1,7 +1,7 @@
-import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueEditionContainer'
 import { venueNormalizer } from '../../../../../utils/normalizers'
-import VenueType from '../../ValueObjects/VenueType'
 import VenueLabel from '../../ValueObjects/VenueLabel'
+import VenueType from '../../ValueObjects/VenueType'
+import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueEditionContainer'
 
 window.scroll = () => {}
 

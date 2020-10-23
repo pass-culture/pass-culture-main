@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
+
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
 

@@ -1,8 +1,9 @@
-import React from 'react'
 import { shallow } from 'enzyme'
-import OffererDetails from '../OffererDetails'
-import { Offerer } from '../Offerer'
+import React from 'react'
+
 import BankInformation from '../BankInformation/BankInformation'
+import { Offerer } from '../Offerer'
+import OffererDetails from '../OffererDetails'
 import VenuesContainer from '../Venues/VenuesContainer'
 
 describe('src | components | pages | Offerer | OffererDetails', () => {

@@ -1,10 +1,10 @@
 import * as fetch from '../../utils/fetch'
+import { fetchFromApiWithCredentials } from '../../utils/fetch'
 import {
   formatAndOrderVenues,
   fetchAllVenuesByProUser,
   computeVenueDisplayName,
 } from '../venuesService'
-import { fetchFromApiWithCredentials } from '../../utils/fetch'
 
 describe('venuesService', () => {
   let mockJsonPromise

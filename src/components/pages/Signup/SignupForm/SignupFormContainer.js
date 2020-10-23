@@ -1,13 +1,14 @@
 import get from 'lodash.get'
-import { compose } from 'redux'
 import { removeWhitespaces } from 'react-final-form-utils'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import { removeErrors } from 'store/reducers/errors'
-import SignupForm from './SignupForm'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
+
+import SignupForm from './SignupForm'
 
 const STATE_ERROR_NAME = 'user'
 

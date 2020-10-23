@@ -4,11 +4,11 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { PersistGate } from 'redux-persist/integration/react'
 
 import AppContainer from 'app/AppContainer'
-import NoMatchPage from 'components/pages/NoMatch/NoMatch'
 import MatomoContainer from 'components/matomo/MatomoContainer'
+import NoMatchPage from 'components/pages/NoMatch/NoMatch'
 import FeaturedRouteContainer from 'components/router/FeaturedRouteContainer'
-import routes from 'utils/routes_map'
 import configureStore from 'store'
+import routes from 'utils/routes_map'
 
 const { store, persistor } = configureStore()
 

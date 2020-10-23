@@ -1,5 +1,6 @@
 import { mount } from 'enzyme'
 import React from 'react'
+
 import OfferPreviewLink from '../OfferPreviewLink'
 
 describe('src | OfferPreviewLink', () => {

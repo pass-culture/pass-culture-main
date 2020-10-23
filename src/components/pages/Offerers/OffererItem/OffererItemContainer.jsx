@@ -1,12 +1,13 @@
 import { connect } from 'react-redux'
 
-import OffererItem from './OffererItem'
+import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 import {
   selectPhysicalVenuesByOffererId,
   selectVenuesByOffererId,
 } from 'store/selectors/data/venuesSelectors'
 
-import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
+import OffererItem from './OffererItem'
+
 
 export const mapStateToProps = (state, ownProps) => {
   const {

@@ -1,4 +1,5 @@
 import { selectOfferers, selectOffererById } from '../offerersSelectors'
+
 import state from './mockState.json'
 
 describe('src | selectors | data | offerersSelectors', () => {

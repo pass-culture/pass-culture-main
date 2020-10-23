@@ -1,4 +1,5 @@
 import { fetchFromApiWithCredentials } from 'utils/fetch'
+
 import { ALL_OFFERERS } from '../components/pages/Offers/_constants'
 
 export const fetchAllVenuesByProUser = offererId => {

@@ -5,6 +5,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import configureStore from 'store'
+
 import Profil from '../Profil'
 
 describe('src | components | pages | Profil', () => {

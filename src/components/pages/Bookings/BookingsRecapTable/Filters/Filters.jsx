@@ -1,18 +1,20 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
 import moment from 'moment'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+
 import { formatAndOrderVenues, fetchAllVenuesByProUser } from 'services/venuesService'
-import FilterByOmniSearch from './FilterByOmniSearch'
-import FilterByEventDate from './FilterByEventDate.jsx'
-import FilterByVenue from './FilterByVenue'
-import FilterByBookingPeriod from './FilterByBookingPeriod'
+
 import {
   ALL_BOOKING_STATUS,
   ALL_VENUES,
   DEFAULT_OMNISEARCH_CRITERIA,
   EMPTY_FILTER_VALUE,
 } from './_constants'
+import FilterByBookingPeriod from './FilterByBookingPeriod'
+import FilterByEventDate from './FilterByEventDate.jsx'
+import FilterByOmniSearch from './FilterByOmniSearch'
+import FilterByVenue from './FilterByVenue'
 
 class Filters extends Component {
   constructor(props) {

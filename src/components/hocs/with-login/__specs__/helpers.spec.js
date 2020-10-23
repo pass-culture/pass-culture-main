@@ -1,6 +1,6 @@
 import { getRedirectToOffersOrOfferers, getRedirectToSignin } from '../helpers'
 
-describe('src | components | hocs | with-login | helpers ', () => {
+describe('src | components | hocs | with-login | helpers', () => {
   describe('getRedirectToOffersOrOfferers', () => {
     describe('when the user is signin for the first time and has no offer and only a virtual venue created by default', () => {
       it('should redirect to offerers page', () => {

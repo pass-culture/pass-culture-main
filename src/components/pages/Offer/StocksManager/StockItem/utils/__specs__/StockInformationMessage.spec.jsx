@@ -1,6 +1,7 @@
-import React from 'react'
-import StockInformationMessage from '../StockInformationMessage'
 import { shallow } from 'enzyme'
+import React from 'react'
+
+import StockInformationMessage from '../StockInformationMessage'
 
 describe('src | components | pages | StocksManager | utils | StockInformationMessage', () => {
   it('should return correct message when provider is Allociné', () => {

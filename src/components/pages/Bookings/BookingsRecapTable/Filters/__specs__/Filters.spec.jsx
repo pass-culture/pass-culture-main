@@ -1,12 +1,14 @@
-import React from 'react'
-import Filters from '../Filters'
-import { ALL_VENUES, EMPTY_FILTER_VALUE } from '../_constants'
 import { mount, shallow } from 'enzyme'
+import React from 'react'
+
 import { fetchAllVenuesByProUser } from 'services/venuesService'
-import FilterByOmniSearch from '../FilterByOmniSearch'
-import FilterByEventDate from '../FilterByEventDate'
-import FilterByVenue from '../FilterByVenue'
+
+import { ALL_VENUES, EMPTY_FILTER_VALUE } from '../_constants'
 import FilterByBookingPeriod from '../FilterByBookingPeriod'
+import FilterByEventDate from '../FilterByEventDate'
+import FilterByOmniSearch from '../FilterByOmniSearch'
+import FilterByVenue from '../FilterByVenue'
+import Filters from '../Filters'
 
 jest.mock('services/venuesService', () => ({
   ...jest.requireActual('services/venuesService'),

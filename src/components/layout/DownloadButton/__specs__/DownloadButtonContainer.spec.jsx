@@ -2,9 +2,10 @@ import { mount } from 'enzyme'
 import React from 'react'
 import { Provider } from 'react-redux'
 
+import { showNotificationV1 } from 'store/reducers/notificationReducer'
+
 import { getStubStore } from '../../../../utils/stubStore'
 import DownloadButtonContainer from '../DownloadButtonContainer'
-import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 global.fetch = url => {
   if (url.includes('reimbursements/csv')) {

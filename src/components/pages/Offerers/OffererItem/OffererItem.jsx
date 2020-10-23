@@ -1,9 +1,10 @@
 import { Icon } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
-import PropTypes from 'prop-types'
-import { UNAVAILABLE_ERROR_PAGE } from '../../../../utils/routes'
+
 import { pluralize } from '../../../../utils/pluralize'
+import { UNAVAILABLE_ERROR_PAGE } from '../../../../utils/routes'
 
 const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable }) => {
   const { id, name, nOffers } = offerer || {}

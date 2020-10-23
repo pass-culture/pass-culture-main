@@ -1,7 +1,8 @@
 import React from 'react'
 
-import Card from './Card/Card'
 import Main from 'components/layout/Main'
+
+import Card from './Card/Card'
 
 const Home = () => (
   <Main

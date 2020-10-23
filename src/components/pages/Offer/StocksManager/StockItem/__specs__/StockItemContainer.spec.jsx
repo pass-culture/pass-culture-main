@@ -1,6 +1,6 @@
-import { mapStateToProps, mapDispatchToProps } from '../StockItemContainer'
 import state from '../../../../../utils/mocks/state'
 import Offer from '../../ValueObjects/Offer'
+import { mapStateToProps, mapDispatchToProps } from '../StockItemContainer'
 
 describe('stockItemContainer', () => {
   describe('mapStateToProps', () => {

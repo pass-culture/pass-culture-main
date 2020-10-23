@@ -1,7 +1,8 @@
 import { mount } from 'enzyme'
+import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router-dom'
-import { createBrowserHistory } from 'history'
+
 import NotificationMessage from '../Notification'
 
 describe('src | components | pages | Venue | Notification', () => {

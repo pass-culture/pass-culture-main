@@ -392,15 +392,15 @@ class Offers extends PureComponent {
                   </tr>
                 </thead>
                 <tbody className="offers-list">
-                {offers.map(offer => (
-                  <OfferItemContainer
-                    isSelected={selectedOfferIds.includes(offer.id)}
-                    key={offer.id}
-                    offer={offer}
-                    refreshOffers={this.getPaginatedOffersWithFilters}
-                    selectOffer={this.selectOffer}
-                  />
-                ))}
+                  {offers.map(offer => (
+                    <OfferItemContainer
+                      isSelected={selectedOfferIds.includes(offer.id)}
+                      key={offer.id}
+                      offer={offer}
+                      refreshOffers={this.getPaginatedOffersWithFilters}
+                      selectOffer={this.selectOffer}
+                    />
+                  ))}
                 </tbody>
               </table>
               <div className="pagination">

@@ -1,15 +1,18 @@
+import createDecorator from 'final-form-calculate'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import createDecorator from 'final-form-calculate'
-import { Link } from 'react-router-dom'
 import { Field, Form } from 'react-final-form'
+import { Link } from 'react-router-dom'
 
-import bindAddressAndDesignationFromSiren from '../../Offerer/OffererCreation/decorators/bindSirenFieldToDesignation'
-import PasswordField from 'components/layout/form/fields/PasswordField'
-import SirenField from './SirenField/SirenField'
 import FieldErrors from 'components/layout/form/FieldErrors'
+import PasswordField from 'components/layout/form/fields/PasswordField'
 import Icon from 'components/layout/Icon'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
+
+import bindAddressAndDesignationFromSiren from '../../Offerer/OffererCreation/decorators/bindSirenFieldToDesignation'
+
+import SirenField from './SirenField/SirenField'
+
 
 const addressAndDesignationFromSirenDecorator = createDecorator({
   field: 'siren',

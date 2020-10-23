@@ -1,8 +1,8 @@
+import { closeModal } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import { closeModal } from 'pass-culture-shared'
 import Block from './Block'
 
 export function mapDispatchToProps(dispatch, ownProps) {

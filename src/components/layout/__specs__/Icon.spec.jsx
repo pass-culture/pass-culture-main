@@ -3,7 +3,7 @@ import React from 'react'
 
 import Icon from '../Icon'
 
-describe('src | components | layout | Icon ', () => {
+describe('src | components | layout | Icon', () => {
   describe('render', () => {
     it('should render an image with correct props when svg given', () => {
       // when

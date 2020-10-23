@@ -1,5 +1,6 @@
 import { mount } from 'enzyme/build'
 import React from 'react'
+
 import NoBookingsMessage from '../NoBookingsMessage'
 
 describe('components | pages | bookings-v2 | NoBookingsMessage', () => {

@@ -3,6 +3,7 @@ import React from 'react'
 import { Route } from 'react-router-dom'
 
 import NotMatch from 'components/pages/NoMatch/NoMatch'
+
 import FeaturedRoute from '../FeaturedRoute'
 
 const Foo = () => <div />

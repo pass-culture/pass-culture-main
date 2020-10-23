@@ -1,8 +1,10 @@
-import { Offerer } from '../Offerer'
 import PropTypes from 'prop-types'
-import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 import React, { Fragment } from 'react'
+
 import Icon from 'components/layout/Icon'
+import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
+
+import { Offerer } from '../Offerer'
 
 const BankInformation = ({ offerer }) => (
   <div className="section op-content-section bank-information">

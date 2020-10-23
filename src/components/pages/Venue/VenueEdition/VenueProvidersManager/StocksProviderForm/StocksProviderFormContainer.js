@@ -3,8 +3,10 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
-import StocksProviderForm from './StocksProviderForm'
+
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
+
+import StocksProviderForm from './StocksProviderForm'
 
 export const mapDispatchToProps = dispatch => ({
   createVenueProvider: (handleFail, handleSuccess, payload) => {

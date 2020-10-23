@@ -6,9 +6,9 @@ import { Field } from 'react-final-form'
 import TextareaField from 'components/layout/form/fields/TextareaField'
 import TextField from 'components/layout/form/fields/TextField'
 
-import IdentifierFields from '../IdentifierFields'
 import VenueLabel from '../../../ValueObjects/VenueLabel'
 import VenueType from '../../../ValueObjects/VenueType'
+import IdentifierFields from '../IdentifierFields'
 
 describe('src | components | pages | Venue | fields | IdentifierFields', () => {
   let props

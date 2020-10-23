@@ -1,8 +1,8 @@
+import { isValidBIC } from 'ibantools'
 import { BasicInput, mergeErrors, removeWhitespaces } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
-import { isValidBIC } from 'ibantools'
 
 class BicInput extends PureComponent {
   handleOnChange = event => {

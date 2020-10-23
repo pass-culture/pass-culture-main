@@ -1,6 +1,6 @@
-import React, { PureComponent, Fragment } from 'react'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
+import React, { PureComponent, Fragment } from 'react'
 
 class SubmitAndCancelControl extends PureComponent {
   handleOnClick = (form, query, stockId) => () => {

@@ -1,6 +1,6 @@
 import {Field, Form} from 'pass-culture-shared'
-import React from 'react'
 import PropTypes from "prop-types"
+import React from 'react'
 
 const MediationItem = ({ mediation }) => {
   const { id, isActive, thumbUrl } = mediation || {}

@@ -1,15 +1,16 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+
+import { ApplicationBanner } from '../ApplicationBanner'
 import BankInformation from '../BankInformationFields'
 import { BicIbanFields } from '../BicIbanFields'
-import { ApplicationBanner } from '../ApplicationBanner'
 
 jest.mock('utils/config', () => ({
   DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL:
     'link/to/venue/demarchesSimplifiees/procedure',
 }))
 
-describe('src | Venue | BankInformation ', () => {
+describe('src | Venue | BankInformation', () => {
   const venue = {
     id: 'AA',
     name: 'fake venue name',

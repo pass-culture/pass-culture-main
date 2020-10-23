@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import AddressField from './AddressField'
 import HiddenField from 'components/layout/form/fields/HiddenField'
 import NumberField from 'components/layout/form/fields/NumberField'
 import TextField from 'components/layout/form/fields/TextField'
+
+import AddressField from './AddressField'
 
 const COORDINATE_ACCURACY = 0.00001
 

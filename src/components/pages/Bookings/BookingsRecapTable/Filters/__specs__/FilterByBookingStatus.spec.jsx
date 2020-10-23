@@ -1,6 +1,7 @@
-import React from 'react'
-import FilterByBookingStatus from '../FilterByBookingStatus'
 import { mount } from 'enzyme'
+import React from 'react'
+
+import FilterByBookingStatus from '../FilterByBookingStatus'
 
 describe('components | FilterByBookingStatus', () => {
   let props

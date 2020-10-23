@@ -3,9 +3,10 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import VenueProvidersManager from './VenueProvidersManager'
-import selectVenueProvidersByVenueId from './selectors/selectVenueProvidersByVenueId'
 import { selectProviders } from 'store/selectors/data/providersSelectors'
+
+import selectVenueProvidersByVenueId from './selectors/selectVenueProvidersByVenueId'
+import VenueProvidersManager from './VenueProvidersManager'
 
 export const mapStateToProps = (state, ownProps) => {
   const { venue } = ownProps

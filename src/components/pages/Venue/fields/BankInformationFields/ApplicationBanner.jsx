@@ -1,6 +1,7 @@
-import React from 'react'
-import Icon from 'components/layout/Icon'
 import PropTypes from 'prop-types'
+import React from 'react'
+
+import Icon from 'components/layout/Icon'
 
 export const ApplicationBanner = ({ applicationId }) => (
   <div className="bi-banner">

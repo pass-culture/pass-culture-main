@@ -1,6 +1,7 @@
-import React from 'react'
-import NoFilteredBookings from '../NoFilteredBookings'
 import { shallow } from 'enzyme'
+import React from 'react'
+
+import NoFilteredBookings from '../NoFilteredBookings'
 
 describe('components | NoFilteredBookings', () => {
   it('should reset filters when clicking on reset button', () => {

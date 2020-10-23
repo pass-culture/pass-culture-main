@@ -6,11 +6,12 @@ import React, { PureComponent, Fragment } from 'react'
 import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
 
+import { ROOT_PATH } from 'utils/config'
+
 import getSuggestionsFromAddressAndMaxSuggestions from './selectors/getSuggestionsFromAddressAndMaxSuggestions'
 import getSuggestionsFromLatitudeAndLongitude from './selectors/getSuggestionsFromLatitudeAndLongitude'
-import sanitizeCoordinates from './utils/sanitizeCoordinates'
 import { FRANCE_POSITION } from './utils/positions'
-import { ROOT_PATH } from 'utils/config'
+import sanitizeCoordinates from './utils/sanitizeCoordinates'
 
 const markerIcon = new LeafletIcon({
   iconUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,

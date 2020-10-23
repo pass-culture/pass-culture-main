@@ -3,14 +3,15 @@ import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit } from 'react-final-form-utils'
 
-import EditAndDeleteControl from './sub-components/EditAndDeleteControl/EditAndDeleteControl'
-import EventFields from './sub-components/fields/EventFields/EventFields'
+import Offer from '../ValueObjects/Offer'
+
 import adaptBookingLimitDatetimeGivenBeginningDatetime from './decorators/adaptBookingLimitDatetimeGivenBeginningDatetime'
 import bindTimeFieldWithDateField from './decorators/bindTimeFieldWithDateField'
+import EditAndDeleteControl from './sub-components/EditAndDeleteControl/EditAndDeleteControl'
+import EventFields from './sub-components/fields/EventFields/EventFields'
+import ProductFieldsContainer from './sub-components/fields/ProductFields/ProductFieldsContainer'
 import SubmitAndCancelControlContainer from './sub-components/SubmitAndCancelControl/SubmitAndCancelControlContainer'
 import { errorKeyToFrenchKey } from './utils/utils'
-import ProductFieldsContainer from './sub-components/fields/ProductFields/ProductFieldsContainer'
-import Offer from '../ValueObjects/Offer'
 
 class StockItem extends PureComponent {
   constructor(props) {

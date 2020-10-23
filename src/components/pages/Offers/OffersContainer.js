@@ -5,12 +5,13 @@ import { requestData } from 'redux-saga-data'
 
 import { withRequiredLogin } from 'components/hocs'
 import { hideActionsBar, showActionsBar } from 'store/reducers/actionsBar'
+import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
 import { saveSearchFilters, setSelectedOfferIds } from 'store/reducers/offers'
 import { selectOffers } from 'store/selectors/data/offersSelectors'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
+
 import { ALL_OFFERS, ALL_VENUES, ALL_OFFERERS } from './_constants'
 import Offers from './Offers'
-import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
 
 export const mapStateToProps = state => {
   return {

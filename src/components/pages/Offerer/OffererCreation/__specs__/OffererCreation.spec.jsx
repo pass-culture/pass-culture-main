@@ -1,7 +1,8 @@
-import OffererCreation from '../OffererCreation'
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 import { Form } from 'react-final-form'
+
+import OffererCreation from '../OffererCreation'
 import OffererCreationForm from '../OffererCreationForm/OffererCreationForm'
 
 describe('src | components | OffererCreation', () => {

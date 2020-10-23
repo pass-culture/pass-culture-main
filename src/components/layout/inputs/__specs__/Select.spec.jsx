@@ -1,5 +1,6 @@
 import { mount } from 'enzyme'
 import React from 'react'
+
 import Select from '../Select'
 
 describe('src | components | layout | form | Select', () => {

@@ -1,8 +1,11 @@
-import React from 'react'
 import PropTypes from 'prop-types'
-import { getBookingStatusDisplayInformations } from './utils/bookingStatusConverter'
-import BookingStatusCellHistory from './BookingStatusCellHistory'
+import React from 'react'
+
 import Icon from 'components/layout/Icon'
+
+import BookingStatusCellHistory from './BookingStatusCellHistory'
+import { getBookingStatusDisplayInformations } from './utils/bookingStatusConverter'
+
 
 const BookingStatusCell = ({ bookingRecapInfo }) => {
   let bookingDisplayInfo = getBookingStatusDisplayInformations(

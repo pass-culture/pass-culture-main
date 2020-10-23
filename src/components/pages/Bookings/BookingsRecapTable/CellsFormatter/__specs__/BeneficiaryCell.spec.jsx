@@ -1,6 +1,7 @@
 import { shallow } from 'enzyme/build'
-import BeneficiaryCell from '../BeneficiaryCell'
 import React from 'react'
+
+import BeneficiaryCell from '../BeneficiaryCell'
 
 describe('components | BeneficiaryCell', () => {
   it('should render a div with two span, one with firstname and lastname and the other the email address', () => {

@@ -4,15 +4,16 @@ import React, { PureComponent, Fragment } from 'react'
 import { createParseNumberValue } from 'react-final-form-utils'
 import ReactTooltip from 'react-tooltip'
 
+import DateField from 'components/layout/form/fields/DateField/DateField'
+import HiddenField from 'components/layout/form/fields/HiddenField'
+import NumberField from 'components/layout/form/fields/NumberField'
+import Icon from 'components/layout/Icon'
+
 import {
   createFormatAvailable,
   formatPrice,
   getFormattedRemainingQuantities,
 } from '../../../utils/utils'
-import DateField from 'components/layout/form/fields/DateField/DateField'
-import HiddenField from 'components/layout/form/fields/HiddenField'
-import NumberField from 'components/layout/form/fields/NumberField'
-import Icon from 'components/layout/Icon'
 
 class ProductFields extends PureComponent {
   componentDidUpdate() {

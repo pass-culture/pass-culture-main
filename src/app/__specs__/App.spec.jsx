@@ -1,5 +1,6 @@
-import React from 'react'
 import { mount, shallow } from 'enzyme/build'
+import React from 'react'
+
 import { App } from '../App'
 import RedirectToMaintenance from '../RedirectToMaintenance'
 

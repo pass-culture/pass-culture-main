@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+
 import Icon from 'components/layout/Icon'
-import { PROVIDER_ICONS } from '../../../../../utils/providers'
+
 import { pluralize } from '../../../../../../utils/pluralize'
+import { PROVIDER_ICONS } from '../../../../../utils/providers'
 
 const VenueProviderItem = ({ venueProvider }) => {
   const { lastSyncDate, nOffers, provider, venueIdAtOfferProvider } = venueProvider

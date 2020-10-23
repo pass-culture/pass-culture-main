@@ -1,12 +1,13 @@
-import get from 'lodash.get'
 import classnames from 'classnames'
+import get from 'lodash.get'
 import { closeModal } from 'pass-culture-shared'
-import React, { PureComponent, Fragment } from 'react'
 import PropTypes from 'prop-types'
+import React, { PureComponent, Fragment } from 'react'
 
-import StockInformationMessage from './StockItem/utils/StockInformationMessage'
-import StockItemContainer from './StockItem/StockItemContainer'
 import Titles from 'components/layout/Titles/Titles'
+
+import StockItemContainer from './StockItem/StockItemContainer'
+import StockInformationMessage from './StockItem/utils/StockInformationMessage'
 
 class StocksManager extends PureComponent {
   constructor() {

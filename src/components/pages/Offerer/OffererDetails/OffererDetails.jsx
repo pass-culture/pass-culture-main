@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import { Offerer } from './Offerer'
 import Main from 'components/layout/Main'
 import Titles from 'components/layout/Titles/Titles'
+
 import BankInformation from './BankInformation/BankInformation'
+import { Offerer } from './Offerer'
 import VenuesContainer from './Venues/VenuesContainer'
 
 class OffererDetails extends PureComponent {

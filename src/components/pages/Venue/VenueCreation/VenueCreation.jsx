@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
-import { getCanSubmit, parseSubmitErrors, removeWhitespaces } from 'react-final-form-utils'
+import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 
 import Main from 'components/layout/Main'
 import Titles from 'components/layout/Titles/Titles'

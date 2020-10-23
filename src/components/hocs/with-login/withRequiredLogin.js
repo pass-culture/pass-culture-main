@@ -1,8 +1,10 @@
 import { compose } from 'redux'
-import withLogin from './withLogin'
+
+import withFrenchQueryRouter from '../withFrenchQueryRouter'
 
 import { getRedirectToSignin } from './helpers'
-import withFrenchQueryRouter from '../withFrenchQueryRouter'
+import withLogin from './withLogin'
+
 
 const withRequiredLogin = compose(
   withFrenchQueryRouter,

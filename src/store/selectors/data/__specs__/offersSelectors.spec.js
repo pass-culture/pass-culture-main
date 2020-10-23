@@ -1,4 +1,5 @@
 import { selectDigitalOffers, selectOfferById, selectOffersByVenueId } from '../offersSelectors'
+
 import state from './mockState.json'
 
 describe('selectOfferById', () => {

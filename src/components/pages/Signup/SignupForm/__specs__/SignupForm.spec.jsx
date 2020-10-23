@@ -1,9 +1,10 @@
-import React from 'react'
-import SignupForm from '../SignupForm'
 import { mount } from 'enzyme'
-import { Link } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
+import React from 'react'
 import { Router } from 'react-router'
+import { Link } from 'react-router-dom'
+
+import SignupForm from '../SignupForm'
 
 describe('src | components | pages | Signup | SignupForm', () => {
   let props

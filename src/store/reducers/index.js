@@ -7,8 +7,8 @@ import data from './data'
 import errors from './errors'
 import maintenanceReducer from './maintenanceReducer'
 import modal from './modal'
-import offers from './offers'
 import { notificationReducer } from './notificationReducer'
+import offers from './offers'
 
 const rootReducer = combineReducers({
   actionsBar,

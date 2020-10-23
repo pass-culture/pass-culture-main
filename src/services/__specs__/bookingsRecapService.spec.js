@@ -1,5 +1,5 @@
-import { fetchBookingsRecapByPage } from '../bookingsRecapService'
 import * as fetch from '../../utils/fetch'
+import { fetchBookingsRecapByPage } from '../bookingsRecapService'
 
 describe('src | services | bookingRecapsService', () => {
   let mockJsonPromise

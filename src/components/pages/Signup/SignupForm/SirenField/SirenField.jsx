@@ -1,10 +1,12 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 import { Field } from 'react-final-form'
-import formatSiren from './formatSiren'
 import { composeValidators, removeWhitespaces } from 'react-final-form-utils'
-import { getSirenInformation } from 'components/pages/Offerer/OffererCreation/decorators/getSirenInformation'
-import PropTypes from 'prop-types'
+
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import { getSirenInformation } from 'components/pages/Offerer/OffererCreation/decorators/getSirenInformation'
+
+import formatSiren from './formatSiren'
 
 const required = value => {
   return value ? undefined : 'Ce champ est obligatoire'

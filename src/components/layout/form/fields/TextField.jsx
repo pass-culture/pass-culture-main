@@ -1,8 +1,8 @@
 /* eslint react/destructuring-assignment: 0 */
 /* eslint react/function-component-definition: 0 */
 import classnames from 'classnames'
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
 import { Field } from 'react-final-form'
 import { composeValidators, createParseNumberValue } from 'react-final-form-utils'
 

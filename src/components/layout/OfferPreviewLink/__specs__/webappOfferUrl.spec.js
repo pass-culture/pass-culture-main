@@ -1,4 +1,5 @@
 import * as config from 'utils/config'
+
 import { webappOfferUrl } from '../webappOfferUrl'
 
 describe('src | webappOfferUrl', () => {

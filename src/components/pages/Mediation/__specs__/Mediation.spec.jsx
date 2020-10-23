@@ -123,7 +123,7 @@ describe('src | components | pages | Mediation', () => {
       handleFail = jest.fn()
     })
 
-    it('should retrieve mediation when not in creation mode ', () => {
+    it('should retrieve mediation when not in creation mode', () => {
       // given
       props.match.params = {
         mediationId: 'ABCD',
@@ -137,7 +137,7 @@ describe('src | components | pages | Mediation', () => {
       expect(getMediation).toHaveBeenCalledWith('ABCD', expect.any(Function), expect.any(Function))
     })
 
-    it('should not retrieve mediation when in creation mode ', () => {
+    it('should not retrieve mediation when in creation mode', () => {
       // given
       props.match.params = {
         mediationId: 'nouveau',

@@ -4,8 +4,9 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import AllocineProviderForm from './AllocineProviderForm'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
+
+import AllocineProviderForm from './AllocineProviderForm'
 
 export const mapDispatchToProps = dispatch => {
   return {

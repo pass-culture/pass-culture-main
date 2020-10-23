@@ -1,6 +1,7 @@
 import { shallow } from 'enzyme'
-import OffererCreationForm from '../OffererCreationForm'
 import React from 'react'
+
+import OffererCreationForm from '../OffererCreationForm'
 
 describe('src | components | pages | OffererCreationForm', () => {
   it('should be clickable when values have been changed and are valid', () => {

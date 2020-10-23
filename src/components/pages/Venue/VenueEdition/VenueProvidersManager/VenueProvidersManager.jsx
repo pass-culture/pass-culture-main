@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import ReactTooltip from 'react-tooltip'
+
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
 import StocksProviderForm from './StocksProviderForm/StocksProviderFormContainer'
 import {

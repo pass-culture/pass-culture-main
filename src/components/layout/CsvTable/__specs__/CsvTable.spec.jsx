@@ -113,7 +113,7 @@ describe('src | components | layout | CsvTable', () => {
     })
 
     describe('when data from csv is provided and isLoading value from state is false', () => {
-      it('should render a table header with 2 columns ', () => {
+      it('should render a table header with 2 columns', () => {
         // when
         const wrapper = shallow(<CsvTable {...props} />)
         wrapper.setState({

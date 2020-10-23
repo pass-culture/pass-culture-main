@@ -1,7 +1,8 @@
 import { connect } from 'react-redux'
 
-import DownloadButton from './DownloadButton'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
+
+import DownloadButton from './DownloadButton'
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   const { filename, href, mimeType } = ownProps

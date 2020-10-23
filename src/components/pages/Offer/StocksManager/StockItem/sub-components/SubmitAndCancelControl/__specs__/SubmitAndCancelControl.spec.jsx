@@ -4,7 +4,7 @@ import { Field, Form } from 'react-final-form'
 
 import SubmitAndCancelControl from '../SubmitAndCancelControl'
 
-describe('src | components | pages | Offer | StocksManagerContainer | StockItem | SubmitAndCancelControl ', () => {
+describe('src | components | pages | Offer | StocksManagerContainer | StockItem | SubmitAndCancelControl', () => {
   it('should display two buttons', () => {
     // given
     const initialProps = {

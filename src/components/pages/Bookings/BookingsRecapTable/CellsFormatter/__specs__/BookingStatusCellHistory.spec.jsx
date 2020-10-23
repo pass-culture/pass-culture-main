@@ -1,5 +1,6 @@
 import { mount } from 'enzyme/build'
 import React from 'react'
+
 import BookingStatusCellHistory from '../BookingStatusCellHistory'
 
 describe('cellsFormatter | BookingsStatusCellHistory', () => {

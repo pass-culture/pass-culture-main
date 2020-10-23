@@ -3,6 +3,7 @@ import React from 'react'
 
 import DateField from 'components/layout/form/fields/DateField/DateField'
 import TimeField from 'components/layout/form/fields/TimeField'
+
 import EventFields from '../EventFields'
 
 describe('src | EventFields', () => {

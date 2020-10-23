@@ -1,9 +1,10 @@
 import { shallow } from 'enzyme'
-import Card from '../Card'
 import React from 'react'
+import { NavLink } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
-import { NavLink } from 'react-router-dom'
+
+import Card from '../Card'
 
 describe('src | components | pages | Home | Card', () => {
   let props

@@ -5,6 +5,7 @@ import { Form } from 'react-final-form'
 import CheckboxField from 'components/layout/form/fields/CheckboxField'
 import NumberField from 'components/layout/form/fields/NumberField'
 import Icon from 'components/layout/Icon'
+
 import AllocineProviderForm from '../../AllocineProviderForm/AllocineProviderForm'
 
 describe('components | AllocineProviderForm', () => {
