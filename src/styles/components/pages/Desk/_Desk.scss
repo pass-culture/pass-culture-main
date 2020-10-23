@@ -2,20 +2,8 @@
   .form {
     text-align: center;
 
-    .columns {
-      width: rem(392px);
-      margin: auto;
-    }
-
-    input[type='text'] {
-      width: rem(316px);
-      height: rem(72px);
-      font-size: rem(36px);
-    }
-
-    .buttonContainer {
-      width: rem(92px);
-      display: inline-block;
+    input {
+      width: rem(328px);
     }
 
     button {

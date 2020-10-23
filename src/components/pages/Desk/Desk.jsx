@@ -2,12 +2,13 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Main from 'components/layout/Main'
 import Titles from 'components/layout/Titles/Titles'
 
 import DeskState from './DeskState/DeskState'
 
-const CODE_MAX_LENGTH = 6
+const TOKEN_MAX_LENGTH = 6
 const CODE_REGEX_VALIDATION = /[^a-z0-9]/i
 
 const CODE_ENTER = 'CODE_ENTER'
@@ -26,29 +27,23 @@ class Desk extends React.PureComponent {
     super(props)
     this.state = {
       booking: null,
-      code: '',
+      token: '',
       status: CODE_ENTER,
     }
-    this.textInput = React.createRef()
   }
 
-  componentDidMount() {
-    this.textInput.current.focus()
+  handleOnClick = token => () => {
+    this.handleCodeRegistration(token)
   }
 
-  handleOnClick = code => () => {
-    this.handleCodeRegistration(code)
-    this.textInput.current.focus()
-  }
-
-  handleCodeChange = event => {
+  isValidToken = event => {
     const { getBooking } = this.props
-    const code = event.target.value.toUpperCase()
-    const status = this.getStatusFromCode(code)
-    this.setState({ code, status })
+    const token = event.target.value.toUpperCase()
+    const status = this.getStatusFromCode(token)
+    this.setState({ status, token })
 
     if (status === CODE_VERIFICATION_IN_PROGRESS) {
-      getBooking(code)
+      getBooking(token)
         .then(booking => {
           this.setState({ booking, status: CODE_VERIFICATION_SUCCESS })
         })
@@ -63,31 +58,31 @@ class Desk extends React.PureComponent {
     }
   }
 
-  getStatusFromCode = code => {
-    if (code === '') {
+  getStatusFromCode = token => {
+    if (token === '') {
       return CODE_ENTER
     }
 
-    if (code.match(CODE_REGEX_VALIDATION) !== null) {
+    if (token.match(CODE_REGEX_VALIDATION) !== null) {
       return CODE_SYNTAX_INVALID
     }
 
-    if (code.length < CODE_MAX_LENGTH) {
+    if (token.length < TOKEN_MAX_LENGTH) {
       return CODE_TYPING
     }
 
     return CODE_VERIFICATION_IN_PROGRESS
   }
 
-  handleCodeRegistration = code => {
+  handleCodeRegistration = token => {
     const { validateBooking } = this.props
-    this.setState({ status: CODE_REGISTERING_IN_PROGRESS, code: '' })
+    this.setState({ status: CODE_REGISTERING_IN_PROGRESS, token: '' })
 
-    validateBooking(code)
+    validateBooking(token)
       .then(() => {
         const { trackValidateBookingSuccess } = this.props
         this.setState({ status: CODE_REGISTERING_SUCCESS })
-        trackValidateBookingSuccess(code)
+        trackValidateBookingSuccess(token)
       })
       .catch(error => {
         error.json().then(body => {
@@ -100,12 +95,12 @@ class Desk extends React.PureComponent {
   }
 
   getValuesFromStatus = status => {
-    let { booking, code, message } = this.state
+    let { booking, message, token } = this.state
     let level
 
     switch (status) {
       case CODE_TYPING:
-        message = `Caractères restants : ${CODE_MAX_LENGTH - code.length}/${CODE_MAX_LENGTH}`
+        message = `Caractères restants : ${TOKEN_MAX_LENGTH - token.length}/${TOKEN_MAX_LENGTH}`
         level = 'pending'
         break
       case CODE_SYNTAX_INVALID:
@@ -135,7 +130,7 @@ class Desk extends React.PureComponent {
         level = 'error'
         break
       default:
-        message = 'Saisissez un code'
+        message = 'Saisissez une contremarque'
         level = 'pending'
     }
 
@@ -159,36 +154,29 @@ class Desk extends React.PureComponent {
   }
 
   render() {
-    const { code, status } = this.state
+    const { status, token } = this.state
 
     return (
       <Main name="desk">
         <Titles title="Guichet" />
         <p className="advice">
-          {'Enregistrez les codes de réservations présentés par les porteurs du pass.'}
+          {'Enregistrez les contremarques de réservations présentés par les porteurs du pass.'}
         </p>
         <div className="section form">
-          <label
-            className="subtitle"
-            htmlFor="token"
-          >
-            {'Contremarque'}
-          </label>
-
-          <input
-            className="input is-undefined"
-            id="token"
-            maxLength={CODE_MAX_LENGTH}
-            onChange={this.handleCodeChange}
-            ref={this.textInput}
+          <TextInput
+            label="Contremarque"
+            maxLength={TOKEN_MAX_LENGTH}
+            name="token"
+            onChange={this.isValidToken}
+            placeholder="ex : AZE123"
             type="text"
-            value={code}
+            value={token}
           />
 
           <button
             className="primary-button"
             disabled={status !== CODE_VERIFICATION_SUCCESS}
-            onClick={this.handleOnClick(code)}
+            onClick={this.handleOnClick(token)}
             type="submit"
           >
             {'Valider'}

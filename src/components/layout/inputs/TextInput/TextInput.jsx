@@ -7,6 +7,7 @@ const TextInput = ({
   disabled,
   error,
   label,
+  maxLength,
   name,
   onChange,
   placeholder,
@@ -29,6 +30,7 @@ const TextInput = ({
       className={`it-input ${error ? 'error' : ''}`}
       disabled={disabled}
       id={name}
+      maxLength={maxLength}
       name={name}
       onChange={onChange}
       placeholder={placeholder}
@@ -43,6 +45,7 @@ const TextInput = ({
 TextInput.defaultProps = {
   disabled: false,
   error: null,
+  maxLength: null,
   onChange: null,
   required: false,
   sublabel: '',
@@ -53,6 +56,7 @@ TextInput.propTypes = {
   disabled: PropTypes.bool,
   error: PropTypes.string,
   label: PropTypes.string.isRequired,
+  maxLength: PropTypes.number,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func,
   placeholder: PropTypes.string.isRequired,

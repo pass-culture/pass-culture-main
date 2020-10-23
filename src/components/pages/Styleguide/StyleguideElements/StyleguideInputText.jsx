@@ -13,6 +13,7 @@ const StyleguideInputText = () => {
       required
       sublabel="Intitulé secondaire"
       type="text"
+      value="Valeur"
     />
   `
 
@@ -36,6 +37,7 @@ const StyleguideInputText = () => {
       placeholder="placeholder disabled"
       sublabel="Intitulé secondaire"
       type="text"
+      value="Valeur"
     />
   `
 

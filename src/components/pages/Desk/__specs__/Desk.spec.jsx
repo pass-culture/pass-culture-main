@@ -50,10 +50,20 @@ describe('src | components | Desk', () => {
     // then
     const title = screen.getByText('Guichet', { selector: 'h1' })
     const description = screen.getByText(
-      'Enregistrez les codes de réservations présentés par les porteurs du pass.'
+      'Enregistrez les contremarques de réservations présentés par les porteurs du pass.'
     )
     expect(title).toBeInTheDocument()
     expect(description).toBeInTheDocument()
+  })
+
+  it('should display a text input', () => {
+    // when
+    renderDesk(props)
+
+    // then
+    const input = screen.getByPlaceholderText('ex : AZE123')
+    expect(input).toHaveAttribute('maxLength', '6')
+    expect(input).toHaveAttribute('type', 'text')
   })
 
   it('should display a message when input is empty', () => {
@@ -66,7 +76,7 @@ describe('src | components | Desk', () => {
 
     // then
     expect(screen.getByText('Valider', { selector: 'button' })).toBeDisabled()
-    expect(screen.getByText('Saisissez un code')).toBeInTheDocument()
+    expect(screen.getByText('Saisissez une contremarque')).toBeInTheDocument()
   })
 
   it('should display a message when is typing a token', () => {
