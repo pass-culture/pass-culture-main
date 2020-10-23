@@ -4,8 +4,7 @@ import React from 'react'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Main from 'components/layout/Main'
 import Titles from 'components/layout/Titles/Titles'
-
-import DeskState from './DeskState/DeskState'
+import { formatLocalTimeDateString } from 'utils/timezone'
 
 const TOKEN_MAX_LENGTH = 6
 const CODE_REGEX_VALIDATION = /[^a-z0-9]/i
@@ -21,13 +20,26 @@ const CODE_REGISTERING_IN_PROGRESS = 'CODE_REGISTERING_IN_PROGRESS'
 const CODE_REGISTERING_SUCCESS = 'CODE_REGISTERING_SUCCESS'
 const CODE_REGISTERING_FAILED = 'CODE_REGISTERING_FAILED'
 
+const displayBookingDate = booking => {
+  if (!booking) {
+    return null
+  }
+
+  if (!booking.date) {
+    return 'Permanent'
+  }
+
+  return formatLocalTimeDateString(booking.date, booking.venueDepartementCode)
+}
+
 class Desk extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
       booking: null,
-      token: '',
+      isDisplayBooking: false,
       status: CODE_ENTER,
+      token: '',
     }
   }
 
@@ -35,12 +47,16 @@ class Desk extends React.PureComponent {
     const { getBooking } = this.props
     const token = event.target.value.toUpperCase()
     const status = this.getStatusFromCode(token)
-    this.setState({ status, token })
+    this.setState({ isDisplayBooking: false, status, token })
 
     if (status === CODE_VERIFICATION_IN_PROGRESS) {
       getBooking(token)
         .then(booking => {
-          this.setState({ booking, status: CODE_VERIFICATION_SUCCESS })
+          this.setState({
+            isDisplayBooking: true,
+            booking,
+            status: CODE_VERIFICATION_SUCCESS,
+          })
         })
         .catch(error => {
           error.json().then(body => {
@@ -137,20 +153,9 @@ class Desk extends React.PureComponent {
     }
   }
 
-  renderChildComponent = () => {
-    const { status } = this.state
-    const { booking, level, message } = this.getValuesFromStatus(status)
-    return (
-      <DeskState
-        booking={booking}
-        level={level}
-        message={message}
-      />
-    )
-  }
-
   render() {
-    const { status, token } = this.state
+    const { isDisplayBooking, status, token } = this.state
+    const { booking, level, message } = this.getValuesFromStatus(status)
 
     return (
       <Main name="desk">
@@ -158,7 +163,7 @@ class Desk extends React.PureComponent {
         <p className="advice">
           {'Enregistrez les contremarques de réservations présentés par les porteurs du pass.'}
         </p>
-        <div className="section form">
+        <div className="form">
           <TextInput
             label="Contremarque"
             maxLength={TOKEN_MAX_LENGTH}
@@ -169,6 +174,35 @@ class Desk extends React.PureComponent {
             value={token}
           />
 
+          {isDisplayBooking && (
+            <div className="booking-summary">
+              <div>
+                {'Utilisateur : '}
+                <span>
+                  {booking.userName}
+                </span>
+              </div>
+              <div>
+                {'Offre : '}
+                <span>
+                  {booking.offerName}
+                </span>
+              </div>
+              <div>
+                {'Date de l’offre : '}
+                <span>
+                  {displayBookingDate(booking)}
+                </span>
+              </div>
+              <div>
+                {'Prix : '}
+                <span>
+                  {`${booking.price} €`}
+                </span>
+              </div>
+            </div>
+          )}
+
           <button
             className="primary-button"
             disabled={status !== CODE_VERIFICATION_SUCCESS}
@@ -178,7 +212,9 @@ class Desk extends React.PureComponent {
             {'Valider la contremarque'}
           </button>
 
-          {this.renderChildComponent()}
+          <div className={`desk-message ${level}`}>
+            {message}
+          </div>
         </div>
       </Main>
     )

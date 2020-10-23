@@ -1,55 +1,36 @@
 .desk-page {
+  .subtitle {
+    display: block;
+    font-size: $size-medium;
+  }
+
   .form {
-    text-align: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
 
     input {
       width: rem(328px);
     }
+  }
 
-    .state {
-      @include dotted($primary);
+  .desk-message {
+    @include caption();
 
-      margin: rem(20px) 0;
-      padding-top: rem(10px);
-      display: flex;
-      align-items: center;
-      font-size: rem(20px);
-      text-align: left;
-      height: rem(60px);
-      width: calc(100% - 110px);
+    color: $green-valid;
 
-      &.pending {
-        color: green;
-      }
-
-      img {
-        width: rem(50px);
-      }
-
-      span {
-        padding-left: rem(20px);
-        font-weight: 500;
-      }
+    &.error {
+      color: $red-error;
     }
   }
 
   .booking-summary {
-    margin: rem(10px) auto;
-    margin-left: 28%;
+    @include caption();
 
-    th {
-      font-weight: normal;
-      text-align: right;
+    color: $grey-dark;
+
+    span {
+      color: $black;
     }
-
-    td {
-      padding-left: rem(5px);
-      font-weight: bold;
-    }
-  }
-
-  .subtitle {
-    display: block;
-    font-size: $size-medium;
   }
 }
