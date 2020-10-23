@@ -4,10 +4,10 @@ import PropTypes from 'prop-types'
 import { requestData } from 'redux-saga-data'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
-import Titles from '../../layout/Titles/Titles'
-import Main from '../../layout/Main'
+import Titles from 'components/layout/Titles/Titles'
+import Main from 'components/layout/Main'
 import { version } from '../../../../package.json'
-import TextInput from '../../layout/inputs/TextInput/TextInput'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import { isValidEmail } from './domain/isValidEmail'
 
 class Profil extends PureComponent {

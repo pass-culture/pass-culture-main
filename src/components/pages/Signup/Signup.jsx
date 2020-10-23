@@ -4,8 +4,8 @@ import { Route, Switch } from 'react-router-dom/umd/react-router-dom'
 
 import SignupFormContainer from './SignupForm/SignupFormContainer'
 import SignupConfirmationContainer from './SignupConfirmation/SignupConfirmationContainer'
-import Logo from '../../layout/Logo'
-import Main from '../../layout/Main'
+import Logo from 'components/layout/Logo'
+import Main from 'components/layout/Main'
 
 const Signup = ({ location }) => {
   return (

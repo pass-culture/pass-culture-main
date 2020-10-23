@@ -5,8 +5,8 @@ import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 
 import LocationViewer from './LocationViewer'
-import FieldErrors from '../../../../layout/form/FieldErrors'
-import getRequiredValidate from '../../../../layout/form/utils/getRequiredValidate'
+import FieldErrors from 'components/layout/form/FieldErrors'
+import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
 
 const updateLocationFields = (form, { isLocationFrozen }) => location => {
   form.batch(() => {

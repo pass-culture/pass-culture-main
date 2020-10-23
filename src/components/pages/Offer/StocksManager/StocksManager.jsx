@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 
 import StockInformationMessage from './StockItem/utils/StockInformationMessage'
 import StockItemContainer from './StockItem/StockItemContainer'
-import Titles from '../../../layout/Titles/Titles'
+import Titles from 'components/layout/Titles/Titles'
 
 class StocksManager extends PureComponent {
   constructor() {

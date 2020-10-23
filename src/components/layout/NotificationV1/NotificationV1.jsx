@@ -4,7 +4,7 @@ import get from 'lodash.get'
 import React, { PureComponent } from 'react'
 import ReactTooltip from 'react-tooltip'
 
-import Icon from '../../layout/Icon'
+import Icon from 'components/layout/Icon'
 import { closeNotification } from 'store/reducers/notificationReducer'
 
 class NotificationV1 extends PureComponent {

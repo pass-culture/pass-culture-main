@@ -2,8 +2,8 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 
-import DateField from '../../../../../../../layout/form/fields/DateField/DateField'
-import TimeField from '../../../../../../../layout/form/fields/TimeField'
+import DateField from 'components/layout/form/fields/DateField/DateField'
+import TimeField from 'components/layout/form/fields/TimeField'
 
 const EventFields = ({ beginningMinDate, readOnly, stocks, timezone }) => {
   const highlightDates = (stocks || []).map(stock => stock.beginningDatetime)

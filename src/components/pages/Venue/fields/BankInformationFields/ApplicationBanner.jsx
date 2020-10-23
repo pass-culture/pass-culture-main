@@ -1,5 +1,5 @@
 import React from 'react'
-import Icon from '../../../../layout/Icon'
+import Icon from 'components/layout/Icon'
 import PropTypes from 'prop-types'
 
 export const ApplicationBanner = ({ applicationId }) => (

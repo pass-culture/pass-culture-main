@@ -1,10 +1,10 @@
 import React from 'react'
 
-import DownloadButtonContainer from '../../layout/DownloadButton/DownloadButtonContainer'
-import Main from '../../layout/Main'
-import Titles from '../../layout/Titles/Titles'
+import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
+import Main from 'components/layout/Main'
+import Titles from 'components/layout/Titles/Titles'
 import { API_URL } from '../../../utils/config'
-import CsvTableButtonContainer from '../../layout/CsvTableButton/CsvTableButtonContainer'
+import CsvTableButtonContainer from 'components/layout/CsvTableButton/CsvTableButtonContainer'
 
 const Reimbursements = () => (
   <Main name="reimbursements">

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import Icon from '../../layout/Icon'
+import Icon from 'components/layout/Icon'
 
 const NoMatch = ({ redirect }) => (
   <div className="page fullscreen no-match">

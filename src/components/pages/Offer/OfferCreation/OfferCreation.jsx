@@ -17,8 +17,8 @@ import { requestData } from 'redux-saga-data'
 
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
 import StocksManagerContainer from '../StocksManager/StocksManagerContainer'
-import Titles from '../../../layout/Titles/Titles'
-import Main from '../../../layout/Main'
+import Titles from 'components/layout/Titles/Titles'
+import Main from 'components/layout/Main'
 import { musicOptions, showOptions } from '../../../../utils/edd'
 import { offerNormalizer } from '../../../../utils/normalizers'
 
@@ -27,9 +27,9 @@ import { CGU_URL } from '../../../../utils/config'
 
 import { getDurationInHours, getDurationInMinutes } from '../utils/duration'
 import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
-import { webappOfferUrl } from '../../../layout/OfferPreviewLink/webappOfferUrl'
-import OfferPreviewLink from '../../../layout/OfferPreviewLink/OfferPreviewLink'
-import Insert from '../../../layout/Insert/Insert'
+import { webappOfferUrl } from 'components/layout/OfferPreviewLink/webappOfferUrl'
+import OfferPreviewLink from 'components/layout/OfferPreviewLink/OfferPreviewLink'
+import Insert from 'components/layout/Insert/Insert'
 
 import offerIsRefundable from '../domain/offerIsRefundable'
 import { isAllocineOffer, isOfferFromStockProvider } from '../domain/localProvider'

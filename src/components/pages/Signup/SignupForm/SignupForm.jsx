@@ -5,11 +5,11 @@ import { Link } from 'react-router-dom'
 import { Field, Form } from 'react-final-form'
 
 import bindAddressAndDesignationFromSiren from '../../Offerer/OffererCreation/decorators/bindSirenFieldToDesignation'
-import PasswordField from '../../../layout/form/fields/PasswordField'
+import PasswordField from 'components/layout/form/fields/PasswordField'
 import SirenField from './SirenField/SirenField'
-import FieldErrors from '../../../layout/form/FieldErrors'
-import Icon from '../../../layout/Icon'
-import TextInput from '../../../layout/inputs/TextInput/TextInput'
+import FieldErrors from 'components/layout/form/FieldErrors'
+import Icon from 'components/layout/Icon'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
 
 const addressAndDesignationFromSirenDecorator = createDecorator({
   field: 'siren',

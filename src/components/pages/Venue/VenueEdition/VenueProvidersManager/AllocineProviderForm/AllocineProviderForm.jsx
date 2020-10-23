@@ -1,12 +1,12 @@
 import classNames from 'classnames'
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import NumberField from '../../../../../layout/form/fields/NumberField'
-import Icon from '../../../../../layout/Icon'
+import NumberField from 'components/layout/form/fields/NumberField'
+import Icon from 'components/layout/Icon'
 import { Form } from 'react-final-form'
 import { getCanSubmit } from 'react-final-form-utils'
-import Insert from '../../../../../layout/Insert/Insert'
-import CheckboxField from '../../../../../layout/form/fields/CheckboxField'
+import Insert from 'components/layout/Insert/Insert'
+import CheckboxField from 'components/layout/form/fields/CheckboxField'
 
 class AllocineProviderForm extends PureComponent {
   constructor() {

@@ -2,9 +2,9 @@ import { mount, shallow } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
 
-import CheckboxField from '../../../../../../layout/form/fields/CheckboxField'
-import NumberField from '../../../../../../layout/form/fields/NumberField'
-import Icon from '../../../../../../layout/Icon'
+import CheckboxField from 'components/layout/form/fields/CheckboxField'
+import NumberField from 'components/layout/form/fields/NumberField'
+import Icon from 'components/layout/Icon'
 import AllocineProviderForm from '../../AllocineProviderForm/AllocineProviderForm'
 
 describe('components | AllocineProviderForm', () => {

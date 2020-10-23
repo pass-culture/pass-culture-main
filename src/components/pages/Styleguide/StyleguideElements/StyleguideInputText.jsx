@@ -1,6 +1,6 @@
 import React from 'react'
-import TextInput from '../../../layout/inputs/TextInput/TextInput'
-import TextInputWithIcon from '../../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import TextInputWithIcon from 'components/layout/inputs/TextInputWithIcon/TextInputWithIcon'
 
 const StyleguideInputText = () => {
   const inputTextEnabled = String.raw`

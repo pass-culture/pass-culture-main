@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 import Paginate from '../Paginate'
-import Icon from '../../../../../../layout/Icon'
+import Icon from 'components/layout/Icon'
 
 describe('components | Paginate', () => {
   let props

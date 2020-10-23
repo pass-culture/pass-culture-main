@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import Home from '../Home'
 import Card from '../Card/Card'
-import Main from '../../../layout/Main'
+import Main from 'components/layout/Main'
 
 describe('src | components | Home', () => {
   it('should render two Cards', () => {

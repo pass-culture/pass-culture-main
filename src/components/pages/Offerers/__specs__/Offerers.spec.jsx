@@ -5,7 +5,7 @@ import Offerers from '../Offerers'
 import OffererItemContainer from '../OffererItem/OffererItemContainer'
 import PendingOffererItem from '../OffererItem/PendingOffererItem'
 import { Link } from 'react-router-dom'
-import Titles from '../../../layout/Titles/Titles'
+import Titles from 'components/layout/Titles/Titles'
 
 describe('src | components | Offerers', () => {
   let props

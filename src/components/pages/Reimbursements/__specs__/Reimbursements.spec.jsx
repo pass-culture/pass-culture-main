@@ -1,8 +1,8 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 import { API_URL } from '../../../../utils/config'
-import DisplayButtonContainer from '../../../layout/CsvTableButton/CsvTableButtonContainer'
-import DownloadButtonContainer from '../../../layout/DownloadButton/DownloadButtonContainer'
+import DisplayButtonContainer from 'components/layout/CsvTableButton/CsvTableButtonContainer'
+import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
 
 import Reimbursements from '../Reimbursements'
 

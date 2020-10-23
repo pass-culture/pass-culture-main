@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import { Offerer } from './Offerer'
-import Main from '../../../layout/Main'
-import Titles from '../../../layout/Titles/Titles'
+import Main from 'components/layout/Main'
+import Titles from 'components/layout/Titles/Titles'
 import BankInformation from './BankInformation/BankInformation'
 import VenuesContainer from './Venues/VenuesContainer'
 

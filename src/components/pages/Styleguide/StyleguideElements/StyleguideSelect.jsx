@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Select from '../../../layout/inputs/Select'
+import Select from 'components/layout/inputs/Select'
 
 const StyleguideSelect = () => {
   const [selectedValueId, setSelectedValueId] = useState(1)

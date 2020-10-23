@@ -1,5 +1,5 @@
 import React from 'react'
-import Icon from '../../../layout/Icon'
+import Icon from 'components/layout/Icon'
 
 const StyleguideButtons = () => {
   const primaryButton = (

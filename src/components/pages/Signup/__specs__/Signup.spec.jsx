@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import { Route } from 'react-router-dom/umd/react-router-dom'
-import Logo from '../../../layout/Logo'
+import Logo from 'components/layout/Logo'
 import Signup from '../Signup'
 
 describe('src | components | pages | Signup', () => {

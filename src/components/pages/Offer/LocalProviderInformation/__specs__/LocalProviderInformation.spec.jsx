@@ -1,7 +1,7 @@
 import { mount } from 'enzyme'
 import React from 'react'
-import Thumb from '../../../../layout/Thumb'
-import Icon from '../../../../layout/Icon'
+import Thumb from 'components/layout/Thumb'
+import Icon from 'components/layout/Icon'
 import LocalProviderInformation from '../LocalProviderInformation'
 
 describe('src | LocalProviderInformationContainer', () => {

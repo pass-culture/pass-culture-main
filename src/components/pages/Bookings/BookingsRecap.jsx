@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react'
-import Main from '../../layout/Main'
-import Titles from '../../layout/Titles/Titles'
+import Main from 'components/layout/Main'
+import Titles from 'components/layout/Titles/Titles'
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import { fetchBookingsRecapByPage } from '../../../services/bookingsRecapService'
 import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
-import Spinner from '../../layout/Spinner'
+import Spinner from 'components/layout/Spinner'
 
 class BookingsRecap extends PureComponent {
   constructor(props) {

@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 
-import Titles from '../../layout/Titles/Titles'
-import Main from '../../layout/Main'
-import UploadThumbContainer from '../../layout/UploadThumb/UploadThumbContainer'
+import Titles from 'components/layout/Titles/Titles'
+import Main from 'components/layout/Main'
+import UploadThumbContainer from 'components/layout/UploadThumb/UploadThumbContainer'
 import CanvasTools from '../../../utils/canvas'
 
 const IMAGE_UPLOAD_SIZE = 400

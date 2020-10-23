@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
-import Icon from '../../../layout/Icon'
-import Thumb from '../../../layout/Thumb'
+import Icon from 'components/layout/Icon'
+import Thumb from 'components/layout/Thumb'
 
 class LocalProviderInformation extends Component {
   componentDidMount() {

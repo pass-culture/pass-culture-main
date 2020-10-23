@@ -1,7 +1,7 @@
 import React from 'react'
 
-import Main from '../../layout/Main'
-import Titles from '../../layout/Titles/Titles'
+import Main from 'components/layout/Main'
+import Titles from 'components/layout/Titles/Titles'
 import StyleguideButtons from './StyleguideElements/StyleguideButtons'
 import StyleguideInputText from './StyleguideElements/StyleguideInputText'
 import StyleguideAgenda from './StyleguideAgenda'

@@ -2,12 +2,12 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
-import Logo from '../../layout/Logo'
-import Main from '../../layout/Main'
+import Logo from 'components/layout/Logo'
+import Main from 'components/layout/Main'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
-import TextInput from '../../layout/inputs/TextInput/TextInput'
-import TextInputWithIcon from '../../layout/inputs/TextInputWithIcon/TextInputWithIcon'
-import GenericError from '../../layout/errors/GenericError'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import TextInputWithIcon from 'components/layout/inputs/TextInputWithIcon/TextInputWithIcon'
+import GenericError from 'components/layout/errors/GenericError'
 
 class Signin extends PureComponent {
   constructor(props) {

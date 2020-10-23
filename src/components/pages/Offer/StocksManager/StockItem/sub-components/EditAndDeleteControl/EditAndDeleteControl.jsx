@@ -4,7 +4,7 @@ import { Portal } from 'react-portal'
 
 import DeleteDialog from '../DeleteDialog/DeleteDialog'
 import withFrenchQueryRouter from '../../../../../../hocs/withFrenchQueryRouter'
-import Icon from '../../../../../../layout/Icon'
+import Icon from 'components/layout/Icon'
 import { errorKeyToFrenchKey } from '../../utils/utils'
 
 class EditAndDeleteControl extends PureComponent {

@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme'
 
-import FieldErrors from '../../../../../layout/form/FieldErrors'
+import FieldErrors from 'components/layout/form/FieldErrors'
 import { addressFieldRender } from '../AddressField'
 import LocationViewer from '../LocationViewer'
 

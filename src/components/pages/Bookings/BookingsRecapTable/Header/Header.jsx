@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { CSVLink } from 'react-csv'
 import generateBookingsCsvFile from '../utils/generateBookingsCsvFile'
-import Icon from '../../../../layout/Icon'
+import Icon from 'components/layout/Icon'
 import { pluralize } from '../../../../../utils/pluralize'
 
 const Header = ({ bookingsRecapFiltered, isLoading }) => {

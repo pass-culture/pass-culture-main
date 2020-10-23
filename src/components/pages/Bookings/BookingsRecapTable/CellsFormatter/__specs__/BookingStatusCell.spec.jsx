@@ -2,7 +2,7 @@ import { mount, shallow } from 'enzyme'
 import React from 'react'
 import BookingStatusCell from '../BookingStatusCell'
 import BookingStatusCellHistory from '../BookingStatusCellHistory'
-import Icon from '../../../../../layout/Icon'
+import Icon from 'components/layout/Icon'
 
 describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell', () => {
   it('should render a div with the correct icon, classNames and status title for given status', () => {
