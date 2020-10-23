@@ -114,13 +114,15 @@ describe('getSirenInformations', () => {
     })
 
     describe('when offerer has no name', () => {
-      it('should have an empty name', async () => {
+      it('should have use firstname and lastname', async () => {
         // given
         const siren = '418166096'
         fetch.mockResponseOnce(
           JSON.stringify({
             unite_legale: {
               siren: '418166096',
+              prenom_1: 'John',
+              nom: 'Do',
               etablissement_siege: {
                 geo_l4: '3 rue de la gare',
                 libelle_commune: 'paris',
@@ -142,7 +144,7 @@ describe('getSirenInformations', () => {
           `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
         )
         expect(locationValues).toMatchObject({
-          name: '',
+          name: 'John Do',
         })
       })
     })
