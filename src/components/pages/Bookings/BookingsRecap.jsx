@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import Main from 'components/layout/Main'
 import Titles from 'components/layout/Titles/Titles'
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
-import { fetchBookingsRecapByPage } from '../../../services/bookingsRecapService'
+import { fetchBookingsRecapByPage } from 'services/bookingsRecapService'
 import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
 import Spinner from 'components/layout/Spinner'
 

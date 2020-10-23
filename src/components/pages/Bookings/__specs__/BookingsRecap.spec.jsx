@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 import Titles from 'components/layout/Titles/Titles'
 import BookingsRecap from '../BookingsRecap'
 import BookingsRecapTable from '../BookingsRecapTable/BookingsRecapTable'
-import * as bookingRecapsService from '../../../../services/bookingsRecapService'
+import * as bookingRecapsService from 'services/bookingsRecapService'
 import NoBookingsMessage from '../NoBookingsMessage/NoBookingsMessage'
 import Spinner from 'components/layout/Spinner'
 
