@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from dateutil import tz
+from freezegun import freeze_time
 import pytest
 from pytest import fixture
 
@@ -23,6 +24,7 @@ TWO_DAYS_AGO = NOW - timedelta(days=2)
 THREE_DAYS_AGO = NOW - timedelta(days=3)
 FOUR_DAYS_AGO = NOW - timedelta(days=4)
 FIVE_DAYS_AGO = NOW - timedelta(days=5)
+ONE_WEEK_FROM_NOW = NOW + timedelta(weeks=1)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -65,52 +67,62 @@ def test_find_not_cancelled_bookings_by_stock(app):
     assert set(all_not_cancelled_bookings) == {validated_booking, not_cancelled_booking}
 
 
-class FindFinalOffererBookingsTest:
+class FindPaymentEligibleBookingsForOffererTest:
     @pytest.mark.usefixtures("db_session")
-    def test_returns_bookings_for_given_offerer(self, app: fixture):
+    def test_returns_used_past_event_and_thing_bookings(self, app: fixture):
         # Given
-        user = create_user()
-        create_deposit(user)
-        offerer1 = create_offerer(siren='123456789')
-        venue = create_venue(offerer1, siret=offerer1.siren + '12345')
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_with_thing_offer(offerer1, venue, offer)
-        booking1 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
-        booking2 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
-        offerer2 = create_offerer(siren='987654321')
-        venue = create_venue(offerer2, siret=offerer2.siren + '12345')
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_with_thing_offer(offerer2, venue, offer)
-        booking3 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
-        repository.save(booking1, booking2, booking3)
+        beneficiary = create_user()
+        create_deposit(beneficiary)
+
+        offerer = create_offerer(siren='123456789')
+        venue = create_venue(offerer, siret=f'{offerer.siren}12345')
+        past_event_stock = create_stock_with_event_offer(
+            offerer=offerer, venue=venue, beginning_datetime=TWO_DAYS_AGO, booking_limit_datetime=THREE_DAYS_AGO
+        )
+        future_event_stock = create_stock_with_event_offer(
+            offerer=offerer, venue=venue, beginning_datetime=ONE_WEEK_FROM_NOW
+        )
+        past_event_booking = create_booking(user=beneficiary, is_used=True, stock=past_event_stock, venue=venue)
+        future_event_booking = create_booking(user=beneficiary, is_used=True, stock=future_event_stock, venue=venue)
+        thing_booking = create_booking(user=beneficiary, is_used=True, venue=venue)
+
+        another_offerer = create_offerer(siren='987654321')
+        another_venue = create_venue(another_offerer, siret=f'{another_offerer.siren}12345')
+        another_thing_booking = create_booking(user=beneficiary, is_used=True, venue=another_venue)
+        another_past_event_stock = create_stock_with_event_offer(
+            offerer=another_offerer, venue=another_venue, beginning_datetime=TWO_DAYS_AGO, booking_limit_datetime=THREE_DAYS_AGO
+        )
+        another_past_event_booking = create_booking(user=beneficiary, is_used=True, stock=another_past_event_stock, venue=venue)
+
+        repository.save(past_event_booking, future_event_booking, thing_booking, another_thing_booking, another_past_event_booking)
 
         # When
-        bookings = booking_repository.find_eligible_bookings_for_offerer(offerer1.id)
+        bookings = booking_repository.find_bookings_eligible_for_payment_for_offerer(offerer.id)
 
         # Then
         assert len(bookings) == 2
-        assert booking1 in bookings
-        assert booking2 in bookings
+        assert past_event_booking in bookings
+        assert thing_booking in bookings
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_bookings_with_payment_first_ordered_by_date_created(self, app: fixture):
         # Given
-        user = create_user()
-        create_deposit(user)
+        beneficiary = create_user()
+        create_deposit(beneficiary)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer, venue, offer)
-        booking1 = create_booking(user=user, date_created=FIVE_DAYS_AGO, is_used=True, stock=stock, venue=venue)
-        booking2 = create_booking(user=user, date_created=TWO_DAYS_AGO, is_used=True, stock=stock, venue=venue)
-        booking3 = create_booking(user=user, date_created=FOUR_DAYS_AGO, is_used=True, stock=stock, venue=venue)
-        booking4 = create_booking(user=user, date_created=THREE_DAYS_AGO, is_used=True, stock=stock, venue=venue)
+        booking1 = create_booking(user=beneficiary, date_created=FIVE_DAYS_AGO, is_used=True, stock=stock, venue=venue)
+        booking2 = create_booking(user=beneficiary, date_created=TWO_DAYS_AGO, is_used=True, stock=stock, venue=venue)
+        booking3 = create_booking(user=beneficiary, date_created=FOUR_DAYS_AGO, is_used=True, stock=stock, venue=venue)
+        booking4 = create_booking(user=beneficiary, date_created=THREE_DAYS_AGO, is_used=True, stock=stock, venue=venue)
         payment1 = create_payment(booking4, offerer, 5)
         payment2 = create_payment(booking3, offerer, 5)
         repository.save(booking1, booking2, payment1, payment2)
 
         # When
-        bookings = booking_repository.find_eligible_bookings_for_offerer(offerer.id)
+        bookings = booking_repository.find_bookings_eligible_for_payment_for_offerer(offerer.id)
 
         # Then
         assert bookings[0] == booking3
@@ -121,18 +133,18 @@ class FindFinalOffererBookingsTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_not_cancelled_bookings_for_offerer(self, app: fixture):
         # Given
-        user = create_user()
-        create_deposit(user)
+        beneficiary = create_user()
+        create_deposit(beneficiary)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer, venue, offer)
-        booking1 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
-        booking2 = create_booking(user=user, is_cancelled=True, is_used=True, stock=stock, venue=venue)
+        booking1 = create_booking(user=beneficiary, is_used=True, stock=stock, venue=venue)
+        booking2 = create_booking(user=beneficiary, is_cancelled=True, is_used=True, stock=stock, venue=venue)
         repository.save(booking1, booking2)
 
         # When
-        bookings = booking_repository.find_eligible_bookings_for_offerer(offerer.id)
+        bookings = booking_repository.find_bookings_eligible_for_payment_for_offerer(offerer.id)
 
         # Then
         assert len(bookings) == 1
@@ -141,28 +153,63 @@ class FindFinalOffererBookingsTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_only_used_bookings(self, app: fixture):
         # Given
-        user = create_user()
-        create_deposit(user)
+        beneficiary = create_user()
+        create_deposit(beneficiary)
         offerer = create_offerer()
         venue = create_venue(offerer)
         thing_offer = create_offer_with_thing_product(venue)
         thing_stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
-        thing_booking1 = create_booking(user=user, is_used=True, stock=thing_stock, venue=venue)
-        thing_booking2 = create_booking(user=user, is_used=False, stock=thing_stock, venue=venue)
+        thing_booking1 = create_booking(user=beneficiary, is_used=True, stock=thing_stock, venue=venue)
+        thing_booking2 = create_booking(user=beneficiary, is_used=False, stock=thing_stock, venue=venue)
         repository.save(thing_booking1, thing_booking2)
 
         # When
-        bookings = booking_repository.find_eligible_bookings_for_offerer(offerer.id)
+        bookings = booking_repository.find_bookings_eligible_for_payment_for_offerer(offerer.id)
 
         # Then
         assert len(bookings) == 1
         assert thing_booking1 in bookings
 
+    @freeze_time(datetime(2020, 7, 2, 14, 0, 0))
+    @pytest.mark.usefixtures("db_session")
+    def test_returns_only_before_today_past_event_bookings(self, app: fixture):
+        # Given
+        now = datetime.utcnow()
+        this_morning = now - timedelta(hours=4)
+        yesterday = now - timedelta(days=1)
+        tomorrow = now + timedelta(days=1)
+
+        beneficiary = create_user()
+        create_deposit(beneficiary)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        yesterday_event_stock = create_stock_with_event_offer(
+            offerer=offerer, venue=venue, beginning_datetime=yesterday, booking_limit_datetime=yesterday
+        )
+        today_past_event_stock = create_stock_with_event_offer(
+            offerer=offerer, venue=venue, beginning_datetime=this_morning, booking_limit_datetime=yesterday
+        )
+        future_event_stock = create_stock_with_event_offer(
+            offerer=offerer, venue=venue, beginning_datetime=tomorrow, booking_limit_datetime=tomorrow
+        )
+        yesterday_event_booking = create_booking(user=beneficiary, is_used=True, stock=yesterday_event_stock, venue=venue)
+        today_past_event_booking = create_booking(user=beneficiary, is_used=True, stock=today_past_event_stock, venue=venue)
+        future_event_booking = create_booking(user=beneficiary, is_used=True, stock=future_event_stock, venue=venue)
+        repository.save(yesterday_event_booking, today_past_event_booking, future_event_booking)
+
+        # When
+        bookings = booking_repository.find_bookings_eligible_for_payment_for_offerer(offerer.id)
+
+        # Then
+        # assert len(bookings) == 1
+        assert yesterday_event_booking in bookings
+        assert today_past_event_booking not in bookings
+
     @pytest.mark.usefixtures("db_session")
     def test_does_not_return_finished_for_more_than_the_automatic_refund_delay_bookings(self, app: fixture):
         # Given
-        user = create_user()
-        create_deposit(user)
+        beneficiary = create_user()
+        create_deposit(beneficiary)
         offerer = create_offerer()
         venue = create_venue(offerer)
         in_the_past_less_than_automatic_refund_delay = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY + timedelta(
@@ -179,46 +226,56 @@ class FindFinalOffererBookingsTest:
                                           venue=venue,
                                           beginning_datetime=in_the_past_less_than_automatic_refund_delay,
                                           booking_limit_datetime=in_the_past_less_than_automatic_refund_delay)
-        event_booking1 = create_booking(user=user, is_used=False,
+        event_booking1 = create_booking(user=beneficiary, is_used=False,
                                         stock=event_stock_finished_more_than_automatic_refund_delay_ago, venue=venue)
-        event_booking2 = create_booking(user=user, is_used=False,
+        event_booking2 = create_booking(user=beneficiary, is_used=False,
                                         stock=event_stock_finished_less_than_automatic_refund_delay_ago, venue=venue)
         repository.save(event_booking1, event_booking2)
 
         # When
-        bookings = booking_repository.find_eligible_bookings_for_offerer(offerer.id)
+        bookings = booking_repository.find_bookings_eligible_for_payment_for_offerer(offerer.id)
 
         # Then
         assert len(bookings) == 0
 
 
-class FindFinalVenueBookingsTest:
+class FindPaymentEligibleBookingsForVenueTest:
     @pytest.mark.usefixtures("db_session")
-    def test_returns_bookings_for_given_venue_ordered_by_date_created(self, app: fixture):
+    def test_returns_used_past_event_and_thing_bookings_ordered_by_date_created(self, app: fixture):
         # Given
-        user = create_user()
-        create_deposit(user)
-        offerer1 = create_offerer(siren='123456789')
-        venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
-        offer = create_offer_with_thing_product(venue1)
-        stock = create_stock_with_thing_offer(offerer1, venue1, offer)
-        booking1 = create_booking(user=user, date_created=datetime(2019, 1, 1), is_used=True, stock=stock, venue=venue1)
-        booking2 = create_booking(user=user, date_created=datetime(2019, 1, 2), is_used=True, stock=stock, venue=venue1)
-        offerer2 = create_offerer(siren='987654321')
-        venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
-        offer = create_offer_with_thing_product(venue2)
-        stock = create_stock_with_thing_offer(offerer2, venue2, offer)
-        booking3 = create_booking(user=user, is_used=True, stock=stock, venue=venue2)
-        repository.save(booking1, booking2, booking3)
+        beneficiary = create_user()
+        create_deposit(beneficiary)
+
+        offerer = create_offerer(siren='123456789')
+        venue = create_venue(offerer, siret=f'{offerer.siren}12345')
+        past_event_stock = create_stock_with_event_offer(
+            offerer=offerer, venue=venue, beginning_datetime=TWO_DAYS_AGO, booking_limit_datetime=THREE_DAYS_AGO
+        )
+        future_event_stock = create_stock_with_event_offer(
+            offerer=offerer, venue=venue, beginning_datetime=ONE_WEEK_FROM_NOW
+        )
+        past_event_booking = create_booking(user=beneficiary, is_used=True, stock=past_event_stock, venue=venue)
+        future_event_booking = create_booking(user=beneficiary, is_used=True, stock=future_event_stock, venue=venue)
+        thing_booking = create_booking(user=beneficiary, is_used=True, venue=venue)
+
+        another_offerer = create_offerer(siren='987654321')
+        another_venue = create_venue(another_offerer, siret=f'{another_offerer.siren}12345')
+        another_thing_booking = create_booking(user=beneficiary, is_used=True, venue=another_venue)
+        another_past_event_stock = create_stock_with_event_offer(
+            offerer=another_offerer, venue=another_venue, beginning_datetime=TWO_DAYS_AGO, booking_limit_datetime=THREE_DAYS_AGO
+        )
+        another_past_event_booking = create_booking(user=beneficiary, is_used=True, stock=another_past_event_stock, venue=venue)
+
+        repository.save(past_event_booking, future_event_booking, thing_booking, another_thing_booking, another_past_event_booking)
 
         # When
-        bookings = booking_repository.find_eligible_bookings_for_venue(venue1.id)
+        bookings = booking_repository.find_bookings_eligible_for_payment_for_venue(venue.id)
 
         # Then
         assert len(bookings) == 2
-        assert bookings[0] == booking1
-        assert bookings[1] == booking2
-        assert booking3 not in bookings
+        assert bookings[0] == past_event_booking
+        assert bookings[1] == thing_booking
+        assert future_event_booking not in bookings
 
 
 class FindDateUsedTest:

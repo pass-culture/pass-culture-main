@@ -8,6 +8,7 @@ import pcapi.core.bookings.repository as booking_repository
 from pcapi.models import Offerer, UserOfferer, VenueSQLEntity, OfferSQLEntity, StockSQLEntity, Booking, EventType, ThingType, UserSQLEntity, DiscoveryView
 from pcapi.models.db import db
 from pcapi.core.bookings.repository import count_cancelled as query_count_all_cancelled_bookings
+from pcapi.core.bookings.repository import _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers
 from pcapi.repository.offer_queries import get_active_offers_ids_query, _filter_recommendable_offers_for_search, \
     keep_only_offers_in_venues_or_national
 from pcapi.repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement, \
@@ -171,7 +172,7 @@ def get_all_bookings_count(departement_code: str = None) -> int:
 
 
 def get_all_used_or_finished_bookings(departement_code: str) -> int:
-    query = booking_repository._query_keep_only_used_or_finished_bookings_on_non_activation_offers() \
+    query = booking_repository._query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers() \
         .join(UserSQLEntity)
     if departement_code:
         query = query.filter(UserSQLEntity.departementCode == departement_code)

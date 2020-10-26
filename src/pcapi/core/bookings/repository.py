@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import date, datetime
 import math
 from typing import List, Optional, Set
 
 from dateutil import tz
-from sqlalchemy import desc, func, text
+from sqlalchemy import cast, Date, desc, func, text
 from sqlalchemy.orm import Query, joinedload, selectinload
 
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap, BookingRecap, EventBookingRecap, ThingBookingRecap
@@ -300,8 +300,8 @@ def find_not_cancelled_bookings_by_stock(stock: StockSQLEntity) -> List[Booking]
         .all()
 
 
-def find_eligible_bookings_for_offerer(offerer_id: int) -> List[Booking]:
-    return _query_keep_only_used_or_finished_bookings_on_non_activation_offers() \
+def find_bookings_eligible_for_payment_for_offerer(offerer_id: int) -> List[Booking]:
+    return _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_thing_or_event_begun_before_today_offers() \
         .join(Offerer) \
         .filter(Offerer.id == offerer_id) \
         .reset_joinpoint() \
@@ -310,8 +310,8 @@ def find_eligible_bookings_for_offerer(offerer_id: int) -> List[Booking]:
         .all()
 
 
-def find_eligible_bookings_for_venue(venue_id: int) -> List[Booking]:
-    return _query_keep_only_used_or_finished_bookings_on_non_activation_offers() \
+def find_bookings_eligible_for_payment_for_venue(venue_id: int) -> List[Booking]:
+    return _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_thing_or_event_begun_before_today_offers() \
         .filter(VenueSQLEntity.id == venue_id) \
         .reset_joinpoint() \
         .outerjoin(Payment) \
@@ -345,11 +345,20 @@ def _query_non_cancelled_non_activation_bookings() -> Query:
         .filter(Booking.isCancelled == False)
 
 
-def _query_keep_only_used_or_finished_bookings_on_non_activation_offers() -> Query:
+def _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers() -> Query:
     return _query_keep_on_non_activation_offers() \
         .join(VenueSQLEntity) \
-        .filter(Booking.isCancelled == False) \
-        .filter(Booking.isUsed == True)
+        .filter(Booking.isCancelled.is_(False)) \
+        .filter(Booking.isUsed.is_(True))
+
+
+def _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_thing_or_event_begun_before_today_offers() -> Query:
+    return _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers() \
+        .filter(
+        (cast(StockSQLEntity.beginningDatetime, Date) < date.today())
+        | (StockSQLEntity.beginningDatetime.is_(None))
+    )
+
 
 
 def find_not_used_and_not_cancelled() -> List[Booking]:

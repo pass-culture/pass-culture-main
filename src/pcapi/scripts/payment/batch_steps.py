@@ -48,13 +48,11 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
         if is_active(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE):
             booking_reimbursements = []
             for venue in offerer.managedVenues:
-                final_bookings = booking_repository.find_eligible_bookings_for_venue(
-                    venue.id)
+                final_bookings = booking_repository.find_bookings_eligible_for_payment_for_venue(venue.id)
                 booking_reimbursements += find_all_booking_reimbursements(
                     final_bookings, NEW_RULES)
         else:
-            final_bookings = booking_repository.find_eligible_bookings_for_offerer(
-                offerer.id)
+            final_bookings = booking_repository.find_bookings_eligible_for_payment_for_offerer(offerer.id)
             booking_reimbursements = find_all_booking_reimbursements(
                 final_bookings, CURRENT_RULES)
 
