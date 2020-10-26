@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Callable, List, Tuple
 
 import pandas
 from sqlalchemy import text
@@ -60,7 +60,7 @@ def get_offerers_with_offer_available_on_discovery_count_v2(departement_code: st
 
 def _get_all_physical_venue_ids() -> selectable.Alias:
     return VenueSQLEntity.query \
-        .filter(VenueSQLEntity.departementCode != None) \
+        .filter(VenueSQLEntity.departementCode.isnot(None)) \
         .with_entities(VenueSQLEntity.id) \
         .subquery()
 
@@ -158,9 +158,8 @@ def get_offers_with_non_cancelled_bookings_count(departement_code: str = None) -
     if departement_code:
         query = query.join(VenueSQLEntity).filter(
             VenueSQLEntity.departementCode == departement_code)
-
     return query \
-        .filter(Booking.isCancelled == False) \
+        .filter(Booking.isCancelled.is_(False)) \
         .filter(OfferSQLEntity.type != str(ThingType.ACTIVATION)) \
         .filter(OfferSQLEntity.type != str(EventType.ACTIVATION)) \
         .distinct(OfferSQLEntity.id) \
@@ -186,8 +185,8 @@ def count_all_cancelled_bookings(departement_code: str = None) -> int:
         departement_code) if departement_code else query_count_all_cancelled_bookings()
 
 
-def get_offer_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_digital,
-                                                counts_column_name) -> pandas.DataFrame:
+def get_offer_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_digital: Callable,
+                                                counts_column_name: str) -> pandas.DataFrame:
     offers_by_type_and_digital_table = _get_offers_grouped_by_type_and_medium()
     offer_counts_per_type_and_digital = query_get_counts_per_type_and_digital()
 
@@ -229,10 +228,10 @@ def _get_offers_grouped_by_type_and_medium() -> pandas.DataFrame:
     types = []
     digital_or_physical = []
 
-    for product_type in EventType:
-        human_product_type = product_type.value['proLabel']
+    for event_product_type in EventType:
+        human_product_type = event_product_type.value['proLabel']
         human_types.append(human_product_type)
-        types.append(str(product_type))
+        types.append(str(event_product_type))
         digital_or_physical.append('Physique')
 
     for product_type in ThingType:

@@ -96,9 +96,9 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
 
     try:
         validate_message_file_structure(xml_file)
-    except DocumentInvalid as e:
+    except DocumentInvalid as exception:
         for payment in payments:
-            payment.setStatus(TransactionStatus.NOT_PROCESSABLE, detail=str(e))
+            payment.setStatus(TransactionStatus.NOT_PROCESSABLE, detail=str(exception))
         repository.save(*payments)
         raise
 
@@ -139,9 +139,9 @@ def send_payments_details(payments: List[Payment], recipients: List[str]) -> Non
         logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
         try:
             send_payment_details_email(csv, recipients, send_raw_email)
-        except MailServiceException as e:
+        except MailServiceException as exception:
             logger.error(
-                '[BATCH][PAYMENTS] Error while sending payment details email to MailJet', e)
+                '[BATCH][PAYMENTS] Error while sending payment details email to MailJet', exception)
 
 
 def send_wallet_balances(recipients: List[str]) -> None:
@@ -155,9 +155,9 @@ def send_wallet_balances(recipients: List[str]) -> None:
     logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
     try:
         send_wallet_balances_email(csv, recipients, send_raw_email)
-    except MailServiceException as e:
+    except MailServiceException as exception:
         logger.error(
-            '[BATCH][PAYMENTS] Error while sending users wallet balances email to MailJet', e)
+            '[BATCH][PAYMENTS] Error while sending users wallet balances email to MailJet', exception)
 
 
 def send_payments_report(payments: List[Payment], recipients: List[str]) -> None:
@@ -186,12 +186,12 @@ def send_payments_report(payments: List[Payment], recipients: List[str]) -> None
     try:
         send_payments_report_emails(
             not_processable_csv, error_csv, groups, recipients, send_raw_email)
-    except MailServiceException as e:
+    except MailServiceException as exception:
         logger.error(
-            '[BATCH][PAYMENTS] Error while sending payments reports to MailJet', e)
+            '[BATCH][PAYMENTS] Error while sending payments reports to MailJet', exception)
 
 
-def set_not_processable_payments_with_bank_information_to_retry():
+def set_not_processable_payments_with_bank_information_to_retry() -> None:
     payments_to_retry = payment_queries.find_not_processable_with_bank_information()
     for payment in payments_to_retry:
         payment_bank_information_is_on_venue = payment.booking.stock.offer.venue.bic and payment.booking.stock.offer.venue.bic
