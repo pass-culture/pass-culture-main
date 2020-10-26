@@ -23,6 +23,7 @@ from pcapi.load_environment_variables import load_environment_variables
 load_environment_variables()
 
 import pcapi
+import pcapi.core.testing
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models.db import db
@@ -128,6 +129,15 @@ def _db(app):
     clean_all_database()
 
     return mock_db
+
+
+pcapi.core.testing.register_event_for_assert_num_queries()
+
+
+@pytest.fixture()
+def assert_num_queries():
+    return pcapi.core.testing.assert_num_queries
+
 
 class TestClient:
     WITH_DOC = False

@@ -1,4 +1,19 @@
+import contextlib
+import math
+
+import flask
+
 import factory.alchemy
+import pytest
+import sqlalchemy.engine
+import sqlalchemy.event
+
+# 1. SELECT the user (beneficiary).
+# 2. INSERT into the user session table
+# 3. RELEASE SAVEPOINT: repository.save() calls `session.commit()`
+# 4. SELECT the user again, since the session has been released after
+#    the RELEASE SAVEPOINT.
+AUTHENTICATION_QUERIES = 4
 
 
 class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -43,3 +58,72 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
         elif session_persistence == factory.alchemy.SESSION_PERSISTENCE_COMMIT:
             session.commit()
         return obj
+
+
+@contextlib.contextmanager
+def assert_num_queries(expected_n_queries):
+    """A context manager that verifies that we do not perform unexpected
+    SQL queries.
+
+    Usage (through the fixture of the same name)::
+
+        def test_func(assert_num_queries):
+            n_queries = 1   # authentication
+            n_queries += 1  # select blobs
+            n_queries += 2  # update blobs
+            with assert_num_queries(n_queries):
+                function_under_test()
+    """
+    # Flask gracefully provides a global. Flask-SQLAlchemy uses it for
+    # the same purpose. Let's do the same.
+    flask._app_ctx_stack._assert_num_queries = []
+    yield
+    queries = flask._app_ctx_stack._assert_num_queries
+    if len(queries) != expected_n_queries:
+        details = '\n'.join(
+            _format_sql_query(query, i, len(queries))
+            for i, query in enumerate(queries, start=1)
+        )
+        pytest.fail(
+            f"{len(queries)} queries executed, {expected_n_queries} expected\n"
+            f"Captured queries were:\n{details}"
+        )
+    del flask._app_ctx_stack._assert_num_queries
+
+
+def _format_sql_query(query, i, total):
+    # SQLAlchemy inserts '\n' into the generated SQL. We add
+    # to padding so that the whole query is properly aligned.
+    prefix_length = 3 + int(math.log(total, 10))
+    sql = (query['statement'] % query['parameters']).replace('\n', '\n' + ' ' * prefix_length)
+    return f'{i}. {sql}'
+
+
+def _record_end_of_query(statement, parameters, **kwargs):
+    """Event handler that records SQL queries for assert_num_queries
+    fixture.
+    """
+    # FIXME (dbaty, 2020-10-23): SQLAlchemy issues savepoints. This is
+    # probably due to the way we configure it, which should probably
+    # be changed.
+    if statement.startswith('SAVEPOINT'):
+        return
+    # Do not record the query if we're not within the
+    # assert_num_queries context manager.
+    if not hasattr(flask._app_ctx_stack, '_assert_num_queries'):
+        return
+    flask._app_ctx_stack._assert_num_queries.append(
+        {
+            'statement': statement,
+            'parameters': parameters,
+        }
+    )
+
+
+def register_event_for_assert_num_queries():
+    sqlalchemy.event.listen(
+        sqlalchemy.engine.Engine,
+        'after_cursor_execute',
+        _record_end_of_query,
+        named=True,
+    )
