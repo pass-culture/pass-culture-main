@@ -44,7 +44,7 @@ describe('src | components | Desk', () => {
     }
   })
 
-  it('should display title, a description and a text input', () => {
+  it('should display a title, a description and a text input', () => {
     // when
     renderDesk(props)
 
@@ -82,7 +82,7 @@ describe('src | components | Desk', () => {
       expect(screen.getByText('Saisissez une contremarque')).toBeInTheDocument()
     })
 
-    it('should display a message when is typing a token', () => {
+    it('should display a message while the user is typing a token', () => {
       // given
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
@@ -109,7 +109,7 @@ describe('src | components | Desk', () => {
     })
   })
 
-  describe('when the token is filled and valid', () => {
+  describe('when the input field is filled with a valid token', () => {
     it('should display a message and booking informations', async () => {
       // given
       jest.spyOn(props, 'getBooking').mockImplementation(() =>
@@ -144,15 +144,13 @@ describe('src | components | Desk', () => {
       expect(bookingPrice).toBeInTheDocument()
     })
 
-    it('should display an error message when token is failed', async () => {
+    it('should display an error message when token validation fails', async () => {
       // given
-      jest
-        .spyOn(props, 'getBooking')
-        .mockImplementation(() =>
-          Promise.reject({
-            json: jest.fn(() => Promise.resolve({ booking: 'token is used or invalid' })),
-          })
-        )
+      jest.spyOn(props, 'getBooking').mockImplementation(() =>
+        Promise.reject({
+          json: jest.fn(() => Promise.resolve({ booking: 'token is used or invalid' })),
+        })
+      )
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
 
