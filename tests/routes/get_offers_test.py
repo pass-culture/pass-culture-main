@@ -1,6 +1,7 @@
 import secrets
 from unittest.mock import patch
 
+from pcapi.core import testing
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import (
@@ -21,7 +22,7 @@ from pcapi.utils.human_ids import humanize
 
 class Returns200:
     def should_filter_by_venue_when_user_is_admin_and_request_specific_venue_with_no_rights_on_it(
-        self, app, db_session
+        self, app, db_session, assert_num_queries
     ):
         # Given
         admin = create_user(is_admin=True, can_book_free_offers=False)
@@ -33,11 +34,14 @@ class Returns200:
         repository.save(admin, offer_on_requested_venue, offer_on_other_venue)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_auth(email=admin.email)
-            .get(f"/offers?venueId={Identifier(requested_venue.id).scrambled}")
-        )
+        client = TestClient(app.test_client()).with_auth(email=admin.email)
+        path = f'/offers?venueId={Identifier(requested_venue.id).scrambled}'
+        n_queries = testing.AUTHENTICATION_QUERIES
+        n_queries += 1  # select offers
+        n_queries += 1  # count offers
+        n_queries += 5  # serializer: select stock, mediation, product, venue, offerer
+        with assert_num_queries(n_queries):
+            response = client.get(path)
 
         # then
         assert response.status_code == 200
