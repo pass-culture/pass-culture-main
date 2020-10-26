@@ -22,7 +22,7 @@ describe('cellsFormatter | BookingsStatusCellHistory', () => {
     const status = wrapper.find('li')
     const disc = status.find('span')
     expect(disc.hasClass('bs-history-booked')).toBe(true)
-    expect(status.text()).toBe('réservé : 04/01/2020 20:31')
+    expect(status.text()).toBe('Réservé : 04/01/2020 20:31')
   })
 
   it('should render a list with as many elements as statuses', () => {
@@ -74,7 +74,7 @@ describe('cellsFormatter | BookingsStatusCellHistory', () => {
     const status = wrapper.find('li')
     const disc = status.find('span')
     expect(disc.hasClass('bs-history-reimbursed')).toStrictEqual(true)
-    expect(status.text()).toBe('remboursé : 06/01/2020')
+    expect(status.text()).toBe('Remboursée : 06/01/2020')
   })
 
   it('should render a "-" when the date is not available', () => {
@@ -95,6 +95,6 @@ describe('cellsFormatter | BookingsStatusCellHistory', () => {
     const status = wrapper.find('li')
     const disc = status.find('span')
     expect(disc.hasClass('bs-history-reimbursed')).toStrictEqual(true)
-    expect(status.text()).toBe('remboursé : -')
+    expect(status.text()).toBe('Remboursée : -')
   })
 })

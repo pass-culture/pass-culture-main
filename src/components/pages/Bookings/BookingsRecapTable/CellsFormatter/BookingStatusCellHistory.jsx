@@ -10,9 +10,9 @@ const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
     return (
       <li key={displayInfoFromStatus.status}>
         <span className={`colored-disc ${displayInfoFromStatus.historyClassName}`} />
-        {`${displayInfoFromStatus.status} : ${computeDateForStatus(
+        {`${displayInfoFromStatus.tooltip_status} : ${computeDateForStatus(
           item,
-          displayInfoFromStatus.dateFormat,
+          displayInfoFromStatus.dateFormat
         )}`}
       </li>
     )

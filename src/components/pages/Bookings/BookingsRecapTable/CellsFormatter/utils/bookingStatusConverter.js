@@ -4,6 +4,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
     id: 'validated',
     status: 'validé',
+    tooltip_status: 'Réservation validée',
     historyClassName: 'bs-history-validated',
     statusClassName: 'booking-status-validated',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
@@ -12,6 +13,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
     id: 'cancelled',
     status: 'annulé',
+    tooltip_status: 'Réservation annulée',
     historyClassName: 'bs-history-cancelled',
     statusClassName: 'booking-status-cancelled',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
@@ -21,6 +23,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
     id: 'booked',
     status: 'réservé',
+    tooltip_status: 'Réservé',
     historyClassName: 'bs-history-booked',
     statusClassName: 'booking-status-booked',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
@@ -29,6 +32,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
     id: 'reimbursed',
     status: 'remboursé',
+    tooltip_status: 'Remboursée',
     historyClassName: 'bs-history-reimbursed',
     statusClassName: 'booking-status-reimbursed',
     dateFormat: FORMAT_DD_MM_YYYY,
@@ -37,6 +41,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
     id: 'confirmed',
     status: 'confirmé',
+    tooltip_status: 'Réservation confirmée',
     historyClassName: 'bs-history-confirmed',
     statusClassName: 'booking-status-confirmed',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
