@@ -192,6 +192,14 @@
       pointer-events: none;
     }
   }
+
+  .bc-retractation-delay {
+    @include body();
+
+    color: $grey-dark;
+    margin: rem(24px);
+    text-align: center;
+  }
 }
 
 #form-create-booking.is-read-only {

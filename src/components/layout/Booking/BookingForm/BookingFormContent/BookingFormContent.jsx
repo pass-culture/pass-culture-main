@@ -136,6 +136,14 @@ class BookingFormContent extends PureComponent {
             </span>
           </p>
         )}
+
+        {isEvent && (
+          <p className="bc-retractation-delay">
+            {
+              'Réservation annulable dans les 48h suivants la réservation et moins de 72h avant la date de l’évènement (si applicable)'
+            }
+          </p>
+        )}
       </form>
     )
   }
