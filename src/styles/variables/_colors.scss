@@ -36,9 +36,3 @@ $mediation-violet: #bd10e0;
 $mediation-green: #4cd964;
 $mediation-green-dark: #003818;
 $mediation-red: #b30041;
-
-// Understood by webpack to be accessible in JS (ex. import { blackColor } from 'styles/variables/index.scss')
-:export {
-  blackColor: $black;
-  primaryColor: $primary;
-}

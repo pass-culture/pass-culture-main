@@ -5,8 +5,8 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { configureTestStore } from 'store/testUtils'
 import { fetchAllVenuesByProUser } from 'services/venuesService'
+import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import {
@@ -295,7 +295,7 @@ describe('src | components | pages | Offers | Offers', () => {
           await renderOffers(props, store)
 
           // When
-          fireEvent.click(screen.queryByTitle('Afficher ou masquer les filtres par statut'))
+          fireEvent.click(screen.queryByAltText('Afficher ou masquer les filtres par statut'))
 
           // Then
           expect(screen.queryByText('Afficher les statuts')).toBeInTheDocument()
@@ -308,7 +308,7 @@ describe('src | components | pages | Offers | Offers', () => {
           // Given
           props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
           await renderOffers(props, store)
-          fireEvent.click(screen.queryByTitle('Afficher ou masquer les filtres par statut'))
+          fireEvent.click(screen.queryByAltText('Afficher ou masquer les filtres par statut'))
           fireEvent.click(screen.queryByLabelText('Active'))
 
           // When
@@ -331,7 +331,7 @@ describe('src | components | pages | Offers | Offers', () => {
           // Given
           props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
           await renderOffers(props, store)
-          fireEvent.click(screen.queryByTitle('Afficher ou masquer les filtres par statut'))
+          fireEvent.click(screen.queryByAltText('Afficher ou masquer les filtres par statut'))
 
           // When
           fireEvent.click(screen.queryByText('5 offres'))
@@ -724,7 +724,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Given
       props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock' }]
       await renderOffers(props, store)
-      fireEvent.click(screen.queryByTitle('Afficher ou masquer les filtres par statut'))
+      fireEvent.click(screen.queryByAltText('Afficher ou masquer les filtres par statut'))
       fireEvent.click(screen.queryByLabelText('Inactive'))
 
       // When
@@ -747,7 +747,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Given
       props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock' }]
       await renderOffers(props, store)
-      fireEvent.click(screen.queryByTitle('Afficher ou masquer les filtres par statut'))
+      fireEvent.click(screen.queryByAltText('Afficher ou masquer les filtres par statut'))
 
       // When
       fireEvent.click(screen.queryByText('Appliquer'))

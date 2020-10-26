@@ -9,14 +9,14 @@ import Main from 'components/layout/Main'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { OffersStatusFiltersModal } from 'components/pages/Offers/OffersStatusFiltersModal/OffersStatusFiltersModal'
-import { SVGFilter } from 'components/svg/SVGFilter'
 import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'services/venuesService'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from 'utils/translate'
 
 import {
   ALL_OFFERS,
   ALL_VENUES,
- ALL_OFFERERS, ALL_VENUES_OPTION,
+  ALL_OFFERERS,
+  ALL_VENUES_OPTION,
   DEFAULT_PAGE,
   EXCLUDING_STATUS_VALUE,
 } from './_constants'
@@ -79,13 +79,7 @@ class Offers extends PureComponent {
 
   updateUrlMatchingState = () => {
     const { query } = this.props
-    const {
-      page,
-      nameSearchValue,
-      selectedVenueId,
-      offererId,
-      statusFilters,
-    } = this.state
+    const { page, nameSearchValue, selectedVenueId, offererId, statusFilters } = this.state
 
     query.change({
       page: page === DEFAULT_PAGE ? null : page,
@@ -154,7 +148,8 @@ class Offers extends PureComponent {
     saveSearchFilters({
       name: nameSearchValue,
       venueId: selectedVenueId,
-     offererId, page,
+      offererId,
+      page,
       active: !statusFilters.active && EXCLUDING_STATUS_VALUE,
       inactive: !statusFilters.inactive && EXCLUDING_STATUS_VALUE,
     })
@@ -368,16 +363,19 @@ class Offers extends PureComponent {
                       {'Stock'}
                     </th>
                     <th className="th-with-filter">
-                      <span>
-                        {'Statut'}
-                      </span>
                       <button
                         onClick={this.toggleStatusFiltersVisibility}
                         type="button"
                       >
-                        <SVGFilter
-                          active={isFilteredByStatus}
+                        {'Statut'}
+                        <Icon
                           alt="Afficher ou masquer les filtres par statut"
+                          className={isFilteredByStatus ? 'active-status-filter' : undefined}
+                          svg={
+                            isFilteredByStatus
+                              ? 'ico-filter-status-active'
+                              : 'ico-filter-status-red'
+                          }
                         />
                       </button>
                       {areStatusFiltersVisible && (
