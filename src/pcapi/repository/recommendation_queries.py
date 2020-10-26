@@ -35,10 +35,10 @@ def find_recommendation_already_created_on_discovery(offer_id: str, mediation_id
                                         & (Recommendation.search == None))
     if offer_id:
         query = query.join(OfferSQLEntity)
-    mediation = mediation_queries.find_by_id(mediation_id)
     offer = find_searchable_offer(offer_id)
 
     if mediation_id:
+        mediation = mediation_queries.find_by_id(mediation_id)
         if _has_no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
             logger.debug(lambda: 'Mediation not found or found but not matching offer for offer_id=%s mediation_id=%s'
                                  % (offer_id, mediation_id))
