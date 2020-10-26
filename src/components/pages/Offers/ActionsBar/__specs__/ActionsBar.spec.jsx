@@ -22,9 +22,17 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       selectedOfferIds: ['testId1', 'testId2'],
       hideActionsBar: jest.fn(),
       setSelectedOfferIds: jest.fn(),
+      toggleSelectAllCheckboxes: jest.fn(),
       showSuccessNotification: jest.fn(),
       trackActivateOffers: jest.fn(),
       trackDeactivateOffers: jest.fn(),
+      searchFilters: {
+        name: 'keyword',
+        venueId: 'E3',
+        offererId: 'A4',
+        active: 'non',
+      },
+      switchAllOffersStatus: jest.fn(),
     }
   })
 
@@ -200,5 +208,71 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     // then
     expect(props.setSelectedOfferIds).toHaveBeenNthCalledWith(1, [])
     expect(props.hideActionsBar).toHaveBeenCalledWith()
+  })
+
+  describe('when all offers are selected', () => {
+    it('should activate all offers on click on "Activer" button', async () => {
+      // given
+      props.areAllOffersSelected = true
+      renderActionsBar(props)
+      const activateButton = screen.queryByText('Activer')
+      const expectedBody = {
+        active: 'non',
+        isActive: true,
+        name: 'keyword',
+        offererId: 'A4',
+        venueId: 'E3',
+      }
+
+      // then
+      expect(activateButton).not.toBeNull()
+
+      // when
+      fireEvent.click(activateButton)
+
+      // then
+      await waitFor(() => {
+        expect(fetchUtils.fetchFromApiWithCredentials).toHaveBeenLastCalledWith(
+          '/offers/all-active-status',
+          'PATCH',
+          expectedBody
+        )
+        expect(props.setSelectedOfferIds).toHaveBeenNthCalledWith(1, [])
+        expect(props.hideActionsBar).toHaveBeenCalledWith()
+        expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
+      })
+    })
+
+    it('should deactivate all offers on click on "Désactiver" button', async () => {
+      // given
+      props.areAllOffersSelected = true
+      renderActionsBar(props)
+      const activateButton = screen.queryByText('Désactiver')
+      const expectedBody = {
+        active: 'non',
+        isActive: false,
+        name: 'keyword',
+        offererId: 'A4',
+        venueId: 'E3',
+      }
+
+      // then
+      expect(activateButton).not.toBeNull()
+
+      // when
+      fireEvent.click(activateButton)
+
+      // then
+      await waitFor(() => {
+        expect(fetchUtils.fetchFromApiWithCredentials).toHaveBeenLastCalledWith(
+          '/offers/all-active-status',
+          'PATCH',
+          expectedBody
+        )
+        expect(props.setSelectedOfferIds).toHaveBeenNthCalledWith(1, [])
+        expect(props.hideActionsBar).toHaveBeenCalledWith()
+        expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
+      })
+    })
   })
 })

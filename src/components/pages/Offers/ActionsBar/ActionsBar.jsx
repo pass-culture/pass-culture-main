@@ -27,6 +27,7 @@ const ActionsBar = props => {
     toggleSelectAllCheckboxes,
     allOffersLength,
     areAllOffersSelected,
+    searchFilters,
   } = props
 
   const nbSelectedOffers = selectedOfferIds.length
@@ -43,12 +44,22 @@ const ActionsBar = props => {
       isActive: true,
     }
 
-    await fetchFromApiWithCredentials('/offers/active-status', 'PATCH', body)
-    refreshOffers({ shouldTriggerSpinner: false })
-    showSuccessNotification(computeActivationSuccessMessage(nbSelectedOffers))
-    handleClose()
-    trackActivateOffers(selectedOfferIds)
-    handleClose()
+    if (areAllOffersSelected) {
+      await fetchFromApiWithCredentials('/offers/all-active-status', 'PATCH', {
+        ...searchFilters,
+        isActive: true,
+      })
+      refreshOffers({ shouldTriggerSpinner: false })
+      showSuccessNotification(computeActivationSuccessMessage(nbSelectedOffers))
+      handleClose()
+    } else {
+      await fetchFromApiWithCredentials('/offers/active-status', 'PATCH', body)
+      refreshOffers({ shouldTriggerSpinner: false })
+      showSuccessNotification(computeActivationSuccessMessage(nbSelectedOffers))
+      handleClose()
+      trackActivateOffers(selectedOfferIds)
+      handleClose()
+    }
   }, [
     selectedOfferIds,
     refreshOffers,
@@ -63,12 +74,23 @@ const ActionsBar = props => {
       ids: selectedOfferIds,
       isActive: false,
     }
-    await fetchFromApiWithCredentials('/offers/active-status', 'PATCH', body)
-    refreshOffers({ shouldTriggerSpinner: false })
-    showSuccessNotification(computeDeactivationSuccessMessage(nbSelectedOffers))
-    handleClose()
-    trackDeactivateOffers(selectedOfferIds)
-    handleClose()
+
+    if (areAllOffersSelected) {
+      await fetchFromApiWithCredentials('/offers/all-active-status', 'PATCH', {
+        ...searchFilters,
+        isActive: false,
+      })
+      refreshOffers({ shouldTriggerSpinner: false })
+      showSuccessNotification(computeDeactivationSuccessMessage(nbSelectedOffers))
+      handleClose()
+    } else {
+      await fetchFromApiWithCredentials('/offers/active-status', 'PATCH', body)
+      refreshOffers({ shouldTriggerSpinner: false })
+      showSuccessNotification(computeDeactivationSuccessMessage(nbSelectedOffers))
+      handleClose()
+      trackDeactivateOffers(selectedOfferIds)
+      handleClose()
+    }
   }, [
     selectedOfferIds,
     refreshOffers,
@@ -130,15 +152,18 @@ const ActionsBar = props => {
 }
 
 ActionsBar.defaultProps = {
+  areAllOffersSelected: false,
   selectedOfferIds: [],
 }
 
 ActionsBar.propTypes = {
+  areAllOffersSelected: PropTypes.bool,
   hideActionsBar: PropTypes.func.isRequired,
   refreshOffers: PropTypes.func.isRequired,
   selectedOfferIds: PropTypes.arrayOf(PropTypes.string),
   setSelectedOfferIds: PropTypes.func.isRequired,
   showSuccessNotification: PropTypes.func.isRequired,
+  toggleSelectAllCheckboxes: PropTypes.func.isRequired,
   trackActivateOffers: PropTypes.func.isRequired,
   trackDeactivateOffers: PropTypes.func.isRequired,
 }
