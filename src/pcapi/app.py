@@ -58,9 +58,9 @@ with app.app_context():
         install_features()
 
     install_login_manager()
-    install_routes(app)
     install_documentation()
     install_admin_views(admin, db.session)
+    install_routes(app)
 
     app.register_blueprint(native_v1, url_prefix='/native/v1')
 
