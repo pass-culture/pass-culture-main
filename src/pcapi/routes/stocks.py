@@ -154,8 +154,6 @@ def delete_stock(id):
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     bookings = delete_stock_and_cancel_bookings(stock)
 
-    check_stock_is_not_imported(stock)
-
     if bookings:
         try:
             send_batch_cancellation_emails_to_users(bookings, send_raw_email)
