@@ -4,6 +4,7 @@ from typing import Optional
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.domain.pro_offers.paginated_offers_recap_repository import PaginatedOffersRepository
+from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.ts_vector import create_filter_on_ts_vector_matching_all_keywords
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
 from pcapi.models import Offerer, OfferSQLEntity, UserOfferer, VenueSQLEntity
@@ -21,6 +22,26 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
                                                             type_id: Optional[str] = None,
                                                             name_keywords: Optional[str] = None
                                                             ) -> PaginatedOffersRecap:
+        query = self.get_offers_by_filters(user_id, user_is_admin, offerer_id, status_filters, venue_id, name_keywords)
+
+        query = query.order_by(OfferSQLEntity.id.desc())
+
+        query = query.paginate(page, per_page=offers_per_page, error_out=False)
+
+        total_offers = query.total
+        total_pages = math.ceil(total_offers / offers_per_page)
+
+        return to_domain(offer_sql_entities=query.items, current_page=query.page, total_pages=total_pages, total_offers=total_offers)
+
+
+    @staticmethod
+    def get_offers_by_filters(user_id: int,
+                              user_is_admin: bool,
+                              offerer_id: Optional[Identifier] = None,
+                              status_filters: OffersStatusFilters = OffersStatusFilters(),
+                              venue_id: Optional[Identifier] = None,
+                              name_keywords: Optional[str] = None
+                              ):
         query = OfferSQLEntity.query.join(VenueSQLEntity)
         if venue_id is not None:
             query = query.filter(OfferSQLEntity.venueId == venue_id)
@@ -41,14 +62,8 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
             query = query \
                 .filter(OfferSQLEntity.isActive != False)
         if name_keywords is not None:
-            name_keywords_filter = create_filter_on_ts_vector_matching_all_keywords(OfferSQLEntity.__name_ts_vector__, name_keywords)
+            name_keywords_filter = create_filter_on_ts_vector_matching_all_keywords(OfferSQLEntity.__name_ts_vector__,
+                                                                                    name_keywords)
             query = query.filter(name_keywords_filter)
 
-        query = query.order_by(OfferSQLEntity.id.desc())
-
-        query = query.paginate(page, per_page=offers_per_page, error_out=False)
-
-        total_offers = query.total
-        total_pages = math.ceil(total_offers / offers_per_page)
-
-        return to_domain(offer_sql_entities=query.items, current_page=query.page, total_pages=total_pages, total_offers=total_offers)
+        return query
