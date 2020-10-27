@@ -97,7 +97,7 @@ def create_offerer(address: str = None,
     offerer.address = address
     offerer.city = city
     offerer.dateCreated = date_created
-    offerer.dateModifiedAtLastModified = date_modified_at_last_provider
+    offerer.dateModifiedAtLastProvider = date_modified_at_last_provider
     offerer.id = idx
     offerer.idAtProviders = id_at_providers
     offerer.isActive = is_active
@@ -149,7 +149,7 @@ def create_venue(offerer: Offerer,
     venue = VenueSQLEntity()
     venue.bookingEmail = booking_email
     venue.comment = comment
-    venue.dateModifiedAtLastModified = date_modified_at_last_provider
+    venue.dateModifiedAtLastProvider = date_modified_at_last_provider
     venue.id = idx
     venue.idAtProviders = id_at_providers
     venue.isVirtual = is_virtual
@@ -248,7 +248,7 @@ def create_stock(quantity: int = None, booking_limit_datetime: datetime = None, 
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.dateCreated = date_created
     stock.dateModified = date_modified
-    stock.dateModifiedAtLastModified = date_modified_at_last_provider
+    stock.dateModifiedAtLastProvider = date_modified_at_last_provider
     stock.hasBeenMigrated = has_been_migrated
     stock.id = idx
     stock.idAtProviders = id_at_providers
