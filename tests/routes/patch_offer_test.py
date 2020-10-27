@@ -1,11 +1,11 @@
 from datetime import datetime
 from unittest.mock import patch
+from freezegun import freeze_time
 
 from pcapi.models import OfferSQLEntity, Product, Provider
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.routes.serialization import serialize
-import pytest
 from tests.conftest import TestClient
 from pcapi.model_creators.generic_creators import (
     create_user,
@@ -26,14 +26,29 @@ from pcapi.utils.human_ids import humanize
 
 
 class Returns200:
-    @pytest.mark.usefixtures("db_session")
-    def when_updating_offer_booking_email(self, app):
+    def when_updating_offer_booking_email(self, app, db_session):
         # Given
+        mocked_date = datetime(2020, 10, 15)
+
         user = create_user()
-        offerer = create_offerer()
+        offerer = create_offerer(
+            date_created=mocked_date,
+            date_modified_at_last_provider=mocked_date,
+        )
         user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, booking_email="old@example.com")
+        venue = create_venue(
+            offerer,
+            date_created=mocked_date,
+            date_modified_at_last_provider=mocked_date,
+        )
+        offer = create_offer_with_thing_product(
+            venue,
+            booking_email="old@example.com",
+            date_created=mocked_date,
+            date_modified_at_last_provider=mocked_date,
+        )
+        offer.product.dateCreated = mocked_date
+        offer.product.dateModifiedAtLastProvider = mocked_date
 
         repository.save(offer, user, user_offerer)
 
@@ -50,12 +65,124 @@ class Returns200:
 
         # Then
         assert response.status_code == 200
+        assert response.json == {
+            "activeMediation": None,
+            "ageMax": None,
+            "ageMin": None,
+            "bookingEmail": "offer@example.com",
+            "conditions": None,
+            "dateCreated": "2020-10-15T00:00:00Z",
+            "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
+            "description": None,
+            "durationMinutes": None,
+            "extraData": {"author": "Test Author"},
+            "fieldsUpdated": [],
+            "hasBookingLimitDatetimesPassed": False,
+            "id": humanize(offer.id),
+            "idAtProviders": f"{offer.product.idAtProviders}@{venue.siret}",
+            "isActive": True,
+            "isBookable": False,
+            "isDigital": False,
+            "isDuo": False,
+            "isEditable": True,
+            "isEvent": False,
+            "isNational": False,
+            "isThing": True,
+            "lastProvider": None,
+            "lastProviderId": None,
+            "mediaUrls": ["test/urls"],
+            "mediations": [],
+            "name": "Test Book",
+            "offerType": {
+                "appLabel": "Film",
+                "conditionalFields": [],
+                "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+                "isActive": True,
+                "offlineOnly": False,
+                "onlineOnly": False,
+                "proLabel": "Audiovisuel - films sur supports physiques et VOD",
+                "sublabel": "Regarder",
+                "type": "Thing",
+                "value": "ThingType.AUDIOVISUEL",
+            },
+            "product": {
+                "ageMax": None,
+                "ageMin": None,
+                "conditions": None,
+                "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
+                "description": None,
+                "durationMinutes": None,
+                "extraData": {"author": "Test Author"},
+                "fieldsUpdated": [],
+                "id": humanize(offer.product.id),
+                "idAtProviders": offer.product.idAtProviders,
+                "isGcuCompatible": True,
+                "isNational": False,
+                "lastProviderId": None,
+                "mediaUrls": ["test/urls"],
+                "name": "Test Book",
+                "owningOffererId": None,
+                "thumbCount": 0,
+                "url": None,
+            },
+            "productId": humanize(offer.product.id),
+            "stocks": [],
+            "thumbUrl": None,
+            "type": "ThingType.AUDIOVISUEL",
+            "url": None,
+            "venue": {
+                "address": "123 rue de Paris",
+                "bic": None,
+                "bookingEmail": None,
+                "city": "Montreuil",
+                "comment": None,
+                "dateCreated": "2020-10-15T00:00:00Z",
+                "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
+                "departementCode": "93",
+                "fieldsUpdated": [],
+                "iban": None,
+                "id": humanize(venue.id),
+                "idAtProviders": None,
+                "isValidated": True,
+                "isVirtual": False,
+                "lastProviderId": None,
+                "latitude": None,
+                "longitude": None,
+                "managingOfferer": {
+                    "address": None,
+                    "bic": None,
+                    "city": "Montreuil",
+                    "dateCreated": "2020-10-15T00:00:00Z",
+                    "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
+                    "fieldsUpdated": [],
+                    "iban": None,
+                    "id": humanize(offerer.id),
+                    "idAtProviders": None,
+                    "isActive": True,
+                    "isValidated": True,
+                    "lastProviderId": None,
+                    "name": "Test Offerer",
+                    "postalCode": "93100",
+                    "siren": "123456789",
+                    "thumbCount": 0,
+                },
+                "managingOffererId": humanize(offerer.id),
+                "name": "La petite librairie",
+                "postalCode": "93100",
+                "publicName": None,
+                "siret": "12345678912345",
+                "thumbCount": 0,
+                "venueLabelId": None,
+                "venueTypeId": None,
+            },
+            "venueId": humanize(venue.id),
+            "withdrawalDetails": None,
+        }
         assert OfferSQLEntity.query.get(offer.id).bookingEmail == "offer@example.com"
 
     @patch("pcapi.use_cases.update_an_offer.redis.add_offer_id")
-    @pytest.mark.usefixtures("db_session")
     def when_updating_an_offer_expect_offer_id_to_be_added_to_redis(
-        self, mock_add_offer_id_to_redis, app
+        self, mock_add_offer_id_to_redis, app, db_session
     ):
         # Given
         user = create_user()
@@ -83,8 +210,9 @@ class Returns200:
             client=app.redis_client, offer_id=offer.id
         )
 
-    @pytest.mark.usefixtures("db_session")
-    def when_user_updating_thing_offer_is_linked_to_same_owning_offerer(self, app):
+    def when_user_updating_thing_offer_is_linked_to_same_owning_offerer(
+        self, app, db_session
+    ):
         # Given
         user = create_user(email="editor@example.com")
         owning_offerer = create_offerer()
@@ -112,8 +240,9 @@ class Returns200:
         assert OfferSQLEntity.query.get(offer_id).name == "New Name"
         assert Product.query.get(product_id).name == "New Name"
 
-    @pytest.mark.usefixtures("db_session")
-    def when_user_updating_thing_offer_is_not_linked_to_owning_offerer(self, app):
+    def when_user_updating_thing_offer_is_not_linked_to_owning_offerer(
+        self, app, db_session
+    ):
         # Given
         user = create_user(email="editor@example.com")
         owning_offerer = create_offerer(siren="123456789")
@@ -142,9 +271,8 @@ class Returns200:
         assert OfferSQLEntity.query.get(offer_id).name == "New Name"
         assert Product.query.get(product_id).name == "Old Name"
 
-    @pytest.mark.usefixtures("db_session")
     def when_user_updating_thing_offer_has_rights_on_offer_but_no_owningOfferer_for_thing(
-        self, app
+        self, app, db_session
     ):
         # Given
         user = create_user(email="editor@example.com")
@@ -171,8 +299,7 @@ class Returns200:
         assert OfferSQLEntity.query.one().name == "New Name"
         assert Product.query.one().name == "Old Name"
 
-    @pytest.mark.usefixtures("db_session")
-    def when_deactivate_offer_from_provider(self, app):
+    def when_deactivate_offer_from_provider(self, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -198,8 +325,7 @@ class Returns200:
         assert response.status_code == 200
         assert not OfferSQLEntity.query.get(offer_id).isActive
 
-    @pytest.mark.usefixtures("db_session")
-    def when_activate_offer_from_provider(self, app):
+    def when_activate_offer_from_provider(self, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -228,8 +354,7 @@ class Returns200:
         assert response.status_code == 200
         assert OfferSQLEntity.query.get(offer_id).isActive
 
-    @pytest.mark.usefixtures("db_session")
-    def when_patch_an_offer_that_is_imported_from_titelive(self, app):
+    def when_patch_an_offer_that_is_imported_from_titelive(self, app, db_session):
         # given
         tite_live_provider = Provider.query.filter(
             Provider.localClass == "TiteLiveThings"
@@ -260,8 +385,7 @@ class Returns200:
         # then
         assert response.status_code == 200
 
-    @pytest.mark.usefixtures("db_session")
-    def when_patch_an_offer_that_is_imported_from_allocine(self, app):
+    def when_patch_an_offer_that_is_imported_from_allocine(self, app, db_session):
         # given
         allocine_provider = Provider.query.filter(
             Provider.localClass == "AllocineStocks"
@@ -294,8 +418,7 @@ class Returns200:
 
 
 class Returns400:
-    @pytest.mark.usefixtures("db_session")
-    def when_trying_to_patch_forbidden_attributes(self, app):
+    def when_trying_to_patch_forbidden_attributes(self, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -343,8 +466,7 @@ class Returns400:
         for key in forbidden_keys:
             assert key in response.json
 
-    @pytest.mark.usefixtures("db_session")
-    def when_offer_name_is_too_long(self, app):
+    def when_offer_name_is_too_long(self, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -374,8 +496,7 @@ class Returns400:
             "Le titre de l’offre doit faire au maximum 90 caractères."
         ]
 
-    @pytest.mark.usefixtures("db_session")
-    def when_trying_to_patch_an_imported_offer(self, app):
+    def when_trying_to_patch_an_imported_offer(self, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -412,8 +533,9 @@ class Returns400:
             "Les offres importées ne sont pas modifiables"
         ]
 
-    @pytest.mark.usefixtures("db_session")
-    def when_trying_to_patch_any_allocine_offer_field_except_is_duo(self, app):
+    def when_trying_to_patch_any_allocine_offer_field_except_is_duo(
+        self, app, db_session
+    ):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -447,8 +569,7 @@ class Returns400:
 
 
 class Returns403:
-    @pytest.mark.usefixtures("db_session")
-    def when_user_is_not_attached_to_offerer(self, app):
+    def when_user_is_not_attached_to_offerer(self, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -475,8 +596,7 @@ class Returns403:
 
 
 class Returns404:
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_404_if_offer_does_not_exist(self, app):
+    def test_returns_404_if_offer_does_not_exist(self, app, db_session):
         # given
         user = create_user()
         repository.save(user)
