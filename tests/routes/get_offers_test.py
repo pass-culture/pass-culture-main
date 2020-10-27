@@ -40,9 +40,35 @@ class Returns200:
         )
 
         # then
-        offers = response.json["offers"]
         assert response.status_code == 200
-        assert len(offers) == 1
+        assert response.json == {
+            "offers": [
+                {
+                    "hasBookingLimitDatetimesPassed": False,
+                    "id": humanize(offer_on_requested_venue.id),
+                    "isActive": True,
+                    "isEditable": True,
+                    "isEvent": False,
+                    "isThing": True,
+                    "name": "Test Book",
+                    "stocks": [],
+                    "thumbUrl": None,
+                    "type": "ThingType.AUDIOVISUEL",
+                    "venue": {
+                        "id": humanize(requested_venue.id),
+                        "isVirtual": False,
+                        "managingOffererId": humanize(offerer.id),
+                        "name": "La petite librairie",
+                        "offererName": "Test Offerer",
+                        "publicName": None,
+                    },
+                    "venueId": humanize(requested_venue.id),
+                }
+            ],
+            "page": 1,
+            "page_count": 1,
+            "total_count": 1,
+        }
 
     def should_filter_by_venue_when_user_is_not_admin_and_request_specific_venue_with_rights_on_it(
         self, app, db_session
@@ -95,12 +121,35 @@ class Returns200:
         )
 
         # then
-        offers = response.json["offers"]
         assert response.status_code == 200
-        assert len(offers) == 1
-        assert response.json["page"] == 1
-        assert response.json["page_count"] == 1
-        assert response.json["total_count"] == 2
+        assert response.json == {
+            "offers": [
+                {
+                    "hasBookingLimitDatetimesPassed": False,
+                    "id": humanize(offer1.id),
+                    "isActive": True,
+                    "isEditable": True,
+                    "isEvent": False,
+                    "isThing": True,
+                    "name": "Test Book",
+                    "stocks": [],
+                    "thumbUrl": None,
+                    "type": "ThingType.AUDIOVISUEL",
+                    "venue": {
+                        "id": humanize(venue.id),
+                        "isVirtual": False,
+                        "managingOffererId": humanize(offerer.id),
+                        "name": "La petite librairie",
+                        "offererName": "Test Offerer",
+                        "publicName": None,
+                    },
+                    "venueId": humanize(venue.id),
+                }
+            ],
+            "page": 1,
+            "page_count": 1,
+            "total_count": 2,
+        }
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user.execute")
     def test_does_not_show_result_to_user_offerer_when_not_validated(
