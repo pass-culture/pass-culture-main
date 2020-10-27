@@ -1,6 +1,5 @@
 from pcapi.models import EventType, OfferSQLEntity, ThingType, Product, Offerer
 from pcapi.repository import repository
-import pytest
 from tests.conftest import TestClient
 from pcapi.model_creators.generic_creators import (
     create_user,
@@ -17,8 +16,7 @@ from pcapi.utils.human_ids import humanize, dehumanize
 
 
 class Returns400:
-    @pytest.mark.usefixtures("db_session")
-    def when_venue_id_is_not_received(self, app):
+    def when_venue_id_is_not_received(self, app, db_session):
         # Given
         user = create_user(email="test@email.com")
         json = {
@@ -40,8 +38,7 @@ class Returns400:
         assert request.status_code == 400
         assert request.json["venueId"] == ["Vous devez préciser un identifiant de lieu"]
 
-    @pytest.mark.usefixtures("db_session")
-    def when_no_duration_given_for_an_event(self, app):
+    def when_no_duration_given_for_an_event(self, app, db_session):
         # Given
         user = create_user(email="test@email.com")
         offerer = create_offerer()
@@ -66,8 +63,7 @@ class Returns400:
         # Then
         assert request.status_code == 201
 
-    @pytest.mark.usefixtures("db_session")
-    def when_venue_is_not_found(self, app):
+    def when_venue_is_not_found(self, app, db_session):
         # Given
         user = create_user(email="test@email.com")
         json = {
@@ -90,8 +86,7 @@ class Returns400:
             "Aucun objet ne correspond à cet identifiant dans notre base de données"
         ]
 
-    @pytest.mark.usefixtures("db_session")
-    def when_new_offer_has_errors(self, app):
+    def when_new_offer_has_errors(self, app, db_session):
         # Given
         user = create_user(email="test@email.com")
         offerer = create_offerer()
@@ -119,8 +114,7 @@ class Returns400:
             "Une offre de type Jeux (support physique) ne peut pas être numérique"
         ]
 
-    @pytest.mark.usefixtures("db_session")
-    def when_offer_type_is_unknown(self, app):
+    def when_offer_type_is_unknown(self, app, db_session):
         # Given
         user = create_user(email="test@email.com")
         offerer = create_offerer()
@@ -148,8 +142,7 @@ class Returns400:
         assert response.status_code == 400
         assert response.json["type"] == ["Le type de cette offre est inconnu"]
 
-    @pytest.mark.usefixtures("db_session")
-    def when_offer_name_is_too_long(self, app):
+    def when_offer_name_is_too_long(self, app, db_session):
         # Given
         user = create_user(email="test@email.com")
         offerer = create_offerer()
@@ -181,8 +174,7 @@ class Returns400:
 
 
 class Returns201:
-    @pytest.mark.usefixtures("db_session")
-    def when_creating_a_new_event_offer(self, app):
+    def when_creating_a_new_event_offer(self, app, db_session):
         # Given
         user = create_user(email="test@email.com")
         offerer = create_offerer()
@@ -222,8 +214,7 @@ class Returns201:
         assert offer.type == str(EventType.SPECTACLE_VIVANT)
         assert offer.product.owningOfferer == Offerer.query.get(offerer_id)
 
-    @pytest.mark.usefixtures("db_session")
-    def when_creating_a_new_event_offer_without_booking_email(self, app):
+    def when_creating_a_new_event_offer_without_booking_email(self, app, db_session):
         # Given
         user = create_user(email="test@email.com")
         offerer = create_offerer()
@@ -251,8 +242,7 @@ class Returns201:
         assert response.status_code == 201
         assert offer.bookingEmail == None
 
-    @pytest.mark.usefixtures("db_session")
-    def when_creating_new_thing_offer(self, app):
+    def when_creating_new_thing_offer(self, app, db_session):
         # Given
         user = create_user(email="test@email.com")
         offerer = create_offerer()
@@ -297,8 +287,7 @@ class Returns201:
         assert thing_product.isNational
         assert offer.product.owningOfferer == Offerer.query.get(offerer_id)
 
-    @pytest.mark.usefixtures("db_session")
-    def when_creating_a_new_offer_from_an_existing_thing(self, app):
+    def when_creating_a_new_offer_from_an_existing_thing(self, app, db_session):
         # given
         user = create_user(email="user@test.com")
         offerer = create_offerer()
@@ -316,8 +305,7 @@ class Returns201:
         # then
         assert response.status_code == 201
 
-    @pytest.mark.usefixtures("db_session")
-    def when_creating_a_new_offer_from_an_existing_event(self, app):
+    def when_creating_a_new_offer_from_an_existing_event(self, app, db_session):
         # given
         user = create_user(email="user@test.com")
         offerer = create_offerer()
@@ -335,8 +323,9 @@ class Returns201:
         # then
         assert response.status_code == 201
 
-    @pytest.mark.usefixtures("db_session")
-    def when_creating_a_new_activation_event_offer_as_a_global_admin(self, app):
+    def when_creating_a_new_activation_event_offer_as_a_global_admin(
+        self, app, db_session
+    ):
         # Given
         user = create_user(
             can_book_free_offers=False, email="test@email.com", is_admin=True
@@ -364,8 +353,9 @@ class Returns201:
 
 
 class Returns403:
-    @pytest.mark.usefixtures("db_session")
-    def when_creating_a_new_activation_event_offer_as_an_offerer_editor(self, app):
+    def when_creating_a_new_activation_event_offer_as_an_offerer_editor(
+        self, app, db_session
+    ):
         # Given
         user = create_user(email="test@email.com", is_admin=False)
         offerer = create_offerer()
@@ -393,8 +383,9 @@ class Returns403:
             "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"
         ]
 
-    @pytest.mark.usefixtures("db_session")
-    def when_creating_a_new_activation_event_offer_as_an_offerer_admin(self, app):
+    def when_creating_a_new_activation_event_offer_as_an_offerer_admin(
+        self, app, db_session
+    ):
         # Given
         user = create_user(email="test@email.com", is_admin=False)
         offerer = create_offerer()
@@ -422,8 +413,7 @@ class Returns403:
             "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"
         ]
 
-    @pytest.mark.usefixtures("db_session")
-    def when_user_is_not_attached_to_offerer(self, app):
+    def when_user_is_not_attached_to_offerer(self, app, db_session):
         # Given
         user = create_user(email="test@email.com")
         offerer = create_offerer()
