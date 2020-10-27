@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pcapi.models import EventType, OfferSQLEntity, ThingType, Product, Offerer
 from pcapi.repository import repository
 from tests.conftest import TestClient
@@ -289,11 +291,19 @@ class Returns201:
 
     def when_creating_a_new_offer_from_an_existing_thing(self, app, db_session):
         # given
+        date_now = datetime(2020, 10, 15)
+
         user = create_user(email="user@test.com")
-        offerer = create_offerer()
+        offerer = create_offerer(
+            date_created=date_now, date_modified_at_last_provider=date_now
+        )
         user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        thing_product = create_product_with_thing_type()
+        venue = create_venue(
+            offerer, date_created=date_now, date_modified_at_last_provider=date_now
+        )
+        thing_product = create_product_with_thing_type(
+            date_modified_at_last_provider=date_now, id_at_providers="1234567891"
+        )
         repository.save(user_offerer, venue, thing_product)
 
         data = {"venueId": humanize(venue.id), "productId": humanize(thing_product.id)}
@@ -304,6 +314,126 @@ class Returns201:
 
         # then
         assert response.status_code == 201
+        date_created = response.json["dateCreated"]
+        date_modified_at_last_provider = response.json["dateModifiedAtLastProvider"]
+        offer_id = response.json["id"]
+        assert response.json == {
+            "activeMediation": None,
+            "ageMax": None,
+            "ageMin": None,
+            "bookingEmail": None,
+            "conditions": None,
+            "dateCreated": date_created,
+            "dateModifiedAtLastProvider": date_modified_at_last_provider,
+            "description": None,
+            "durationMinutes": None,
+            "extraData": {"author": "Test Author"},
+            "fieldsUpdated": [],
+            "hasBookingLimitDatetimesPassed": False,
+            "id": offer_id,
+            "idAtProviders": None,
+            "isActive": True,
+            "isBookable": False,
+            "isDigital": False,
+            "isDuo": False,
+            "isEditable": True,
+            "isEvent": False,
+            "isNational": False,
+            "isThing": True,
+            "lastProvider": None,
+            "lastProviderId": None,
+            "mediaUrls": ["test/urls"],
+            "mediations": [],
+            "name": "Test Book",
+            "offerType": {
+                "appLabel": "Livre ou carte lecture",
+                "conditionalFields": ["author", "isbn"],
+                "description": "S’abonner à un quotidien d’actualité ? À un "
+                "hebdomadaire humoristique ? À un mensuel dédié "
+                "à la nature ? Acheter une BD ou un manga ? Ou "
+                "tout simplement ce livre dont tout le monde "
+                "parle ?",
+                "isActive": True,
+                "offlineOnly": False,
+                "onlineOnly": False,
+                "proLabel": "Livres papier ou numérique, abonnements lecture",
+                "sublabel": "Lire",
+                "type": "Thing",
+                "value": "ThingType.LIVRE_EDITION",
+            },
+            "product": {
+                "ageMax": None,
+                "ageMin": None,
+                "conditions": None,
+                "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
+                "description": None,
+                "durationMinutes": None,
+                "extraData": {"author": "Test Author"},
+                "fieldsUpdated": [],
+                "id": humanize(thing_product.id),
+                "idAtProviders": "1234567891",
+                "isGcuCompatible": True,
+                "isNational": False,
+                "lastProviderId": None,
+                "mediaUrls": ["test/urls"],
+                "name": "Test Book",
+                "owningOffererId": None,
+                "thumbCount": 1,
+                "url": None,
+            },
+            "productId": humanize(thing_product.id),
+            "stocks": [],
+            "thumbUrl": f"http://localhost/storage/thumbs/products/{humanize(thing_product.id)}",
+            "type": "ThingType.LIVRE_EDITION",
+            "url": None,
+            "venue": {
+                "address": "123 rue de Paris",
+                "bic": None,
+                "bookingEmail": None,
+                "city": "Montreuil",
+                "comment": None,
+                "dateCreated": "2020-10-15T00:00:00Z",
+                "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
+                "departementCode": "93",
+                "fieldsUpdated": [],
+                "iban": None,
+                "id": humanize(venue.id),
+                "idAtProviders": None,
+                "isValidated": True,
+                "isVirtual": False,
+                "lastProviderId": None,
+                "latitude": None,
+                "longitude": None,
+                "managingOfferer": {
+                    "address": None,
+                    "bic": None,
+                    "city": "Montreuil",
+                    "dateCreated": "2020-10-15T00:00:00Z",
+                    "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
+                    "fieldsUpdated": [],
+                    "iban": None,
+                    "id": humanize(offerer.id),
+                    "idAtProviders": None,
+                    "isActive": True,
+                    "isValidated": True,
+                    "lastProviderId": None,
+                    "name": "Test Offerer",
+                    "postalCode": "93100",
+                    "siren": "123456789",
+                    "thumbCount": 0,
+                },
+                "managingOffererId": humanize(offerer.id),
+                "name": "La petite librairie",
+                "postalCode": "93100",
+                "publicName": None,
+                "siret": "12345678912345",
+                "thumbCount": 0,
+                "venueLabelId": None,
+                "venueTypeId": None,
+            },
+            "venueId": humanize(venue.id),
+            "withdrawalDetails": None,
+        }
 
     def when_creating_a_new_offer_from_an_existing_event(self, app, db_session):
         # given
