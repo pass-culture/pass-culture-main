@@ -7,7 +7,7 @@ jest.mock('utils/fetch', () => ({
 }))
 
 describe('src | DeskContainer', () => {
-  it('should retrive a booking with a token given', () => {
+  it('should retrieve a booking with a token given', () => {
     // given
     const { getBooking } = mapDispatchToProps(jest.fn())
 
@@ -28,6 +28,20 @@ describe('src | DeskContainer', () => {
     // then
     expect(fetchFromApiWithCredentials).toHaveBeenCalledWith(
       '/v2/bookings/use/token/ABCDEF',
+      'PATCH'
+    )
+  })
+
+  it('should invalid a booking with a token given', () => {
+    // given
+    const { invalidateBooking } = mapDispatchToProps(jest.fn())
+
+    // when
+    invalidateBooking('ABCDEF')
+
+    // then
+    expect(fetchFromApiWithCredentials).toHaveBeenCalledWith(
+      '/v2/bookings/keep/token/ABCDEF',
       'PATCH'
     )
   })

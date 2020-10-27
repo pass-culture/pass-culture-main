@@ -17,6 +17,8 @@ export const mapDispatchToProps = dispatch => ({
       return booking
     }),
   validateBooking: code => fetchFromApiWithCredentials(`/v2/bookings/use/token/${code}`, 'PATCH'),
+  invalidateBooking: code =>
+    fetchFromApiWithCredentials(`/v2/bookings/keep/token/${code}`, 'PATCH'),
 })
 
 export const mergeProps = (stateProps, dispatchProps, ownProps) => ({

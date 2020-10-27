@@ -6,150 +6,177 @@ import Main from 'components/layout/Main'
 import Titles from 'components/layout/Titles/Titles'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
-const TOKEN_MAX_LENGTH = 6
-const TOKEN_SYNTAX_VALID = /[^a-z0-9]/i
-
-const CHAR_REMAINING = 'CHAR_REMAINING'
-const SYNTAX_INVALID = 'SYNTAX_INVALID'
-const VERIFICATION_IN_PROGRESS = 'VERIFICATION_IN_PROGRESS'
-const VERIFICATION_SUCCESS = 'VERIFICATION_SUCCESS'
-const VERIFICATION_FAILED = 'VERIFICATION_FAILED'
-const REGISTERING_IN_PROGRESS = 'REGISTERING_IN_PROGRESS'
-const REGISTERING_SUCCESS = 'REGISTERING_SUCCESS'
-const REGISTERING_FAILED = 'REGISTERING_FAILED'
-
-const displayBookingDate = booking =>
-  !booking.date
-    ? 'Permanent'
-    : formatLocalTimeDateString(booking.date, booking.venueDepartementCode)
-
 class Desk extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
       booking: null,
-      status: '',
+      isDisabledButton: true,
+      isUsedToken: false,
+      level: '',
+      message: 'Saisissez une contremarque',
       token: '',
     }
+
+    this.TOKEN_MAX_LENGTH = 6
+    this.VALID_TOKEN_SYNTAX = /[^a-z0-9]/i
+    this.BOOKING_ALREADY_USED = 410
   }
+
+  formattedBookingDate = booking =>
+    !booking.datetime
+      ? 'Permanent'
+      : formatLocalTimeDateString(
+        booking.datetime,
+        booking.venueDepartementCode,
+        'DD/MM/YYYY - HH[h]mm'
+      )
+
+  firstErrorMessageFromApi = body => Object.keys(body)[0]
 
   isValidToken = event => {
     const { getBooking } = this.props
     const token = event.target.value.toUpperCase()
-    const status = this.getStatusFromToken(token)
-    this.setState({ booking: null, status, token })
+    const { canCheckTheToken, level, message } = this.getStatusFromToken(token)
+    this.setState({
+      booking: null,
+      level,
+      message,
+      token,
+    })
 
-    if (status === VERIFICATION_IN_PROGRESS) {
+    if (canCheckTheToken) {
       getBooking(token)
         .then(booking => {
           this.setState({
             booking,
-            status: VERIFICATION_SUCCESS,
+            isDisabledButton: false,
+            message: 'Coupon vérifié, cliquez sur "Valider" pour enregistrer',
           })
         })
         .catch(error => {
-          error.json().then(body => {
-            this.setState({
-              status: VERIFICATION_FAILED,
-              message: body[Object.keys(body)[0]],
+          if (error.status === this.BOOKING_ALREADY_USED) {
+            error.json().then(body => {
+              this.setState({
+                level: '',
+                isUsedToken: true,
+                message: body[this.firstErrorMessageFromApi(body)],
+              })
             })
-          })
+          } else {
+            error.json().then(body => {
+              this.setState({
+                level: 'error',
+                message: body[this.firstErrorMessageFromApi(body)],
+              })
+            })
+          }
         })
     }
   }
 
   getStatusFromToken = token => {
     if (token === '') {
-      return ''
+      return {
+        canCheckTheToken: false,
+        level: '',
+        message: 'Saisissez une contremarque',
+      }
     }
 
-    if (token.match(TOKEN_SYNTAX_VALID) !== null) {
-      return SYNTAX_INVALID
+    if (token.match(this.VALID_TOKEN_SYNTAX) !== null) {
+      return {
+        canCheckTheToken: false,
+        level: 'error',
+        message: 'Caractères valides : de A à Z et de 0 à 9',
+      }
     }
 
-    if (token.length < TOKEN_MAX_LENGTH) {
-      return CHAR_REMAINING
+    if (token.length < this.TOKEN_MAX_LENGTH) {
+      return {
+        canCheckTheToken: false,
+        level: '',
+        message: `Caractères restants : ${this.TOKEN_MAX_LENGTH - token.length}/${
+          this.TOKEN_MAX_LENGTH
+        }`,
+      }
     }
 
-    return VERIFICATION_IN_PROGRESS
+    return {
+      canCheckTheToken: true,
+      level: '',
+      message: 'Vérification...',
+    }
   }
 
   registrationOfToken = token => event => {
     event.preventDefault()
     const { validateBooking } = this.props
-    this.setState({ status: REGISTERING_IN_PROGRESS })
+    this.setState({
+      message: 'Validation en cours...',
+    })
 
     validateBooking(token)
       .then(() => {
         const { trackValidateBookingSuccess } = this.props
-        this.setState({ status: REGISTERING_SUCCESS })
+        this.setState({
+          message: 'Contremarque validée !',
+        })
         trackValidateBookingSuccess(token)
+      })
+      .then(() => {
+        this.setState({
+          isDisabledButton: false,
+          isUsedToken: true,
+        })
       })
       .catch(error => {
         error.json().then(body => {
           this.setState({
-            status: REGISTERING_FAILED,
-            message: body[Object.keys(body)[0]],
+            level: 'error',
+            message: body[this.firstErrorMessageFromApi(body)],
           })
         })
       })
   }
 
-  getValuesFromStatus = status => {
-    let { message, token } = this.state
-    let level = ''
+  invalidationOfToken = token => event => {
+    event.preventDefault()
+    const { invalidateBooking } = this.props
+    this.setState({
+      message: 'Invalidation en cours...',
+    })
 
-    switch (status) {
-      case CHAR_REMAINING:
-        message = `Caractères restants : ${TOKEN_MAX_LENGTH - token.length}/${TOKEN_MAX_LENGTH}`
-        break
-      case SYNTAX_INVALID:
-        message = 'Caractères valides : de A à Z et de 0 à 9'
-        level = 'error'
-        break
-      case VERIFICATION_IN_PROGRESS:
-        message = 'Vérification...'
-        break
-      case VERIFICATION_SUCCESS:
-        message = 'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
-        break
-      case REGISTERING_IN_PROGRESS:
-        message = 'Enregistrement en cours...'
-        break
-      case REGISTERING_SUCCESS:
-        message = 'Enregistrement réussi !'
-        break
-      case VERIFICATION_FAILED:
-        level = 'error'
-        break
-      case REGISTERING_FAILED:
-        level = 'error'
-        break
-      default:
-        message = 'Saisissez une contremarque'
-    }
-
-    return {
-      level,
-      message,
-    }
+    invalidateBooking(token)
+      .then(() => {
+        this.setState({
+          message: 'Contremarque invalidée !',
+        })
+      })
+      .then(() => {
+        this.setState({
+          isUsedToken: false,
+          isDisabledButton: false,
+        })
+      })
   }
 
   render() {
-    const { booking, status, token } = this.state
-    const { level, message } = this.getValuesFromStatus(status)
+    const { booking, isDisabledButton, isUsedToken, level, message, token } = this.state
 
     return (
       <Main name="desk">
         <Titles title="Guichet" />
         <p className="advice">
-          {'Enregistrez les contremarques de réservations présentés par les porteurs du pass.'}
+          {
+            'Saisissez les contremarques présentées par les jeunes afin de les valider ou de les invalider.'
+          }
         </p>
         <form>
           <TextInput
             label="Contremarque"
-            maxLength={TOKEN_MAX_LENGTH}
+            maxLength={this.TOKEN_MAX_LENGTH}
             name="token"
             onChange={this.isValidToken}
             placeholder="ex : AZE123"
@@ -184,7 +211,7 @@ class Desk extends Component {
                   {'Date de l’offre : '}
                 </div>
                 <div className="desk-value">
-                  {displayBookingDate(booking)}
+                  {this.formattedBookingDate(booking)}
                 </div>
               </div>
               <div>
@@ -199,14 +226,25 @@ class Desk extends Component {
           )}
 
           <div className="desk-button">
-            <button
-              className="primary-button"
-              disabled={status !== VERIFICATION_SUCCESS}
-              onClick={this.registrationOfToken(token)}
-              type="submit"
-            >
-              {'Valider la contremarque'}
-            </button>
+            {isUsedToken && (
+              <button
+                className="secondary-button"
+                onClick={this.invalidationOfToken(token)}
+                type="submit"
+              >
+                {'Invalider la contremarque'}
+              </button>
+            )}
+            {!isUsedToken && (
+              <button
+                className="primary-button"
+                disabled={isDisabledButton}
+                onClick={this.registrationOfToken(token)}
+                type="submit"
+              >
+                {'Valider la contremarque'}
+              </button>
+            )}
           </div>
 
           <div
@@ -224,6 +262,7 @@ class Desk extends Component {
 
 Desk.propTypes = {
   getBooking: PropTypes.func.isRequired,
+  invalidateBooking: PropTypes.func.isRequired,
   trackValidateBookingSuccess: PropTypes.func.isRequired,
   validateBooking: PropTypes.func.isRequired,
 }
