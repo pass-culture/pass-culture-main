@@ -19,7 +19,8 @@ from pcapi.repository import offer_queries, \
     venue_queries
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
-from pcapi.routes.serialization.offers_serialize import serialize_offer
+from pcapi.routes.serialization.offers_serialize import serialize_offer, PostOfferBodyModel, PostOfferResponseBodyModel
+from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.list_offers_for_pro_user import OffersRequestParameters
 from pcapi.use_cases.update_an_offer import update_an_offer
 from pcapi.use_cases.update_offers_active_status import update_offers_active_status
@@ -32,8 +33,7 @@ from pcapi.utils.rest import ensure_current_user_has_rights, \
     load_or_404, \
     load_or_raise_error, \
     login_or_api_key_required
-from pcapi.validation.routes.offers import check_has_venue_id, \
-    check_offer_name_length_is_valid, \
+from pcapi.validation.routes.offers import check_offer_name_length_is_valid, \
     check_offer_type_is_valid, \
     check_user_has_rights_on_offerer, \
     check_valid_edition, \
@@ -90,30 +90,27 @@ def get_offer(offer_id: int) -> (str, int):
 
 @private_api.route('/offers', methods=['POST'])
 @login_or_api_key_required
-@expect_json_data
-def post_offer() -> (str, int):
-    venue_id = request.json.get('venueId')
-    check_has_venue_id(venue_id)
-    venue = load_or_raise_error(VenueSQLEntity, venue_id)
+@spectree_serialize(response_model=PostOfferResponseBodyModel, on_success_status=201) # type: ignore
+def post_offer(body: PostOfferBodyModel) -> PostOfferResponseBodyModel:
+    venue = load_or_raise_error(VenueSQLEntity, body.venue_id)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
-    product_id = dehumanize(request.json.get('productId'))
 
-    if product_id:
-        offer = initialize_offer_from_product_id(product_id)
+    if body.product_id:
+        offer = initialize_offer_from_product_id(body.product_id)
     else:
-        offer_type_name = request.json.get('type')
+        offer_type_name = body.type
         check_offer_type_is_valid(offer_type_name)
-        offer_name = request.json.get('name')
+        offer_name = body.name
         check_offer_name_length_is_valid(offer_name)
         offer = fill_offer_with_new_data(request.json, current_user)
         offer.product.owningOfferer = venue.managingOfferer
 
     offer.venue = venue
-    offer.bookingEmail = request.json.get('bookingEmail', None)
+    offer.bookingEmail = body.booking_email
     repository.save(offer)
     send_offer_creation_notification_to_administration(offer, current_user, PRO_URL, send_raw_email)
 
-    return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 201
+    return PostOfferResponseBodyModel.from_orm(offer)
 
 
 @private_api.route('/offers/active-status', methods=['PATCH'])

@@ -4,7 +4,7 @@ from pcapi.validation.routes.events import check_user_can_create_activation_even
 from pcapi.validation.routes.url import is_url_safe
 
 
-def initialize_offer_from_product_id(product_id: str) -> OfferSQLEntity:
+def initialize_offer_from_product_id(product_id: int) -> OfferSQLEntity:
     thing_product = product_queries.find_by_id(product_id)
     offer = initialize_offer_from_product(thing_product)
     return offer

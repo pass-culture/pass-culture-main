@@ -38,7 +38,7 @@ class Returns400:
 
         # Then
         assert request.status_code == 400
-        assert request.json["venueId"] == ["Vous devez préciser un identifiant de lieu"]
+        assert request.json["venueId"] == ["Ce champ est obligatoire"]
 
     def when_no_duration_given_for_an_event(self, app, db_session):
         # Given
@@ -202,15 +202,14 @@ class Returns201:
 
         # Then
         assert response.status_code == 201
-        assert response.json["isEvent"] is True
-        assert response.json["isThing"] is False
 
         offer_id = dehumanize(response.json["id"])
         offer = OfferSQLEntity.query.filter_by(id=offer_id).first()
         assert offer.bookingEmail == "offer@email.com"
         assert offer.venueId == venue.id
-        event_id = dehumanize(response.json["product"]["id"])
-        event_product = Product.query.filter_by(id=event_id).first()
+        assert offer.isEvent == True
+        assert offer.isThing == False
+        event_product = offer.product
         assert event_product.durationMinutes == 60
         assert event_product.name == "La pièce de théâtre"
         assert offer.type == str(EventType.SPECTACLE_VIVANT)
@@ -250,8 +249,7 @@ class Returns201:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, is_virtual=True, siret=None)
-        thing_product = create_product_with_thing_type()
-        repository.save(user, venue, thing_product, user_offerer)
+        repository.save(user, venue, user_offerer)
         offerer_id = offerer.id
         json = {
             "type": "ThingType.JEUX_VIDEO",
@@ -278,7 +276,7 @@ class Returns201:
         offer = OfferSQLEntity.query.filter_by(id=offer_id).first()
         assert offer.bookingEmail == "offer@email.com"
         assert offer.venueId == venue.id
-        thing_id = dehumanize(response.json["product"]["id"])
+        thing_id = offer.product.id
         thing_product = Product.query.filter_by(id=thing_id).first()
         assert thing_product.name == "Les lapins crétins"
         assert offer.type == str(ThingType.JEUX_VIDEO)
@@ -314,126 +312,10 @@ class Returns201:
 
         # then
         assert response.status_code == 201
-        date_created = response.json["dateCreated"]
-        date_modified_at_last_provider = response.json["dateModifiedAtLastProvider"]
         offer_id = response.json["id"]
-        assert response.json == {
-            "activeMediation": None,
-            "ageMax": None,
-            "ageMin": None,
-            "bookingEmail": None,
-            "conditions": None,
-            "dateCreated": date_created,
-            "dateModifiedAtLastProvider": date_modified_at_last_provider,
-            "description": None,
-            "durationMinutes": None,
-            "extraData": {"author": "Test Author"},
-            "fieldsUpdated": [],
-            "hasBookingLimitDatetimesPassed": False,
-            "id": offer_id,
-            "idAtProviders": None,
-            "isActive": True,
-            "isBookable": False,
-            "isDigital": False,
-            "isDuo": False,
-            "isEditable": True,
-            "isEvent": False,
-            "isNational": False,
-            "isThing": True,
-            "lastProvider": None,
-            "lastProviderId": None,
-            "mediaUrls": ["test/urls"],
-            "mediations": [],
-            "name": "Test Book",
-            "offerType": {
-                "appLabel": "Livre ou carte lecture",
-                "conditionalFields": ["author", "isbn"],
-                "description": "S’abonner à un quotidien d’actualité ? À un "
-                "hebdomadaire humoristique ? À un mensuel dédié "
-                "à la nature ? Acheter une BD ou un manga ? Ou "
-                "tout simplement ce livre dont tout le monde "
-                "parle ?",
-                "isActive": True,
-                "offlineOnly": False,
-                "onlineOnly": False,
-                "proLabel": "Livres papier ou numérique, abonnements lecture",
-                "sublabel": "Lire",
-                "type": "Thing",
-                "value": "ThingType.LIVRE_EDITION",
-            },
-            "product": {
-                "ageMax": None,
-                "ageMin": None,
-                "conditions": None,
-                "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
-                "description": None,
-                "durationMinutes": None,
-                "extraData": {"author": "Test Author"},
-                "fieldsUpdated": [],
-                "id": humanize(thing_product.id),
-                "idAtProviders": "1234567891",
-                "isGcuCompatible": True,
-                "isNational": False,
-                "lastProviderId": None,
-                "mediaUrls": ["test/urls"],
-                "name": "Test Book",
-                "owningOffererId": None,
-                "thumbCount": 1,
-                "url": None,
-            },
-            "productId": humanize(thing_product.id),
-            "stocks": [],
-            "thumbUrl": f"http://localhost/storage/thumbs/products/{humanize(thing_product.id)}",
-            "type": "ThingType.LIVRE_EDITION",
-            "url": None,
-            "venue": {
-                "address": "123 rue de Paris",
-                "bic": None,
-                "bookingEmail": None,
-                "city": "Montreuil",
-                "comment": None,
-                "dateCreated": "2020-10-15T00:00:00Z",
-                "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
-                "departementCode": "93",
-                "fieldsUpdated": [],
-                "iban": None,
-                "id": humanize(venue.id),
-                "idAtProviders": None,
-                "isValidated": True,
-                "isVirtual": False,
-                "lastProviderId": None,
-                "latitude": None,
-                "longitude": None,
-                "managingOfferer": {
-                    "address": None,
-                    "bic": None,
-                    "city": "Montreuil",
-                    "dateCreated": "2020-10-15T00:00:00Z",
-                    "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
-                    "fieldsUpdated": [],
-                    "iban": None,
-                    "id": humanize(offerer.id),
-                    "idAtProviders": None,
-                    "isActive": True,
-                    "isValidated": True,
-                    "lastProviderId": None,
-                    "name": "Test Offerer",
-                    "postalCode": "93100",
-                    "siren": "123456789",
-                    "thumbCount": 0,
-                },
-                "managingOffererId": humanize(offerer.id),
-                "name": "La petite librairie",
-                "postalCode": "93100",
-                "publicName": None,
-                "siret": "12345678912345",
-                "thumbCount": 0,
-                "venueLabelId": None,
-                "venueTypeId": None,
-            },
-            "venueId": humanize(venue.id),
-            "withdrawalDetails": None,
-        }
+        assert type(offer_id) == str
+        assert offer_id != "" and not offer_id.isspace()
+        assert response.json == {"id": offer_id}
 
     def when_creating_a_new_offer_from_an_existing_event(self, app, db_session):
         # given

@@ -2,31 +2,8 @@ import pytest
 
 from pcapi.models import ApiErrors, ThingType, EventType, OfferSQLEntity
 from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
-from pcapi.validation.routes.offers import check_has_venue_id, check_offer_type_is_valid, check_offer_is_editable, \
+from pcapi.validation.routes.offers import check_offer_type_is_valid, check_offer_is_editable, \
     check_offer_name_length_is_valid, check_edition_for_allocine_offer_is_valid, check_user_has_rights_on_offerer
-
-
-class CheckHasVenueIdTest:
-    def test_raises_exception_when_venue_id_is_None(self):
-        # Given
-        venue_id = None
-
-        # When
-        with pytest.raises(ApiErrors) as error:
-            check_has_venue_id(venue_id)
-
-        # Then
-        assert error.value.errors['venueId'] == ['Vous devez préciser un identifiant de lieu']
-
-    def test_raises_does_not_raise_exception_when_venue_id(self):
-        # Given
-        venue_id = 'AE'
-
-        # When
-        try:
-            check_has_venue_id(venue_id)
-        except:
-            assert False
 
 
 class CheckOfferTypeIsValidTest:

@@ -19,13 +19,6 @@ def check_user_has_rights_on_offerer(user_offerer: UserOfferer):
         raise errors
 
 
-def check_has_venue_id(venue_id):
-    if venue_id is None:
-        api_errors = ApiErrors()
-        api_errors.add_error('venueId', 'Vous devez préciser un identifiant de lieu')
-        raise api_errors
-
-
 def check_venue_exists_when_requested(venue, venue_id):
     if venue_id and venue is None:
         errors = ResourceNotFoundError()
