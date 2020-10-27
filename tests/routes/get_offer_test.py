@@ -1,6 +1,5 @@
 from pcapi.repository import repository
 from tests.conftest import TestClient
-import pytest
 from pcapi.model_creators.generic_creators import (
     create_bank_information,
     create_booking,
@@ -19,8 +18,7 @@ from pcapi.utils.human_ids import humanize
 
 
 class Returns200:
-    @pytest.mark.usefixtures("db_session")
-    def when_user_has_rights_on_managing_offerer(self, app):
+    def when_user_has_rights_on_managing_offerer(self, app, db_session):
         # Given
         beneficiary = create_user()
         offerer = create_offerer()
@@ -48,8 +46,7 @@ class Returns200:
         assert "validationToken" not in response_json["venue"]["managingOfferer"]
         assert "thumbUrl" in response_json
 
-    @pytest.mark.usefixtures("db_session")
-    def when_returns_an_active_mediation(self, app):
+    def when_returns_an_active_mediation(self, app, db_session):
         # Given
         beneficiary = create_user()
         offerer = create_offerer()
@@ -69,8 +66,7 @@ class Returns200:
         assert response.status_code == 200
         assert response.json["activeMediation"] is not None
 
-    @pytest.mark.usefixtures("db_session")
-    def when_returns_a_first_matching_booking(self, app):
+    def when_returns_a_first_matching_booking(self, app, db_session):
         # Given
         beneficiary = create_user()
         create_deposit(user=beneficiary)
@@ -92,8 +88,7 @@ class Returns200:
         assert response.status_code == 200
         assert humanize(booking.id) in response.json["firstMatchingBooking"]["id"]
 
-    @pytest.mark.usefixtures("db_session")
-    def when_returns_an_event_stock(self, app):
+    def when_returns_an_event_stock(self, app, db_session):
         # Given
         beneficiary = create_user()
         offerer = create_offerer()
