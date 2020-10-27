@@ -1,260 +1,261 @@
 from datetime import timedelta, datetime
 from unittest.mock import patch
 
-from pcapi.models import StockSQLEntity, Provider
+from pcapi.models import StockSQLEntity, ThingType, EventType
+from pcapi.models.feature import override_features
 from pcapi.repository import repository
+from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.routes.serialization import serialize
-import pytest
 from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import dehumanize, humanize
+from pcapi.utils.date import DATE_ISO_FORMAT
 
 
-class Post:
-    class Returns201:
-        @patch('pcapi.routes.mediations.feature_queries.is_active', return_value=True)
-        @patch('pcapi.routes.stocks.redis.add_offer_id')
-        @pytest.mark.usefixtures("db_session")
-        def when_user_has_rights(self, mock_add_offer_id_to_redis, mock_feature, app):
-            # Given
-            user = create_user(email='test@email.fr')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
-            repository.save(user_offerer, offer)
+class Returns201:
+    @override_features(SYNCHRONIZE_ALGOLIA=True)
+    @patch("pcapi.routes.stocks.redis.add_offer_id")
+    def when_user_has_rights(self, mock_add_offer_id_to_redis, app, db_session):
+        # Given
+        offer = offers_factories.OfferFactory(product__type=str(ThingType.AUDIOVISUEL))
+        user_offerer = offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
 
-            stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
-            repository.save(user)
+        stock_data = {"price": 1222, "offerId": humanize(offer.id)}
 
-            # When
-            response = TestClient(app.test_client()).with_auth('test@email.fr') \
-                .post('/stocks', json=stock_data)
+        # When
+        response = (
+            TestClient(app.test_client())
+            .with_auth("user@example.com")
+            .post("/stocks", json=stock_data)
+        )
 
-            # Then
-            assert response.status_code == 201
-            id = response.json['id']
+        # Then
+        assert response.status_code == 201
 
-            stock = StockSQLEntity.query.filter_by(id=dehumanize(id)).first()
-            assert stock.price == 1222
+        # This are variables we do not have control over with but we still want to check
+        # the response body has the right format
+        id = response.json["id"]
+        dateCreated = response.json["dateCreated"]
+        dateModified = response.json["dateModified"]
+        dateModifiedAtLastProvider = response.json["dateModifiedAtLastProvider"]
+        assert type(id) == str
+        assert type(datetime.strptime(dateCreated, DATE_ISO_FORMAT)) == datetime
+        assert type(datetime.strptime(dateModified, DATE_ISO_FORMAT)) == datetime
+        assert (
+            type(datetime.strptime(dateModifiedAtLastProvider, DATE_ISO_FORMAT))
+            == datetime
+        )
 
-        @patch('pcapi.routes.stocks.redis.add_offer_id')
-        @pytest.mark.usefixtures("db_session")
-        def when_booking_limit_datetime_is_none_for_thing(self, mock_add_offer_id_to_redis, app):
-            # Given
-            user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
-            repository.save(user, offer)
+        assert response.json == {
+            "beginningDatetime": None,
+            "bookingLimitDatetime": None,
+            "dateCreated": dateCreated,
+            "dateModified": dateModified,
+            "dateModifiedAtLastProvider": dateModifiedAtLastProvider,
+            "fieldsUpdated": [],
+            "hasBeenMigrated": None,
+            "id": id,
+            "idAtProviders": None,
+            "isSoftDeleted": False,
+            "lastProviderId": None,
+            "offerId": humanize(offer.id),
+            "price": 1222.0,
+            "quantity": None,
+        }
 
-            data = {
-                'price': 0,
-                'offerId': humanize(offer.id),
-                'bookingLimitDatetime': None
-            }
+        stock = StockSQLEntity.query.filter_by(id=dehumanize(id)).first()
+        assert stock.price == 1222
+        assert stock.bookingLimitDatetime is None
 
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email) \
-                .post('/stocks', json=data)
+        mock_add_offer_id_to_redis.assert_called()
+        mock_args, mock_kwargs = mock_add_offer_id_to_redis.call_args
+        assert mock_kwargs["offer_id"] == offer.id
 
-            # Then
-            assert response.status_code == 201
-            assert response.json["price"] == 0
-            assert response.json["bookingLimitDatetime"] is None
 
-            id = response.json['id']
-            stock = StockSQLEntity.query.filter_by(id=dehumanize(id)).first()
-            assert stock.price == 0
-            assert stock.bookingLimitDatetime is None
+class Returns400:
+    def when_missing_offer_id(self, app, db_session):
+        # Given
+        user = users_factories.UserFactory()
 
-        @patch('pcapi.routes.stocks.redis.add_offer_id')
-        @pytest.mark.usefixtures("db_session")
-        def when_stock_is_created_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
-            # Given
-            user = create_user()
-            offerer = create_offerer()
-            create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
-            repository.save(offer)
-            stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
+        # When
+        response = (
+            TestClient(app.test_client())
+            .with_auth(user.email)
+            .post("/stocks", json={"price": 1222})
+        )
 
-            # When
-            TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .post('/stocks', json=stock_data)
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"offerId": ["Ce paramètre est obligatoire"]}
 
-            # Then
-            mock_add_offer_id_to_redis.assert_called()
-            mock_args, mock_kwargs = mock_add_offer_id_to_redis.call_args
-            assert mock_kwargs['offer_id'] == offer.id
+    def when_booking_limit_datetime_after_beginning_datetime(self, app, db_session):
+        # Given
+        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        offer = offers_factories.OfferFactory(product__type=str(EventType.JEUX))
 
-    class Returns400:
-        @pytest.mark.usefixtures("db_session")
-        def when_missing_offer_id(self, app):
-            # Given
-            user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
-            repository.save(user, offer)
+        beginningDatetime = datetime(2019, 2, 14)
 
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email) \
-                .post('/stocks', json={'price': 1222})
+        data = {
+            "price": 1222,
+            "offerId": humanize(offer.id),
+            "beginningDatetime": serialize(beginningDatetime),
+            "bookingLimitDatetime": serialize(beginningDatetime + timedelta(days=2)),
+        }
 
-            # Then
-            assert response.status_code == 400
-            assert response.json["offerId"] == ['Ce paramètre est obligatoire']
+        # When
+        response = (
+            TestClient(app.test_client())
+            .with_auth(user.email)
+            .post("/stocks", json=data)
+        )
 
-        @pytest.mark.usefixtures("db_session")
-        def when_booking_limit_datetime_after_beginning_datetime(self, app):
-            # Given
-            user = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-            repository.save(user, offer)
-
-            beginningDatetime = datetime(2019, 2, 14)
-
-            data = {
-                'price': 1222,
-                'offerId': humanize(offer.id),
-                'beginningDatetime': serialize(beginningDatetime),
-                'bookingLimitDatetime': serialize(beginningDatetime + timedelta(days=2))
-            }
-
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email) \
-                .post('/stocks', json=data)
-
-            # Then
-            assert response.status_code == 400
-            assert response.json['bookingLimitDatetime'] == [
-                'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement'
+        # Then
+        assert response.status_code == 400
+        assert response.json == {
+            "bookingLimitDatetime": [
+                "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement"
             ]
+        }
 
-        @pytest.mark.usefixtures("db_session")
-        def when_invalid_format_for_booking_limit_datetime(self, app):
-            # Given
-            user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
-            repository.save(user, offer)
+    def when_invalid_format_for_booking_limit_datetime(self, app, db_session):
+        # Given
+        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        offer = offers_factories.OfferFactory(product__type=str(ThingType.AUDIOVISUEL))
 
-            data = {
-                'price': 0,
-                'offerId': humanize(offer.id),
-                'bookingLimitDatetime': 'zbbopbjeo'
-            }
+        data = {
+            "price": 0,
+            "offerId": humanize(offer.id),
+            "bookingLimitDatetime": "zbbopbjeo",
+        }
 
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email) \
-                .post('/stocks', json=data)
+        # When
+        response = (
+            TestClient(app.test_client())
+            .with_auth(user.email)
+            .post("/stocks", json=data)
+        )
 
-            # Then
-            assert response.status_code == 400
-            assert response.json["bookingLimitDatetime"] == ["Format de date invalide"]
+        # Then
+        print(response.json)
+        assert response.status_code == 400
+        assert response.json == {"bookingLimitDatetime": ["Format de date invalide"]}
 
-        @pytest.mark.usefixtures("db_session")
-        def when_booking_limit_datetime_is_none_for_event(self, app):
-            # Given
-            beginningDatetime = datetime(2019, 2, 14)
-            user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-            repository.save(user, offer)
+    def when_booking_limit_datetime_is_none_for_event(self, app, db_session):
+        # Given
+        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        offer = offers_factories.OfferFactory(product__type=str(EventType.JEUX))
 
-            data = {
-                'price': 0,
-                'offerId': humanize(offer.id),
-                'bookingLimitDatetime': None,
-                'beginningDatetime': serialize(beginningDatetime),
-            }
+        beginningDatetime = datetime(2019, 2, 14)
+        data = {
+            "price": 0,
+            "offerId": humanize(offer.id),
+            "bookingLimitDatetime": None,
+            "beginningDatetime": serialize(beginningDatetime),
+        }
 
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email) \
-                .post('/stocks', json=data)
+        # When
+        response = (
+            TestClient(app.test_client())
+            .with_auth(user.email)
+            .post("/stocks", json=data)
+        )
 
-            # Then
-            assert response.status_code == 400
-            assert response.json["bookingLimitDatetime"] == ['Ce paramètre est obligatoire']
+        # Then
+        assert response.status_code == 400
+        assert response.json == {
+            "bookingLimitDatetime": ["Ce paramètre est obligatoire"]
+        }
 
-        @pytest.mark.usefixtures("db_session")
-        def when_setting_beginning_datetime_on_offer_with_thing(self, app):
-            # Given
-            user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
-            repository.save(user, offer)
-            beginningDatetime = datetime(2019, 2, 14)
+    def when_setting_beginning_datetime_on_offer_with_thing(self, app, db_session):
+        # Given
+        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        offer = offers_factories.OfferFactory(product__type=str(ThingType.AUDIOVISUEL))
 
-            data = {
-                'price': 0,
-                'offerId': humanize(offer.id),
-                'beginningDatetime': serialize(beginningDatetime),
-                'bookingLimitDatetime': serialize(beginningDatetime - timedelta(days=2))
-            }
+        beginningDatetime = datetime(2019, 2, 14)
 
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email) \
-                .post('/stocks', json=data)
+        data = {
+            "price": 0,
+            "offerId": humanize(offer.id),
+            "beginningDatetime": serialize(beginningDatetime),
+            "bookingLimitDatetime": serialize(beginningDatetime - timedelta(days=2)),
+        }
 
-            # Then
-            assert response.status_code == 400
-            assert response.json['global'] == [
+        # When
+        response = (
+            TestClient(app.test_client())
+            .with_auth(user.email)
+            .post("/stocks", json=data)
+        )
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {
+            "global": [
                 "Impossible de mettre une date de début si l'offre ne porte pas sur un événement"
             ]
+        }
 
-        @pytest.mark.usefixtures("db_session")
-        def when_stock_is_on_offer_coming_from_provider(self, app):
-            # given
-            tite_live_provider = Provider \
-                .query \
-                .filter(Provider.localClass == 'TiteLiveThings') \
-                .first()
+    def when_stock_is_on_offer_coming_from_provider(self, app, db_session):
+        # given
+        tite_live_provider = get_provider_by_local_class("TiteLiveThings")
 
-            user = create_user(email='test@email.fr')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id, last_provider=tite_live_provider)
-            repository.save(user_offerer, offer)
+        user = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        user_offerer = offers_factories.UserOffererFactory(user=user, offerer=offerer)
+        product = offers_factories.ProductFactory(type=str(ThingType.AUDIOVISUEL))
+        idAtProviders = f"{product.idAtProviders}@{venue.siret}"
 
-            stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
-            repository.save(user)
+        offer = offers_factories.OfferFactory(
+            product=product,
+            venue=venue,
+            lastProviderId=tite_live_provider.id,
+            lastProvider=tite_live_provider,
+            idAtProviders=idAtProviders,
+        )
 
-            # When
-            response = TestClient(app.test_client()).with_auth('test@email.fr') \
-                .post('/stocks', json=stock_data)
+        stock_data = {"price": 1222, "offerId": humanize(offer.id)}
 
-            # Then
-            assert response.status_code == 400
-            assert response.json["global"] == ["Les offres importées ne sont pas modifiables"]
+        # When
+        response = (
+            TestClient(app.test_client())
+            .with_auth(user.email)
+            .post("/stocks", json=stock_data)
+        )
 
-    class Returns403:
-        @pytest.mark.usefixtures("db_session")
-        def when_user_has_no_rights_and_creating_stock_from_offer_id(self, app):
-            # Given
-            user = create_user(email='test@email.fr')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
-            repository.save(user, offer)
+        # Then
+        assert response.status_code == 400
+        assert response.json == {
+            "global": ["Les offres importées ne sont pas modifiables"]
+        }
 
-            data = {'price': 1222, 'offerId': humanize(offer.id)}
 
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email) \
-                .post('/stocks', json=data)
+class Returns403:
+    def when_user_has_no_rights_and_creating_stock_from_offer_id(self, app, db_session):
+        # Given
+        user = users_factories.UserFactory(email="wrong@example.com")
+        offer = offers_factories.OfferFactory(product__type=str(ThingType.AUDIOVISUEL))
+        user_offerer = offers_factories.UserOffererFactory(
+            user__email="right@example.com", offerer=offer.venue.managingOfferer
+        )
 
-            # Then
-            assert response.status_code == 403
-            assert response.json["global"] == [
-                "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+        data = {"price": 1222, "offerId": humanize(offer.id)}
+
+        # When
+        response = (
+            TestClient(app.test_client())
+            .with_auth(user.email)
+            .post("/stocks", json=data)
+        )
+
+        # Then
+        assert response.status_code == 403
+        assert response.json == {
+            "global": [
+                "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
+            ]
+        }

@@ -1,191 +1,275 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from pcapi.models import Booking, Provider
+from freezegun import freeze_time
+
+from pcapi.models import Booking, Provider, EventType
+from pcapi.models.feature import override_features
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
-import pytest
 from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue, \
-    create_user_offerer
-from pcapi.model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product, \
-    create_offer_with_event_product
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.utils.human_ids import humanize
 
-NOW = datetime.utcnow()
+NOW = datetime(2020, 10, 15)
 
 
-class Delete:
-    class Returns200:
-        @pytest.mark.usefixtures("db_session")
-        def when_current_user_has_rights_on_offer(self, app):
-            # given
-            user = create_user(email='test@email.com')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue)
-            repository.save(user, stock, user_offerer)
+class Returns200:
+    def when_current_user_has_rights_on_offer(self, app, db_session):
+        # given
+        offer = offers_factories.OfferFactory()
+        user_offerer = offers_factories.UserOffererFactory(
+            user__email="notadmin@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
 
-            # when
-            response = TestClient(app.test_client()).with_auth('test@email.com') \
-                .delete('/stocks/' + humanize(stock.id))
+        stock = offers_factories.StockFactory(
+            offer=offer,
+            price=100,
+            quantity=10,
+            dateCreated=NOW,
+            dateModified=NOW,
+            dateModifiedAtLastProvider=NOW,
+        )
 
-            # then
-            assert response.status_code == 200
-            assert response.json['isSoftDeleted'] is True
+        # when
+        response = (
+            TestClient(app.test_client())
+            .with_auth("notadmin@example.com")
+            .delete("/stocks/" + humanize(stock.id))
+        )
 
-        @pytest.mark.usefixtures("db_session")
-        def expect_bookings_to_be_cancelled(self, app):
-            # given
-            user = create_user(email='test@email.com')
-            other_user = create_user(email='consumer@test.com')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking1 = create_booking(other_user, is_cancelled=False, stock=stock)
-            booking2 = create_booking(other_user, is_cancelled=False, stock=stock)
-            repository.save(user, stock, user_offerer, booking1, booking2)
+        # then
+        assert response.status_code == 200
+        assert response.json == {
+            "beginningDatetime": None,
+            "bookingLimitDatetime": None,
+            "dateCreated": "2020-10-15T00:00:00Z",
+            "dateModified": "2020-10-15T00:00:00Z",
+            "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
+            "fieldsUpdated": [],
+            "hasBeenMigrated": None,
+            "id": humanize(stock.id),
+            "idAtProviders": None,
+            "isSoftDeleted": True,
+            "lastProviderId": None,
+            "offerId": humanize(offer.id),
+            "price": 100.0,
+            "quantity": 10,
+        }
 
-            # when
-            response = TestClient(app.test_client()).with_auth('test@email.com').delete('/stocks/' + humanize(stock.id))
+    def expect_bookings_to_be_cancelled(self, app, db_session):
+        # given
+        admin = users_factories.UserFactory(
+            email="admin@email.com", isAdmin=True, canBookFreeOffers=False
+        )
+        stock = offers_factories.StockFactory(
+            dateCreated=NOW,
+            dateModified=NOW,
+            dateModifiedAtLastProvider=NOW,
+            price=0,
+        )
+        other_user = users_factories.UserFactory(email="consumer@test.com")
+        booking1 = bookings_factories.BookingFactory(
+            user=other_user, isCancelled=False, stock=stock
+        )
+        booking2 = bookings_factories.BookingFactory(
+            user=other_user, isCancelled=False, stock=stock
+        )
 
-            # then
-            assert response.status_code == 200
-            bookings = Booking.query.filter_by(isCancelled=True).all()
-            assert booking1 in bookings
-            assert booking2 in bookings
+        # when
+        response = (
+            TestClient(app.test_client())
+            .with_auth(admin.email)
+            .delete("/stocks/" + humanize(stock.id))
+        )
 
-        @pytest.mark.usefixtures("db_session")
-        def expect_booking_to_be_cancelled_when_stock_is_an_event_that_ended_less_than_two_days_ago(self, app):
-            # given
-            user = create_user(email='test@email.com')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(
-                offerer,
-                venue,
-                beginning_datetime=NOW - timedelta(hours=47),
-                booking_limit_datetime=NOW - timedelta(days=6),
-                price=0
-            )
-            booking = create_booking(user, is_cancelled=False, stock=stock)
+        # then
+        assert response.status_code == 200
+        bookings = Booking.query.filter_by(isCancelled=True).all()
+        assert booking1 in bookings
+        assert booking2 in bookings
 
-            repository.save(user, stock, user_offerer, booking)
+    @freeze_time("2020-10-15 00:00:00")
+    def expect_booking_to_be_cancelled_when_stock_is_an_event_that_ended_less_than_two_days_ago(
+        self, app, db_session
+    ):
+        # given
+        admin = users_factories.UserFactory(
+            email="admin@email.com", isAdmin=True, canBookFreeOffers=False
+        )
+        user = users_factories.UserFactory(email="consumer@test.com")
+        stock = offers_factories.StockFactory(
+            offer__product__type=str(EventType.JEUX),
+            price=0,
+            quantity=10,
+            dateCreated=NOW - timedelta(days=7),
+            dateModified=NOW - timedelta(days=7),
+            dateModifiedAtLastProvider=NOW - timedelta(days=7),
+            beginningDatetime=NOW - timedelta(hours=47),
+            bookingLimitDatetime=NOW - timedelta(days=6),
+        )
+        booking = bookings_factories.BookingFactory(
+            user=user, isCancelled=False, stock=stock
+        )
 
-            # when
-            response = TestClient(app.test_client()).with_auth('test@email.com') \
-                .delete('/stocks/' + humanize(stock.id))
+        # when
+        response = (
+            TestClient(app.test_client())
+            .with_auth(admin.email)
+            .delete("/stocks/" + humanize(stock.id))
+        )
 
-            # then
-            assert response.status_code == 200
-            booking_from_db = Booking.query.filter_by(isCancelled=True).one()
-            assert booking == booking_from_db
+        # then
+        assert response.status_code == 200
+        booking_from_db = Booking.query.filter_by(isCancelled=True).one()
+        assert booking == booking_from_db
 
-        @pytest.mark.usefixtures("db_session")
-        def when_stock_is_on_an_offer_from_allocine_provider(self, app):
-            # Given
-            allocine_provider = get_provider_by_local_class('AllocineStocks')
-            offerer = create_offerer()
-            user = create_user(email='test@email.com')
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, last_provider_id=allocine_provider.id,
-                                                    id_at_providers='allo')
-            stock = create_stock(id_at_providers='allo-cine', offer=offer)
-            repository.save(user, user_offerer, stock)
+    def when_stock_is_on_an_offer_from_allocine_provider(self, app, db_session):
+        # Given
+        allocine_provider = get_provider_by_local_class("AllocineStocks")
 
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email) \
-                .delete('/stocks/' + humanize(stock.id))
+        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        venue = offers_factories.VenueFactory()
+        product = offers_factories.ProductFactory()
+        idAtProviders = f"{product.idAtProviders}@{venue.siret}"
 
-            # Then
-            assert response.status_code == 200
-            assert response.json['isSoftDeleted'] is True
+        offer = offers_factories.OfferFactory(
+            product=product,
+            venue=venue,
+            lastProviderId=allocine_provider.id,
+            lastProvider=allocine_provider,
+            idAtProviders=idAtProviders,
+        )
+        stock = offers_factories.StockFactory(offer=offer, idAtProviders=idAtProviders)
 
-        @patch('pcapi.routes.stocks.feature_queries.is_active', return_value=True)
-        @patch('pcapi.routes.stocks.redis.add_offer_id')
-        @pytest.mark.usefixtures("db_session")
-        def when_stock_is_deleted_expect_offer_id_to_be_added_to_redis(self, mock_redis, mock_feature, app):
-            # given
-            beneficiary = create_user()
-            offerer = create_offerer()
-            create_user_offerer(beneficiary, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue)
-            repository.save(stock)
+        # When
+        response = (
+            TestClient(app.test_client())
+            .with_auth(user.email)
+            .delete("/stocks/" + humanize(stock.id))
+        )
 
-            # when
-            response = TestClient(app.test_client()).with_auth(beneficiary.email) \
-                .delete('/stocks/' + humanize(stock.id))
+        # Then
+        assert response.status_code == 200
+        assert response.json["isSoftDeleted"] is True
 
-            # then
-            assert response.status_code == 200
-            mock_redis.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
+    @override_features(SYNCHRONIZE_ALGOLIA=True)
+    @patch("pcapi.routes.stocks.redis.add_offer_id")
+    def when_stock_is_deleted_expect_offer_id_to_be_added_to_redis(
+        self, mock_redis, app, db_session
+    ):
+        # given
+        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        stock = offers_factories.StockFactory()
 
-    class Returns400:
-        @pytest.mark.usefixtures("db_session")
-        def when_stock_is_on_an_offer_from_titelive_provider(self, app):
-            # given
-            tite_live_provider = Provider \
-                .query \
-                .filter(Provider.localClass == 'TiteLiveThings') \
-                .first()
+        # when
+        response = (
+            TestClient(app.test_client())
+            .with_auth(user.email)
+            .delete("/stocks/" + humanize(stock.id))
+        )
 
-            user = create_user(email='test@email.com')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id, last_provider=tite_live_provider)
-            stock = create_stock(offer=offer)
-            repository.save(user, stock, user_offerer)
-
-            # when
-            response = TestClient(app.test_client()).with_auth('test@email.com') \
-                .delete('/stocks/' + humanize(stock.id))
-
-            # then
-            assert response.status_code == 400
-            assert response.json["global"] == ["Les offres importées ne sont pas modifiables"]
-
-
-        @pytest.mark.usefixtures("db_session")
-        def when_stock_is_an_event_that_ended_more_than_two_days_ago(self, app):
-            # given
-            user = create_user(email='test@email.com')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, beginning_datetime=NOW - timedelta(days=5),
-                                                  booking_limit_datetime=NOW - timedelta(days=6))
-            repository.save(user, stock, user_offerer)
-
-            # when
-            response = TestClient(app.test_client()).with_auth('test@email.com') \
-                .delete('/stocks/' + humanize(stock.id))
-
-            # then
-            assert response.status_code == 400
-            assert response.json['global'] == ["L'événement s'est terminé il y a plus de deux jours, " \
-                                               "la suppression est impossible."]
+        # then
+        assert response.status_code == 200
+        mock_redis.assert_called_once_with(
+            client=app.redis_client, offer_id=stock.offerId
+        )
 
 
-    class Returns403:
-        @pytest.mark.usefixtures("db_session")
-        def when_current_user_has_no_rights_on_offer(self, app):
-            # given
-            user = create_user(email='test@email.com')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue)
-            repository.save(user, stock)
+class Returns400:
+    def when_stock_is_on_an_offer_from_titelive_provider(self, app, db_session):
+        # given
+        allocine_provider = get_provider_by_local_class("TiteLiveThings")
 
-            # when
-            response = TestClient(app.test_client()).with_auth('test@email.com') \
-                .delete('/stocks/' + humanize(stock.id))
+        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        venue = offers_factories.VenueFactory()
+        product = offers_factories.ProductFactory()
+        idAtProviders = f"{product.idAtProviders}@{venue.siret}"
 
-            # then
-            assert response.status_code == 403
+        offer = offers_factories.OfferFactory(
+            product=product,
+            venue=venue,
+            lastProviderId=allocine_provider.id,
+            lastProvider=allocine_provider,
+            idAtProviders=idAtProviders,
+        )
+        stock = offers_factories.StockFactory(offer=offer, idAtProviders=idAtProviders)
+
+        # when
+        response = (
+            TestClient(app.test_client())
+            .with_auth(user.email)
+            .delete("/stocks/" + humanize(stock.id))
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json["global"] == [
+            "Les offres importées ne sont pas modifiables"
+        ]
+
+    @freeze_time("2020-10-15 00:00:00")
+    def when_stock_is_an_event_that_ended_more_than_two_days_ago(self, app, db_session):
+        # given
+        admin = users_factories.UserFactory(
+            email="admin@email.com", isAdmin=True, canBookFreeOffers=False
+        )
+        user = users_factories.UserFactory(email="consumer@test.com")
+        product = offers_factories.ProductFactory(type=str(EventType.JEUX))
+        offer = offers_factories.OfferFactory(product=product)
+        stock = offers_factories.StockFactory(
+            offer=offer,
+            price=0,
+            quantity=10,
+            dateCreated=NOW - timedelta(days=7),
+            dateModified=NOW - timedelta(days=7),
+            dateModifiedAtLastProvider=NOW - timedelta(days=7),
+            beginningDatetime=NOW - timedelta(hours=49),
+            bookingLimitDatetime=NOW - timedelta(days=6),
+        )
+        booking = bookings_factories.BookingFactory(
+            user=user, isCancelled=False, stock=stock
+        )
+
+        # when
+        response = (
+            TestClient(app.test_client())
+            .with_auth(admin.email)
+            .delete("/stocks/" + humanize(stock.id))
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json["global"] == [
+            "L'événement s'est terminé il y a plus de deux jours, "
+            "la suppression est impossible."
+        ]
+
+
+class Returns403:
+    def when_current_user_has_no_rights_on_offer(self, app, db_session):
+        # given
+        user = users_factories.UserFactory(email="notadmin@example.com")
+        offer = offers_factories.OfferFactory()
+
+        user_offerer = offers_factories.UserOffererFactory(
+            user__email="anotheruser@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        stock = offers_factories.StockFactory(
+            offer=offer,
+        )
+
+        # when
+        response = (
+            TestClient(app.test_client())
+            .with_auth(user.email)
+            .delete("/stocks/" + humanize(stock.id))
+        )
+
+        # then
+        assert response.status_code == 403
