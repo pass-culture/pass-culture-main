@@ -35,6 +35,7 @@ class Returns204:
 
         # Then
         assert response.status_code == 204
+        assert response.json == None
         assert OfferSQLEntity.query.get(offer1.id).isActive == True
         assert OfferSQLEntity.query.get(offer2.id).isActive == True
 
