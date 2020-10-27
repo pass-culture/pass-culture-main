@@ -1,8 +1,6 @@
 import secrets
 from unittest.mock import patch
 
-import pytest
-
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import (
@@ -22,9 +20,8 @@ from pcapi.utils.human_ids import humanize
 
 
 class Returns200:
-    @pytest.mark.usefixtures("db_session")
     def should_filter_by_venue_when_user_is_admin_and_request_specific_venue_with_no_rights_on_it(
-        self, app
+        self, app, db_session
     ):
         # Given
         admin = create_user(is_admin=True, can_book_free_offers=False)
@@ -47,9 +44,8 @@ class Returns200:
         assert response.status_code == 200
         assert len(offers) == 1
 
-    @pytest.mark.usefixtures("db_session")
     def should_filter_by_venue_when_user_is_not_admin_and_request_specific_venue_with_rights_on_it(
-        self, app
+        self, app, db_session
     ):
         # Given
         pro = create_user(is_admin=False, can_book_free_offers=False)
@@ -75,10 +71,9 @@ class Returns200:
         assert response.status_code == 200
         assert len(offers) == 1
 
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.routes.offers.list_offers_for_pro_user.execute")
     def test_results_are_paginated_with_pagination_details_in_body(
-        self, list_offers_mock, app
+        self, list_offers_mock, app, db_session
     ):
         # Given
         user = create_user()
@@ -107,10 +102,9 @@ class Returns200:
         assert response.json["page_count"] == 1
         assert response.json["total_count"] == 2
 
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.routes.offers.list_offers_for_pro_user.execute")
     def test_does_not_show_result_to_user_offerer_when_not_validated(
-        self, list_offers_mock, app
+        self, list_offers_mock, app, db_session
     ):
         # given
         user = create_user()
@@ -139,9 +133,10 @@ class Returns200:
             "total_count": 0,
         }
 
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.routes.offers.list_offers_for_pro_user.execute")
-    def test_results_are_filtered_by_given_venue_id(self, list_offers_mock, app):
+    def test_results_are_filtered_by_given_venue_id(
+        self, list_offers_mock, app, db_session
+    ):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -172,9 +167,10 @@ class Returns200:
         assert expected_parameter.status_filters.exclude_active == False
         assert expected_parameter.status_filters.exclude_inactive == False
 
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.routes.offers.list_offers_for_pro_user.execute")
-    def test_results_are_filtered_by_given_status(self, list_offers_mock, app):
+    def test_results_are_filtered_by_given_status(
+        self, list_offers_mock, app, db_session
+    ):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -197,9 +193,10 @@ class Returns200:
         assert expected_parameter.status_filters.exclude_active == True
         assert expected_parameter.status_filters.exclude_inactive == True
 
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.routes.offers.list_offers_for_pro_user.execute")
-    def test_results_are_filtered_by_given_offerer_id(self, list_offers_mock, app):
+    def test_results_are_filtered_by_given_offerer_id(
+        self, list_offers_mock, app, db_session
+    ):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -229,8 +226,7 @@ class Returns200:
 
 
 class Returns404:
-    @pytest.mark.usefixtures("db_session")
-    def when_requested_venue_does_not_exist(self, app):
+    def when_requested_venue_does_not_exist(self, app, db_session):
         # Given
         user = create_user(email="user@test.com")
         repository.save(user)
@@ -248,8 +244,7 @@ class Returns404:
 
 
 class Returns403:
-    @pytest.mark.usefixtures("db_session")
-    def when_user_has_no_rights_on_requested_venue(self, app):
+    def when_user_has_no_rights_on_requested_venue(self, app, db_session):
         # Given
         user = create_user(email="user@test.com")
         offerer = create_offerer()
