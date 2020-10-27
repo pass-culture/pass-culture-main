@@ -108,28 +108,31 @@ def create_event_occurrence(offer: OfferSQLEntity,
     return event_occurrence
 
 
-def create_offer_with_thing_product(venue: VenueSQLEntity,
-                                    author_name: str = 'Test Author',
-                                    booking_email: Optional[str] = 'booking@example.net',
-                                    date_created: datetime = datetime.utcnow(),
-                                    description: Optional[str] = None,
-                                    id_at_providers: str = None,
-                                    idx: int = None,
-                                    product_idx: int = None,
-                                    is_active: bool = True,
-                                    is_digital: bool = False,
-                                    is_national: bool = False,
-                                    is_offline_only: bool = False,
-                                    media_urls: List[str] = ['test/urls'],
-                                    product: Product = None,
-                                    thing_name: Optional[str] = 'Test Book',
-                                    thing_type: ThingType = ThingType.AUDIOVISUEL,
-                                    thumb_count: int = 0,
-                                    url: Optional[str] = None,
-                                    last_provider_id: int = None,
-                                    last_provider: Provider = None,
-                                    extra_data: Dict = None,
-                                    withdrawal_details: Optional[str] = None) -> OfferSQLEntity:
+def create_offer_with_thing_product(
+        venue: VenueSQLEntity,
+        author_name: str = 'Test Author',
+        booking_email: Optional[str] = 'booking@example.net',
+        date_created: datetime = datetime.utcnow(),
+        description: Optional[str] = None,
+        id_at_providers: str = None,
+        idx: int = None,
+        product_idx: int = None,
+        is_active: bool = True,
+        is_digital: bool = False,
+        is_national: bool = False,
+        is_offline_only: bool = False,
+        media_urls: List[str] = ['test/urls'],
+        product: Product = None,
+        thing_name: Optional[str] = 'Test Book',
+        thing_type: ThingType = ThingType.AUDIOVISUEL,
+        thumb_count: int = 0,
+        url: Optional[str] = None,
+        last_provider_id: int = None,
+        last_provider: Provider = None,
+        extra_data: Dict = None,
+        withdrawal_details: Optional[str] = None,
+        date_modified_at_last_provider: Optional[datetime] = datetime.utcnow()
+    ) -> OfferSQLEntity:
     offer = OfferSQLEntity()
     if product:
         offer.product = product
@@ -161,6 +164,7 @@ def create_offer_with_thing_product(venue: VenueSQLEntity,
         offer.description = description
     offer.venue = venue
     offer.dateCreated = date_created
+    offer.dateModifiedAtLastProvider = date_modified_at_last_provider
     offer.bookingEmail = booking_email
     offer.isActive = is_active
     offer.lastProviderId = last_provider_id
