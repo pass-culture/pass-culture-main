@@ -66,7 +66,7 @@ class BookOfferTest:
         mocked_add_offer_id.assert_not_called()
 
     def test_raise_if_is_admin(self):
-        user = users_factories.UserFactory(canBookFreeOffers=False, is_admin=True)
+        user = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
         stock = offers_factories.StockFactory()
 
         with pytest.raises(api_errors.ApiErrors) as exc:
@@ -74,7 +74,7 @@ class BookOfferTest:
         assert 'insufficientFunds' in exc.value.errors
 
     def test_raise_if_pro_user(self):
-        user = users_factories.UserFactory(canBookFreeOffers=False, is_admin=False)
+        user = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=False)
         stock = offers_factories.StockFactory()
 
         with pytest.raises(api_errors.ApiErrors) as exc:

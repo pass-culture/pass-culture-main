@@ -170,7 +170,6 @@ class SerializeBookingMinimalTest:
     def test_should_return_booking_with_expected_information(self):
         # Given
         booking = BookingFactory(
-            identifier=3,
             amount=1,
             quantity=1,
             token='GQTQR9',
