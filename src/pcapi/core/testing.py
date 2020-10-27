@@ -2,6 +2,7 @@ import contextlib
 import math
 
 import flask
+import sqlalchemy.orm
 
 import factory.alchemy
 import pytest
@@ -36,6 +37,20 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
         # This issue is discussed here: https://github.com/jeancochrane/pytest-flask-sqlalchemy/issues/12
         from pcapi.models import db
         session = db.session
+
+        known_fields = {
+            prop.key
+            for prop in sqlalchemy.orm.class_mapper(model_class).iterate_properties
+            if isinstance(prop, (sqlalchemy.orm.ColumnProperty, sqlalchemy.orm.RelationshipProperty))
+        }
+        unknown_fields = set(kwargs.keys()) - known_fields
+        if unknown_fields:
+            raise ValueError(
+                f"{cls.__name__} received unexpected argument(s): "
+                f"{', '.join(sorted(unknown_fields))}. "
+                f"Possible arguments are: {', '.join(sorted(known_fields))}"
+            )
+
         # Factory Boy expects that a model instance can be built with this:
         #
         #    instance = Model(attr1='value1', attr2='value2')
@@ -50,6 +65,7 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
         obj = model_class()
         for attr, value in kwargs.items():
             setattr(obj, attr, value)
+
         # The rest of the method if the same as the original.
         session.add(obj)
         session_persistence = cls._meta.sqlalchemy_session_persistence
