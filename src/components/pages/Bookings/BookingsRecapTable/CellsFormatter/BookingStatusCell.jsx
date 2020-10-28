@@ -6,7 +6,6 @@ import Icon from 'components/layout/Icon'
 import BookingStatusCellHistory from './BookingStatusCellHistory'
 import { getBookingStatusDisplayInformations } from './utils/bookingStatusConverter'
 
-
 const BookingStatusCell = ({ bookingRecapInfo }) => {
   let bookingDisplayInfo = getBookingStatusDisplayInformations(
     bookingRecapInfo.original.booking_status

@@ -1,5 +1,5 @@
 import moment from 'moment'
-import * as PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import React from 'react'
 
 import { getBookingStatusDisplayInformations } from './utils/bookingStatusConverter'
@@ -10,7 +10,7 @@ const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
     return (
       <li key={displayInfoFromStatus.status}>
         <span className={`colored-disc ${displayInfoFromStatus.historyClassName}`} />
-        {`${displayInfoFromStatus.tooltip_status} : ${computeDateForStatus(
+        {`${displayInfoFromStatus.label} : ${computeDateForStatus(
           item,
           displayInfoFromStatus.dateFormat
         )}`}

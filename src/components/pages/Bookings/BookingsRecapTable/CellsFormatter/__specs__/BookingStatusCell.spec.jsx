@@ -1,14 +1,28 @@
-import { mount, shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
 
-import Icon from 'components/layout/Icon'
-
-
+import { getStubStore } from '../../../../../../utils/stubStore'
 import BookingStatusCell from '../BookingStatusCell'
-import BookingStatusCellHistory from '../BookingStatusCellHistory'
 
-describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell', () => {
-  it('should render a div with the correct icon, classNames and status title for given status', () => {
+const renderBookingStatusCell = props => {
+  const stubbedStore = getStubStore({
+    data: (state = {}) => state,
+  })
+
+  render(
+    <Provider store={stubbedStore}>
+      <MemoryRouter>
+        <BookingStatusCell {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
+}
+
+describe('bookingsStatusCell', () => {
+  it('should display the status label', () => {
     // Given
     const props = {
       bookingRecapInfo: {
@@ -38,27 +52,15 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
     }
 
     // When
-    const wrapper = mount(<BookingStatusCell {...props} />)
+    renderBookingStatusCell(props)
 
     // Then
-    const status = wrapper.find('div').at(0)
-    expect(status.hasClass('booking-status-label')).toBe(true)
-    expect(status.hasClass('booking-status-validated')).toBe(true)
-
-    const statusText = status.find('span').at(0)
-    expect(statusText.text()).toBe('validé')
-
-    const icon = wrapper.find(Icon)
-    expect(icon).toHaveLength(1)
-    expect(icon.props()).toStrictEqual({
-      alt: '',
-      png: null,
-      svg: 'ico-status-double-validated',
-    })
+    const title = screen.getByText('validé', { selector: 'span' })
+    expect(title).toBeInTheDocument()
   })
 
   describe('tooltip', () => {
-    it('should always display the offer title and history title and amount when it is not free', () => {
+    it('should display the offer title and history title and amount when it is not free', () => {
       // Given
       const expectedHistoryTitle = 'Historique'
       const props = {
@@ -90,21 +92,19 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
       }
 
       // When
-      const wrapper = shallow(<BookingStatusCell {...props} />)
+      renderBookingStatusCell(props)
 
       // Then
-      const offer = wrapper.find('.bs-offer-title')
-      const historyTitle = wrapper.find({ children: expectedHistoryTitle })
-      const amount = wrapper.find('.bs-offer-amount')
-      expect(offer).toHaveLength(1)
-      expect(offer.text()).toBe('Matrix')
-      expect(historyTitle).toHaveLength(1)
-      expect(amount).toHaveLength(1)
+      const title = screen.getByText(expectedHistoryTitle, { selector: 'div' })
+      expect(title).toBeInTheDocument()
+      const offer = screen.getByText('Matrix', { selector: 'div' })
+      expect(offer).toBeInTheDocument()
+      const amount = screen.getByText(`Prix : 10 €`, { selector: 'div' })
+      expect(amount).toBeInTheDocument()
     })
 
     it('should display the booking amount when it is not free', () => {
       // Given
-      const expectedAmount = 'Prix : 10\u00a0€'
       const props = {
         bookingRecapInfo: {
           original: {
@@ -134,16 +134,17 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
       }
 
       // When
-      const wrapper = shallow(<BookingStatusCell {...props} />)
+      renderBookingStatusCell(props)
 
       // Then
-      const amount = wrapper.find('.bs-offer-amount')
-      expect(amount.text()).toBe(expectedAmount)
+      const offer = screen.getByText('Matrix', { selector: 'div' })
+      expect(offer).toBeInTheDocument()
+      const amount = screen.getByText('Prix : 10 €', { selector: 'div' })
+      expect(amount).toBeInTheDocument()
     })
 
-    it('should display Prix: Gratuit when the offer is free', () => {
+    it('should display the appropriate message when the offer is free', () => {
       // Given
-      const expectedAmount = 'Prix : Gratuit'
       const props = {
         bookingRecapInfo: {
           original: {
@@ -172,16 +173,18 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
       }
 
       // When
-      const wrapper = shallow(<BookingStatusCell {...props} />)
+      renderBookingStatusCell(props)
 
       // Then
-      const amount = wrapper.find('.bs-offer-amount')
-      expect(amount).toHaveLength(1)
-      expect(amount.text()).toBe(expectedAmount)
+      const offer = screen.getByText('Matrix', { selector: 'div' })
+      expect(offer).toBeInTheDocument()
+      const amount = screen.getByText('Prix : Gratuit', { selector: 'div' })
+      expect(amount).toBeInTheDocument()
     })
 
-    it('should display as many BookingStatusCellHistory Component as dates present in booking recap history', () => {
+    it('should display all the history dates present in booking recap history', () => {
       // Given
+      const expectedNumberOfHistoryDates = 3
       const props = {
         bookingRecapInfo: {
           original: {
@@ -218,28 +221,17 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
       }
 
       // When
-      const wrapper = mount(<BookingStatusCell {...props} />)
+      renderBookingStatusCell(props)
 
       // Then
-      const historyCells = wrapper.find(BookingStatusCellHistory)
-      const historyBookedCell = historyCells.at(0)
-      expect(historyCells).toHaveLength(1)
-      expect(historyBookedCell.props()).toStrictEqual({
-        bookingStatusHistory: [
-          {
-            date: '2020-01-04T20:31:12+01:00',
-            status: 'booked',
-          },
-          {
-            date: '2020-01-05T20:31:12+01:00',
-            status: 'validated',
-          },
-          {
-            date: '2020-01-06T20:31:12+01:00',
-            status: 'reimbursed',
-          },
-        ],
-      })
+      const historyCellReserved = screen.getByText('Réservé : 04/01/2020 20:31')
+      expect(historyCellReserved).toBeInTheDocument()
+      const historyCellValidated = screen.getByText('Réservation validée : 05/01/2020 20:31')
+      expect(historyCellValidated).toBeInTheDocument()
+      const historyCellReimbursed = screen.getByText('Remboursée : 06/01/2020')
+      expect(historyCellReimbursed).toBeInTheDocument()
+      const numberOfHistoryItemsDisplayed = screen.getAllByRole('listitem')
+      expect(numberOfHistoryItemsDisplayed).toHaveLength(expectedNumberOfHistoryDates)
     })
   })
 })
