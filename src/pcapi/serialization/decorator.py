@@ -1,20 +1,32 @@
-from flask import request, make_response, Response
 from functools import wraps
+from typing import Callable, Any, Optional
+
+from flask import request, make_response, Response
 from pydantic import BaseModel
-from typing import Callable, Any
 from spectree import Response as SpectreeResponse
 
 from pcapi.flask_app import api as default_api
 from pcapi.routes.serialization.serializer import serialize
+from pcapi.models import ApiErrors
 
 
 def _make_json_response(
-    content: BaseModel,
+    content: Optional[BaseModel],
     status_code: int,
     by_alias: bool,
     exclude_none: bool = False,
 ) -> Response:
     """serializes model, creates JSON response with given status code"""
+    if status_code == 204:
+        return make_response("", 204)
+
+    if not content:
+        raise ApiErrors(
+            {
+                "configuration": "You need to provide a response body model if the status code is not 204"
+            }
+        )
+
     json_content = content.json(exclude_none=exclude_none, by_alias=by_alias)
 
     response = make_response(json_content, status_code)
@@ -33,7 +45,7 @@ def spectree_serialize(
     response_by_alias: bool = True,
     exclude_none: bool = False,
     on_success_status: int = 200,
-    api = default_api,
+    api=default_api,
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
 
@@ -55,7 +67,10 @@ def spectree_serialize(
         query_in_kwargs = route.__annotations__.get("query")
         spectree_response_success_code = f"HTTP_{on_success_status}"
         spectree_response = SpectreeResponse("HTTP_403")
-        spectree_response.code_models[spectree_response_success_code] = response_model
+        if response_model:
+            spectree_response.code_models[
+                spectree_response_success_code
+            ] = response_model
 
         @wraps(route)
         @api.validate(
