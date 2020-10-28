@@ -56,15 +56,14 @@ const CONDITIONAL_FIELDS = {
 }
 
 class OfferCreation extends PureComponent {
-  constructor(props) {
-    super(props)
-    const { dispatch } = this.props
-    dispatch(resetForm())
-  }
-
   componentDidMount() {
+    const { dispatch } = this.props
     this.handleShowStocksManager()
     this.setDefaultBookingEmailIfNew()
+
+    // pass-culture-shared have a dedicated redux state for forms.
+    // it's not correctly reset when we came back from offer edition.
+    dispatch(resetForm())
   }
 
   componentDidUpdate(prevProps) {
