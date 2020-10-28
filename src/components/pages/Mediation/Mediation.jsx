@@ -42,7 +42,7 @@ class Mediation extends PureComponent {
   onHandleDataRequest = (handleSuccess, handleFail) => {
     const {
       getMediation,
-      getOffer,
+      loadOffer,
       match: {
         params: { mediationId, offerId },
       },
@@ -50,7 +50,7 @@ class Mediation extends PureComponent {
     } = this.props
     const { isNew } = this.state
     if (!offer) {
-      getOffer(offerId)
+      loadOffer(offerId)
     }
     if (!isNew) {
       getMediation(mediationId, handleSuccess, handleFail)
@@ -455,8 +455,8 @@ Mediation.defaultProps = {
 Mediation.propTypes = {
   createOrUpdateMediation: PropTypes.func.isRequired,
   getMediation: PropTypes.func.isRequired,
-  getOffer: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
+  loadOffer: PropTypes.func.isRequired,
   match: PropTypes.shape().isRequired,
   mediation: PropTypes.shape(),
   offer: PropTypes.shape().isRequired,

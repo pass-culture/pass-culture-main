@@ -6,6 +6,7 @@ import { compose } from 'redux'
 import { withRequiredLogin } from 'components/hocs'
 import withTracking from 'components/hocs/withTracking'
 import { selectOfferById } from 'store/offers/selectors'
+import { loadOffer } from 'store/offers/thunks'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectOfferers } from 'store/selectors/data/offerersSelectors'
@@ -108,6 +109,7 @@ export const mapStateToProps = (state, ownProps) => {
 }
 
 export const mapDispatchToProps = dispatch => ({
+  loadOffer: offerId => dispatch(loadOffer(offerId)),
   showValidationNotification: () => {
     dispatch(
       showNotificationV1({

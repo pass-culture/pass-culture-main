@@ -1,3 +1,5 @@
+import * as offersThunks from 'store/offers/thunks'
+
 import { mapDispatchToProps } from '../MediationContainer'
 import { mapStateToProps } from '../MediationContainer'
 
@@ -17,7 +19,7 @@ describe('src | components | pages | MediationContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        getOffer: expect.any(Function),
+        loadOffer: expect.any(Function),
         getMediation: expect.any(Function),
         showOfferModificationErrorNotification: expect.any(Function),
         showOfferModificationValidationNotification: expect.any(Function),
@@ -26,39 +28,18 @@ describe('src | components | pages | MediationContainer', () => {
     })
   })
 
-  describe('getOffer', () => {
+  describe('loadOffer', () => {
     it('should retrieve offer with offerId', () => {
       // given
-      const { getOffer } = mapDispatchToProps(dispatch, props)
+      jest.spyOn(offersThunks, 'loadOffer')
+      const { loadOffer } = mapDispatchToProps(dispatch, props)
       const offerId = 'offerId'
 
       // when
-      getOffer(offerId)
+      loadOffer(offerId)
 
       // then
-      expect(dispatch).toHaveBeenCalledWith({
-        config: {
-          apiPath: '/offers/offerId',
-          method: 'GET',
-          normalizer: {
-            mediations: 'mediations',
-            product: {
-              normalizer: {
-                offers: 'offers',
-              },
-              stateKey: 'products',
-            },
-            stocks: 'stocks',
-            venue: {
-              normalizer: {
-                managingOfferer: 'offerers',
-              },
-              stateKey: 'venues',
-            },
-          },
-        },
-        type: 'REQUEST_DATA_GET_/OFFERS/OFFERID',
-      })
+      expect(offersThunks.loadOffer).toHaveBeenCalledWith(offerId)
     })
   })
 

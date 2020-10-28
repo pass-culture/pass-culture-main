@@ -109,6 +109,7 @@ describe('src | OfferCreation', () => {
         lastProvider: null,
       },
       history: {},
+      loadOffer: jest.fn(),
       offersSearchFilters: {},
       offerers: [],
       offerer: {

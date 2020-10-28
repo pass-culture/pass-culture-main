@@ -30,6 +30,7 @@ describe('components | OfferEdition', () => {
         isDuo: false,
       },
       isEditableOffer: true,
+      loadOffer: jest.fn(),
       loadVenue: jest.fn(),
       location: {
         search: '?lieu=AQ',

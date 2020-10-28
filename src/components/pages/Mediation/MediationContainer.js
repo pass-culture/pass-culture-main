@@ -5,11 +5,12 @@ import { requestData } from 'redux-saga-data'
 
 import { withRequiredLogin } from 'components/hocs'
 import { selectOfferById } from 'store/offers/selectors'
+import { loadOffer } from 'store/offers/thunks'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { selectMediationById } from 'store/selectors/data/mediationsSelectors'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'
-import { mediationNormalizer, offerNormalizer } from 'utils/normalizers'
+import { mediationNormalizer } from 'utils/normalizers'
 
 import Mediation from './Mediation'
 
@@ -30,14 +31,6 @@ export const mapStateToProps = (state, ownProps) => {
 
 export const mapDispatchToProps = dispatch => {
   return {
-    getOffer: offerId => {
-      dispatch(
-        requestData({
-          apiPath: `/offers/${offerId}`,
-          normalizer: offerNormalizer,
-        })
-      )
-    },
     getMediation: (mediationId, handleSuccess, handleFail) => {
       dispatch(
         requestData({
@@ -48,6 +41,7 @@ export const mapDispatchToProps = dispatch => {
         })
       )
     },
+    loadOffer: offerId => dispatch(loadOffer(offerId)),
     showOfferModificationErrorNotification: error => {
       dispatch(
         showNotificationV1({

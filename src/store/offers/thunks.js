@@ -1,11 +1,24 @@
-import { loadFilteredOffers } from 'repository/pcapi/pcapi'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { setStocks, setVenues } from 'store/reducers/data'
+
 import { setOffers } from './actions'
+
+export const loadOffer = offerId => {
+  return dispatch => {
+    return pcapi.loadOffer(offerId).then(rawOffer => {
+      const { stocks, venue, ...offer } = rawOffer
+      dispatch(setOffers([offer]))
+      dispatch(setStocks(stocks))
+      dispatch(setVenues([venue]))
+    })
+  }
+}
 
 export const loadOffers = filters => {
   return dispatch => {
-    return loadFilteredOffers(filters).then(
-      ({ offers: offersRecap, page, page_count: pageCount, total_count: offersCount }) => {
+    return pcapi
+      .loadFilteredOffers(filters)
+      .then(({ offers: offersRecap, page, page_count: pageCount, total_count: offersCount }) => {
         const { offers, stocks, venues } = offersRecapNormalizer(offersRecap)
 
         dispatch(setOffers(offers))
@@ -13,8 +26,7 @@ export const loadOffers = filters => {
         dispatch(setVenues(venues))
 
         return { page, pageCount, offersCount }
-      }
-    )
+      })
   }
 }
 

@@ -6,6 +6,7 @@ import { compose } from 'redux'
 import { withRequiredLogin } from 'components/hocs'
 import withTracking from 'components/hocs/withTracking'
 import { selectOfferById } from 'store/offers/selectors'
+import { loadOffer } from 'store/offers/thunks'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { selectOffererById, selectOfferers } from 'store/selectors/data/offerersSelectors'
 import { selectProductById } from 'store/selectors/data/productsSelectors'
@@ -114,6 +115,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 }
 
 export const mapDispatchToProps = dispatch => ({
+  loadOffer: offerId => dispatch(loadOffer(offerId)),
   updateFormSetIsDuo: isDuo => {
     dispatch(
       mergeForm('offer', {

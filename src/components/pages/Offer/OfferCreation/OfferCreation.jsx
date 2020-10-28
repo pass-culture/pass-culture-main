@@ -24,7 +24,6 @@ import { CGU_URL } from 'utils/config'
 import { translateApiParamsToQueryParams } from 'utils/translate'
 
 import { musicOptions, showOptions } from '../../../../utils/edd'
-import { offerNormalizer } from '../../../../utils/normalizers'
 import { pluralize } from '../../../../utils/pluralize'
 import { isAllocineOffer, isOfferFromStockProvider } from '../domain/localProvider'
 import offerIsRefundable from '../domain/offerIsRefundable'
@@ -32,7 +31,6 @@ import LocalProviderInformation from '../LocalProviderInformation/LocalProviderI
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
 import StocksManagerContainer from '../StocksManager/StocksManagerContainer'
 import { getDurationInHours, getDurationInMinutes } from '../utils/duration'
-
 
 const DURATION_LIMIT_TIME = 100
 
@@ -122,6 +120,7 @@ class OfferCreation extends PureComponent {
     const {
       dispatch,
       history,
+      loadOffer,
       match: {
         params: { offerId },
       },
@@ -134,12 +133,7 @@ class OfferCreation extends PureComponent {
     const { offererId, venueId } = query.translate()
 
     if (offerId !== 'creation') {
-      dispatch(
-        requestData({
-          apiPath: `/offers/${offerId}`,
-          normalizer: offerNormalizer,
-        })
-      )
+      loadOffer(offerId)
     } else if (venueId) {
       dispatch(
         requestData({
@@ -828,6 +822,7 @@ OfferCreation.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
   isEditableOffer: PropTypes.bool.isRequired,
+  loadOffer: PropTypes.func.isRequired,
   location: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
   selectedOfferType: PropTypes.shape().isRequired,

@@ -6,6 +6,10 @@ import {
 } from 'components/pages/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 
+export const loadOffer = async offerId => {
+  return client.get(`/offers/${offerId}`)
+}
+
 export const loadFilteredOffers = async ({
   nameSearchValue = ALL_OFFERS,
   offererId = ALL_OFFERERS,

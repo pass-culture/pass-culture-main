@@ -22,7 +22,6 @@ import Titles from 'components/layout/Titles/Titles'
 import { OFFERERS_API_PATH } from 'config/apiPaths'
 import { CGU_URL } from 'utils/config'
 import { musicOptions, showOptions } from 'utils/edd'
-import { offerNormalizer } from 'utils/normalizers'
 import { pluralize } from 'utils/pluralize'
 
 import { isAllocineOffer, isOfferFromStockProvider } from '../domain/localProvider'
@@ -118,6 +117,7 @@ class OfferEdition extends PureComponent {
     const {
       dispatch,
       history,
+      loadOffer,
       match: {
         params: { offerId },
       },
@@ -130,12 +130,7 @@ class OfferEdition extends PureComponent {
     const { offererId, venueId } = query.translate()
 
     if (offerId !== 'creation') {
-      dispatch(
-        requestData({
-          apiPath: `/offers/${offerId}`,
-          normalizer: offerNormalizer,
-        })
-      )
+      loadOffer(offerId)
     } else if (venueId) {
       dispatch(
         requestData({
@@ -733,6 +728,7 @@ OfferEdition.defaultProps = {
 OfferEdition.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
+  loadOffer: PropTypes.func.isRequired,
   location: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
   selectedOfferType: PropTypes.shape().isRequired,
