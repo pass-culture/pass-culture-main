@@ -78,8 +78,6 @@ class LocalProvider(Iterator):
 
         _save_same_thumb_from_thumb_count_to_index(
             pc_object, new_thumb_index, new_thumb)
-        logger.debug("Creating thumb #" + str(new_thumb_index) +
-                     " for " + str(pc_object))
         self.createdThumbs += new_thumb_index
 
     def _create_object(self, providable_info: ProvidableInfo) -> Model:

@@ -37,17 +37,12 @@ def process_product_thumb(uri: str, get_product_thumb: Callable = _get_product_t
     if product:
         main_thumb_was_not_processed = product.thumbCount == 0 and (not is_main_thumb)
         if main_thumb_was_not_processed:
-            logger.debug(f'[BATCH][PRODUCT THUMB UPDATE] Trying to process secondary thumb when main '
-                         f'thumb was not processed for product with id: "{product.id}" / uri: "{uri}"')
             return
 
         product.thumbCount += 1
-        logger.debug(
-            f'[BATCH][PRODUCT THUMB UPDATE] Product with id: "{product.id}" / uri: "{uri}" processed successfully')
         return product
 
     else:
-        logger.debug(f'[BATCH][PRODUCT THUMB UPDATE] Product not found for id: "{product_id}" / uri: "{uri}"')
         return None
 
 

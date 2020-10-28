@@ -9,7 +9,6 @@ from pcapi.recommendations_engine import get_offers_for_recommendations_discover
 from pcapi.repository import mediation_queries, repository
 from pcapi.repository.offer_queries import find_searchable_offer, get_offers_for_recommendation_v3
 from pcapi.repository.recommendation_queries import find_recommendation_already_created_on_discovery
-from pcapi.utils.logger import logger
 
 
 # TODO remove this function and its tests once v3 is the only route
@@ -23,7 +22,6 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
             with db.session.no_autoflush:
                 recommendation = _create_recommendation_from_ids(user, offer_id, mediation_id=mediation_id)
             repository.save(recommendation)
-            logger.debug(lambda: 'Creating Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
 
     return recommendation
 

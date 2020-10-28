@@ -29,8 +29,6 @@ def _has_no_mediation_or_mediation_does_not_match_offer(mediation: MediationSQLE
 
 
 def find_recommendation_already_created_on_discovery(offer_id: str, mediation_id: str, user_id: int) -> Recommendation:
-    logger.debug(lambda: 'Requested Recommendation with offer_id=%s mediation_id=%s' % (
-        offer_id, mediation_id))
     query = Recommendation.query.filter((Recommendation.userId == user_id)
                                         & (Recommendation.search == None))
     if offer_id:
@@ -40,15 +38,12 @@ def find_recommendation_already_created_on_discovery(offer_id: str, mediation_id
     if mediation_id:
         mediation = mediation_queries.find_by_id(mediation_id)
         if _has_no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
-            logger.debug(lambda: 'Mediation not found or found but not matching offer for offer_id=%s mediation_id=%s'
-                                 % (offer_id, mediation_id))
             raise ResourceNotFoundError()
 
         query = query.filter(Recommendation.mediationId == mediation_id)
 
     if offer_id:
         if offer is None:
-            logger.debug(lambda: 'Offer not found for offer_id=%s' % (offer_id,))
             raise ResourceNotFoundError()
 
         query = query.filter(OfferSQLEntity.id == offer_id)

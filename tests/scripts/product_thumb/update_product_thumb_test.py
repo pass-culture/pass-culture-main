@@ -86,9 +86,7 @@ class ProcessProductThumbTest:
         get_product_thumb.assert_called_once_with('thumbs/products/A6UQA')
 
     @clean_database
-    @patch('pcapi.scripts.product_thumb.update_product_thumb.logger.debug')
     def test_should_increase_product_thumb_count_by_one_and_set_first_thumb_dominant_color_when_thumb_is_main(self,
-                                                                                                              logger_debug,
                                                                                                               app):
         # Given
         product = create_product_with_thing_type(thumb_count=0)
@@ -102,8 +100,6 @@ class ProcessProductThumbTest:
 
         # Then
         assert updated_product.thumbCount == 1
-        logger_debug.assert_called_once_with(
-            f'[BATCH][PRODUCT THUMB UPDATE] Product with id: "{product.id}" / uri: "{uri}" processed successfully')
 
     @clean_database
     def test_should_increase_product_thumb_count_by_one_and_not_set_first_thumb_dominant_color_when_thumb_is_not_main(
@@ -135,42 +131,7 @@ class ProcessProductThumbTest:
         assert not success
 
     @clean_database
-    @patch('pcapi.scripts.product_thumb.update_product_thumb.logger.debug')
-    def test_should_log_error_when_product_does_not_exist_in_database(self, logger_debug, app):
-        # Given
-        uri = 'thumbs/products/AE'
-        get_product_thumb = MagicMock(return_value=IMAGE_AS_BYTES)
-
-        # When
-        success = process_product_thumb(uri, get_product_thumb)
-
-        # Then
-        logger_debug.assert_called_once_with(
-            f'[BATCH][PRODUCT THUMB UPDATE] Product not found for id: "1" / uri: "thumbs/products/AE"')
-        assert not success
-
-    @clean_database
-    @patch('pcapi.scripts.product_thumb.update_product_thumb.logger.debug')
-    def test_should_log_error_when_product_thumb_count_is_zero_and_current_thumb_is_not_main(self, logger_debug, app):
-        # Given
-        product = create_product_with_thing_type(thumb_count=0)
-        repository.save(product)
-        human_product_id = humanize(product.id)
-        uri = f'thumbs/products/{human_product_id}_1'
-        get_product_thumb = MagicMock(return_value=IMAGE_AS_BYTES)
-
-        # When
-        success = process_product_thumb(uri, get_product_thumb)
-
-        # Then
-        logger_debug.assert_called_once_with(
-            f'[BATCH][PRODUCT THUMB UPDATE] Trying to process secondary thumb when main '
-            f'thumb was not processed for product with id: "{product.id}" / uri: "{uri}"')
-        assert not success
-
-    @clean_database
-    @patch('pcapi.scripts.product_thumb.update_product_thumb.logger.debug')
-    def test_should_not_fetch_product_thumb_when_is_not_main(self, logger_debug, app):
+    def test_should_not_fetch_product_thumb_when_is_not_main(self, app):
         # Given
         product = create_product_with_thing_type(thumb_count=1)
         repository.save(product)
@@ -184,8 +145,6 @@ class ProcessProductThumbTest:
         # Then
         get_product_thumb.assert_not_called()
         assert success
-        logger_debug.assert_called_once_with(
-            f'[BATCH][PRODUCT THUMB UPDATE] Product with id: "{product.id}" / uri: "{uri}" processed successfully')
 
 
 class ProcessFileTest:

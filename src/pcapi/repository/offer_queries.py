@@ -36,7 +36,6 @@ def department_or_national_offers(query, departement_codes):
         VenueSQLEntity.departementCode.in_(departement_codes) | (OfferSQLEntity.isNational == True)
     )
 
-    logger.debug(lambda: '(reco) departement .count ' + str(query.count()))
     return query
 
 
@@ -54,7 +53,6 @@ def _has_active_and_validated_offerer() -> BinaryExpression:
 def _with_active_and_validated_offerer(query):
     query = query.join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId) \
         .filter(_has_active_and_validated_offerer())
-    logger.debug(lambda: '(reco) from active and validated offerer .count' + str(query.count()))
     return query
 
 
@@ -137,23 +135,13 @@ def get_active_offers_ids_query(user, departement_codes=[ALL_DEPARTMENTS_CODE], 
 
     if offer_id is not None:
         active_offers_query = active_offers_query.filter(OfferSQLEntity.id == offer_id)
-    logger.debug(lambda: '(reco) all offers count {}'.format(active_offers_query.count()))
     active_offers_query = active_offers_query.filter_by(isActive=True)
-    logger.debug(lambda: '(reco) active offers count {}'.format(active_offers_query.count()))
     active_offers_query = _with_validated_venue(active_offers_query)
-    logger.debug(lambda: '(reco) offers with venue count {}'.format(active_offers_query.count()))
     active_offers_query = _with_image(active_offers_query)
-    logger.debug(lambda: '(reco) offers with image count {} '.format(active_offers_query.count()))
     active_offers_query = department_or_national_offers(active_offers_query, departement_codes)
-    logger.debug(lambda:
-                 '(reco) department or national {} in {}'.format(str(departement_codes),
-                                                                 active_offers_query.count()))
     active_offers_query = _bookable_offers(active_offers_query)
-    logger.debug(lambda: '(reco) bookable_offers {}'.format(active_offers_query.count()))
     active_offers_query = _with_active_and_validated_offerer(active_offers_query)
-    logger.debug(lambda: '(reco) active and validated {}'.format(active_offers_query.count()))
     active_offers_query = _not_activation_offers(active_offers_query)
-    logger.debug(lambda: '(reco) not_currently_recommended and not_activation {}'.format(active_offers_query.count()))
     if user:
         active_offers_query = _exclude_booked_and_favorite(active_offers_query, user)
     active_offer_ids = active_offers_query.with_entities(OfferSQLEntity.id).subquery()

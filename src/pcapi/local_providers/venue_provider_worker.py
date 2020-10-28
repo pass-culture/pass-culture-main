@@ -22,7 +22,6 @@ def update_venues_for_specific_provider(provider_id: int):
             venue_providers_to_sync.remove(venue_provider)
         else:
             sleep(WAIT_TIME_FOR_AVAILABLE_WORKER)
-            logger.debug("[VenueProviderWorker] Waiting for available worker")
 
 
 def do_sync_venue_provider(venue_provider: VenueProvider):
