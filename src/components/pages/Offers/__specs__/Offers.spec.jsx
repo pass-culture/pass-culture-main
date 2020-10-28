@@ -818,7 +818,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(props.closeNotification).not.toHaveBeenCalledWith()
     })
 
-    it('should deselect all offers if they were all selected', async () => {
+    it('should deselect all offers', () => {
       // Given
       props = {
         ...props,
@@ -827,8 +827,7 @@ describe('src | components | pages | Offers | Offers', () => {
           tag: 'offers-activation',
         },
       }
-      const { unmount } = await renderOffers(props, store)
-      fireEvent.click(screen.getByLabelText('Tout sélectionner'))
+      const { unmount } = renderOffers(props, store)
 
       // When
       unmount()
@@ -837,7 +836,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(props.setSelectedOfferIds).toHaveBeenLastCalledWith([])
     })
 
-    it('should hide action bar if all offers were selected', async () => {
+    it('should hide action bar',  () => {
       // Given
       props = {
         ...props,
@@ -846,8 +845,7 @@ describe('src | components | pages | Offers | Offers', () => {
           tag: 'offers-activation',
         },
       }
-      const { unmount } = await renderOffers(props, store)
-      fireEvent.click(screen.getByLabelText('Tout sélectionner'))
+      const { unmount } = renderOffers(props, store)
 
       // When
       unmount()

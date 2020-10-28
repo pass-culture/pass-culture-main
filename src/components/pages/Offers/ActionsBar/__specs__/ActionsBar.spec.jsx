@@ -232,7 +232,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(fetchUtils.fetchFromApiWithCredentials).toHaveBeenLastCalledWith(
+        expect(fetchFromApiWithCredentials).toHaveBeenLastCalledWith(
           '/offers/all-active-status',
           'PATCH',
           expectedBody
@@ -264,7 +264,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(fetchUtils.fetchFromApiWithCredentials).toHaveBeenLastCalledWith(
+        expect(fetchFromApiWithCredentials).toHaveBeenLastCalledWith(
           '/offers/all-active-status',
           'PATCH',
           expectedBody

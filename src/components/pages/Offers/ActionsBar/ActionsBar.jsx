@@ -36,7 +36,7 @@ const ActionsBar = props => {
     setSelectedOfferIds([])
     hideActionsBar()
     areAllOffersSelected && toggleSelectAllCheckboxes()
-  }, [hideActionsBar, setSelectedOfferIds])
+  }, [hideActionsBar, setSelectedOfferIds, areAllOffersSelected, toggleSelectAllCheckboxes])
 
   const handleActivate = useCallback(async () => {
     const body = {
@@ -50,7 +50,7 @@ const ActionsBar = props => {
         isActive: true,
       })
       refreshOffers({ shouldTriggerSpinner: false })
-      showSuccessNotification(computeActivationSuccessMessage(nbSelectedOffers))
+      showSuccessNotification(computeActivationSuccessMessage(allOffersLength))
       handleClose()
     } else {
       await fetchFromApiWithCredentials('/offers/active-status', 'PATCH', body)
@@ -67,6 +67,7 @@ const ActionsBar = props => {
     nbSelectedOffers,
     handleClose,
     trackActivateOffers,
+    allOffersLength,
   ])
 
   const handleDeactivate = useCallback(async () => {
@@ -81,7 +82,7 @@ const ActionsBar = props => {
         isActive: false,
       })
       refreshOffers({ shouldTriggerSpinner: false })
-      showSuccessNotification(computeDeactivationSuccessMessage(nbSelectedOffers))
+      showSuccessNotification(computeDeactivationSuccessMessage(allOffersLength))
       handleClose()
     } else {
       await fetchFromApiWithCredentials('/offers/active-status', 'PATCH', body)
@@ -98,6 +99,7 @@ const ActionsBar = props => {
     nbSelectedOffers,
     handleClose,
     trackDeactivateOffers,
+    allOffersLength,
   ])
 
   const computeSelectedOffersLabel = () => {
