@@ -87,6 +87,19 @@ def test_valid_response_from_api(request_post, response_return_value, expected_r
     assert api_response == expected_result
 
 
+@patch('pcapi.connectors.api_recaptcha.requests.post')
+def test_with_empty_token(request_post):
+    # Given
+    request_post.return_value = errors_return_value
+
+    # When
+    api_response = validate_recaptcha_token(None, ORIGINAL_ACTION)
+
+    # Then
+    request_post.assert_not_called()
+    assert api_response is False
+
+
 @pytest.mark.parametrize("response_return_value,exception_value", test_api_recaptcha_exceptions_data.values(), ids=test_api_recaptcha_exceptions_data.keys())
 @patch('pcapi.connectors.api_recaptcha.RECAPTCHA_SECRET', "recaptcha-secret")
 @patch('pcapi.connectors.api_recaptcha.requests.post')

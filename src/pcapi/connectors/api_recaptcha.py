@@ -20,6 +20,9 @@ class ReCaptchaException(Exception):
 
 
 def validate_recaptcha_token(token: str, original_action: str) -> bool:
+    if not token:
+        return False
+
     params = {
         "secret": RECAPTCHA_SECRET,
         "response": token
