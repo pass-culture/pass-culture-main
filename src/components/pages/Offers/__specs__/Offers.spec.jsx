@@ -273,7 +273,7 @@ describe('src | components | pages | Offers | Offers', () => {
         })
       })
 
-      describe('status filters', () => {
+      describe.skip('status filters', () => {
         it('should not render status filters', async () => {
           // Given
           props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
@@ -720,7 +720,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
     })
 
-    it('should have status value when user filters by status', async () => {
+    it.skip('should have status value when user filters by status', async () => {
       // Given
       props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock' }]
       await renderOffers(props, store)
@@ -743,7 +743,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
     })
 
-    it('should have status value be removed when user ask for all status', async () => {
+    it.skip('should have status value be removed when user ask for all status', async () => {
       // Given
       props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock' }]
       await renderOffers(props, store)

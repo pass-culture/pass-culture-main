@@ -362,31 +362,37 @@ class Offers extends PureComponent {
                     <th>
                       {'Stock'}
                     </th>
-                    <th className="th-with-filter">
-                      <button
-                        onClick={this.toggleStatusFiltersVisibility}
-                        type="button"
-                      >
+                    {true ? (
+                      <th>
                         {'Statut'}
-                        <Icon
-                          alt="Afficher ou masquer les filtres par statut"
-                          className={isFilteredByStatus ? 'active-status-filter' : undefined}
-                          svg={
-                            isFilteredByStatus
-                              ? 'ico-filter-status-active'
-                              : 'ico-filter-status-red'
-                          }
-                        />
-                      </button>
-                      {areStatusFiltersVisible && (
-                        <OffersStatusFiltersModal
-                          refreshOffers={this.handleOnSubmit}
-                          statusFilters={statusFilters}
-                          toggleModalVisibility={this.toggleStatusFiltersVisibility}
-                          updateStatusFilters={this.updateStatusFilters}
-                        />
-                      )}
-                    </th>
+                      </th>
+                    ) : (
+                      <th className="th-with-filter">
+                        <button
+                          onClick={this.toggleStatusFiltersVisibility}
+                          type="button"
+                        >
+                          {'Statut'}
+                          <Icon
+                            alt="Afficher ou masquer les filtres par statut"
+                            className={isFilteredByStatus ? 'active-status-filter' : undefined}
+                            svg={
+                              isFilteredByStatus
+                                ? 'ico-filter-status-active'
+                                : 'ico-filter-status-red'
+                            }
+                          />
+                        </button>
+                        {areStatusFiltersVisible && (
+                          <OffersStatusFiltersModal
+                            refreshOffers={this.handleOnSubmit}
+                            statusFilters={statusFilters}
+                            toggleModalVisibility={this.toggleStatusFiltersVisibility}
+                            updateStatusFilters={this.updateStatusFilters}
+                          />
+                        )}
+                      </th>
+                    )}
                     <th />
                     <th />
                   </tr>
