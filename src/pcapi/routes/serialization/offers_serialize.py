@@ -1,4 +1,4 @@
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Union
 from pydantic import BaseModel, validator
 
 from pcapi.models import OfferSQLEntity, UserSQLEntity
@@ -113,3 +113,40 @@ class PatchOfferActiveStatusBodyModel(BaseModel):
 
     class Config:
         alias_generator = to_camel
+
+
+class ListOffersVenueResponseModel(BaseModel):
+    id: str
+    isVirtual: bool
+    managingOffererId: str
+    name: str
+    offererName: str
+    publicName: Optional[str]
+
+
+class ListOffersStockResponseModel(BaseModel):
+    id: str
+    offerId: str
+    remainingQuantity: Union[str, int]
+
+
+class ListOffersOfferResponseModel(BaseModel):
+    hasBookingLimitDatetimesPassed: bool
+    id: str
+    isActive: bool
+    isEditable: bool
+    isEvent: bool
+    isThing: bool
+    name: str
+    stocks: List[ListOffersStockResponseModel]
+    thumbUrl: Optional[str]
+    type: str
+    venue: ListOffersVenueResponseModel
+    venueId: str
+
+
+class ListOffersResponseModel(BaseModel):
+    offers: List[ListOffersOfferResponseModel]
+    page: int
+    page_count: int
+    total_count: int

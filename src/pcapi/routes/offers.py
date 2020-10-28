@@ -27,6 +27,7 @@ from pcapi.routes.serialization.offers_serialize import (
     OfferResponseIdModel,
     PatchOfferBodyModel,
     PatchOfferActiveStatusBodyModel,
+    ListOffersResponseModel,
 )
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.list_offers_for_pro_user import OffersRequestParameters
@@ -49,6 +50,7 @@ from pcapi.validation.routes.offers import (
 
 @private_api.route("/offers", methods=["GET"])
 @login_required
+@spectree_serialize(response_model=ListOffersResponseModel)  # type: ignore
 def list_offers() -> (str, int):
     offerer_identifier = Identifier.from_scrambled_id(request.args.get("offererId"))
     venue_identifier = Identifier.from_scrambled_id(request.args.get("venueId"))
@@ -88,7 +90,7 @@ def list_offers() -> (str, int):
     )
     paginated_offers = list_offers_for_pro_user.execute(offers_request_parameters)
 
-    return serialize_offers_recap_paginated(paginated_offers), 200
+    return ListOffersResponseModel(**serialize_offers_recap_paginated(paginated_offers))
 
 
 @private_api.route("/offers/<offer_id>", methods=["GET"])

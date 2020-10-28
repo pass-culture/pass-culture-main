@@ -12,6 +12,7 @@ from pcapi.model_creators.generic_creators import (
     create_user,
     create_user_offerer,
     create_venue,
+    create_stock,
 )
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.repository import repository
@@ -31,7 +32,8 @@ class Returns200:
         other_venue = create_venue(offerer, siret="54321987654321")
         offer_on_requested_venue = create_offer_with_thing_product(requested_venue)
         offer_on_other_venue = create_offer_with_thing_product(other_venue)
-        repository.save(admin, offer_on_requested_venue, offer_on_other_venue)
+        stock = create_stock(offer=offer_on_requested_venue)
+        repository.save(admin, stock, offer_on_other_venue)
 
         # when
         client = TestClient(app.test_client()).with_auth(email=admin.email)
@@ -55,7 +57,13 @@ class Returns200:
                     "isEvent": False,
                     "isThing": True,
                     "name": "Test Book",
-                    "stocks": [],
+                    "stocks": [
+                        {
+                            "id": humanize(stock.id),
+                            "offerId": humanize(offer_on_requested_venue.id),
+                            "remainingQuantity": "unlimited",
+                        }
+                    ],
                     "thumbUrl": None,
                     "type": "ThingType.AUDIOVISUEL",
                     "venue": {
