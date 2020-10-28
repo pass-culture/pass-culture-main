@@ -35,7 +35,7 @@ const ActionsBar = props => {
   const handleClose = useCallback(() => {
     setSelectedOfferIds([])
     hideActionsBar()
-    toggleSelectAllCheckboxes()
+    areAllOffersSelected && toggleSelectAllCheckboxes()
   }, [hideActionsBar, setSelectedOfferIds])
 
   const handleActivate = useCallback(async () => {

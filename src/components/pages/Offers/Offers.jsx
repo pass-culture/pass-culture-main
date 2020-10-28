@@ -80,9 +80,15 @@ class Offers extends PureComponent {
   }
 
   componentWillUnmount() {
-    const { closeNotification, notification } = this.props
+    const { closeNotification, notification, setSelectedOfferIds, hideActionsBar } = this.props
+    const { areAllOffersSelected } = this.state
     if (notification && notification.tag === 'offers-activation') {
       closeNotification()
+    }
+
+    if (areAllOffersSelected) {
+      setSelectedOfferIds([])
+      hideActionsBar()
     }
   }
 
@@ -317,17 +323,9 @@ class Offers extends PureComponent {
   }
 
   render() {
-    const {
-      currentUser,
-      handleOnDeactivateAllVenueOffersClick,
-      handleOnActivateAllVenueOffersClick,
-      offers,
-      query,
-      selectedOfferIds,
-    } = this.props
+    const { currentUser, offers, selectedOfferIds } = this.props
 
     const { isAdmin } = currentUser || {}
-    const { venueId } = translateQueryParamsToApiParams(query.parse())
     const {
       areStatusFiltersVisible,
       nameSearchValue,
@@ -429,25 +427,6 @@ class Offers extends PureComponent {
         </div>
 
         <div className="section">
-          {offers.length > 0 && venueId && (
-            <div className="offers-list-actions">
-              <button
-                className="button deactivate is-tertiary is-small"
-                onClick={handleOnDeactivateAllVenueOffersClick(venueId)}
-                type="button"
-              >
-                {'Désactiver toutes les offres'}
-              </button>
-
-              <button
-                className="button activate is-tertiary is-small"
-                onClick={handleOnActivateAllVenueOffersClick(venueId)}
-                type="button"
-              >
-                {'Activer toutes les offres'}
-              </button>
-            </div>
-          )}
           {isLoading && <Spinner />}
           {offers.length > 0 && !isLoading && (
             <Fragment>
@@ -562,8 +541,6 @@ Offers.defaultProps = {
 Offers.propTypes = {
   closeNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape().isRequired,
-  handleOnActivateAllVenueOffersClick: PropTypes.func.isRequired,
-  handleOnDeactivateAllVenueOffersClick: PropTypes.func.isRequired,
   hideActionsBar: PropTypes.func.isRequired,
   loadOffers: PropTypes.func.isRequired,
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
