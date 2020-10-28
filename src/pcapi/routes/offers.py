@@ -1,29 +1,32 @@
 from flask import jsonify, request
-from flask_login import current_user, \
-    login_required
+from flask_login import current_user, login_required
 
 from pcapi.flask_app import private_api
 from pcapi.domain.admin_emails import send_offer_creation_notification_to_administration
-from pcapi.domain.create_offer import fill_offer_with_new_data, \
-    initialize_offer_from_product_id
+from pcapi.domain.create_offer import (
+    fill_offer_with_new_data,
+    initialize_offer_from_product_id,
+)
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.infrastructure.container import list_offers_for_pro_user
-from pcapi.models import OfferSQLEntity, \
-    RightsType, \
-    VenueSQLEntity
+from pcapi.models import OfferSQLEntity, RightsType, VenueSQLEntity
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.repository import offer_queries, \
-    repository, \
-    user_offerer_queries, \
-    venue_queries
-from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
+from pcapi.repository import (
+    offer_queries,
+    repository,
+    user_offerer_queries,
+    venue_queries,
+)
+from pcapi.routes.serialization.offers_recap_serialize import (
+    serialize_offers_recap_paginated,
+)
 from pcapi.routes.serialization.offers_serialize import (
     serialize_offer,
     PostOfferBodyModel,
     OfferResponseIdModel,
     PatchOfferBodyModel,
-    PatchOfferActiveStatusBodyModel
+    PatchOfferActiveStatusBodyModel,
 )
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.list_offers_for_pro_user import OffersRequestParameters
@@ -32,22 +35,26 @@ from pcapi.use_cases.update_offers_active_status import update_offers_active_sta
 from pcapi.utils.config import PRO_URL
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.mailing import send_raw_email
-from pcapi.utils.rest import ensure_current_user_has_rights, \
-    load_or_404, \
-    load_or_raise_error, \
-    login_or_api_key_required
-from pcapi.validation.routes.offers import check_offer_name_length_is_valid, \
-    check_offer_type_is_valid, \
-    check_user_has_rights_on_offerer, \
-    check_valid_edition, \
-    check_venue_exists_when_requested
+from pcapi.utils.rest import (
+    ensure_current_user_has_rights,
+    load_or_404,
+    load_or_raise_error,
+    login_or_api_key_required,
+)
+from pcapi.validation.routes.offers import (
+    check_offer_name_length_is_valid,
+    check_offer_type_is_valid,
+    check_user_has_rights_on_offerer,
+    check_valid_edition,
+    check_venue_exists_when_requested,
+)
 
 
-@private_api.route('/offers', methods=['GET'])
+@private_api.route("/offers", methods=["GET"])
 @login_required
 def list_offers() -> (str, int):
-    offerer_identifier = Identifier.from_scrambled_id(request.args.get('offererId'))
-    venue_identifier = Identifier.from_scrambled_id(request.args.get('venueId'))
+    offerer_identifier = Identifier.from_scrambled_id(request.args.get("offererId"))
+    venue_identifier = Identifier.from_scrambled_id(request.args.get("venueId"))
 
     if not current_user.isAdmin:
         offerer_id = None
@@ -58,15 +65,16 @@ def list_offers() -> (str, int):
         if offerer_identifier:
             offerer_id = offerer_identifier.persisted
         if offerer_id is not None:
-            user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
-                user_id=current_user.id,
-                offerer_id=offerer_id
+            user_offerer = (
+                user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
+                    user_id=current_user.id, offerer_id=offerer_id
+                )
             )
             check_user_has_rights_on_offerer(user_offerer)
 
     status_filters = OffersStatusFilters(
-        exclude_active=request.args.get('active') == 'false',
-        exclude_inactive=request.args.get('inactive') == 'false'
+        exclude_active=request.args.get("active") == "false",
+        exclude_inactive=request.args.get("inactive") == "false",
     )
 
     offers_request_parameters = OffersRequestParameters(
@@ -74,26 +82,28 @@ def list_offers() -> (str, int):
         user_is_admin=current_user.isAdmin,
         offerer_id=offerer_identifier,
         venue_id=venue_identifier,
-        offers_per_page=int(request.args.get('paginate')) if request.args.get('paginate') else None,
-        name_keywords=request.args.get('name'),
-        page=int(request.args.get('page')) if request.args.get('page') else None,
-        status_filters=status_filters
+        offers_per_page=int(request.args.get("paginate"))
+        if request.args.get("paginate")
+        else None,
+        name_keywords=request.args.get("name"),
+        page=int(request.args.get("page")) if request.args.get("page") else None,
+        status_filters=status_filters,
     )
     paginated_offers = list_offers_for_pro_user.execute(offers_request_parameters)
 
     return serialize_offers_recap_paginated(paginated_offers), 200
 
 
-@private_api.route('/offers/<offer_id>', methods=['GET'])
+@private_api.route("/offers/<offer_id>", methods=["GET"])
 @login_required
 def get_offer(offer_id: int) -> (str, int):
     offer = load_or_404(OfferSQLEntity, offer_id)
     return jsonify(serialize_offer(offer, current_user)), 200
 
 
-@private_api.route('/offers', methods=['POST'])
+@private_api.route("/offers", methods=["POST"])
 @login_or_api_key_required
-@spectree_serialize(response_model=OfferResponseIdModel, on_success_status=201) # type: ignore
+@spectree_serialize(response_model=OfferResponseIdModel, on_success_status=201)  # type: ignore
 def post_offer(body: PostOfferBodyModel) -> OfferResponseIdModel:
     venue = load_or_raise_error(VenueSQLEntity, body.venue_id)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
@@ -111,21 +121,23 @@ def post_offer(body: PostOfferBodyModel) -> OfferResponseIdModel:
     offer.venue = venue
     offer.bookingEmail = body.booking_email
     repository.save(offer)
-    send_offer_creation_notification_to_administration(offer, current_user, PRO_URL, send_raw_email)
+    send_offer_creation_notification_to_administration(
+        offer, current_user, PRO_URL, send_raw_email
+    )
 
     return OfferResponseIdModel.from_orm(offer)
 
 
-@private_api.route('/offers/active-status', methods=['PATCH'])
+@private_api.route("/offers/active-status", methods=["PATCH"])
 @login_or_api_key_required
-@spectree_serialize(response_model=None, on_success_status=204) # type: ignore
+@spectree_serialize(response_model=None, on_success_status=204)  # type: ignore
 def patch_offers_active_status(body: PatchOfferActiveStatusBodyModel) -> None:
     update_offers_active_status(body.ids, body.is_active)
 
 
-@private_api.route('/offers/<offer_id>', methods=['PATCH'])
+@private_api.route("/offers/<offer_id>", methods=["PATCH"])
 @login_or_api_key_required
-@spectree_serialize(response_model=OfferResponseIdModel) # type: ignore
+@spectree_serialize(response_model=OfferResponseIdModel)  # type: ignore
 def patch_offer(offer_id: str, body: PatchOfferBodyModel) -> OfferResponseIdModel:
     payload = request.json
     check_valid_edition(payload)
