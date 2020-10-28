@@ -351,7 +351,7 @@ class Returns400:
         # Then
         assert response.status_code == 400
         assert response.json["owningOffererId"] == [
-            "Vous ne pouvez pas modifier cette information"
+            "Vous ne pouvez pas changer cette information"
         ]
         for key in forbidden_keys:
             assert key in response.json

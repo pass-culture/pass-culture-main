@@ -1,5 +1,5 @@
 from typing import Dict, Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from pcapi.models import OfferSQLEntity, UserSQLEntity
 from pcapi.core.bookings.repository import find_first_matching_from_offer_by_user
@@ -13,6 +13,10 @@ from pcapi.serialization.utils import (
     dehumanize_field,
     humanize_field,
     dehumanize_list_field,
+)
+from pcapi.validation.routes.offers import (
+    check_offer_name_length_is_valid,
+    check_offer_type_is_valid,
 )
 
 
@@ -35,7 +39,19 @@ class PostOfferBodyModel(BaseModel):
     name: Optional[str]
     booking_email: Optional[str]
 
-    _normalize_product_id = dehumanize_field("product_id")
+    _dehumanize_product_id = dehumanize_field("product_id")
+
+    @validator("name", pre=True)
+    def validate_name(cls, name, values):
+        if not values["product_id"]:
+            check_offer_name_length_is_valid(name)
+        return name
+
+    @validator("type", pre=True)
+    def validate_type(cls, type_field, values):
+        if not values["product_id"]:
+            check_offer_type_is_valid(type_field)
+        return type_field
 
     class Config:
         alias_generator = to_camel
@@ -57,23 +73,43 @@ class PatchOfferBodyModel(BaseModel):
     type: Optional[str]
     url: Optional[str]
     withdrawalDetails: Optional[str]
+    isActive: Optional[bool]
+    isDuo: Optional[bool]
+    durationMinutes: Optional[int]
+    mediaUrls: Optional[List[str]]
+    ageMin: Optional[int]
+    ageMax: Optional[int]
+    conditions: Optional[str]
+    venueId: Optional[str]
+    productId: Optional[str]
+
+    @validator("name", pre=True)
+    def validate_name(cls, name):
+        if name:
+            check_offer_name_length_is_valid(name)
+        return name
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
 
 
 class OfferResponseIdModel(BaseModel):
     id: str
 
-    _normalize_id = humanize_field("id")
+    _humanize_id = humanize_field("id")
 
     class Config:  # pylint: disable=too-few-public-methods
         orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
 
+
 class PatchOfferActiveStatusBodyModel(BaseModel):
     is_active: bool
     ids: List[int]
 
-    _normalize_ids = dehumanize_list_field("ids")
+    _humanize_ids = dehumanize_list_field("ids")
 
     class Config:
         alias_generator = to_camel

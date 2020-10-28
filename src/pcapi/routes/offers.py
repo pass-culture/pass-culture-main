@@ -42,10 +42,7 @@ from pcapi.utils.rest import (
     login_or_api_key_required,
 )
 from pcapi.validation.routes.offers import (
-    check_offer_name_length_is_valid,
-    check_offer_type_is_valid,
     check_user_has_rights_on_offerer,
-    check_valid_edition,
     check_venue_exists_when_requested,
 )
 
@@ -111,10 +108,6 @@ def post_offer(body: PostOfferBodyModel) -> OfferResponseIdModel:
     if body.product_id:
         offer = initialize_offer_from_product_id(body.product_id)
     else:
-        offer_type_name = body.type
-        check_offer_type_is_valid(offer_type_name)
-        offer_name = body.name
-        check_offer_name_length_is_valid(offer_name)
         offer = fill_offer_with_new_data(request.json, current_user)
         offer.product.owningOfferer = venue.managingOfferer
 
@@ -139,19 +132,12 @@ def patch_offers_active_status(body: PatchOfferActiveStatusBodyModel) -> None:
 @login_or_api_key_required
 @spectree_serialize(response_model=OfferResponseIdModel)  # type: ignore
 def patch_offer(offer_id: str, body: PatchOfferBodyModel) -> OfferResponseIdModel:
-    payload = request.json
-    check_valid_edition(payload)
     offer = offer_queries.get_offer_by_id(dehumanize(offer_id))
 
     if not offer:
         raise ResourceNotFoundError
 
     ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
-
-    offer_name = body.name
-    if offer_name:
-        check_offer_name_length_is_valid(offer_name)
-
-    offer = update_an_offer(offer, modifications=payload)
+    offer = update_an_offer(offer, modifications=body.dict(exclude_unset=True))
 
     return OfferResponseIdModel.from_orm(offer)

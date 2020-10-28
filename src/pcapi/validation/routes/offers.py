@@ -29,18 +29,6 @@ def check_venue_exists_when_requested(venue, venue_id):
         raise errors
 
 
-def check_valid_edition(payload: dict):
-    forbidden_keys = {'idAtProviders', 'dateModifiedAtLastProvider', 'thumbCount',
-                      'owningOffererId', 'id', 'lastProviderId', 'dateCreated'}
-    all_keys = payload.keys()
-    keys_in_error = forbidden_keys.intersection(all_keys)
-    if keys_in_error:
-        errors = ApiErrors()
-        for key in keys_in_error:
-            errors.add_error(key, 'Vous ne pouvez pas modifier cette information')
-        raise errors
-
-
 def check_offer_type_is_valid(offer_type_name):
     if not ProductType.is_thing(offer_type_name) and not ProductType.is_event(offer_type_name):
         api_error = ApiErrors()
