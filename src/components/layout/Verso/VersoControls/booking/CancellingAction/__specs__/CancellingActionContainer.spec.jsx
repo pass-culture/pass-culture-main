@@ -2,7 +2,7 @@ import moment from 'moment'
 
 import { getCancellingUrl, mapDispatchToProps, mapStateToProps } from '../CancellingActionContainer'
 
-describe('src | components | layout | Verso | VersoControls | booking | CancellingAction | CancellingActionContainer', () => {
+describe('verso | booking | CancellingActionContainer', () => {
   describe('getCancellingUrl', () => {
     describe('when I am in reservations page', () => {
       it('should return a URL without booking id', () => {

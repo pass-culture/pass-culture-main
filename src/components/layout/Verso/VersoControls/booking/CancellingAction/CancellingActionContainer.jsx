@@ -6,7 +6,7 @@ import { compose } from 'redux'
 import { closeSharePopin, openSharePopin } from '../../../../../../redux/actions/share'
 import {
   selectBookingByRouterMatch,
-  selectPastEventBookingByOfferId
+  selectPastEventBookingByOfferId,
 } from '../../../../../../redux/selectors/data/bookingsSelectors'
 import { selectOfferByRouterMatch } from '../../../../../../redux/selectors/data/offersSelectors'
 import { selectStockById } from '../../../../../../redux/selectors/data/stocksSelectors'
@@ -59,15 +59,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     const { errors } = payload
     const { booking: bookingError } = errors || {}
     const message = bookingError || ['Une erreur inconnue s’est produite']
-    const propsOk = {
-      action: handleClosePopinAction,
-      label: 'Non',
-    }
-    const okButton = <PopinButton {...propsOk} />
     const options = {
-      buttons: [
-        okButton,
-      ],
       text: message.join('\n'),
       title: 'Annulation impossible',
     }
@@ -89,7 +81,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         handleSuccess: () => handleSuccessPopin(offerId),
         method: 'PUT',
         normalizer: bookingNormalizer,
-      }),
+      })
     )
   }
 
@@ -113,10 +105,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         />
       )
       const options = {
-        buttons: [
-          yesButton,
-          noButton,
-        ],
+        buttons: [yesButton, noButton],
         handleClose: () => history.push(`${pathname.split('/reservation/')[0]}${search}`),
         text: 'Souhaites-tu réellement annuler cette réservation ?',
         title: offerName,
@@ -129,8 +118,5 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 export default compose(
   withRouter,
   withTracking('Offer'),
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
+  connect(mapStateToProps, mapDispatchToProps)
 )(CancellingAction)
