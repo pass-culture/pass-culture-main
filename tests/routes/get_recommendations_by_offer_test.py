@@ -1,5 +1,8 @@
-from pcapi.repository import repository
 import pytest
+
+import pcapi.core.recommendations.factories as recommendations_factories
+from pcapi.core import testing
+from pcapi.repository import repository
 from tests.conftest import TestClient
 from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
     create_mediation
@@ -12,20 +15,22 @@ RECOMMENDATION_URL = '/recommendations'
 class Get:
     class Returns200:
         @pytest.mark.usefixtures("db_session")
-        def when_mediation_id_is_not_given(self, app):
-            # Given
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-            user = create_user(email='user@test.com')
-            recommendation = create_recommendation(offer, user)
-            repository.save(recommendation)
+        def when_mediation_id_is_not_given(self, app, assert_num_queries):
+            recommendation = recommendations_factories.RecommendationFactory(
+                user__email='test@example.com',
+                mediation=None,
+            )
+
+            offer = recommendation.offer
 
             # When
-            path = '/recommendations/offers/{}'.format(humanize(offer.id))
-            response = TestClient(app.test_client()) \
-                .with_auth(email='user@test.com') \
-                .get(path)
+            n_queries = testing.AUTHENTICATION_QUERIES
+            n_queries += 2  # fetch data: select offer and recommendation
+            n_queries += 6  # serializer: mediation, product, stock, venue, offerer, bookings
+            client = TestClient(app.test_client()).with_auth(email='test@example.com')
+            with assert_num_queries(n_queries):
+                path = '/recommendations/offers/{}'.format(humanize(offer.id))
+                response = client.get(path)
 
             # Then
             assert response.status_code == 200
