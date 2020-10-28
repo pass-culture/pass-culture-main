@@ -7,7 +7,6 @@ from pcapi.domain.create_offer import (
     fill_offer_with_new_data,
     initialize_offer_from_product_id,
 )
-from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.infrastructure.container import list_offers_for_pro_user
 from pcapi.models import OfferSQLEntity, RightsType, VenueSQLEntity
@@ -28,6 +27,7 @@ from pcapi.routes.serialization.offers_serialize import (
     PatchOfferBodyModel,
     PatchOfferActiveStatusBodyModel,
     ListOffersResponseModel,
+    ListOffersQueryModel,
 )
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.list_offers_for_pro_user import OffersRequestParameters
@@ -51,18 +51,15 @@ from pcapi.validation.routes.offers import (
 @private_api.route("/offers", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=ListOffersResponseModel)  # type: ignore
-def list_offers() -> (str, int):
-    offerer_identifier = Identifier.from_scrambled_id(request.args.get("offererId"))
-    venue_identifier = Identifier.from_scrambled_id(request.args.get("venueId"))
-
+def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
     if not current_user.isAdmin:
         offerer_id = None
-        if venue_identifier:
-            venue = venue_queries.find_by_id(venue_identifier.persisted)
-            check_venue_exists_when_requested(venue, venue_identifier)
+        if query.venue_id:
+            venue = venue_queries.find_by_id(query.venue_id)
+            check_venue_exists_when_requested(venue, query.venue_id)
             offerer_id = venue.managingOffererId
-        if offerer_identifier:
-            offerer_id = offerer_identifier.persisted
+        if query.offerer_id:
+            offerer_id = query.offerer_id
         if offerer_id is not None:
             user_offerer = (
                 user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
@@ -72,20 +69,18 @@ def list_offers() -> (str, int):
             check_user_has_rights_on_offerer(user_offerer)
 
     status_filters = OffersStatusFilters(
-        exclude_active=request.args.get("active") == "false",
-        exclude_inactive=request.args.get("inactive") == "false",
+        exclude_active=query.active == "false",
+        exclude_inactive=query.inactive == "false",
     )
 
     offers_request_parameters = OffersRequestParameters(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
-        offerer_id=offerer_identifier,
-        venue_id=venue_identifier,
-        offers_per_page=int(request.args.get("paginate"))
-        if request.args.get("paginate")
-        else None,
-        name_keywords=request.args.get("name"),
-        page=int(request.args.get("page")) if request.args.get("page") else None,
+        offerer_id=query.offerer_id,
+        venue_id=query.venue_id,
+        offers_per_page=query.paginate,
+        name_keywords=query.name,
+        page=query.page,
         status_filters=status_filters,
     )
     paginated_offers = list_offers_for_pro_user.execute(offers_request_parameters)

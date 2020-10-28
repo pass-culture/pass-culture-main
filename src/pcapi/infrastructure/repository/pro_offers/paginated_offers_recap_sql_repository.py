@@ -1,7 +1,6 @@
 import math
 from typing import Optional
 
-from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.domain.pro_offers.paginated_offers_recap_repository import PaginatedOffersRepository
@@ -16,16 +15,16 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
                                                             user_is_admin: bool,
                                                             page: Optional[int],
                                                             offers_per_page: int,
-                                                            offerer_id: Optional[Identifier] = None,
+                                                            offerer_id: Optional[int] = None,
                                                             status_filters: OffersStatusFilters = OffersStatusFilters(),
-                                                            venue_id: Optional[Identifier] = None,
+                                                            venue_id: Optional[int] = None,
                                                             name_keywords: Optional[str] = None
                                                             ) -> PaginatedOffersRecap:
         query = OfferSQLEntity.query.join(VenueSQLEntity)
         if venue_id is not None:
-            query = query.filter(OfferSQLEntity.venueId == venue_id.persisted)
+            query = query.filter(OfferSQLEntity.venueId == venue_id)
         if offerer_id is not None:
-            query = query.filter(VenueSQLEntity.managingOffererId == offerer_id.persisted)
+            query = query.filter(VenueSQLEntity.managingOffererId == offerer_id)
         if not user_is_admin:
             query = query \
                 .join(Offerer) \

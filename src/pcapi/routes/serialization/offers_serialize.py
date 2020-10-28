@@ -13,6 +13,7 @@ from pcapi.serialization.utils import (
     dehumanize_field,
     humanize_field,
     dehumanize_list_field,
+    cast_optional_field_str_to_int,
 )
 from pcapi.validation.routes.offers import (
     check_offer_name_length_is_valid,
@@ -109,7 +110,7 @@ class PatchOfferActiveStatusBodyModel(BaseModel):
     is_active: bool
     ids: List[int]
 
-    _humanize_ids = dehumanize_list_field("ids")
+    _dehumanize_ids = dehumanize_list_field("ids")
 
     class Config:
         alias_generator = to_camel
@@ -150,3 +151,23 @@ class ListOffersResponseModel(BaseModel):
     page: int
     page_count: int
     total_count: int
+
+
+class ListOffersQueryModel(BaseModel):
+    active: Optional[str]
+    inactive: Optional[str]
+    paginate: Optional[int]
+    page: Optional[int]
+    name: Optional[str]
+    offerer_id: Optional[int]
+    venue_id: Optional[int]
+
+    _cast_paginate = cast_optional_field_str_to_int("paginate")
+    _cast_page = cast_optional_field_str_to_int("page")
+    _dehumanize_venue_id = dehumanize_field("venue_id")
+    _dehumanize_offerer_id = dehumanize_field("offerer_id")
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+        arbitrary_types_allowed = True

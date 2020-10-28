@@ -37,7 +37,7 @@ class Returns200:
 
         # when
         client = TestClient(app.test_client()).with_auth(email=admin.email)
-        path = f'/offers?venueId={Identifier(requested_venue.id).scrambled}'
+        path = f"/offers?venueId={humanize(requested_venue.id)}"
         n_queries = testing.AUTHENTICATION_QUERIES
         n_queries += 1  # select offers
         n_queries += 1  # count offers
@@ -101,7 +101,7 @@ class Returns200:
         response = (
             TestClient(app.test_client())
             .with_auth(email=pro.email)
-            .get(f"/offers?venueId={Identifier(requested_venue.id).scrambled}")
+            .get(f"/offers?venueId={humanize(requested_venue.id)}")
         )
 
         # then
@@ -209,7 +209,7 @@ class Returns200:
         response = (
             TestClient(app.test_client())
             .with_auth(email=user.email)
-            .get("/offers?venueId=" + Identifier(venue.id).scrambled)
+            .get("/offers?venueId=" + humanize(venue.id))
         )
 
         # then
@@ -220,7 +220,7 @@ class Returns200:
         assert expected_parameter.user_id == user.id
         assert expected_parameter.user_is_admin == user.isAdmin
         assert expected_parameter.offerer_id is None
-        assert expected_parameter.venue_id == Identifier(venue.id)
+        assert expected_parameter.venue_id == venue.id
         assert expected_parameter.offers_per_page == 20
         assert expected_parameter.name_keywords is None
         assert expected_parameter.page == 1
@@ -279,7 +279,7 @@ class Returns200:
         assert isinstance(expected_parameter, OffersRequestParameters)
         assert expected_parameter.user_id == user.id
         assert expected_parameter.user_is_admin == user.isAdmin
-        assert expected_parameter.offerer_id == Identifier(offerer.id)
+        assert expected_parameter.offerer_id == offerer.id
         assert expected_parameter.venue_id is None
         assert expected_parameter.offers_per_page == 20
         assert expected_parameter.name_keywords is None
@@ -316,7 +316,7 @@ class Returns403:
         response = (
             TestClient(app.test_client())
             .with_auth(email=user.email)
-            .get(f"/offers?venueId={Identifier(venue.id).scrambled}")
+            .get(f"/offers?venueId={humanize(venue.id)}")
         )
 
         # then

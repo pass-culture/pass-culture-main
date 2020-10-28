@@ -1,10 +1,10 @@
-from typing import Optional, Any, Union, List
+from typing import Optional, Any, Union
 
 from pydantic import ValidationError, validator
 from flask import Response, Request
 
 from pcapi.models import ApiErrors
-from pcapi.utils.human_ids import humanize, dehumanize
+from pcapi.utils.human_ids import humanize, dehumanize, dehumanize_ids_list
 
 
 def to_camel(string: str) -> str:
@@ -56,8 +56,13 @@ def dehumanize_id(id_to_dehumanize: Optional[Union[int, str]]) -> Optional[int]:
 
     return int(id_to_dehumanize)
 
-def dehumanize_ids(ids_to_dehumanize: List[Union[int, str]]) -> List[Optional[int]]:
-    return list(map(dehumanize_id, ids_to_dehumanize))
+
+def cast_optional_str_to_int(optional_str: Optional[str]) -> Optional[int]:
+    if isinstance(optional_str, str):
+        return int(optional_str)
+
+    return optional_str
+
 
 def humanize_field(field_name: str) -> classmethod:
     return validator(field_name, pre=True, allow_reuse=True)(humanize_id)
@@ -68,4 +73,8 @@ def dehumanize_field(field_name: str) -> classmethod:
 
 
 def dehumanize_list_field(field_name: str) -> classmethod:
-    return validator(field_name, pre=True, allow_reuse=True)(dehumanize_ids)
+    return validator(field_name, pre=True, allow_reuse=True)(dehumanize_ids_list)
+
+
+def cast_optional_field_str_to_int(field_name: str) -> classmethod:
+    return validator(field_name, pre=True, allow_reuse=True)(cast_optional_str_to_int)

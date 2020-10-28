@@ -1,21 +1,20 @@
 from typing import Optional
 
-from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.domain.pro_offers.paginated_offers_recap_repository import PaginatedOffersRepository
 
 
-class OffersRequestParameters(object):
+class OffersRequestParameters:
     DEFAULT_OFFERS_PER_PAGE = 20
     DEFAULT_PAGE = 1
 
     def __init__(self,
                  user_id: int,
                  user_is_admin: bool,
-                 offerer_id: Optional[Identifier],
-                 venue_id: Optional[Identifier],
+                 offerer_id: Optional[int],
+                 venue_id: Optional[int],
                  offers_per_page: Optional[int],
                  page: Optional[int],
                  name_keywords: Optional[str] = None,

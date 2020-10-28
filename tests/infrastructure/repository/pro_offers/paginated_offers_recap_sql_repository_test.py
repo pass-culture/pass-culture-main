@@ -109,7 +109,7 @@ class PaginatedOfferSQLRepositoryTest:
         paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
             user_id=user.id,
             user_is_admin=user.isAdmin,
-            venue_id=Identifier(requested_venue.id),
+            venue_id=requested_venue.id,
             page=1,
             offers_per_page=10
         )
@@ -170,7 +170,7 @@ class PaginatedOfferSQLRepositoryTest:
             user_is_admin=pro_user.isAdmin,
             page=1,
             offers_per_page=1,
-            offerer_id=Identifier(wanted_offerer.id)
+            offerer_id=wanted_offerer.id
         )
 
         # then
