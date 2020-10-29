@@ -965,7 +965,7 @@ describe('src | components | pages | Offers | Offers', () => {
     })
 
     describe('on click on select all offers checkbox', () => {
-      it('should display "Tout déselectionner" when initial label was "Tout sélectionner"', async () => {
+      it('should display "Tout désélectionner" when initial label was "Tout sélectionner"', async () => {
         // Given
         await renderOffers(props, store)
 
@@ -973,16 +973,16 @@ describe('src | components | pages | Offers | Offers', () => {
         fireEvent.click(screen.getByLabelText('Tout sélectionner'))
 
         // Then
-        expect(screen.queryByText('Tout déselectionner')).not.toBeNull()
+        expect(screen.queryByText('Tout désélectionner')).not.toBeNull()
       })
 
-      it('should display "Tout sélectionner" when initial label was "Tout déselectionner"', async () => {
+      it('should display "Tout sélectionner" when initial label was "Tout désélectionner"', async () => {
         // Given
         await renderOffers(props, store)
         fireEvent.click(screen.getByLabelText('Tout sélectionner'))
 
         // When
-        fireEvent.click(screen.getByLabelText('Tout déselectionner'))
+        fireEvent.click(screen.getByLabelText('Tout désélectionner'))
 
         // Then
         expect(screen.queryByText('Tout sélectionner')).not.toBeNull()
@@ -1059,7 +1059,7 @@ describe('src | components | pages | Offers | Offers', () => {
         fireEvent.click(screen.getByLabelText('Tout sélectionner'))
 
         // When
-        fireEvent.click(screen.getByLabelText('Tout déselectionner'))
+        fireEvent.click(screen.getByLabelText('Tout désélectionner'))
 
         // Then
         expect(props.setSelectedOfferIds).toHaveBeenCalledWith([])
