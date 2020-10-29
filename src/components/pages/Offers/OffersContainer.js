@@ -1,12 +1,15 @@
 import { lastTrackerMoment } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { requestData } from 'redux-saga-data'
 
 import { withRequiredLogin } from 'components/hocs'
 import { saveSearchFilters, setSelectedOfferIds } from 'store/offers/actions'
 import { selectOffers } from 'store/offers/selectors'
-import { loadOffers } from 'store/offers/thunks'
+import {
+  loadOffers,
+  setAllVenueOffersActivate,
+  setAllVenueOffersInactivate,
+} from 'store/offers/thunks'
 import { hideActionsBar, showActionsBar } from 'store/reducers/actionsBar'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
@@ -38,29 +41,19 @@ export const mapDispatchToProps = dispatch => {
   }
   return {
     closeNotification: () => dispatch(closeNotification()),
-    handleOnActivateAllVenueOffersClick: venueId => () => {
-      dispatch(
-        requestData({
-          apiPath: `/venues/${venueId}/offers/activate`,
-          method: 'PUT',
-          stateKey: 'offers',
-          handleSuccess: showOffersActivationNotification(
-            'Toutes les offres de ce lieu ont été activées avec succès'
-          ),
-        })
-      )
+    handleOnActivateAllVenueOffersClick: venueId => {
+      dispatch(setAllVenueOffersActivate(venueId)).then(() => {
+        showOffersActivationNotification(
+          'Toutes les offres de ce lieu ont été activées avec succès'
+        )
+      })
     },
-    handleOnDeactivateAllVenueOffersClick: venueId => () => {
-      dispatch(
-        requestData({
-          apiPath: `/venues/${venueId}/offers/deactivate`,
-          method: 'PUT',
-          stateKey: 'offers',
-          handleSuccess: showOffersActivationNotification(
-            'Toutes les offres de ce lieu ont été désactivées avec succès'
-          ),
-        })
-      )
+    handleOnDeactivateAllVenueOffersClick: venueId => {
+      dispatch(setAllVenueOffersInactivate(venueId)).then(() => {
+        showOffersActivationNotification(
+          'Toutes les offres de ce lieu ont été désactivées avec succès'
+        )
+      })
     },
     hideActionsBar: () => dispatch(hideActionsBar()),
     loadOffers: filters => dispatch(loadOffers(filters)),

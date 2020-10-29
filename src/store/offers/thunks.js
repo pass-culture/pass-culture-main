@@ -3,6 +3,22 @@ import { setStocks, setVenues } from 'store/reducers/data'
 
 import { setOffers } from './actions'
 
+export const setAllVenueOffersActivate = venueId => {
+  return dispatch => {
+    return pcapi.setAllVenueOffersActivate(venueId).then(offersRecap => {
+      dispatch(setOffersRecap(offersRecap))
+    })
+  }
+}
+
+export const setAllVenueOffersInactivate = venueId => {
+  return dispatch => {
+    return pcapi.setAllVenueOffersInactivate(venueId).then(offersRecap => {
+      dispatch(setOffersRecap(offersRecap))
+    })
+  }
+}
+
 export const loadOffer = offerId => {
   return dispatch => {
     return pcapi.loadOffer(offerId).then(rawOffer => {
@@ -19,14 +35,18 @@ export const loadOffers = filters => {
     return pcapi
       .loadFilteredOffers(filters)
       .then(({ offers: offersRecap, page, page_count: pageCount, total_count: offersCount }) => {
-        const { offers, stocks, venues } = offersRecapNormalizer(offersRecap)
-
-        dispatch(setOffers(offers))
-        dispatch(setStocks(stocks))
-        dispatch(setVenues(venues))
-
+        dispatch(setOffersRecap(offersRecap))
         return { page, pageCount, offersCount }
       })
+  }
+}
+
+export const setOffersRecap = offersRecap => {
+  return dispatch => {
+    const { offers, stocks, venues } = offersRecapNormalizer(offersRecap)
+    dispatch(setOffers(offers))
+    dispatch(setStocks(stocks))
+    dispatch(setVenues(venues))
   }
 }
 

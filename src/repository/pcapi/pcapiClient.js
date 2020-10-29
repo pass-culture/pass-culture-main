@@ -33,6 +33,13 @@ export const client = {
     }
     return await fetchWithErrorHandler(path, options)
   },
+  put: async (path, data, withCredentials = true) => {
+    const options = {
+      ...buildOptions('PUT', withCredentials),
+      body: JSON.stringify(data),
+    }
+    return await fetchWithErrorHandler(path, options)
+  },
   patch: async (path, data, withCredentials = true) => {
     const options = {
       ...buildOptions('PATCH', withCredentials),

@@ -39,3 +39,11 @@ export const loadFilteredOffers = async ({
 
   return client.get(`/offers?${queryParams.join('&')}`)
 }
+
+export const setAllVenueOffersActivate = async venueId => {
+  return client.put(`/venues/${venueId}/offers/activate`)
+}
+
+export const setAllVenueOffersInactivate = async venueId => {
+  return client.put(`/venues/${venueId}/offers/deactivate`)
+}
