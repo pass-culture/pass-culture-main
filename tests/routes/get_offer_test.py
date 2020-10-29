@@ -95,7 +95,9 @@ class Returns200:
         date_now = datetime(2020, 10, 15)
 
         beneficiary = create_user()
-        offerer = create_offerer(date_created=date_now, date_modified_at_last_provider=date_now)
+        offerer = create_offerer(
+            date_created=date_now, date_modified_at_last_provider=date_now
+        )
         venue = create_venue(
             offerer, date_created=date_now, date_modified_at_last_provider=date_now
         )
@@ -106,7 +108,7 @@ class Returns200:
             booking_limit_datetime=date_now,
             date_created=date_now,
             date_modified_at_last_provider=date_now,
-            date_modifed=date_now
+            date_modifed=date_now,
         )
         stock.offer.dateCreated = date_now
         stock.offer.dateModifiedAtLastProvider = date_now
@@ -134,6 +136,7 @@ class Returns200:
             "durationMinutes": 60,
             "extraData": None,
             "fieldsUpdated": [],
+            "firstMatchingBooking": None,
             "hasBookingLimitDatetimesPassed": True,
             "id": humanize(stock.offer.id),
             "idAtProviders": None,

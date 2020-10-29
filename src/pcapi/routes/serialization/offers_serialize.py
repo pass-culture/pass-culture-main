@@ -1,5 +1,7 @@
-from typing import Dict, Optional, List, Union
-from pydantic import BaseModel, validator
+from typing import Dict, Optional, List, Union, Any
+from datetime import datetime
+
+from pydantic import BaseModel, validator, Json
 
 from pcapi.models import OfferSQLEntity, UserSQLEntity
 from pcapi.core.bookings.repository import find_first_matching_from_offer_by_user
@@ -19,6 +21,7 @@ from pcapi.validation.routes.offers import (
     check_offer_name_length_is_valid,
     check_offer_type_is_valid,
 )
+from pcapi.utils.date import format_into_utc_date
 
 
 def serialize_offer(offer: OfferSQLEntity, current_user: UserSQLEntity) -> Dict:
@@ -58,19 +61,12 @@ class PostOfferBodyModel(BaseModel):
         alias_generator = to_camel
 
 
-class ExtraDataModel(BaseModel):
-    author: Optional[str]
-    musicSubType: Optional[str]
-    musicType: Optional[str]
-    performer: Optional[str]
-
-
 class PatchOfferBodyModel(BaseModel):
     bookingEmail: Optional[str]
     description: Optional[str]
     isNational: Optional[bool]
     name: Optional[str]
-    extraData: Optional[ExtraDataModel]
+    extraData: Any
     type: Optional[str]
     url: Optional[str]
     withdrawalDetails: Optional[str]
@@ -171,3 +167,178 @@ class ListOffersQueryModel(BaseModel):
         alias_generator = to_camel
         extra = "forbid"
         arbitrary_types_allowed = True
+
+
+class GetOfferOfferTypeResponseModel(BaseModel):
+    appLabel: str
+    conditionalFields: List[Optional[str]]
+    description: str
+    isActive: bool
+    offlineOnly: bool
+    onlineOnly: bool
+    proLabel: str
+    sublabel: str
+    type: str
+    value: str
+
+
+class GetOfferProductResponseModel(BaseModel):
+    ageMax: Optional[int]
+    ageMin: Optional[int]
+    conditions: Optional[str]
+    dateModifiedAtLastProvider: str
+    description: Optional[str]
+    durationMinutes: Optional[int]
+    extraData: Any
+    fieldsUpdated: List[str]
+    id: str
+    idAtProviders: Optional[str]
+    isGcuCompatible: bool
+    isNational: bool
+    lastProviderId: Optional[str]
+    mediaUrls: List[str]
+    name: str
+    owningOffererId: Optional[str]
+    thumbCount: int
+    url: Optional[str]
+
+
+class GetOfferStockResponseModel(BaseModel):
+    beginningDatetime: Optional[str]
+    bookingLimitDatetime: Optional[str]
+    bookingsQuantity: int
+    dateCreated: str
+    dateModified: str
+    dateModifiedAtLastProvider: str
+    fieldsUpdated: List[str]
+    hasBeenMigrated: Optional[bool]
+    id: str
+    idAtProviders: Optional[str]
+    isBookable: bool
+    isEventDeletable: bool
+    isEventExpired: bool
+    isSoftDeleted: bool
+    lastProviderId: Optional[str]
+    offerId: str
+    price: float
+    quantity: Optional[int]
+    remainingQuantity: Optional[Union[int, str]]
+
+
+class GetOfferManagingOffererResponseModel(BaseModel):
+    address: Optional[str]
+    bic: Optional[str]
+    city: str
+    dateCreated: str
+    dateModifiedAtLastProvider: str
+    fieldsUpdated: List[str]
+    iban: Optional[str]
+    id: str
+    idAtProviders: Optional[str]
+    isActive: bool
+    isValidated: bool
+    lastProviderId: Optional[str]
+    name: str
+    postalCode: str
+    siren: str
+    thumbCount: int
+
+
+class GetOfferVenueResponseModel(BaseModel):
+    address: str
+    bic: Optional[str]
+    bookingEmail: Optional[str]
+    city: str
+    comment: Optional[str]
+    dateCreated: str
+    dateModifiedAtLastProvider: str
+    departementCode: str
+    fieldsUpdated: List[str]
+    iban: Optional[str]
+    id: str
+    idAtProviders: Optional[str]
+    isValidated: bool
+    isVirtual: bool
+    lastProviderId: Optional[str]
+    latitude: Optional[float]
+    longitude: Optional[float]
+    managingOfferer: GetOfferManagingOffererResponseModel
+    managingOffererId: str
+    name: str
+    postalCode: str
+    publicName: Optional[str]
+    siret: str
+    thumbCount: int
+    venueLabelId: Optional[str]
+    venueTypeId: Optional[str]
+
+
+class GetOfferLastProviderResponseModel(BaseModel):
+    apiKey: Optional[str]
+    apiKeyGenerationDate: Optional[str]
+    enabledForPro: bool
+    id: str
+    isActive: bool
+    localClass: str
+    name: str
+    requireProviderIdentifier: bool
+
+
+class GetOfferMediationResponseModel(BaseModel):
+    authorId: Optional[str]
+    credit: Optional[str]
+    dateCreated: str
+    dateModifiedAtLastProvider: str
+    fieldsUpdated: List[str]
+    id: str
+    idAtProviders: Optional[str]
+    isActive: bool
+    lastProviderId: Optional[str]
+    offerId: str
+    thumbCount: int
+    thumbUrl: Optional[str]
+
+
+class GetOfferResponseModel(BaseModel):
+    activeMediation: Optional[GetOfferMediationResponseModel]
+    ageMax: Optional[int]
+    ageMin: Optional[int]
+    bookingEmail: str
+    conditions: Optional[str]
+    dateCreated: str
+    dateModifiedAtLastProvider: str
+    description: Optional[str]
+    durationMinutes: Optional[int]
+    extraData: Any
+    fieldsUpdated: List[str]
+    hasBookingLimitDatetimesPassed: bool
+    id: str
+    idAtProviders: Optional[str]
+    isActive: bool
+    isBookable: bool
+    isDigital: bool
+    isDuo: bool
+    isEditable: bool
+    isEvent: bool
+    isNational: bool
+    isThing: bool
+    lastProvider: Optional[GetOfferLastProviderResponseModel]
+    lastProviderId: Optional[str]
+    mediaUrls: List[str]
+    mediations: List[GetOfferMediationResponseModel]
+    name: str
+    offerType: GetOfferOfferTypeResponseModel
+    product: GetOfferProductResponseModel
+    productId: str
+    stocks: List[GetOfferStockResponseModel]
+    thumbUrl: Optional[str]
+    type: str
+    url: Optional[str]
+    venue: GetOfferVenueResponseModel
+    venueId: str
+    withdrawalDetails: Optional[str]
+    # FIXME: this variable does not seem to be used in any app
+    firstMatchingBooking: Optional[Any]
+
+    class Config:  # pylint: disable=too-few-public-methods
+        json_encoders = {datetime: format_into_utc_date}

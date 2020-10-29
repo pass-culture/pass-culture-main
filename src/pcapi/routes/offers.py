@@ -28,6 +28,7 @@ from pcapi.routes.serialization.offers_serialize import (
     PatchOfferActiveStatusBodyModel,
     ListOffersResponseModel,
     ListOffersQueryModel,
+    GetOfferResponseModel,
 )
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.list_offers_for_pro_user import OffersRequestParameters
@@ -90,9 +91,10 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
 
 @private_api.route("/offers/<offer_id>", methods=["GET"])
 @login_required
-def get_offer(offer_id: int) -> (str, int):
+@spectree_serialize(response_model=GetOfferResponseModel)
+def get_offer(offer_id: str) -> GetOfferResponseModel:
     offer = load_or_404(OfferSQLEntity, offer_id)
-    return jsonify(serialize_offer(offer, current_user)), 200
+    return GetOfferResponseModel(**serialize_offer(offer, current_user))
 
 
 @private_api.route("/offers", methods=["POST"])
