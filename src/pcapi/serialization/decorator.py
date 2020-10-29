@@ -6,7 +6,6 @@ from pydantic import BaseModel
 from spectree import Response as SpectreeResponse
 
 from pcapi.flask_app import api as default_api
-from pcapi.routes.serialization.serializer import serialize
 from pcapi.models import ApiErrors
 
 
@@ -65,12 +64,9 @@ def spectree_serialize(
     def decorate_validation(route: Callable[..., Any]) -> Callable[[Any], Any]:
         body_in_kwargs = route.__annotations__.get("body")
         query_in_kwargs = route.__annotations__.get("query")
-        spectree_response_success_code = f"HTTP_{on_success_status}"
         spectree_response = SpectreeResponse("HTTP_403")
         if response_model:
-            spectree_response.code_models[
-                spectree_response_success_code
-            ] = response_model
+            spectree_response.code_models[f"HTTP_{on_success_status}"] = response_model
 
         @wraps(route)
         @api.validate(
