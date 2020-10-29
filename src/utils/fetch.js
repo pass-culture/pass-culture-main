@@ -4,11 +4,19 @@ const NO_CONTENT_STATUS = 204
 
 export const fetchFromApiWithCredentials = (path, method, body) => {
   const bodyParams = body ? { body: JSON.stringify(body) } : {}
+
+  method = method || 'GET'
+
   const init = {
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    method: method || 'GET',
+    method: method,
     ...bodyParams,
+  }
+
+  if (method !== 'GET') {
+    init['headers'] = {
+      'Content-Type': 'application/json',
+    }
   }
 
   return fetch(`${API_URL}${path}`, init).then(response => {

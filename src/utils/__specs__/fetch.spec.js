@@ -22,7 +22,6 @@ describe('fetchFromApiWithCredentials', () => {
     // Then
     expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
       method: 'GET',
     })
   })
