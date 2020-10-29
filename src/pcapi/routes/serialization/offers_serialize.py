@@ -1,7 +1,7 @@
 from typing import Dict, Optional, List, Union, Any
 from datetime import datetime
 
-from pydantic import BaseModel, validator, Json
+from pydantic import BaseModel, validator
 
 from pcapi.models import OfferSQLEntity, UserSQLEntity
 from pcapi.core.bookings.repository import find_first_matching_from_offer_by_user
@@ -124,7 +124,17 @@ class ListOffersVenueResponseModel(BaseModel):
 class ListOffersStockResponseModel(BaseModel):
     id: str
     offerId: str
-    remainingQuantity: Union[str, int]
+    remainingQuantity: Union[int, str]
+
+    @validator("remainingQuantity", pre=True)
+    def validate_remaining_quantity(cls, remainingQuantity):
+        if (
+            remainingQuantity
+            and remainingQuantity != "0"
+            and not isinstance(remainingQuantity, int)
+        ):
+            return remainingQuantity.lstrip("0")
+        return remainingQuantity
 
 
 class ListOffersOfferResponseModel(BaseModel):
@@ -245,14 +255,14 @@ class GetOfferManagingOffererResponseModel(BaseModel):
 
 
 class GetOfferVenueResponseModel(BaseModel):
-    address: str
+    address: Optional[str]
     bic: Optional[str]
     bookingEmail: Optional[str]
-    city: str
+    city: Optional[str]
     comment: Optional[str]
     dateCreated: str
     dateModifiedAtLastProvider: str
-    departementCode: str
+    departementCode: Optional[str]
     fieldsUpdated: List[str]
     iban: Optional[str]
     id: str
@@ -265,9 +275,9 @@ class GetOfferVenueResponseModel(BaseModel):
     managingOfferer: GetOfferManagingOffererResponseModel
     managingOffererId: str
     name: str
-    postalCode: str
+    postalCode: Optional[str]
     publicName: Optional[str]
-    siret: str
+    siret: Optional[str]
     thumbCount: int
     venueLabelId: Optional[str]
     venueTypeId: Optional[str]
