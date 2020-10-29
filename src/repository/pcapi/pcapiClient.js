@@ -1,10 +1,15 @@
 import { API_URL } from 'utils/config'
 
+const GET_HTTP_METHOD = 'GET'
+
 const buildOptions = (method, withCredentials = true) => {
   const options = {
-    headers: { 'Content-Type': 'application/json' },
     method: method,
   }
+  if (method != GET_HTTP_METHOD) {
+    options['headers'] = { 'Content-Type': 'application/json' }
+  }
+
   if (withCredentials) {
     options.credentials = 'include'
   }
@@ -24,7 +29,7 @@ const fetchWithErrorHandler = async (path, options) => {
 
 export const client = {
   get: async (path, withCredentials = true) => {
-    return await fetchWithErrorHandler(path, buildOptions('GET', withCredentials))
+    return await fetchWithErrorHandler(path, buildOptions(GET_HTTP_METHOD, withCredentials))
   },
   post: async (path, data, withCredentials = true) => {
     const options = {

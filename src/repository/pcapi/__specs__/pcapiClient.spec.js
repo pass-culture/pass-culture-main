@@ -1,6 +1,8 @@
 import fetch from 'jest-fetch-mock'
-import { API_URL } from '../../../utils/config'
+
 import { client } from 'repository/pcapi/pcapiClient'
+
+import { API_URL } from '../../../utils/config'
 
 describe('pcapiClient', () => {
   beforeEach(() => {
@@ -22,7 +24,6 @@ describe('pcapiClient', () => {
       // Then
       expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
         method: 'GET',
       })
     })
@@ -36,7 +37,6 @@ describe('pcapiClient', () => {
 
       // Then
       expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
-        headers: { 'Content-Type': 'application/json' },
         method: 'GET',
       })
     })
