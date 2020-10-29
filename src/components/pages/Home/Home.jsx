@@ -6,7 +6,7 @@ import Card from './Card/Card'
 
 const Home = () => (
   <div className="home-cards columns">
-  <PageTitle title="Accueil" />
+    <PageTitle title="Accueil" />
     <Card
       navLink="/guichet"
       svg="ico-guichet-w"

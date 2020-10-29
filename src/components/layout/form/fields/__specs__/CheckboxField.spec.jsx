@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-bind */
 import { mount } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
@@ -10,10 +11,10 @@ describe('components | CheckboxField', () => {
     const props = {
       checked: true,
       id: 'checkbox-id',
-      name: 'checkbox-name'
+      name: 'checkbox-name',
     }
 
-    const formWithCheckboxField = ({handleSubmit}) => (
+    const formWithCheckboxField = ({ handleSubmit }) => (
       <form>
         <CheckboxField {...props} />
         <button
@@ -47,10 +48,10 @@ describe('components | CheckboxField', () => {
       checked: false,
       id: 'checkbox-id',
       name: 'checkbox-name',
-      label: 'checkbox-label'
+      label: 'checkbox-label',
     }
 
-    const formWithCheckboxField = ({handleSubmit}) => (
+    const formWithCheckboxField = ({ handleSubmit }) => (
       <form>
         <CheckboxField {...props} />
         <button

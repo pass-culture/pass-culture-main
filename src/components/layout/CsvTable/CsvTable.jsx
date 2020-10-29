@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import Header from '../Header/Header'
-import Spinner from '../Spinner'
 import PageTitle from '../PageTitle/PageTitle'
+import Spinner from '../Spinner'
 
 class CsvTable extends PureComponent {
   constructor(props) {

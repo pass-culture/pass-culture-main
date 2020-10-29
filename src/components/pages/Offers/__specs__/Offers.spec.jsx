@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-disabled-tests */
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { mount } from 'enzyme'

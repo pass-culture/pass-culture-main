@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-bind */
 import { mount, shallow } from 'enzyme'
 import React, { Fragment } from 'react'
 import { Field, Form } from 'react-final-form'

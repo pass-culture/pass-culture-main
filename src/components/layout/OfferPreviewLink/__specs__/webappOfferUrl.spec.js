@@ -1,3 +1,5 @@
+/* eslint-disable no-import-assign */
+/* eslint-disable import/namespace */
 import * as config from 'utils/config'
 
 import { webappOfferUrl } from '../webappOfferUrl'

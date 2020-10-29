@@ -8,12 +8,10 @@ import Main from 'components/layout/Main'
 import Titles from 'components/layout/Titles/Titles'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
-
 import { version } from '../../../../package.json'
-
+import PageTitle from '../../layout/PageTitle/PageTitle'
 
 import { isValidEmail } from './domain/isValidEmail'
-import PageTitle from '../../layout/PageTitle/PageTitle'
 
 class Profil extends PureComponent {
   constructor(props) {

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-bind */
 import { mount } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
@@ -5,7 +6,7 @@ import { Form } from 'react-final-form'
 import TimeField from '../TimeField'
 
 describe('src | components | layout | form | TimeField', () => {
-  it('should submit a form with a time', async() => {
+  it('should submit a form with a time', async () => {
     await new Promise(done => {
       // given
       const wrapper = mount(

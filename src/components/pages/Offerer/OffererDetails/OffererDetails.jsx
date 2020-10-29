@@ -2,12 +2,12 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
 import BankInformation from './BankInformation/BankInformation'
 import { Offerer } from './Offerer'
 import VenuesContainer from './Venues/VenuesContainer'
-import PageTitle from '../../../layout/PageTitle/PageTitle'
 
 class OffererDetails extends PureComponent {
   componentDidMount() {

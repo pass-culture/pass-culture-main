@@ -3,12 +3,12 @@ import React from 'react'
 
 import { fetchAllVenuesByProUser } from 'repository/venuesService'
 
-import Filters from '../Filters'
+import { ALL_VENUES, EMPTY_FILTER_VALUE } from '../_constants'
 import FilterByBookingPeriod from '../FilterByBookingPeriod'
 import FilterByEventDate from '../FilterByEventDate'
 import FilterByOmniSearch from '../FilterByOmniSearch'
 import FilterByVenue from '../FilterByVenue'
-import { ALL_VENUES, EMPTY_FILTER_VALUE } from '../_constants'
+import Filters from '../Filters'
 
 jest.mock('repository/venuesService', () => ({
   ...jest.requireActual('repository/venuesService'),

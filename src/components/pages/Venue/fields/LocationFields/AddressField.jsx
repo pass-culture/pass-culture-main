@@ -33,6 +33,7 @@ export const addressFieldRender = ({
   readOnly,
   required,
   addressProps,
+  // eslint-disable-next-line react/display-name
 }) => ({ input, meta }) => {
   return (
     <div
@@ -90,6 +91,7 @@ export const addressFieldRender = ({
   )
 }
 
+// eslint-disable-next-line react/no-multi-comp
 export const AddressField = ({
   className,
   disabled,

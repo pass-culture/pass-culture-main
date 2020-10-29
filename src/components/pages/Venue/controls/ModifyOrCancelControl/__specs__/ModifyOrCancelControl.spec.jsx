@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-bind */
 import { mount } from 'enzyme'
 import React, { Fragment } from 'react'
 import { Field, Form } from 'react-final-form'
@@ -10,7 +11,7 @@ const history = {
 
 describe('src | components | pages | Venue | controls | ModifyOrCancelControl', () => {
   describe('mount', () => {
-    it('should redirect to offerer page and reset form when click on cancel creation form', async() => {
+    it('should redirect to offerer page and reset form when click on cancel creation form', async () => {
       await new Promise(done => {
         // given
         const props = {

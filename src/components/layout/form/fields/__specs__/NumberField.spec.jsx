@@ -1,12 +1,12 @@
+/* eslint-disable react/jsx-no-bind */
 import { mount } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
 
 import NumberField from '../NumberField'
 
-
 describe('src | components | layout | form | NumberField', () => {
-  it('should submit a form with number field when number is a decimal with a dot', async() => {
+  it('should submit a form with number field when number is a decimal with a dot', async () => {
     await new Promise(done => {
       // given
       const initialValues = {
@@ -49,7 +49,7 @@ describe('src | components | layout | form | NumberField', () => {
     })
   })
 
-  it('should submit a form with number field when number is a decimal with a comma', async() => {
+  it('should submit a form with number field when number is a decimal with a comma', async () => {
     await new Promise(done => {
       // given
       const initialValues = {

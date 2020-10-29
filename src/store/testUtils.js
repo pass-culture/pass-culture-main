@@ -1,12 +1,12 @@
 import merge from 'lodash.merge'
 
 import configureStore from 'store'
+import { initialState as offersInitialState } from 'store/offers/reducer'
 import { initialState as bookingSummaryInitialState } from 'store/reducers/bookingSummary/bookingSummary'
 import { initialState as dataInitialState } from 'store/reducers/data'
 import { initialState as errorsInitialState } from 'store/reducers/errors'
 import { initialState as maintenanceInitialState } from 'store/reducers/maintenanceReducer'
 import { initialState as modalInitialState } from 'store/reducers/modal'
-import { initialState as offersInitialState } from 'store/offers/reducer'
 
 export const configureTestStore = overrideData => {
   const initialData = {

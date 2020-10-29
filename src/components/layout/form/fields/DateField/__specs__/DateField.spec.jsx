@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-bind */
 import { mount } from 'enzyme'
 import moment from 'moment'
 import React from 'react'
@@ -6,7 +7,7 @@ import { Form } from 'react-final-form'
 import DateField from '../DateField'
 
 describe('src | components | layout | form | DateField', () => {
-  it('should submit a form with a date', async() => {
+  it('should submit a form with a date', async () => {
     await new Promise(done => {
       // given
       const initialValues = {
@@ -31,14 +32,8 @@ describe('src | components | layout | form | DateField', () => {
       )
 
       // when
-      wrapper
-        .find(DateField)
-        .find('input[name="myDate"]')
-        .simulate('click')
-      wrapper
-        .find('DatePicker')
-        .props()
-        .onChange(moment('2019-04-28T20:00:00Z'))
+      wrapper.find(DateField).find('input[name="myDate"]').simulate('click')
+      wrapper.find('DatePicker').props().onChange(moment('2019-04-28T20:00:00Z'))
       wrapper.find('button[type="submit"]').simulate('click')
 
       // then
@@ -79,15 +74,12 @@ describe('src | components | layout | form | DateField', () => {
     )
 
     // when
-    expect(
-      wrapper
-        .find(DateField)
-        .find('input[name="myDate"]')
-        .props().value
-    ).toStrictEqual('26/04/2019')
+    expect(wrapper.find(DateField).find('input[name="myDate"]').props().value).toStrictEqual(
+      '26/04/2019'
+    )
   })
 
-  it('should delete date when delete is pressed', async() => {
+  it('should delete date when delete is pressed', async () => {
     await new Promise(done => {
       // given
       const initialValues = {
