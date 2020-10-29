@@ -1,4 +1,5 @@
 import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/_constants'
+import { signout } from 'repository/pcapi/pcapi'
 import { client } from 'repository/pcapi/pcapiClient'
 
 import {
@@ -206,6 +207,16 @@ describe('pcapi', () => {
         price: '14.01',
         quantity: '6',
       })
+    })
+  })
+
+  describe('signout', () => {
+    it('should', () => {
+      // When
+      signout()
+
+      // Then
+      expect(client.get).toHaveBeenCalledWith('/users/signout')
     })
   })
 

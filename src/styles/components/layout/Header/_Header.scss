@@ -13,12 +13,12 @@
 }
 
 header.navbar {
+  align-items: flex-start;
+
+  z-index: inherit;
   &:not(.is-small) {
     height: 9.375rem;
   }
-
-  align-items: flex-start;
-  z-index: inherit;
 
   @include navbar-colors($primary);
 
@@ -82,6 +82,8 @@ header.navbar {
     .navbar-item {
       font-size: rem(12px);
       font-weight: 700;
+
+      @include caption();
     }
   }
 
@@ -126,4 +128,57 @@ header.navbar {
 
 .navbar-dropdown.is-right {
   width: rem(230px);
+}
+
+
+[data-reach-menu-button] {
+  @include caption();
+
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  color: $white;
+  display: flex;
+  padding: rem(5px) rem(10px);
+
+  &[aria-expanded="true"] {
+    background-color: $primary-dark;
+  }
+}
+
+[data-reach-menu-popover] {
+  box-shadow: 0 0 3.75rem $black-shadow;
+  z-index: 10;
+
+}
+
+[data-reach-menu-items] {
+  background: $white;
+  border: none;q
+}
+
+[data-reach-menu-item] {
+  @include caption();
+
+  align-items: center;
+  color: $primary;
+  display: flex;
+
+  .icon {
+    margin-right: rem(8px);
+  }
+
+  &:hover, &:focus, &:active {
+    background-color: $grey-light;
+    color: $primary;
+  }
+
+  &[data-selected] {
+    background-color: $primary-dark;
+    color: $white;
+
+    .icon {
+      filter: brightness(100);
+    }
+  }
 }

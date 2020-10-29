@@ -1392,6 +1392,77 @@
     tslib "^2.0.0"
     warning "^4.0.3"
 
+"@reach/auto-id@0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@reach/auto-id/-/auto-id-0.11.2.tgz#c66a905c5401d1ac3da8d26165b8d27d6e778fa6"
+  integrity sha512-YZ21b0Kb88wJ0t7QjSznWOYskARQMnmXY9Y2XZ5RyYcZ2krT4s3+ghghpfaPs6BKcrZDonZCrU65OFDJPa1jAw==
+  dependencies:
+    "@reach/utils" "0.11.2"
+    tslib "^2.0.0"
+
+"@reach/descendants@0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@reach/descendants/-/descendants-0.11.2.tgz#49ea1b5eb91aba8ae6dce57f6575c38aff1f9756"
+  integrity sha512-63Wdx32/RyjGRJc4UZKK7F1sIrb6jeGkDwvQH0hv0lRAhEjsiSQ1t2JTYDml3testFP48J0B2xS7JzNeY0zoQw==
+  dependencies:
+    "@reach/utils" "0.11.2"
+    tslib "^2.0.0"
+
+"@reach/menu-button@^0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@reach/menu-button/-/menu-button-0.11.2.tgz#7c1a955431b6b5c25e77eeaceac347bfc728bee9"
+  integrity sha512-8fU8Gp7wBBhMBFSGxuF62HSdjgaib+NXEM+MhOIYcAacDnP8cxkpvag/Nm/7cMdV/O5JRuuZBralG854AxaO2g==
+  dependencies:
+    "@reach/auto-id" "0.11.2"
+    "@reach/descendants" "0.11.2"
+    "@reach/popover" "0.11.2"
+    "@reach/utils" "0.11.2"
+    prop-types "^15.7.2"
+    tslib "^2.0.0"
+
+"@reach/observe-rect@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@reach/observe-rect/-/observe-rect-1.2.0.tgz#d7a6013b8aafcc64c778a0ccb83355a11204d3b2"
+  integrity sha512-Ba7HmkFgfQxZqqaeIWWkNK0rEhpxVQHIoVyW1YDSkGsGIXzcaW4deC8B0pZrNSSyLTdIk7y+5olKt5+g0GmFIQ==
+
+"@reach/popover@0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@reach/popover/-/popover-0.11.2.tgz#d7d14d8d74b0a376e31dd9a3223d16802360e0d3"
+  integrity sha512-fB5lScg7Sfu3k0c+bjX7QbnFOJ1nsCWYGvrH1M9qlQolWM6gSJcD+ANnEHIb/wF85zuxzgdxZY5bjTj0RZc6Lg==
+  dependencies:
+    "@reach/portal" "0.11.2"
+    "@reach/rect" "0.11.2"
+    "@reach/utils" "0.11.2"
+    tabbable "^4.0.0"
+    tslib "^2.0.0"
+
+"@reach/portal@0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@reach/portal/-/portal-0.11.2.tgz#19a671be9ff010a345892b81e710cb6e4d9f9762"
+  integrity sha512-/53A/rY5oX2Y7D5TpvsP+V5cSd+4MPY6f21mAmVn4DCVwpkCFOlJ059ZL7ixS85M0Jz48YQnnvBJUqwkxqUG/g==
+  dependencies:
+    "@reach/utils" "0.11.2"
+    tslib "^2.0.0"
+
+"@reach/rect@0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@reach/rect/-/rect-0.11.2.tgz#bc92f97f87e81d1307054fd41c40874d3fbf5491"
+  integrity sha512-eoUWayAADi1ITtrc+8jN9NsBTUkfpORkOs5bQb4RnR6UA/3zlxo5VPuxWgWAG0BCohZlqsxg7NpvckNAyaiAAQ==
+  dependencies:
+    "@reach/observe-rect" "1.2.0"
+    "@reach/utils" "0.11.2"
+    prop-types "^15.7.2"
+    tslib "^2.0.0"
+
+"@reach/utils@0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@reach/utils/-/utils-0.11.2.tgz#be1f03650db56fd67a16d3fc70e5262cdb139cec"
+  integrity sha512-fBTolYj+rKTROXmf0zHO0rCWSvw7J0ALmYj5QxW4DmITMOH5uyRuWDWOfqohIGFbOtF/sum50WTB3tvx76d+Aw==
+  dependencies:
+    "@types/warning" "^3.0.0"
+    tslib "^2.0.0"
+    warning "^4.0.3"
+
 "@redux-saga/core@^1.1.3":
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@redux-saga/core/-/core-1.1.3.tgz#3085097b57a4ea8db5528d58673f20ce0950f6a4"
@@ -7212,6 +7283,11 @@ hard-rejection@^2.1.0:
   resolved "https://registry.yarnpkg.com/hard-rejection/-/hard-rejection-2.1.0.tgz#1c6eda5c1685c63942766d79bb40ae773cecd883"
   integrity sha512-VIZB+ibDhx7ObhAe7OVtoEbuP4h/MuOTHJ+J8h/eBXotJYl0fBgR72xDFCKgIh22OJZIOVNxBMWuhAr10r8HdA==
 
+harmony-reflect@^1.4.6:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/harmony-reflect/-/harmony-reflect-1.6.1.tgz#c108d4f2bb451efef7a37861fdbdae72c9bdefa9"
+  integrity sha512-WJTeyp0JzGtHcuMsi7rw2VwtkvLa+JyfEKJCFyfcS0+CDkjQ5lHPu7zEhFZP+PDSRrEgXa5Ah0l1MbgbE41XjA==
+
 has-ansi@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/has-ansi/-/has-ansi-2.0.0.tgz#34f5049ce1ecdf2b0649af3ef24e45ed35416d91"
@@ -7596,6 +7672,13 @@ icss-utils@^4.0.0, icss-utils@^4.1.1:
   integrity sha512-4aFq7wvWyMHKgxsH8QQtGpvbASCf+eM3wPRLI6R+MgAnTCZ6STYsRvttLvRWK0Nfif5piF394St3HeJDaljGPA==
   dependencies:
     postcss "^7.0.14"
+
+identity-obj-proxy@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/identity-obj-proxy/-/identity-obj-proxy-3.0.0.tgz#94d2bda96084453ef36fbc5aaec37e0f79f1fc14"
+  integrity sha1-lNK9qWCERT7zb7xarsN+D3nx/BQ=
+  dependencies:
+    harmony-reflect "^1.4.6"
 
 ieee754@^1.1.4:
   version "1.2.1"
@@ -14194,6 +14277,11 @@ sync-request@4.1.0:
     get-port "^3.1.0"
     http-response-object "^1.1.0"
     then-request "^2.2.0"
+
+tabbable@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/tabbable/-/tabbable-4.0.0.tgz#5bff1d1135df1482cf0f0206434f15eadbeb9261"
+  integrity sha512-H1XoH1URcBOa/rZZWxLxHCtOdVUEev+9vo5YdYhC9tCY4wnybX+VQrCYuy9ubkg69fCBxCONJOSLGfw0DWMffQ==
 
 table@^5.2.3:
   version "5.4.6"

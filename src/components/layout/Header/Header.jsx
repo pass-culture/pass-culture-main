@@ -1,14 +1,17 @@
+import { Menu, MenuList, MenuButton, MenuItem, MenuLink } from '@reach/menu-button'
+import '@reach/menu-button/styles.css'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { NavLink } from 'react-router-dom'
+import { reinitializeData } from 'redux-saga-data'
 
-import { HELP_PAGE_URL, STYLEGUIDE_ACTIVE } from 'utils/config'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 import Icon from '../Icon'
 import Logo from '../Logo'
 
-import SignoutButton from './Signout/SignoutButton'
+import { HELP_PAGE_URL, STYLEGUIDE_ACTIVE } from './_constants'
 
 class Header extends PureComponent {
   constructor() {
@@ -24,6 +27,17 @@ class Header extends PureComponent {
     this.setState({
       showMobileMenu: !showMobileMenu,
     })
+  }
+
+  onSignoutClick = () => {
+    const { dispatch } = this.props
+    pcapi.signout()
+      .then(() => {
+        dispatch(reinitializeData())
+      })
+      .catch(() => {
+        // dispatch(reinitializeData())
+      })
   }
 
   render() {
@@ -96,23 +110,19 @@ class Header extends PureComponent {
                   </span>
                 </NavLink>
               )}
-
-              <div className="navbar-item has-dropdown is-hoverable">
-                <NavLink
-                  className="navbar-link"
-                  to="#"
-                >
+              <Menu>
+                <MenuButton>
                   <span className="icon">
                     <Icon svg={`ico-user-circled${whiteHeader ? '' : '-w'}`} />
                   </span>
                   <span>
                     {name}
                   </span>
-                </NavLink>
-                <div className="navbar-dropdown is-right">
-                  <NavLink
-                    className="navbar-item"
-                    to="/profil"
+                </MenuButton>
+                <MenuList>
+                  <MenuLink
+                    as="a"
+                    href="/profil"
                   >
                     <span className="icon">
                       <Icon svg="ico-user" />
@@ -120,10 +130,10 @@ class Header extends PureComponent {
                     <span>
                       {'Profil'}
                     </span>
-                  </NavLink>
-                  <NavLink
-                    className="navbar-item"
-                    to="/structures"
+                  </MenuLink>
+                  <MenuLink
+                    as="a"
+                    href="/structures"
                   >
                     <span className="icon">
                       <Icon svg="ico-structure-r" />
@@ -131,10 +141,10 @@ class Header extends PureComponent {
                     <span>
                       {offerers.length > 1 ? 'Structures juridiques' : 'Structure juridique'}
                     </span>
-                  </NavLink>
-                  <NavLink
-                    className="navbar-item"
-                    to="/remboursements"
+                  </MenuLink>
+                  <MenuLink
+                    as="a"
+                    href="/remboursements"
                   >
                     <span className="icon">
                       <Icon svg="ico-compta" />
@@ -142,11 +152,11 @@ class Header extends PureComponent {
                     <span>
                       {'Remboursements'}
                     </span>
-                  </NavLink>
+                  </MenuLink>
                   {STYLEGUIDE_ACTIVE && (
-                    <NavLink
-                      className="navbar-item"
-                      to="/styleguide"
+                    <MenuLink
+                      as="a"
+                      href="/styleguide"
                     >
                       <span className="icon">
                         <Icon svg="ico-stars" />
@@ -154,13 +164,11 @@ class Header extends PureComponent {
                       <span>
                         {'Styleguide'}
                       </span>
-                    </NavLink>
+                    </MenuLink>
                   )}
-                  <a
-                    className="navbar-item"
+                  <MenuLink
+                    as="a"
                     href={HELP_PAGE_URL}
-                    rel="noopener noreferrer"
-                    target="_blank"
                   >
                     <span className="icon">
                       <Icon svg="ico-help" />
@@ -168,21 +176,17 @@ class Header extends PureComponent {
                     <span>
                       {'Aide'}
                     </span>
-                  </a>
-                  <SignoutButton
-                    Tag="a"
-                    className="navbar-item"
-                    handleSuccessRedirect={this.onHandleSuccessRedirect}
-                  >
+                  </MenuLink>
+                  <MenuItem onSelect={this.onSignoutClick}>
                     <span className="icon">
                       <Icon svg="ico-deconnect" />
                     </span>
                     <span>
                       {'Déconnexion'}
                     </span>
-                  </SignoutButton>
-                </div>
-              </div>
+                  </MenuItem>
+                </MenuList>
+              </Menu>
             </div>
           </div>
         </div>
@@ -197,6 +201,7 @@ Header.defaultProps = {
 }
 
 Header.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   isSmall: PropTypes.bool,
   name: PropTypes.string.isRequired,
   offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
