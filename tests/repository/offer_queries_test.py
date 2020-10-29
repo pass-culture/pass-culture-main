@@ -821,26 +821,6 @@ class GetPaginatedExpiredOfferIdsTest:
         assert offer2 not in results
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_one_offer_id_when_offers_are_expired_since_more_than_two_days_and_one_second(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
-        offer2 = create_offer_with_event_product(is_active=True, venue=venue)
-        in_range_stock = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 30, 10, 1, 0))
-        out_of_range_stock = create_stock_from_offer(offer=offer2,
-                                                     booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59))
-        repository.save(in_range_stock, out_of_range_stock)
-
-        # When
-        results = get_paginated_expired_offer_ids(limit=2, page=0)
-
-        # Then
-        assert len(results) == 1
-        assert offer1 in results
-        assert offer2 not in results
-
-    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_when_offers_are_expired_exactly_since_two_days(self, app):
         # Given
         offerer = create_offerer()
