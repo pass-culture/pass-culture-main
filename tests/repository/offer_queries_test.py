@@ -4,6 +4,7 @@ from freezegun import freeze_time
 import pytest
 from sqlalchemy import func
 
+import pcapi.core.offers.factories as offers_factories
 from pcapi.models import OfferSQLEntity, StockSQLEntity, Product
 from pcapi.models.offer_type import EventType, ThingType
 from pcapi.repository import repository
@@ -22,6 +23,7 @@ from pcapi.model_creators.generic_creators import create_booking, create_user, c
 from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product, \
     create_product_with_event_type, create_offer_with_event_product, create_event_occurrence, \
     create_stock_from_event_occurrence, create_stock_from_offer
+from pcapi.utils.converter import from_tuple_to_int
 
 
 class DepartmentOrNationalOffersTest:
@@ -877,6 +879,25 @@ class GetPaginatedExpiredOfferIdsTest:
 
         # Then
         assert results == []
+
+    @pytest.mark.usefixtures("db_session")
+    def should_ignore_soft_deleted_stocks(self, app):
+        offer = offers_factories.OfferFactory()
+        offers_factories.StockFactory(
+            offer=offer,
+            bookingLimitDatetime=datetime(2019, 12, 31),  # within range
+        )
+        offers_factories.StockFactory(
+            offer=offer,
+            bookingLimitDatetime=datetime(2020, 1, 31),  # in the future
+            isSoftDeleted=True,
+        )
+
+        expired_offer_ids = get_paginated_expired_offer_ids(limit=1, page=0)
+        expired_offer_ids = from_tuple_to_int(expired_offer_ids)
+
+        assert expired_offer_ids == [offer.id]
+
 
 class UpdateOffersIsActiveStatusTest:
     @pytest.mark.usefixtures("db_session")

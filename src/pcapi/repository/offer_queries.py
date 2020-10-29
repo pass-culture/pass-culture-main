@@ -334,6 +334,7 @@ def get_paginated_expired_offer_ids(limit: int, page: int) -> List[tuple]:
         .join(StockSQLEntity) \
         .with_entities(OfferSQLEntity.id) \
         .filter(OfferSQLEntity.isActive == True) \
+        .filter(StockSQLEntity.isSoftDeleted == False) \
         .filter(StockSQLEntity.bookingLimitDatetime is not None) \
         .having(start_limit) \
         .having(end_limit) \
