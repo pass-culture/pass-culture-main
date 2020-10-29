@@ -1,5 +1,5 @@
 import * as pcapi from 'repository/pcapi/pcapi'
-import { setStocks, setVenues } from 'store/reducers/data'
+import { setMediations, setStocks, setVenues } from 'store/reducers/data'
 
 import { setOffers } from './actions'
 
@@ -22,10 +22,7 @@ export const setAllVenueOffersInactivate = venueId => {
 export const loadOffer = offerId => {
   return dispatch => {
     return pcapi.loadOffer(offerId).then(rawOffer => {
-      const { stocks, venue, ...offer } = rawOffer
-      dispatch(setOffers([offer]))
-      dispatch(setStocks(stocks))
-      dispatch(setVenues([venue]))
+      dispatch(setOffersRecap([rawOffer]))
     })
   }
 }
@@ -43,7 +40,8 @@ export const loadOffers = filters => {
 
 export const setOffersRecap = offersRecap => {
   return dispatch => {
-    const { offers, stocks, venues } = offersRecapNormalizer(offersRecap)
+    const { mediations, offers, stocks, venues } = offersRecapNormalizer(offersRecap)
+    dispatch(setMediations(mediations))
     dispatch(setOffers(offers))
     dispatch(setStocks(stocks))
     dispatch(setVenues(venues))
@@ -51,15 +49,27 @@ export const setOffersRecap = offersRecap => {
 }
 
 const offersRecapNormalizer = offersRecap => {
+  const mediations = []
   const stocks = []
   const venues = []
 
-  const offers = offersRecap.map(offer => {
-    const { stocks: offerStocks, venue: offerVenue, ...offerStrippedOfStocksAndVenue } = offer
+  const offers = offersRecap.map(rawOffer => {
+    const { stocks: offerStocks, venue: offerVenue, ...offerStrippedOfStocksAndVenue } = rawOffer
+
+    let flatOffer = offerStrippedOfStocksAndVenue
+    if (rawOffer.mediations) {
+      const {
+        mediations: offerMediations,
+        ...offerStrippedOfMediations
+      } = offerStrippedOfStocksAndVenue
+      mediations.push(...offerMediations)
+      flatOffer = offerStrippedOfMediations
+    }
+
     stocks.push(...offerStocks)
     venues.push(offerVenue)
 
-    return offerStrippedOfStocksAndVenue
+    return flatOffer
   })
 
   const uniqueVenues = venues.reduce((accumulator, venue) => {
@@ -75,6 +85,7 @@ const offersRecapNormalizer = offersRecap => {
   }, [])
 
   return {
+    mediations: mediations,
     offers: offers,
     stocks: stocks,
     venues: uniqueVenues,
