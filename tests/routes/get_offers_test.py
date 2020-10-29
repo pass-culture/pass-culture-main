@@ -2,7 +2,6 @@ import secrets
 from unittest.mock import patch
 
 from pcapi.core import testing
-from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import (
     to_domain,
