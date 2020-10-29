@@ -41,14 +41,14 @@ export const mapDispatchToProps = dispatch => {
   }
   return {
     closeNotification: () => dispatch(closeNotification()),
-    handleOnActivateAllVenueOffersClick: venueId => {
+    handleOnActivateAllVenueOffersClick: venueId => () => {
       dispatch(setAllVenueOffersActivate(venueId)).then(() => {
         showOffersActivationNotification(
           'Toutes les offres de ce lieu ont été activées avec succès'
         )
       })
     },
-    handleOnDeactivateAllVenueOffersClick: venueId => {
+    handleOnDeactivateAllVenueOffersClick: venueId => () => {
       dispatch(setAllVenueOffersInactivate(venueId)).then(() => {
         showOffersActivationNotification(
           'Toutes les offres de ce lieu ont été désactivées avec succès'
