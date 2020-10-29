@@ -17,7 +17,7 @@ input[type="checkbox"] {
     background-color: $grey-dark;
 
     &::after {
-      background-image: url(/icons/checkbox-check.svg);
+      background-image: "url(/icons/checkbox-check.svg)";
       background-position: center;
       background-repeat: no-repeat;
       content: "";

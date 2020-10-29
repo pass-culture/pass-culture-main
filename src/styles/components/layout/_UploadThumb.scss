@@ -88,7 +88,7 @@
       border: none;
       outline: none;
       display: inline-block;
-      background: url(/icons/ico-plus-circled@2x.png) center no-repeat transparent;
+      background: "url(/icons/ico-plus-circled@2x.png)" center no-repeat transparent;
       background-size: rem(36px) rem(36px);
       color: $primary;
       font-size: rem(1px);
@@ -104,12 +104,12 @@
 
     .change-zoom.decrement {
       margin: 0 rem(5px) 0 0;
-      background-image: url(/icons/ico-minus-circled@2x.png);
+      background-image: "url(/icons/ico-minus-circled@2x.png)";
     }
   }
 
   input[type=range]::-webkit-slider-thumb {
-    background: url(/thumb.png) center no-repeat $primary !important;
+    background: "url(/thumb.png)" center no-repeat $primary !important;
   }
 
   canvas {

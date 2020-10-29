@@ -34,7 +34,7 @@
     -moz-appearance: none;
     -webkit-appearance: none;
     appearance: none;
-    background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
+    background: "url(/icons/dropdown-disclosure-down-b.svg)" no-repeat 92% 56%;
 
     &:focus {
       border-color: $primary;
@@ -42,7 +42,7 @@
 
     &:disabled {
       background-color: $grey-light;
-      background-image: url("/icons/dropdown-disclosure-down-b-disabled.svg");
+      background-image: "url(/icons/dropdown-disclosure-down-b-disabled.svg)";
       border-color: $grey-light;
       color: $grey-dark;
       cursor: initial;
@@ -97,7 +97,7 @@
     align-items: center;
     border-radius: rem(20px);
     height: rem(40px);
-    background-image: url(/icons/ico-calendar.svg);
+    background-image: "url(/icons/ico-calendar.svg)";
     background-repeat: no-repeat;
     background-position-y: center;
     background-position-x: 90%;
@@ -107,7 +107,7 @@
     }
 
     &.disabled {
-      background-image: url(/icons/ico-calendar-disabled.svg);
+      background-image: "url(/icons/ico-calendar-disabled.svg)";
     }
   }
 
@@ -188,7 +188,7 @@
       -moz-appearance: none;
       -webkit-appearance: none;
       appearance: none;
-      background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
+      background: "url(/icons/dropdown-disclosure-down-b.svg)" no-repeat 92% 56%;
 
       &:focus {
         border-color: $primary;
@@ -196,7 +196,7 @@
 
       &:disabled {
         background-color: $grey-light;
-        background-image: url("/icons/dropdown-disclosure-down-b-disabled.svg");
+        background-image: "url(/icons/dropdown-disclosure-down-b-disabled.svg)";
         border-color: $grey-light;
         box-shadow: none;
         color: $grey-dark;

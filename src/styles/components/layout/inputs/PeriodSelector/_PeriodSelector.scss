@@ -8,7 +8,7 @@
 
     .field-date {
       align-items: center;
-      background: url(/icons/ico-calendar.svg) no-repeat 90% center;
+      background: "url(/icons/ico-calendar.svg)" no-repeat 90% center;
       display: flex;
       height: rem(40px);
 
@@ -17,7 +17,7 @@
       }
 
       &.disabled {
-        background-image: url(/icons/ico-calendar-disabled.svg);
+        background-image: "url(/icons/ico-calendar-disabled.svg)";
       }
     }
 
