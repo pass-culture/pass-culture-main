@@ -8,9 +8,8 @@ export default () => {
     getBatchSDK()
 
     /* eslint-disable-next-line */
-    window.batchSDK(function(api) {
+    window.batchSDK(function (api) {
       api.ui.hide('alert')
-      api.setCustomUserID(null)
     })
   }
 }
