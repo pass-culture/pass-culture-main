@@ -1,9 +1,0 @@
-- name: Install nginx
-  yum:
-    name: nginx
-    state: present
-
-- name: Start nginx
-  service:
-    name: nginx
-    state: started
