@@ -20,9 +20,28 @@ def test_user_logs_in_and_refreshes_token(app):
     assert response.json['refresh_token']
     assert response.json['access_token']
 
-    # Check the access token does work
+    refresh_token = response.json['refresh_token']
+    access_token = response.json['access_token']
+
+    # Ensure the access token is valid
     test_client.auth_header = {
-        'Authorization': f"Bearer {response.json['access_token']}"
+        'Authorization': f'Bearer {access_token}'
+    }
+    response = test_client.get('/native/v1/protected')
+    assert response.status_code == 200
+
+    # Ensure the refresh token can generate a new access token
+    test_client.auth_header = {
+        'Authorization': f'Bearer {refresh_token}'
+    }
+    response = test_client.post('/native/v1/refresh_access_token', json={})
+    assert response.status_code == 200, response.json
+    assert response.json['access_token']
+    access_token = response.json['access_token']
+
+    # Ensure the new access token is valid
+    test_client.auth_header = {
+        'Authorization': f'Bearer {access_token}'
     }
     response = test_client.get('/native/v1/protected')
     assert response.status_code == 200

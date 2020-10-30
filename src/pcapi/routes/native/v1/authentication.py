@@ -1,6 +1,6 @@
 from flask_jwt_extended import (
     jwt_required, create_access_token, create_refresh_token,
-    get_jwt_identity
+    jwt_refresh_token_required, get_jwt_identity
 )
 
 from pcapi.core.users import api as user_api
@@ -26,6 +26,16 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     return authentication.SigninResponse(
         access_token=create_access_token(identity=body.identifier),
         refresh_token=create_refresh_token(identity=body.identifier),
+    )
+
+
+@blueprint.native_v1.route('/refresh_access_token', methods=['POST'])
+@jwt_refresh_token_required
+@spectree_serialize(response_model=authentication.RefreshResponse, on_success_status=200, api=blueprint.api)  # type: ignore
+def refresh(body: authentication.RefreshRequest) -> authentication.RefreshResponse:
+    current_user = get_jwt_identity()
+    return authentication.RefreshResponse(
+        access_token=create_access_token(identity=current_user)
     )
 
 
