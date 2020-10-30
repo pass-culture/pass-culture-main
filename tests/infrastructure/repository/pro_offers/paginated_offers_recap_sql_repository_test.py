@@ -14,7 +14,6 @@ from pcapi.model_creators.specific_creators import create_offer_with_event_produ
 from pcapi.repository import repository
 
 
-
 class PaginatedOfferSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_paginated_offers_with_details_of_pagination_and_offers_of_requested_page(self, app):
@@ -95,33 +94,23 @@ class PaginatedOfferSQLRepositoryTest:
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_of_given_venue(self, app):
-        user = create_user()
-        offerer = create_offerer(siren='123456789')
-        user_offerer = create_user_offerer(user=user, offerer=offerer)
-
-        product_event = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
-        product_thing = create_product_with_thing_type(thing_name='Belle du Seigneur')
-        requested_venue = create_venue(offerer=offerer, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
-        other_venue = create_venue(offerer=offerer, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
-        offer_on_requested_venue = create_offer_with_event_product(venue=requested_venue, product=product_event)
-        offer_on_other_venue = create_offer_with_thing_product(venue=other_venue, product=product_thing)
-        repository.save(
-            user_offerer, offer_on_requested_venue, offer_on_other_venue
-        )
+        user_offerer = offers_factories.UserOffererFactory()
+        offer_for_requested_venue = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
+        offer_for_other_venue = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
 
         # when
         paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
-            user_id=user.id,
-            user_is_admin=user.isAdmin,
-            venue_id=requested_venue.id,
+            user_id=user_offerer.user.id,
+            user_is_admin=user_offerer.user.isAdmin,
+            venue_id=offer_for_requested_venue.venue.id,
             page=1,
             offers_per_page=10
         )
 
         # then
         offers_id = [offer.identifier for offer in paginated_offers.offers]
-        assert Identifier(offer_on_requested_venue.id) in offers_id
-        assert Identifier(offer_on_other_venue.id) not in offers_id
+        assert Identifier(offer_for_requested_venue.id) in offers_id
+        assert Identifier(offer_for_other_venue.id) not in offers_id
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_of_given_type(self, app):

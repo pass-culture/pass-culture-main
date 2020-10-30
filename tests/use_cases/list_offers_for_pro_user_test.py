@@ -51,6 +51,7 @@ class OffersRequestParametersTest:
         assert offers_request_parameters.user_id == 12
         assert offers_request_parameters.user_is_admin is False
         assert offers_request_parameters.venue_id is None
+        assert offers_request_parameters.type_id is None
         assert offers_request_parameters.status_filters == status_filters
 
 
