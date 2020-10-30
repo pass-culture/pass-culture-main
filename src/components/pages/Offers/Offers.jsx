@@ -6,6 +6,7 @@ import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { OffersStatusFiltersModal } from 'components/pages/Offers/OffersStatusFiltersModal/OffersStatusFiltersModal'
@@ -22,7 +23,6 @@ import {
 } from './_constants'
 import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
-import PageTitle from '../../layout/PageTitle/PageTitle'
 
 class Offers extends PureComponent {
   constructor(props) {
@@ -272,6 +272,8 @@ class Offers extends PureComponent {
       </Link>
     ) : null
 
+    const statusFilterEnabled = false
+
     return (
       <Main
         PageActionsBar={this.getOffersActionsBar}
@@ -364,7 +366,7 @@ class Offers extends PureComponent {
                     <th>
                       {'Stock'}
                     </th>
-                    {true ? (
+                    {!statusFilterEnabled ? (
                       <th>
                         {'Statut'}
                       </th>
