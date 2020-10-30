@@ -140,11 +140,15 @@
   }
 
   .react-datepicker__navigation--next::before {
-    content: '\55';
+    color: $black;
+    content: '\3009';
+    font-size: rem(20px);
   }
 
   .react-datepicker__navigation--previous::before {
-    content: '\ea';
+    color: $black;
+    content: '\3008';
+    font-size: rem(20px);
   }
 
   /* ----- CLEAR ICON ----- */
