@@ -110,17 +110,50 @@ describe('src | components | Desk', () => {
     })
   })
 
+  it('should not validate the form when token is valid then invalid', async () => {
+    // given
+    jest.spyOn(props, 'getBooking').mockResolvedValue()
+    renderDesk(props)
+    const tokenInput = screen.getByLabelText('Contremarque')
+    await waitFor(() => fireEvent.change(tokenInput, { target: { value: 'MEFA01' } }))
+
+    // when
+    fireEvent.change(tokenInput, { target: { value: 'MEFA' } })
+
+    // then
+    const submitButton = screen.getByRole('button', { name: 'Valider la contremarque' })
+    expect(submitButton).toBeDisabled()
+  })
+
+  it('should not invalidate the form when token is valid then invalid', async () => {
+    // given
+    jest.spyOn(props, 'getBooking').mockResolvedValue(
+      Promise.reject({
+        json: jest.fn(() => Promise.resolve({ booking: 'token is already validated' })),
+        status: 410,
+      })
+    )
+    renderDesk(props)
+    const tokenInput = screen.getByLabelText('Contremarque')
+    await waitFor(() => fireEvent.change(tokenInput, { target: { value: 'MEFA01' } }))
+
+    // when
+    fireEvent.change(tokenInput, { target: { value: 'MEFA' } })
+
+    // then
+    const submitButton = screen.getByRole('button', { name: 'Valider la contremarque' })
+    expect(submitButton).toBeDisabled()
+  })
+
   describe('when the input field is filled with a valid token', () => {
     it('should display a message and booking informations', async () => {
       // given
-      jest.spyOn(props, 'getBooking').mockImplementation(() =>
-        Promise.resolve({
-          datetime: '2020-10-23T20:00:00Z',
-          offerName: 'Fake offer',
-          userName: 'Fake user name',
-          price: 40,
-        })
-      )
+      jest.spyOn(props, 'getBooking').mockResolvedValue({
+        datetime: '2020-10-23T20:00:00Z',
+        offerName: 'Fake offer',
+        userName: 'Fake user name',
+        price: 40,
+      })
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
 
@@ -147,11 +180,9 @@ describe('src | components | Desk', () => {
 
     it('should display an error message when token validation fails', async () => {
       // given
-      jest.spyOn(props, 'getBooking').mockImplementation(() =>
-        Promise.reject({
-          json: jest.fn(() => Promise.resolve({ booking: 'token validation is failed' })),
-        })
-      )
+      jest.spyOn(props, 'getBooking').mockRejectedValue({
+        json: jest.fn(() => Promise.resolve({ booking: 'token validation is failed' })),
+      })
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
 
@@ -165,12 +196,10 @@ describe('src | components | Desk', () => {
 
     it('should display a message and can invalidated the token when token is already validated', async () => {
       // given
-      jest.spyOn(props, 'getBooking').mockImplementation(() =>
-        Promise.reject({
-          json: jest.fn(() => Promise.resolve({ booking: 'token is already validated' })),
-          status: 410,
-        })
-      )
+      jest.spyOn(props, 'getBooking').mockRejectedValue({
+        json: jest.fn(() => Promise.resolve({ booking: 'token is already validated' })),
+        status: 410,
+      })
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
 
@@ -188,8 +217,8 @@ describe('src | components | Desk', () => {
   describe('when I can submit the form', () => {
     it('should display a message when booking is validated', async () => {
       // given
-      jest.spyOn(props, 'getBooking').mockImplementation(() => Promise.resolve({}))
-      jest.spyOn(props, 'validateBooking').mockImplementation(() => Promise.resolve())
+      jest.spyOn(props, 'getBooking').mockResolvedValue()
+      jest.spyOn(props, 'validateBooking').mockResolvedValue()
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
       const submitButton = screen.getByRole('button', { name: 'Valider la contremarque' })
@@ -210,13 +239,11 @@ describe('src | components | Desk', () => {
 
     it('should display a message when booking is invalidated', async () => {
       // given
-      jest.spyOn(props, 'getBooking').mockImplementation(() =>
-        Promise.reject({
-          json: jest.fn(() => Promise.resolve({ booking: 'token is already validated' })),
-          status: 410,
-        })
-      )
-      jest.spyOn(props, 'invalidateBooking').mockImplementation(() => Promise.resolve())
+      jest.spyOn(props, 'getBooking').mockRejectedValue({
+        json: jest.fn(() => Promise.resolve({ booking: 'token is already validated' })),
+        status: 410,
+      })
+      jest.spyOn(props, 'invalidateBooking').mockResolvedValue()
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
       fireEvent.change(tokenInput, { target: { value: 'MEFA01' } })
@@ -235,12 +262,10 @@ describe('src | components | Desk', () => {
 
     it('should display an error message when the booking registration has failed', async () => {
       // given
-      jest.spyOn(props, 'getBooking').mockImplementation(() => Promise.resolve({}))
+      jest.spyOn(props, 'getBooking').mockResolvedValue()
       jest
         .spyOn(props, 'validateBooking')
-        .mockImplementation(() =>
-          Promise.reject({ json: jest.fn(() => Promise.resolve({ booking: 'error message' })) })
-        )
+        .mockRejectedValue({ json: jest.fn(() => Promise.resolve({ booking: 'error message' })) })
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
       const submitButton = screen.getByRole('button', { name: 'Valider la contremarque' })

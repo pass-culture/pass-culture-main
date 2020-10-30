@@ -42,6 +42,7 @@ class Desk extends Component {
     const { canCheckTheToken, level, message } = this.getStatusFromToken(token)
     this.setState({
       booking: null,
+      isDisabledButton: true,
       isUsedToken: false,
       level,
       message,
