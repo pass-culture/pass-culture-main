@@ -11,6 +11,7 @@ from flask import Flask, \
     jsonify, \
     Blueprint
 from flask.testing import FlaskClient
+from flask_jwt_extended import JWTManager
 from flask_login import LoginManager, login_user
 from mailjet_rest import Client
 from requests import Response
@@ -31,6 +32,7 @@ from pcapi.models.install import install_activity, install_materialized_views
 from pcapi.repository.clean_database import clean_all_database
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes import install_routes
+from pcapi.routes.native.v1.blueprint import native_v1
 from pcapi.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from pcapi.utils.json_encoder import EnumJSONEncoder
 
@@ -76,6 +78,10 @@ def app():
     install_local_providers()
     app.mailjet_client = Mock()
     app.redis_client = Mock()
+    app.register_blueprint(native_v1, url_prefix='/native/v1')
+
+    jwt = JWTManager(app)
+
 
     @app.route('/test/signin', methods=['POST'])
     def test_signin():

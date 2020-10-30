@@ -1,22 +1,31 @@
 from flask_jwt_extended import (
-    jwt_required, create_access_token,
+    jwt_required, create_access_token, create_refresh_token,
     get_jwt_identity
 )
 
-from pcapi.utils.credentials import get_user_with_credentials
-from pcapi.utils.login_manager import stamp_session
+from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.credentials import get_user_with_credentials
 
 from . import blueprint
 from .serialization import authentication
 
 
 @blueprint.native_v1.route("/signin", methods=["POST"])
-@spectree_serialize(response_model=authentication.SigninResponseModel, on_success_status=200, api=blueprint.api)  # type: ignore
-def signin(body: authentication.SigninRequestModel) -> authentication.SigninResponseModel:
-    user = get_user_with_credentials(body.identifier, body.password)
-    access_token = create_access_token(identity=body.identifier)
-    return authentication.SigninResponseModel(access_token=access_token)
+@spectree_serialize(response_model=authentication.SigninResponse, on_success_status=200, api=blueprint.api)  # type: ignore
+def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
+    try:
+        get_user_with_credentials(body.identifier, body.password)
+    except ApiErrors as original_errors:
+        errors = ApiErrors()
+        errors.status_code = 400
+        errors.add_error('general', 'Identifiant ou Mot de passe incorrect')
+        raise errors from original_errors
+    # TODO: Should we fill the token with some less trivial data ?
+    return authentication.SigninResponse(
+        access_token=create_access_token(identity=body.identifier),
+        refresh_token=create_refresh_token(identity=body.identifier),
+    )
 
 
 # TODO: temporary resource to test JWT authentication on a resource

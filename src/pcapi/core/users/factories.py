@@ -6,6 +6,9 @@ from pcapi.core.testing import BaseFactory
 from pcapi.models import user_sql_entity
 
 
+DEFAULT_PASSWORD = 'user@AZERTY123'
+
+
 class UserFactory(BaseFactory):
     class Meta:
         model = user_sql_entity.UserSQLEntity
@@ -21,7 +24,7 @@ class UserFactory(BaseFactory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
-        password = kwargs.get('password', 'user@AZERTY123')
+        password = kwargs.get('password', DEFAULT_PASSWORD)
         kwargs['password'] = user_sql_entity.hash_password(password)
         return super()._create(model_class, *args, **kwargs)
 

@@ -1,10 +1,11 @@
 from pydantic import BaseModel
 
 
-class SigninRequestModel(BaseModel):
+class SigninRequest(BaseModel):
     identifier: str
     password: str
 
 
-class SigninResponseModel(BaseModel):
+class SigninResponse(BaseModel):
+    refresh_token: str
     access_token: str
