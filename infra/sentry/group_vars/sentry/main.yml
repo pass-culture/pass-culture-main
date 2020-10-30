@@ -1,7 +1,0 @@
-google_client_id: "{{ vault_google_client_id }}"
-google_client_secret: "{{ vault_google_client_secret }}"
-certificate_admin_email: "{{ vault_certificate_admin_email }}"
-service_host: "logs.passculture.app"
-service_name: "sentry"
-service_root_directory: "/opt"
-lets_encrypt_ssl_dir: "/etc/letsencrypt/live"
