@@ -48,7 +48,7 @@ jest.mock('repository/venuesService', () => ({
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  // ...jest.requireActual('repository/pcapi/pcapi'),
+  ...jest.requireActual('repository/pcapi/pcapi'),
   loadTypes: jest.fn().mockResolvedValue([]),
 }))
 
@@ -282,6 +282,7 @@ describe('src | components | pages | Offers | Offers', () => {
         })
       })
 
+      // eslint-disable-next-line jest/no-disabled-tests
       describe.skip('status filters', () => {
         it('should not render status filters', async () => {
           // Given
@@ -745,8 +746,8 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
       pcapi.loadTypes.mockResolvedValue([
-        { value: 'test_id_1', proLabel: 'My test value'},
-        { value: 'test_id_2', proLabel: 'My second test value'},
+        { value: 'test_id_1', proLabel: 'My test value' },
+        { value: 'test_id_2', proLabel: 'My second test value' },
       ])
 
       renderOffers(props, store)
@@ -772,6 +773,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
     })
 
+    // eslint-disable-next-line jest/no-disabled-tests
     it.skip('should have status value when user filters by status', async () => {
       // Given
       props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock' }]
@@ -796,6 +798,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
     })
 
+    // eslint-disable-next-line jest/no-disabled-tests
     it.skip('should have status value be removed when user ask for all status', async () => {
       // Given
       props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock' }]
