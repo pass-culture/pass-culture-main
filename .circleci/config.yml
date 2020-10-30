@@ -311,6 +311,5 @@ workflows:
       - functional-tests-webapp
       - functional-tests-pro
       - tests-data-analytics
-      - run-tests
       - run-tests:
           is_nightly_build: true
