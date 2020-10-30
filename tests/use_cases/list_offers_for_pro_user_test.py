@@ -2,8 +2,8 @@ from unittest.mock import MagicMock
 
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
-
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
+from pcapi.models import ThingType
 from pcapi.use_cases.list_offers_for_pro_user import ListOffersForProUser, OffersRequestParameters
 
 
@@ -15,6 +15,7 @@ class OffersRequestParametersTest:
                 user_is_admin=True,
                 offerer_id=None,
                 venue_id=None,
+                type_id=None,
                 page=None,
                 offers_per_page=None
         )
@@ -35,6 +36,7 @@ class OffersRequestParametersTest:
                 user_is_admin=False,
                 offerer_id=Identifier(12),
                 venue_id=None,
+                type_id=None,
                 name_keywords='Toto bateau',
                 page=12,
                 offers_per_page=3,
@@ -66,6 +68,7 @@ class ListOffersForProUserTest:
                 user_is_admin=False,
                 offerer_id=Identifier(43),
                 venue_id=Identifier(36),
+                type_id=str(ThingType.AUDIOVISUEL),
                 offers_per_page=12,
                 name_keywords='Offre Label',
                 page=12,
@@ -84,5 +87,6 @@ class ListOffersForProUserTest:
                 user_id=12,
                 user_is_admin=False,
                 venue_id=Identifier(36),
+                type_id=str(ThingType.AUDIOVISUEL),
                 status_filters=status_filters
         )

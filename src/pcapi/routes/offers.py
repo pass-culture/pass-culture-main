@@ -79,6 +79,7 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
         user_is_admin=current_user.isAdmin,
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
+        type_id=query.type_id,
         offers_per_page=query.paginate,
         name_keywords=query.name,
         page=query.page,

@@ -1,14 +1,18 @@
 import pytest
 
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import \
     PaginatedOffersSQLRepository
+from pcapi.models import ThingType
 from pcapi.model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, \
     create_product_with_event_type, create_product_with_thing_type
 from pcapi.repository import repository
+
 
 
 class PaginatedOfferSQLRepositoryTest:
@@ -118,6 +122,32 @@ class PaginatedOfferSQLRepositoryTest:
         offers_id = [offer.identifier for offer in paginated_offers.offers]
         assert Identifier(offer_on_requested_venue.id) in offers_id
         assert Identifier(offer_on_other_venue.id) not in offers_id
+
+    @pytest.mark.usefixtures("db_session")
+    def should_return_offers_of_given_type(self, app):
+        user_offerer = offers_factories.UserOffererFactory()
+        requested_offer = offers_factories.OfferFactory(
+            type=str(ThingType.AUDIOVISUEL),
+            venue__managingOfferer=user_offerer.offerer
+        )
+        other_offer = offers_factories.OfferFactory(
+            type=str(ThingType.JEUX),
+            venue__managingOfferer=user_offerer.offerer
+        )
+
+        # when
+        paginated_offers = PaginatedOffersSQLRepository().get_paginated_offers_for_offerer_venue_and_keywords(
+            user_id=user_offerer.user.id,
+            user_is_admin=user_offerer.user.isAdmin,
+            type_id=str(ThingType.AUDIOVISUEL),
+            page=1,
+            offers_per_page=10
+        )
+
+        # then
+        offers_id = [offer.identifier for offer in paginated_offers.offers]
+        assert Identifier(requested_offer.id) in offers_id
+        assert Identifier(other_offer.id) not in offers_id
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_matching_searched_name(self, app):

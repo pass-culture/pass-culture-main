@@ -16,6 +16,7 @@ class PaginatedOffersRepository(ABC):
         offerer_id: Optional[int] = None,
         status_filters: OffersStatusFilters = OffersStatusFilters(),
         venue_id: Optional[int] = None,
+        type_id: Optional[str] = None,
         name_keywords: Optional[str] = None,
     ) -> PaginatedOffersRecap:
         pass

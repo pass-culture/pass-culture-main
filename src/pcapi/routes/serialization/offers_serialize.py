@@ -167,6 +167,7 @@ class ListOffersQueryModel(BaseModel):
     name: Optional[str]
     offerer_id: Optional[int]
     venue_id: Optional[int]
+    type_id: Optional[str]
 
     _cast_paginate = cast_optional_field_str_to_int("paginate")
     _cast_page = cast_optional_field_str_to_int("page")

@@ -18,11 +18,14 @@ class PaginatedOffersSQLRepository(PaginatedOffersRepository):
                                                             offerer_id: Optional[int] = None,
                                                             status_filters: OffersStatusFilters = OffersStatusFilters(),
                                                             venue_id: Optional[int] = None,
+                                                            type_id: Optional[str] = None,
                                                             name_keywords: Optional[str] = None
                                                             ) -> PaginatedOffersRecap:
         query = OfferSQLEntity.query.join(VenueSQLEntity)
         if venue_id is not None:
             query = query.filter(OfferSQLEntity.venueId == venue_id)
+        if type_id is not None:
+            query = query.filter(OfferSQLEntity.type == type_id)
         if offerer_id is not None:
             query = query.filter(VenueSQLEntity.managingOffererId == offerer_id)
         if not user_is_admin:
