@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import PageTitle from 'components/layout/PageTitle/PageTitle'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Main from 'components/layout/Main'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
@@ -36,12 +36,13 @@ class Desk extends Component {
 
   firstErrorMessageFromApi = body => Object.keys(body)[0]
 
-  isValidToken = event => {
+  validateToken = event => {
     const { getBooking } = this.props
     const token = event.target.value.toUpperCase()
     const { canCheckTheToken, level, message } = this.getStatusFromToken(token)
     this.setState({
       booking: null,
+      isUsedToken: false,
       level,
       message,
       token,
@@ -180,7 +181,7 @@ class Desk extends Component {
             label="Contremarque"
             maxLength={this.TOKEN_MAX_LENGTH}
             name="token"
-            onChange={this.isValidToken}
+            onChange={this.validateToken}
             placeholder="ex : AZE123"
             type="text"
             value={token}
