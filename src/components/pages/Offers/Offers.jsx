@@ -10,6 +10,7 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { OffersStatusFiltersModal } from 'components/pages/Offers/OffersStatusFiltersModal/OffersStatusFiltersModal'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'repository/venuesService'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from 'utils/translate'
 
@@ -18,6 +19,8 @@ import {
   ALL_OFFERS,
   ALL_VENUES,
   ALL_VENUES_OPTION,
+  ALL_TYPES,
+  ALL_TYPES_OPTION,
   DEFAULT_PAGE,
   EXCLUDING_STATUS_VALUE,
 } from './_constants'
@@ -35,6 +38,7 @@ class Offers extends PureComponent {
       offererId,
       page,
       venueId: selectedVenueId,
+      TypeId: selectedTypeId,
     } = translateQueryParamsToApiParams(props.query.parse())
 
     const isFilteredByActiveStatus = active === EXCLUDING_STATUS_VALUE
@@ -49,6 +53,7 @@ class Offers extends PureComponent {
       offererId: offererId || ALL_OFFERERS,
       offerer: null,
       selectedVenueId: selectedVenueId || ALL_VENUES,
+      selectedTypeId: selectedTypeId || ALL_TYPES,
       venueOptions: [],
       statusFilters: {
         active: !isFilteredByActiveStatus,
@@ -56,6 +61,7 @@ class Offers extends PureComponent {
       },
       areStatusFiltersVisible: false,
       isFilteredByStatus: isFilteredByActiveStatus || isFilteredByInactiveStatus,
+      typeOptions: [],
     }
   }
 
@@ -69,6 +75,7 @@ class Offers extends PureComponent {
 
     this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
     this.fetchAndFormatVenues(offererId)
+    this.fetchTypeOptions()
   }
 
   componentWillUnmount() {
@@ -80,15 +87,35 @@ class Offers extends PureComponent {
 
   updateUrlMatchingState = () => {
     const { query } = this.props
-    const { page, nameSearchValue, selectedVenueId, offererId, statusFilters } = this.state
+    const {
+      nameSearchValue,
+      offererId,
+      page,
+      selectedVenueId,
+      selectedTypeId,
+      statusFilters,
+    } = this.state
 
     query.change({
       page: page === DEFAULT_PAGE ? null : page,
       [mapApiToBrowser.name]: nameSearchValue === ALL_OFFERS ? null : nameSearchValue,
       [mapApiToBrowser.venueId]: selectedVenueId === ALL_VENUES ? null : selectedVenueId,
+      [mapApiToBrowser.typeId]: selectedTypeId === ALL_TYPES ? null : selectedTypeId,
       [mapApiToBrowser.offererId]: offererId === ALL_OFFERERS ? null : offererId,
       [mapApiToBrowser.active]: statusFilters.active ? null : EXCLUDING_STATUS_VALUE,
       [mapApiToBrowser.inactive]: statusFilters.inactive ? null : EXCLUDING_STATUS_VALUE,
+    })
+  }
+
+  fetchTypeOptions = () => {
+    pcapi.loadTypes().then(types => {
+      let typeOptions = types.map(type => ({
+        id: type.value,
+        displayName: type.proLabel,
+      }))
+      this.setState({
+        typeOptions: typeOptions.sort((a, b) => a.displayName.localeCompare(b.displayName)),
+      })
     })
   }
 
@@ -118,10 +145,17 @@ class Offers extends PureComponent {
 
   loadAndUpdateOffers() {
     const { loadOffers } = this.props
-    const { nameSearchValue, selectedVenueId, offererId, page, statusFilters } = this.state
+    const {
+      nameSearchValue,
+      selectedVenueId,
+      selectedTypeId,
+      offererId,
+      page,
+      statusFilters,
+    } = this.state
     const isFilteredByStatus = !statusFilters.active || !statusFilters.inactive
 
-    loadOffers({ nameSearchValue, selectedVenueId, offererId, page, statusFilters })
+    loadOffers({ nameSearchValue, selectedVenueId, selectedTypeId, offererId, page, statusFilters })
       .then(({ page, pageCount, offersCount }) => {
         this.setState(
           {
@@ -145,10 +179,18 @@ class Offers extends PureComponent {
 
   getPaginatedOffersWithFilters = ({ shouldTriggerSpinner }) => {
     const { saveSearchFilters } = this.props
-    const { nameSearchValue, selectedVenueId, offererId, page, statusFilters } = this.state
+    const {
+      nameSearchValue,
+      offererId,
+      page,
+      selectedVenueId,
+      selectedTypeId,
+      statusFilters,
+    } = this.state
     saveSearchFilters({
       name: nameSearchValue,
       venueId: selectedVenueId,
+      typeId: selectedTypeId,
       offererId,
       page,
       active: !statusFilters.active && EXCLUDING_STATUS_VALUE,
@@ -156,7 +198,6 @@ class Offers extends PureComponent {
     })
 
     shouldTriggerSpinner && this.setState({ isLoading: true })
-
     this.loadAndUpdateOffers()
   }
 
@@ -193,6 +234,10 @@ class Offers extends PureComponent {
 
   storeSelectedVenue = event => {
     this.setState({ selectedVenueId: event.target.value })
+  }
+
+  storeSelectedType = event => {
+    this.setState({ selectedTypeId: event.target.value })
   }
 
   onPreviousPageClick = () => {
@@ -254,7 +299,9 @@ class Offers extends PureComponent {
       isFilteredByStatus,
       isLoading,
       selectedVenueId,
+      selectedTypeId,
       statusFilters,
+      typeOptions,
       venueOptions,
     } = this.state
 
@@ -307,14 +354,24 @@ class Offers extends PureComponent {
             placeholder="Rechercher par nom d’offre"
             value={nameSearchValue}
           />
-          <Select
-            defaultOption={ALL_VENUES_OPTION}
-            handleSelection={this.storeSelectedVenue}
-            label="Lieu"
-            name="lieu"
-            options={venueOptions}
-            selectedValue={selectedVenueId}
-          />
+          <div className="form-row">
+            <Select
+              defaultOption={ALL_VENUES_OPTION}
+              handleSelection={this.storeSelectedVenue}
+              label="Lieu"
+              name="lieu"
+              options={venueOptions}
+              selectedValue={selectedVenueId}
+            />
+            <Select
+              defaultOption={ALL_TYPES_OPTION}
+              handleSelection={this.storeSelectedType}
+              label="Catégories"
+              name="type"
+              options={typeOptions}
+              selectedValue={selectedTypeId}
+            />
+          </div>
           <div className="search-separator">
             <div className="separator" />
             <button

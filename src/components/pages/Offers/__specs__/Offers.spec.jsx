@@ -5,6 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import * as pcapi from 'repository/pcapi/pcapi'
 import { fetchAllVenuesByProUser } from 'repository/venuesService'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
@@ -14,6 +15,8 @@ import {
   ALL_OFFERS,
   ALL_VENUES,
   ALL_VENUES_OPTION,
+  ALL_TYPES,
+  ALL_TYPES_OPTION,
   DEFAULT_PAGE,
   EXCLUDING_STATUS_VALUE,
 } from '../_constants'
@@ -42,6 +45,11 @@ const renderOffers = (props, store) => {
 jest.mock('repository/venuesService', () => ({
   ...jest.requireActual('repository/venuesService'),
   fetchAllVenuesByProUser: jest.fn(),
+}))
+
+jest.mock('repository/pcapi/pcapi', () => ({
+  // ...jest.requireActual('repository/pcapi/pcapi'),
+  loadTypes: jest.fn().mockResolvedValue([]),
 }))
 
 jest.mock('store/selectors/data/venuesSelectors', () => ({
@@ -123,6 +131,7 @@ describe('src | components | pages | Offers | Offers', () => {
         nameSearchValue: ALL_OFFERS,
         page: DEFAULT_PAGE,
         selectedVenueId: ALL_VENUES,
+        selectedTypeId: ALL_TYPES,
         offererId: ALL_OFFERERS,
         statusFilters: {
           active: true,
@@ -320,6 +329,7 @@ describe('src | components | pages | Offers | Offers', () => {
             offererId: 'all',
             page: 1,
             selectedVenueId: 'all',
+            selectedTypeId: ALL_TYPES,
             statusFilters: {
               active: false,
               inactive: true,
@@ -357,6 +367,7 @@ describe('src | components | pages | Offers | Offers', () => {
           nameSearchValue: ALL_OFFERS,
           page: DEFAULT_PAGE,
           selectedVenueId: ALL_VENUES,
+          selectedTypeId: ALL_TYPES,
           offererId: ALL_OFFERERS,
           statusFilters: {
             active: true,
@@ -382,6 +393,7 @@ describe('src | components | pages | Offers | Offers', () => {
           nameSearchValue: 'Any word',
           page: DEFAULT_PAGE,
           selectedVenueId: ALL_VENUES,
+          selectedTypeId: ALL_TYPES,
           offererId: ALL_OFFERERS,
           statusFilters: {
             active: true,
@@ -408,6 +420,34 @@ describe('src | components | pages | Offers | Offers', () => {
           nameSearchValue: ALL_OFFERS,
           page: DEFAULT_PAGE,
           selectedVenueId: proVenues[0].id,
+          selectedTypeId: ALL_TYPES,
+          offererId: ALL_OFFERERS,
+          statusFilters: {
+            active: true,
+            inactive: true,
+          },
+        })
+      })
+    })
+
+    it('should load offers with selected type filter', async () => {
+      // Given
+      renderOffers(props, store)
+      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
+        selector: 'select[name="lieu"]',
+      })
+
+      // When
+      await waitFor(() => fireEvent.change(venueSelect, { target: { value: proVenues[0].id } }))
+      fireEvent.click(screen.getByText('Lancer la recherche'))
+
+      // Then
+      await waitFor(() => {
+        expect(props.loadOffers).toHaveBeenCalledWith({
+          nameSearchValue: ALL_OFFERS,
+          page: DEFAULT_PAGE,
+          selectedVenueId: proVenues[0].id,
+          selectedTypeId: ALL_TYPES,
           offererId: ALL_OFFERERS,
           statusFilters: {
             active: true,
@@ -565,6 +605,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
           lieu: null,
+          categorie: null,
           nom: null,
           page: 2,
           structure: null,
@@ -591,6 +632,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
           lieu: null,
+          categorie: null,
           nom: null,
           page: null,
           structure: null,
@@ -616,6 +658,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
           lieu: null,
+          categorie: null,
           nom: 'AnyWord',
           page: null,
           structure: null,
@@ -638,6 +681,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => {
         expect(props.saveSearchFilters).toHaveBeenCalledWith({
           venueId: ALL_VENUES,
+          typeId: ALL_TYPES,
           name: 'search string',
           offererId: ALL_OFFERERS,
           page: DEFAULT_PAGE,
@@ -663,6 +707,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
           lieu: null,
+          categorie: null,
           nom: null,
           page: null,
           structure: null,
@@ -687,6 +732,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
           lieu: proVenues[0].id,
+          categorie: null,
           nom: null,
           page: null,
           structure: null,
@@ -698,19 +744,25 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
+      pcapi.loadTypes.mockResolvedValue([
+        { value: 'test_id_1', proLabel: 'My test value'},
+        { value: 'test_id_2', proLabel: 'My second test value'},
+      ])
+
       renderOffers(props, store)
-      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
-        selector: 'select[name="lieu"]',
+      const typeSelect = screen.getByDisplayValue(ALL_TYPES_OPTION.displayName, {
+        selector: 'select[name="type"]',
       })
 
       // When
-      await waitFor(() => fireEvent.change(venueSelect, { target: { value: ALL_VENUES } }))
+      await waitFor(() => fireEvent.change(typeSelect, { target: { value: 'test_id_1' } }))
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
           lieu: null,
+          categorie: 'test_id_1',
           nom: null,
           page: null,
           structure: null,
@@ -734,6 +786,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => {
         expect(props.query.change).toHaveBeenLastCalledWith({
           lieu: null,
+          categorie: null,
           nom: null,
           page: null,
           active: null,
@@ -756,6 +809,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => {
         expect(props.query.change).toHaveBeenLastCalledWith({
           lieu: null,
+          categorie: null,
           nom: null,
           page: null,
           active: null,
@@ -845,6 +899,7 @@ describe('src | components | pages | Offers | Offers', () => {
         nameSearchValue: ALL_OFFERS,
         page: 2,
         selectedVenueId: ALL_VENUES,
+        selectedTypeId: ALL_TYPES,
         offererId: ALL_OFFERERS,
         statusFilters: {
           active: true,
@@ -869,6 +924,7 @@ describe('src | components | pages | Offers | Offers', () => {
         nameSearchValue: ALL_OFFERS,
         page: DEFAULT_PAGE,
         selectedVenueId: ALL_VENUES,
+        selectedTypeId: ALL_TYPES,
         offererId: ALL_OFFERERS,
         statusFilters: {
           active: true,

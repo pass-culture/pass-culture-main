@@ -2,10 +2,14 @@ import {
   ALL_OFFERS,
   ALL_OFFERERS,
   ALL_VENUES,
+  ALL_TYPES,
   DEFAULT_PAGE,
 } from 'components/pages/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 
+//
+// offers
+//
 export const loadOffer = async offerId => {
   return client.get(`/offers/${offerId}`)
 }
@@ -14,6 +18,7 @@ export const loadFilteredOffers = async ({
   nameSearchValue = ALL_OFFERS,
   offererId = ALL_OFFERERS,
   selectedVenueId = ALL_VENUES,
+  selectedTypeId = ALL_TYPES,
   statusFilters,
   page = DEFAULT_PAGE,
 }) => {
@@ -26,6 +31,9 @@ export const loadFilteredOffers = async ({
   }
   if (selectedVenueId !== ALL_VENUES) {
     queryParams.push(`venueId=${selectedVenueId}`)
+  }
+  if (selectedTypeId !== ALL_TYPES) {
+    queryParams.push(`typeId=${selectedTypeId}`)
   }
   if (page) {
     queryParams.push(`page=${page}`)
@@ -46,4 +54,11 @@ export const setAllVenueOffersActivate = async venueId => {
 
 export const setAllVenueOffersInactivate = async venueId => {
   return client.put(`/venues/${venueId}/offers/deactivate`)
+}
+
+//
+// types
+//
+export const loadTypes = () => {
+  return client.get(`/types`)
 }

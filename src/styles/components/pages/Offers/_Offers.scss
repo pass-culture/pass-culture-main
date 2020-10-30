@@ -47,6 +47,16 @@
     margin-top: rem(24px);
     width: rem(180px);
   }
+  .form-row {
+    display: flex;
+    flex-direction: row;
+    .input-select {
+      margin-left: rem(10px);
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
 
   .offers-count {
     margin-bottom: rem(33px);
