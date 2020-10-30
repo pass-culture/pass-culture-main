@@ -66,10 +66,11 @@ const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
       hasSubmitErrors,
       hasValidationErrors,
       pristine,
+      values,
     }) => {
       const { isloading } = this.state
       const canSubmit =
-        (!pristine && !hasSubmitErrors && !hasValidationErrors && !isloading) ||
+        (values.newPasswordConfirm === values.newPassword && !pristine && !hasSubmitErrors && !hasValidationErrors && !isloading) ||
         (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
 
       return (

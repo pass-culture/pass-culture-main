@@ -39,7 +39,10 @@ test('je clique sur le lien reçu par e-mail, je saisis mon nouveau mot de passe
   await t
     .navigateTo(`${ROOT_PATH}mot-de-passe-perdu?token=${resetPasswordToken}`)
     .typeText(userNewPasswordInput, 'user@AZERTY123')
-    .typeText(userNewPasswordConfirmInput, 'user@AZERTY123')
+    .typeText(userNewPasswordConfirmInput, 'newuser@AZERTY123')
+    .expect(submitNewPasswordButton.hasAttribute('disabled'))
+    .ok()
+    .typeText(userNewPasswordConfirmInput, 'user@AZERTY123', { replace: true })
     .click(submitNewPasswordButton)
     .expect(getPageUrl())
     .eql(`${ROOT_PATH}mot-de-passe-perdu/succes?token=${resetPasswordToken}`)

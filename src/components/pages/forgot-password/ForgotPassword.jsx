@@ -5,13 +5,13 @@ import { Route, Switch } from 'react-router-dom'
 
 import PageNotFoundContainer from '../../layout/ErrorBoundaries/ErrorsPage/PageNotFound/PageNotFoundContainer'
 import RequestEmailForm from './RequestEmailForm/RequestEmailForm'
-import ResetThePasswordForm from './ResetPasswordForm/ResetPasswordForm'
+import ResetPasswordForm from './ResetPasswordForm/ResetPasswordForm'
 import SuccessView from './SuccessView/SuccessView'
 
 const ForgotPassword = ({ location }) => {
   const { token } = parse(location.search)
   const initialValues = { token }
-  const FormComponent = !token ? RequestEmailForm : ResetThePasswordForm
+  const FormComponent = !token ? RequestEmailForm : ResetPasswordForm
 
   return (
     <main className="logout-form-main">
