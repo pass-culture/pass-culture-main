@@ -44,6 +44,7 @@
     rel="apple-touch-startup-image" />
   <title>pass Culture</title>
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-706346995"></script>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/fr_FR/sdk.js"></script>
   <script>
     // Snapchat
     (function (e, t, n) {
@@ -75,6 +76,16 @@
       s.parentNode.insertBefore(t, s)
     }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '2715078098585151');
+
+    // Facebook SDK
+    window.fbAsyncInit = function () {
+      FB.init({
+        appId: '1015703662289710',
+        autoLogAppEvents: true,
+        xfbml: true,
+        version: 'v8.0',
+      });
+    };
 
     // Google Ads
     window.dataLayer = window.dataLayer || [];
