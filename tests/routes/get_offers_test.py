@@ -2,7 +2,6 @@ import secrets
 from unittest.mock import patch
 
 from pcapi.core import testing
-from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import (
     to_domain,
 )
@@ -15,7 +14,6 @@ from pcapi.model_creators.generic_creators import (
 )
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.repository import repository
-from pcapi.core.offers.api import OffersRequestParameters
 from tests.conftest import TestClient
 from pcapi.utils.human_ids import humanize
 
@@ -213,19 +211,17 @@ class Returns200:
 
         # then
         assert response.status_code == 200
-        list_offers_mock.assert_called_once()
-        expected_parameter = list_offers_mock.call_args[0][0]
-        assert isinstance(expected_parameter, OffersRequestParameters)
-        assert expected_parameter.user_id == user.id
-        assert expected_parameter.user_is_admin == user.isAdmin
-        assert expected_parameter.offerer_id is None
-        assert expected_parameter.venue_id == venue.id
-        assert expected_parameter.offers_per_page == 20
-        assert expected_parameter.name_keywords is None
-        assert expected_parameter.page == 1
-        assert isinstance(expected_parameter.status_filters, OffersStatusFilters)
-        assert expected_parameter.status_filters.exclude_active == False
-        assert expected_parameter.status_filters.exclude_inactive == False
+        list_offers_mock.assert_called_once_with(
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
+            offerer_id=None,
+            venue_id=venue.id,
+            offers_per_page=None,
+            name_keywords=None,
+            page=None,
+            exclude_active=False,
+            exclude_inactive=False,
+        )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
     def test_results_are_filtered_by_given_status(
@@ -246,12 +242,17 @@ class Returns200:
 
         # then
         assert response.status_code == 200
-        list_offers_mock.assert_called_once()
-        expected_parameter = list_offers_mock.call_args[0][0]
-        assert isinstance(expected_parameter, OffersRequestParameters)
-        assert isinstance(expected_parameter.status_filters, OffersStatusFilters)
-        assert expected_parameter.status_filters.exclude_active == True
-        assert expected_parameter.status_filters.exclude_inactive == True
+        list_offers_mock.assert_called_once_with(
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
+            offerer_id=None,
+            venue_id=None,
+            offers_per_page=None,
+            name_keywords=None,
+            page=None,
+            exclude_active=True,
+            exclude_inactive=True,
+        )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
     def test_results_are_filtered_by_given_offerer_id(
@@ -273,16 +274,17 @@ class Returns200:
 
         # then
         assert response.status_code == 200
-        list_offers_mock.assert_called_once()
-        expected_parameter = list_offers_mock.call_args[0][0]
-        assert isinstance(expected_parameter, OffersRequestParameters)
-        assert expected_parameter.user_id == user.id
-        assert expected_parameter.user_is_admin == user.isAdmin
-        assert expected_parameter.offerer_id == offerer.id
-        assert expected_parameter.venue_id is None
-        assert expected_parameter.offers_per_page == 20
-        assert expected_parameter.name_keywords is None
-        assert expected_parameter.page == 1
+        list_offers_mock.assert_called_once_with(
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
+            offerer_id=offerer.id,
+            venue_id=None,
+            offers_per_page=None,
+            name_keywords=None,
+            page=None,
+            exclude_active=False,
+            exclude_inactive=False,
+        )
 
 
 class Returns404:

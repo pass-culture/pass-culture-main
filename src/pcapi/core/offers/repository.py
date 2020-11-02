@@ -1,7 +1,6 @@
 import math
 from typing import Optional
 
-from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.domain.ts_vector import create_filter_on_ts_vector_matching_all_keywords
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import (
@@ -16,7 +15,8 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
     page: Optional[int],
     offers_per_page: int,
     offerer_id: Optional[int] = None,
-    status_filters: OffersStatusFilters = OffersStatusFilters(),
+    exclude_active: Optional[bool] = False,
+    exclude_inactive: Optional[bool] = False,
     venue_id: Optional[int] = None,
     type_id: Optional[str] = None,
     name_keywords: Optional[str] = None,
@@ -35,9 +35,9 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
             .filter(UserOfferer.userId == user_id)
             .filter(UserOfferer.validationToken == None)
         )
-    if status_filters.exclude_active:
+    if exclude_active:
         query = query.filter(OfferSQLEntity.isActive != True)
-    if status_filters.exclude_inactive:
+    if exclude_inactive:
         query = query.filter(OfferSQLEntity.isActive != False)
     if name_keywords is not None:
         name_keywords_filter = create_filter_on_ts_vector_matching_all_keywords(

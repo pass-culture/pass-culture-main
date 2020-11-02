@@ -3,7 +3,6 @@ import pytest
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.identifier.identifier import Identifier
-from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.models import ThingType
 from pcapi.core.offers.repository import get_paginated_offers_for_offerer_venue_and_keywords
@@ -211,7 +210,7 @@ class PaginatedOfferSQLRepositoryTest:
                 user_is_admin=user.isAdmin,
                 offers_per_page=requested_offers_per_page,
                 page=requested_page,
-                status_filters=OffersStatusFilters(exclude_active=True)
+                exclude_active=True,
             )
 
             # then
@@ -237,7 +236,7 @@ class PaginatedOfferSQLRepositoryTest:
                 user_is_admin=user.isAdmin,
                 offers_per_page=requested_offers_per_page,
                 page=requested_page,
-                status_filters=OffersStatusFilters(exclude_inactive=True)
+                exclude_inactive=True
             )
 
             # then

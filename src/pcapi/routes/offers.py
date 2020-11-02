@@ -7,7 +7,6 @@ from pcapi.domain.create_offer import (
     fill_offer_with_new_data,
     initialize_offer_from_product_id,
 )
-from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.models import OfferSQLEntity, RightsType, VenueSQLEntity
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import (
@@ -30,7 +29,7 @@ from pcapi.routes.serialization.offers_serialize import (
     GetOfferResponseModel,
 )
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.core.offers.api import OffersRequestParameters, list_offers_for_pro_user
+from pcapi.core.offers.api import list_offers_for_pro_user
 from pcapi.use_cases.update_an_offer import update_an_offer
 from pcapi.use_cases.update_offers_active_status import update_offers_active_status, update_all_offers_active_status
 from pcapi.utils.config import PRO_URL
@@ -69,12 +68,7 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
             )
             check_user_has_rights_on_offerer(user_offerer)
 
-    status_filters = OffersStatusFilters(
-        exclude_active=query.active == "false",
-        exclude_inactive=query.inactive == "false",
-    )
-
-    offers_request_parameters = OffersRequestParameters(
+    paginated_offers = list_offers_for_pro_user(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
         offerer_id=query.offerer_id,
@@ -83,9 +77,9 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
         offers_per_page=query.paginate,
         name_keywords=query.name,
         page=query.page,
-        status_filters=status_filters,
+        exclude_active=query.active == "false",
+        exclude_inactive=query.inactive == "false",
     )
-    paginated_offers = list_offers_for_pro_user(offers_request_parameters)
 
     return ListOffersResponseModel(**serialize_offers_recap_paginated(paginated_offers))
 
