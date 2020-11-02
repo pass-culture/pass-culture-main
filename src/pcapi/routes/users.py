@@ -5,7 +5,10 @@ from flask_login import current_user, \
     logout_user, \
     login_user
 
+from pcapi.core.users import api as user_api
+from pcapi.core.users import exceptions as user_exceptions
 from pcapi.flask_app import private_api
+from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.user_queries import find_user_by_reset_password_token, \
     find_user_by_email
 from pcapi.routes.serialization import as_dict
@@ -14,7 +17,6 @@ from pcapi.routes.serialization.users import PatchUserBodyModel, \
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.update_user_informations import update_user_informations, \
     AlterableUserInformations
-from pcapi.utils.credentials import get_user_with_credentials
 from pcapi.utils.includes import USER_INCLUDES
 from pcapi.utils.login_manager import stamp_session, \
     discard_session
@@ -58,7 +60,19 @@ def signin():
     identifier = json.get("identifier")
     password = json.get("password")
     check_valid_signin(identifier, password)
-    user = get_user_with_credentials(identifier, password)
+    errors = ApiErrors()
+    errors.status_code = 401
+    try:
+        user = user_api.get_user_with_credentials(identifier, password)
+    except user_exceptions.InvalidIdentifier as exc:
+        errors.add_error('identifier', 'Identifiant incorrect')
+        raise errors from exc
+    except user_exceptions.UnvalidatedAccount as exc:
+        errors.add_error('identifier', "Ce compte n'est pas validé.")
+        raise errors from exc
+    except user_exceptions.InvalidPassword as exc:
+        errors.add_error('password', 'Mot de passe incorrect')
+        raise errors from exc
     login_user(user, remember=True)
     stamp_session(user)
     return jsonify(as_dict(user, includes=USER_INCLUDES)), 200

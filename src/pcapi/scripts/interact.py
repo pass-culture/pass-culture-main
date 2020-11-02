@@ -30,7 +30,6 @@ from pcapi.repository.user_queries import *
 from pcapi.sandboxes import *
 from sqlalchemy import *
 from pcapi.utils.config import *
-from pcapi.utils.credentials import *
 from pcapi.utils.human_ids import *
 from pcapi.utils.import_module import *
 from pcapi.utils.includes import *
