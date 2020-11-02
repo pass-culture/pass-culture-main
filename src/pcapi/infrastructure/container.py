@@ -2,7 +2,6 @@ from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository impo
 from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import BeneficiaryBookingsSQLRepository
 from pcapi.infrastructure.repository.favorite.favorite_sql_repository import FavoriteSQLRepository
 from pcapi.infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import PaginatedOfferersSQLRepository
-from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
 from pcapi.infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
 from pcapi.infrastructure.repository.stock_provider.stock_provider_fnac import StockProviderFnacRepository
 from pcapi.infrastructure.repository.stock_provider.stock_provider_libraires import StockProviderLibrairesRepository
@@ -18,12 +17,10 @@ from pcapi.use_cases.get_venue_labels import GetVenueLabels
 from pcapi.use_cases.get_venues_by_pro_user import GetVenuesByProUser
 from pcapi.use_cases.list_favorites_of_beneficiary import ListFavoritesOfBeneficiary
 from pcapi.use_cases.list_offerers_for_pro_user import ListOfferersForProUser
-from pcapi.use_cases.list_offers_for_pro_user import ListOffersForProUser
 
 beneficiary_bookings_repository = BeneficiaryBookingsSQLRepository()
 favorite_repository = FavoriteSQLRepository()
 notification_service = MailjetNotificationService()
-paginated_offer_repository = PaginatedOffersSQLRepository()
 stock_repository = StockSQLRepository()
 user_repository = BeneficiarySQLRepository()
 venue_label_repository = VenueLabelSQLRepository()
@@ -42,8 +39,6 @@ get_venue_labels = GetVenueLabels(venue_label_repository=venue_label_repository)
 get_all_venues_by_pro_user = GetVenuesByProUser(venue_repository=venue_with_offerer_informations_repository)
 
 list_favorites_of_beneficiary = ListFavoritesOfBeneficiary(favorite_repository=favorite_repository)
-
-list_offers_for_pro_user = ListOffersForProUser(paginated_offer_repository=paginated_offer_repository)
 
 add_contact_in_eligibility_list = AddContactInEligibilityList(
     notification_service=notification_service

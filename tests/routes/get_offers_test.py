@@ -15,7 +15,7 @@ from pcapi.model_creators.generic_creators import (
 )
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.repository import repository
-from pcapi.use_cases.list_offers_for_pro_user import OffersRequestParameters
+from pcapi.core.offers.api import OffersRequestParameters
 from tests.conftest import TestClient
 from pcapi.utils.human_ids import humanize
 
@@ -108,7 +108,7 @@ class Returns200:
         assert response.status_code == 200
         assert len(offers) == 1
 
-    @patch("pcapi.routes.offers.list_offers_for_pro_user.execute")
+    @patch("pcapi.routes.offers.list_offers_for_pro_user")
     def test_results_are_paginated_with_pagination_details_in_body(
         self, list_offers_mock, app, db_session
     ):
@@ -162,7 +162,7 @@ class Returns200:
             "total_count": 2,
         }
 
-    @patch("pcapi.routes.offers.list_offers_for_pro_user.execute")
+    @patch("pcapi.routes.offers.list_offers_for_pro_user")
     def test_does_not_show_result_to_user_offerer_when_not_validated(
         self, list_offers_mock, app, db_session
     ):
@@ -193,7 +193,7 @@ class Returns200:
             "total_count": 0,
         }
 
-    @patch("pcapi.routes.offers.list_offers_for_pro_user.execute")
+    @patch("pcapi.routes.offers.list_offers_for_pro_user")
     def test_results_are_filtered_by_given_venue_id(
         self, list_offers_mock, app, db_session
     ):
@@ -227,7 +227,7 @@ class Returns200:
         assert expected_parameter.status_filters.exclude_active == False
         assert expected_parameter.status_filters.exclude_inactive == False
 
-    @patch("pcapi.routes.offers.list_offers_for_pro_user.execute")
+    @patch("pcapi.routes.offers.list_offers_for_pro_user")
     def test_results_are_filtered_by_given_status(
         self, list_offers_mock, app, db_session
     ):
@@ -253,7 +253,7 @@ class Returns200:
         assert expected_parameter.status_filters.exclude_active == True
         assert expected_parameter.status_filters.exclude_inactive == True
 
-    @patch("pcapi.routes.offers.list_offers_for_pro_user.execute")
+    @patch("pcapi.routes.offers.list_offers_for_pro_user")
     def test_results_are_filtered_by_given_offerer_id(
         self, list_offers_mock, app, db_session
     ):

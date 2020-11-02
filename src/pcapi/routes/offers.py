@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import request
 from flask_login import current_user, login_required
 
 from pcapi.flask_app import private_api
@@ -8,7 +8,6 @@ from pcapi.domain.create_offer import (
     initialize_offer_from_product_id,
 )
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
-from pcapi.infrastructure.container import list_offers_for_pro_user
 from pcapi.models import OfferSQLEntity, RightsType, VenueSQLEntity
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import (
@@ -31,7 +30,7 @@ from pcapi.routes.serialization.offers_serialize import (
     GetOfferResponseModel,
 )
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.use_cases.list_offers_for_pro_user import OffersRequestParameters
+from pcapi.core.offers.api import OffersRequestParameters, list_offers_for_pro_user
 from pcapi.use_cases.update_an_offer import update_an_offer
 from pcapi.use_cases.update_offers_active_status import update_offers_active_status, update_all_offers_active_status
 from pcapi.utils.config import PRO_URL
@@ -86,7 +85,7 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
         page=query.page,
         status_filters=status_filters,
     )
-    paginated_offers = list_offers_for_pro_user.execute(offers_request_parameters)
+    paginated_offers = list_offers_for_pro_user(offers_request_parameters)
 
     return ListOffersResponseModel(**serialize_offers_recap_paginated(paginated_offers))
 
