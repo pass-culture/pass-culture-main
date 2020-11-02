@@ -3,7 +3,7 @@ import React from 'react'
 
 import StocksManager from '../StocksManager'
 
-describe('src | components | pages | Offer | StocksManager | StocksManager', () => {
+describe('offer | StocksManager', () => {
   let props
   let query
   const stock = {
@@ -60,7 +60,7 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
         .findWhere(
           node =>
             node.text() ===
-            "Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement."
+            "Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 72h avant le début de l'événement."
         )
         .first()
       const legalTextSecondSentence = wrapper

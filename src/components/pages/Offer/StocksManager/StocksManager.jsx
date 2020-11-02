@@ -220,7 +220,7 @@ class StocksManager extends PureComponent {
             <div className="stocks-event-legal-warning">
               <span>
                 {
-                  "Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement."
+                  "Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 72h avant le début de l'événement."
                 }
               </span>
               <span>
