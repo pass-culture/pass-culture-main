@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 from pcapi.repository import repository
-from pcapi.scripts.deactivate_offers_during_quatantine.fetch_user_emails_for_offers import \
+from pcapi.scripts.deactivate_offers_during_quarantine.fetch_user_emails_for_offers import \
     fetch_user_emails_for_offers_with_max_stock_date_between_today_and_end_of_quarantine
 import pytest
 from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_stock, create_user, \
@@ -11,7 +11,7 @@ from pcapi.model_creators.specific_creators import create_offer_with_event_produ
 
 
 class FetchUserEmailsForOffersTest:
-    @patch('pcapi.scripts.deactivate_offers_during_quatantine.fetch_user_emails_for_offers.'
+    @patch('pcapi.scripts.deactivate_offers_during_quarantine.fetch_user_emails_for_offers.'
            'build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine')
     def test_should_call_build_offers_query(self, stub_build_query):
         # Given

@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from pcapi.models import OfferSQLEntity
 from pcapi.repository import repository
-from pcapi.scripts.deactivate_offers_during_quatantine.deactivate_offers import \
+from pcapi.scripts.deactivate_offers_during_quarantine.deactivate_offers import \
     build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine, deactivate_offers, \
     deactivate_offers_with_max_stock_date_between_today_and_end_of_quarantine, \
     get_offers_with_max_stock_date_between_today_and_end_of_quarantine
@@ -16,7 +16,7 @@ TODAY = datetime(2020, 4, 10)
 
 
 class GetOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
-    @patch('pcapi.scripts.deactivate_offers_during_quatantine.'
+    @patch('pcapi.scripts.deactivate_offers_during_quarantine.'
            'deactivate_offers.build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine')
     def test_should_call_build_offers_query(self, stub_build_query):
         # When
@@ -159,7 +159,7 @@ class DeactivateOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         assert offer_not_to_deactivate.isActive is True
 
     @pytest.mark.usefixtures("db_session")
-    @patch('pcapi.scripts.deactivate_offers_during_quatantine.deactivate_offers.delete_expired_offers')
+    @patch('pcapi.scripts.deactivate_offers_during_quarantine.deactivate_offers.delete_expired_offers')
     def test_should_unindex_offers(self, mocked_delete_expired_offers):
         # Given
         offerer = create_offerer()
