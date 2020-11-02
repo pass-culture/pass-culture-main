@@ -37,10 +37,10 @@ describe('components | Home', () => {
             short: "34 avenue de l'opéra",
           },
         },
-        userGeolocation: {
-          latitude: 40,
-          longitude: 41,
-        },
+      },
+      userGeolocation: {
+        latitude: 40,
+        longitude: 41,
       },
       history: {
         push: jest.fn(),
