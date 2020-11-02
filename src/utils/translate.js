@@ -96,6 +96,9 @@ export const mapBrowserToApi = {
   epuisee: 'soldOut',
   expiree: 'expired',
   statut: 'status',
+  creation: 'creationMode',
+  manuelle: 'manual',
+  importee: 'imported',
 }
 
 export const mapApiToBrowser = invert(mapBrowserToApi)

@@ -10,7 +10,13 @@ import Titles from 'components/layout/Titles/Titles'
 import LocalProviderInformation from 'components/pages/Offer/LocalProviderInformation/LocalProviderInformationContainer'
 import MediationsManager from 'components/pages/Offer/MediationsManager/MediationsManagerContainer'
 import StocksManagerContainer from 'components/pages/Offer/StocksManager/StocksManagerContainer'
-import { ALL_OFFERERS, ALL_STATUS, ALL_TYPES, ALL_VENUES } from 'components/pages/Offers/_constants'
+import {
+  ALL_OFFERERS,
+  ALL_STATUS,
+  ALL_TYPES,
+  ALL_VENUES,
+  DEFAULT_CREATION_MODE,
+} from 'components/pages/Offers/_constants'
 import { showModal } from 'store/reducers/modal'
 import { getStubStore } from 'utils/stubStore'
 
@@ -117,6 +123,7 @@ describe('src | OfferCreation', () => {
         offererId: ALL_OFFERERS,
         page: 1,
         status: ALL_STATUS,
+        creationMode: DEFAULT_CREATION_MODE.id,
       },
       offerers: [],
       offerer: {
@@ -324,7 +331,7 @@ describe('src | OfferCreation', () => {
         // then
         const backButton = wrapper.find('a.back-button')
         expect(backButton.prop('href')).toMatch(
-          `/offres?lieu=${ALL_VENUES}&categorie=${ALL_TYPES}&structure=${ALL_OFFERERS}&page=1&statut=${ALL_STATUS}`
+          `/offres?lieu=${ALL_VENUES}&categorie=${ALL_TYPES}&structure=${ALL_OFFERERS}&page=1&statut=${ALL_STATUS}&creation=${DEFAULT_CREATION_MODE.id}`
         )
       })
 
@@ -366,6 +373,20 @@ describe('src | OfferCreation', () => {
         // then
         const backButton = wrapper.find('a.back-button')
         expect(backButton.prop('href')).toMatch('/offres?statut=epuisee')
+      })
+
+      it('should translate creation mode filter value in back link when not default', () => {
+        // given
+        props.offersSearchFilters = {
+          creationMode: 'manual',
+        }
+
+        // when
+        const wrapper = getMountedOfferCreationWrapper(props, store)
+
+        // then
+        const backButton = wrapper.find('a.back-button')
+        expect(backButton.prop('href')).toMatch('/offres?creation=manuelle')
       })
 
       it('should create a new Product when no offer type', () => {

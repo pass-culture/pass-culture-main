@@ -1,4 +1,9 @@
-import { ALL_OFFERS, ALL_STATUS, ALL_VENUES } from 'components/pages/Offers/_constants'
+import {
+  ALL_OFFERS,
+  ALL_STATUS,
+  ALL_VENUES,
+  DEFAULT_CREATION_MODE,
+} from 'components/pages/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 
 import { loadFilteredOffers, updateOffersActiveStatus } from '../pcapi'
@@ -69,7 +74,12 @@ describe('pcapi', () => {
 
     it('should call offers route with "page=1" when provided filters are defaults', async () => {
       // Given
-      const filters = { nameSearchValue: ALL_OFFERS, selectedVenueId: ALL_VENUES, status: ALL_STATUS }
+      const filters = {
+        nameSearchValue: ALL_OFFERS,
+        selectedVenueId: ALL_VENUES,
+        status: ALL_STATUS,
+        creationMode: DEFAULT_CREATION_MODE.id,
+      }
 
       // When
       await loadFilteredOffers(filters)
@@ -80,19 +90,27 @@ describe('pcapi', () => {
 
     it('should call offers route with filters when provided', async () => {
       // Given
-      const filters = { nameSearchValue: 'OCS', selectedVenueId: 'AA', page: 2, status: 'expired' }
+      const filters = {
+        nameSearchValue: 'OCS',
+        selectedVenueId: 'AA',
+        page: 2,
+        status: 'expired',
+        creationMode: 'manual',
+      }
 
       // When
       await loadFilteredOffers(filters)
 
       // Then
-      expect(client.get).toHaveBeenCalledWith('/offers?name=OCS&venueId=AA&page=2&status=expired')
+      expect(client.get).toHaveBeenCalledWith(
+        '/offers?name=OCS&venueId=AA&page=2&status=expired&creationMode=manual'
+      )
     })
   })
 
   describe('updateOffersActiveStatus', () => {
     describe('when updating all offers', () => {
-      it('should call offers/all-active-status with proper params', async () => {
+      it('should call offers/all-active-status with proper params when filters are defaults', async () => {
         // given
         const body = {
           isActive: true,
@@ -105,6 +123,33 @@ describe('pcapi', () => {
         expect(client.patch).toHaveBeenCalledWith('/offers/all-active-status', {
           isActive: true,
           page: 1,
+        })
+      })
+
+      it('should call offers/all-active-status with proper params when filters are set', async () => {
+        // given
+        const body = {
+          isActive: true,
+          offererId: 'IJ',
+          venueId: 'KL',
+          typeId: 'ThingType.AUDIOVISUEL',
+          page: 2,
+          status: 'expired',
+          creationMode: 'imported',
+        }
+
+        // when
+        await updateOffersActiveStatus(true, body)
+
+        // then
+        expect(client.patch).toHaveBeenCalledWith('/offers/all-active-status', {
+          isActive: true,
+          offererId: 'IJ',
+          venueId: 'KL',
+          typeId: 'ThingType.AUDIOVISUEL',
+          page: 2,
+          status: 'expired',
+          creationMode: 'imported',
         })
       })
     })

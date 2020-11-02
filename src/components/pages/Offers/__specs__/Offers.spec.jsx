@@ -18,6 +18,8 @@ import {
   ALL_TYPES_OPTION,
   ALL_VENUES,
   ALL_VENUES_OPTION,
+  CREATION_MODES_FILTERS,
+  DEFAULT_CREATION_MODE,
   DEFAULT_PAGE,
 } from '../_constants'
 import Offers from '../Offers'
@@ -134,6 +136,7 @@ describe('src | components | pages | Offers | Offers', () => {
         selectedTypeId: ALL_TYPES,
         offererId: ALL_OFFERERS,
         status: ALL_STATUS,
+        creationMode: DEFAULT_CREATION_MODE.id,
       })
     })
 
@@ -312,7 +315,7 @@ describe('src | components | pages | Offers | Offers', () => {
       it('should render venue filter with default option and given venues', async () => {
         // Given
         const expectedSelectOptions = [
-          { id: [ALL_VENUES_OPTION.displayName.id], value: ALL_VENUES_OPTION.displayName },
+          { id: [ALL_VENUES_OPTION.id], value: ALL_VENUES_OPTION.displayName },
           { id: [proVenues[0].id], value: proVenues[0].name },
           { id: [proVenues[1].id], value: `${proVenues[1].offererName} - Offre numérique` },
         ]
@@ -353,6 +356,49 @@ describe('src | components | pages | Offers | Offers', () => {
           })
           expect(venueSelect).toBeInTheDocument()
         })
+      })
+
+      it('should render creation mode filter with default option selected', async () => {
+        // When
+        renderOffers(props, store)
+
+        // Then
+        expect(screen.getByDisplayValue('Tous les modes')).toBeInTheDocument()
+      })
+
+      it('should render creation mode filter with given creation mode selected', async () => {
+        // Given
+        jest.spyOn(props.query, 'parse').mockReturnValue({ creation: 'importee' })
+
+        // When
+        renderOffers(props, store)
+
+        // Then
+        expect(screen.getByDisplayValue('Importée')).toBeInTheDocument()
+      })
+
+      it('should allow user to select manual creation mode filter', () => {
+        // Given
+        renderOffers(props, store)
+        const creationModeSelect = screen.getByDisplayValue('Tous les modes')
+
+        // When
+        fireEvent.change(creationModeSelect, { target: { value: 'manual' } })
+
+        // Then
+        expect(screen.getByDisplayValue('Manuelle')).toBeInTheDocument()
+      })
+
+      it('should allow user to select imported creation mode filter', () => {
+        // Given
+        renderOffers(props, store)
+        const creationModeSelect = screen.getByDisplayValue('Tous les modes')
+
+        // When
+        fireEvent.change(creationModeSelect, { target: { value: 'imported' } })
+
+        // Then
+        expect(screen.getByDisplayValue('Importée')).toBeInTheDocument()
       })
 
       describe('status filters', () => {
@@ -418,6 +464,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
           // Then
           expect(props.loadOffers).toHaveBeenLastCalledWith({
+            creationMode: DEFAULT_CREATION_MODE.id,
             nameSearchValue: '',
             offererId: ALL_OFFERERS,
             page: 1,
@@ -444,7 +491,7 @@ describe('src | components | pages | Offers | Offers', () => {
   })
 
   describe('on click on search button', () => {
-    it('should load offers with default filters when no changes where made', async () => {
+    it('should load offers with default filters when no changes where made', () => {
       // Given
       renderOffers(props, store)
 
@@ -452,86 +499,104 @@ describe('src | components | pages | Offers | Offers', () => {
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.loadOffers).toHaveBeenCalledWith({
-          nameSearchValue: ALL_OFFERS,
-          page: DEFAULT_PAGE,
-          selectedVenueId: ALL_VENUES,
-          selectedTypeId: ALL_TYPES,
-          offererId: ALL_OFFERERS,
-          status: 'all',
-        })
+      expect(props.loadOffers).toHaveBeenLastCalledWith({
+        nameSearchValue: ALL_OFFERS,
+        page: DEFAULT_PAGE,
+        selectedVenueId: ALL_VENUES,
+        selectedTypeId: ALL_TYPES,
+        offererId: ALL_OFFERERS,
+        status: 'all',
+        creationMode: DEFAULT_CREATION_MODE.id,
       })
     })
 
-    it('should load offers with written offer name filter', async () => {
+    it('should load offers with written offer name filter', () => {
       // Given
       renderOffers(props, store)
-
-      // When
       fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre'), {
         target: { value: 'Any word' },
       })
+
+      // When
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.loadOffers).toHaveBeenCalledWith({
-          nameSearchValue: 'Any word',
-          page: DEFAULT_PAGE,
-          selectedVenueId: ALL_VENUES,
-          selectedTypeId: ALL_TYPES,
-          offererId: ALL_OFFERERS,
-          status: 'all',
-        })
+      expect(props.loadOffers).toHaveBeenLastCalledWith({
+        nameSearchValue: 'Any word',
+        page: DEFAULT_PAGE,
+        selectedVenueId: ALL_VENUES,
+        selectedTypeId: ALL_TYPES,
+        offererId: ALL_OFFERERS,
+        status: 'all',
+        creationMode: DEFAULT_CREATION_MODE.id,
       })
     })
 
     it('should load offers with selected venue filter', async () => {
       // Given
-      renderOffers(props, store)
+      await renderOffers(props, store)
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
         selector: 'select[name="lieu"]',
       })
+      fireEvent.change(venueSelect, { target: { value: proVenues[0].id } })
 
       // When
-      await waitFor(() => fireEvent.change(venueSelect, { target: { value: proVenues[0].id } }))
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.loadOffers).toHaveBeenCalledWith({
-          nameSearchValue: ALL_OFFERS,
-          page: DEFAULT_PAGE,
-          selectedVenueId: proVenues[0].id,
-          selectedTypeId: ALL_TYPES,
-          offererId: ALL_OFFERERS,
-          status: ALL_STATUS,
-        })
+      expect(props.loadOffers).toHaveBeenLastCalledWith({
+        nameSearchValue: ALL_OFFERS,
+        page: DEFAULT_PAGE,
+        selectedVenueId: proVenues[0].id,
+        selectedTypeId: ALL_TYPES,
+        offererId: ALL_OFFERERS,
+        status: ALL_STATUS,
+        creationMode: DEFAULT_CREATION_MODE.id,
       })
     })
 
     it('should load offers with selected type filter', async () => {
       // Given
-      renderOffers(props, store)
+      await renderOffers(props, store)
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
         selector: 'select[name="lieu"]',
       })
+      fireEvent.change(venueSelect, { target: { value: proVenues[0].id } })
 
       // When
-      await waitFor(() => fireEvent.change(venueSelect, { target: { value: proVenues[0].id } }))
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.loadOffers).toHaveBeenCalledWith({
-          nameSearchValue: ALL_OFFERS,
-          page: DEFAULT_PAGE,
-          selectedVenueId: proVenues[0].id,
-          selectedTypeId: ALL_TYPES,
-          offererId: ALL_OFFERERS,
-          status: 'all',
-        })
+      expect(props.loadOffers).toHaveBeenLastCalledWith({
+        nameSearchValue: ALL_OFFERS,
+        page: DEFAULT_PAGE,
+        selectedVenueId: proVenues[0].id,
+        selectedTypeId: ALL_TYPES,
+        offererId: ALL_OFFERERS,
+        status: 'all',
+        creationMode: DEFAULT_CREATION_MODE.id,
+      })
+    })
+
+    it('should load offers with selected creation mode filter', () => {
+      // Given
+      renderOffers(props, store)
+      const creationModeSelect = screen.getByDisplayValue(DEFAULT_CREATION_MODE.displayName)
+      const importedCreationMode = CREATION_MODES_FILTERS[1].id
+      fireEvent.change(creationModeSelect, { target: { value: importedCreationMode } })
+
+      // When
+      fireEvent.click(screen.getByText('Lancer la recherche'))
+
+      // Then
+      expect(props.loadOffers).toHaveBeenLastCalledWith({
+        nameSearchValue: ALL_OFFERS,
+        page: DEFAULT_PAGE,
+        selectedVenueId: ALL_VENUES,
+        selectedTypeId: ALL_TYPES,
+        offererId: ALL_OFFERERS,
+        status: ALL_STATUS,
+        creationMode: 'imported',
       })
     })
   })
@@ -579,6 +644,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
+          creation: null,
           lieu: null,
           categorie: null,
           nom: null,
@@ -605,6 +671,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
+          creation: null,
           lieu: null,
           categorie: null,
           nom: null,
@@ -630,6 +697,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
+          creation: null,
           lieu: null,
           categorie: null,
           nom: 'AnyWord',
@@ -658,6 +726,7 @@ describe('src | components | pages | Offers | Offers', () => {
           offererId: ALL_OFFERERS,
           page: DEFAULT_PAGE,
           status: ALL_STATUS,
+          creationMode: DEFAULT_CREATION_MODE.id,
         })
       })
     })
@@ -677,6 +746,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
+          creation: null,
           lieu: null,
           categorie: null,
           nom: null,
@@ -701,6 +771,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
+          creation: null,
           lieu: proVenues[0].id,
           categorie: null,
           nom: null,
@@ -730,6 +801,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
+          creation: null,
           lieu: null,
           categorie: 'test_id_1',
           nom: null,
@@ -753,6 +825,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenLastCalledWith({
+          creation: null,
           lieu: null,
           categorie: null,
           nom: null,
@@ -776,6 +849,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenLastCalledWith({
+          creation: null,
           lieu: null,
           categorie: null,
           nom: null,
@@ -811,6 +885,51 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(screen.queryByText('La structure')).toBeNull()
+    })
+
+    it('should have creation mode value when user filters by creation mode', async () => {
+      // Given
+      renderOffers(props, store)
+
+      // When
+      fireEvent.change(screen.getByDisplayValue('Tous les modes'), { target: { value: 'manual' } })
+      await fireEvent.click(screen.getByText('Lancer la recherche'))
+
+      // Then
+      expect(props.query.change).toHaveBeenLastCalledWith({
+        creation: 'manuelle',
+        lieu: null,
+        categorie: null,
+        nom: null,
+        page: null,
+        statut: null,
+        structure: null,
+      })
+    })
+
+    it('should have creation mode value be removed when user ask for all creation modes', async () => {
+      // Given
+      renderOffers(props, store)
+      const searchButton = screen.getByText('Lancer la recherche')
+      fireEvent.change(screen.getByDisplayValue('Tous les modes'), { target: { value: 'manual' } })
+      fireEvent.click(searchButton)
+
+      // When
+      fireEvent.change(screen.getByDisplayValue('Manuelle'), {
+        target: { value: DEFAULT_CREATION_MODE.id },
+      })
+      await fireEvent.click(searchButton)
+
+      // Then
+      expect(props.query.change).toHaveBeenLastCalledWith({
+        creation: null,
+        lieu: null,
+        categorie: null,
+        nom: null,
+        page: null,
+        statut: null,
+        structure: null,
+      })
     })
   })
 
@@ -899,6 +1018,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(props.loadOffers).toHaveBeenLastCalledWith({
+        creationMode: DEFAULT_CREATION_MODE.id,
         nameSearchValue: ALL_OFFERS,
         page: 2,
         selectedVenueId: ALL_VENUES,
@@ -921,6 +1041,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(props.loadOffers).toHaveBeenLastCalledWith({
+        creationMode: DEFAULT_CREATION_MODE.id,
         nameSearchValue: ALL_OFFERS,
         page: DEFAULT_PAGE,
         selectedVenueId: ALL_VENUES,

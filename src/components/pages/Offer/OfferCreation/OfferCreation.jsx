@@ -20,7 +20,7 @@ import OfferPreviewLink from 'components/layout/OfferPreviewLink/OfferPreviewLin
 import { webappOfferUrl } from 'components/layout/OfferPreviewLink/webappOfferUrl'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
-import { ALL_STATUS } from 'components/pages/Offers/_constants'
+import { ALL_STATUS, DEFAULT_CREATION_MODE } from 'components/pages/Offers/_constants'
 import { OFFERERS_API_PATH } from 'config/apiPaths'
 import { CGU_URL } from 'utils/config'
 import { musicOptions, showOptions } from 'utils/edd'
@@ -304,11 +304,14 @@ class OfferCreation extends PureComponent {
 
   computeOffersUrl = () => {
     const { offersSearchFilters } = this.props
-    const { status } = offersSearchFilters
+    const { creationMode, status } = offersSearchFilters
     const searchFiltersParams = { ...offersSearchFilters }
 
     if (status && status !== ALL_STATUS) {
       searchFiltersParams.status = mapApiToBrowser[status]
+    }
+    if (creationMode && creationMode !== DEFAULT_CREATION_MODE.id) {
+      searchFiltersParams.creationMode = mapApiToBrowser[creationMode]
     }
 
     const queryString = new URLSearchParams(

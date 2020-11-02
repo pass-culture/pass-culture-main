@@ -22,6 +22,8 @@ import {
   ALL_VENUES_OPTION,
   ALL_TYPES,
   ALL_TYPES_OPTION,
+  CREATION_MODES_FILTERS,
+  DEFAULT_CREATION_MODE,
   DEFAULT_PAGE,
 } from './_constants'
 import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
@@ -38,6 +40,7 @@ class Offers extends PureComponent {
       venueId: selectedVenueId,
       typeId: selectedTypeId,
       status,
+      creationMode,
     } = translateQueryParamsToApiParams(props.query.parse())
 
     this.state = {
@@ -56,6 +59,7 @@ class Offers extends PureComponent {
       areStatusFiltersVisible: false,
       areAllOffersSelected: false,
       typeOptions: [],
+      creationMode: mapBrowserToApi[creationMode] || DEFAULT_CREATION_MODE.id,
     }
   }
 
@@ -84,7 +88,15 @@ class Offers extends PureComponent {
 
   updateUrlMatchingState = () => {
     const { query } = this.props
-    const { nameSearchValue, offererId, page, selectedVenueId, selectedTypeId, status } = this.state
+    const {
+      nameSearchValue,
+      offererId,
+      page,
+      selectedVenueId,
+      selectedTypeId,
+      status,
+      creationMode,
+    } = this.state
 
     query.change({
       page: page === DEFAULT_PAGE ? null : page,
@@ -93,6 +105,8 @@ class Offers extends PureComponent {
       [mapApiToBrowser.typeId]: selectedTypeId === ALL_TYPES ? null : selectedTypeId,
       [mapApiToBrowser.offererId]: offererId === ALL_OFFERERS ? null : offererId,
       [mapApiToBrowser.status]: status === ALL_STATUS ? null : mapApiToBrowser[status],
+      [mapApiToBrowser.creationMode]:
+        creationMode === DEFAULT_CREATION_MODE.id ? null : mapApiToBrowser[creationMode],
     })
   }
 
@@ -114,9 +128,25 @@ class Offers extends PureComponent {
 
   loadAndUpdateOffers() {
     const { loadOffers } = this.props
-    const { nameSearchValue, selectedVenueId, selectedTypeId, offererId, page, status } = this.state
+    const {
+      creationMode,
+      nameSearchValue,
+      selectedVenueId,
+      selectedTypeId,
+      offererId,
+      page,
+      status,
+    } = this.state
 
-    loadOffers({ nameSearchValue, selectedVenueId, selectedTypeId, offererId, page, status })
+    loadOffers({
+      creationMode,
+      nameSearchValue,
+      selectedVenueId,
+      selectedTypeId,
+      offererId,
+      page,
+      status,
+    })
       .then(({ page, pageCount, offersCount }) => {
         this.setState(
           {
@@ -140,14 +170,23 @@ class Offers extends PureComponent {
 
   getPaginatedOffersWithFilters = ({ shouldTriggerSpinner }) => {
     const { saveSearchFilters } = this.props
-    const { nameSearchValue, offererId, page, selectedVenueId, selectedTypeId, status } = this.state
+    const {
+      creationMode,
+      nameSearchValue,
+      offererId,
+      page,
+      selectedVenueId,
+      selectedTypeId,
+      status,
+    } = this.state
     saveSearchFilters({
       name: nameSearchValue,
       venueId: selectedVenueId,
       typeId: selectedTypeId,
       offererId,
       page,
-      status: status,
+      status,
+      creationMode,
     })
 
     shouldTriggerSpinner && this.setState({ isLoading: true })
@@ -191,6 +230,10 @@ class Offers extends PureComponent {
 
   storeSelectedType = event => {
     this.setState({ selectedTypeId: event.target.value })
+  }
+
+  handleCreationModeSelection = event => {
+    this.setState({ creationMode: event.target.value })
   }
 
   onPreviousPageClick = () => {
@@ -275,6 +318,7 @@ class Offers extends PureComponent {
       typeOptions,
       venueOptions,
       areAllOffersSelected,
+      creationMode,
     } = this.state
 
     const actionLink = !isAdmin ? (
@@ -340,6 +384,14 @@ class Offers extends PureComponent {
               name="type"
               options={typeOptions}
               selectedValue={selectedTypeId}
+            />
+            <Select
+              defaultOption={DEFAULT_CREATION_MODE}
+              handleSelection={this.handleCreationModeSelection}
+              label="Mode de création"
+              name="creationMode"
+              options={CREATION_MODES_FILTERS}
+              selectedValue={creationMode}
             />
           </div>
           <div className="search-separator">
