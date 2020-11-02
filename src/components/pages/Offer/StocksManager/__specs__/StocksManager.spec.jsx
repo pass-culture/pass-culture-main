@@ -1,7 +1,28 @@
+import '@testing-library/jest-dom'
+import { fireEvent } from '@testing-library/dom'
+import { render, screen } from '@testing-library/react'
 import { shallow } from 'enzyme'
 import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
 
+import { configureTestStore } from '../../../../../store/testUtils'
 import StocksManager from '../StocksManager'
+
+const renderStocksManager = (props, storeItem) => {
+  const stubbedStore = configureTestStore({
+    data: {},
+    ...storeItem,
+  })
+
+  render(
+    <Provider store={stubbedStore}>
+      <MemoryRouter>
+        <StocksManager {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
+}
 
 describe('offer | StocksManager', () => {
   let props
@@ -51,27 +72,17 @@ describe('offer | StocksManager', () => {
   })
 
   describe('when managing an event', () => {
-    it('should contain the event cancellation legal text', () => {
+    it('should display the event cancellation legal text', () => {
       // when
-      const wrapper = shallow(<StocksManager {...props} />)
+      renderStocksManager(props)
 
       // then
-      const legalTextFirstSentence = wrapper
-        .findWhere(
-          node =>
-            node.text() ===
-            "Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 72h avant le début de l'événement."
-        )
-        .first()
-      const legalTextSecondSentence = wrapper
-        .findWhere(
-          node =>
-            node.text() ===
-            "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente."
-        )
-        .first()
-      expect(legalTextFirstSentence).toHaveLength(1)
-      expect(legalTextSecondSentence).toHaveLength(1)
+      const legalTextFirstSentence =
+        "Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 72h avant le début de l'événement."
+      const legalTextSecondSentence =
+        "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente."
+      expect(screen.queryByText(legalTextFirstSentence, { selector: 'span' })).toBeInTheDocument()
+      expect(screen.queryByText(legalTextSecondSentence, { selector: 'span' })).toBeInTheDocument()
     })
   })
 
@@ -81,41 +92,41 @@ describe('offer | StocksManager', () => {
       props.isEvent = false
 
       // when
-      const wrapper = shallow(<StocksManager {...props} />)
+      renderStocksManager(props)
 
       // then
-      const legalTextFirstSentence = wrapper
-        .findWhere(
-          node =>
-            node.text() ===
-            "Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement."
-        )
-        .first()
-      const legalTextSecondSentence = wrapper
-        .findWhere(
-          node =>
-            node.text() ===
-            "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente."
-        )
-        .first()
-      expect(legalTextFirstSentence).toHaveLength(0)
-      expect(legalTextSecondSentence).toHaveLength(0)
+      const legalTextFirstSentence =
+        "Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement."
+      const legalTextSecondSentence =
+        "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente."
+      expect(
+        screen.queryByText(legalTextFirstSentence, { selector: 'span' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(legalTextSecondSentence, { selector: 'span' })
+      ).not.toBeInTheDocument()
     })
   })
 
   describe('onClickCreateStockItem', () => {
-    it('should update URL query param when click on add stock button', () => {
+    it('should prevent reclicking the button to add stock and display new line of stocks to validate', async () => {
       // given
-      const wrapper = shallow(<StocksManager {...props} />)
-      const button = wrapper.find('#add-stock')
+      props.isEvent = true
+      renderStocksManager(props)
+      const stockButton = screen.getByText('+ Ajouter une date')
 
       // when
-      button.simulate('click')
+      await fireEvent.click(stockButton)
 
       // then
-      expect(query.changeToCreation).toHaveBeenCalledWith(null, {
-        key: 'stock',
-      })
+      expect(stockButton).toBeDisabled()
+
+      expect(screen.getByTitle('Gratuit si vide')).toBeInTheDocument()
+      expect(
+        screen.getByTitle(
+          "Si ce champ est vide, les réservations seront possibles jusqu'à l'heure de début de l'événement. S'il est rempli, les réservations seront bloquées à 23h59 à la date saisie."
+        )
+      ).toBeInTheDocument()
     })
   })
 
@@ -147,13 +158,14 @@ describe('offer | StocksManager', () => {
       // then
       expect(query.changeToReadOnly).toHaveBeenCalledWith(null, { key: 'stock' })
     })
-  })
+  }) // todo not done
 
   describe('handleEnterKey', () => {
     describe('when all stocks are read only', () => {
       beforeEach(() => {
         props.location.search = '?gestion&lieu=CU'
       })
+
       it('should do nothing when stock creation is not allowed', () => {
         // given
         props.isStockCreationAllowed = false
@@ -216,10 +228,11 @@ describe('offer | StocksManager', () => {
         expect(submitElement.click).toHaveBeenCalledWith()
       })
     })
-  })
+  }) // todo not done
 
   describe('render', () => {
-    it('should return a error message', () => {
+    it('should display an error message', async () => {
+      // todo not working
       // given
       props.query = { context: () => ({}) }
       const wrapper = shallow(<StocksManager {...props} />)
@@ -236,23 +249,17 @@ describe('offer | StocksManager', () => {
       expect(errorMessage).toHaveLength(1)
     })
 
-    it('should return a success message', () => {
+    it('should display a success message when state is updated with one', () => {
       // given
       props.query = { context: () => ({}) }
-      const wrapper = shallow(<StocksManager {...props} />)
-      wrapper.setState({
-        editSuccess: true,
-      })
 
       // when
-      const successMessage = wrapper.find('div.notification.is-success')
+      renderStocksManager(props)
 
       // then
-      expect(successMessage).toHaveLength(1)
-      expect(successMessage.text()).toBe(
+      const expectedSuccessMessage =
         "Les modifications ont été enregistrées.Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email."
-      )
-      expect(successMessage.hasClass('fade-out')).toBe(false)
+      expect(screen.getByText(expectedSuccessMessage)).toBeInTheDocument()
     })
   })
 })
