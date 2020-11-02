@@ -15,6 +15,7 @@ def install_routes(app: Flask) -> None:
     import pcapi.routes.features
     import pcapi.routes.mediations
     import pcapi.routes.music_types
+    import pcapi.routes.native.v1.account
     import pcapi.routes.native.v1.authentication
     import pcapi.routes.offers
     import pcapi.routes.offerers
