@@ -15,9 +15,15 @@ export class Home extends PureComponent {
 
   handleOnSubmit = event => {
     event.preventDefault()
-    const { categoryCriterion, geolocationCriterion, history, sortCriterion } = this.props
+    const {
+      categoryCriterion,
+      geolocationCriterion,
+      history,
+      sortCriterion,
+      userGeolocation,
+    } = this.props
     const { keywordsToSearch } = this.state
-    const { place, searchAround, userGeolocation } = geolocationCriterion
+    const { place, searchAround } = geolocationCriterion
     const { geolocation: placeGeolocation, name } = place || {}
     const { long = '' } = name || {}
 
@@ -127,10 +133,6 @@ Home.propTypes = {
       place: PropTypes.bool,
       user: PropTypes.bool,
     }).isRequired,
-    userGeolocation: PropTypes.shape({
-      latitude: PropTypes.number,
-      longitude: PropTypes.number,
-    }),
   }).isRequired,
   history: PropTypes.shape({ push: PropTypes.func }).isRequired,
   sortCriterion: PropTypes.shape({
@@ -138,5 +140,9 @@ Home.propTypes = {
     index: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     requiresGeolocation: PropTypes.bool.isRequired,
+  }).isRequired,
+  userGeolocation: PropTypes.shape({
+    latitude: PropTypes.number,
+    longitude: PropTypes.number,
   }).isRequired,
 }

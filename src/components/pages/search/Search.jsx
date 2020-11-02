@@ -28,7 +28,6 @@ class Search extends PureComponent {
           place: false,
           user: false,
         },
-        userGeolocation: props.geolocation,
       },
       sortCriterion: SORT_CRITERIA.RELEVANCE,
     }
@@ -59,9 +58,6 @@ class Search extends PureComponent {
   }
 
   handleGeolocationCriterionSelection = criterionKey => {
-    const {
-      geolocationCriterion: { userGeolocation },
-    } = this.state
     const label = GEOLOCATION_CRITERIA[criterionKey].label
 
     this.setState({
@@ -73,7 +69,6 @@ class Search extends PureComponent {
           everywhere: label === GEOLOCATION_CRITERIA.EVERYWHERE.label,
           user: label === GEOLOCATION_CRITERIA.AROUND_ME.label,
         },
-        userGeolocation,
       },
     })
     const { redirectToSearchMainPage } = this.props
@@ -81,23 +76,20 @@ class Search extends PureComponent {
   }
 
   handleOnPlaceSelection = place => {
-    this.setState(prevState => {
-      return {
-        geolocationCriterion: {
-          params: {
-            label: buildPlaceLabel(place),
-            icon: 'ico-there',
-            requiresGeolocation: false,
-          },
-          place: place,
-          searchAround: {
-            everywhere: false,
-            place: true,
-            user: false,
-          },
-          userGeolocation: prevState.geolocationCriterion.userGeolocation,
+    this.setState({
+      geolocationCriterion: {
+        params: {
+          label: buildPlaceLabel(place),
+          icon: 'ico-there',
+          requiresGeolocation: false,
         },
-      }
+        place: place,
+        searchAround: {
+          everywhere: false,
+          place: true,
+          user: false,
+        },
+      },
     })
   }
 
@@ -118,11 +110,10 @@ class Search extends PureComponent {
   }
 
   render() {
-    const { history, location, match, redirectToSearchMainPage } = this.props
+    const { history, location, match, redirectToSearchMainPage, geolocation } = this.props
     const { categoryCriterion, geolocationCriterion, sortCriterion } = this.state
-    const { place, userGeolocation } = geolocationCriterion
+    const { place } = geolocationCriterion
     const { parametersFromHome } = location
-
     return (
       <Switch>
         <Route
@@ -134,7 +125,7 @@ class Search extends PureComponent {
             geolocationCriterion={geolocationCriterion}
             history={history}
             sortCriterion={sortCriterion}
-            userGeolocation={userGeolocation}
+            userGeolocation={geolocation}
           />
         </Route>
         <Route path={`${match.path}/resultats`}>
@@ -151,7 +142,7 @@ class Search extends PureComponent {
             place={place}
             redirectToSearchMainPage={redirectToSearchMainPage}
             search={history.location.search}
-            userGeolocation={userGeolocation}
+            userGeolocation={geolocation}
           />
         </Route>
         <Route path={`${match.path}/criteres-localisation`}>
@@ -159,7 +150,7 @@ class Search extends PureComponent {
             activeCriterionLabel={geolocationCriterion.params.label}
             backTo={match.path}
             criteria={GEOLOCATION_CRITERIA}
-            geolocation={userGeolocation}
+            geolocation={geolocation}
             history={history}
             match={match}
             onCriterionSelection={this.handleGeolocationCriterionSelection}
@@ -184,7 +175,7 @@ class Search extends PureComponent {
             activeCriterionLabel={sortCriterion.label}
             backTo={match.path}
             criteria={SORT_CRITERIA}
-            geolocation={userGeolocation}
+            geolocation={geolocation}
             history={history}
             match={match}
             onCriterionSelection={this.handleSortCriterionSelection}
