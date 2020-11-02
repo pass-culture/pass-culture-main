@@ -9,7 +9,11 @@ import OfferItem from '../OfferItem'
 const renderOfferItem = props => {
   return render(
     <MemoryRouter>
-      <OfferItem {...props} />
+      <table>
+        <tbody>
+          <OfferItem {...props} />
+        </tbody>
+      </table>
     </MemoryRouter>
   )
 }
@@ -78,6 +82,18 @@ describe('src | components | pages | Offers | OfferItem', () => {
     })
 
     describe('action buttons', () => {
+      it('should display a button to show offer stocks', () => {
+        // given
+        renderOfferItem(props)
+
+        // then
+        expect(screen.queryByText('Stocks')).toBeInTheDocument()
+        expect(screen.queryByText('Stocks')).toHaveAttribute(
+          'href',
+          `/offres/${eventOffer.id}?gestion`
+        )
+      })
+
       describe('edit offer link', () => {
         it('should be displayed when offer is editable', () => {
           // when
@@ -124,6 +140,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       // given
       props.venue = {
         name: 'Paris',
+        isVirtual: false,
       }
 
       // when
@@ -138,6 +155,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.venue = {
         name: 'Paris',
         publicName: 'lieu de ouf',
+        isVirtual: false,
       }
 
       // when

@@ -6,7 +6,6 @@ import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
 import { isOfferFullyBooked } from 'components/pages/Offers/domain/isOfferFullyBooked'
 import { computeVenueDisplayName } from 'repository/venuesService'
-import { fetchFromApiWithCredentials } from 'utils/fetch'
 import { pluralize } from 'utils/pluralize'
 
 import { computeOfferStatus } from '../domain/computeOfferStatus'
@@ -31,31 +30,7 @@ const OFFER_STATUS_PROPERTIES = {
   },
 }
 
-const OfferItem = ({
-  disabled,
-  offer,
-  refreshOffers,
-  stocks,
-  trackActivateOffer,
-  trackDeactivateOffer,
-  venue,
-  isSelected,
-  selectOffer,
-}) => {
-  function handleOnDeactivateClick() {
-    const { id, isActive } = offer || {}
-    const body = {
-      ids: [id],
-      isActive: !isActive,
-    }
-
-    fetchFromApiWithCredentials('/offers/active-status', 'PATCH', body).then(() => {
-      refreshOffers({ shouldTriggerSpinner: false })
-    })
-
-    isActive ? trackDeactivateOffer(id) : trackActivateOffer(id)
-  }
-
+const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) => {
   function handleOnChangeSelected() {
     selectOffer(offer.id, !isSelected)
   }
@@ -155,13 +130,13 @@ const OfferItem = ({
         </span>
       </td>
       <td className="switch-column">
-        <button
-          className="secondary-button"
-          onClick={handleOnDeactivateClick}
-          type="button"
+        <Link
+          className="secondary-link with-icon"
+          to={`/offres/${offer.id}?gestion`}
         >
-          {offer.isActive ? 'Désactiver' : 'Activer'}
-        </button>
+          <Icon svg="ico-guichet-full" />
+          {'Stocks'}
+        </Link>
       </td>
       <td className="edit-column">
         {isOfferEditable && (
@@ -186,11 +161,8 @@ OfferItem.propTypes = {
   disabled: PropTypes.bool,
   isSelected: PropTypes.bool,
   offer: PropTypes.shape().isRequired,
-  refreshOffers: PropTypes.func.isRequired,
   selectOffer: PropTypes.func.isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  trackActivateOffer: PropTypes.func.isRequired,
-  trackDeactivateOffer: PropTypes.func.isRequired,
   venue: PropTypes.shape({
     isVirtual: PropTypes.bool.isRequired,
     name: PropTypes.string,

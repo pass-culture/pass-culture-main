@@ -17,6 +17,17 @@
     width: rem(25px);
   }
 
+  &.with-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      height: rem(24px);
+      margin-right: rem(4px);
+    }
+  }
+
   &:active,
   &:hover,
   &:focus {

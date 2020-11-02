@@ -428,7 +428,6 @@ class Offers extends PureComponent {
                       isSelected={areAllOffersSelected || selectedOfferIds.includes(offer.id)}
                       key={offer.id}
                       offer={offer}
-                      refreshOffers={this.getPaginatedOffersWithFilters}
                       selectOffer={this.selectOffer}
                     />
                   ))}
