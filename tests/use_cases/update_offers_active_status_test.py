@@ -81,7 +81,7 @@ class UpdateAllOffersIsActiveStatusTest:
         update_all_offers_active_status(user_id=12, user_is_admin=True, is_active=True, status_filters=status_filters)
 
         # Then
-        mocked_get.assert_called_once_with(None, status_filters, None, None)
+        mocked_get.assert_called_once_with(12, True, None, status_filters, None, None)
         mocked_update.assert_called_once_with([1, 2], True)
         mocked_feature_is_active.assert_called_once_with(FeatureToggle.SYNCHRONIZE_ALGOLIA)
         assert mocked_add_offer_to_redis.call_args_list == [
