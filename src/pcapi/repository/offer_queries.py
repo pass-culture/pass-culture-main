@@ -356,9 +356,9 @@ def update_offers_is_active_status(offers_id: [int], is_active: bool) -> None:
 
 def get_all_offers_id_by_filters(user_id: int,
                                  user_is_admin: bool,
-                                 offerer_id: Optional[Identifier] = None,
+                                 offerer_id: Optional[int] = None,
                                  status_filters: OffersStatusFilters = OffersStatusFilters(),
-                                 venue_id: Optional[Identifier] = None,
+                                 venue_id: Optional[int] = None,
                                  name_keywords: Optional[str] = None) -> List[int]:
     query = PaginatedOffersSQLRepository\
         .get_offers_by_filters(user_id, user_is_admin, offerer_id, status_filters, venue_id, name_keywords) \
