@@ -32,7 +32,7 @@ const OFFER_STATUS_PROPERTIES = {
 }
 
 const OfferItem = ({
-  areAllOffersSelected,
+  disabled,
   offer,
   refreshOffers,
   stocks,
@@ -96,10 +96,10 @@ const OfferItem = ({
     <tr className={`offer-item ${isOfferInactiveOrExpired ? 'inactive' : ''} offer-row`}>
       <td className="select-column">
         <input
-          checked={isSelected || areAllOffersSelected}
+          checked={isSelected}
           className="select-offer-checkbox"
           data-testid={`select-offer-${offer.id}`}
-          disabled={areAllOffersSelected}
+          disabled={disabled}
           id={`select-offer-${offer.id}`}
           onChange={handleOnChangeSelected}
           type="checkbox"
@@ -175,10 +175,12 @@ const OfferItem = ({
 }
 
 OfferItem.defaultProps = {
+  disabled: false,
   isSelected: false,
 }
 
 OfferItem.propTypes = {
+  disabled: PropTypes.bool,
   isSelected: PropTypes.bool,
   offer: PropTypes.shape().isRequired,
   refreshOffers: PropTypes.func.isRequired,

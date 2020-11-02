@@ -91,13 +91,19 @@
     }
 
     .th-checkbox {
-      margin: 0;
       padding: 0;
-      position: absolute;
 
       input {
         font-size: 1rem;
-        margin-right: rem(26px);
+      }
+    }
+
+    .th-checkbox-label {
+      overflow: visible;
+      white-space: nowrap;
+
+      label {
+        cursor: pointer;
       }
     }
 

@@ -201,7 +201,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => expect(screen.queryByText('My other offer')).not.toBeNull())
     })
 
-    it('should display a checkbox to select all offers', async () => {
+    it('should display a unchecked by default checkbox to select all offers', async () => {
       // Given
       props.offers = [
         {
@@ -231,10 +231,12 @@ describe('src | components | pages | Offers | Offers', () => {
       ]
 
       // When
-      renderOffers(props, store)
+      await renderOffers(props, store)
 
       // Then
-      await waitFor(() => expect(screen.queryByText('Tout sélectionner')).not.toBeNull())
+      const selectAllOffersCheckbox = screen.queryByLabelText('Tout sélectionner')
+      expect(selectAllOffersCheckbox).not.toBeNull()
+      expect(selectAllOffersCheckbox).not.toBeChecked()
     })
 
     describe('total number of offers', () => {
@@ -973,19 +975,7 @@ describe('src | components | pages | Offers | Offers', () => {
         fireEvent.click(screen.getByLabelText('Tout sélectionner'))
 
         // Then
-        expect(screen.queryByText('Tout désélectionner')).not.toBeNull()
-      })
-
-      it('should display "Tout sélectionner" when initial label was "Tout désélectionner"', async () => {
-        // Given
-        await renderOffers(props, store)
-        fireEvent.click(screen.getByLabelText('Tout sélectionner'))
-
-        // When
-        fireEvent.click(screen.getByLabelText('Tout désélectionner'))
-
-        // Then
-        expect(screen.queryByText('Tout sélectionner')).not.toBeNull()
+        expect(screen.queryByLabelText('Tout désélectionner')).toBeInTheDocument()
       })
 
       it('should check all offers checkboxes', async () => {
@@ -1019,9 +1009,7 @@ describe('src | components | pages | Offers | Offers', () => {
         await renderOffers(props, store)
 
         // When
-        await waitFor(() => {
-          fireEvent.click(screen.getByLabelText('Tout sélectionner'))
-        })
+        fireEvent.click(screen.getByLabelText('Tout sélectionner'))
 
         // Then
         expect(props.setSelectedOfferIds).toHaveBeenCalledWith(['M4', 'AE3'])

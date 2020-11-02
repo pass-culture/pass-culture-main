@@ -419,6 +419,36 @@ describe('src | components | pages | Offers | OfferItem', () => {
       const soldOutOfferStatus = wrapper.findWhere(node => node.text() === 'épuisée').first()
       expect(soldOutOfferStatus).toHaveLength(1)
     })
+
+    it('should be selectable by default', () => {
+      // when
+      const wrapper = mount(
+        <MemoryRouter>
+          <OfferItem {...props} />
+        </MemoryRouter>
+      )
+
+      // then
+      const selectOfferCheckbox = wrapper.find('input[type="checkbox"]')
+      console.log(selectOfferCheckbox.debug())
+      expect(selectOfferCheckbox.prop('disabled')).toBe(false)
+    })
+
+    it('should not be selectable given prop', () => {
+      // given
+      props.disabled = true
+
+      // when
+      const wrapper = mount(
+        <MemoryRouter>
+          <OfferItem {...props} />
+        </MemoryRouter>
+      )
+
+      // then
+      const selectOfferCheckbox = wrapper.find('input[type="checkbox"]')
+      expect(selectOfferCheckbox.prop('disabled')).toBe(true)
+    })
   })
 
   describe('event tracking', () => {
