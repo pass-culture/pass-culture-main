@@ -1,32 +1,54 @@
 <!DOCTYPE html>
 <html lang="fr" dir="ltr">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob: data: https: http: gap://ready 'unsafe-inline'; connect-src 'self' https: http: ws://localhost:3000 wss://app.passculture-local:3000">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self' blob: data: https: http: gap://ready 'unsafe-inline'; connect-src 'self' https: http: ws://localhost:3000 wss://app.passculture-local:3000">
   <link rel="manifest" href="/manifest.json">
   <link rel="shortcut icon" href="/manifest-icons/app-icon-iphone.png">
   <link rel="apple-touch-icon" href="/manifest-icons/app-icon-iphone@3x.png">
   <!--  Apple does not support manifest.json, so we need to add one image/device resolution to have a working splash screen on iOS devices -->
-  <link href="/iosSplashscreens/iphone5_splash.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-  <link href="/iosSplashscreens/iphone6_splash.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-  <link href="/iosSplashscreens/iphoneplus_splash.png" media="(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
-  <link href="/iosSplashscreens/iphonex_splash.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
-  <link href="/iosSplashscreens/iphonexr_splash.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-  <link href="/iosSplashscreens/iphonexsmax_splash.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
-  <link href="/iosSplashscreens/ipad_splash.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-  <link href="/iosSplashscreens/ipadpro1_splash.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-  <link href="/iosSplashscreens/ipadpro3_splash.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
-  <link href="/iosSplashscreens/ipadpro2_splash.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+  <link href="/iosSplashscreens/iphone5_splash.png"
+    media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
+  <link href="/iosSplashscreens/iphone6_splash.png"
+    media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
+  <link href="/iosSplashscreens/iphoneplus_splash.png"
+    media="(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)"
+    rel="apple-touch-startup-image" />
+  <link href="/iosSplashscreens/iphonex_splash.png"
+    media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)"
+    rel="apple-touch-startup-image" />
+  <link href="/iosSplashscreens/iphonexr_splash.png"
+    media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
+  <link href="/iosSplashscreens/iphonexsmax_splash.png"
+    media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)"
+    rel="apple-touch-startup-image" />
+  <link href="/iosSplashscreens/ipad_splash.png"
+    media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
+  <link href="/iosSplashscreens/ipadpro1_splash.png"
+    media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
+  <link href="/iosSplashscreens/ipadpro3_splash.png"
+    media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
+  <link href="/iosSplashscreens/ipadpro2_splash.png"
+    media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
   <title>pass Culture</title>
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-706346995"></script>
   <script>
     // Snapchat
-    (function(e, t, n) {
+    (function (e, t, n) {
       if (e.snaptr) return;
-      var a = e.snaptr = function() { a.handleRequest ? a.handleRequest.apply(a, arguments) : a.queue.push(arguments) };
+      var a = e.snaptr = function () { a.handleRequest ? a.handleRequest.apply(a, arguments) : a.queue.push(arguments) };
       a.queue = [];
       var s = 'script';
       r = t.createElement(s);
@@ -38,9 +60,9 @@
     snaptr('init', '2de6998a-feb8-4b7a-aac0-f380a4af8494', { 'user_email': 'dev@passculture.app' });
 
     // Facebook
-    !function(f, b, e, v, n, t, s) {
+    !function (f, b, e, v, n, t, s) {
       if (f.fbq) return;
-      n = f.fbq = function() { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments) };
+      n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments) };
       if (!f._fbq) f._fbq = n;
       n.push = n;
       n.loaded = !0;
@@ -71,7 +93,7 @@
 
     var _paq = window._paq || [];
     // Code CNIL
-    _paq.push([function() {
+    _paq.push([function () {
       var self = this;
       function getOriginalVisitorCookieTimeout() {
         var now = new Date(),
@@ -86,33 +108,34 @@
     }]);
     // FIN du code CNIL
     _paq.push(['enableLinkTracking']);
-    (function() {
-      var u="%MATOMO_SERVER_URL%";
-      _paq.push(['setTrackerUrl', u+'matomo.php']);
+    (function () {
+      var u = "%MATOMO_SERVER_URL%";
+      _paq.push(['setTrackerUrl', u + 'matomo.php']);
       _paq.push(['setSiteId', '1']);
-      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+      var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+      g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + 'matomo.js'; s.parentNode.insertBefore(g, s);
     })();
   </script>
 </head>
+
 <body>
   <script>
     // prevent bounce in ios
     // http://blog.lazd.net/iNoBounce/
     ;
-    (function(global) {
+    (function (global) {
       var startY = 0
       var enabled = false
       var supportsPassiveOption = false
       try {
         var opts = Object.defineProperty({}, 'passive', {
-          get: function() {
+          get: function () {
             supportsPassiveOption = true
           },
         })
         window.addEventListener('test', null, opts)
-      } catch (e) {}
-      var handleTouchmove = function(evt) {
+      } catch (e) { }
+      var handleTouchmove = function (evt) {
         var el = evt.target
         while (el !== document.body && el !== document) {
           var style = window.getComputedStyle(el)
@@ -143,10 +166,10 @@
         }
         evt.preventDefault()
       }
-      var handleTouchstart = function(evt) {
+      var handleTouchstart = function (evt) {
         startY = evt.touches ? evt.touches[0].screenY : evt.screenY
       }
-      var enable = function() {
+      var enable = function () {
         window.addEventListener(
           'touchstart',
           handleTouchstart,
@@ -163,12 +186,12 @@
         )
         enabled = true
       }
-      var disable = function() {
+      var disable = function () {
         window.removeEventListener('touchstart', handleTouchstart, false)
         window.removeEventListener('touchmove', handleTouchmove, false)
         enabled = false
       }
-      var isEnabled = function() {
+      var isEnabled = function () {
         return enabled
       }
       var testDiv = document.createElement('div')
@@ -189,9 +212,10 @@
       if (typeof module !== 'undefined' && module.exports) {
         module.exports = iNoBounce
       }
-      if (typeof global.define === 'function') {;
-        (function(define) {
-          define('iNoBounce', [], function() {
+      if (typeof global.define === 'function') {
+        ;
+        (function (define) {
+          define('iNoBounce', [], function () {
             return iNoBounce
           })
         })(global.define)
