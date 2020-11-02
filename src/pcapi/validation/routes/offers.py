@@ -1,32 +1,7 @@
 from pcapi.domain.allocine import get_editable_fields_for_allocine_offers
-from pcapi.models import OfferSQLEntity, UserOfferer
-from pcapi.models.api_errors import ResourceNotFoundError, ApiErrors
+from pcapi.models import OfferSQLEntity
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_type import ProductType
-
-
-def check_user_has_rights_on_offerer(user_offerer: UserOfferer):
-    errors = ApiErrors()
-    errors.add_error(
-        'global',
-        "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
-    )
-    errors.status_code = 403
-
-    if user_offerer is None:
-        raise errors
-
-    if user_offerer.validationToken:
-        raise errors
-
-
-def check_venue_exists_when_requested(venue, venue_id):
-    if venue_id and venue is None:
-        errors = ResourceNotFoundError()
-        errors.add_error(
-            'global',
-            "Ce lieu n'a pas été trouvé"
-        )
-        raise errors
 
 
 def check_offer_type_is_valid(offer_type_name):

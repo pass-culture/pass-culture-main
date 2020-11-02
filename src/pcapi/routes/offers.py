@@ -12,8 +12,6 @@ from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import (
     offer_queries,
     repository,
-    user_offerer_queries,
-    venue_queries,
 )
 from pcapi.routes.serialization.offers_recap_serialize import (
     serialize_offers_recap_paginated,
@@ -42,32 +40,12 @@ from pcapi.utils.rest import (
     login_or_api_key_required,
     expect_json_data
 )
-from pcapi.validation.routes.offers import (
-    check_user_has_rights_on_offerer,
-    check_venue_exists_when_requested,
-)
 
 
 @private_api.route("/offers", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=ListOffersResponseModel)  # type: ignore
 def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
-    if not current_user.isAdmin:
-        offerer_id = None
-        if query.venue_id:
-            venue = venue_queries.find_by_id(query.venue_id)
-            check_venue_exists_when_requested(venue, query.venue_id)
-            offerer_id = venue.managingOffererId
-        if query.offerer_id:
-            offerer_id = query.offerer_id
-        if offerer_id is not None:
-            user_offerer = (
-                user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
-                    user_id=current_user.id, offerer_id=offerer_id
-                )
-            )
-            check_user_has_rights_on_offerer(user_offerer)
-
     paginated_offers = list_offers_for_pro_user(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
