@@ -2179,10 +2179,6 @@ describe('components | Results', () => {
         searchedKeywords: 'vas-y',
         sortCriterionLabel: 'Pertinence',
         totalPagesNumber: 0,
-        userGeolocation: {
-          latitude: 40.1,
-          longitude: 41.1,
-        },
       })
     })
 

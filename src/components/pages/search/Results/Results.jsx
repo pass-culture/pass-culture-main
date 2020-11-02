@@ -62,7 +62,7 @@ class Results extends PureComponent {
       numberOfActiveFilters: this.getNumberOfActiveFilters(
         categoriesFromUrlOrProps,
         parametersFromHome,
-        searchAroundFromUrlOrProps,
+        searchAroundFromUrlOrProps
       ),
       place: placeFromUrlOrProps,
       resultsCount: 0,
@@ -70,7 +70,6 @@ class Results extends PureComponent {
       searchedKeywords: '',
       sortCriterionLabel: this.getSortCriterionLabelFromIndex(sortByFromUrlOrProps),
       totalPagesNumber: 0,
-      userGeolocation: props.userGeolocation,
     }
     this.inputRef = React.createRef()
   }
@@ -96,19 +95,22 @@ class Results extends PureComponent {
 
   updateFiltersWhenComingFromHome = (parametersFromHome, keywords, currentPage) => {
     const { filters } = this.state
-    this.setState({
-      filters: {
-        ...filters,
-        ...parametersFromHome,
-        searchAround: {
-          everywhere: !parametersFromHome.searchAround,
-          place: false,
-          user: parametersFromHome.searchAround,
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          ...parametersFromHome,
+          searchAround: {
+            everywhere: !parametersFromHome.searchAround,
+            place: false,
+            user: parametersFromHome.searchAround,
+          },
         },
       },
-    }, () => {
-      this.fetchOffers({ keywords, page: currentPage })
-    })
+      () => {
+        this.fetchOffers({ keywords, page: currentPage })
+      }
+    )
   }
 
   getCategoriesFromUrlOrProps = categoriesFromProps => {
@@ -201,7 +203,8 @@ class Results extends PureComponent {
 
   getNumberOfActiveFilters = (categories, parametersFromHome, searchAround) => {
     const numberOfActiveCategories = categories.length
-    const geolocationFilterCounter = searchAround.user === true || searchAround.place === true ? 1 : 0
+    const geolocationFilterCounter =
+      searchAround.user === true || searchAround.place === true ? 1 : 0
 
     if (parametersFromHome) {
       const {
@@ -213,13 +216,15 @@ class Results extends PureComponent {
         priceRange,
       } = parametersFromHome
 
-      return geolocationFilterCounter
-        + offerCategories.length
-        + this.getNumberFromBoolean(offerIsDuo)
-        + this.getNumberFromBoolean(offerIsFree)
-        + this.getNumberFromBoolean(offerIsNew)
-        + this.getNumberOfSelectedFilters(offerTypes)
-        + this.getPriceRangeCounter(priceRange)
+      return (
+        geolocationFilterCounter +
+        offerCategories.length +
+        this.getNumberFromBoolean(offerIsDuo) +
+        this.getNumberFromBoolean(offerIsFree) +
+        this.getNumberFromBoolean(offerIsNew) +
+        this.getNumberOfSelectedFilters(offerTypes) +
+        this.getPriceRangeCounter(priceRange)
+      )
     }
     return geolocationFilterCounter + numberOfActiveCategories
   }
@@ -271,7 +276,7 @@ class Results extends PureComponent {
         () => {
           const { currentPage } = this.state
           this.fetchOffers({ keywords: trimmedKeywordsToSearch, page: currentPage })
-        },
+        }
       )
     }
     this.inputRef.current.blur()
@@ -306,7 +311,8 @@ class Results extends PureComponent {
   }
 
   fetchOffers = ({ keywords = '', page = 0 } = {}) => {
-    const { filters, place, userGeolocation } = this.state
+    const { filters, place } = this.state
+    const { userGeolocation } = this.props
     const {
       aroundRadius,
       date,
@@ -422,7 +428,7 @@ class Results extends PureComponent {
         results: [],
         sortCriterionLabel: this.getSortCriterionLabelFromIndex(sortBy),
       }),
-      () => this.fetchOffers({ keywords: searchedKeywords }),
+      () => this.fetchOffers({ keywords: searchedKeywords })
     )
     const queryParams = search.replace(/(tri=)(\w*)/, 'tri=' + sortBy)
 
@@ -449,13 +455,13 @@ class Results extends PureComponent {
       () => {
         if (isGeolocationEnabled(userGeolocation)) {
           history.push(
-            `/recherche/resultats?mots-cles=&autour-de=oui&tri=&categories=&latitude=${userGeolocation.latitude}&longitude=${userGeolocation.longitude}`,
+            `/recherche/resultats?mots-cles=&autour-de=oui&tri=&categories=&latitude=${userGeolocation.latitude}&longitude=${userGeolocation.longitude}`
           )
           this.fetchOffers()
         } else {
           window.alert('Active ta géolocalisation pour voir les offres autour de toi !')
         }
-      },
+      }
     )
   }
 
@@ -615,7 +621,13 @@ Results.defaultProps = {
 
 Results.propTypes = {
   criteria: PropTypes.shape({
-    categories: PropTypes.array,
+    categories: PropTypes.arrayOf(
+      PropTypes.shape({
+        label: PropTypes.string,
+        icon: PropTypes.string,
+        facetFilter: PropTypes.string,
+      })
+    ),
     searchAround: PropTypes.shape({
       everywhere: PropTypes.bool,
       place: PropTypes.bool,
