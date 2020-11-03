@@ -17,7 +17,6 @@ from pcapi.routes.serialization.offers_recap_serialize import (
     serialize_offers_recap_paginated,
 )
 from pcapi.routes.serialization.offers_serialize import (
-    serialize_offer,
     PostOfferBodyModel,
     OfferResponseIdModel,
     PatchOfferBodyModel,
@@ -43,6 +42,8 @@ from pcapi.utils.rest import (
     login_or_api_key_required,
     expect_json_data,
 )
+from pcapi.utils.includes import OFFER_INCLUDES
+from pcapi.routes.serialization.dictifier import as_dict
 
 
 @private_api.route("/offers", methods=["GET"])
@@ -69,7 +70,7 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
 @spectree_serialize(response_model=GetOfferResponseModel)
 def get_offer(offer_id: str) -> GetOfferResponseModel:
     offer = load_or_404(OfferSQLEntity, offer_id)
-    return GetOfferResponseModel(**serialize_offer(offer, current_user))
+    return GetOfferResponseModel(**as_dict(offer, includes=OFFER_INCLUDES))
 
 
 @private_api.route("/offers", methods=["POST"])

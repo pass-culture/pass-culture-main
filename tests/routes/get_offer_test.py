@@ -68,28 +68,6 @@ class Returns200:
         assert response.status_code == 200
         assert response.json["activeMediation"] is not None
 
-    def when_returns_a_first_matching_booking(self, app, db_session):
-        # Given
-        beneficiary = create_user()
-        create_deposit(user=beneficiary)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue=venue)
-        stock = create_stock(offer=offer)
-        booking = create_booking(user=beneficiary, stock=stock)
-        repository.save(booking)
-
-        # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(email=beneficiary.email)
-            .get(f"/offers/{humanize(offer.id)}")
-        )
-
-        # Then
-        assert response.status_code == 200
-        assert humanize(booking.id) in response.json["firstMatchingBooking"]["id"]
-
     def when_returns_an_event_stock(self, app, db_session):
         # Given
         date_now = datetime(2020, 10, 15)
@@ -136,7 +114,6 @@ class Returns200:
             "durationMinutes": 60,
             "extraData": None,
             "fieldsUpdated": [],
-            "firstMatchingBooking": None,
             "hasBookingLimitDatetimesPassed": True,
             "id": humanize(stock.offer.id),
             "idAtProviders": None,

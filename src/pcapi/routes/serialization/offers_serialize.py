@@ -3,13 +3,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, validator
 
-from pcapi.models import OfferSQLEntity, UserSQLEntity
 from pcapi.core.bookings.repository import find_first_matching_from_offer_by_user
-from pcapi.routes.serialization.dictifier import as_dict
-from pcapi.utils.includes import (
-    OFFER_INCLUDES,
-    WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES,
-)
 from pcapi.serialization.utils import (
     to_camel,
     dehumanize_field,
@@ -22,18 +16,6 @@ from pcapi.validation.routes.offers import (
     check_offer_type_is_valid,
 )
 from pcapi.utils.date import format_into_utc_date
-
-
-def serialize_offer(offer: OfferSQLEntity, current_user: UserSQLEntity) -> Dict:
-    dict_offer = as_dict(offer, includes=OFFER_INCLUDES)
-
-    booking = find_first_matching_from_offer_by_user(offer.id, current_user.id)
-    if booking:
-        dict_offer["firstMatchingBooking"] = as_dict(
-            booking, includes=WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES
-        )
-
-    return dict_offer
 
 
 class PostOfferBodyModel(BaseModel):
@@ -347,8 +329,6 @@ class GetOfferResponseModel(BaseModel):
     venue: GetOfferVenueResponseModel
     venueId: str
     withdrawalDetails: Optional[str]
-    # FIXME: this variable does not seem to be used in any app
-    firstMatchingBooking: Optional[Any]
 
     class Config:  # pylint: disable=too-few-public-methods
         json_encoders = {datetime: format_into_utc_date}
