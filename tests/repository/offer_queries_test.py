@@ -17,15 +17,12 @@ from pcapi.repository.offer_queries import department_or_national_offers, \
     get_offers_by_ids, \
     get_paginated_expired_offer_ids, \
     update_offers_is_active_status, \
-    get_all_offers_id_by_filters, \
     _build_bookings_quantity_subquery
 from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, \
     create_venue, create_provider
 from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product, \
     create_product_with_event_type, create_offer_with_event_product, create_event_occurrence, \
     create_stock_from_event_occurrence, create_stock_from_offer
-from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
-from pcapi.domain.identifier.identifier import Identifier
 from pcapi.utils.converter import from_tuple_to_int
 
 
@@ -921,28 +918,3 @@ class UpdateOffersIsActiveStatusTest:
         assert OfferSQLEntity.query.get(offer1.id).isActive == True
         assert OfferSQLEntity.query.get(offer2.id).isActive == True
         assert OfferSQLEntity.query.get(offer3.id).isActive == False
-
-class GetAllOffersIdByFiltersTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_all_offers_ids_filtered_by_given_params(self, app):
-        # Given
-        user = create_user()
-        offerer = create_offerer()
-        wanted_venue = create_venue(offerer=offerer)
-        unwanted_venue = create_venue(offerer=offerer, siret='12345678912344')
-        wanted_offer = create_offer_with_thing_product(venue=wanted_venue, thing_name='Wanted name', is_active=False)
-        unwanted_offer2 = create_offer_with_thing_product(venue=wanted_venue, is_active=False)
-        unwanted_offer3 = create_offer_with_thing_product(venue=wanted_venue)
-        unwanted_offer4 = create_offer_with_thing_product(venue=unwanted_venue)
-        repository.save(user, wanted_offer, unwanted_offer2, unwanted_offer3, unwanted_offer4)
-        status_filters = OffersStatusFilters(
-            exclude_active=True,
-            exclude_inactive=False
-        )
-
-        # When
-        offers_id = get_all_offers_id_by_filters(user.id, user.isAdmin, offerer_id=Identifier(offerer.id), status_filters=status_filters, venue_id=Identifier(wanted_venue.id), name_keywords='Wanted')
-
-        # Then
-        assert len(offers_id) == 1
-        assert wanted_offer.id in offers_id

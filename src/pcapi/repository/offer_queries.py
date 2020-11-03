@@ -12,8 +12,6 @@ from pcapi.domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from pcapi.models import Booking, DiscoveryView, DiscoveryViewV3, \
     EventType, FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Offerer, SeenOffer, StockSQLEntity, ThingType, \
     UserSQLEntity, VenueSQLEntity
-from pcapi.domain.identifier.identifier import Identifier
-from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.models.db import Model, db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
@@ -23,8 +21,6 @@ from pcapi.repository.iris_venues_queries import find_venues_located_near_iris
 from pcapi.repository.venue_queries import get_only_venue_ids_for_department_codes
 from pcapi.use_cases.diversify_recommended_offers import order_offers_by_diversified_types
 from pcapi.utils.logger import logger
-from pcapi.utils.converter import from_tuple_to_int
-from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_sql_repository import PaginatedOffersSQLRepository
 
 ALL_DEPARTMENTS_CODE = '00'
 
@@ -353,18 +349,3 @@ def update_offers_is_active_status(offers_id: [int], is_active: bool) -> None:
         .filter(OfferSQLEntity.id.in_(offers_id)) \
         .update({"isActive": is_active}, synchronize_session=False)
     db.session.commit()
-
-def get_all_offers_id_by_filters(user_id: int,
-                                 user_is_admin: bool,
-                                 offerer_id: Optional[Identifier] = None,
-                                 status_filters: OffersStatusFilters = OffersStatusFilters(),
-                                 venue_id: Optional[Identifier] = None,
-                                 name_keywords: Optional[str] = None) -> List[int]:
-    query = PaginatedOffersSQLRepository\
-        .get_offers_by_filters(user_id, user_is_admin, offerer_id, status_filters, venue_id, name_keywords) \
-        .with_entities(OfferSQLEntity.id)
-
-    offer_ids_as_tuple = query.all()
-    offer_ids_as_int = from_tuple_to_int(offer_ids_as_tuple)
-
-    return offer_ids_as_int
