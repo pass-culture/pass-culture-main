@@ -4,8 +4,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.model_creators.generic_creators import create_offerer, create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.use_cases.update_offers_active_status import update_offers_active_status, update_all_offers_active_status
-from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
-
 
 class UpdateOffersIsActiveStatusTest:
     class ActivateOffersTest:
@@ -75,13 +73,21 @@ class UpdateAllOffersIsActiveStatusTest:
     def test_should_get_all_offers_filtered_by_params_and_call_update(self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, mocked_get, app):
         # Given
         mocked_get.return_value = [1, 2]
-        status_filters = OffersStatusFilters()
 
         # When
-        update_all_offers_active_status(user_id=12, user_is_admin=True, is_active=True, status_filters=status_filters)
+        update_all_offers_active_status(user_id=12, user_is_admin=True, is_active=True)
 
         # Then
-        mocked_get.assert_called_once_with(12, True, None, status_filters, None, None)
+        mocked_get.assert_called_once_with(
+            user_id=12,
+            user_is_admin=True,
+            offerer_id=None,
+            exclude_active=False,
+            exclude_inactive=False,
+            venue_id=None,
+            type_id=None,
+            name_keywords=None
+        )
         mocked_update.assert_called_once_with([1, 2], True)
         mocked_feature_is_active.assert_called_once_with(FeatureToggle.SYNCHRONIZE_ALGOLIA)
         assert mocked_add_offer_to_redis.call_args_list == [

@@ -21,29 +21,16 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
     type_id: Optional[str] = None,
     name_keywords: Optional[str] = None,
 ) -> PaginatedOffersRecap:
-    query = OfferSQLEntity.query.join(VenueSQLEntity)
-    if venue_id is not None:
-        query = query.filter(OfferSQLEntity.venueId == venue_id)
-    if type_id is not None:
-        query = query.filter(OfferSQLEntity.type == type_id)
-    if offerer_id is not None:
-        query = query.filter(VenueSQLEntity.managingOffererId == offerer_id)
-    if not user_is_admin:
-        query = (
-            query.join(Offerer)
-            .join(UserOfferer)
-            .filter(UserOfferer.userId == user_id)
-            .filter(UserOfferer.validationToken is None)
-        )
-    if exclude_active:
-        query = query.filter(OfferSQLEntity.isActive != True)
-    if exclude_inactive:
-        query = query.filter(OfferSQLEntity.isActive != False)
-    if name_keywords is not None:
-        name_keywords_filter = create_filter_on_ts_vector_matching_all_keywords(
-            OfferSQLEntity.__name_ts_vector__, name_keywords
-        )
-        query = query.filter(name_keywords_filter)
+    query = get_offers_by_filters(
+        user_id=user_id,
+        user_is_admin=user_is_admin,
+        offerer_id=offerer_id,
+        exclude_active=exclude_active,
+        exclude_inactive=exclude_inactive,
+        venue_id=venue_id,
+        type_id=type_id,
+        name_keywords=name_keywords,
+    )
 
     query = query.order_by(OfferSQLEntity.id.desc())
 
@@ -68,6 +55,7 @@ def get_offers_by_filters(
     exclude_active: Optional[bool] = False,
     exclude_inactive: Optional[bool] = False,
     venue_id: Optional[int] = None,
+    type_id: Optional[str] = None,
     name_keywords: Optional[str] = None,
 ):
     query = OfferSQLEntity.query.join(VenueSQLEntity)

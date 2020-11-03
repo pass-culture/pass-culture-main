@@ -24,7 +24,6 @@ from pcapi.model_creators.generic_creators import create_booking, create_user, c
 from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product, \
     create_product_with_event_type, create_offer_with_event_product, create_event_occurrence, \
     create_stock_from_event_occurrence, create_stock_from_offer
-from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.utils.converter import from_tuple_to_int
 
 
@@ -935,13 +934,17 @@ class GetAllOffersIdByFiltersTest:
         unwanted_offer3 = create_offer_with_thing_product(venue=wanted_venue)
         unwanted_offer4 = create_offer_with_thing_product(venue=unwanted_venue)
         repository.save(user, wanted_offer, unwanted_offer2, unwanted_offer3, unwanted_offer4)
-        status_filters = OffersStatusFilters(
-            exclude_active=True,
-            exclude_inactive=False
-        )
 
         # When
-        offers_id = get_all_offers_id_by_filters(user.id, user.isAdmin, offerer_id=offerer.id, status_filters=status_filters, venue_id=wanted_venue.id, name_keywords='Wanted')
+        offers_id = get_all_offers_id_by_filters(
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
+            offerer_id=offerer.id,
+            exclude_active=True,
+            exclude_inactive=False,
+            venue_id=wanted_venue.id,
+            name_keywords='Wanted'
+        )
 
         # Then
         assert len(offers_id) == 1

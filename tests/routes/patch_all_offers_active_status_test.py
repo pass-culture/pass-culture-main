@@ -92,8 +92,6 @@ class Patch:
                 'isActive': False,
                 'offererId': humanize(offerer.id),
                 'venueId': humanize(venue.id),
-                'active': 'true',
-                'inactive': 'true',
                 'name': 'OK',
             }
 
