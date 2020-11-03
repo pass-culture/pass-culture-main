@@ -19,33 +19,53 @@ export const loadFilteredOffers = async ({
   offererId = ALL_OFFERERS,
   selectedVenueId = ALL_VENUES,
   selectedTypeId = ALL_TYPES,
-  statusFilters,
   page = DEFAULT_PAGE,
 }) => {
-  const queryParams = []
-  if (nameSearchValue !== ALL_OFFERS) {
-    queryParams.push(`name=${nameSearchValue}`)
+  const body = createRequestBody(nameSearchValue, offererId, selectedVenueId, selectedTypeId, page)
+  const queryParams = new URLSearchParams(body).toString()
+  return client.get(`/offers?${queryParams}`)
+}
+
+export const updateOffersActiveStatus = (
+  areAllOffersSelected,
+  {
+    name = ALL_OFFERS,
+    offererId = ALL_OFFERERS,
+    venueId = ALL_VENUES,
+    typeId = ALL_TYPES,
+    page = DEFAULT_PAGE,
+    ids = [],
+    isActive,
   }
-  if (offererId !== ALL_OFFERERS) {
-    queryParams.push(`offererId=${offererId}`)
-  }
-  if (selectedVenueId !== ALL_VENUES) {
-    queryParams.push(`venueId=${selectedVenueId}`)
-  }
-  if (selectedTypeId !== ALL_TYPES) {
-    queryParams.push(`typeId=${selectedTypeId}`)
-  }
-  if (page) {
-    queryParams.push(`page=${page}`)
-  }
-  if (statusFilters && statusFilters.active === false) {
-    queryParams.push(`active=false`)
-  }
-  if (statusFilters && statusFilters.inactive === false) {
-    queryParams.push(`inactive=false`)
+) => {
+  const formattedBody = createRequestBody(name, offererId, venueId, typeId, page)
+
+  if (areAllOffersSelected) {
+    return client.patch('/offers/all-active-status', { ...formattedBody, isActive })
   }
 
-  return client.get(`/offers?${queryParams.join('&')}`)
+  return client.patch('/offers/active-status', { ids, isActive })
+}
+
+const createRequestBody = (nameSearchValue, offererId, selectedVenueId, selectedTypeId, page) => {
+  const body = {}
+  if (nameSearchValue !== ALL_OFFERS) {
+    body.name = nameSearchValue
+  }
+  if (offererId !== ALL_OFFERERS) {
+    body.offererId = offererId
+  }
+  if (selectedVenueId !== ALL_VENUES) {
+    body.venueId = selectedVenueId
+  }
+  if (selectedTypeId !== ALL_TYPES) {
+    body.typeId = selectedTypeId
+  }
+  if (page) {
+    body.page = page
+  }
+
+  return body
 }
 
 export const setAllVenueOffersActivate = async venueId => {

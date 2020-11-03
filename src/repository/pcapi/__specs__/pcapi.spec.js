@@ -1,11 +1,12 @@
 import { client } from 'repository/pcapi/pcapiClient'
 
 import { ALL_OFFERS, ALL_VENUES } from '../../../components/pages/Offers/_constants'
-import { loadFilteredOffers } from '../pcapi'
+import { loadFilteredOffers, updateOffersActiveStatus } from '../pcapi'
 
 jest.mock('repository/pcapi/pcapiClient', () => ({
   client: {
     get: jest.fn().mockResolvedValue({}),
+    patch: jest.fn(),
   },
 }))
 
@@ -86,20 +87,46 @@ describe('pcapi', () => {
       await loadFilteredOffers(filters)
 
       // Then
-      expect(client.get).toHaveBeenCalledWith(
-        '/offers?name=OCS&venueId=AA&page=2&active=false&inactive=false'
-      )
+      expect(client.get).toHaveBeenCalledWith('/offers?name=OCS&venueId=AA&page=2')
+    })
+  })
+
+  describe('updateOffersActiveStatus', () => {
+    describe('when updating all offers', () => {
+      it('should call offers/all-active-status with proper params', async () => {
+        // given
+        const body = {
+          isActive: true,
+        }
+
+        // when
+        await updateOffersActiveStatus(true, body)
+
+        // then
+        expect(client.patch).toHaveBeenCalledWith('/offers/all-active-status', {
+          isActive: true,
+          page: 1,
+        })
+      })
     })
 
-    it('should call offers route without status filters when none are provided', async () => {
-      // Given
-      const filters = { statusFilters: {} }
+    describe('when updating some offers', () => {
+      it('should call offers/active-status with proper params', async () => {
+        // given
+        const body = {
+          isActive: true,
+          ids: ['A3', 'E9'],
+        }
 
-      // When
-      await loadFilteredOffers(filters)
+        // when
+        await updateOffersActiveStatus(false, body)
 
-      // Then
-      expect(client.get).toHaveBeenCalledWith('/offers?page=1')
+        // then
+        expect(client.patch).toHaveBeenCalledWith('/offers/active-status', {
+          ids: ['A3', 'E9'],
+          isActive: true,
+        })
+      })
     })
   })
 })

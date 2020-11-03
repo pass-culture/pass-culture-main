@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
-import { fetchFromApiWithCredentials } from 'utils/fetch'
+import { updateOffersActiveStatus } from 'repository/pcapi/pcapi'
 
 import ActionsBar from '../ActionsBar'
 
@@ -10,8 +10,8 @@ const renderActionsBar = props => {
   return render(<ActionsBar {...props} />)
 }
 
-jest.mock('utils/fetch', () => ({
-  fetchFromApiWithCredentials: jest.fn().mockResolvedValue({}),
+jest.mock('repository/pcapi/pcapi', () => ({
+  updateOffersActiveStatus: jest.fn().mockResolvedValue({}),
 }))
 
 describe('src | components | pages | Offers | ActionsBar', () => {
@@ -80,11 +80,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(fetchFromApiWithCredentials).toHaveBeenLastCalledWith(
-          '/offers/active-status',
-          'PATCH',
-          expectedBody
-        )
+        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(false, expectedBody)
         expect(props.setSelectedOfferIds).toHaveBeenNthCalledWith(1, [])
         expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
         expect(props.trackActivateOffers).toHaveBeenCalledWith(['testId1', 'testId2'])
@@ -146,11 +142,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(fetchFromApiWithCredentials).toHaveBeenLastCalledWith(
-          '/offers/active-status',
-          'PATCH',
-          expectedBody
-        )
+        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(false, expectedBody)
         expect(props.setSelectedOfferIds).toHaveBeenNthCalledWith(1, [])
         expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
         expect(props.trackDeactivateOffers).toHaveBeenCalledWith(['testId1', 'testId2'])
@@ -230,11 +222,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(fetchFromApiWithCredentials).toHaveBeenLastCalledWith(
-          '/offers/all-active-status',
-          'PATCH',
-          expectedBody
-        )
+        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(true, expectedBody)
         expect(props.setSelectedOfferIds).toHaveBeenNthCalledWith(1, [])
         expect(props.hideActionsBar).toHaveBeenCalledTimes(1)
         expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
@@ -259,11 +247,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(fetchFromApiWithCredentials).toHaveBeenLastCalledWith(
-          '/offers/all-active-status',
-          'PATCH',
-          expectedBody
-        )
+        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(true, expectedBody)
         expect(props.setSelectedOfferIds).toHaveBeenNthCalledWith(1, [])
         expect(props.hideActionsBar).toHaveBeenCalledTimes(1)
         expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })

@@ -2,7 +2,8 @@ import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
-import { fetchFromApiWithCredentials } from 'utils/fetch'
+
+import { updateOffersActiveStatus } from '../../../../repository/pcapi/pcapi'
 
 const computeActivationSuccessMessage = nbSelectedOffers => {
   const successMessage =
@@ -47,9 +48,8 @@ const ActionsBar = props => {
         isActive: isActivating,
       }
       const body = areAllOffersSelected ? bodyAllActiveStatus : bodySomeActiveStatus
-      const apiPath = areAllOffersSelected ? '/offers/all-active-status' : '/offers/active-status'
 
-      fetchFromApiWithCredentials(apiPath, 'PATCH', body).then(() => {
+      updateOffersActiveStatus(areAllOffersSelected, body).then(() => {
         refreshOffers({ shouldTriggerSpinner: false })
         showSuccessNotification(
           isActivating
