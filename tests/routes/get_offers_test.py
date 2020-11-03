@@ -161,37 +161,6 @@ class Returns200:
         }
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_does_not_show_result_to_user_offerer_when_not_validated(
-        self, list_offers_mock, app, db_session
-    ):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(
-            user, offerer, validation_token=secrets.token_urlsafe(20)
-        )
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        repository.save(user_offerer, offer)
-        list_offers_mock.return_value = to_domain(
-            offer_sql_entities=[], current_page=0, total_pages=0, total_offers=0
-        )
-
-        # when
-        response = (
-            TestClient(app.test_client()).with_auth(email=user.email).get("/offers")
-        )
-
-        # then
-        assert response.status_code == 200
-        assert response.json == {
-            "offers": [],
-            "page": 0,
-            "page_count": 0,
-            "total_count": 0,
-        }
-
-    @patch("pcapi.routes.offers.list_offers_for_pro_user")
     def test_results_are_filtered_by_given_venue_id(
         self, list_offers_mock, app, db_session
     ):
@@ -315,6 +284,32 @@ class Returns403:
         offerer = create_offerer()
         venue = create_venue(offerer)
         repository.save(user, venue)
+
+        # when
+        response = (
+            TestClient(app.test_client())
+            .with_auth(email=user.email)
+            .get(f"/offers?venueId={humanize(venue.id)}")
+        )
+
+        # then
+        assert response.status_code == 403
+        assert response.json == {
+            "global": [
+                "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
+            ]
+        }
+
+    def when_user_offerer_is_not_validated(self, app, db_session):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(
+            user, offerer, validation_token=secrets.token_urlsafe(20)
+        )
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        repository.save(user_offerer, offer)
 
         # when
         response = (
