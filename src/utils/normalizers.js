@@ -56,7 +56,6 @@ export const offerNormalizer = {
   activeMediation: {
     stateKey: 'mediations',
   },
-  firstMatchingBooking: 'bookings',
   stocks: {
     stateKey: 'stocks',
     normalizer: {
