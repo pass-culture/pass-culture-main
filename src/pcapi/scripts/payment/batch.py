@@ -56,6 +56,8 @@ def generate_and_send_payments(payment_message_id: str = None):
     except Exception as e:
         logger.exception('[BATCH][PAYMENTS] STEP 6', e)
 
+    logger.info('[BATCH][PAYMENTS] generate_and_send_payments is done')
+
 
 def generate_or_collect_payments(payment_message_id: str = None) -> Tuple[List[Payment], List[Payment]]:
     if payment_message_id is None:
