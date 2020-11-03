@@ -17,3 +17,6 @@ class RefreshRequest(BaseModel):
 
 class RefreshResponse(BaseModel):
     access_token: str
+
+class PasswordResetRequestRequest(BaseModel):
+    email: str

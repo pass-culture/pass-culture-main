@@ -14,6 +14,7 @@ from flask.testing import FlaskClient
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager, login_user
 from mailjet_rest import Client
+from pcapi.routes.native.v1.blueprint import native_v1
 from requests import Response
 from requests.auth import _basic_auth_str
 
@@ -75,6 +76,7 @@ def app():
     install_activity()
     install_materialized_views()
     install_routes(app)
+    app.register_blueprint(native_v1, url_prefix='/native/v1')
     install_local_providers()
     app.mailjet_client = Mock()
     app.redis_client = Mock()
