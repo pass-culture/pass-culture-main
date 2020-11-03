@@ -9,6 +9,7 @@ from sqlalchemy import BigInteger, \
     ForeignKey, \
     Integer, \
     String, Numeric
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
@@ -80,6 +81,8 @@ class Booking(PcObject, Model, VersionedMixin):
                     nullable=False,
                     default=False)
 
+    confirmationDate = Column(DateTime, nullable=True)
+
     @property
     def total_amount(self):
         return self.amount * self.quantity
@@ -143,6 +146,10 @@ class Booking(PcObject, Model, VersionedMixin):
         if self.isUsed or self.isCancelled:
             return None
         return api.generate_qr_code(self.token, self.stock.offer.extraData)
+
+    @hybrid_property
+    def isConfirmed(self):
+        return self.confirmationDate and self.confirmationDate <= datetime.utcnow()
 
 
 # FIXME: move this out of the `models` module

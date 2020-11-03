@@ -256,12 +256,31 @@ class CheckBeneficiaryCanCancelBookingTest:
         with pytest.raises(exceptions.BookingIsAlreadyUsed):
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
 
-    def test_raise_if_too_late_to_cancel(self):
+    def test_raise_if_event_too_close(self):
         booking = factories.BookingFactory(
             stock__beginningDatetime=datetime.utcnow() + timedelta(days=1),
         )
-        with pytest.raises(exceptions.EventHappensInLessThan72Hours):
+        with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
+        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
+
+    def test_raise_if_booked_long_ago(self):
+        booking = factories.BookingFactory(
+            stock__beginningDatetime=datetime.utcnow() + timedelta(days=10),
+            dateCreated=datetime.utcnow() - timedelta(days=2)
+        )
+        with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
+            validation.check_beneficiary_can_cancel_booking(booking.user, booking)
+        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
+
+    def test_raise_if_event_too_close_and_booked_long_ago(self):
+        booking = factories.BookingFactory(
+            stock__beginningDatetime=datetime.utcnow() + timedelta(days=1),
+            dateCreated=datetime.utcnow() - timedelta(days=2)
+        )
+        with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
+            validation.check_beneficiary_can_cancel_booking(booking.user, booking)
+        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
 
 
 @pytest.mark.usefixtures("db_session")

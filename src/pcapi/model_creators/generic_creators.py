@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 from typing import Optional, Union
 
@@ -7,6 +7,7 @@ from decimal import Decimal
 from geoalchemy2.shape import from_shape
 from shapely.geometry import Polygon
 
+from pcapi.core.bookings import api as bookings_api
 from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
 from pcapi.models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
@@ -143,6 +144,7 @@ def create_booking(user: UserSQLEntity,
     booking.stock = stock
     booking.token = token if token is not None else random_token()
     booking.userId = user.id
+    booking.confirmationDate = bookings_api.compute_confirmation_date(stock.beginningDatetime, date_created)
 
     return booking
 

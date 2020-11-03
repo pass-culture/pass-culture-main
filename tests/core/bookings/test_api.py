@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import pytz
 from unittest import mock
 
 from flask import current_app as app
@@ -34,6 +35,7 @@ class BookOfferTest:
         assert len(booking.token) == 6
         assert not booking.isCancelled
         assert not booking.isUsed
+        assert booking.confirmationDate is None
 
         mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=stock.offer.id)
 
@@ -41,6 +43,22 @@ class BookOfferTest:
         assert email_data1['MJ-TemplateID'] == 1095029  # to offerer
         email_data2 = mocked_send_raw_email.call_args_list[1][1]['data']
         assert email_data2['MJ-TemplateID'] == 1163067  # to beneficiary
+
+    def test_create_event_booking(self):
+        ten_days_from_now = datetime.utcnow() + timedelta(days=10)
+        user = users_factories.UserFactory()
+        stock = offers_factories.StockFactory(price=10, beginningDatetime=ten_days_from_now)
+
+        booking = api.book_offer(beneficiary=user, stock=stock, quantity=1)
+        two_days_after_booking = booking.dateCreated + timedelta(days=2)
+        assert booking.quantity == 1
+        assert booking.amount == 10
+        assert booking.stock == stock
+        assert booking.recommendation is None
+        assert len(booking.token) == 6
+        assert not booking.isCancelled
+        assert not booking.isUsed
+        assert booking.confirmationDate == two_days_after_booking
 
     def test_create_booking_with_recommendation(self):
         user = users_factories.UserFactory()
@@ -119,6 +137,7 @@ class BookOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelByBeneficiaryTest:
+
     @mock.patch('pcapi.infrastructure.services.notification.mailjet_notification_service.send_raw_email')
     def test_cancel_booking(self, mocked_send_raw_email):
         booking = factories.BookingFactory()
@@ -145,13 +164,39 @@ class CancelByBeneficiaryTest:
             api.cancel_booking_by_beneficiary(booking.user, booking)
         assert not booking.isCancelled
 
-    def test_raise_if_too_late_to_cancel(self):
+    def test_raise_if_event_too_close(self):
+        event_date_too_close_to_cancel_booking = datetime.now() + timedelta(days=1)
         booking = factories.BookingFactory(
-            stock__beginningDatetime=datetime.now() + timedelta(days=1),
+            stock__beginningDatetime=event_date_too_close_to_cancel_booking,
         )
-        with pytest.raises(exceptions.EventHappensInLessThan72Hours):
+        with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             api.cancel_booking_by_beneficiary(booking.user, booking)
         assert not booking.isCancelled
+        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
+
+    def test_raise_if_booking_created_too_long_ago_to_cancel_booking(self):
+        event_date_far_enough_to_cancel_booking = datetime.now() + timedelta(days=2, minutes=1)
+        booking_date_too_long_ago_to_cancel_booking = datetime.utcnow() - timedelta(days=2, minutes=1)
+        booking = factories.BookingFactory(
+            stock__beginningDatetime=event_date_far_enough_to_cancel_booking,
+            dateCreated=booking_date_too_long_ago_to_cancel_booking
+        )
+        with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
+            api.cancel_booking_by_beneficiary(booking.user, booking)
+        assert not booking.isCancelled
+        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
+
+    def test_raise_if_event_too_close_and_booked_long_ago(self):
+        booking_date_too_long_ago_to_cancel_booking = datetime.utcnow() - timedelta(days=2, minutes=1)
+        event_date_too_close_to_cancel_booking = datetime.now() + timedelta(days=1)
+        booking = factories.BookingFactory(
+            stock__beginningDatetime=event_date_too_close_to_cancel_booking,
+            dateCreated=booking_date_too_long_ago_to_cancel_booking
+        )
+        with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
+            api.cancel_booking_by_beneficiary(booking.user, booking)
+        assert not booking.isCancelled
+        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
 
     def test_raise_if_trying_to_cancel_someone_else_s_booking(self):
         booking = factories.BookingFactory()
@@ -295,3 +340,32 @@ class GenerateQrCodeTest:
         qr_code = api.generate_qr_code('ABCDE', offer_extra_data={})
         assert isinstance(qr_code, str)
         assert qr_code == "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJsAAACbAQAAAABdGtQhAAABs0lEQVR4nL1XMY7bMBCcFQXQqagf0EDeYSlp8o/8w7Hko/8VyfcR6gdURwKSJ4VdxYc0580WJDDFDHZJzoBCPNVcPWPAZ8EiIlKq5ZcUkWEWkfrTnB+DHRnRukDHBJAclIQoNeyI8758wwVFmhdwflD1fWMF2HNjXsL5b9BEdBw0hYQrIAkoXXOEZdIRQgaA3LoQc+tCBGCiihBJkiMMLVNPklQSmsiIjqvPrVs9mbQ6mpLhY2GI6BiUhG5uBW8uRDu6QMDpjK4uP3DxkLR9LSds+/wlKV1v+wYz4brYyGnmBGp5Xfk+r750zXEulav9ruOq5QxOxI6uhh2x7e3bSzifqwaW1QscPNikvuzQ/9Tp6ODDxBu2fekTAKFWHgFbhytMtL+bC3ZYdM4IWRJgR0daJkN7czoPtsLBD76cgDnTD8jvSS0m5nUGFtlLhU3ktOhE+d29c5d6kskwt0qje+SRcPBoXYhZy+uQOzJydCFaJsMsWnmUW5jIKT16g9boHuChMbyn31XpHT3AK46wZwlx176M829QuKL0Cdi1rp7t6HQs6H4yvOGIDPR6t07+12/iD1lz9hCJWM0gAAAAAElFTkSuQmCC"
+
+
+@pytest.mark.parametrize(
+    "booking_date",
+    [datetime(2020, 7, 14, 15, 30), datetime(2020, 10, 25, 1, 45),  datetime.now()],
+    ids=["14 Jul", "Daylight Saving Switch", "Now"]
+)
+@pytest.mark.usefixtures("db_session")
+class ComputeConfirmationDateTest:
+    def test_returns_none_if_no_event_beginning(self, booking_date):
+        event_beginning = None
+        booking_creation = booking_date
+        assert api.compute_confirmation_date(event_beginning, booking_creation) is None
+
+    def test_returns_creation_date_if_event_begins_too_soon(self, booking_date):
+        event_date_too_close_to_cancel_booking = booking_date + timedelta(days=1)
+        booking_creation = booking_date
+        assert api.compute_confirmation_date(event_date_too_close_to_cancel_booking, booking_creation) == booking_creation
+
+    def test_returns_two_days_after_booking_creation_if_event_begins_in_more_than_five_days(self, booking_date):
+        event_date_more_ten_days_from_now = booking_date + timedelta(days=6)
+        booking_creation = booking_date
+        assert api.compute_confirmation_date(event_date_more_ten_days_from_now, booking_creation) == booking_creation + timedelta(days=2)
+
+    def test_returns_three_days_before_event_if_event_begins_between_three_and_five_days_from_now(self, booking_date):
+        event_date_four_days_from_now = booking_date + timedelta(days=4)
+        booking_creation = booking_date
+        assert api.compute_confirmation_date(event_date_four_days_from_now, booking_creation) == event_date_four_days_from_now - timedelta(days=3)
+

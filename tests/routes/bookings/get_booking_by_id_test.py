@@ -37,6 +37,7 @@ class Get:
                 'amount': 0.0,
                 'cancellationDate': None,
                 'completedUrl': completed_url,
+                'confirmationDate': None,
                 'dateCreated': format_into_utc_date(booking.dateCreated),
                 'dateUsed': None,
                 'id': humanize(booking.id),

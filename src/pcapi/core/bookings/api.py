@@ -1,7 +1,8 @@
 import base64
 import datetime
 import io
-from typing import Dict
+import pytz
+import typing
 
 from flask import current_app as app
 import qrcode
@@ -10,6 +11,7 @@ from PIL import Image
 
 from pcapi.connectors import redis
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings import conf
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.recommendation import Recommendation
 from pcapi.models.stock_sql_entity import StockSQLEntity
@@ -66,6 +68,9 @@ def book_offer(
 
     expenses = booking_repository.get_user_expenses(beneficiary)
     validation.check_expenses_limits(expenses, booking.total_amount, stock.offer)
+
+    booking.dateCreated = datetime.datetime.utcnow()
+    booking.confirmationDate = compute_confirmation_date(stock.beginningDatetime, booking.dateCreated)
 
     repository.save(booking)
 
@@ -127,7 +132,7 @@ def mark_as_unused(booking: Booking) -> None:
     repository.save(booking)
 
 
-def generate_qr_code(booking_token: str, offer_extra_data: Dict) -> str:
+def generate_qr_code(booking_token: str, offer_extra_data: typing.Dict) -> str:
     qr = qrcode.QRCode(
         version=QR_CODE_VERSION,
         error_correction=qrcode.constants.ERROR_CORRECT_Q,
@@ -156,3 +161,18 @@ def _convert_image_to_base64(image: Image) -> str:
     image.save(image_as_bytes)
     image_as_base64 = base64.b64encode(image_as_bytes.getvalue())
     return f'data:image/png;base64,{str(image_as_base64, encoding="utf-8")}'
+
+
+def compute_confirmation_date(event_beginning: typing.Optional[datetime.datetime], booking_creation: datetime.datetime) -> typing.Optional[datetime.datetime]:
+    if event_beginning:
+        if event_beginning.tzinfo:
+            tz_naive_event_beginning = event_beginning.astimezone(pytz.utc)
+            tz_naive_event_beginning = tz_naive_event_beginning.replace(tzinfo=None)
+        else:
+            tz_naive_event_beginning = event_beginning
+        before_event_limit = tz_naive_event_beginning - conf.CONFIRM_BOOKING_BEFORE_EVENT_DELAY
+        after_booking_limit = booking_creation + conf.CONFIRM_BOOKING_AFTER_CREATION_DELAY
+        earliest_date_in_cancellation_period = min(before_event_limit, after_booking_limit)
+        latest_date_between_earliest_date_in_cancellation_period_and_booking_creation = max(earliest_date_in_cancellation_period, booking_creation)
+        return latest_date_between_earliest_date_in_cancellation_period_and_booking_creation
+    return None

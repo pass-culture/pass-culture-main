@@ -46,10 +46,12 @@ class BookingIsAlreadyUsed(ClientError):
         super().__init__('booking', 'Impossible d\'annuler une réservation consommée')
 
 
-class EventHappensInLessThan72Hours(ClientError):
-    def __init__(self):
-        super().__init__('booking',
-                         "Impossible d'annuler une réservation moins de 72h avant le début de l'évènement")
+class CannotCancelConfirmedBooking(ClientError):
+    def __init__(self, after_creation, before_event):
+        super().__init__(
+            'booking',
+            f"Impossible d'annuler une réservation {after_creation}{before_event}"
+        )
 
 
 class BookingDoesntExist(ClientError):

@@ -1,19 +1,14 @@
 import datetime
 
+from pcapi.core.bookings import conf
+from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 import pcapi.domain.expenses as payments_api
 from pcapi.domain import user_activation
-from pcapi.models import api_errors
+from pcapi.models import api_errors, UserSQLEntity
 from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.db import db
 from pcapi.repository import payment_queries
-
-from . import exceptions
-
-
-# FIXME: badly named. For now, it's only used to check that a booking
-# can be marked as USED, not whether it can be cancelled.
-BOOKING_CANCELLATION_DELAY = datetime.timedelta(hours=72)
 
 
 def check_can_book_free_offer(user, stock):
@@ -81,14 +76,23 @@ def check_expenses_limits(expenses, requested_amount, offer):
             raise exceptions.DigitalExpenseLimitHasBeenReached(expenses['digital']['max'])
 
 
-def check_beneficiary_can_cancel_booking(user, booking):
+def check_beneficiary_can_cancel_booking(user: UserSQLEntity, booking: Booking) -> None:
     if booking.userId != user.id:
         raise exceptions.BookingDoesntExist()
     if booking.isUsed:
         raise exceptions.BookingIsAlreadyUsed()
-    if booking.stock.beginningDatetime is not None:
-        if booking.stock.beginningDatetime < datetime.datetime.utcnow() + datetime.timedelta(hours=72):
-            raise exceptions.EventHappensInLessThan72Hours()
+    if booking.isConfirmed:
+        raise exceptions.CannotCancelConfirmedBooking(
+            conf.BOOKING_CONFIRMATION_ERROR_CLAUSES[conf.CONFIRM_BOOKING_AFTER_CREATION_DELAY],
+            conf.BOOKING_CONFIRMATION_ERROR_CLAUSES[conf.CONFIRM_BOOKING_BEFORE_EVENT_DELAY]
+        )
+    # TODO(fseguin, 2020-11-03: cleanup after next MEP
+    if booking.stock.beginningDatetime and not booking.confirmationDate:
+        if _is_confirmed(booking.stock.beginningDatetime, booking.dateCreated):
+            raise exceptions.CannotCancelConfirmedBooking(
+                conf.BOOKING_CONFIRMATION_ERROR_CLAUSES[conf.CONFIRM_BOOKING_AFTER_CREATION_DELAY],
+                conf.BOOKING_CONFIRMATION_ERROR_CLAUSES[conf.CONFIRM_BOOKING_BEFORE_EVENT_DELAY]
+            )
 
 
 # FIXME: should not raise exceptions from `api_errors` (see below for details).
@@ -120,7 +124,7 @@ def check_is_usable(booking):
         raise gone
     if (
             booking.stock.beginningDatetime and
-            booking.stock.beginningDatetime > datetime.datetime.utcnow() + BOOKING_CANCELLATION_DELAY
+            booking.stock.beginningDatetime > datetime.datetime.utcnow() + conf.USE_BOOKING_BEFORE_EVENT_DELAY
     ):
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error(
@@ -155,3 +159,12 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         gone = api_errors.ResourceGoneError()
         gone.add_error('payment', "Le remboursement est en cours de traitement")
         raise gone
+
+
+# TODO(fseguin, 2020-11-03): cleanup after next MEP
+def _is_confirmed(event_beginning, booking_creation):
+    now = datetime.datetime.now(tz=datetime.timezone.utc)
+    before_event_limit = event_beginning - conf.CONFIRM_BOOKING_BEFORE_EVENT_DELAY
+    after_booking_limit = booking_creation + conf.CONFIRM_BOOKING_AFTER_CREATION_DELAY
+    confirmation_date = max(min(before_event_limit, after_booking_limit), now)
+    return datetime.datetime.utcnow() <= confirmation_date

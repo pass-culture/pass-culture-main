@@ -2,7 +2,7 @@ from flask import current_app as app, jsonify
 
 from pcapi.core.bookings.exceptions import OfferIsAlreadyBooked, QuantityIsInvalid, StockIsNotBookable, \
     CannotBookFreeOffers, PhysicalExpenseLimitHasBeenReached, UserHasInsufficientFunds, \
-    DigitalExpenseLimitHasBeenReached, BookingIsAlreadyUsed, EventHappensInLessThan72Hours, BookingDoesntExist
+    DigitalExpenseLimitHasBeenReached, BookingIsAlreadyUsed, CannotCancelConfirmedBooking, BookingDoesntExist
 from pcapi.domain.stock.stock_exceptions import StockDoesntExist
 from pcapi.domain.users import UnauthorizedForAdminUser
 
@@ -25,7 +25,7 @@ def handle_get_all_bookings_exceptions(exception):
 
 
 @app.errorhandler(BookingIsAlreadyUsed)
-@app.errorhandler(EventHappensInLessThan72Hours)
+@app.errorhandler(CannotCancelConfirmedBooking)
 def handle_cancel_a_booking(exception):
     return jsonify(exception.errors), 400
 

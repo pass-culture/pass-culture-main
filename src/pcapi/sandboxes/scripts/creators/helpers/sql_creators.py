@@ -4,6 +4,7 @@ from datetime import datetime
 import random
 from typing import Optional, List, Dict
 
+from pcapi.core.bookings import api as bookings_api
 from pcapi.models import UserSQLEntity, Deposit, Offerer, UserOfferer, RightsType, VenueSQLEntity, OfferSQLEntity, Product, Provider, \
     EventType, StockSQLEntity, ThingType, Booking, Recommendation, MediationSQLEntity, PaymentMessage, Payment
 from pcapi.models.payment_status import TransactionStatus, PaymentStatus
@@ -441,6 +442,7 @@ def create_booking(user: UserSQLEntity,
     booking.stock = stock
     booking.token = token if token is not None else random_token()
     booking.userId = user.id
+    booking.confirmationDate = bookings_api.compute_confirmation_date(stock.beginningDatetime, date_created)
 
     return booking
 
