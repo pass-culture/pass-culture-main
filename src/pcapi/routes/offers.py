@@ -113,14 +113,9 @@ def patch_offers_active_status(body: PatchOfferActiveStatusBodyModel) -> None:
 @expect_json_data
 def patch_all_offers_active_status() -> None:
     payload = request.json
-    offerer_identifier = (
-        dehumanize(payload.get("offererId"))
-        if payload.get("offererId") != "all"
-        else None
-    )
-    venue_identifier = (
-        dehumanize(payload.get("venueId")) if payload.get("venueId") != "all" else None
-    )
+    offerer_identifier = dehumanize(payload.get("offererId"))
+
+    venue_identifier = dehumanize(payload.get("venueId"))
 
     name_keywords = payload.get("name")
     offers_new_active_status = payload.get("isActive")

@@ -24,8 +24,6 @@ class Patch:
 
             json = {
                 'isActive': True,
-                'offererId': 'all',
-                'venueId': 'all',
                 'active': 'true',
                 'inactive': 'true',
             }
@@ -54,8 +52,6 @@ class Patch:
 
             json = {
                 'isActive': False,
-                'offererId': 'all',
-                'venueId': 'all',
                 'active': 'true',
                 'inactive': 'true',
             }
