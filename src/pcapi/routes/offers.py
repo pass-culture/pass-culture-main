@@ -119,6 +119,7 @@ def patch_all_offers_active_status() -> None:
 
     name_keywords = payload.get("name")
     offers_new_active_status = payload.get("isActive")
+    type_id = payload.get("typeId")
 
     update_all_offers_active_status(
         user_id=current_user.id,
@@ -128,6 +129,7 @@ def patch_all_offers_active_status() -> None:
         exclude_active=payload.get("active") == "false",
         exclude_inactive=payload.get("inactive") == "false",
         venue_id=venue_identifier,
+        type_id=type_id,
         name_keywords=name_keywords,
     )
 
