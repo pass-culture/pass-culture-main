@@ -6,8 +6,9 @@ from pcapi.core.offers.repository import (
 )
 from pcapi.repository import (
     user_offerer_queries,
-    venue_queries,
 )
+from pcapi.models import VenueSQLEntity
+
 from . import validation
 
 DEFAULT_OFFERS_PER_PAGE = 20
@@ -17,19 +18,20 @@ DEFAULT_PAGE = 1
 def list_offers_for_pro_user(
     user_id: int,
     user_is_admin: bool,
-    venue_id: Optional[int],
     type_id: Optional[str],
     offerer_id: Optional[int],
     offers_per_page: Optional[int],
     page: Optional[int],
+    venue: Optional[VenueSQLEntity] = None,
     exclude_active: Optional[bool] = False,
     exclude_inactive: Optional[bool] = False,
     name_keywords: Optional[str] = None,
 ) -> PaginatedOffersRecap:
-    if venue_id:
-        venue = venue_queries.find_by_id(venue_id)
-        validation.check_venue_exists_when_requested(venue, venue_id)
+    venue_id = None
+
+    if venue:
         offerer_id = offerer_id or venue.managingOffererId
+        venue_id = venue.id
 
     if not user_is_admin and offerer_id is not None:
         user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(

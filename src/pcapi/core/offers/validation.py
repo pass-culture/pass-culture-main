@@ -1,7 +1,7 @@
 from typing import Optional
 
-from pcapi.models import UserOfferer, VenueSQLEntity
-from pcapi.models.api_errors import ResourceNotFoundError, ApiErrors
+from pcapi.models import UserOfferer
+from pcapi.models.api_errors import ApiErrors
 
 # FIXME (cgaunet, 2020-11-02): I moved this function from validation/routes/offers.py. It
 # should not raise HTTP-related exceptions. It should rather raise
@@ -21,13 +21,4 @@ def check_user_has_rights_on_offerer(user_offerer: Optional[UserOfferer]) -> Non
         raise errors
 
     if not user_offerer.isValidated:
-        raise errors
-
-
-def check_venue_exists_when_requested(
-    venue: Optional[VenueSQLEntity], venue_id: Optional[int]
-) -> None:
-    if venue_id and venue is None:
-        errors = ResourceNotFoundError()
-        errors.add_error("global", "Ce lieu n'a pas été trouvé")
         raise errors

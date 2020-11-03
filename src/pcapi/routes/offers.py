@@ -49,11 +49,16 @@ from pcapi.utils.rest import (
 @login_required
 @spectree_serialize(response_model=ListOffersResponseModel)  # type: ignore
 def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
+    venue = None
+
+    if query.venue_id:
+        venue = VenueSQLEntity.query.filter_by(id=query.venue_id).first_or_404()
+
     paginated_offers = list_offers_for_pro_user(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
         offerer_id=query.offerer_id,
-        venue_id=query.venue_id,
+        venue=venue,
         type_id=query.type_id,
         offers_per_page=query.paginate,
         name_keywords=query.name,
