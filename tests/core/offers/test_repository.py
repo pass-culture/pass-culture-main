@@ -5,16 +5,29 @@ from pcapi.core.users import factories as users_factories
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.models import ThingType
-from pcapi.core.offers.repository import get_paginated_offers_for_offerer_venue_and_keywords
-from pcapi.model_creators.generic_creators import create_offerer, create_user, create_user_offerer, create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, \
-    create_product_with_event_type, create_product_with_thing_type
+from pcapi.core.offers.repository import (
+    get_paginated_offers_for_offerer_venue_and_keywords,
+)
+from pcapi.model_creators.generic_creators import (
+    create_offerer,
+    create_user,
+    create_user_offerer,
+    create_venue,
+)
+from pcapi.model_creators.specific_creators import (
+    create_offer_with_event_product,
+    create_offer_with_thing_product,
+    create_product_with_event_type,
+    create_product_with_thing_type,
+)
 from pcapi.repository import repository
 
 
 class PaginatedOfferSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
-    def should_return_paginated_offers_with_details_of_pagination_and_offers_of_requested_page(self, app):
+    def should_return_paginated_offers_with_details_of_pagination_and_offers_of_requested_page(
+        self, app
+    ):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -31,7 +44,7 @@ class PaginatedOfferSQLRepositoryTest:
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offers_per_page=requested_offers_per_page,
-            page=requested_page
+            page=requested_page,
         )
 
         # Then
@@ -61,7 +74,7 @@ class PaginatedOfferSQLRepositoryTest:
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offers_per_page=requested_offers_per_page,
-            page=requested_page
+            page=requested_page,
         )
 
         # Then
@@ -81,20 +94,24 @@ class PaginatedOfferSQLRepositoryTest:
 
         # When
         paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-            user_id=user.id,
-            user_is_admin=user.isAdmin,
-            page=1,
-            offers_per_page=10
+            user_id=user.id, user_is_admin=user.isAdmin, page=1, offers_per_page=10
         )
 
         # Then
-        assert paginated_offers.offers[0].identifier.persisted > paginated_offers.offers[1].identifier.persisted
+        assert (
+            paginated_offers.offers[0].identifier.persisted
+            > paginated_offers.offers[1].identifier.persisted
+        )
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_of_given_venue(self, app):
         user_offerer = offers_factories.UserOffererFactory()
-        offer_for_requested_venue = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
-        offer_for_other_venue = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
+        offer_for_requested_venue = offers_factories.OfferFactory(
+            venue__managingOfferer=user_offerer.offerer
+        )
+        offer_for_other_venue = offers_factories.OfferFactory(
+            venue__managingOfferer=user_offerer.offerer
+        )
 
         # when
         paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
@@ -102,7 +119,7 @@ class PaginatedOfferSQLRepositoryTest:
             user_is_admin=user_offerer.user.isAdmin,
             venue_id=offer_for_requested_venue.venue.id,
             page=1,
-            offers_per_page=10
+            offers_per_page=10,
         )
 
         # then
@@ -114,18 +131,18 @@ class PaginatedOfferSQLRepositoryTest:
     def should_return_offers_of_given_type(self, app):
         user_offerer = offers_factories.UserOffererFactory()
         requested_offer = offers_factories.OfferFactory(
-            type=str(ThingType.AUDIOVISUEL),
-            venue__managingOfferer=user_offerer.offerer
+            type=str(ThingType.AUDIOVISUEL), venue__managingOfferer=user_offerer.offerer
         )
         other_offer = offers_factories.OfferFactory(
-            type=str(ThingType.JEUX),
-            venue__managingOfferer=user_offerer.offerer
+            type=str(ThingType.JEUX), venue__managingOfferer=user_offerer.offerer
         )
 
         paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-            user_id=user_offerer.user.id,,
+            user_id=user_offerer.user.id,
             user_is_admin=user_offerer.user.isAdmin,
             type_id=str(ThingType.AUDIOVISUEL),
+            page=1,
+            offers_per_page=10,
         )
 
         # then
@@ -136,26 +153,46 @@ class PaginatedOfferSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_matching_searched_name(self, app):
         user = create_user()
-        offerer = create_offerer(siren='123456789')
+        offerer = create_offerer(siren="123456789")
         user_offerer = create_user_offerer(user=user, offerer=offerer)
 
-        product_event = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
-        product_thing = create_product_with_thing_type(thing_name='Belle du Seigneur', author_name='Jacqueline Rencon')
-        requested_venue = create_venue(offerer=offerer, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
-        other_venue = create_venue(offerer=offerer, name='Librairie la Rencontre des jachères', city='Saint Denis', siret=offerer.siren + '54321')
-        offer_matching_requested_name = create_offer_with_event_product(venue=requested_venue, product=product_event)
-        offer_not_matching_requested_name = create_offer_with_thing_product(venue=other_venue, product=product_thing)
+        product_event = create_product_with_event_type(
+            event_name="Rencontre avec Jacques Martin"
+        )
+        product_thing = create_product_with_thing_type(
+            thing_name="Belle du Seigneur", author_name="Jacqueline Rencon"
+        )
+        requested_venue = create_venue(
+            offerer=offerer,
+            name="Bataclan",
+            city="Paris",
+            siret=offerer.siren + "12345",
+        )
+        other_venue = create_venue(
+            offerer=offerer,
+            name="Librairie la Rencontre des jachères",
+            city="Saint Denis",
+            siret=offerer.siren + "54321",
+        )
+        offer_matching_requested_name = create_offer_with_event_product(
+            venue=requested_venue, product=product_event
+        )
+        offer_not_matching_requested_name = create_offer_with_thing_product(
+            venue=other_venue, product=product_thing
+        )
         repository.save(
-            user_offerer, offer_matching_requested_name, offer_not_matching_requested_name
+            user_offerer,
+            offer_matching_requested_name,
+            offer_not_matching_requested_name,
         )
 
         # when
         paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
             user_id=user.id,
             user_is_admin=user.isAdmin,
-            name_keywords='Jac rencon',
+            name_keywords="Jac rencon",
             page=1,
-            offers_per_page=10
+            offers_per_page=10,
         )
 
         # then
@@ -168,13 +205,19 @@ class PaginatedOfferSQLRepositoryTest:
         # given
         pro_user = create_user()
         wanted_offerer = create_offerer()
-        unwanted_offerer = create_offerer(siren='981237')
+        unwanted_offerer = create_offerer(siren="981237")
         create_user_offerer(pro_user, wanted_offerer)
         create_user_offerer(pro_user, unwanted_offerer)
         venue_from_wanted_offerer = create_venue(wanted_offerer)
-        venue_from_unwanted_offerer = create_venue(unwanted_offerer, siret='12345678912387')
-        offer_from_wanted_offerer = create_offer_with_thing_product(venue=venue_from_wanted_offerer, thing_name='Returned offer')
-        offer_from_unwanted_offerer = create_offer_with_thing_product(venue=venue_from_unwanted_offerer, thing_name='Not returned offer')
+        venue_from_unwanted_offerer = create_venue(
+            unwanted_offerer, siret="12345678912387"
+        )
+        offer_from_wanted_offerer = create_offer_with_thing_product(
+            venue=venue_from_wanted_offerer, thing_name="Returned offer"
+        )
+        offer_from_unwanted_offerer = create_offer_with_thing_product(
+            venue=venue_from_unwanted_offerer, thing_name="Not returned offer"
+        )
 
         repository.save(offer_from_wanted_offerer, offer_from_unwanted_offerer)
 
@@ -184,7 +227,7 @@ class PaginatedOfferSQLRepositoryTest:
             user_is_admin=pro_user.isAdmin,
             page=1,
             offers_per_page=1,
-            offerer_id=wanted_offerer.id
+            offerer_id=wanted_offerer.id,
         )
 
         # then
@@ -236,7 +279,7 @@ class PaginatedOfferSQLRepositoryTest:
                 user_is_admin=user.isAdmin,
                 offers_per_page=requested_offers_per_page,
                 page=requested_page,
-                exclude_inactive=True
+                exclude_inactive=True,
             )
 
             # then
