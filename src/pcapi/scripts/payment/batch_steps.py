@@ -113,6 +113,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
 
     successfully_sent_payments = send_payment_message_email(
         xml_file, checksum, recipients, send_raw_email)
+    logger.info(f'[BATCH][PAYMENTS] Updating status of %d payments', len(payments))
     if successfully_sent_payments:
         for payment in payments:
             payment.setStatus(TransactionStatus.SENT)
