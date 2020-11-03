@@ -33,7 +33,7 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
             query.join(Offerer)
             .join(UserOfferer)
             .filter(UserOfferer.userId == user_id)
-            .filter(UserOfferer.validationToken == None)
+            .filter(UserOfferer.validationToken is None)
         )
     if exclude_active:
         query = query.filter(OfferSQLEntity.isActive != True)
@@ -52,6 +52,7 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
     total_offers = query.total
     total_pages = math.ceil(total_offers / offers_per_page)
 
+    # FIXME (cgaunet, 2020-11-03): we should not have serialization logic in the repository
     return to_domain(
         offer_sql_entities=query.items,
         current_page=query.page,
