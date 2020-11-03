@@ -5,15 +5,16 @@ from pcapi.connectors import redis
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository.offer_queries import update_offers_is_active_status, get_all_offers_id_by_filters
+from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 
 
 def update_all_offers_active_status(user_id: int,
                                     user_is_admin: bool,
                                     is_active: bool,
-                                    offerer_id: Optional[int] = None,
+                                    offerer_id: Optional[Identifier] = None,
                                     status_filters: OffersStatusFilters = OffersStatusFilters(),
-                                    venue_id: Optional[int] = None,
+                                    venue_id: Optional[Identifier] = None,
                                     name_keywords: Optional[str] = None):
     offers_id = get_all_offers_id_by_filters(user_id, user_is_admin, offerer_id, status_filters, venue_id, name_keywords)
 

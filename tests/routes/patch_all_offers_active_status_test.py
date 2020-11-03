@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.models import OfferSQLEntity
 from pcapi.repository import repository
+from pcapi.domain.identifier.identifier import Identifier
 from pcapi.utils.human_ids import humanize
 from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, API_URL
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product

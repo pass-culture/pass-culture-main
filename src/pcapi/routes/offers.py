@@ -7,6 +7,7 @@ from pcapi.domain.create_offer import (
     fill_offer_with_new_data,
     initialize_offer_from_product_id,
 )
+from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
 from pcapi.infrastructure.container import list_offers_for_pro_user
 from pcapi.models import OfferSQLEntity, RightsType, VenueSQLEntity
@@ -134,10 +135,10 @@ def patch_offers_active_status(body: PatchOfferActiveStatusBodyModel) -> None:
 @private_api.route('/offers/all-active-status', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data
-def patch_all_offers_active_status() -> None:
+def patch_all_offers_active_status() -> (str, int):
     payload = request.json
-    offerer_identifier = dehumanize(payload.get('offererId')) if payload.get('offererId') != 'all' else None
-    venue_identifier = dehumanize(payload.get('venueId')) if payload.get('venueId') != 'all' else None
+    offerer_identifier = Identifier.from_scrambled_id(payload.get('offererId')) if payload.get('offererId') != 'all' else None
+    venue_identifier = Identifier.from_scrambled_id(payload.get('venueId')) if payload.get('venueId') != 'all' else None
 
     status_filters = OffersStatusFilters(
         exclude_active=payload.get('active') == 'false',

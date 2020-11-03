@@ -20,11 +20,12 @@ from pcapi.repository.offer_queries import department_or_national_offers, \
     get_all_offers_id_by_filters, \
     _build_bookings_quantity_subquery
 from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, \
-    create_venue, create_provider, create_user_offerer
+    create_venue, create_provider
 from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product, \
     create_product_with_event_type, create_offer_with_event_product, create_event_occurrence, \
     create_stock_from_event_occurrence, create_stock_from_offer
 from pcapi.domain.pro_offers.offers_status_filters import OffersStatusFilters
+from pcapi.domain.identifier.identifier import Identifier
 from pcapi.utils.converter import from_tuple_to_int
 
 
@@ -927,7 +928,6 @@ class GetAllOffersIdByFiltersTest:
         # Given
         user = create_user()
         offerer = create_offerer()
-        create_user_offerer(user, offerer)
         wanted_venue = create_venue(offerer=offerer)
         unwanted_venue = create_venue(offerer=offerer, siret='12345678912344')
         wanted_offer = create_offer_with_thing_product(venue=wanted_venue, thing_name='Wanted name', is_active=False)
@@ -941,7 +941,7 @@ class GetAllOffersIdByFiltersTest:
         )
 
         # When
-        offers_id = get_all_offers_id_by_filters(user.id, user.isAdmin, offerer_id=offerer.id, status_filters=status_filters, venue_id=wanted_venue.id, name_keywords='Wanted')
+        offers_id = get_all_offers_id_by_filters(user.id, user.isAdmin, offerer_id=Identifier(offerer.id), status_filters=status_filters, venue_id=Identifier(wanted_venue.id), name_keywords='Wanted')
 
         # Then
         assert len(offers_id) == 1
