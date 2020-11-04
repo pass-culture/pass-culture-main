@@ -58,7 +58,7 @@ jobs:
             - run:
                 name: Running tests
                 command: |
-                  RUN_ENV=tests venv/bin/pytest tests --cov --cov-report html --junitxml=test-results/junit.xml -x
+                  RUN_ENV=tests venv/bin/pytest tests --cov --cov-report html --junitxml=test-results/junit.xml
                   venv/bin/coveralls
       - unless:
           condition: << parameters.is_nightly_build >>
