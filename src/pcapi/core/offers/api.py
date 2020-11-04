@@ -4,10 +4,20 @@ from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.core.offers.repository import (
     get_paginated_offers_for_offerer_venue_and_keywords,
 )
-from pcapi.repository import (
-    user_offerer_queries,
+from pcapi.repository import user_offerer_queries, repository
+from pcapi.models import VenueSQLEntity, OfferSQLEntity, RightsType, UserSQLEntity
+from pcapi.domain.create_offer import (
+    fill_offer_with_new_data,
+    initialize_offer_from_product_id,
 )
-from pcapi.models import VenueSQLEntity
+from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
+from pcapi.utils.rest import (
+    ensure_current_user_has_rights,
+    load_or_raise_error,
+)
+from pcapi.domain.admin_emails import send_offer_creation_notification_to_administration
+from pcapi.utils.config import PRO_URL
+from pcapi.utils.mailing import send_raw_email
 
 from . import validation
 
@@ -16,25 +26,26 @@ DEFAULT_PAGE = 1
 
 
 def list_offers_for_pro_user(
-        user_id: int,
-        user_is_admin: bool,
-        type_id: Optional[str],
-        offerer_id: Optional[int],
-        offers_per_page: Optional[int],
-        page: Optional[int],
-        venue_id: Optional[int] = None,
-        name_keywords: Optional[str] = None,
-        requested_status: Optional[str] = None,
+    user_id: int,
+    user_is_admin: bool,
+    type_id: Optional[str],
+    offerer_id: Optional[int],
+    offers_per_page: Optional[int],
+    page: Optional[int],
+    venue_id: Optional[int] = None,
+    name_keywords: Optional[str] = None,
+    requested_status: Optional[str] = None,
 ) -> PaginatedOffersRecap:
     if not user_is_admin:
-        offerer_id = None
         if venue_id:
             venue = VenueSQLEntity.query.filter_by(id=venue_id).first_or_404()
             offerer_id = offerer_id or venue.managingOffererId
         if offerer_id is not None:
-            user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
+            user_offerer = (
+                user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
                     user_id=user_id, offerer_id=offerer_id
                 )
+            )
             validation.check_user_has_rights_on_offerer(user_offerer)
 
     return get_paginated_offers_for_offerer_venue_and_keywords(
@@ -48,3 +59,24 @@ def list_offers_for_pro_user(
         name_keywords=name_keywords,
         requested_status=requested_status,
     )
+
+
+def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> OfferSQLEntity:
+    venue = load_or_raise_error(VenueSQLEntity, offer_data.venue_id)
+
+    ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
+
+    if offer_data.product_id:
+        offer = initialize_offer_from_product_id(offer_data.product_id)
+    else:
+        offer = fill_offer_with_new_data(offer_data.dict(by_alias=True), user)
+        offer.product.owningOfferer = venue.managingOfferer
+
+    offer.venue = venue
+    offer.bookingEmail = offer_data.booking_email
+    repository.save(offer)
+    send_offer_creation_notification_to_administration(
+        offer, user, PRO_URL, send_raw_email
+    )
+
+    return offer

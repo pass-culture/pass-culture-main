@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 from pcapi.models import OfferSQLEntity, Product, UserSQLEntity
 from pcapi.repository import product_queries
 from pcapi.validation.routes.events import check_user_can_create_activation_event
@@ -10,12 +12,14 @@ def initialize_offer_from_product_id(product_id: int) -> OfferSQLEntity:
     return offer
 
 
-def fill_offer_with_new_data(product_dict: str, user: UserSQLEntity) -> OfferSQLEntity:
+def fill_offer_with_new_data(
+    product_dict: Dict[str, Any], user: UserSQLEntity
+) -> OfferSQLEntity:
     product = Product()
-    url = product_dict.get('url')
+    url = product_dict.get("url")
     if url:
         is_url_safe(url)
-        product_dict['isNational'] = True
+        product_dict["isNational"] = True
     product.populate_from_dict(product_dict)
     check_user_can_create_activation_event(user, product)
     offer = OfferSQLEntity()

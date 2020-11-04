@@ -2,17 +2,10 @@ from flask import request
 from flask_login import current_user, login_required
 
 from pcapi.flask_app import private_api
-from pcapi.domain.admin_emails import send_offer_creation_notification_to_administration
-from pcapi.domain.create_offer import (
-    fill_offer_with_new_data,
-    initialize_offer_from_product_id,
-)
-from pcapi.models import OfferSQLEntity, RightsType, VenueSQLEntity
+from pcapi.models import OfferSQLEntity, RightsType
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.repository import (
-    offer_queries,
-    repository,
-)
+from pcapi.repository import offer_queries
+
 from pcapi.routes.serialization.offers_recap_serialize import (
     serialize_offers_recap_paginated,
 )
@@ -26,19 +19,16 @@ from pcapi.routes.serialization.offers_serialize import (
     GetOfferResponseModel,
 )
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.core.offers.api import list_offers_for_pro_user
+from pcapi.core.offers.api import list_offers_for_pro_user, create_offer
 from pcapi.use_cases.update_an_offer import update_an_offer
 from pcapi.use_cases.update_offers_active_status import (
     update_offers_active_status,
     update_all_offers_active_status,
 )
-from pcapi.utils.config import PRO_URL
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.rest import (
     ensure_current_user_has_rights,
     load_or_404,
-    load_or_raise_error,
     login_or_api_key_required,
     expect_json_data,
 )
@@ -77,22 +67,7 @@ def get_offer(offer_id: str) -> GetOfferResponseModel:
 @login_or_api_key_required
 @spectree_serialize(response_model=OfferResponseIdModel, on_success_status=201)  # type: ignore
 def post_offer(body: PostOfferBodyModel) -> OfferResponseIdModel:
-    venue = load_or_raise_error(VenueSQLEntity, body.venue_id)
-    ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
-
-    if body.product_id:
-        offer = initialize_offer_from_product_id(body.product_id)
-    else:
-        offer = fill_offer_with_new_data(request.json, current_user)
-        offer.product.owningOfferer = venue.managingOfferer
-
-    offer.venue = venue
-    offer.bookingEmail = body.booking_email
-    repository.save(offer)
-    send_offer_creation_notification_to_administration(
-        offer, current_user, PRO_URL, send_raw_email
-    )
-
+    offer = create_offer(offer_data=body, user=current_user)
     return OfferResponseIdModel.from_orm(offer)
 
 

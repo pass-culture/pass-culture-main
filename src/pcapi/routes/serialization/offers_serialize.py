@@ -24,6 +24,16 @@ class PostOfferBodyModel(BaseModel):
     type: Optional[str]
     name: Optional[str]
     booking_email: Optional[str]
+    url: Optional[str]
+    media_urls: Optional[List[str]]
+    description: Optional[str]
+    withdrawal_details: Optional[str]
+    conditions: Optional[str]
+    age_min: Optional[int]
+    age_max: Optional[int]
+    duration_minutes: Optional[int]
+    is_national: Optional[bool]
+    is_duo: Optional[bool]
 
     _dehumanize_product_id = dehumanize_field("product_id")
 
