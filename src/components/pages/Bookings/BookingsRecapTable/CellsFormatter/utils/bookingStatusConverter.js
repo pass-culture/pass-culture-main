@@ -45,7 +45,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     historyClassName: 'bs-history-confirmed',
     statusClassName: 'booking-status-confirmed',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    svgIconFilename: 'ico-status-double-validated',
+    svgIconFilename: 'ico-status-validated',
   },
 ]
 
