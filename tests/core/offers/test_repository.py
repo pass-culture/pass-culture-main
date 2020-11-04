@@ -1,25 +1,26 @@
+from datetime import timedelta, datetime
+
 import pytest
 
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.users import factories as users_factories
-from pcapi.domain.identifier.identifier import Identifier
-from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
-from pcapi.models import ThingType
 from pcapi.core.offers.repository import (
     get_paginated_offers_for_offerer_venue_and_keywords,
 )
+from pcapi.domain.identifier.identifier import Identifier
+from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.model_creators.generic_creators import (
     create_offerer,
     create_user,
     create_user_offerer,
-    create_venue,
+    create_venue, create_booking,
 )
 from pcapi.model_creators.specific_creators import (
     create_offer_with_event_product,
     create_offer_with_thing_product,
     create_product_with_event_type,
-    create_product_with_thing_type,
+    create_product_with_thing_type, create_stock_from_offer,
 )
+from pcapi.models import ThingType
 from pcapi.repository import repository
 
 
@@ -235,54 +236,287 @@ class PaginatedOfferSQLRepositoryTest:
         assert paginated_offers.offers[0].name == offer_from_wanted_offerer.name
 
     class StatusFiltersTest:
+        def setup_method(self):
+            self.offerer = create_offerer()
+            venue = create_venue(self.offerer)
+            self.pro = create_user()
+            self.user_offerer = create_user_offerer(self.pro, self.offerer)
+
+            self.inactive_thing_offer_with_stock_with_remaining_quantity = create_offer_with_thing_product(venue, is_active=False)
+            self.inactive_thing_offer_without_remaining_quantity = create_offer_with_thing_product(venue, is_active=False)
+            self.inactive_thing_offer_without_stock = create_offer_with_thing_product(venue, is_active=False)
+            self.inactive_expired_event_offer = create_offer_with_event_product(venue, is_active=False)
+            self.active_thing_offer_with_one_stock_with_remaining_quantity = create_offer_with_thing_product(venue, is_active=True)
+            self.active_thing_offer_with_all_stocks_without_quantity = create_offer_with_thing_product(venue, is_active=True)
+            self.active_event_offer_with_stock_in_the_future_without_quantity = create_offer_with_event_product(venue=venue)
+            self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity = create_offer_with_event_product(venue=venue)
+            self.sold_old_thing_offer_with_all_stocks_empty = create_offer_with_thing_product(venue)
+            self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity = create_offer_with_event_product(venue=venue)
+            self.sold_out_thing_offer_without_stock = create_offer_with_thing_product(venue)
+            self.sold_out_event_offer_without_stock = create_offer_with_event_product(venue=venue)
+            self.expired_event_offer_with_stock_in_the_past_without_quantity = create_offer_with_event_product(venue=venue)
+            self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity = create_offer_with_event_product(venue=venue)
+            self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity = create_offer_with_event_product(venue=venue)
+
+        def save_data_set(self):
+            five_days_ago = datetime.now() - timedelta(days=5)
+            in_five_days = datetime.now() + timedelta(days=5)
+            beneficiary = create_user(email='jane.doe@example.com')
+            stock_1 = create_stock_from_offer(self.sold_old_thing_offer_with_all_stocks_empty, quantity=0)
+            stock_2 = create_stock_from_offer(self.active_thing_offer_with_one_stock_with_remaining_quantity, quantity=5)
+            stock_3 = create_stock_from_offer(self.active_thing_offer_with_one_stock_with_remaining_quantity, quantity=0)
+            stock_4 = create_stock_from_offer(self.active_thing_offer_with_all_stocks_without_quantity, quantity=None)
+            stock_5 = create_stock_from_offer(self.expired_event_offer_with_stock_in_the_past_without_quantity, beginning_datetime=five_days_ago, booking_limit_datetime=five_days_ago, quantity=None)
+            stock_17 = create_stock_from_offer(self.expired_event_offer_with_stock_in_the_past_without_quantity, beginning_datetime=in_five_days, booking_limit_datetime=in_five_days, quantity=None, soft_deleted=True)
+            stock_6 = create_stock_from_offer(self.active_event_offer_with_stock_in_the_future_without_quantity, beginning_datetime=in_five_days, booking_limit_datetime=in_five_days, quantity=None)
+            stock_7 = create_stock_from_offer(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity, beginning_datetime=five_days_ago, booking_limit_datetime=five_days_ago, quantity=5)
+            stock_8 = create_stock_from_offer(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity, beginning_datetime=five_days_ago, booking_limit_datetime=five_days_ago, quantity=4)
+            stock_9 = create_stock_from_offer(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity, beginning_datetime=in_five_days, booking_limit_datetime=in_five_days, quantity=1)
+            stock_10 = create_stock_from_offer(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity, beginning_datetime=in_five_days, booking_limit_datetime=in_five_days, quantity=0)
+            stock_11 = create_stock_from_offer(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity, beginning_datetime=five_days_ago, booking_limit_datetime=five_days_ago, quantity=0)
+            stock_12 = create_stock_from_offer(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity, beginning_datetime=five_days_ago, booking_limit_datetime=five_days_ago, quantity=0)
+            stock_13 = create_stock_from_offer(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity, beginning_datetime=five_days_ago, booking_limit_datetime=five_days_ago, quantity=5)
+            stock_14 = create_stock_from_offer(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity, beginning_datetime=in_five_days, booking_limit_datetime=in_five_days, quantity=1, price=0)
+            stock_15 = create_stock_from_offer(self.inactive_thing_offer_with_stock_with_remaining_quantity, quantity=4)
+            stock_16 = create_stock_from_offer(self.active_event_offer_with_stock_in_the_future_without_quantity, beginning_datetime=five_days_ago, booking_limit_datetime=five_days_ago, quantity=None)
+            stock_18 = create_stock_from_offer(self.inactive_expired_event_offer, beginning_datetime=five_days_ago, booking_limit_datetime=five_days_ago, quantity=None)
+            stock_19 = create_stock_from_offer(self.inactive_thing_offer_without_remaining_quantity, quantity=0)
+            booking = create_booking(user=beneficiary, stock=stock_14)
+            booking_cancelled = create_booking(user=beneficiary, stock=stock_9, is_cancelled=True)
+            stocks = [stock_1, stock_2, stock_3, stock_4, stock_5, stock_6, stock_7, stock_8, stock_10, stock_11, stock_12, stock_13, stock_15, stock_16, stock_17, stock_18, stock_19]
+
+            repository.save(
+                self.user_offerer,
+                self.inactive_thing_offer_without_stock,
+                self.sold_out_thing_offer_without_stock,
+                self.sold_out_event_offer_without_stock,
+                *stocks,
+                booking,
+                booking_cancelled,
+            )
+
         @pytest.mark.usefixtures("db_session")
-        def should_return_offers_filtering_out_active_status(self, app):
-            user = create_user()
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            inactive_offer = create_offer_with_thing_product(venue, is_active=False)
-            active_offer = create_offer_with_thing_product(venue, is_active=True)
-            repository.save(user_offerer, inactive_offer, active_offer)
-            requested_page = 1
-            requested_offers_per_page = 2
+        def should_return_only_active_offers_when_requesting_active_status(self, app):
+            self.save_data_set()
 
             # when
             paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=user.id,
-                user_is_admin=user.isAdmin,
-                offers_per_page=requested_offers_per_page,
-                page=requested_page,
-                exclude_active=True,
+                user_id=self.pro.id,
+                user_is_admin=self.pro.isAdmin,
+                offers_per_page=20,
+                page=1,
+                requested_status='active'
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(inactive_offer.id) in offers_id
-            assert Identifier(active_offer.id) not in offers_id
+            offer_ids = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(self.active_thing_offer_with_one_stock_with_remaining_quantity.id) in offer_ids
+            assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) in offer_ids
+            assert Identifier(self.active_event_offer_with_stock_in_the_future_without_quantity.id) in offer_ids
+            assert Identifier(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id) in offer_ids
+            assert Identifier(self.inactive_thing_offer_without_stock.id) not in offer_ids
+            assert Identifier(self.inactive_thing_offer_with_stock_with_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.inactive_expired_event_offer.id) not in offer_ids
+            assert Identifier(self.inactive_thing_offer_without_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.sold_out_thing_offer_without_stock.id) not in offer_ids
+            assert Identifier(self.sold_old_thing_offer_with_all_stocks_empty.id) not in offer_ids
+            assert Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
+            assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) not in offer_ids
+            assert Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id) not in offer_ids
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_offers_filtering_out_inactive_status(self, app):
-            user = create_user()
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            inactive_offer = create_offer_with_thing_product(venue, is_active=False)
-            active_offer = create_offer_with_thing_product(venue, is_active=True)
-            repository.save(user_offerer, inactive_offer, active_offer)
-            requested_page = 1
-            requested_offers_per_page = 2
+        def should_return_only_inactive_offers_when_requesting_inactive_status(self, app):
+            # given
+            self.save_data_set()
 
             # when
             paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=user.id,
-                user_is_admin=user.isAdmin,
-                offers_per_page=requested_offers_per_page,
-                page=requested_page,
-                exclude_inactive=True,
+                user_id=self.pro.id,
+                user_is_admin=self.pro.isAdmin,
+                offers_per_page=20,
+                page=1,
+                requested_status='inactive'
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(inactive_offer.id) not in offers_id
-            assert Identifier(active_offer.id) in offers_id
+            offer_ids = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(self.active_thing_offer_with_one_stock_with_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) not in offer_ids
+            assert Identifier(self.active_event_offer_with_stock_in_the_future_without_quantity.id) not in offer_ids
+            assert Identifier(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.inactive_thing_offer_without_stock.id) in offer_ids
+            assert Identifier(self.inactive_thing_offer_with_stock_with_remaining_quantity.id) in offer_ids
+            assert Identifier(self.inactive_expired_event_offer.id) in offer_ids
+            assert Identifier(self.inactive_thing_offer_without_remaining_quantity.id) in offer_ids
+            assert Identifier(self.sold_out_thing_offer_without_stock.id) not in offer_ids
+            assert Identifier(self.sold_old_thing_offer_with_all_stocks_empty.id) not in offer_ids
+            assert Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
+            assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) not in offer_ids
+            assert Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id) not in offer_ids
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_only_sold_out_offers_when_requesting_sold_out_status(self, app):
+            # given
+            self.save_data_set()
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=self.pro.id,
+                user_is_admin=self.pro.isAdmin,
+                offers_per_page=20,
+                page=1,
+                requested_status='soldOut'
+            )
+
+            # then
+            offer_ids = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(self.active_thing_offer_with_one_stock_with_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) not in offer_ids
+            assert Identifier(self.active_event_offer_with_stock_in_the_future_without_quantity.id) not in offer_ids
+            assert Identifier(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.inactive_thing_offer_without_stock.id) not in offer_ids
+            assert Identifier(self.inactive_thing_offer_with_stock_with_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.inactive_expired_event_offer.id) not in offer_ids
+            assert Identifier(self.inactive_thing_offer_without_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.sold_out_thing_offer_without_stock.id) in offer_ids
+            assert Identifier(self.sold_old_thing_offer_with_all_stocks_empty.id) in offer_ids
+            assert Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id) in offer_ids
+            assert Identifier(self.sold_out_event_offer_without_stock.id) in offer_ids
+            assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) not in offer_ids
+            assert Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id) not in offer_ids
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offers_with_no_stocks_when_requesting_sold_out_status(self, app):
+            # given
+            self.save_data_set()
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=self.pro.id,
+                user_is_admin=self.pro.isAdmin,
+                offers_per_page=20,
+                page=1,
+                requested_status='soldOut'
+            )
+
+            # then
+            offer_ids = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(self.sold_out_thing_offer_without_stock.id) in offer_ids
+            assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) not in offer_ids
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offers_with_no_remaining_quantity_and_no_bookings_when_requesting_sold_out_status(self, app):
+            # given
+            self.save_data_set()
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=self.pro.id,
+                user_is_admin=self.pro.isAdmin,
+                offers_per_page=20,
+                page=1,
+                requested_status='soldOut'
+            )
+
+            # then
+            offer_ids = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(self.sold_old_thing_offer_with_all_stocks_empty.id) in offer_ids
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offers_with_no_remaining_quantity_in_the_future_when_requesting_sold_out_status(self, app):
+            # given
+            self.save_data_set()
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=self.pro.id,
+                user_is_admin=self.pro.isAdmin,
+                offers_per_page=20,
+                page=1,
+                requested_status='soldOut'
+            )
+
+            # then
+            offer_ids = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id) in offer_ids
+
+        @pytest.mark.usefixtures("db_session")
+        def should_exclude_offers_with_cancelled_bookings_when_requesting_sold_out_status(self, app):
+            # given
+            self.save_data_set()
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=self.pro.id,
+                user_is_admin=self.pro.isAdmin,
+                offers_per_page=20,
+                page=1,
+                requested_status='soldOut'
+            )
+
+            # then
+            offer_ids = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id) not in offer_ids
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_only_expired_offers_when_requesting_expired_status(self, app):
+            # given
+            self.save_data_set()
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=self.pro.id,
+                user_is_admin=self.pro.isAdmin,
+                offers_per_page=20,
+                page=1,
+                requested_status='expired'
+            )
+
+            # then
+            offer_ids = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(self.active_thing_offer_with_one_stock_with_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) not in offer_ids
+            assert Identifier(self.active_event_offer_with_stock_in_the_future_without_quantity.id) not in offer_ids
+            assert Identifier(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.inactive_thing_offer_without_stock.id) not in offer_ids
+            assert Identifier(self.inactive_thing_offer_with_stock_with_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.inactive_expired_event_offer.id) not in offer_ids
+            assert Identifier(self.inactive_thing_offer_without_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.sold_out_thing_offer_without_stock.id) not in offer_ids
+            assert Identifier(self.sold_old_thing_offer_with_all_stocks_empty.id) not in offer_ids
+            assert Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
+            assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) in offer_ids
+            assert Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id) in offer_ids
+            assert Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id) in offer_ids
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_only_sold_out_offers_and_requested_venue_when_requesting_sold_out_status_and_specific_venue(self, app):
+            # given
+            self.save_data_set()
+            other_venue = create_venue(offerer=self.offerer, siret='12345678998765')
+            sold_out_offer_on_other_venue = create_offer_with_thing_product(other_venue)
+            repository.save(sold_out_offer_on_other_venue)
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=self.pro.id,
+                user_is_admin=self.pro.isAdmin,
+                offers_per_page=20,
+                page=1,
+                requested_status='soldOut',
+                venue_id=other_venue.id
+            )
+
+            # then
+            offer_ids = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(self.sold_out_thing_offer_without_stock.id) not in offer_ids
+            assert Identifier(self.sold_old_thing_offer_with_all_stocks_empty.id) not in offer_ids
+            assert Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id) not in offer_ids
+            assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
+            assert Identifier(sold_out_offer_on_other_venue.id) in offer_ids

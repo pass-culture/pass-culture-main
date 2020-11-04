@@ -49,22 +49,16 @@ from pcapi.utils.rest import (
 @login_required
 @spectree_serialize(response_model=ListOffersResponseModel)  # type: ignore
 def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
-    venue = None
-
-    if query.venue_id:
-        venue = VenueSQLEntity.query.filter_by(id=query.venue_id).first_or_404()
-
     paginated_offers = list_offers_for_pro_user(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
         offerer_id=query.offerer_id,
-        venue=venue,
+        venue_id=query.venue_id,
         type_id=query.type_id,
         offers_per_page=query.paginate,
         name_keywords=query.name,
         page=query.page,
-        exclude_active=query.active == "false",
-        exclude_inactive=query.inactive == "false",
+        requested_status=query.status,
     )
 
     return ListOffersResponseModel(**serialize_offers_recap_paginated(paginated_offers))
@@ -126,8 +120,7 @@ def patch_all_offers_active_status() -> None:
         user_is_admin=current_user.isAdmin,
         is_active=offers_new_active_status,
         offerer_id=offerer_identifier,
-        exclude_active=payload.get("active") == "false",
-        exclude_inactive=payload.get("inactive") == "false",
+        requested_status=payload.get("status"),
         venue_id=venue_identifier,
         type_id=type_id,
         name_keywords=name_keywords,

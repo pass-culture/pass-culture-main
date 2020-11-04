@@ -940,8 +940,7 @@ class GetAllOffersIdByFiltersTest:
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offerer_id=offerer.id,
-            exclude_active=True,
-            exclude_inactive=False,
+            requested_status='inactive',
             venue_id=wanted_venue.id,
             name_keywords='Wanted'
         )

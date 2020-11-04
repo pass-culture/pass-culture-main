@@ -31,15 +31,12 @@ class Returns200:
         offer_on_other_venue = create_offer_with_thing_product(other_venue)
         stock = create_stock(offer=offer_on_requested_venue)
         repository.save(admin, stock, offer_on_other_venue)
-
-        # when
         client = TestClient(app.test_client()).with_auth(email=admin.email)
         path = f"/offers?venueId={humanize(requested_venue.id)}"
-        n_queries = testing.AUTHENTICATION_QUERIES
-        n_queries += 1  # select offers
-        n_queries += 1  # count offers
-        n_queries += 5  # serializer: select stock, mediation, product, venue, offerer
-        with assert_num_queries(n_queries):
+        select_and_count_offers_number_of_queries = 2
+
+        # when
+        with assert_num_queries(testing.AUTHENTICATION_QUERIES + select_and_count_offers_number_of_queries):
             response = client.get(path)
 
         # then
@@ -184,13 +181,12 @@ class Returns200:
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offerer_id=None,
-            venue=venue,
+            venue_id=venue.id,
             type_id=None,
             offers_per_page=None,
             name_keywords=None,
             page=None,
-            exclude_active=False,
-            exclude_inactive=False,
+            requested_status=None,
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
@@ -207,7 +203,7 @@ class Returns200:
         response = (
             TestClient(app.test_client())
             .with_auth(email=user.email)
-            .get("/offers?active=false&inactive=false")
+            .get("/offers?status=active")
         )
 
         # then
@@ -216,13 +212,12 @@ class Returns200:
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offerer_id=None,
-            venue=None,
+            venue_id=None,
             type_id=None,
             offers_per_page=None,
             name_keywords=None,
             page=None,
-            exclude_active=True,
-            exclude_inactive=True,
+            requested_status='active',
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
@@ -249,13 +244,12 @@ class Returns200:
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offerer_id=offerer.id,
-            venue=None,
+            venue_id=None,
             type_id=None,
             offers_per_page=None,
             name_keywords=None,
             page=None,
-            exclude_active=False,
-            exclude_inactive=False,
+            requested_status=None,
         )
 
 

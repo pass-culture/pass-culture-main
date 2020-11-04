@@ -16,28 +16,26 @@ DEFAULT_PAGE = 1
 
 
 def list_offers_for_pro_user(
-    user_id: int,
-    user_is_admin: bool,
-    type_id: Optional[str],
-    offerer_id: Optional[int],
-    offers_per_page: Optional[int],
-    page: Optional[int],
-    venue: Optional[VenueSQLEntity] = None,
-    exclude_active: Optional[bool] = False,
-    exclude_inactive: Optional[bool] = False,
-    name_keywords: Optional[str] = None,
+        user_id: int,
+        user_is_admin: bool,
+        type_id: Optional[str],
+        offerer_id: Optional[int],
+        offers_per_page: Optional[int],
+        page: Optional[int],
+        venue_id: Optional[int] = None,
+        name_keywords: Optional[str] = None,
+        requested_status: Optional[str] = None,
 ) -> PaginatedOffersRecap:
-    venue_id = None
-
-    if venue:
-        offerer_id = offerer_id or venue.managingOffererId
-        venue_id = venue.id
-
-    if not user_is_admin and offerer_id is not None:
-        user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
-            user_id=user_id, offerer_id=offerer_id
-        )
-        validation.check_user_has_rights_on_offerer(user_offerer)
+    if not user_is_admin:
+        offerer_id = None
+        if venue_id:
+            venue = VenueSQLEntity.query.filter_by(id=venue_id).first_or_404()
+            offerer_id = offerer_id or venue.managingOffererId
+        if offerer_id is not None:
+            user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
+                    user_id=user_id, offerer_id=offerer_id
+                )
+            validation.check_user_has_rights_on_offerer(user_offerer)
 
     return get_paginated_offers_for_offerer_venue_and_keywords(
         user_id=user_id,
@@ -48,6 +46,5 @@ def list_offers_for_pro_user(
         type_id=type_id,
         page=page or DEFAULT_PAGE,
         name_keywords=name_keywords,
-        exclude_active=exclude_active,
-        exclude_inactive=exclude_inactive,
+        requested_status=requested_status,
     )

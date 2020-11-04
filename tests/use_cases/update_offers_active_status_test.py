@@ -82,8 +82,7 @@ class UpdateAllOffersIsActiveStatusTest:
             user_id=12,
             user_is_admin=True,
             offerer_id=None,
-            exclude_active=False,
-            exclude_inactive=False,
+            requested_status=None,
             venue_id=None,
             type_id=None,
             name_keywords=None

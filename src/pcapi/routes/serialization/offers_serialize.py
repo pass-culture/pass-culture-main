@@ -160,12 +160,11 @@ class ListOffersResponseModel(BaseModel):
 
 
 class ListOffersQueryModel(BaseModel):
-    active: Optional[str]
-    inactive: Optional[str]
     paginate: Optional[int]
     page: Optional[int]
     name: Optional[str]
     offerer_id: Optional[int]
+    status: Optional[str]
     venue_id: Optional[int]
     type_id: Optional[str]
 
