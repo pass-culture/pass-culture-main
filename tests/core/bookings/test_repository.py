@@ -5,6 +5,7 @@ from freezegun import freeze_time
 import pytest
 from pytest import fixture
 
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
 from pcapi.model_creators.activity_creators import create_booking_activity, save_all_activities
 from pcapi.model_creators.generic_creators import create_booking, create_deposit, create_offerer, create_payment, create_recommendation, create_stock, create_user, create_user_offerer, create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_stock_from_offer, create_stock_with_event_offer, \
@@ -1390,7 +1391,7 @@ class FindByProUserIdTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, idx='15')
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0, beginning_datetime=datetime.utcnow() + timedelta(hours=98))
         yesterday = datetime.utcnow() - timedelta(days=1)
         booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF')
         repository.save(user_offerer, booking)
@@ -1412,9 +1413,33 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_used is False
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
+        assert expected_booking_recap.booking_is_confirmed is False
         assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime.astimezone(
             tz.gettz('Europe/Paris'))
         assert expected_booking_recap.venue_identifier == venue.id
+        assert isinstance(expected_booking_recap.booking_status_history, BookingRecapHistory)
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(self, app: fixture):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com',
+                                  first_name='Ron', last_name='Weasley')
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer, idx='15')
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
+        more_than_two_days_ago = datetime.utcnow() - timedelta(days=3)
+        booking = create_booking(user=beneficiary, stock=stock, date_created=more_than_two_days_ago, token='ABCDEF')
+        repository.save(user_offerer, booking)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+
+        # Then
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.booking_is_confirmed is True
+        assert isinstance(expected_booking_recap.booking_status_history, BookingRecapHistory)
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_payment_date_when_booking_has_been_reimbursed(self, app: fixture):
@@ -1495,6 +1520,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_used is True
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
+        assert expected_booking_recap.booking_status_history.date_confirmed is not None
         assert expected_booking_recap.booking_status_history.date_used is not None
 
     @pytest.mark.usefixtures("db_session")

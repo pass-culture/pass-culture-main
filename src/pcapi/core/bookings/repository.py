@@ -255,6 +255,8 @@ def _build_bookings_recap_query(user_id: int) -> Query:
         Booking.amount.label("bookingAmount"),
         Booking.dateUsed.label("dateUsed"),
         Booking.cancellationDate.label("cancellationDate"),
+        Booking.confirmationDate.label("confirmationDate"),
+        Booking.isConfirmed.label("isConfirmed"),
         OfferSQLEntity.name.label("offerName"),
         OfferSQLEntity.id.label("offerId"),
         OfferSQLEntity.extraData.label("offerExtraData"),
@@ -322,7 +324,7 @@ def _serialize_thing_booking_recap(booking: AbstractKeyedTuple) -> ThingBookingR
         booking_date=_serialize_date_with_timezone(date_without_timezone=booking.bookingDate, booking=booking),
         booking_is_used=booking.isUsed,
         booking_is_cancelled=booking.isCancelled,
-        booking_is_confirmed=False,  # devnote: temporary waiting for business rule to be implemented
+        booking_is_confirmed=False,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
         venue_identifier=booking.venueId,
@@ -330,7 +332,7 @@ def _serialize_thing_booking_recap(booking: AbstractKeyedTuple) -> ThingBookingR
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
         cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate,
                                                         booking=booking),
-        confirmation_date=None,  # devnote: temporary waiting for business rule to be implemented
+        confirmation_date=None,
         venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
         venue_is_virtual=booking.venueIsVirtual
     )
@@ -350,7 +352,7 @@ def _serialize_book_booking_recap(booking: AbstractKeyedTuple) -> BookBookingRec
         booking_date=_serialize_date_with_timezone(date_without_timezone=booking.bookingDate, booking=booking),
         booking_is_used=booking.isUsed,
         booking_is_cancelled=booking.isCancelled,
-        booking_is_confirmed=False,  # devnote: temporary waiting for business rule to be implemented
+        booking_is_confirmed=False,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
         venue_identifier=booking.venueId,
@@ -358,7 +360,7 @@ def _serialize_book_booking_recap(booking: AbstractKeyedTuple) -> BookBookingRec
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
         cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate,
                                                         booking=booking),
-        confirmation_date=None,  # devnote: temporary waiting for business rule to be implemented
+        confirmation_date=None,
         venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
         venue_is_virtual=booking.venueIsVirtual
     )
@@ -377,7 +379,7 @@ def _serialize_event_booking_recap(booking: AbstractKeyedTuple) -> EventBookingR
         booking_date=_serialize_date_with_timezone(date_without_timezone=booking.bookingDate, booking=booking),
         booking_is_used=booking.isUsed,
         booking_is_cancelled=booking.isCancelled,
-        booking_is_confirmed=False,  # devnote: temporary waiting for business rule to be implemented
+        booking_is_confirmed=booking.isConfirmed,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
         event_beginning_datetime=_apply_departement_timezone(
@@ -385,7 +387,7 @@ def _serialize_event_booking_recap(booking: AbstractKeyedTuple) -> EventBookingR
             departement_code=booking.venueDepartementCode
         ),
         date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
-        confirmation_date=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),   # devnote: temporary waiting for business rule to be implemented
+        confirmation_date=_serialize_date_with_timezone(date_without_timezone=booking.confirmationDate, booking=booking),
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
         cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate,
                                                         booking=booking),

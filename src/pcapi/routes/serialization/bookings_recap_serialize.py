@@ -35,12 +35,11 @@ def _serialize_booking_status_history(booking_status_history: BookingRecapHistor
         BookingRecapStatus.booked,
         booking_status_history.booking_date
     )]
-    # devnote : BookingRecapConfirmedHistory "and condition" is temporary while business rule is not implemented
     if isinstance(booking_status_history, BookingRecapConfirmedHistory) and booking_status_history.date_confirmed is not None:
         serialized_booking_status_history.append(
             _serialize_booking_status_info(
                 BookingRecapStatus.confirmed,
-                booking_status_history.date_confirmed  # devnote : temporary while business rule is not implemented
+                booking_status_history.date_confirmed
             )
         )
     if isinstance(booking_status_history, BookingRecapValidatedHistory):
