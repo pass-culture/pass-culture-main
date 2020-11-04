@@ -23,6 +23,10 @@
     background-color: $green-valid;
   }
 
+  .booking-status-confirmed {
+    background-color: $black;
+  }
+
   .booking-status-wrapper {
     position: relative;
     line-height: $body-line-height;
