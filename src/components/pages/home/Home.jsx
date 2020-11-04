@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
 import MainView from './MainView/MainView'
 import User from './Profile/ValueObjects/User'
 import { getCurrentPosition } from '../../../utils/geolocation'
@@ -15,16 +15,27 @@ const Home = ({
   user,
 }) => {
   const [isLoading, setIsLoading] = useState(true)
-  const userCoordinates = getCurrentPosition(geolocation).then(userCoordinates => {
-    setIsLoading(false)
-    return userCoordinates
-  })
+  const geolocationRef = useRef(geolocation)
+
+  useEffect(() => {
+    const waitForCoordinates = async () => {
+      try {
+        const confirmedGeolocation = await getCurrentPosition(geolocation)
+        geolocationRef.current = confirmedGeolocation
+        setIsLoading(false)
+      } catch (error) {
+        setIsLoading(false)
+      }
+    }
+    waitForCoordinates()
+  }, [geolocation])
+
   return (
     <Fragment>
       {isLoading && <LoaderContainer />}
       {!isLoading && (
         <MainView
-          geolocation={userCoordinates}
+          geolocation={geolocationRef.current}
           history={history}
           match={match}
           trackAllModulesSeen={trackAllModulesSeen}
