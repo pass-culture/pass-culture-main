@@ -45,7 +45,7 @@ def refresh() -> authentication.RefreshResponse:
 
 
 @blueprint.native_v1.route("/password_reset_request", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)  # type: ignore
+@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[503])  # type: ignore
 def password_reset_request(body: PasswordResetRequestRequest) -> None:
     user = find_user_by_email(body.email)
 

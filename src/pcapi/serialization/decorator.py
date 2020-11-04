@@ -1,9 +1,10 @@
 from functools import wraps
-from typing import Callable, Any, Optional
+from typing import Callable, Any, List, Optional
 
 from flask import request, make_response, Response
 from pydantic import BaseModel
 from spectree import Response as SpectreeResponse
+from spectree.spec import SpecTree
 
 from pcapi.flask_app import api as default_api
 from pcapi.models import ApiErrors
@@ -44,7 +45,8 @@ def spectree_serialize(
     response_by_alias: bool = True,
     exclude_none: bool = False,
     on_success_status: int = 200,
-    api=default_api,
+    on_error_statuses: List[int] = [],
+    api: SpecTree = default_api,
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
 
@@ -64,7 +66,15 @@ def spectree_serialize(
     def decorate_validation(route: Callable[..., Any]) -> Callable[[Any], Any]:
         body_in_kwargs = route.__annotations__.get("body")
         query_in_kwargs = route.__annotations__.get("query")
-        spectree_response = SpectreeResponse("HTTP_403")
+
+        if 403 not in on_error_statuses:
+            on_error_statuses.append(403)
+
+        spectree_response = SpectreeResponse(*[f"HTTP_{on_error_status}" for on_error_status in on_error_statuses])
+
+        if on_success_status == 204:
+            spectree_response.codes.append(f"HTTP_{on_success_status}")
+
         if response_model:
             spectree_response.code_models[f"HTTP_{on_success_status}"] = response_model
 
