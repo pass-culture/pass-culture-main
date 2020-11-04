@@ -1,6 +1,7 @@
 import { API_URL } from 'utils/config'
 
 const GET_HTTP_METHOD = 'GET'
+const HTTP_STATUS_NO_CONTENT = 204
 
 const buildOptions = (method, withCredentials = true) => {
   const options = {
@@ -23,7 +24,7 @@ const fetchWithErrorHandler = async (path, options) => {
   if (!response.ok) {
     throw Error('HTTP error')
   }
-  const results = response.statusText !== 'NO CONTENT' ? await response.json() : null
+  const results = response.status !== HTTP_STATUS_NO_CONTENT ? await response.json() : null
   return Promise.resolve(results)
 }
 
