@@ -61,7 +61,9 @@ def list_offers_for_pro_user(
 def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> OfferSQLEntity:
     venue = load_or_raise_error(VenueSQLEntity, offer_data.venue_id)
 
-    ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
+    ensure_current_user_has_rights(
+        rights=RightsType.editor, offerer_id=venue.managingOffererId, user=user
+    )
 
     if offer_data.product_id:
         offer = initialize_offer_from_product_id(offer_data.product_id)
