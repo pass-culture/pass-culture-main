@@ -3,7 +3,7 @@ import pytest
 from pcapi.models import Offer
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, API_URL
+from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, API_URL, create_provider
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from tests.conftest import TestClient
 
@@ -70,25 +70,27 @@ class Patch:
         def should_update_offers_by_given_filters(self, app):
             # Given
             user = create_user()
-            offerer = create_offerer()
-            offerer2 = create_offerer(siren='516399122')
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            venue2 = create_venue(offerer, siret='12355678912354')
-            venue3 = create_venue(offerer2, siret='12355691912354')
-            offer_corresponding_to_filters = create_offer_with_thing_product(venue, idx=1, is_active=True, thing_name='OK 1')
-            offer_corresponding_to_filters_2 = create_offer_with_thing_product(venue, idx=2, is_active=True, thing_name='OK 2')
-            offer_not_corresponding_to_filters = create_offer_with_thing_product(venue2, idx=3, is_active=True, thing_name='OK 3')
-            offer_not_corresponding_to_filters_2 = create_offer_with_thing_product(venue3, idx=4, is_active=True, thing_name='OK 4')
-            offer_not_corresponding_to_filters_3 = create_offer_with_thing_product(venue, idx=5, is_active=True, thing_name='Pas celle ci')
+            offerer_1 = create_offerer()
+            offerer_2 = create_offerer(siren='516399122')
+            user_offerer = create_user_offerer(user, offerer_1)
+            venue_1 = create_venue(offerer_1)
+            venue_2 = create_venue(offerer_1, siret='12355678912354')
+            venue_3 = create_venue(offerer_2, siret='12355691912354')
+            provider = create_provider()
+            offer_corresponding_to_filters_1 = create_offer_with_thing_product(venue_1, idx=1, is_active=True, thing_name='OK 1', last_provider_id=provider.id, last_provider=provider)
+            offer_corresponding_to_filters_2 = create_offer_with_thing_product(venue_1, idx=2, is_active=True, thing_name='OK 2', last_provider_id=provider.id, last_provider=provider)
+            offer_not_corresponding_to_filters_1 = create_offer_with_thing_product(venue_2, idx=3, is_active=True, thing_name='OK 3')
+            offer_not_corresponding_to_filters_2 = create_offer_with_thing_product(venue_3, idx=4, is_active=True, thing_name='OK 4')
+            offer_not_corresponding_to_filters_3 = create_offer_with_thing_product(venue_1, idx=5, is_active=True, thing_name='Pas celle ci')
 
-            repository.save(offer_corresponding_to_filters, offer_corresponding_to_filters_2, offer_not_corresponding_to_filters, offer_not_corresponding_to_filters_2, offer_not_corresponding_to_filters_3, user, user_offerer)
+            repository.save(offer_corresponding_to_filters_1, offer_corresponding_to_filters_2, offer_not_corresponding_to_filters_1, offer_not_corresponding_to_filters_2, offer_not_corresponding_to_filters_3, user, user_offerer)
 
             json = {
                 'isActive': False,
-                'offererId': humanize(offerer.id),
-                'venueId': humanize(venue.id),
+                'offererId': humanize(offerer_1.id),
+                'venueId': humanize(venue_1.id),
                 'name': 'OK',
+                'creationMode': 'imported',
             }
 
             # When
@@ -98,8 +100,8 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            assert Offer.query.get(offer_corresponding_to_filters.id).isActive == False
+            assert Offer.query.get(offer_corresponding_to_filters_1.id).isActive == False
             assert Offer.query.get(offer_corresponding_to_filters_2.id).isActive == False
-            assert Offer.query.get(offer_not_corresponding_to_filters.id).isActive == True
+            assert Offer.query.get(offer_not_corresponding_to_filters_1.id).isActive == True
             assert Offer.query.get(offer_not_corresponding_to_filters_2.id).isActive == True
             assert Offer.query.get(offer_not_corresponding_to_filters_3.id).isActive == True

@@ -348,7 +348,8 @@ def get_all_offers_id_by_filters(
     requested_status: Optional[str] = None,
     venue_id: Optional[int] = None,
     type_id: Optional[str] = None,
-    name_keywords: Optional[str] = None
+    name_keywords: Optional[str] = None,
+    creation_mode: Optional[str] = None,
 ) -> List[int]:
     query = get_offers_by_filters(
         user_id=user_id,
@@ -358,6 +359,7 @@ def get_all_offers_id_by_filters(
         venue_id=venue_id,
         type_id=type_id,
         name_keywords=name_keywords,
+        creation_mode=creation_mode,
     ).with_entities(Offer.id)
 
     offer_ids_as_tuple = query.all()

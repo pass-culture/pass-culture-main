@@ -19,6 +19,7 @@ def update_all_offers_active_status(
     venue_id: Optional[int] = None,
     type_id: Optional[str] = None,
     name_keywords: Optional[str] = None,
+    creation_mode: Optional[str] = None,
 ):
     offers_id = get_all_offers_id_by_filters(
         user_id=user_id,
@@ -28,6 +29,7 @@ def update_all_offers_active_status(
         venue_id=venue_id,
         type_id=type_id,
         name_keywords=name_keywords,
+        creation_mode=creation_mode
     )
 
     update_offers_active_status(offers_id, is_active)

@@ -101,6 +101,7 @@ def patch_all_offers_active_status() -> None:
         venue_id=venue_identifier,
         type_id=type_id,
         name_keywords=name_keywords,
+        creation_mode=payload.get("creationMode")
     )
 
     return "", 204

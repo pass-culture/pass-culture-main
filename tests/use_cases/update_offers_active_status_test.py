@@ -70,7 +70,7 @@ class UpdateAllOffersIsActiveStatusTest:
     @patch('pcapi.use_cases.update_offers_active_status.update_offers_is_active_status')
     @patch('pcapi.use_cases.update_offers_active_status.feature_queries.is_active', return_value=True)
     @patch('pcapi.use_cases.update_offers_active_status.redis.add_offer_id')
-    def test_should_get_all_offers_filtered_by_params_and_call_update(self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, mocked_get, app):
+    def test_should_get_all_offers_filtered_by_default_params_and_call_update(self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, mocked_get, app):
         # Given
         mocked_get.return_value = [1, 2]
 
@@ -85,7 +85,8 @@ class UpdateAllOffersIsActiveStatusTest:
             requested_status=None,
             venue_id=None,
             type_id=None,
-            name_keywords=None
+            name_keywords=None,
+            creation_mode=None,
         )
         mocked_update.assert_called_once_with([1, 2], True)
         mocked_feature_is_active.assert_called_once_with(FeatureToggle.SYNCHRONIZE_ALGOLIA)
@@ -93,3 +94,36 @@ class UpdateAllOffersIsActiveStatusTest:
             call(client=app.redis_client, offer_id=1),
             call(client=app.redis_client, offer_id=2)
         ]
+
+    @patch('pcapi.use_cases.update_offers_active_status.get_all_offers_id_by_filters')
+    @patch('pcapi.use_cases.update_offers_active_status.update_offers_is_active_status')
+    @patch('pcapi.use_cases.update_offers_active_status.feature_queries.is_active', return_value=True)
+    @patch('pcapi.use_cases.update_offers_active_status.redis.add_offer_id')
+    def test_should_get_all_offers_filtered_by_params(self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, mocked_get, app):
+        # Given
+        mocked_get.return_value = [1, 2]
+
+        # When
+        update_all_offers_active_status(
+            user_id=12,
+            user_is_admin=True,
+            is_active=True,
+            offerer_id=123,
+            requested_status='active',
+            venue_id=456,
+            type_id='ThingType',
+            name_keywords='search',
+            creation_mode='imported'
+        )
+
+        # Then
+        mocked_get.assert_called_once_with(
+            user_id=12,
+            user_is_admin=True,
+            offerer_id=123,
+            requested_status='active',
+            venue_id=456,
+            type_id='ThingType',
+            name_keywords='search',
+            creation_mode='imported'
+        )

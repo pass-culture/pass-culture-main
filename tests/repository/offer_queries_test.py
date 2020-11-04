@@ -927,9 +927,10 @@ class GetAllOffersIdByFiltersTest:
         user = create_user()
         offerer = create_offerer()
         create_user_offerer(user, offerer)
+        provider = create_provider()
         wanted_venue = create_venue(offerer=offerer)
         unwanted_venue = create_venue(offerer=offerer, siret='12345678912344')
-        wanted_offer = create_offer_with_thing_product(venue=wanted_venue, thing_name='Wanted name', is_active=False)
+        wanted_offer = create_offer_with_thing_product(venue=wanted_venue, thing_name='Wanted name', is_active=False, last_provider=provider, last_provider_id=provider.id)
         unwanted_offer2 = create_offer_with_thing_product(venue=wanted_venue, is_active=False)
         unwanted_offer3 = create_offer_with_thing_product(venue=wanted_venue)
         unwanted_offer4 = create_offer_with_thing_product(venue=unwanted_venue)
@@ -942,7 +943,8 @@ class GetAllOffersIdByFiltersTest:
             offerer_id=offerer.id,
             requested_status='inactive',
             venue_id=wanted_venue.id,
-            name_keywords='Wanted'
+            name_keywords='Wanted',
+            creation_mode='imported',
         )
 
         # Then
