@@ -63,6 +63,18 @@ class Post:
             # Then
             assert response.status_code == 400
 
+        @patch("pcapi.routes.beneficiaries.is_licence_token_valid", check_token_failed_mock)
+        def when_token_is_the_string_null(self, app):
+            # Given
+            data = {'token': "null"}
+
+            # When
+            response = TestClient(app.test_client()) \
+                .post(f'/beneficiaries/licence_verify', json=data)
+
+            # Then
+            assert response.status_code == 400
+
         @patch("pcapi.routes.beneficiaries.is_licence_token_valid", check_token_mock)
         def when_has_wrong_token_key(self, app):
             # Given

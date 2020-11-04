@@ -9,7 +9,7 @@ def check_verify_licence_token_payload(payload: Request) -> None:
         errors = ApiErrors()
         errors.add_error('token', "Missing token")
         raise errors
-    if not token:
+    if not token or token == "null":
         errors = ApiErrors()
         errors.add_error('token', "Empty token")
         raise errors
