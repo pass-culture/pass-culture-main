@@ -324,7 +324,7 @@ def test_send_payment_details_sends_a_csv_attachment(app):
     app.mailjet_client.send.create.assert_called_once()
     args = app.mailjet_client.send.create.call_args
     assert len(args[1]['data']['Attachments']) == 1
-    assert args[1]['data']['Attachments'][0]['ContentType'] == 'text/csv'
+    assert args[1]['data']['Attachments'][0]['ContentType'] == 'application/zip'
 
 
 @mocked_mail

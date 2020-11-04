@@ -1,11 +1,13 @@
 import base64
-import os
 from datetime import datetime
+import io
+import os
 from pprint import pformat
 from typing import Dict, List, Union
-from requests import Response
+import zipfile
 
 from flask import current_app as app, render_template
+from requests import Response
 
 from pcapi.connectors import api_entreprises
 from pcapi.domain.postal_code.postal_code import PostalCode
@@ -246,16 +248,35 @@ def make_payment_message_email(xml: str, checksum: bytes) -> Dict:
     }
 
 
+def _get_zipfile_content(content: str, filename: str):
+    """Return the content of a ZIP fie that would include a single file
+    with the requested content and filename.
+    """
+    stream = io.BytesIO()
+    zf = zipfile.ZipFile(
+        stream, mode='w', compression=zipfile.ZIP_DEFLATED, compresslevel=9
+    )
+    zf.writestr(filename, content)
+    zf.close()
+    stream.seek(0)
+    return stream.read()
+
+
 def make_payment_details_email(csv: str) -> Dict:
     now = datetime.utcnow()
-    csv_b64encode = base64.b64encode(csv.encode('utf-8')).decode()
+    csv_filename = f"details_des_paiements_{datetime.strftime(now, '%Y%m%d')}.csv"
+    zipfile_content = _get_zipfile_content(csv, csv_filename)
     return {
         'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'FromName': 'pass Culture Pro',
         'Subject': 'Détails des paiements pass Culture Pro - {}'.format(datetime.strftime(now, "%Y-%m-%d")),
-        'Attachments': [{"ContentType": "text/csv",
-                         "Filename": "details_des_paiements_{}.csv".format(datetime.strftime(now, "%Y%m%d")),
-                         "Content": csv_b64encode}],
+        'Attachments': [
+            {
+                "ContentType": "application/zip",
+                "Filename": f"{csv_filename}.zip",
+                "Content": base64.b64encode(zipfile_content).decode(),
+            },
+        ],
         'Html-part': ''
     }
 

@@ -1,4 +1,7 @@
+import base64
+import io
 from unittest.mock import Mock, patch
+import zipfile
 
 from bs4 import BeautifulSoup
 from freezegun import freeze_time
@@ -95,17 +98,24 @@ def test_make_payment_message_email_sends_a_xml_file_with_its_checksum_in_email_
 @freeze_time('2018-10-15 09:21:34')
 def test_make_payment_details_email():
     # Given
-    csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
+    csv = '"header A","header B","header É"\n"part A","part B","part É"\n'
 
     # When
     email = make_payment_details_email(csv)
 
     # Then
+    expected_csv_name = "details_des_paiements_20181015.csv"
     assert email["FromEmail"] == 'support@example.com'
     assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Détails des paiements pass Culture Pro - 2018-10-15"
     assert email["Html-part"] == ""
-    assert email["Attachments"] == [{"ContentType": "text/csv",
-                                     "Filename": "details_des_paiements_20181015.csv",
-                                     "Content": 'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
-                                                'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
+    assert len(email["Attachments"]) == 1
+    attachment = email["Attachments"][0]
+    assert attachment["ContentType"] == "application/zip"
+    assert attachment['Filename'] == f"{expected_csv_name}.zip"
+    encoded_zip_content = attachment["Content"]
+    zip_content = base64.b64decode(encoded_zip_content)
+    zf = zipfile.ZipFile(io.BytesIO(zip_content))
+    assert zf.namelist() == [expected_csv_name]
+    csv_in_zip_file = zf.open(expected_csv_name).read().decode('utf-8')
+    assert csv_in_zip_file == csv
