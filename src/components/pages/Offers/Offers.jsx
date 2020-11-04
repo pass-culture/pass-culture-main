@@ -38,7 +38,7 @@ class Offers extends PureComponent {
       offererId,
       page,
       venueId: selectedVenueId,
-      TypeId: selectedTypeId,
+      typeId: selectedTypeId,
     } = translateQueryParamsToApiParams(props.query.parse())
 
     const isFilteredByActiveStatus = active === EXCLUDING_STATUS_VALUE
@@ -273,15 +273,10 @@ class Offers extends PureComponent {
   }
 
   selectAllOffers = () => {
-    const {
-      offers,
-      showActionsBar,
-      setSelectedOfferIds,
-      hideActionsBar,
-    } = this.props
+    const { offers, showActionsBar, setSelectedOfferIds, hideActionsBar } = this.props
     const { areAllOffersSelected } = this.state
 
-    const selectedOfferIds = areAllOffersSelected ? [] : offers.map((offer) => offer.id)
+    const selectedOfferIds = areAllOffersSelected ? [] : offers.map(offer => offer.id)
     selectedOfferIds.length ? showActionsBar() : hideActionsBar()
     setSelectedOfferIds(selectedOfferIds)
 
