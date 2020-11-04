@@ -12,7 +12,9 @@ from pcapi.model_creators.generic_creators import (
     create_offerer,
     create_user,
     create_user_offerer,
-    create_venue, create_booking,
+    create_venue,
+    create_booking,
+    create_provider,
 )
 from pcapi.model_creators.specific_creators import (
     create_offer_with_event_product,
@@ -234,6 +236,58 @@ class PaginatedOfferSQLRepositoryTest:
         # then
         assert paginated_offers.total_offers == 1
         assert paginated_offers.offers[0].name == offer_from_wanted_offerer.name
+
+    @pytest.mark.usefixtures("db_session")
+    def test_returns_offers_filtered_by_manual_creation_mode_when_provided(self, app: object):
+        # given
+        pro_user = create_user()
+        offerer = create_offerer()
+        create_user_offerer(pro_user, offerer)
+        venue = create_venue(offerer)
+        provider = create_provider()
+        manually_created_offer = create_offer_with_thing_product(venue=venue, last_provider=None, last_provider_id=None)
+        imported_offer = create_offer_with_thing_product(venue=venue, last_provider=provider, last_provider_id=provider.id)
+
+        repository.save(manually_created_offer, imported_offer, pro_user)
+
+        # When
+        paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            user_id=pro_user.id,
+            user_is_admin=pro_user.isAdmin,
+            page=1,
+            offers_per_page=1,
+            creation_mode='manual'
+        )
+
+        # then
+        assert paginated_offers.total_offers == 1
+        assert paginated_offers.offers[0].identifier.persisted == manually_created_offer.id
+
+    @pytest.mark.usefixtures("db_session")
+    def test_returns_offers_filtered_by_imported_creation_mode_when_provided(self, app: object):
+        # given
+        pro_user = create_user()
+        offerer = create_offerer()
+        create_user_offerer(pro_user, offerer)
+        venue = create_venue(offerer)
+        provider = create_provider()
+        manually_created_offer = create_offer_with_thing_product(venue=venue, last_provider=None, last_provider_id=None)
+        imported_offer = create_offer_with_thing_product(venue=venue, last_provider=provider, last_provider_id=provider.id)
+
+        repository.save(manually_created_offer, imported_offer, pro_user)
+
+        # When
+        paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            user_id=pro_user.id,
+            user_is_admin=pro_user.isAdmin,
+            page=1,
+            offers_per_page=1,
+            creation_mode='imported'
+        )
+
+        # then
+        assert paginated_offers.total_offers == 1
+        assert paginated_offers.offers[0].identifier.persisted == imported_offer.id
 
     class StatusFiltersTest:
         def setup_method(self):

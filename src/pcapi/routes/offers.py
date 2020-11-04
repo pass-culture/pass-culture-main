@@ -50,6 +50,7 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
         name_keywords=query.name,
         page=query.page,
         requested_status=query.status,
+        creation_mode=query.creation_mode,
     )
 
     return ListOffersResponseModel(**serialize_offers_recap_paginated(paginated_offers))

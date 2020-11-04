@@ -187,6 +187,7 @@ class Returns200:
             name_keywords=None,
             page=None,
             requested_status=None,
+            creation_mode=None,
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
@@ -218,6 +219,7 @@ class Returns200:
             name_keywords=None,
             page=None,
             requested_status='active',
+            creation_mode=None,
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
@@ -250,6 +252,39 @@ class Returns200:
             name_keywords=None,
             page=None,
             requested_status=None,
+            creation_mode=None,
+        )
+
+    @patch("pcapi.routes.offers.list_offers_for_pro_user")
+    def test_results_are_filtered_by_given_creation_mode(
+        self, list_offers_mock, app, db_session
+    ):
+        # given
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        repository.save(user_offerer)
+
+        # when
+        response = (
+            TestClient(app.test_client())
+            .with_auth(email=user.email)
+            .get("/offers?creationMode=imported")
+        )
+
+        # then
+        assert response.status_code == 200
+        list_offers_mock.assert_called_once_with(
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
+            offerer_id=None,
+            venue_id=None,
+            type_id=None,
+            offers_per_page=None,
+            name_keywords=None,
+            page=None,
+            requested_status=None,
+            creation_mode='imported',
         )
 
 

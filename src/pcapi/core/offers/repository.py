@@ -14,6 +14,9 @@ from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_co
 )
 from pcapi.models import Offerer, Offer, UserOfferer, VenueSQLEntity, StockSQLEntity
 
+IMPORTED_CREATION_MODE = 'imported'
+MANUAL_CREATION_MODE = 'manual'
+
 INACTIVE_STATUS = 'inactive'
 EXPIRED_STATUS = 'expired'
 SOLD_OUT_STATUS = 'soldOut'
@@ -30,6 +33,7 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
         venue_id: Optional[int] = None,
         type_id: Optional[str] = None,
         name_keywords: Optional[str] = None,
+        creation_mode: Optional[str] = None,
 ) -> PaginatedOffersRecap:
     query = get_offers_by_filters(
         user_id=user_id,
@@ -39,6 +43,7 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
         venue_id=venue_id,
         type_id=type_id,
         name_keywords=name_keywords,
+        creation_mode=creation_mode
     )
 
     query = query \
@@ -79,6 +84,7 @@ def get_offers_by_filters(
         venue_id: Optional[int] = None,
         type_id: Optional[str] = None,
         name_keywords: Optional[str] = None,
+        creation_mode: Optional[str] = None,
 ):
     datetime_now = datetime.utcnow()
     query = Offer.query
@@ -89,6 +95,8 @@ def get_offers_by_filters(
         query = query.filter(Offer.venueId == venue_id)
     if type_id is not None:
         query = query.filter(Offer.type == type_id)
+    if creation_mode is not None:
+        query = _filter_by_creation_mode(query, creation_mode)
     if offerer_id is not None:
         venue_alias = aliased(VenueSQLEntity)
         query = query \
@@ -109,6 +117,15 @@ def get_offers_by_filters(
         query = query.filter(name_keywords_filter)
 
     return query.distinct(Offer.id)
+
+
+def _filter_by_creation_mode(query: Query, creation_mode: str):
+    if creation_mode == MANUAL_CREATION_MODE:
+        query = query.filter(Offer.lastProviderId == None)
+    if creation_mode == IMPORTED_CREATION_MODE:
+        query = query.filter(Offer.lastProviderId != None)
+
+    return query
 
 
 def _filter_by_status(query: Query, user_id: int, datetime_now: datetime, requested_status: str) -> Query:
