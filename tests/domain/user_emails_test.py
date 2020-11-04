@@ -506,6 +506,21 @@ class SendResetPasswordUserEmailTest:
         mock_retrieve_data_for_reset_password_user_email.assert_called_once_with(user)
         mocked_send_email.assert_called_once_with(data={'MJ-TemplateID': 912168})
 
+    @patch('pcapi.domain.user_emails.retrieve_data_for_reset_password_user_native_app_email',
+           return_value={'MJ-TemplateID': 12345})
+    def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(self,
+                                                                              mock_retrieve_data_for_reset_password_user_native_app_email):
+        # given
+        user = create_user(email='bobby@example.com', first_name='Bobby', reset_password_token='AZ45KNB99H')
+        mocked_send_email = Mock()
+
+        # when
+        send_reset_password_email_to_user(user, mocked_send_email, is_native_app=True)
+
+        # then
+        mock_retrieve_data_for_reset_password_user_native_app_email.assert_called_once_with(user)
+        mocked_send_email.assert_called_once_with(data={'MJ-TemplateID': 12345})
+
 
 class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
     @patch('pcapi.domain.user_emails.make_duplicate_beneficiary_pre_subscription_rejected_data',

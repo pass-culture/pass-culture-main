@@ -58,7 +58,7 @@ def password_reset_request(body: PasswordResetRequestRequest) -> None:
     generate_reset_token(user)
     repository.save(user)
 
-    is_email_sent = send_reset_password_email_to_user(user, send_raw_email)
+    is_email_sent = send_reset_password_email_to_user(user, send_raw_email, is_native_app=True)
 
     if not is_email_sent:
         app.logger.error(
