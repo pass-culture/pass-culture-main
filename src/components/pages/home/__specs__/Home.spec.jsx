@@ -77,6 +77,35 @@ describe('src | components | home', () => {
     expect(loadingScreen).toHaveLength(1)
   })
 
+  it('should render the main view with a valid geolocation prop', async () => {
+    // Given
+    const flushPromises = () => new Promise(setImmediate)
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [],
+          nbHits: 0,
+          nbPages: 1,
+          page: 1,
+        })
+      })
+    )
+    fetchHomepage.mockResolvedValue([])
+
+    // When
+    const wrapper = await mount(
+      <MemoryRouter initialEntries={['/accueil']}>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+    await flushPromises()
+    wrapper.update()
+
+    // Then
+    const mainView = wrapper.find('MainView')
+    expect(mainView.prop('geolocation')).toStrictEqual(props.geolocation)
+  })
+
   it('should render the main view when navigating to /accueil', async () => {
     // Given
     const flushPromises = () => new Promise(setImmediate)
