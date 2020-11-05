@@ -185,7 +185,7 @@ class PcObject:
 
 
 def _dehumanize_if_needed(column, value: Any) -> Any:
-    if _is_human_id_column(column):
+    if _is_human_id_column(column) and not isinstance(value, int):
         return dehumanize(value)
     return value
 
