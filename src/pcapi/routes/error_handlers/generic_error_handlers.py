@@ -59,7 +59,7 @@ def internal_error(error: Exception) -> Tuple[Dict, int]:
     errors.add_error('global',
                      "Il semble que nous ayons des problèmes techniques :("
                      + " On répare ça au plus vite.")
-    return jsonify(errors.exceptions), 500
+    return jsonify(errors.errors), 500
 
 
 @app.errorhandler(MethodNotAllowed)
