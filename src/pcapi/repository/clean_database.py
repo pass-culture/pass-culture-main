@@ -34,10 +34,13 @@ from pcapi.models.db import db
 from pcapi.models.email import Email
 from pcapi.models.install import install_features, install_materialized_views
 from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity
+from pcapi.utils.config import ENV
 
 
 def clean_all_database(*args, **kwargs):
     """ Order of deletions matters because of foreign key constraints """
+    if ENV != 'development':
+        raise ValueError(f"You cannot do this on this environment: '{ENV}'")
     Activity = load_activity()
     LocalProviderEvent.query.delete()
     AllocineVenueProviderPriceRule.query.delete()
