@@ -4,6 +4,7 @@ from pcapi.load_environment_variables import load_environment_variables
 load_environment_variables()
 
 import os
+import sys
 
 from flask import Flask
 from mailjet_rest import Client
@@ -38,3 +39,17 @@ from pcapi.utils.token import *
 from pcapi.scripts.beneficiary import old_remote_import
 from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.booking import *
+
+
+def set_python_prompt():
+    env = os.environ['ENV']
+    if env == 'production':
+        color = '\x1b[1;49;31m'  # red
+    elif env == 'staging':
+        color = '\x1b[1;49;35m'  # purple
+    else:
+        color = None
+    if color:
+        sys.ps1 = f'{color}{env} >>>\x1b[0m '
+
+set_python_prompt()
