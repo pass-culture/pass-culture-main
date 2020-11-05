@@ -25,6 +25,7 @@ export const CGU_URL = 'https://docs.passculture.app/textes-normatifs'
 export const API_URL = process.env.API_URL || 'http://localhost'
 export const {
   ENVIRONMENT_NAME,
+  SENTRY_SAMPLE_RATE,
   SENTRY_SERVER_URL,
   URL_FOR_MAINTENANCE,
   MAINTENANCE_PAGE_AVAILABLE,
@@ -80,11 +81,11 @@ if (typeof window !== 'undefined' && window.cordova) {
     // CALC_ROOT_PATH = window.location.href.split('/').slice(0, 10).join('/')
     CALC_ROOT_PATH = window.location.href.match(/file:\/\/(.*)\/www/)[0]
   }
-  window.addEventListener('keyboardWillShow', function() {
+  window.addEventListener('keyboardWillShow', function () {
     console.log('Keyboard show')
     document.body.className += ' softkeyboard'
   })
-  window.addEventListener('keyboardWillHide', function() {
+  window.addEventListener('keyboardWillHide', function () {
     console.log('Keyboard Hide')
     document.body.className = document.body.className
       .split(' ')

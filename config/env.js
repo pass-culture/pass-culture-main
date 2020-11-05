@@ -1,7 +1,9 @@
 const fs = require('fs')
 const path = require('path')
-const paths = require('./paths')
+
 const { name, version } = require('../package.json')
+
+const paths = require('./paths')
 
 // Make sure that including paths.js after env.js will read .env variables.
 delete require.cache[require.resolve('./paths')]
@@ -70,6 +72,7 @@ function getClientEnvironment(publicUrl) {
         PUBLIC_URL: publicUrl,
         VERSION: version,
         MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
+        SENTRY_SAMPLE_RATE: process.env.SENTRY_SAMPLE_RATE,
         SENTRY_SERVER_URL: process.env.SENTRY_SERVER_URL,
         URL_FOR_MAINTENANCE: process.env.URL_FOR_MAINTENANCE,
         MAINTENANCE_PAGE_AVAILABLE: process.env.MAINTENANCE_PAGE_AVAILABLE === 'true' || false,

@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/browser'
+import { Integrations as TracingIntegrations } from '@sentry/tracing'
 import { Form, Icon } from 'pass-culture-shared'
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -9,7 +10,7 @@ import BicInput from 'components/layout/BicInput'
 import BlockContainer from 'components/layout/BlockContainer'
 import IbanInput from 'components/layout/IbanInput'
 import Root from 'Root'
-import { ROOT_PATH, ENVIRONMENT_NAME, SENTRY_SERVER_URL } from 'utils/config'
+import { ROOT_PATH, ENVIRONMENT_NAME, SENTRY_SERVER_URL, SENTRY_SAMPLE_RATE } from 'utils/config'
 import registerCacheWorker from 'workers/cache'
 
 import { version } from '../package.json'
@@ -41,6 +42,8 @@ if (SENTRY_SERVER_URL) {
     dsn: SENTRY_SERVER_URL,
     environment: ENVIRONMENT_NAME,
     release: version,
+    integrations: [new TracingIntegrations.BrowserTracing()],
+    tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
   })
 }
 
