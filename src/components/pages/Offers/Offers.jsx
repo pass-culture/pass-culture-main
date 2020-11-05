@@ -1,5 +1,7 @@
+import moment from 'moment/moment'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
+import DatePicker from 'react-datepicker'
 import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
@@ -13,6 +15,8 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'repository/venuesService'
 import { mapApiToBrowser, mapBrowserToApi, translateQueryParamsToApiParams } from 'utils/translate'
 
+import InputWithCalendar from '../../layout/inputs/PeriodSelector/InputWithCalendar'
+
 import {
   DEFAULT_SEARCH_FILTERS,
   ALL_VENUES_OPTION,
@@ -20,6 +24,7 @@ import {
   CREATION_MODES_FILTERS,
   DEFAULT_CREATION_MODE,
   DEFAULT_PAGE,
+  DEFAULT_EVENT_PERIOD,
   ADMINS_DISABLED_FILTERS_MESSAGE,
 } from './_constants'
 import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
@@ -48,6 +53,12 @@ class Offers extends PureComponent {
         creationMode: searchFilters.creationMode
           ? mapBrowserToApi[searchFilters.creationMode]
           : DEFAULT_SEARCH_FILTERS.creationMode,
+        periodBeginningDate:
+          (searchFilters.eventBeginningPeriod && moment(searchFilters.eventBeginningPeriod)) ||
+          DEFAULT_SEARCH_FILTERS.eventPeriod,
+        periodEndingDate:
+          (searchFilters.eventEndingPeriod && moment(searchFilters.eventEndingPeriod)) ||
+          DEFAULT_SEARCH_FILTERS.eventPeriod,
       },
       offerer: null,
       venueOptions: [],
@@ -103,6 +114,18 @@ class Offers extends PureComponent {
 
     if (page !== DEFAULT_PAGE) {
       queryParams.page = page
+    }
+
+    if (searchFilters.periodBeginningDate !== DEFAULT_SEARCH_FILTERS.eventPeriod) {
+      queryParams.periodBeginningDate = searchFilters.periodBeginningDate.format(
+        'YYYY-MM-DD HH:mm:ss'
+      )
+    }
+
+    if (searchFilters.periodEndingDate !== DEFAULT_SEARCH_FILTERS.eventPeriod) {
+      queryParams.periodEndingDate = moment(searchFilters.periodEndingDate)
+        .endOf('day')
+        .format('YYYY-MM-DD HH:mm:ss')
     }
 
     query.change(queryParams)
@@ -263,7 +286,6 @@ class Offers extends PureComponent {
 
   selectOffer = (offerId, selected) => {
     const { hideActionsBar, setSelectedOfferIds, selectedOfferIds, showActionsBar } = this.props
-
     let newSelectedOfferIds = [...selectedOfferIds]
     if (selected) {
       newSelectedOfferIds.push(offerId)
@@ -291,6 +313,16 @@ class Offers extends PureComponent {
     this.setState({ areAllOffersSelected: !areAllOffersSelected })
   }
 
+  handlePeriodStartDateChange = periodBeginningDate => {
+    const dateToFilter = periodBeginningDate === null ? '' : periodBeginningDate
+    this.setState({ periodBeginningDate: dateToFilter })
+  }
+
+  handlePeriodEndDateChange = periodEndingDate => {
+    const dateToFilter = periodEndingDate === null ? moment() : periodEndingDate
+    this.setState({ periodEndingDate: dateToFilter })
+  }
+
   getOffersActionsBar = () => {
     const { selectedOfferIds } = this.props
     const { areAllOffersSelected, offersCount } = this.state
@@ -307,6 +339,18 @@ class Offers extends PureComponent {
 
   setIsStatusFiltersVisible = isStatusFiltersVisible => {
     this.setState({ isStatusFiltersVisible })
+  }
+
+  handlePeriodStartDateChange = periodBeginningDate => {
+    const dateToFilter =
+      periodBeginningDate === null ? DEFAULT_SEARCH_FILTERS.eventPeriod : periodBeginningDate
+    this.setSearchFilters('periodBeginningDate', dateToFilter)
+  }
+
+  handlePeriodEndDateChange = periodEndingDate => {
+    const dateToFilter =
+      periodEndingDate === null ? DEFAULT_SEARCH_FILTERS.eventPeriod : periodEndingDate
+    this.setSearchFilters('periodEndingDate', dateToFilter)
   }
 
   renderSearchFilters = () => {
@@ -360,16 +404,58 @@ class Offers extends PureComponent {
               options={CREATION_MODES_FILTERS}
               selectedValue={searchFilters.creationMode}
             />
+            <div className="period-filter">
+              <label
+                className="period-filter-label"
+                htmlFor="select-filter-booking-date"
+              >
+                {'Période de réservation'}
+              </label>
+              <div
+                className="period-filter-inputs"
+                id="select-filter-booking-date"
+              >
+                <div className="period-filter-begin-picker">
+                  <DatePicker
+                    className="period-filter-input"
+                    customInput={
+                      <InputWithCalendar customClass="field-date-only field-date-begin"/>
+                    }
+                    disabled={false}
+                    dropdownMode="select"
+                    maxDate={searchFilters.periodEndingDate}
+                    minDate="2020-05-03"
+                    onChange={this.handlePeriodStartDateChange}
+                    placeholderText="JJ/MM/AAAA"
+                    selected={searchFilters.periodBeginningDate}
+                  />
+                </div>
+                <span className="vertical-bar"/>
+                <div className="period-filter-end-picker">
+                  <DatePicker
+                    className="period-filter-input"
+                    customInput={<InputWithCalendar customClass="field-date-only field-date-end"/>}
+                    disabled={false}
+                    dropdownMode="select"
+                    maxDate={moment()}
+                    minDate={searchFilters.periodBeginningDate}
+                    onChange={this.handlePeriodEndDateChange}
+                    placeholderText="JJ/MM/AAAA"
+                    selected={searchFilters.periodEndingDate}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
           <div className="search-separator">
-            <div className="separator" />
+            <div className="separator"/>
             <button
               className="primary-button"
               type="submit"
             >
               {'Lancer la recherche'}
             </button>
-            <div className="separator" />
+            <div className="separator"/>
           </div>
         </form>
       </Fragment>
@@ -395,7 +481,7 @@ class Offers extends PureComponent {
           className="primary-button with-icon"
           to="/offres/creation"
         >
-          <Icon svg="ico-plus" />
+          <Icon svg="ico-plus"/>
           {'Créer ma première offre'}
         </Link>
       </div>

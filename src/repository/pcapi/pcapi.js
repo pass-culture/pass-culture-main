@@ -1,3 +1,5 @@
+import moment from 'moment/moment'
+
 import { DEFAULT_SEARCH_FILTERS, DEFAULT_PAGE } from 'components/pages/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 
@@ -14,6 +16,8 @@ export const loadFilteredOffers = async ({
   venueId = DEFAULT_SEARCH_FILTERS.venueId,
   typeId = DEFAULT_SEARCH_FILTERS.typeId,
   page = DEFAULT_PAGE,
+  periodBeginningDate = DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+  periodEndingDate = DEFAULT_SEARCH_FILTERS.periodEndingDate,
   status = DEFAULT_SEARCH_FILTERS.status,
   creationMode = DEFAULT_SEARCH_FILTERS.creationMode,
 }) => {
@@ -25,6 +29,8 @@ export const loadFilteredOffers = async ({
     page,
     status,
     creationMode,
+    periodBeginningDate,
+    periodEndingDate,
   })
 
   const queryParams = new URLSearchParams(body).toString()
@@ -72,6 +78,16 @@ const createRequestBody = searchFilters => {
 
   if (searchFilters.page) {
     body.page = searchFilters.page
+  }
+
+  if (searchFilters.periodBeginningDate !== DEFAULT_SEARCH_FILTERS.periodBeginningDate) {
+    body.periodBeginningDate = searchFilters.periodBeginningDate.format('YYYY-MM-DD HH:mm:ss')
+  }
+
+  if (searchFilters.periodEndingDate !== DEFAULT_SEARCH_FILTERS.periodEndingDate) {
+    body.periodEndingDate = moment(searchFilters.periodEndingDate)
+      .endOf('day')
+      .format('YYYY-MM-DD HH:mm:ss')
   }
 
   return body

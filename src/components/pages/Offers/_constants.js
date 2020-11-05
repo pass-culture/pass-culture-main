@@ -15,6 +15,7 @@ export const ALL_OFFERERS = 'all'
 export const ALL_TYPES = 'all'
 export const ALL_STATUS = 'all'
 export const ALL_CREATION_MODES = 'all'
+export const ALL_EVENT_PERIODS = ''
 export const DEFAULT_SEARCH_FILTERS = {
   name: ALL_OFFERS,
   offererId: ALL_OFFERERS,
@@ -22,6 +23,8 @@ export const DEFAULT_SEARCH_FILTERS = {
   typeId: ALL_TYPES,
   status: ALL_STATUS,
   creationMode: ALL_CREATION_MODES,
+  periodBeginningDate: ALL_EVENT_PERIODS,
+  periodEndingDate: ALL_EVENT_PERIODS,
 }
 export const DEFAULT_PAGE = 1
 
@@ -33,5 +36,6 @@ const CREATION_MODES_OPTIONS = [
   { displayName: 'Importée', id: 'imported' },
 ]
 export const [DEFAULT_CREATION_MODE, ...CREATION_MODES_FILTERS] = CREATION_MODES_OPTIONS
+export const DEFAULT_EVENT_PERIOD = ''
 export const ADMINS_DISABLED_FILTERS_MESSAGE =
   'Sélectionnez une structure et/ou un lieu pour activer les filtres'

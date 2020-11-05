@@ -45,13 +45,108 @@
 
   .input-select {
     margin-top: rem(24px);
-    width: rem(180px);
+    width: rem(162px);
   }
+
+  .period-filter {
+    margin-left: rem(10px);
+    margin-top: rem(24px);
+
+    .period-filter-inputs {
+      display: flex;
+      height: rem(40px);
+      margin-top: rem(8px);
+
+      .field-date {
+        align-items: center;
+        background-image: url(/icons/ico-calendar.svg);
+        background-position-x: 90%;
+        background-position-y: center;
+        background-repeat: no-repeat;
+        border: 1px solid $grey-medium;
+        display: flex;
+        height: rem(40px);
+
+        &:focus-within {
+          border-color: $primary;
+          border-width: 2px;
+        }
+
+        &.disabled {
+          background-image: url(/icons/ico-calendar-disabled.svg);
+        }
+      }
+
+      .period-filter-input {
+        background: none;
+        border: 0;
+        cursor: pointer;
+        font-size: rem(16px);
+        outline: none;
+        padding-left: rem(10px);
+        width: rem(130px);
+
+        &:disabled {
+          color: $grey-dark;
+          cursor: initial;
+          opacity: 1;
+
+          &::placeholder {
+            color: $grey-dark;
+          }
+        }
+      }
+
+      .field-date-only {
+        border-radius: 20px;
+      }
+
+      .field-date-begin {
+        border-bottom-right-radius: 0;
+        border-right: none;
+        border-top-right-radius: 0;
+        height: rem(40px);
+
+        &:focus-within {
+          border-color: $primary;
+        }
+      }
+
+      .field-date-end {
+        border-bottom-left-radius: 0;
+        border-left: none;
+        border-top-left-radius: 0;
+        height: rem(40px);
+
+        &:focus-within {
+          border-color: $primary;
+        }
+      }
+
+      &.disabled {
+        box-shadow: none;
+      }
+    }
+  }
+
+  .vertical-bar {
+    width: 1px;
+  }
+
+  .period-filter:focus-within {
+    .vertical-bar {
+      background-color: $primary;
+      width: 2px;
+    }
+  }
+
   .form-row {
     display: flex;
     flex-direction: row;
+
     .input-select {
       margin-left: rem(10px);
+
       &:first-child {
         margin-left: 0;
       }
@@ -136,11 +231,11 @@
         outline: none;
 
         img {
-          margin-left: rem(10px);
+          filter: brightness(0) invert(0);
           height: rem(16px);
+          margin-left: rem(10px);
           margin-top: rem(2px);
           width: rem(16px);
-          filter: brightness(0) invert(0);
 
           &.active-status-filter {
             filter: unset;

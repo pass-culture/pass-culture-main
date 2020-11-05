@@ -106,6 +106,8 @@ export const mapBrowserToApi = {
   creation: 'creationMode',
   manuelle: 'manual',
   importee: 'imported',
+  [`periode-evenement-debut`]: 'periodBeginningDate',
+  [`periode-evenement-fin`]: 'periodEndingDate',
 }
 
 export const mapApiToBrowser = invert(mapBrowserToApi)
