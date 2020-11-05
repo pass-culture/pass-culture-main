@@ -57,6 +57,7 @@
       }
     ],
     "react/no-set-state": "off",
+    "react/destructuring-assignment": "off",
     "react/prop-types": "off",
     "react/require-optimization": "off",
     "react/static-property-placement": "off",
