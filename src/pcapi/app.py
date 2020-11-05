@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 import os
 
-import sentry_sdk
-from sentry_sdk.integrations.flask import FlaskIntegration
-from sentry_sdk.integrations.rq import RqIntegration
 from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from pcapi.admin.install import install_admin_views
@@ -18,8 +15,7 @@ from pcapi.models.install import install_activity, \
     install_materialized_views
 from pcapi.repository.feature_queries import feature_request_profiling_enabled
 from pcapi.routes import install_routes
-from pcapi.utils.config import IS_DEV, \
-    ENV
+from pcapi.utils.config import IS_DEV
 from pcapi.routes.native.v1.blueprint import native_v1
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.logger import configure_json_logger, \
@@ -27,14 +23,6 @@ from pcapi.utils.logger import configure_json_logger, \
 
 configure_json_logger()
 disable_werkzeug_request_logs()
-
-if IS_DEV is False:
-    sentry_sdk.init(
-        dsn="https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5",
-        integrations=[FlaskIntegration(), RqIntegration()],
-        release=read_version_from_file(),
-        environment=ENV
-    )
 
 if feature_request_profiling_enabled():
     profiling_restrictions = [

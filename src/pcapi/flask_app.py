@@ -20,6 +20,7 @@ from mailjet_rest import Client
 import redis
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.rq import RqIntegration
 from spectree import SpecTree
 from sqlalchemy import orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
@@ -28,8 +29,7 @@ from pcapi.models.db import db
 from pcapi.repository.feature_queries import feature_request_profiling_enabled
 from pcapi.serialization.utils import before_handler
 from pcapi.utils.config import IS_DEV, \
-    ENV
-from pcapi.utils.config import REDIS_URL
+    ENV, REDIS_URL, SENTRY_SAMPLE_RATE
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.logger import json_logger
@@ -40,9 +40,10 @@ from pcapi.utils.mailing import MAILJET_API_KEY, \
 if IS_DEV is False:
     sentry_sdk.init(
         dsn="https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5",
-        integrations=[FlaskIntegration()],
+        integrations=[FlaskIntegration(), RqIntegration()],
         release=read_version_from_file(),
-        environment=ENV
+        environment=ENV,
+        traces_sample_rate=float(SENTRY_SAMPLE_RATE) if SENTRY_SAMPLE_RATE else None
     )
 
 app = Flask(__name__, static_url_path='/static')
