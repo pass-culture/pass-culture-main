@@ -7,7 +7,8 @@
     "node": ">=12 <13"
   },
   "dependencies": {
-    "@sentry/browser": "^5.7.0",
+    "@sentry/browser": "^5.27.3",
+    "@sentry/tracing": "^5.27.3",
     "@typeform/embed": "0.22.1",
     "algoliasearch": "^4.1.0",
     "contentful": "^7.14.5",
