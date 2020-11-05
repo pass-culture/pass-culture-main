@@ -21,11 +21,6 @@ def check_stock_is_updatable(stock: StockSQLEntity) -> None:
         raise api_errors
 
 
-def check_request_has_offer_id(request_data: dict) -> None:
-    if 'offerId' not in request_data:
-        raise ApiErrors({'offerId': ['Ce paramètre est obligatoire']})
-
-
 def check_dates_are_allowed_on_new_stock(request_data: dict, offer: OfferSQLEntity) -> None:
     if offer.isThing:
         _forbid_dates_on_stock_for_thing_offer(request_data)

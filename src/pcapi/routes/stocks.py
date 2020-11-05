@@ -24,6 +24,11 @@ from pcapi.repository import feature_queries, offerer_queries, repository
 from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.repository.stock_queries import find_stocks_with_possible_filters
 from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization.stock_serialize import (
+    PostStockBodyModel,
+    StockResponseIdModel,
+)
+from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.mailing import MailServiceException, send_raw_email
 from pcapi.utils.rest import (
@@ -38,7 +43,6 @@ from pcapi.validation.routes.stocks import (
     check_dates_are_allowed_on_existing_stock,
     check_dates_are_allowed_on_new_stock,
     check_only_editable_fields_will_be_updated,
-    check_request_has_offer_id,
     check_stock_is_updatable,
     check_stocks_are_editable_for_offer,
     get_only_fields_with_value_to_be_updated,
@@ -86,28 +90,26 @@ def get_stock(stock_id, mediation_id):
 
 @private_api.route("/stocks", methods=["POST"])
 @login_or_api_key_required
-@expect_json_data
-def create_stock():
-    request_data = request.json
-    check_request_has_offer_id(request_data)
-    offer_id = dehumanize(request_data.get("offerId"))
-    offer = get_offer_by_id(offer_id)
+@spectree_serialize(on_success_status=201, response_model=StockResponseIdModel)
+def create_stock(body: PostStockBodyModel):
+    offer = get_offer_by_id(body.offer_id)
+    body_dict = body.dict(by_alias=True, exclude_unset=True)
 
     check_offer_is_editable(offer)
 
-    check_dates_are_allowed_on_new_stock(request_data, offer)
-    offerer = offerer_queries.get_by_offer_id(offer_id)
+    check_dates_are_allowed_on_new_stock(body_dict, offer)
+    offerer = offerer_queries.get_by_offer_id(body.offer_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
 
     check_stocks_are_editable_for_offer(offer)
 
-    new_stock = StockSQLEntity(from_dict=request_data)
+    new_stock = StockSQLEntity(from_dict=body_dict)
     repository.save(new_stock)
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
+        redis.add_offer_id(client=app.redis_client, offer_id=body.offer_id)
 
-    return jsonify(as_dict(new_stock)), 201
+    return StockResponseIdModel.from_orm(new_stock)
 
 
 @private_api.route("/stocks/<stock_id>", methods=["PATCH"])

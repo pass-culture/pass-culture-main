@@ -39,33 +39,7 @@ class Returns201:
         # This are variables we do not have control over with but we still want to check
         # the response body has the right format
         id = response.json["id"]
-        dateCreated = response.json["dateCreated"]
-        dateModified = response.json["dateModified"]
-        dateModifiedAtLastProvider = response.json["dateModifiedAtLastProvider"]
         assert type(id) == str
-        assert type(datetime.strptime(dateCreated, DATE_ISO_FORMAT)) == datetime
-        assert type(datetime.strptime(dateModified, DATE_ISO_FORMAT)) == datetime
-        assert (
-            type(datetime.strptime(dateModifiedAtLastProvider, DATE_ISO_FORMAT))
-            == datetime
-        )
-
-        assert response.json == {
-            "beginningDatetime": None,
-            "bookingLimitDatetime": None,
-            "dateCreated": dateCreated,
-            "dateModified": dateModified,
-            "dateModifiedAtLastProvider": dateModifiedAtLastProvider,
-            "fieldsUpdated": [],
-            "hasBeenMigrated": None,
-            "id": id,
-            "idAtProviders": None,
-            "isSoftDeleted": False,
-            "lastProviderId": None,
-            "offerId": humanize(offer.id),
-            "price": 1222.0,
-            "quantity": None,
-        }
 
         stock = StockSQLEntity.query.filter_by(id=dehumanize(id)).first()
         assert stock.price == 1222
@@ -90,7 +64,7 @@ class Returns400:
 
         # Then
         assert response.status_code == 400
-        assert response.json == {"offerId": ["Ce paramètre est obligatoire"]}
+        assert response.json == {"offerId": ["Ce champ est obligatoire"]}
 
     def when_booking_limit_datetime_after_beginning_datetime(self, app, db_session):
         # Given
@@ -124,11 +98,12 @@ class Returns400:
     def when_invalid_format_for_booking_limit_datetime(self, app, db_session):
         # Given
         user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
-        offer = offers_factories.OfferFactory(product__type=str(ThingType.AUDIOVISUEL))
+        offer = offers_factories.OfferFactory(product__type=str(EventType.JEUX))
 
         data = {
             "price": 0,
             "offerId": humanize(offer.id),
+            "beginningDatetime": "2020-10-11T00:00:00Z",
             "bookingLimitDatetime": "zbbopbjeo",
         }
 
@@ -140,7 +115,6 @@ class Returns400:
         )
 
         # Then
-        print(response.json)
         assert response.status_code == 400
         assert response.json == {"bookingLimitDatetime": ["Format de date invalide"]}
 
