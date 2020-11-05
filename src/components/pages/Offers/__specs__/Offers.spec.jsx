@@ -21,6 +21,7 @@ import {
   CREATION_MODES_FILTERS,
   DEFAULT_CREATION_MODE,
   DEFAULT_PAGE,
+  DEFAULT_SEARCH_FILTERS,
 } from '../_constants'
 import Offers from '../Offers'
 
@@ -110,6 +111,7 @@ describe('src | components | pages | Offers | Offers', () => {
         change,
         parse,
       },
+      savedSearchFilters: {},
       setSelectedOfferIds: jest.fn(),
       showActionsBar: jest.fn(),
       hideActionsBar: jest.fn(),
@@ -130,10 +132,10 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(props.loadOffers).toHaveBeenCalledWith({
-        nameSearchValue: ALL_OFFERS,
+        name: ALL_OFFERS,
         page: DEFAULT_PAGE,
-        selectedVenueId: ALL_VENUES,
-        selectedTypeId: ALL_TYPES,
+        venueId: ALL_VENUES,
+        typeId: ALL_TYPES,
         offererId: ALL_OFFERERS,
         status: ALL_STATUS,
         creationMode: DEFAULT_CREATION_MODE.id,
@@ -430,7 +432,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
           // Then
           expect(
-            screen.queryByAltText('Afficher ou masquer les filtres par statut')
+            screen.queryByAltText('Afficher ou masquer le filtre par statut')
           ).not.toBeInTheDocument()
         })
 
@@ -440,7 +442,7 @@ describe('src | components | pages | Offers | Offers', () => {
           await renderOffers(props, store)
 
           // When
-          fireEvent.click(screen.getByAltText('Afficher ou masquer les filtres par statut'))
+          fireEvent.click(screen.getByAltText('Afficher ou masquer le filtre par statut'))
 
           // Then
           expect(screen.queryByText('Afficher les statuts')).toBeInTheDocument()
@@ -456,7 +458,7 @@ describe('src | components | pages | Offers | Offers', () => {
           // Given
           props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
           await renderOffers(props, store)
-          fireEvent.click(screen.getByAltText('Afficher ou masquer les filtres par statut'))
+          fireEvent.click(screen.getByAltText('Afficher ou masquer le filtre par statut'))
           fireEvent.click(screen.getByLabelText('Expirée'))
 
           // When
@@ -464,12 +466,12 @@ describe('src | components | pages | Offers | Offers', () => {
 
           // Then
           expect(props.loadOffers).toHaveBeenLastCalledWith({
-            creationMode: DEFAULT_CREATION_MODE.id,
-            nameSearchValue: '',
-            offererId: ALL_OFFERERS,
-            page: 1,
-            selectedVenueId: ALL_VENUES,
-            selectedTypeId: ALL_TYPES,
+            creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+            name: '',
+            offererId: DEFAULT_SEARCH_FILTERS.offererId,
+            page: DEFAULT_PAGE,
+            venueId: DEFAULT_SEARCH_FILTERS.venueId,
+            typeId: DEFAULT_SEARCH_FILTERS.typeId,
             status: 'expired',
           })
         })
@@ -478,7 +480,7 @@ describe('src | components | pages | Offers | Offers', () => {
           // Given
           props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
           await renderOffers(props, store)
-          fireEvent.click(screen.getByAltText('Afficher ou masquer les filtres par statut'))
+          fireEvent.click(screen.getByAltText('Afficher ou masquer le filtre par statut'))
 
           // When
           fireEvent.click(screen.getByText('5 offres'))
@@ -486,12 +488,30 @@ describe('src | components | pages | Offers | Offers', () => {
           // Then
           expect(screen.queryByText('Afficher les statuts')).toBeNull()
         })
+
+        it('should display no results for filters', async () => {
+          // Given
+          props.savedSearchFilters = {
+            lieu: proVenues[0].id,
+          }
+          props.offers = []
+
+          // When
+          await renderOffers(props, store)
+
+          // Then
+          await waitFor(() => {
+            expect(
+              screen.getByText('Aucune offre trouvée pour votre recherche')
+            ).toBeInTheDocument()
+          })
+        })
       })
     })
   })
 
   describe('on click on search button', () => {
-    it('should load offers with default filters when no changes where made', () => {
+    it('should load offers with default filters when no changes where made', async () => {
       // Given
       renderOffers(props, store)
 
@@ -499,18 +519,20 @@ describe('src | components | pages | Offers | Offers', () => {
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      expect(props.loadOffers).toHaveBeenLastCalledWith({
-        nameSearchValue: ALL_OFFERS,
-        page: DEFAULT_PAGE,
-        selectedVenueId: ALL_VENUES,
-        selectedTypeId: ALL_TYPES,
-        offererId: ALL_OFFERERS,
-        status: 'all',
-        creationMode: DEFAULT_CREATION_MODE.id,
+      await waitFor(() => {
+        expect(props.loadOffers).toHaveBeenCalledWith({
+          name: DEFAULT_SEARCH_FILTERS.name,
+          page: DEFAULT_PAGE,
+          venueId: DEFAULT_SEARCH_FILTERS.venueId,
+          typeId: DEFAULT_SEARCH_FILTERS.typeId,
+          offererId: DEFAULT_SEARCH_FILTERS.offererId,
+          status: DEFAULT_SEARCH_FILTERS.status,
+          creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+        })
       })
     })
 
-    it('should load offers with written offer name filter', () => {
+    it('should load offers with written offer name filter', async () => {
       // Given
       renderOffers(props, store)
       fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre'), {
@@ -521,14 +543,16 @@ describe('src | components | pages | Offers | Offers', () => {
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      expect(props.loadOffers).toHaveBeenLastCalledWith({
-        nameSearchValue: 'Any word',
-        page: DEFAULT_PAGE,
-        selectedVenueId: ALL_VENUES,
-        selectedTypeId: ALL_TYPES,
-        offererId: ALL_OFFERERS,
-        status: 'all',
-        creationMode: DEFAULT_CREATION_MODE.id,
+      await waitFor(() => {
+        expect(props.loadOffers).toHaveBeenCalledWith({
+          name: 'Any word',
+          page: DEFAULT_PAGE,
+          venueId: DEFAULT_SEARCH_FILTERS.venueId,
+          typeId: DEFAULT_SEARCH_FILTERS.typeId,
+          offererId: DEFAULT_SEARCH_FILTERS.offererId,
+          status: DEFAULT_SEARCH_FILTERS.status,
+          creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+        })
       })
     })
 
@@ -544,14 +568,16 @@ describe('src | components | pages | Offers | Offers', () => {
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      expect(props.loadOffers).toHaveBeenLastCalledWith({
-        nameSearchValue: ALL_OFFERS,
-        page: DEFAULT_PAGE,
-        selectedVenueId: proVenues[0].id,
-        selectedTypeId: ALL_TYPES,
-        offererId: ALL_OFFERERS,
-        status: ALL_STATUS,
-        creationMode: DEFAULT_CREATION_MODE.id,
+      await waitFor(() => {
+        expect(props.loadOffers).toHaveBeenCalledWith({
+          page: DEFAULT_PAGE,
+          venueId: proVenues[0].id,
+          name: DEFAULT_SEARCH_FILTERS.name,
+          typeId: DEFAULT_SEARCH_FILTERS.typeId,
+          offererId: DEFAULT_SEARCH_FILTERS.offererId,
+          status: DEFAULT_SEARCH_FILTERS.status,
+          creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+        })
       })
     })
 
@@ -568,13 +594,13 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(props.loadOffers).toHaveBeenLastCalledWith({
-        nameSearchValue: ALL_OFFERS,
+        venueId: proVenues[0].id,
         page: DEFAULT_PAGE,
-        selectedVenueId: proVenues[0].id,
-        selectedTypeId: ALL_TYPES,
-        offererId: ALL_OFFERERS,
-        status: 'all',
-        creationMode: DEFAULT_CREATION_MODE.id,
+        name: DEFAULT_SEARCH_FILTERS.name,
+        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        offererId: DEFAULT_SEARCH_FILTERS.offererId,
+        status: DEFAULT_SEARCH_FILTERS.status,
+        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
       })
     })
 
@@ -590,13 +616,13 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(props.loadOffers).toHaveBeenLastCalledWith({
-        nameSearchValue: ALL_OFFERS,
         page: DEFAULT_PAGE,
-        selectedVenueId: ALL_VENUES,
-        selectedTypeId: ALL_TYPES,
-        offererId: ALL_OFFERERS,
-        status: ALL_STATUS,
         creationMode: 'imported',
+        name: DEFAULT_SEARCH_FILTERS.name,
+        venueId: DEFAULT_SEARCH_FILTERS.venueId,
+        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        offererId: DEFAULT_SEARCH_FILTERS.offererId,
+        status: DEFAULT_SEARCH_FILTERS.status,
       })
     })
   })
@@ -644,13 +670,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
-          creation: null,
-          lieu: null,
-          categorie: null,
-          nom: null,
           page: 2,
-          structure: null,
-          statut: null,
         })
       })
     })
@@ -670,15 +690,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       await waitFor(() => {
-        expect(props.query.change).toHaveBeenCalledWith({
-          creation: null,
-          lieu: null,
-          categorie: null,
-          nom: null,
-          page: null,
-          structure: null,
-          statut: null,
-        })
+        expect(props.query.change).toHaveBeenCalledWith({})
       })
     })
 
@@ -697,13 +709,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
-          creation: null,
-          lieu: null,
-          categorie: null,
           nom: 'AnyWord',
-          page: null,
-          structure: null,
-          statut: null,
         })
       })
     })
@@ -745,15 +751,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       await waitFor(() => {
-        expect(props.query.change).toHaveBeenCalledWith({
-          creation: null,
-          lieu: null,
-          categorie: null,
-          nom: null,
-          page: null,
-          structure: null,
-          statut: null,
-        })
+        expect(props.query.change).toHaveBeenCalledWith({})
       })
     })
 
@@ -771,13 +769,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
-          creation: null,
           lieu: proVenues[0].id,
-          categorie: null,
-          nom: null,
-          page: null,
-          structure: null,
-          statut: null,
         })
       })
     })
@@ -801,13 +793,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
-          creation: null,
-          lieu: null,
           categorie: 'test_id_1',
-          nom: null,
-          page: null,
-          structure: null,
-          statut: null,
         })
       })
     })
@@ -816,7 +802,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Given
       props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock' }]
       await renderOffers(props, store)
-      fireEvent.click(screen.getByAltText('Afficher ou masquer les filtres par statut'))
+      fireEvent.click(screen.getByAltText('Afficher ou masquer le filtre par statut'))
       fireEvent.click(screen.getByLabelText('Épuisée'))
 
       // When
@@ -825,13 +811,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenLastCalledWith({
-          creation: null,
-          lieu: null,
-          categorie: null,
-          nom: null,
-          page: null,
           statut: 'epuisee',
-          structure: null,
         })
       })
     })
@@ -840,7 +820,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Given
       props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock' }]
       await renderOffers(props, store)
-      fireEvent.click(screen.queryByAltText('Afficher ou masquer les filtres par statut'))
+      fireEvent.click(screen.queryByAltText('Afficher ou masquer le filtre par statut'))
       fireEvent.click(screen.queryByLabelText('Tous'))
 
       // When
@@ -848,15 +828,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       await waitFor(() => {
-        expect(props.query.change).toHaveBeenLastCalledWith({
-          creation: null,
-          lieu: null,
-          categorie: null,
-          nom: null,
-          page: null,
-          statut: null,
-          structure: null,
-        })
+        expect(props.query.change).toHaveBeenLastCalledWith({})
       })
     })
 
@@ -898,12 +870,6 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(props.query.change).toHaveBeenLastCalledWith({
         creation: 'manuelle',
-        lieu: null,
-        categorie: null,
-        nom: null,
-        page: null,
-        statut: null,
-        structure: null,
       })
     })
 
@@ -921,15 +887,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await fireEvent.click(searchButton)
 
       // Then
-      expect(props.query.change).toHaveBeenLastCalledWith({
-        creation: null,
-        lieu: null,
-        categorie: null,
-        nom: null,
-        page: null,
-        statut: null,
-        structure: null,
-      })
+      expect(props.query.change).toHaveBeenLastCalledWith({})
     })
   })
 
@@ -1018,13 +976,13 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(props.loadOffers).toHaveBeenLastCalledWith({
-        creationMode: DEFAULT_CREATION_MODE.id,
-        nameSearchValue: ALL_OFFERS,
         page: 2,
-        selectedVenueId: ALL_VENUES,
-        selectedTypeId: ALL_TYPES,
-        offererId: ALL_OFFERERS,
-        status: ALL_STATUS,
+        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+        name: DEFAULT_SEARCH_FILTERS.name,
+        venueId: DEFAULT_SEARCH_FILTERS.venueId,
+        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        offererId: DEFAULT_SEARCH_FILTERS.offererId,
+        status: DEFAULT_SEARCH_FILTERS.status,
       })
     })
 
@@ -1041,13 +999,13 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(props.loadOffers).toHaveBeenLastCalledWith({
-        creationMode: DEFAULT_CREATION_MODE.id,
-        nameSearchValue: ALL_OFFERS,
         page: DEFAULT_PAGE,
-        selectedVenueId: ALL_VENUES,
-        selectedTypeId: ALL_TYPES,
-        offererId: ALL_OFFERERS,
-        status: ALL_STATUS,
+        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+        name: DEFAULT_SEARCH_FILTERS.name,
+        venueId: DEFAULT_SEARCH_FILTERS.venueId,
+        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        offererId: DEFAULT_SEARCH_FILTERS.offererId,
+        status: DEFAULT_SEARCH_FILTERS.status,
       })
     })
 

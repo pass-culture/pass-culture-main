@@ -18,11 +18,11 @@ import Offers from './Offers'
 
 export const mapStateToProps = state => {
   return {
+    getOfferer: fetchOffererById,
     lastTrackerMoment: lastTrackerMoment(state, 'offers'),
     notification: state.notification,
     offers: selectOffers(state),
-    searchFilters: state.offers.searchFilters,
-    getOfferer: fetchOffererById,
+    savedSearchFilters: state.offers.searchFilters,
     selectedOfferIds: state.offers.selectedOfferIds,
   }
 }

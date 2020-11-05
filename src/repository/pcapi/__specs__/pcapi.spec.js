@@ -1,9 +1,4 @@
-import {
-  ALL_OFFERS,
-  ALL_STATUS,
-  ALL_VENUES,
-  DEFAULT_CREATION_MODE,
-} from 'components/pages/Offers/_constants'
+import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 
 import { loadFilteredOffers, updateOffersActiveStatus } from '../pcapi'
@@ -75,10 +70,10 @@ describe('pcapi', () => {
     it('should call offers route with "page=1" when provided filters are defaults', async () => {
       // Given
       const filters = {
-        nameSearchValue: ALL_OFFERS,
-        selectedVenueId: ALL_VENUES,
-        status: ALL_STATUS,
-        creationMode: DEFAULT_CREATION_MODE.id,
+        name: DEFAULT_SEARCH_FILTERS.name,
+        venueId: DEFAULT_SEARCH_FILTERS.venueId,
+        status: DEFAULT_SEARCH_FILTERS.status,
+        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
       }
 
       // When
@@ -91,8 +86,8 @@ describe('pcapi', () => {
     it('should call offers route with filters when provided', async () => {
       // Given
       const filters = {
-        nameSearchValue: 'OCS',
-        selectedVenueId: 'AA',
+        name: 'OCS',
+        venueId: 'AA',
         page: 2,
         status: 'expired',
         creationMode: 'manual',
@@ -103,7 +98,7 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith(
-        '/offers?name=OCS&venueId=AA&page=2&status=expired&creationMode=manual'
+        '/offers?name=OCS&venueId=AA&status=expired&creationMode=manual&page=2'
       )
     })
   })

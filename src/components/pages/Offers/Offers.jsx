@@ -9,18 +9,14 @@ import Main from 'components/layout/Main'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
-import { OffersStatusFiltersModal } from 'components/pages/Offers/OffersStatusFiltersModal/OffersStatusFiltersModal'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'repository/venuesService'
 import { mapApiToBrowser, mapBrowserToApi, translateQueryParamsToApiParams } from 'utils/translate'
 
 import {
+  DEFAULT_SEARCH_FILTERS,
   ALL_OFFERERS,
-  ALL_OFFERS,
-  ALL_STATUS,
-  ALL_VENUES,
   ALL_VENUES_OPTION,
-  ALL_TYPES,
   ALL_TYPES_OPTION,
   CREATION_MODES_FILTERS,
   DEFAULT_CREATION_MODE,
@@ -28,51 +24,47 @@ import {
 } from './_constants'
 import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
+import StatusFiltersButton from './StatusFiltersButton'
 
 class Offers extends PureComponent {
   constructor(props) {
     super(props)
 
-    const {
-      name: nameKeywords,
-      offererId,
-      page,
-      venueId: selectedVenueId,
-      typeId: selectedTypeId,
-      status,
-      creationMode,
-    } = translateQueryParamsToApiParams(props.query.parse())
+    const { page, ...searchFilters } = translateQueryParamsToApiParams(props.query.parse())
 
     this.state = {
       isLoading: false,
-      nameSearchValue: nameKeywords || ALL_OFFERS,
       offersCount: 0,
       page: page || DEFAULT_PAGE,
       pageCount: null,
-      offererId: offererId || ALL_OFFERERS,
+      searchFilters: {
+        name: searchFilters.name || DEFAULT_SEARCH_FILTERS.name,
+        offererId: searchFilters.offererId || DEFAULT_SEARCH_FILTERS.offererId,
+        venueId: searchFilters.venueId || DEFAULT_SEARCH_FILTERS.venueId,
+        typeId: searchFilters.typeId || DEFAULT_SEARCH_FILTERS.typeId,
+        status: searchFilters.status || DEFAULT_SEARCH_FILTERS.status,
+        creationMode: searchFilters.creationMode
+          ? mapBrowserToApi[searchFilters.creationMode]
+          : DEFAULT_SEARCH_FILTERS.creationMode,
+      },
       offerer: null,
-      selectedVenueId: selectedVenueId || ALL_VENUES,
-      selectedTypeId: selectedTypeId || ALL_TYPES,
       venueOptions: [],
-      status: mapBrowserToApi[status] || ALL_STATUS,
-      isFilteredByStatus: Boolean(status),
-      areStatusFiltersVisible: false,
+      isStatusFiltersVisible: false,
       areAllOffersSelected: false,
       typeOptions: [],
-      creationMode: mapBrowserToApi[creationMode] || DEFAULT_CREATION_MODE.id,
     }
   }
 
   componentDidMount() {
-    const { offererId } = this.state
+    const { searchFilters } = this.state
     const { getOfferer } = this.props
 
-    if (offererId !== ALL_OFFERERS) {
-      getOfferer(offererId).then(offerer => this.setState({ offerer }))
+    if (searchFilters.offererId !== ALL_OFFERERS) {
+      getOfferer(searchFilters.offererId).then(offerer => this.setState({ offerer }))
     }
 
     this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
-    this.fetchAndFormatVenues(offererId)
+    this.fetchAndFormatVenues(searchFilters.offererId)
     this.fetchTypeOptions()
   }
 
@@ -88,26 +80,30 @@ class Offers extends PureComponent {
 
   updateUrlMatchingState = () => {
     const { query } = this.props
-    const {
-      nameSearchValue,
-      offererId,
-      page,
-      selectedVenueId,
-      selectedTypeId,
-      status,
-      creationMode,
-    } = this.state
 
-    query.change({
-      page: page === DEFAULT_PAGE ? null : page,
-      [mapApiToBrowser.name]: nameSearchValue === ALL_OFFERS ? null : nameSearchValue,
-      [mapApiToBrowser.venueId]: selectedVenueId === ALL_VENUES ? null : selectedVenueId,
-      [mapApiToBrowser.typeId]: selectedTypeId === ALL_TYPES ? null : selectedTypeId,
-      [mapApiToBrowser.offererId]: offererId === ALL_OFFERERS ? null : offererId,
-      [mapApiToBrowser.status]: status === ALL_STATUS ? null : mapApiToBrowser[status],
-      [mapApiToBrowser.creationMode]:
-        creationMode === DEFAULT_CREATION_MODE.id ? null : mapApiToBrowser[creationMode],
+    const { searchFilters, page } = this.state
+    let queryParams = Object.keys(searchFilters).reduce((params, field) => {
+      if (searchFilters[field] === DEFAULT_SEARCH_FILTERS[field]) {
+        return params
+      }
+      return {
+        ...params,
+        [mapApiToBrowser[field]]: searchFilters[field],
+      }
+    }, {})
+
+    const fieldsWithTranslatedValues = ['statut', 'creation']
+    fieldsWithTranslatedValues.forEach(field => {
+      if (queryParams[field]) {
+        queryParams[field] = mapApiToBrowser[queryParams[field]]
+      }
     })
+
+    if (page !== DEFAULT_PAGE) {
+      queryParams.page = page
+    }
+
+    query.change(queryParams)
   }
 
   fetchTypeOptions = () => {
@@ -122,31 +118,11 @@ class Offers extends PureComponent {
     })
   }
 
-  updateStatusFilters = selectedStatus => {
-    this.setState({ status: selectedStatus })
-  }
-
   loadAndUpdateOffers() {
     const { loadOffers } = this.props
-    const {
-      creationMode,
-      nameSearchValue,
-      selectedVenueId,
-      selectedTypeId,
-      offererId,
-      page,
-      status,
-    } = this.state
+    const { searchFilters, page } = this.state
 
-    loadOffers({
-      creationMode,
-      nameSearchValue,
-      selectedVenueId,
-      selectedTypeId,
-      offererId,
-      page,
-      status,
-    })
+    loadOffers({ ...searchFilters, page })
       .then(({ page, pageCount, offersCount }) => {
         this.setState(
           {
@@ -154,7 +130,6 @@ class Offers extends PureComponent {
             offersCount,
             page,
             pageCount,
-            isFilteredByStatus: status !== ALL_STATUS,
           },
           () => {
             this.updateUrlMatchingState()
@@ -170,25 +145,11 @@ class Offers extends PureComponent {
 
   getPaginatedOffersWithFilters = ({ shouldTriggerSpinner }) => {
     const { saveSearchFilters } = this.props
-    const {
-      creationMode,
-      nameSearchValue,
-      offererId,
-      page,
-      selectedVenueId,
-      selectedTypeId,
-      status,
-    } = this.state
+    const { searchFilters, page } = this.state
     saveSearchFilters({
-      name: nameSearchValue,
-      venueId: selectedVenueId,
-      typeId: selectedTypeId,
-      offererId,
+      ...searchFilters,
       page,
-      status,
-      creationMode,
     })
-
     shouldTriggerSpinner && this.setState({ isLoading: true })
     this.loadAndUpdateOffers()
   }
@@ -205,35 +166,49 @@ class Offers extends PureComponent {
     this.setState(
       {
         page: DEFAULT_PAGE,
-        areStatusFiltersVisible: false,
       },
       () => {
+        this.setIsStatusFiltersVisible(false)
         this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
       }
     )
   }
 
-  handleOnOffererClick = () => {
-    this.setState({ offererId: ALL_OFFERERS, offerer: null, page: DEFAULT_PAGE }, () => {
+  handleOffererFilterRemoval = () => {
+    this.setSearchFilters('offererId', ALL_OFFERERS)
+    this.setState({ offerer: null, page: DEFAULT_PAGE }, () => {
       this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
       this.fetchAndFormatVenues()
     })
   }
 
+  setSearchFilters(field, value) {
+    const { searchFilters } = this.state
+    const updatedSearchFilters = {
+      ...searchFilters,
+      [field]: value,
+    }
+    this.setState({ searchFilters: updatedSearchFilters })
+  }
+
   storeNameSearchValue = event => {
-    this.setState({ nameSearchValue: event.target.value })
+    this.setSearchFilters('name', event.target.value)
   }
 
   storeSelectedVenue = event => {
-    this.setState({ selectedVenueId: event.target.value })
+    this.setSearchFilters('venueId', event.target.value)
   }
 
   storeSelectedType = event => {
-    this.setState({ selectedTypeId: event.target.value })
+    this.setSearchFilters('typeId', event.target.value)
   }
 
-  handleCreationModeSelection = event => {
-    this.setState({ creationMode: event.target.value })
+  updateStatusFilter = selectedStatus => {
+    this.setSearchFilters('status', selectedStatus)
+  }
+
+  storeCreationMode = event => {
+    this.setSearchFilters('creationMode', event.target.value)
   }
 
   onPreviousPageClick = () => {
@@ -294,34 +269,186 @@ class Offers extends PureComponent {
     )
   }
 
-  toggleStatusFiltersVisibility = () => {
-    const { areStatusFiltersVisible } = this.state
-    this.setState({ areStatusFiltersVisible: !areStatusFiltersVisible })
+  setIsStatusFiltersVisible = isStatusFiltersVisible => {
+    this.setState({ isStatusFiltersVisible })
+  }
+
+  renderTableHead = () => {
+    const { currentUser, offers } = this.props
+    const { areAllOffersSelected, isStatusFiltersVisible, searchFilters } = this.state
+    return (
+      <thead>
+        <tr>
+          {currentUser.isAdmin ? (
+            <Fragment>
+              <th />
+              <th />
+            </Fragment>
+          ) : (
+            <Fragment>
+              <th className="th-checkbox">
+                {offers.length ? (
+                  <input
+                    checked={areAllOffersSelected}
+                    className="select-offer-checkbox"
+                    id="select-offer-checkbox"
+                    onChange={this.selectAllOffers}
+                    type="checkbox"
+                  />
+                ) : null}
+              </th>
+              <th className="th-checkbox-label">
+                <label htmlFor="select-offer-checkbox">
+                  {areAllOffersSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
+                </label>
+              </th>
+            </Fragment>
+          )}
+          <th />
+          <th>
+            {'Lieu'}
+          </th>
+          <th>
+            {'Stock'}
+          </th>
+          {currentUser.isAdmin ? (
+            <th>
+              {'Statut'}
+            </th>
+          ) : (
+            <th className="th-with-filter">
+              <StatusFiltersButton
+                isStatusFiltersVisible={isStatusFiltersVisible}
+                refreshOffers={this.handleOnSubmit}
+                setIsStatusFiltersVisible={this.setIsStatusFiltersVisible}
+                status={searchFilters.status}
+                updateStatusFilter={this.updateStatusFilter}
+              />
+            </th>
+          )}
+          <th />
+          <th />
+        </tr>
+      </thead>
+    )
+  }
+
+  renderTable = () => {
+    const { offers, selectedOfferIds } = this.props
+    const { areAllOffersSelected, offersCount, page, pageCount } = this.state
+
+    return (
+      <Fragment>
+        <div className="offers-count">
+          {`${offersCount} ${offersCount <= 1 ? 'offre' : 'offres'}`}
+        </div>
+        <table>
+          {this.renderTableHead()}
+          <tbody className="offers-list">
+            {offers.map(offer => (
+              <OfferItemContainer
+                disabled={areAllOffersSelected}
+                isSelected={areAllOffersSelected || selectedOfferIds.includes(offer.id)}
+                key={offer.id}
+                offer={offer}
+                selectOffer={this.selectOffer}
+              />
+            ))}
+          </tbody>
+        </table>
+        <div className="pagination">
+          <button
+            disabled={page === 1}
+            onClick={this.onPreviousPageClick}
+            type="button"
+          >
+            <Icon
+              alt="Aller à la page précédente"
+              svg="ico-left-arrow"
+            />
+          </button>
+          <span>
+            {`Page ${page}/${pageCount}`}
+          </span>
+          <button
+            disabled={page === pageCount}
+            onClick={this.onNextPageClick}
+            type="button"
+          >
+            <Icon
+              alt="Aller à la page suivante"
+              svg="ico-right-arrow"
+            />
+          </button>
+        </div>
+      </Fragment>
+    )
+  }
+
+  resetFilters = () => {
+    this.setState({ searchFilters: { ...DEFAULT_SEARCH_FILTERS } }, () => {
+      this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
+    })
+  }
+
+  renderNoResultsForFilters = () => (
+    <div>
+      <table>
+        {this.renderTableHead()}
+      </table>
+
+      <div className="search-no-results">
+        <Icon
+          alt="Illustration de recherche"
+          svg="ico-search-gray"
+        />
+        <p>
+          {'Aucune offre trouvée pour votre recherche'}
+        </p>
+        <p>
+          {'Vous pouvez modifer votre recherche ou'}
+          <br />
+          <Link
+            className="tertiary-link"
+            onClick={this.resetFilters}
+            to="/offres"
+          >
+            {'afficher toutes les offres'}
+          </Link>
+        </p>
+      </div>
+    </div>
+  )
+
+  renderSearchResults = () => {
+    const { offers, savedSearchFilters } = this.props
+    const { isLoading } = this.state
+
+    if (isLoading) {
+      return <Spinner />
+    }
+
+    if (offers.length) {
+      return this.renderTable()
+    }
+    // We dont want "no results for filters" to disappear on filters change
+    // so we need to use saved search filters and not local state ones.
+    const hasSearchFilters = Object.keys(savedSearchFilters)
+      .map(field => savedSearchFilters[field] !== DEFAULT_SEARCH_FILTERS[field])
+      .includes(true)
+    if (hasSearchFilters) {
+      return this.renderNoResultsForFilters()
+    }
+
+    return null
   }
 
   render() {
-    const { currentUser, offers, selectedOfferIds } = this.props
-
+    const { currentUser } = this.props
     const { isAdmin } = currentUser || {}
-    const {
-      areStatusFiltersVisible,
-      nameSearchValue,
-      offersCount,
-      offerer,
-      page,
-      pageCount,
-      isFilteredByStatus,
-      isLoading,
-      selectedVenueId,
-      selectedTypeId,
-      status,
-      typeOptions,
-      venueOptions,
-      areAllOffersSelected,
-      creationMode,
-    } = this.state
+    const { searchFilters, offerer, typeOptions, venueOptions } = this.state
 
-    const actionLink = !isAdmin ? (
+    const actionLink = isAdmin ? null : (
       <Link
         className="cta button is-primary"
         to="/offres/creation"
@@ -333,7 +460,7 @@ class Offers extends PureComponent {
           {'Créer une offre'}
         </span>
       </Link>
-    ) : null
+    )
 
     return (
       <Main
@@ -350,7 +477,7 @@ class Offers extends PureComponent {
           <span className="offerer-filter">
             {offerer.name}
             <button
-              onClick={this.handleOnOffererClick}
+              onClick={this.handleOffererFilterRemoval}
               type="button"
             >
               <Icon
@@ -366,7 +493,7 @@ class Offers extends PureComponent {
             name="offre"
             onChange={this.storeNameSearchValue}
             placeholder="Rechercher par nom d’offre"
-            value={nameSearchValue}
+            value={searchFilters.name}
           />
           <div className="form-row">
             <Select
@@ -375,7 +502,7 @@ class Offers extends PureComponent {
               label="Lieu"
               name="lieu"
               options={venueOptions}
-              selectedValue={selectedVenueId}
+              selectedValue={searchFilters.venueId}
             />
             <Select
               defaultOption={ALL_TYPES_OPTION}
@@ -383,15 +510,15 @@ class Offers extends PureComponent {
               label="Catégories"
               name="type"
               options={typeOptions}
-              selectedValue={selectedTypeId}
+              selectedValue={searchFilters.typeId}
             />
             <Select
               defaultOption={DEFAULT_CREATION_MODE}
-              handleSelection={this.handleCreationModeSelection}
+              handleSelection={this.storeCreationMode}
               label="Mode de création"
               name="creationMode"
               options={CREATION_MODES_FILTERS}
-              selectedValue={creationMode}
+              selectedValue={searchFilters.creationMode}
             />
           </div>
           <div className="search-separator">
@@ -406,121 +533,8 @@ class Offers extends PureComponent {
           </div>
         </form>
 
-        <div className="offers-count">
-          {`${offersCount} ${offersCount <= 1 ? 'offre' : 'offres'}`}
-        </div>
-
         <div className="section">
-          {isLoading && <Spinner />}
-          {offers.length > 0 && !isLoading && (
-            <Fragment>
-              <table>
-                <thead>
-                  <tr>
-                    {isAdmin ? (
-                      <Fragment>
-                        <th />
-                        <th />
-                      </Fragment>
-                    ) : (
-                      <Fragment>
-                        <th className="th-checkbox">
-                          <input
-                            checked={areAllOffersSelected}
-                            className="select-offer-checkbox"
-                            id="select-offer-checkbox"
-                            onChange={this.selectAllOffers}
-                            type="checkbox"
-                          />
-                        </th>
-                        <th className="th-checkbox-label">
-                          <label htmlFor="select-offer-checkbox">
-                            {areAllOffersSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
-                          </label>
-                        </th>
-                      </Fragment>
-                    )}
-                    <th />
-                    <th>
-                      {'Lieu'}
-                    </th>
-                    <th>
-                      {'Stock'}
-                    </th>
-                    {isAdmin ? (
-                      <th>
-                        {'Statut'}
-                      </th>
-                    ) : (
-                      <th className="th-with-filter">
-                        <button
-                          onClick={this.toggleStatusFiltersVisibility}
-                          type="button"
-                        >
-                          {'Statut'}
-                          <Icon
-                            alt="Afficher ou masquer les filtres par statut"
-                            className={isFilteredByStatus ? 'active-status-filter' : undefined}
-                            svg={
-                              isFilteredByStatus
-                                ? 'ico-filter-status-active'
-                                : 'ico-filter-status-red'
-                            }
-                          />
-                        </button>
-                        {areStatusFiltersVisible && (
-                          <OffersStatusFiltersModal
-                            refreshOffers={this.handleOnSubmit}
-                            status={status}
-                            toggleModalVisibility={this.toggleStatusFiltersVisibility}
-                            updateStatusFilters={this.updateStatusFilters}
-                          />
-                        )}
-                      </th>
-                    )}
-                    <th />
-                    <th />
-                  </tr>
-                </thead>
-                <tbody className="offers-list">
-                  {offers.map(offer => (
-                    <OfferItemContainer
-                      disabled={areAllOffersSelected}
-                      isSelected={areAllOffersSelected || selectedOfferIds.includes(offer.id)}
-                      key={offer.id}
-                      offer={offer}
-                      selectOffer={this.selectOffer}
-                    />
-                  ))}
-                </tbody>
-              </table>
-              <div className="pagination">
-                <button
-                  disabled={page === 1}
-                  onClick={this.onPreviousPageClick}
-                  type="button"
-                >
-                  <Icon
-                    alt="Aller à la page précédente"
-                    svg="ico-left-arrow"
-                  />
-                </button>
-                <span>
-                  {`Page ${page}/${pageCount}`}
-                </span>
-                <button
-                  disabled={page === pageCount}
-                  onClick={this.onNextPageClick}
-                  type="button"
-                >
-                  <Icon
-                    alt="Aller à la page suivante"
-                    svg="ico-right-arrow"
-                  />
-                </button>
-              </div>
-            </Fragment>
-          )}
+          {this.renderSearchResults()}
         </div>
       </Main>
     )
@@ -543,6 +557,14 @@ Offers.propTypes = {
     parse: PropTypes.func.isRequired,
   }).isRequired,
   saveSearchFilters: PropTypes.func.isRequired,
+  savedSearchFilters: PropTypes.shape({
+    name: PropTypes.string,
+    offererId: PropTypes.string,
+    venueId: PropTypes.string,
+    typeId: PropTypes.string,
+    status: PropTypes.string,
+    creationMode: PropTypes.string,
+  }).isRequired,
   selectedOfferIds: PropTypes.arrayOf(PropTypes.string),
   setSelectedOfferIds: PropTypes.func.isRequired,
   showActionsBar: PropTypes.func.isRequired,

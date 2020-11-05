@@ -1,12 +1,4 @@
-import {
-  ALL_OFFERS,
-  ALL_OFFERERS,
-  ALL_VENUES,
-  ALL_TYPES,
-  ALL_STATUS,
-  DEFAULT_CREATION_MODE,
-  DEFAULT_PAGE,
-} from 'components/pages/Offers/_constants'
+import { DEFAULT_SEARCH_FILTERS, DEFAULT_PAGE } from 'components/pages/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 
 //
@@ -17,23 +9,24 @@ export const loadOffer = async offerId => {
 }
 
 export const loadFilteredOffers = async ({
-  nameSearchValue = ALL_OFFERS,
-  offererId = ALL_OFFERERS,
-  selectedVenueId = ALL_VENUES,
-  selectedTypeId = ALL_TYPES,
+  name = DEFAULT_SEARCH_FILTERS.name,
+  offererId = DEFAULT_SEARCH_FILTERS.offererId,
+  venueId = DEFAULT_SEARCH_FILTERS.venueId,
+  typeId = DEFAULT_SEARCH_FILTERS.typeId,
   page = DEFAULT_PAGE,
-  status = ALL_STATUS,
-  creationMode = DEFAULT_CREATION_MODE.id,
+  status = DEFAULT_SEARCH_FILTERS.status,
+  creationMode = DEFAULT_SEARCH_FILTERS.creationMode,
 }) => {
-  const body = createRequestBody(
-    nameSearchValue,
+  const body = createRequestBody({
+    name,
     offererId,
-    selectedVenueId,
-    selectedTypeId,
+    venueId,
+    typeId,
     page,
     status,
-    creationMode
-  )
+    creationMode,
+  })
+
   const queryParams = new URLSearchParams(body).toString()
   return client.get(`/offers?${queryParams}`)
 }
@@ -41,26 +34,26 @@ export const loadFilteredOffers = async ({
 export const updateOffersActiveStatus = (
   areAllOffersSelected,
   {
-    name = ALL_OFFERS,
-    offererId = ALL_OFFERERS,
-    venueId = ALL_VENUES,
-    typeId = ALL_TYPES,
+    name = DEFAULT_SEARCH_FILTERS.name,
+    offererId = DEFAULT_SEARCH_FILTERS.offererId,
+    venueId = DEFAULT_SEARCH_FILTERS.venueId,
+    typeId = DEFAULT_SEARCH_FILTERS.typeId,
+    status = DEFAULT_SEARCH_FILTERS.status,
+    creationMode = DEFAULT_SEARCH_FILTERS.creationMode,
     page = DEFAULT_PAGE,
     ids = [],
     isActive,
-    status = ALL_STATUS,
-    creationMode = DEFAULT_CREATION_MODE.id,
   }
 ) => {
-  const formattedBody = createRequestBody(
+  const formattedBody = createRequestBody({
     name,
     offererId,
     venueId,
     typeId,
     page,
     status,
-    creationMode
-  )
+    creationMode,
+  })
 
   if (areAllOffersSelected) {
     return client.patch('/offers/all-active-status', { ...formattedBody, isActive })
@@ -69,36 +62,16 @@ export const updateOffersActiveStatus = (
   return client.patch('/offers/active-status', { ids, isActive })
 }
 
-const createRequestBody = (
-  nameSearchValue,
-  offererId,
-  selectedVenueId,
-  selectedTypeId,
-  page,
-  status,
-  creationMode
-) => {
+const createRequestBody = searchFilters => {
   const body = {}
-  if (nameSearchValue !== ALL_OFFERS) {
-    body.name = nameSearchValue
-  }
-  if (offererId !== ALL_OFFERERS) {
-    body.offererId = offererId
-  }
-  if (selectedVenueId !== ALL_VENUES) {
-    body.venueId = selectedVenueId
-  }
-  if (selectedTypeId !== ALL_TYPES) {
-    body.typeId = selectedTypeId
-  }
-  if (page) {
-    body.page = page
-  }
-  if (status !== ALL_STATUS) {
-    body.status = status
-  }
-  if (creationMode !== DEFAULT_CREATION_MODE.id) {
-    body.creationMode = creationMode
+  Object.keys(DEFAULT_SEARCH_FILTERS).forEach(field => {
+    if (searchFilters[field] && searchFilters[field] !== DEFAULT_SEARCH_FILTERS[field]) {
+      body[field] = searchFilters[field]
+    }
+  })
+
+  if (searchFilters.page) {
+    body.page = searchFilters.page
   }
 
   return body

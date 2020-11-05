@@ -1,5 +1,12 @@
 import invert from 'lodash.invert'
 
+import {
+  OFFER_STATUS_ACTIVE,
+  OFFER_STATUS_INACTIVE,
+  OFFER_STATUS_SOLDOUT,
+  OFFER_STATUS_EXPIRED,
+} from 'components/pages/Offers/_constants'
+
 export function collectionToPath(collectionName) {
   switch (collectionName) {
     case 'mediations':
@@ -91,10 +98,10 @@ export const mapBrowserToApi = {
   reservations: 'bookings',
   structure: 'offererId',
   stock: 'stockIdOrNew',
-  active: 'active',
-  inactive: 'inactive',
-  epuisee: 'soldOut',
-  expiree: 'expired',
+  active: OFFER_STATUS_ACTIVE,
+  inactive: OFFER_STATUS_INACTIVE,
+  epuisee: OFFER_STATUS_SOLDOUT,
+  expiree: OFFER_STATUS_EXPIRED,
   statut: 'status',
   creation: 'creationMode',
   manuelle: 'manual',

@@ -5,32 +5,32 @@ import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
 import { ALL_STATUS } from 'components/pages/Offers/_constants'
 
 export const OffersStatusFiltersModal = ({
+  isVisible,
   refreshOffers,
   status,
-  toggleModalVisibility,
-  updateStatusFilters,
+  setIsVisible,
+  updateStatusFilter,
 }) => {
   const modalRef = useRef(null)
 
   const handleStatusFilterChange = useCallback(
     event => {
-      updateStatusFilters(event.target.value)
+      updateStatusFilter(event.target.value)
     },
-    [updateStatusFilters],
+    [updateStatusFilter]
   )
 
   const onClickOutside = useCallback(
     event => {
       const { target } = event
-
       if (modalRef.current && !modalRef.current.contains(target)) {
         event.preventDefault()
         event.stopPropagation()
 
-        toggleModalVisibility()
+        setIsVisible(!isVisible)
       }
     },
-    [toggleModalVisibility],
+    [setIsVisible, isVisible]
   )
 
   useEffect(() => {
@@ -40,6 +40,10 @@ export const OffersStatusFiltersModal = ({
       document.body.removeEventListener('click', onClickOutside)
     }
   }, [onClickOutside])
+
+  if (!isVisible) {
+    return null
+  }
 
   return (
     <div
@@ -95,9 +99,14 @@ export const OffersStatusFiltersModal = ({
   )
 }
 
+OffersStatusFiltersModal.defaultProps = {
+  status: null,
+}
+
 OffersStatusFiltersModal.propTypes = {
+  isVisible: PropTypes.bool.isRequired,
   refreshOffers: PropTypes.func.isRequired,
-  status: PropTypes.string.isRequired,
-  toggleModalVisibility: PropTypes.func.isRequired,
-  updateStatusFilters: PropTypes.func.isRequired,
+  setIsVisible: PropTypes.func.isRequired,
+  status: PropTypes.string,
+  updateStatusFilter: PropTypes.func.isRequired,
 }

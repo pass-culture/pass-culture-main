@@ -195,4 +195,20 @@
   .loading-spinner {
     margin-top: rem(70px);
   }
+
+  .search-no-results {
+    text-align: center;
+    color: $grey-dark;
+
+    img {
+      margin: rem(10px) 0 rem(30px)
+    }
+
+    p {
+      margin-bottom: rem(20px);
+    }
+    a {
+      color: $primary;
+    }
+  }
 }
