@@ -1,7 +1,11 @@
 from flask import current_app as app
-from flask_jwt_extended import (create_access_token, create_refresh_token,
-                                get_jwt_identity, jwt_refresh_token_required,
-                                jwt_required)
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    get_jwt_identity,
+    jwt_refresh_token_required,
+    jwt_required,
+)
 
 from pcapi.core.users import api as user_api
 from pcapi.core.users import exceptions as user_exceptions
@@ -54,15 +58,15 @@ def password_reset_request(body: PasswordResetRequestRequest) -> None:
     generate_reset_token(user)
     repository.save(user)
 
-    try:
-        send_reset_password_email_to_user(user, send_raw_email)
-    except MailServiceException as mail_service_exception:
+    is_email_sent = send_reset_password_email_to_user(user, send_raw_email)
+
+    if not is_email_sent:
         app.logger.error(
-            f"Email service failure when user request password reset with {user.email}"
+            'Email service failure when user request password reset with %s', user.email
         )
-        errors = ApiErrors()
-        errors.status_code = 500
-        raise errors from mail_service_exception
+        errors = ApiErrors({'error': "L'email n'a pas pu être envoyé"})
+        errors.status_code = 400
+        raise errors
 
 
 # TODO: temporary resource to test JWT authentication on a resource

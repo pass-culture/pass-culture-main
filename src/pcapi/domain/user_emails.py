@@ -37,7 +37,7 @@ from pcapi.emails.user_notification_after_stock_update import \
     retrieve_data_to_warn_user_after_stock_update_affecting_booking
 from pcapi.emails.user_reset_password import \
     retrieve_data_for_reset_password_user_email
-from pcapi.models import Booking, Offerer, UserOfferer, UserSQLEntity, \
+from pcapi.models import Offerer, UserOfferer, UserSQLEntity, \
     VenueSQLEntity
 from pcapi.repository.user_queries import find_all_emails_of_user_offerers_admins
 from pcapi.utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
@@ -93,9 +93,9 @@ def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: Booking,
     send_email(data=data)
 
 
-def send_reset_password_email_to_user(user: UserSQLEntity, send_email: Callable[..., bool]) -> None:
+def send_reset_password_email_to_user(user: UserSQLEntity, send_email: Callable[..., bool]) -> bool:
     data = retrieve_data_for_reset_password_user_email(user)
-    send_email(data=data)
+    return send_email(data=data)
 
 
 def send_reset_password_email_to_pro(user: UserSQLEntity, send_email: Callable[..., bool]) -> None:

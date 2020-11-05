@@ -4,7 +4,6 @@ import pytest
 
 from pcapi.core.users import factories as user_factories
 from pcapi.core.users.factories import UserFactory
-from pcapi.utils.mailing import MailServiceException
 from tests.conftest import TestClient
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -89,12 +88,19 @@ def test_request_reset_password_for_unknown_email(app):
     assert response.status_code == 204
 
 
-def test_request_reset_password_for_existing_email(app):
+@patch('pcapi.routes.native.v1.authentication.send_reset_password_email_to_user')
+def test_request_reset_password_for_existing_email(mock_send_reset_password_email_to_user, app):
     email = "existing_user@example.com"
     data = {"email": email}
     user = UserFactory(email=email)
+
+    assert user.resetPasswordToken is None
+
+    mock_send_reset_password_email_to_user.return_value = True
+
     response = TestClient(app.test_client()).post("/native/v1/password_reset_request", json=data)
 
+    mock_send_reset_password_email_to_user.assert_called_once()
     assert response.status_code == 204
     assert user.resetPasswordToken is not None
 
@@ -108,8 +114,10 @@ def test_request_reset_password_with_mail_service_exception(
     data = {"email": email}
     UserFactory(email=email)
 
-    mock_send_reset_password_email_to_user.side_effect = MailServiceException()
+    mock_send_reset_password_email_to_user.return_value = False
 
     response = TestClient(app.test_client()).post("/native/v1/password_reset_request", json=data)
 
-    assert response.status_code == 500
+    mock_send_reset_password_email_to_user.assert_called_once()
+    assert response.status_code == 400
+    assert response.json['error'] == "L'email n'a pas pu être envoyé"

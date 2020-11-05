@@ -76,7 +76,6 @@ def app():
     install_activity()
     install_materialized_views()
     install_routes(app)
-    app.register_blueprint(native_v1, url_prefix='/native/v1')
     install_local_providers()
     app.mailjet_client = Mock()
     app.redis_client = Mock()

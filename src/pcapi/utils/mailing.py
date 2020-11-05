@@ -41,11 +41,11 @@ def send_raw_email(data: Dict) -> bool:
         save(data, status)
         if not successfully_sent_email:
             logger.logger.warning(
-                f'[EMAIL] Trying to send email failed with status code {response.status_code}')
-    except Exception:
-        logger.logger.exception(f'[EMAIL] Trying to send email failed with unexpected error')
-    finally:
-        return successfully_sent_email
+                '[EMAIL] Trying to send email failed with status code %s', response.status_code)
+    except Exception as exc:
+        logger.logger.exception('[EMAIL] Trying to send email failed with unexpected error %s', exc)
+
+    return successfully_sent_email
 
 
 def create_contact(email: str) -> Response:
