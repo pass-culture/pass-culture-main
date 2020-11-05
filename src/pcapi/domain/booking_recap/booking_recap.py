@@ -79,12 +79,12 @@ class BookingRecap:
     def booking_status(self) -> BookingRecapStatus:
         if self.booking_is_reimbursed:
             return BookingRecapStatus.reimbursed
-        if self.booking_is_confirmed:
-            return BookingRecapStatus.confirmed
         if self.booking_is_cancelled:
             return BookingRecapStatus.cancelled
         if self.booking_is_used:
             return BookingRecapStatus.validated
+        if self.booking_is_confirmed:
+            return BookingRecapStatus.confirmed
         else:
             return BookingRecapStatus.booked
 

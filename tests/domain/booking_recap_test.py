@@ -49,7 +49,21 @@ class BookingRecapTest:
                 # Then
                 assert booking_recap_status == BookingRecapStatus.validated
 
-            def test_should_return_confirmed_status_when_booking_is_for_an_event_and_and_not_cancellable(self):
+            def test_should_return_validated_status_when_booking_is_for_an_event_and_not_cancellable_but_validated(self):
+                # Given
+                booking_recap = create_domain_event_booking_recap(
+                    booking_is_used=True,
+                    booking_is_cancelled=False,
+                    booking_is_confirmed=True,
+                    booking_is_reimbursed=False)
+
+                # When
+                booking_recap_status = booking_recap.booking_status
+
+                # Then
+                assert booking_recap_status == BookingRecapStatus.validated
+
+            def test_should_return_confirmed_status_when_booking_is_for_an_event_and_not_cancellable(self):
                 # Given
                 booking_recap = create_domain_event_booking_recap(
                     booking_is_used=False,
