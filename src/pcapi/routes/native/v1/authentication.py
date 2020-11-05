@@ -11,7 +11,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.v1.serialization.authentication import PasswordResetRequestRequest
-
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.mailing import MailServiceException, send_raw_email
 
@@ -58,9 +57,11 @@ def password_reset_request(body: PasswordResetRequestRequest) -> None:
     try:
         send_reset_password_email_to_user(user, send_raw_email)
     except MailServiceException as mail_service_exception:
-        app.logger.error("[send_reset_password_email] Mail service failure", mail_service_exception)
+        app.logger.error(
+            f"Email service failure when user request password reset with {user.email}"
+        )
         errors = ApiErrors()
-        errors.status_code = 503
+        errors.status_code = 500
         raise errors from mail_service_exception
 
 
