@@ -39,7 +39,7 @@ const generateBookingsCsvFile = bookings => {
     bookingArray.push(offerNameWithEscapedDoubleQuotes)
     bookingArray.push(formatEventDatetimeIfEventType(booking))
     bookingArray.push(booking.stock.offer_isbn || '')
-    bookingArray.push(booking.beneficiary.lastname.concat(' ', booking.beneficiary.firstname))
+    bookingArray.push(`${booking.beneficiary.lastname} ${booking.beneficiary.firstname}`)
     bookingArray.push(booking.beneficiary.email)
     const bookingDatetimeFormatted = moment
       .parseZone(booking.booking_date)
