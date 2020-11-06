@@ -2,7 +2,7 @@ from typing import List
 
 from pytest import fixture
 
-from pcapi.models import Booking, UserSQLEntity, StockSQLEntity, VenueSQLEntity, OfferSQLEntity
+from pcapi.models import Booking, UserSQLEntity, StockSQLEntity, VenueSQLEntity, Offer
 from pcapi.sandboxes.scripts.creators.bookings_recap.bookings_recap import save_bookings_recap_sandbox
 import pytest
 
@@ -16,7 +16,7 @@ class BookingsRecapTest:
         # Then
         assert Booking.query.count() == 14
         assert UserSQLEntity.query.count() == 4
-        assert OfferSQLEntity.query.count() == 6
+        assert Offer.query.count() == 6
         assert StockSQLEntity.query.count() == 6
         assert VenueSQLEntity.query.count() == 4
 

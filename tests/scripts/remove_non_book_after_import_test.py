@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from pcapi.models import Product, OfferSQLEntity
+from pcapi.models import Product, Offer
 from pcapi.repository import repository
 from pcapi.scripts.remove_non_book_after_import import delete_product_from_isbn_file, read_isbn_from_file
 import pytest
@@ -61,7 +61,7 @@ def test_should_not_delete_product_with_bookings_and_deactivate_associated_offer
     delete_product_from_isbn_file('mon_fichier_isbns.txt')
 
     # Then
-    offer = OfferSQLEntity.query.one()
+    offer = Offer.query.one()
     assert offer.isActive is False
     assert Product.query.count() == 1
 

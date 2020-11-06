@@ -3,12 +3,12 @@ from typing import List
 from flask import current_app as app
 
 from pcapi.connectors import redis
-from pcapi.models import OfferSQLEntity
+from pcapi.models import Offer
 from pcapi.repository import repository
 
 
 def deactivate_inappropriate_offers(offer_ids: List[int]):
-    offers = OfferSQLEntity.query.filter(OfferSQLEntity.id.in_(offer_ids)).all()
+    offers = Offer.query.filter(Offer.id.in_(offer_ids)).all()
     for o in offers:
         o.isActive = False
         o.product.isGcuCompatible = False

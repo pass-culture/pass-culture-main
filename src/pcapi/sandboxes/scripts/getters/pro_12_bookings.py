@@ -1,5 +1,5 @@
 from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import OfferSQLEntity
+from pcapi.core.offers.models import Offer
 from pcapi.models.offerer import Offerer
 from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.user_sql_entity import UserSQLEntity
@@ -14,7 +14,7 @@ from pcapi.sandboxes.scripts.utils.helpers import get_booking_helper, \
 
 def get_existing_pro_validated_user_with_validated_offerer_with_booking():
     query = Booking.query.join(StockSQLEntity) \
-                         .join(OfferSQLEntity) \
+                         .join(Offer) \
                          .join(VenueSQLEntity) \
                          .join(Offerer) \
                          .join(UserOfferer) \

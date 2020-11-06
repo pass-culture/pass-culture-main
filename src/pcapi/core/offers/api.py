@@ -9,7 +9,7 @@ from pcapi.domain.create_offer import (
     initialize_offer_from_product_id,
 )
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
-from pcapi.models import OfferSQLEntity, RightsType, UserSQLEntity, VenueSQLEntity
+from pcapi.models import Offer, RightsType, UserSQLEntity, VenueSQLEntity
 from pcapi.repository import repository, user_offerer_queries
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.utils.config import PRO_URL
@@ -58,7 +58,7 @@ def list_offers_for_pro_user(
     )
 
 
-def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> OfferSQLEntity:
+def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> Offer:
     venue = load_or_raise_error(VenueSQLEntity, offer_data.venue_id)
 
     ensure_current_user_has_rights(

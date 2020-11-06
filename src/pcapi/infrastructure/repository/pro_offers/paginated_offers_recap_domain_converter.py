@@ -3,10 +3,10 @@ from typing import Dict, List
 from pcapi.domain.identifier.identifier import Identifier
 
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap
-from pcapi.models import OfferSQLEntity, StockSQLEntity
+from pcapi.models import Offer, StockSQLEntity
 
 
-def to_domain(offer_sql_entities: List[OfferSQLEntity], current_page: int, total_pages: int, total_offers: int) -> PaginatedOffersRecap:
+def to_domain(offer_sql_entities: List[Offer], current_page: int, total_pages: int, total_offers: int) -> PaginatedOffersRecap:
     offers_recap = [_offer_recap_to_domain(offer_sql_entity) for offer_sql_entity in offer_sql_entities]
 
     return PaginatedOffersRecap(offers_recap=offers_recap,
@@ -15,7 +15,7 @@ def to_domain(offer_sql_entities: List[OfferSQLEntity], current_page: int, total
                                 total_offers=total_offers)
 
 
-def _offer_recap_to_domain(offer_sql_entity: OfferSQLEntity) -> OfferRecap:
+def _offer_recap_to_domain(offer_sql_entity: Offer) -> OfferRecap:
     stocks = [_stock_serializer(stock_entity) for stock_entity in offer_sql_entity.activeStocks]
 
     return OfferRecap(

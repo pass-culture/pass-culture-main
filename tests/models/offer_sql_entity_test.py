@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from pcapi.models import OfferSQLEntity, ApiErrors, ThingType, EventType, Product, Provider
+from pcapi.models import Offer, ApiErrors, ThingType, EventType, Product, Provider
 from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
 import pytest
@@ -23,7 +23,7 @@ ten_days_from_now = now + timedelta(days=10)
 class DateRangeTest:
     def test_offer_as_dict_returns_dateRange_in_ISO_8601(self):
         # Given
-        offer = OfferSQLEntity()
+        offer = Offer()
         offer.stocks = [
             create_stock(beginning_datetime=datetime(2018, 10, 22, 10, 10, 10), offer=offer)
         ]
@@ -268,7 +268,7 @@ class CreateOfferTest:
 
 def test_offer_is_digital_when_it_has_an_url():
     # given
-    offer = OfferSQLEntity()
+    offer = Offer()
     offer.url = 'http://url.com'
 
     # when / then
@@ -364,7 +364,7 @@ class hasBookingLimitDatetimesPassedTest:
     def test_returns_false_when_no_active_stock_has_future_booking_limit_datetime(self):
         # given
         now = datetime.utcnow()
-        offer = OfferSQLEntity()
+        offer = Offer()
         stock1 = create_stock(booking_limit_datetime=now - timedelta(weeks=3))
         stock2 = create_stock(booking_limit_datetime=now + timedelta(weeks=2), is_soft_deleted=True)
         offer.stocks = [stock1, stock2]
@@ -375,7 +375,7 @@ class hasBookingLimitDatetimesPassedTest:
     def test_returns_true_when_all_stocks_have_passed_booking_limit_datetime(self):
         # given
         now = datetime.utcnow()
-        offer = OfferSQLEntity()
+        offer = Offer()
         stock1 = create_stock(booking_limit_datetime=now - timedelta(weeks=3))
         stock2 = create_stock(booking_limit_datetime=now - timedelta(weeks=2))
         stock3 = create_stock(booking_limit_datetime=now - timedelta(weeks=1))
@@ -388,7 +388,7 @@ class hasBookingLimitDatetimesPassedTest:
         # given
         now = datetime.utcnow()
 
-        offer = OfferSQLEntity()
+        offer = Offer()
         stock1 = create_stock(booking_limit_datetime=now - timedelta(weeks=3))
         stock2 = create_stock(booking_limit_datetime=None)
         stock3 = create_stock(booking_limit_datetime=now + timedelta(weeks=1))
@@ -415,7 +415,7 @@ class hasBookingLimitDatetimesPassedTest:
 class ActiveMediationTest:
     def test_returns_none_when_no_mediations_exist_on_offer(self):
         # given
-        offer = OfferSQLEntity()
+        offer = Offer()
         offer.mediations = []
 
         # then
@@ -423,7 +423,7 @@ class ActiveMediationTest:
 
     def test_returns_none_when_all_mediations_are_deactivated(self):
         # given
-        offer = OfferSQLEntity()
+        offer = Offer()
         offer.mediations = [
             create_mediation(offer, is_active=False),
             create_mediation(offer, is_active=False)
@@ -434,7 +434,7 @@ class ActiveMediationTest:
 
     def test_returns_the_most_recent_active_mediation(self):
         # given
-        offer = OfferSQLEntity()
+        offer = Offer()
         offer.mediations = [
             create_mediation(offer, date_created=four_days_ago, is_active=True),
             create_mediation(offer, date_created=now, is_active=False),
@@ -448,7 +448,7 @@ class ActiveMediationTest:
 class DateRangeTest:
     def test_date_range_is_empty_when_offer_is_a_thing(self):
         # Given
-        offer = OfferSQLEntity()
+        offer = Offer()
         offer.type = str(ThingType.LIVRE_EDITION)
         offer.stocks = [create_stock(offer=offer)]
 
@@ -457,7 +457,7 @@ class DateRangeTest:
 
     def test_date_range_starts_and_ends_at_beginning_date_time_when_offer_has_only_one_stock(self):
         # Given
-        offer = OfferSQLEntity()
+        offer = Offer()
         offer.type = str(EventType.CINEMA)
         offer.stocks = [
             create_stock(beginning_datetime=two_days_ago, offer=offer)
@@ -468,7 +468,7 @@ class DateRangeTest:
 
     def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_beginning_date_time(self):
         # Given
-        offer = OfferSQLEntity()
+        offer = Offer()
         offer.type = str(EventType.CINEMA)
         offer.stocks = [
             create_stock(beginning_datetime=two_days_ago, offer=offer),
@@ -482,7 +482,7 @@ class DateRangeTest:
 
     def test_date_range_is_empty_when_event_has_no_stocks(self):
         # given
-        offer = OfferSQLEntity()
+        offer = Offer()
         offer.type = str(EventType.CINEMA)
         offer.stocks = []
 
@@ -493,7 +493,7 @@ class DateRangeTest:
 class IsEditableTest:
     def test_returns_false_when_offer_is_coming_from_provider(self, app):
         # given
-        offer = OfferSQLEntity()
+        offer = Offer()
         offer.lastProviderId = 21
 
         # then
@@ -529,7 +529,7 @@ class IsEditableTest:
 
     def test_returns_true_when_offer_is_not_coming_from_provider(self, app):
         # given
-        offer = OfferSQLEntity()
+        offer = Offer()
 
         # then
         assert offer.isEditable is True
@@ -538,7 +538,7 @@ class IsEditableTest:
 class ActiveStocksTest:
     def test_should_return_only_not_soft_deleted_stocks(self):
         # Given
-        offer = OfferSQLEntity()
+        offer = Offer()
         active_stock = create_stock(is_soft_deleted=False, offer=offer)
         soft_deleted_stock = create_stock(is_soft_deleted=True, offer=offer)
         offer.stocks = [
@@ -553,7 +553,7 @@ class ActiveStocksTest:
 class IsFromProviderTest:
     def test_returns_True_when_offer_is_coming_from_provider(self, app):
         # given
-        offer = OfferSQLEntity()
+        offer = Offer()
         offer.lastProviderId = 21
 
         # then
@@ -575,7 +575,7 @@ class IsFromProviderTest:
 
     def test_returns_False_when_offer_is_not_coming_from_provider(self, app):
         # given
-        offer = OfferSQLEntity()
+        offer = Offer()
 
         # then
         assert offer.isFromProvider is False
@@ -584,7 +584,7 @@ class IsFromProviderTest:
 class ThumbUrlTest:
     def test_should_return_thumb_url_with_mediation_when_mediation_exists(self):
         # given
-        offer = OfferSQLEntity()
+        offer = Offer()
         offer.mediations = [create_mediation(idx=1, date_created=datetime(2019, 11, 1, 10, 0, 0), thumb_count=1)]
 
         # then
@@ -592,7 +592,7 @@ class ThumbUrlTest:
 
     def test_should_return_thumb_url_with_product_when_mediation_does_not_exist(self):
         # given
-        offer = OfferSQLEntity()
+        offer = Offer()
         offer.product = create_product_with_thing_type()
         offer.product.id = 1
 
@@ -601,7 +601,7 @@ class ThumbUrlTest:
 
     def test_should_return_empty_thumb_url_when_no_product_nor_mediation(self):
         # given
-        offer = OfferSQLEntity()
+        offer = Offer()
 
         # then
         assert offer.thumbUrl == ''

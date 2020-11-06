@@ -3,7 +3,7 @@ from sqlalchemy import Sequence
 import pytest
 
 from pcapi.local_providers.chunk_manager import save_chunks
-from pcapi.models import OfferSQLEntity, StockSQLEntity
+from pcapi.models import Offer, StockSQLEntity
 from pcapi.models.db import db
 from pcapi.repository import repository
 from pcapi.model_creators.generic_creators import create_stock, create_offerer, create_venue
@@ -24,7 +24,7 @@ class SaveChunksTest:
                                                 id_at_providers='1%12345678912345')
         offer.venueId = venue.id
         chunk_to_insert = {
-            '1|OfferSQLEntity': offer
+            '1|Offer': offer
         }
         db.session.expunge(offer)
 
@@ -34,7 +34,7 @@ class SaveChunksTest:
         save_chunks(chunk_to_insert, chunk_to_update)
 
         # Then
-        assert OfferSQLEntity.query.count() == 1
+        assert Offer.query.count() == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_save_chunks_insert_1_offer_and_1_stock_in_chunk(self, app):
@@ -55,7 +55,7 @@ class SaveChunksTest:
         stock.offerId = offer_id
 
         chunk_to_insert = {
-            '1|OfferSQLEntity': offer,
+            '1|Offer': offer,
             '1|StockSQLEntity': stock,
         }
         db.session.expunge(offer)
@@ -67,7 +67,7 @@ class SaveChunksTest:
         save_chunks(chunk_to_insert, chunk_to_update)
 
         # Then
-        assert OfferSQLEntity.query.count() == 1
+        assert Offer.query.count() == 1
         assert StockSQLEntity.query.count() == 1
 
     @pytest.mark.usefixtures("db_session")
@@ -84,7 +84,7 @@ class SaveChunksTest:
         db.session.refresh(offer)
         offer.isDuo = True
         chunk_to_update = {
-            '1|OfferSQLEntity': offer,
+            '1|Offer': offer,
         }
         db.session.expunge(offer)
 
@@ -94,7 +94,7 @@ class SaveChunksTest:
         save_chunks(chunk_to_insert, chunk_to_update)
 
         # Then
-        assert OfferSQLEntity.query.count() == 1
+        assert Offer.query.count() == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_save_chunks_update_2_offers_and_1_stock_in_chunk(self, app):
@@ -118,9 +118,9 @@ class SaveChunksTest:
         offer2.isDuo = True
         stock.quantity = 2
         chunk_to_update = {
-            '1|OfferSQLEntity': offer1,
+            '1|Offer': offer1,
             '1|StockSQLEntity': stock,
-            '2|OfferSQLEntity': offer2,
+            '2|Offer': offer2,
         }
         db.session.expunge(offer1)
         db.session.expunge(offer2)
@@ -132,7 +132,7 @@ class SaveChunksTest:
         save_chunks(chunk_to_insert, chunk_to_update)
 
         # Then
-        offers = OfferSQLEntity.query.all()
+        offers = Offer.query.all()
         assert len(offers) == 2
         assert any(offer.isDuo for offer in offers)
         assert StockSQLEntity.query.count() == 1

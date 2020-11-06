@@ -12,7 +12,7 @@ from pcapi.domain.ts_vector import create_filter_on_ts_vector_matching_all_keywo
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import (
     to_domain,
 )
-from pcapi.models import Offerer, OfferSQLEntity, UserOfferer, VenueSQLEntity, StockSQLEntity
+from pcapi.models import Offerer, Offer, UserOfferer, VenueSQLEntity, StockSQLEntity
 
 INACTIVE_STATUS = 'inactive'
 EXPIRED_STATUS = 'expired'
@@ -43,20 +43,20 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
 
     query = query \
         .options(
-            joinedload(OfferSQLEntity.venue)
+            joinedload(Offer.venue)
             .joinedload(VenueSQLEntity.managingOfferer)
         ) \
         .options(
-            joinedload(OfferSQLEntity.stocks)
+            joinedload(Offer.stocks)
             .joinedload(StockSQLEntity.bookings)
         ) \
         .options(
-            joinedload(OfferSQLEntity.mediations)
+            joinedload(Offer.mediations)
         ) \
         .options(
-            joinedload(OfferSQLEntity.product)
+            joinedload(Offer.product)
         ) \
-        .order_by(OfferSQLEntity.id.desc()) \
+        .order_by(Offer.id.desc()) \
         .paginate(page, per_page=offers_per_page, error_out=False)
 
     total_offers = query.total
@@ -81,14 +81,14 @@ def get_offers_by_filters(
         name_keywords: Optional[str] = None,
 ):
     datetime_now = datetime.utcnow()
-    query = OfferSQLEntity.query
+    query = Offer.query
 
     if requested_status is not None:
         query = _filter_by_status(query, user_id, datetime_now, requested_status)
     if venue_id is not None:
-        query = query.filter(OfferSQLEntity.venueId == venue_id)
+        query = query.filter(Offer.venueId == venue_id)
     if type_id is not None:
-        query = query.filter(OfferSQLEntity.type == type_id)
+        query = query.filter(Offer.type == type_id)
     if offerer_id is not None:
         venue_alias = aliased(VenueSQLEntity)
         query = query \
@@ -104,11 +104,11 @@ def get_offers_by_filters(
         )
     if name_keywords is not None:
         name_keywords_filter = create_filter_on_ts_vector_matching_all_keywords(
-            OfferSQLEntity.__name_ts_vector__, name_keywords
+            Offer.__name_ts_vector__, name_keywords
         )
         query = query.filter(name_keywords_filter)
 
-    return query.distinct(OfferSQLEntity.id)
+    return query.distinct(Offer.id)
 
 
 def _filter_by_status(query: Query, user_id: int, datetime_now: datetime, requested_status: str) -> Query:
@@ -118,19 +118,19 @@ def _filter_by_status(query: Query, user_id: int, datetime_now: datetime, reques
         query = _filter_by_sold_out_status(query, user_id, datetime_now)
     elif requested_status == EXPIRED_STATUS:
         query = query \
-            .filter(OfferSQLEntity.isActive.is_(True)) \
+            .filter(Offer.isActive.is_(True)) \
             .join(StockSQLEntity) \
             .filter(StockSQLEntity.isSoftDeleted.is_(False)) \
-            .group_by(OfferSQLEntity.id) \
+            .group_by(Offer.id) \
             .having(func.max(StockSQLEntity.bookingLimitDatetime) < datetime_now)
     elif requested_status == INACTIVE_STATUS:
-        query = query.filter(OfferSQLEntity.isActive.is_(False))
+        query = query.filter(Offer.isActive.is_(False))
     return query
 
 
 def _filter_by_sold_out_status(query, user_id, datetime_now):
-    sold_out_offers = OfferSQLEntity.query \
-        .filter(OfferSQLEntity.isActive.is_(True)) \
+    sold_out_offers = Offer.query \
+        .filter(Offer.isActive.is_(True)) \
         .join(VenueSQLEntity) \
         .join(Offerer) \
         .join(UserOfferer) \
@@ -140,18 +140,18 @@ def _filter_by_sold_out_status(query, user_id, datetime_now):
         .filter(StockSQLEntity.isSoftDeleted.is_(False)) \
         .filter(or_(StockSQLEntity.beginningDatetime.is_(None), StockSQLEntity.bookingLimitDatetime >= datetime_now)) \
         .outerjoin(Booking, StockSQLEntity.id == Booking.stockId) \
-        .group_by(OfferSQLEntity.id) \
+        .group_by(Offer.id) \
         .having(func.sum(StockSQLEntity.quantity) == coalesce(func.sum(case([(Booking.isCancelled.is_(True), 0)], else_=Booking.quantity)), 0))
     query = query \
-        .filter(OfferSQLEntity.isActive.is_(True)) \
-        .filter(not_(OfferSQLEntity.stocks.any())) \
+        .filter(Offer.isActive.is_(True)) \
+        .filter(not_(Offer.stocks.any())) \
         .union_all(sold_out_offers)
     return query
 
 
 def _filter_by_active_status(query, user_id, datetime_now):
     future_stocks_with_remaining_quantity = StockSQLEntity.query \
-        .join(OfferSQLEntity) \
+        .join(Offer) \
         .join(VenueSQLEntity) \
         .join(Offerer) \
         .join(UserOfferer) \
@@ -164,6 +164,6 @@ def _filter_by_active_status(query, user_id, datetime_now):
         .having(or_(StockSQLEntity.quantity.is_(None), StockSQLEntity.quantity != coalesce(func.sum(case([(Booking.isCancelled.is_(True), 0)], else_=Booking.quantity)), 0))) \
         .subquery()
     query = query \
-        .filter(OfferSQLEntity.isActive.is_(True)) \
-        .join(future_stocks_with_remaining_quantity, OfferSQLEntity.id == future_stocks_with_remaining_quantity.c.offerId)
+        .filter(Offer.isActive.is_(True)) \
+        .join(future_stocks_with_remaining_quantity, Offer.id == future_stocks_with_remaining_quantity.c.offerId)
     return query

@@ -1,7 +1,7 @@
 from typing import Optional
 
 from pcapi.domain.offers import update_is_active_status
-from pcapi.models import Booking, OfferSQLEntity, Product, StockSQLEntity, ThingType
+from pcapi.models import Booking, Offer, Product, StockSQLEntity, ThingType
 from pcapi.repository import repository
 from pcapi.repository.favorite_queries import get_favorites_for_offers
 from pcapi.repository.mediation_queries import get_mediations_for_offers
@@ -17,7 +17,7 @@ class ProductWithBookingsException(Exception):
 def delete_unwanted_existing_product(isbn: str):
     product_has_at_least_one_booking = Product.query \
         .filter_by(idAtProviders=isbn) \
-        .join(OfferSQLEntity) \
+        .join(Offer) \
         .join(StockSQLEntity) \
         .join(Booking) \
         .count() > 0

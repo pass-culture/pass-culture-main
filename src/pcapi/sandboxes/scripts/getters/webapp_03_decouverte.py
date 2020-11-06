@@ -1,5 +1,5 @@
 from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import OfferSQLEntity
+from pcapi.core.offers.models import Offer
 from pcapi.models.recommendation import Recommendation
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository.user_queries import keep_only_webapp_users
@@ -28,7 +28,7 @@ def get_existing_webapp_user_with_no_date_read():
 def get_existing_webapp_user_with_at_least_one_recommendation():
     query = Recommendation.query.join(UserSQLEntity)
     query = keep_only_webapp_users(query)
-    query = query.reset_joinpoint().join(OfferSQLEntity)
+    query = query.reset_joinpoint().join(Offer)
 
     recommendation = query.first()
     return {

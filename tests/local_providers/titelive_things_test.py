@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.local_providers import TiteLiveThings
-from pcapi.models import Product, BookFormat, LocalProviderEvent, OfferSQLEntity
+from pcapi.models import Product, BookFormat, LocalProviderEvent, Offer
 from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
@@ -945,6 +945,6 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        offer = OfferSQLEntity.query.one()
+        offer = Offer.query.one()
         assert offer.isActive is False
         assert Product.query.count() == 1

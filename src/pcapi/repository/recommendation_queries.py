@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List
 
-from pcapi.models import MediationSQLEntity, OfferSQLEntity, Recommendation
+from pcapi.models import MediationSQLEntity, Offer, Recommendation
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.db import db
 from pcapi.repository import mediation_queries
@@ -28,7 +28,7 @@ def find_recommendation_already_created_on_discovery(offer_id: str, mediation_id
     query = Recommendation.query.filter((Recommendation.userId == user_id)
                                         & (Recommendation.search == None))
     if offer_id:
-        query = query.join(OfferSQLEntity)
+        query = query.join(Offer)
     offer = find_searchable_offer(offer_id)
 
     if mediation_id:
@@ -42,7 +42,7 @@ def find_recommendation_already_created_on_discovery(offer_id: str, mediation_id
         if offer is None:
             raise ResourceNotFoundError()
 
-        query = query.filter(OfferSQLEntity.id == offer_id)
+        query = query.filter(Offer.id == offer_id)
 
     return query.first()
 

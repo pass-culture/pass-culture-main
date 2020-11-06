@@ -36,7 +36,7 @@ class Recommendation(PcObject, Model):
                      index=True,
                      nullable=True)
 
-    offer = relationship('OfferSQLEntity',
+    offer = relationship('Offer',
                          foreign_keys=[offerId],
                          backref='recommendations')
 

@@ -5,7 +5,7 @@ import pytest
 from sqlalchemy import func
 
 import pcapi.core.offers.factories as offers_factories
-from pcapi.models import OfferSQLEntity, StockSQLEntity, Product
+from pcapi.models import Offer, StockSQLEntity, Product
 from pcapi.models.offer_type import EventType, ThingType
 from pcapi.repository import repository
 from pcapi.repository.offer_queries import department_or_national_offers, \
@@ -257,7 +257,7 @@ class QueryOfferWithRemainingStocksTest:
         repository.save(offer)
 
         # When
-        offers_count = OfferSQLEntity.query \
+        offers_count = Offer.query \
             .join(StockSQLEntity) \
             .count()
 
@@ -279,7 +279,7 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = OfferSQLEntity.query \
+        offers_count = Offer.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
@@ -304,7 +304,7 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = OfferSQLEntity.query \
+        offers_count = Offer.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
@@ -328,7 +328,7 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = OfferSQLEntity.query \
+        offers_count = Offer.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
@@ -353,7 +353,7 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = OfferSQLEntity.query \
+        offers_count = Offer.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
@@ -378,7 +378,7 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = OfferSQLEntity.query \
+        offers_count = Offer.query \
             .join(StockSQLEntity) \
             .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
             .filter((StockSQLEntity.quantity == None) | (
@@ -916,9 +916,9 @@ class UpdateOffersIsActiveStatusTest:
         update_offers_is_active_status(offers_id=offers_id, is_active=True)
 
         # Then
-        assert OfferSQLEntity.query.get(offer1.id).isActive == True
-        assert OfferSQLEntity.query.get(offer2.id).isActive == True
-        assert OfferSQLEntity.query.get(offer3.id).isActive == False
+        assert Offer.query.get(offer1.id).isActive == True
+        assert Offer.query.get(offer2.id).isActive == True
+        assert Offer.query.get(offer3.id).isActive == False
 
 class GetAllOffersIdByFiltersTest:
     @pytest.mark.usefixtures("db_session")

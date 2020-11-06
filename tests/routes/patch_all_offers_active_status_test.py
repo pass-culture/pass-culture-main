@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.models import OfferSQLEntity
+from pcapi.models import Offer
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, API_URL
@@ -35,8 +35,8 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            assert OfferSQLEntity.query.get(offer1.id).isActive == True
-            assert OfferSQLEntity.query.get(offer2.id).isActive == True
+            assert Offer.query.get(offer1.id).isActive == True
+            assert Offer.query.get(offer2.id).isActive == True
 
         @pytest.mark.usefixtures("db_session")
         def when_deactivating_all_existing_offers(self, app):
@@ -63,8 +63,8 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            assert OfferSQLEntity.query.get(offer1.id).isActive == False
-            assert OfferSQLEntity.query.get(offer2.id).isActive == False
+            assert Offer.query.get(offer1.id).isActive == False
+            assert Offer.query.get(offer2.id).isActive == False
 
         @pytest.mark.usefixtures("db_session")
         def should_update_offers_by_given_filters(self, app):
@@ -98,8 +98,8 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            assert OfferSQLEntity.query.get(offer_corresponding_to_filters.id).isActive == False
-            assert OfferSQLEntity.query.get(offer_corresponding_to_filters_2.id).isActive == False
-            assert OfferSQLEntity.query.get(offer_not_corresponding_to_filters.id).isActive == True
-            assert OfferSQLEntity.query.get(offer_not_corresponding_to_filters_2.id).isActive == True
-            assert OfferSQLEntity.query.get(offer_not_corresponding_to_filters_3.id).isActive == True
+            assert Offer.query.get(offer_corresponding_to_filters.id).isActive == False
+            assert Offer.query.get(offer_corresponding_to_filters_2.id).isActive == False
+            assert Offer.query.get(offer_not_corresponding_to_filters.id).isActive == True
+            assert Offer.query.get(offer_not_corresponding_to_filters_2.id).isActive == True
+            assert Offer.query.get(offer_not_corresponding_to_filters_3.id).isActive == True

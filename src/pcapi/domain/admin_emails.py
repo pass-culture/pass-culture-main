@@ -1,6 +1,6 @@
 from typing import Dict, List, Callable
 
-from pcapi.models import OfferSQLEntity, UserSQLEntity, Offerer, UserOfferer
+from pcapi.models import Offer, UserSQLEntity, Offerer, UserOfferer
 from pcapi.utils.mailing import make_validation_email_object, make_payment_message_email, \
     compute_email_html_part_and_recipients, make_payment_details_email, \
     make_payments_report_email, make_wallet_balances_email, make_offer_creation_notification_email, \
@@ -51,7 +51,7 @@ def send_payments_report_emails(not_processable_payments_csv: str, error_payment
     return send_email(data=email)
 
 
-def send_offer_creation_notification_to_administration(offer: OfferSQLEntity, author: UserSQLEntity, app_origin_url: str,
+def send_offer_creation_notification_to_administration(offer: Offer, author: UserSQLEntity, app_origin_url: str,
                                                        send_email: Callable[[dict], bool]) -> bool:
     email = make_offer_creation_notification_email(offer, author, app_origin_url)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], email['To'])

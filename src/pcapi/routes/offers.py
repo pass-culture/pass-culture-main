@@ -2,7 +2,7 @@ from flask import request
 from flask_login import current_user, login_required
 
 from pcapi.flask_app import private_api
-from pcapi.models import OfferSQLEntity, RightsType
+from pcapi.models import Offer, RightsType
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import offer_queries
 
@@ -59,7 +59,7 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
 @login_required
 @spectree_serialize(response_model=GetOfferResponseModel)
 def get_offer(offer_id: str) -> GetOfferResponseModel:
-    offer = load_or_404(OfferSQLEntity, offer_id)
+    offer = load_or_404(Offer, offer_id)
     return GetOfferResponseModel(**as_dict(offer, includes=OFFER_INCLUDES))
 
 

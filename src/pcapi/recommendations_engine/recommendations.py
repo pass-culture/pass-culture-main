@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from sqlalchemy.orm import joinedload
 
-from pcapi.models import DiscoveryView, MediationSQLEntity, OfferSQLEntity, Recommendation, UserSQLEntity, VenueSQLEntity
+from pcapi.models import DiscoveryView, MediationSQLEntity, Offer, Recommendation, UserSQLEntity, VenueSQLEntity
 from pcapi.models.db import db
 from pcapi.recommendations_engine import get_offers_for_recommendations_discovery
 from pcapi.repository import mediation_queries, repository
@@ -67,14 +67,14 @@ def _get_recommendation_with_information(recommendation_ids: List[int]) -> List[
             Recommendation.id.in_(recommendation_ids)) \
         .options(
             joinedload(Recommendation.offer)
-            .joinedload(OfferSQLEntity.venue)
+            .joinedload(Offer.venue)
             .joinedload(VenueSQLEntity.managingOfferer)) \
         .options(
             joinedload(Recommendation.offer)
-            .joinedload(OfferSQLEntity.stocks)) \
+            .joinedload(Offer.stocks)) \
         .options(
             joinedload(Recommendation.offer)
-            .joinedload(OfferSQLEntity.mediations)) \
+            .joinedload(Offer.mediations)) \
         .all()
 
 
@@ -89,7 +89,7 @@ def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
     return _create_recommendation(user, offer, mediation=mediation)
 
 
-def _create_recommendation(user: UserSQLEntity, offer: OfferSQLEntity,
+def _create_recommendation(user: UserSQLEntity, offer: Offer,
                            mediation: MediationSQLEntity = None) -> Recommendation:
     recommendation = Recommendation()
     recommendation.user = user

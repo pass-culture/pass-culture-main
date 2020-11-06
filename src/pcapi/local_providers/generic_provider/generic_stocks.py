@@ -7,7 +7,7 @@ from sqlalchemy import Sequence
 
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import OfferSQLEntity, \
+from pcapi.models import Offer, \
     StockSQLEntity, \
     VenueProvider
 from pcapi.models.db import Model, \
@@ -50,7 +50,7 @@ class GenericStocks(LocalProvider):
         if not self.product:
             return []
 
-        providable_info_offer = self.create_providable_info(OfferSQLEntity,
+        providable_info_offer = self.create_providable_info(Offer,
                                                             f"{self.provider_stocks['ref']}@{self.siret}",
                                                             datetime.utcnow())
         providable_info_stock = self.create_providable_info(StockSQLEntity,
@@ -60,12 +60,12 @@ class GenericStocks(LocalProvider):
         return [providable_info_offer, providable_info_stock]
 
     def fill_object_attributes(self, pc_object: Model) -> None:
-        if isinstance(pc_object, OfferSQLEntity):
+        if isinstance(pc_object, Offer):
             self.fill_offer_attributes(pc_object)
         if isinstance(pc_object, StockSQLEntity):
             self.fill_stock_attributes(pc_object)
 
-    def fill_offer_attributes(self, offer: OfferSQLEntity) -> None:
+    def fill_offer_attributes(self, offer: Offer) -> None:
         offer.bookingEmail = self.venue.bookingEmail
         offer.description = self.product.description
         offer.extraData = self.product.extraData

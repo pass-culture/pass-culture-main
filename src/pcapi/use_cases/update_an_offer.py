@@ -2,13 +2,13 @@ from flask import current_app as app
 
 from pcapi.connectors import redis
 from pcapi.domain.offers import is_from_allocine
-from pcapi.models import OfferSQLEntity
+from pcapi.models import Offer
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository, feature_queries
 from pcapi.validation.routes.offers import check_edition_for_allocine_offer_is_valid, check_offer_is_editable
 
 
-def update_an_offer(offer: OfferSQLEntity, modifications: dict) -> OfferSQLEntity:
+def update_an_offer(offer: Offer, modifications: dict) -> Offer:
     check_offer_is_editable(offer)
 
     if is_from_allocine(offer):
@@ -19,7 +19,7 @@ def update_an_offer(offer: OfferSQLEntity, modifications: dict) -> OfferSQLEntit
     return offer
 
 
-def _update_offer(offer: OfferSQLEntity, modifications) -> OfferSQLEntity:
+def _update_offer(offer: Offer, modifications) -> Offer:
     offer.populate_from_dict(modifications)
     offer.update_with_product_data(modifications)
 
@@ -30,7 +30,7 @@ def _update_offer(offer: OfferSQLEntity, modifications) -> OfferSQLEntity:
     return offer
 
 
-def _update_offer_for_allocine_offers(offer: OfferSQLEntity, modifications) -> OfferSQLEntity:
+def _update_offer_for_allocine_offers(offer: Offer, modifications) -> Offer:
     modifications = _exclude_modifications_where_offer_value_wont_change(offer, modifications)
 
     check_edition_for_allocine_offer_is_valid(modifications)
@@ -51,7 +51,7 @@ def _update_offer_for_allocine_offers(offer: OfferSQLEntity, modifications) -> O
     return offer
 
 
-def _exclude_modifications_where_offer_value_wont_change(offer: OfferSQLEntity, modifications):
+def _exclude_modifications_where_offer_value_wont_change(offer: Offer, modifications):
     modifications_to_keep = dict()
 
     for (field, new_value) in modifications.items():

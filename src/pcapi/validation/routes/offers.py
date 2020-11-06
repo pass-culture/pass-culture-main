@@ -1,5 +1,5 @@
 from pcapi.domain.allocine import get_editable_fields_for_allocine_offers
-from pcapi.models import OfferSQLEntity
+from pcapi.models import Offer
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_type import ProductType
 
@@ -29,7 +29,7 @@ def check_offer_id_is_present_in_request(offer_id: str):
         raise errors
 
 
-def check_offer_is_editable(offer: OfferSQLEntity):
+def check_offer_is_editable(offer: Offer):
     if not offer.isEditable:
         error = ApiErrors()
         error.status_code = 400

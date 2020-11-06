@@ -5,7 +5,7 @@ import random
 from typing import Optional, List, Dict
 
 from pcapi.core.bookings import api as bookings_api
-from pcapi.models import UserSQLEntity, Deposit, Offerer, UserOfferer, RightsType, VenueSQLEntity, OfferSQLEntity, Product, Provider, \
+from pcapi.models import UserSQLEntity, Deposit, Offerer, UserOfferer, RightsType, VenueSQLEntity, Offer, Product, Provider, \
     EventType, StockSQLEntity, ThingType, Booking, Recommendation, MediationSQLEntity, PaymentMessage, Payment
 from pcapi.models.payment_status import TransactionStatus, PaymentStatus
 from pcapi.utils.token import random_token
@@ -212,8 +212,8 @@ def create_offer_with_event_product(venue: VenueSQLEntity = None,
                                     product: Product = None,
                                     last_provider: Provider = None,
                                     thumb_count: int = 0,
-                                    withdrawal_details: Optional[str] = None) -> OfferSQLEntity:
-    offer = OfferSQLEntity()
+                                    withdrawal_details: Optional[str] = None) -> Offer:
+    offer = Offer()
     if product is None:
         product = create_product_with_event_type(event_name=event_name, event_type=event_type,
                                                  duration_minutes=duration_minutes,
@@ -242,7 +242,7 @@ def create_stock(quantity: int = None, booking_limit_datetime: datetime = None, 
                  date_created: datetime = datetime.utcnow(), date_modified: datetime = datetime.utcnow(),
                  date_modified_at_last_provider: datetime = None, has_been_migrated: bool = None, idx: int = None,
                  id_at_providers: str = None, is_soft_deleted: bool = False, last_provider_id: int = None,
-                 offer: OfferSQLEntity = None, price: float = 10) -> StockSQLEntity:
+                 offer: Offer = None, price: float = 10) -> StockSQLEntity:
     stock = StockSQLEntity()
     stock.quantity = quantity
     stock.beginningDatetime = beginning_datetime
@@ -325,8 +325,8 @@ def create_offer_with_thing_product(venue: VenueSQLEntity,
                                     last_provider_id: int = None,
                                     last_provider: Provider = None,
                                     extra_data: Dict = None,
-                                    withdrawal_details: Optional[str] = None) -> OfferSQLEntity:
-    offer = OfferSQLEntity()
+                                    withdrawal_details: Optional[str] = None) -> Offer:
+    offer = Offer()
     if product:
         offer.product = product
         offer.productId = product.id
@@ -375,7 +375,7 @@ def create_offer_with_thing_product(venue: VenueSQLEntity,
     return offer
 
 
-def create_recommendation(offer: OfferSQLEntity = None,
+def create_recommendation(offer: Offer = None,
                           user: UserSQLEntity = None,
                           date_created: datetime = datetime.utcnow(),
                           date_read: datetime = None,

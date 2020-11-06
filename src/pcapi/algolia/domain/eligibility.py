@@ -2,17 +2,17 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
 
-from pcapi.models import OfferSQLEntity
+from pcapi.models import Offer
 
 
 class EligibilityRule(ABC):
     @abstractmethod
-    def apply(self, offer: OfferSQLEntity, offer_details: dict):
+    def apply(self, offer: Offer, offer_details: dict):
         pass
 
 
 class NameHasChanged(EligibilityRule):
-    def apply(self, offer: OfferSQLEntity, offer_details: dict):
+    def apply(self, offer: Offer, offer_details: dict):
         offer_name = offer.name
         indexed_offer_name = offer_details['name']
 
@@ -20,7 +20,7 @@ class NameHasChanged(EligibilityRule):
 
 
 class DatesHaveChanged(EligibilityRule):
-    def apply(self, offer: OfferSQLEntity, offer_details: dict):
+    def apply(self, offer: Offer, offer_details: dict):
         if not offer.isEvent:
             return False
 
@@ -31,7 +31,7 @@ class DatesHaveChanged(EligibilityRule):
 
 
 class PricesHaveChanged(EligibilityRule):
-    def apply(self, offer: OfferSQLEntity, offer_details: dict):
+    def apply(self, offer: Offer, offer_details: dict):
         offer_prices = list(map(lambda stock: float(stock.price), offer.activeStocks))
         indexed_offer_prices = offer_details['prices']
 

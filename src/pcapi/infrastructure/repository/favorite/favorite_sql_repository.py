@@ -5,7 +5,7 @@ from sqlalchemy.orm import joinedload
 from pcapi.domain.favorite.favorite import Favorite
 from pcapi.domain.favorite.favorite_repository import FavoriteRepository
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
-from pcapi.models import FavoriteSQLEntity, OfferSQLEntity, StockSQLEntity, VenueSQLEntity, Booking
+from pcapi.models import FavoriteSQLEntity, Offer, StockSQLEntity, VenueSQLEntity, Booking
 
 
 class FavoriteSQLRepository(FavoriteRepository):
@@ -14,7 +14,7 @@ class FavoriteSQLRepository(FavoriteRepository):
             .filter(FavoriteSQLEntity.userId == beneficiary_identifier) \
             .options(
                 joinedload(FavoriteSQLEntity.offer)
-                    .joinedload(OfferSQLEntity.venue)
+                    .joinedload(Offer.venue)
                     .joinedload(VenueSQLEntity.managingOfferer)
              ) \
             .options(
@@ -22,29 +22,29 @@ class FavoriteSQLRepository(FavoriteRepository):
             ) \
             .options(
                 joinedload(FavoriteSQLEntity.offer)
-                    .joinedload(OfferSQLEntity.stocks)
+                    .joinedload(Offer.stocks)
             ) \
             .options(
                 joinedload(FavoriteSQLEntity.offer)
-                    .joinedload(OfferSQLEntity.product)
+                    .joinedload(Offer.product)
             ) \
             .options(
                 joinedload(FavoriteSQLEntity.offer)
-                    .joinedload(OfferSQLEntity.mediations)
+                    .joinedload(Offer.mediations)
             ) \
             .all()
 
         offer_ids = [favorite_sql_entity.offer.id for favorite_sql_entity in favorite_sql_entities]
 
-        bookings = OfferSQLEntity.query \
-            .filter(OfferSQLEntity.id.in_(offer_ids)) \
+        bookings = Offer.query \
+            .filter(Offer.id.in_(offer_ids)) \
             .join(StockSQLEntity) \
             .join(Booking) \
             .filter(Booking.userId == beneficiary_identifier) \
             .filter(Booking.isCancelled == False) \
             .with_entities(
                 Booking.id.label('booking_id'),
-                OfferSQLEntity.id.label('offer_id'),
+                Offer.id.label('offer_id'),
                 StockSQLEntity.id.label('stock_id')
         ) \
             .all()

@@ -21,7 +21,7 @@ def test_save_activation_sandbox(app):
         Booking=0,
         Deposit=0,
         MediationSQLEntity=0,
-        OfferSQLEntity=1,
+        Offer=1,
         Offerer=1,
         Product=1,
         Recommendation=0,

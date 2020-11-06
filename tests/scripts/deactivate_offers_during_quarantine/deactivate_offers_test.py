@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
-from pcapi.models import OfferSQLEntity
+from pcapi.models import Offer
 from pcapi.repository import repository
 from pcapi.scripts.deactivate_offers_during_quarantine.deactivate_offers import \
     build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine, deactivate_offers, \
@@ -132,7 +132,7 @@ class DeactivateOffersTest:
         deactivate_offers(offers)
 
         # Then
-        updated_offers = OfferSQLEntity.query.filter_by(id=offer.id).all()
+        updated_offers = Offer.query.filter_by(id=offer.id).all()
         for offer in updated_offers:
             assert offer.isActive is False
 

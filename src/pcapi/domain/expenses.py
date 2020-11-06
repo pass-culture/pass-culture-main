@@ -2,7 +2,7 @@ from decimal import Decimal
 from typing import Dict, List
 
 from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import OfferSQLEntity
+from pcapi.core.offers.models import Offer
 from pcapi.models.offer_type import ThingType
 
 
@@ -67,14 +67,14 @@ def _get_bookings_of_physical_things(bookings: List[Booking]) -> List[Booking]:
     return match
 
 
-def is_eligible_to_digital_offers_capping(offer: OfferSQLEntity) -> bool:
+def is_eligible_to_digital_offers_capping(offer: Offer) -> bool:
     if offer.isDigital and offer.type in map(str, DIGITAL_EXPENSES_CAPPED_TYPES):
         return True
 
     return False
 
 
-def is_eligible_to_physical_offers_capping(offer: OfferSQLEntity) -> bool:
+def is_eligible_to_physical_offers_capping(offer: Offer) -> bool:
     if not offer.isDigital and offer.type in map(str, PHYSICAL_EXPENSES_CAPPED_TYPES):
         return True
 

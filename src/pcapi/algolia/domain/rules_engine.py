@@ -1,8 +1,8 @@
 from pcapi.algolia.domain.eligibility import EligibilityRules
-from pcapi.models import OfferSQLEntity
+from pcapi.models import Offer
 
 
-def is_eligible_for_reindexing(offer: OfferSQLEntity, offer_details: dict) -> bool:
+def is_eligible_for_reindexing(offer: Offer, offer_details: dict) -> bool:
     eligibility_rules = [rule.value for rule in EligibilityRules]
 
     for rule in eligibility_rules:

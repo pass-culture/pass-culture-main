@@ -10,7 +10,7 @@ from pcapi.algolia.infrastructure.api import add_objects, delete_objects
 from pcapi.algolia.infrastructure.builder import build_object
 from pcapi.connectors.redis import add_to_indexed_offers, check_offer_exists, delete_indexed_offers, get_offer_details, \
     add_offer_ids_in_error
-from pcapi.models import OfferSQLEntity
+from pcapi.models import Offer
 from pcapi.repository import offer_queries
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.logger import logger
@@ -64,7 +64,7 @@ def delete_expired_offers(client: Redis, offer_ids: List[int]) -> None:
         _process_deleting(client=client, offer_ids_to_delete=offer_ids_to_delete)
 
 
-def _build_offer_details_to_be_indexed(offer: OfferSQLEntity) -> dict:
+def _build_offer_details_to_be_indexed(offer: Offer) -> dict:
     stocks = offer.activeStocks
     event_dates = []
     prices = list(map(lambda stock: float(stock.price), stocks))

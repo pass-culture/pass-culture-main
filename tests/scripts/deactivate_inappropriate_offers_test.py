@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from pcapi.models import OfferSQLEntity, Product
+from pcapi.models import Offer, Product
 from pcapi.repository import repository
 from pcapi.scripts.deactivate_inappropriate_offers import deactivate_inappropriate_offers
 import pytest
@@ -26,7 +26,7 @@ class DeactivateInappropriateOffersTest:
 
         # Then
         products = Product.query.all()
-        offers = OfferSQLEntity.query.all()
+        offers = Offer.query.all()
         first_product = products[0]
         second_product = products[1]
         first_offer = offers[0]

@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.models import ApiErrors, ThingType, EventType, OfferSQLEntity
+from pcapi.models import ApiErrors, ThingType, EventType, Offer
 from pcapi.model_creators.generic_creators import create_user, create_offerer
 from pcapi.validation.routes.offers import (
     check_offer_type_is_valid,
@@ -59,7 +59,7 @@ class CheckOfferNameIsValidTest:
 class CheckOfferIsEditableTest:
     def test_raises_error_when_offer_is_not_editable(self):
         # given
-        offer = OfferSQLEntity()
+        offer = Offer()
         offer.lastProviderId = "42"
 
         # when
@@ -71,7 +71,7 @@ class CheckOfferIsEditableTest:
 
     def test_does_not_raise_error_when_offer_type_is_editable(self):
         # given
-        offer = OfferSQLEntity()
+        offer = Offer()
 
         # when
         try:

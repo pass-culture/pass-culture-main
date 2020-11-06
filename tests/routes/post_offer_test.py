@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pcapi.models import EventType, OfferSQLEntity, ThingType, Product, Offerer
+from pcapi.models import EventType, Offer, ThingType, Product, Offerer
 from pcapi.repository import repository
 from tests.conftest import TestClient
 from pcapi.model_creators.generic_creators import (
@@ -204,7 +204,7 @@ class Returns201:
         assert response.status_code == 201
 
         offer_id = dehumanize(response.json["id"])
-        offer = OfferSQLEntity.query.filter_by(id=offer_id).first()
+        offer = Offer.query.filter_by(id=offer_id).first()
         assert offer.bookingEmail == "offer@email.com"
         assert offer.venueId == venue.id
         assert offer.isEvent == True
@@ -239,7 +239,7 @@ class Returns201:
 
         # Then
         offer_id = dehumanize(response.json["id"])
-        offer = OfferSQLEntity.query.filter_by(id=offer_id).first()
+        offer = Offer.query.filter_by(id=offer_id).first()
         assert response.status_code == 201
         assert offer.bookingEmail == None
 
@@ -270,10 +270,10 @@ class Returns201:
         # Then
         assert response.status_code == 201
         offer_id = dehumanize(response.json["id"])
-        offer = OfferSQLEntity.query.filter_by(id=offer_id).first()
+        offer = Offer.query.filter_by(id=offer_id).first()
         assert offer.bookingEmail == "offer@email.com"
         offer_id = dehumanize(response.json["id"])
-        offer = OfferSQLEntity.query.filter_by(id=offer_id).first()
+        offer = Offer.query.filter_by(id=offer_id).first()
         assert offer.bookingEmail == "offer@email.com"
         assert offer.venueId == venue.id
         thing_id = offer.product.id

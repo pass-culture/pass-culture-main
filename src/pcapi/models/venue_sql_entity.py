@@ -6,7 +6,7 @@ from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 
-from pcapi.core.offers.models import OfferSQLEntity
+from pcapi.core.offers.models import Offer
 from pcapi.domain.ts_vector import create_ts_vector_and_table_args
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models.venue_type import VenueType
@@ -139,7 +139,7 @@ class VenueSQLEntity(PcObject,
 
     @property
     def nOffers(self):
-        return OfferSQLEntity.query.filter(OfferSQLEntity.venueId == self.id).with_entities(OfferSQLEntity.id).count()
+        return Offer.query.filter(Offer.venueId == self.id).with_entities(Offer.id).count()
 
 
 @listens_for(VenueSQLEntity, 'before_insert')

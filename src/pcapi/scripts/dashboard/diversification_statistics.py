@@ -5,7 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.sql import selectable
 
 import pcapi.core.bookings.repository as booking_repository
-from pcapi.models import Offerer, UserOfferer, VenueSQLEntity, OfferSQLEntity, StockSQLEntity, Booking, EventType, ThingType, UserSQLEntity, DiscoveryView
+from pcapi.models import Offerer, UserOfferer, VenueSQLEntity, Offer, StockSQLEntity, Booking, EventType, ThingType, UserSQLEntity, DiscoveryView
 from pcapi.models.db import db
 from pcapi.core.bookings.repository import count_cancelled as query_count_all_cancelled_bookings
 from pcapi.core.bookings.repository import _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers
@@ -27,8 +27,8 @@ def get_offerers_with_offer_available_on_discovery_count(departement_code: str =
     active_offers_ids = get_active_offers_ids_query(user=None)
     query = Offerer.query\
         .join(VenueSQLEntity)\
-        .join(OfferSQLEntity)\
-        .filter(OfferSQLEntity.id.in_(active_offers_ids))
+        .join(Offer)\
+        .filter(Offer.id.in_(active_offers_ids))
 
     if departement_code:
         query = query \
@@ -73,7 +73,7 @@ def _get_physical_venue_ids_for_departement(departement_code: str) -> selectable
 
 
 def get_offerers_with_offers_available_on_search_count(departement_code: str = None) -> int:
-    base_query = Offerer.query.join(VenueSQLEntity).join(OfferSQLEntity)
+    base_query = Offerer.query.join(VenueSQLEntity).join(Offer)
     query = _filter_recommendable_offers_for_search(base_query)
     query = query.distinct(Offerer.id)
 
@@ -90,9 +90,9 @@ def get_offerers_with_non_cancelled_bookings_count(departement_code: str = None)
         query = query.filter(VenueSQLEntity.departementCode == departement_code)
 
     return query \
-        .join(OfferSQLEntity) \
-        .filter(OfferSQLEntity.type != str(ThingType.ACTIVATION)) \
-        .filter(OfferSQLEntity.type != str(EventType.ACTIVATION)) \
+        .join(Offer) \
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
+        .filter(Offer.type != str(EventType.ACTIVATION)) \
         .join(StockSQLEntity) \
         .join(Booking) \
         .filter_by(isCancelled=False) \
@@ -101,7 +101,7 @@ def get_offerers_with_non_cancelled_bookings_count(departement_code: str = None)
 
 
 def get_offers_with_user_offerer_and_stock_count(departement_code: str = None) -> int:
-    query = OfferSQLEntity.query.join(VenueSQLEntity)
+    query = Offer.query.join(VenueSQLEntity)
 
     if departement_code:
         query = query.filter(VenueSQLEntity.departementCode == departement_code)
@@ -109,16 +109,16 @@ def get_offers_with_user_offerer_and_stock_count(departement_code: str = None) -
     return query \
         .join(Offerer) \
         .join(UserOfferer) \
-        .join(StockSQLEntity, StockSQLEntity.offerId == OfferSQLEntity.id) \
-        .filter(OfferSQLEntity.type != str(EventType.ACTIVATION)) \
-        .filter(OfferSQLEntity.type != str(ThingType.ACTIVATION)) \
-        .distinct(OfferSQLEntity.id) \
+        .join(StockSQLEntity, StockSQLEntity.offerId == Offer.id) \
+        .filter(Offer.type != str(EventType.ACTIVATION)) \
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
+        .distinct(Offer.id) \
         .count()
 
 
 def get_offers_available_on_discovery_count(departement_code: str = None) -> int:
     offer_ids_subquery = get_active_offers_ids_query(user=None)
-    query = OfferSQLEntity.query.filter(OfferSQLEntity.id.in_(offer_ids_subquery))
+    query = Offer.query.filter(Offer.id.in_(offer_ids_subquery))
 
     if departement_code:
         query = query.join(VenueSQLEntity).filter(
@@ -141,7 +141,7 @@ def get_offers_available_on_discovery_count_v2(departement_code: str = None) -> 
 
 
 def get_offers_available_on_search_count(departement_code: str = None) -> int:
-    base_query = OfferSQLEntity.query.join(VenueSQLEntity).join(Offerer)
+    base_query = Offer.query.join(VenueSQLEntity).join(Offerer)
     query = _filter_recommendable_offers_for_search(base_query)
 
     if departement_code:
@@ -151,7 +151,7 @@ def get_offers_available_on_search_count(departement_code: str = None) -> int:
 
 
 def get_offers_with_non_cancelled_bookings_count(departement_code: str = None) -> int:
-    query = OfferSQLEntity.query \
+    query = Offer.query \
         .join(StockSQLEntity) \
         .join(Booking)
 
@@ -160,9 +160,9 @@ def get_offers_with_non_cancelled_bookings_count(departement_code: str = None) -
             VenueSQLEntity.departementCode == departement_code)
     return query \
         .filter(Booking.isCancelled.is_(False)) \
-        .filter(OfferSQLEntity.type != str(ThingType.ACTIVATION)) \
-        .filter(OfferSQLEntity.type != str(EventType.ACTIVATION)) \
-        .distinct(OfferSQLEntity.id) \
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
+        .filter(Offer.type != str(EventType.ACTIVATION)) \
+        .distinct(Offer.id) \
         .count()
 
 

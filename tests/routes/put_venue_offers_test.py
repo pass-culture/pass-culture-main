@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from pcapi.models import OfferSQLEntity
+from pcapi.models import Offer
 from pcapi.repository import repository
 import pytest
 from tests.conftest import TestClient
@@ -116,7 +116,7 @@ class Put:
             assert response.json[0]['isActive'] == True
             assert response.json[1]['isActive'] == True
 
-            offers = OfferSQLEntity.query.all()
+            offers = Offer.query.all()
             assert offers[0].isActive == True
             assert offers[1].isActive == True
 
@@ -174,7 +174,7 @@ class Put:
             assert response.json[0]['isActive'] == False
             assert response.json[1]['isActive'] == False
 
-            offers = OfferSQLEntity.query.all()
+            offers = Offer.query.all()
             assert not offers[0].isActive
             assert not offers[1].isActive
 

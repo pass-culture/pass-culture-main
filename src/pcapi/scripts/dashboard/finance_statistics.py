@@ -3,7 +3,7 @@ from typing import List, Tuple
 import pandas
 from sqlalchemy import func, text
 
-from pcapi.models import Deposit, Booking, Payment, UserSQLEntity, StockSQLEntity, OfferSQLEntity, VenueSQLEntity
+from pcapi.models import Deposit, Booking, Payment, UserSQLEntity, StockSQLEntity, Offer, VenueSQLEntity
 from pcapi.models.db import db
 from pcapi.models.payment_status import TransactionStatus
 
@@ -35,7 +35,7 @@ def get_total_amount_to_pay(departement_code: str = None) -> float:
     if departement_code:
         query = query.join(Booking) \
             .join(StockSQLEntity) \
-            .join(OfferSQLEntity) \
+            .join(Offer) \
             .join(VenueSQLEntity) \
             .join(UserSQLEntity, UserSQLEntity.id == Booking.userId) \
             .filter(UserSQLEntity.departementCode == departement_code)

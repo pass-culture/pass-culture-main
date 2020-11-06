@@ -7,7 +7,7 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription impo
     BeneficiaryPreSubscription
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap, EventBookingRecap, ThingBookingRecap
 from pcapi.domain.favorite.favorite import Favorite
-from pcapi.models import MediationSQLEntity, OfferSQLEntity
+from pcapi.models import MediationSQLEntity, Offer
 
 
 def create_domain_beneficiary(identifier: int = None,
@@ -179,7 +179,7 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
 
 
 def create_domain_favorite(identifier: int,
-                           offer: OfferSQLEntity,
+                           offer: Offer,
                            mediation: MediationSQLEntity = None,
                            booking: dict = None):
     return Favorite(

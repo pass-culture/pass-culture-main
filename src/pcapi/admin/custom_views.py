@@ -6,7 +6,7 @@ from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.connectors import redis
 from pcapi.domain.user_activation import is_import_status_change_allowed, IMPORT_STATUS_MODIFICATION_RULE
 from pcapi.flask_app import app
-from pcapi.models import ImportStatus, BeneficiaryImport, OfferSQLEntity
+from pcapi.models import ImportStatus, BeneficiaryImport, Offer
 from pcapi.repository import repository
 
 
@@ -26,7 +26,7 @@ class OfferAdminView(BaseAdminView):
     column_filters = ['type', 'criteria.name']
     form_columns = ['criteria']
 
-    def on_model_change(self, form: Form, offer: OfferSQLEntity, is_created=False):
+    def on_model_change(self, form: Form, offer: Offer, is_created=False):
         redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
 

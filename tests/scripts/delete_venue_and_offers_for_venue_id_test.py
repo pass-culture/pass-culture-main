@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.models import VenueSQLEntity, OfferSQLEntity
+from pcapi.models import VenueSQLEntity, Offer
 from pcapi.repository import repository
 from pcapi.scripts.delete_venue_and_offers_for_venue_id import delete_venue_and_offers_for_venue_id
 import pytest
@@ -44,7 +44,7 @@ class DeleteVenueAndOffersForVenueIdTest:
         delete_venue_and_offers_for_venue_id(humanize(venue1.id))
 
         # Then
-        offers = OfferSQLEntity.query.all()
+        offers = Offer.query.all()
         assert all([o.venue == venue2 for o in offers])
         assert VenueSQLEntity.query.get(venue1.id) is None
 

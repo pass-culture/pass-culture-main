@@ -22,7 +22,7 @@ class FavoriteSQLEntity(PcObject, Model):
                      index=True,
                      nullable=False)
 
-    offer = relationship('OfferSQLEntity',
+    offer = relationship('Offer',
                          foreign_keys=[offerId],
                          backref='favorites')
 

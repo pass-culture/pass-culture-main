@@ -2,7 +2,7 @@ from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, UniqueC
 from sqlalchemy.orm import relationship, column_property
 
 from pcapi.models.db import Model
-from pcapi.core.offers.models import OfferSQLEntity
+from pcapi.core.offers.models import Offer
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
@@ -65,7 +65,7 @@ class VenueProvider(PcObject,
 
     @property
     def nOffers(self):
-        return OfferSQLEntity.query \
-            .filter(OfferSQLEntity.venueId == self.venueId) \
-            .filter(OfferSQLEntity.lastProviderId == self.providerId) \
+        return Offer.query \
+            .filter(Offer.venueId == self.venueId) \
+            .filter(Offer.lastProviderId == self.providerId) \
             .count()

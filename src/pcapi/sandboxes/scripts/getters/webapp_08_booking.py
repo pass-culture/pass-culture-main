@@ -1,4 +1,4 @@
-from pcapi.models import StockSQLEntity, EventType, ThingType, MediationSQLEntity, OfferSQLEntity, VenueSQLEntity, Offerer
+from pcapi.models import StockSQLEntity, EventType, ThingType, MediationSQLEntity, Offer, VenueSQLEntity, Offerer
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository.offer_queries import _filter_bookable_stocks_for_discovery
 from pcapi.repository.user_queries import keep_only_webapp_users
@@ -7,13 +7,13 @@ from pcapi.utils.human_ids import humanize
 
 
 def get_query_join_on_event(query):
-    join_on_event = (OfferSQLEntity.id == StockSQLEntity.offerId)
+    join_on_event = (Offer.id == StockSQLEntity.offerId)
     query = query.join(StockSQLEntity, join_on_event)
     return query
 
 
 def get_query_join_on_thing(query):
-    join_on_offer_id = (OfferSQLEntity.id == StockSQLEntity.offerId)
+    join_on_offer_id = (Offer.id == StockSQLEntity.offerId)
     query = query.join(StockSQLEntity, join_on_offer_id)
     return query
 
@@ -21,10 +21,10 @@ def get_query_join_on_thing(query):
 def get_non_free_offers_query_by_type():
     filter_not_free_price = (StockSQLEntity.price > 0)
     filter_not_an_activation_offer = \
-        (OfferSQLEntity.type != str(EventType.ACTIVATION)) \
-        | (OfferSQLEntity.type != str(ThingType.ACTIVATION))
+        (Offer.type != str(EventType.ACTIVATION)) \
+        | (Offer.type != str(ThingType.ACTIVATION))
 
-    query = OfferSQLEntity.query
+    query = Offer.query
     query = get_query_join_on_thing(query)
     query = _filter_bookable_stocks_for_discovery(query)
     query = query \
@@ -36,7 +36,7 @@ def get_non_free_offers_query_by_type():
 def get_non_free_digital_offer():
     query = get_non_free_offers_query_by_type()
     offer = query \
-        .filter(OfferSQLEntity.url != None) \
+        .filter(Offer.url != None) \
         .first()
     return {
         "offer": get_offer_helper(offer)
@@ -46,10 +46,10 @@ def get_non_free_digital_offer():
 def get_non_free_thing_offer_with_active_mediation():
     query = get_non_free_offers_query_by_type()
     offer = query \
-        .filter(OfferSQLEntity.url == None) \
+        .filter(Offer.url == None) \
         .filter(StockSQLEntity.beginningDatetime == None) \
-        .filter(OfferSQLEntity.mediations.any(MediationSQLEntity.isActive == True)) \
-        .join(VenueSQLEntity, VenueSQLEntity.id == OfferSQLEntity.venueId) \
+        .filter(Offer.mediations.any(MediationSQLEntity.isActive == True)) \
+        .join(VenueSQLEntity, VenueSQLEntity.id == Offer.venueId) \
         .join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId) \
         .filter(Offerer.validationToken == None) \
         .first()
@@ -66,9 +66,9 @@ def get_non_free_thing_offer_with_active_mediation():
 def get_non_free_event_offer():
     query = get_non_free_offers_query_by_type()
     offer = query \
-        .filter(OfferSQLEntity.type.in_([str(event_type) for event_type in EventType])) \
-        .filter(OfferSQLEntity.mediations.any(MediationSQLEntity.isActive == True)) \
-        .join(VenueSQLEntity, VenueSQLEntity.id == OfferSQLEntity.venueId) \
+        .filter(Offer.type.in_([str(event_type) for event_type in EventType])) \
+        .filter(Offer.mediations.any(MediationSQLEntity.isActive == True)) \
+        .join(VenueSQLEntity, VenueSQLEntity.id == Offer.venueId) \
         .join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId) \
         .filter(Offerer.validationToken == None) \
         .first()

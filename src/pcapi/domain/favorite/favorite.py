@@ -1,10 +1,10 @@
 from typing import Dict
 
-from pcapi.models import OfferSQLEntity, MediationSQLEntity
+from pcapi.models import Offer, MediationSQLEntity
 
 
 class Favorite(object):
-    def __init__(self, identifier: int, mediation: MediationSQLEntity, offer: OfferSQLEntity, booking: Dict):
+    def __init__(self, identifier: int, mediation: MediationSQLEntity, offer: Offer, booking: Dict):
         self.identifier = identifier
         self.mediation = mediation
         self.offer = offer

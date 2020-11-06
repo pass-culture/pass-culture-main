@@ -2,7 +2,7 @@ from datetime import datetime
 from unittest.mock import patch
 from freezegun import freeze_time
 
-from pcapi.models import OfferSQLEntity, Product, Provider
+from pcapi.models import Offer, Product, Provider
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.routes.serialization import serialize
@@ -68,7 +68,7 @@ class Returns200:
         assert response.json == {
             "id": humanize(offer.id),
         }
-        assert OfferSQLEntity.query.get(offer.id).bookingEmail == "offer@example.com"
+        assert Offer.query.get(offer.id).bookingEmail == "offer@example.com"
 
     @patch("pcapi.use_cases.update_an_offer.redis.add_offer_id")
     def when_updating_an_offer_expect_offer_id_to_be_added_to_redis(
@@ -127,7 +127,7 @@ class Returns200:
 
         # Then
         assert response.status_code == 200
-        assert OfferSQLEntity.query.get(offer_id).name == "New Name"
+        assert Offer.query.get(offer_id).name == "New Name"
         assert Product.query.get(product_id).name == "New Name"
 
     def when_user_updating_thing_offer_is_not_linked_to_owning_offerer(
@@ -158,7 +158,7 @@ class Returns200:
 
         # Then
         assert response.status_code == 200
-        assert OfferSQLEntity.query.get(offer_id).name == "New Name"
+        assert Offer.query.get(offer_id).name == "New Name"
         assert Product.query.get(product_id).name == "Old Name"
 
     def when_user_updating_thing_offer_has_rights_on_offer_but_no_owningOfferer_for_thing(
@@ -186,7 +186,7 @@ class Returns200:
 
         # Then
         assert response.status_code == 200
-        assert OfferSQLEntity.query.one().name == "New Name"
+        assert Offer.query.one().name == "New Name"
         assert Product.query.one().name == "Old Name"
 
     def when_deactivate_offer_from_provider(self, app, db_session):
@@ -213,7 +213,7 @@ class Returns200:
 
         # Then
         assert response.status_code == 200
-        assert not OfferSQLEntity.query.get(offer_id).isActive
+        assert not Offer.query.get(offer_id).isActive
 
     def when_activate_offer_from_provider(self, app, db_session):
         # Given
@@ -242,7 +242,7 @@ class Returns200:
 
         # Then
         assert response.status_code == 200
-        assert OfferSQLEntity.query.get(offer_id).isActive
+        assert Offer.query.get(offer_id).isActive
 
     def when_patch_an_offer_that_is_imported_from_titelive(self, app, db_session):
         # given

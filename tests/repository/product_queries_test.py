@@ -5,7 +5,7 @@ from pcapi.model_creators.generic_creators import create_booking, \
     create_stock, create_user, create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 
-from pcapi.models import FavoriteSQLEntity, MediationSQLEntity, OfferSQLEntity, Product, Recommendation, StockSQLEntity
+from pcapi.models import FavoriteSQLEntity, MediationSQLEntity, Offer, Product, Recommendation, StockSQLEntity
 from pcapi.models.offer_type import ThingType
 from pcapi.repository import repository
 from pcapi.repository.product_queries import delete_unwanted_existing_product, find_active_book_product_by_isbn
@@ -71,7 +71,7 @@ class DeleteUnwantedExistingProductTest:
 
         # Then
         assert Product.query.count() == 0
-        assert OfferSQLEntity.query.count() == 0
+        assert Offer.query.count() == 0
         assert StockSQLEntity.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
@@ -92,7 +92,7 @@ class DeleteUnwantedExistingProductTest:
             delete_unwanted_existing_product('1111111111111')
 
         # Then
-        offer = OfferSQLEntity.query.one()
+        offer = Offer.query.one()
         assert offer.isActive is False
         assert Product.query.one() == product
         assert not product.isGcuCompatible
@@ -117,7 +117,7 @@ class DeleteUnwantedExistingProductTest:
 
         # Then
         assert Product.query.count() == 0
-        assert OfferSQLEntity.query.count() == 0
+        assert Offer.query.count() == 0
         assert StockSQLEntity.query.count() == 0
         assert Recommendation.query.count() == 0
         assert MediationSQLEntity.query.count() == 0
@@ -143,7 +143,7 @@ class DeleteUnwantedExistingProductTest:
 
         # Then
         assert Product.query.count() == 0
-        assert OfferSQLEntity.query.count() == 0
+        assert Offer.query.count() == 0
         assert StockSQLEntity.query.count() == 0
         assert MediationSQLEntity.query.count() == 0
         assert Recommendation.query.count() == 0

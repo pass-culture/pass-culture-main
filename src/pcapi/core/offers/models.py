@@ -18,7 +18,7 @@ from pcapi.models.versioned_mixin import VersionedMixin
 from pcapi.utils.date import DateTimes
 
 
-class OfferSQLEntity(PcObject,
+class Offer(PcObject,
                      Model,
                      ExtraDataMixin,
                      DeactivableMixin,
@@ -193,5 +193,5 @@ class OfferSQLEntity(PcObject,
         return matching_type_thing.value['proLabel']
 
 
-OfferSQLEntity.__name_ts_vector__ = create_ts_vector(OfferSQLEntity.name)
-OfferSQLEntity.__table_args__ = [create_fts_index('idx_offer_fts_name', OfferSQLEntity.__name_ts_vector__)]
+Offer.__name_ts_vector__ = create_ts_vector(Offer.name)
+Offer.__table_args__ = [create_fts_index('idx_offer_fts_name', Offer.__name_ts_vector__)]

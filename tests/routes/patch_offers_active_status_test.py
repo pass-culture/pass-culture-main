@@ -1,4 +1,4 @@
-from pcapi.models import OfferSQLEntity
+from pcapi.models import Offer
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 from pcapi.model_creators.generic_creators import (
@@ -36,8 +36,8 @@ class Returns204:
         # Then
         assert response.status_code == 204
         assert response.json == None
-        assert OfferSQLEntity.query.get(offer1.id).isActive == True
-        assert OfferSQLEntity.query.get(offer2.id).isActive == True
+        assert Offer.query.get(offer1.id).isActive == True
+        assert Offer.query.get(offer2.id).isActive == True
 
     def when_deactivating_existing_offers(self, app, db_session):
         # Given
@@ -61,5 +61,5 @@ class Returns204:
 
         # Then
         assert response.status_code == 204
-        assert OfferSQLEntity.query.get(offer1.id).isActive == False
-        assert OfferSQLEntity.query.get(offer2.id).isActive == False
+        assert Offer.query.get(offer1.id).isActive == False
+        assert Offer.query.get(offer2.id).isActive == False

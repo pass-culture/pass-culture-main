@@ -7,7 +7,7 @@ from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
 from pcapi.models import BeneficiaryImport, BeneficiaryImportStatus, Booking, \
-    EventType, ImportStatus, OfferSQLEntity, Offerer, RightsType, StockSQLEntity, \
+    EventType, ImportStatus, Offer, Offerer, RightsType, StockSQLEntity, \
     ThingType, UserSQLEntity, UserOfferer, BeneficiaryImportSources
 from pcapi.models.db import db
 from pcapi.models.user_sql_entity import WalletBalance
@@ -35,9 +35,9 @@ def count_users_by_email(email: str) -> int:
 def _query_user_having_booked() -> Query:
     return UserSQLEntity.query.join(Booking) \
         .join(StockSQLEntity) \
-        .join(OfferSQLEntity) \
-        .filter(OfferSQLEntity.type != str(ThingType.ACTIVATION)) \
-        .filter(OfferSQLEntity.type != str(EventType.ACTIVATION)) \
+        .join(Offer) \
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
+        .filter(Offer.type != str(EventType.ACTIVATION)) \
         .distinct(UserSQLEntity.id)
 
 

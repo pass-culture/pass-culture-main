@@ -4,7 +4,7 @@ from unittest.mock import call, patch
 import pytest
 
 from pcapi.local_providers.libraires.libraires_stocks import LibrairesStocks
-from pcapi.models import OfferSQLEntity, StockSQLEntity
+from pcapi.models import Offer, StockSQLEntity
 from pcapi.repository import repository
 from pcapi.model_creators.generic_creators import create_booking, create_offerer, create_stock, create_user, \
     create_venue, create_venue_provider
@@ -48,7 +48,7 @@ class LibrairesStocksTest:
             offer_providable_info = libraires_providable_infos[0]
             stock_providable_info = libraires_providable_infos[1]
 
-            assert offer_providable_info.type == OfferSQLEntity
+            assert offer_providable_info.type == Offer
             assert offer_providable_info.id_at_providers == '9780199536986@12345678912345'
             assert stock_providable_info.type == StockSQLEntity
             assert stock_providable_info.id_at_providers == '9780199536986@12345678912345'
@@ -82,7 +82,7 @@ class LibrairesStocksTest:
             libraires_stocks_provider.updateObjects()
 
             # Then
-            offer = OfferSQLEntity.query.first()
+            offer = Offer.query.first()
             stock = StockSQLEntity.query.first()
 
             assert offer.type == product.type
@@ -126,7 +126,7 @@ class LibrairesStocksTest:
             # Then
             stock = StockSQLEntity.query.one()
             assert stock.quantity == 10
-            assert OfferSQLEntity.query.count() == 1
+            assert Offer.query.count() == 1
 
         @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.libraires.libraires_stocks.api_libraires_stocks.stocks_information')
@@ -163,7 +163,7 @@ class LibrairesStocksTest:
 
             # Then
             assert StockSQLEntity.query.count() == 2
-            assert OfferSQLEntity.query.filter_by(lastProviderId=libraires_stocks_provider.id).count() == 2
+            assert Offer.query.filter_by(lastProviderId=libraires_stocks_provider.id).count() == 2
             assert libraires_stocks_local_provider.last_processed_isbn == '1550199555555'
 
         @pytest.mark.usefixtures("db_session")
@@ -252,7 +252,7 @@ class LibrairesStocksTest:
             libraires_stocks_provider.updateObjects()
 
             # Then
-            offers = OfferSQLEntity.query.all()
+            offers = Offer.query.all()
             stocks = StockSQLEntity.query.all()
             assert len(stocks) == 2
             assert len(offers) == 2

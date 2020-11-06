@@ -2,14 +2,14 @@ from datetime import datetime
 from typing import Optional, List
 
 from pcapi.models import Booking
-from pcapi.models import OfferSQLEntity
+from pcapi.models import Offer
 
 
 class Stock(object):
     def __init__(self,
                  identifier: int,
                  quantity: Optional[int],
-                 offer: OfferSQLEntity,
+                 offer: Offer,
                  price: float,
                  beginning_datetime: Optional[datetime] = None,
                  booking_limit_datetime: Optional[datetime] = None,

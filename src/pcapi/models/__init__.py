@@ -6,7 +6,7 @@ from pcapi.models.beneficiary_import import BeneficiaryImport, BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus, \
     ImportStatus
 from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import OfferSQLEntity
+from pcapi.core.offers.models import Offer
 from pcapi.models.criterion import Criterion
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.deposit import Deposit
@@ -82,7 +82,7 @@ __all__ = (
     'AllocineVenueProviderPriceRule',
     'LocalProviderEvent',
     'OfferCriterion',
-    'OfferSQLEntity',
+    'Offer',
     'Payment',
     'PaymentStatus',
     'PaymentMessage',
@@ -121,7 +121,7 @@ models = (
     Deposit,
     Email,
     Product,
-    OfferSQLEntity,
+    Offer,
     MediationSQLEntity,
     Recommendation,
     FavoriteSQLEntity,

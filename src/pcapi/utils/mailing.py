@@ -11,7 +11,7 @@ from requests import Response
 
 from pcapi.connectors import api_entreprises
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.models import Booking, OfferSQLEntity, Offerer, StockSQLEntity, UserSQLEntity, UserOfferer, VenueSQLEntity
+from pcapi.models import Booking, Offer, Offerer, StockSQLEntity, UserSQLEntity, UserOfferer, VenueSQLEntity
 from pcapi.models.email import EmailStatus
 from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
 from pcapi.repository.email_queries import save
@@ -82,7 +82,7 @@ def add_contact_to_list(email: str, list_id: str) -> Response:
     return app.mailjet_client.listrecipient.create(data=data)
 
 
-def build_pc_pro_offer_link(offer: OfferSQLEntity) -> str:
+def build_pc_pro_offer_link(offer: Offer) -> str:
     return f'{PRO_URL}/offres/{humanize(offer.id)}?lieu={humanize(offer.venueId)}' \
            f'&structure={humanize(offer.venue.managingOffererId)}'
 
@@ -387,7 +387,7 @@ def parse_email_addresses(addresses: str) -> List[str]:
     return [a for a in addresses if a]
 
 
-def make_offer_creation_notification_email(offer: OfferSQLEntity, author: UserSQLEntity, pro_origin_url: str) -> Dict:
+def make_offer_creation_notification_email(offer: Offer, author: UserSQLEntity, pro_origin_url: str) -> Dict:
     humanized_offer_id = humanize(offer.id)
     link_to_offer = f'{pro_origin_url}/offres/{humanized_offer_id}'
     html = render_template('mails/offer_creation_notification_email.html', offer=offer, author=author,

@@ -11,7 +11,7 @@ from pcapi.domain.allocine import get_movie_poster, get_movies_showtimes
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.domain.price_rule import AllocineStocksPriceRule
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import AllocineVenueProvider, EventType, OfferSQLEntity, Product, StockSQLEntity, \
+from pcapi.models import AllocineVenueProvider, EventType, Offer, Product, StockSQLEntity, \
     VenueSQLEntity
 from pcapi.models.db import Model, db
 from pcapi.models.local_provider_event import LocalProviderEventType
@@ -63,7 +63,7 @@ class AllocineStocks(LocalProvider):
 
         if _has_original_version_product(self.filtered_movie_showtimes):
             venue_movie_original_version_unique_id = _build_original_movie_uuid(self.movie_information, self.venue)
-            original_version_offer_providable_information = self.create_providable_info(OfferSQLEntity,
+            original_version_offer_providable_information = self.create_providable_info(Offer,
                                                                                         venue_movie_original_version_unique_id,
                                                                                         datetime.utcnow())
 
@@ -71,7 +71,7 @@ class AllocineStocks(LocalProvider):
 
         if _has_french_version_product(self.filtered_movie_showtimes):
             venue_movie_french_version_unique_id = _build_french_movie_uuid(self.movie_information, self.venue)
-            french_version_offer_providable_information = self.create_providable_info(OfferSQLEntity,
+            french_version_offer_providable_information = self.create_providable_info(Offer,
                                                                                       venue_movie_french_version_unique_id,
                                                                                       datetime.utcnow())
             providable_information_list.append(french_version_offer_providable_information)
@@ -91,7 +91,7 @@ class AllocineStocks(LocalProvider):
         if isinstance(pc_object, Product):
             self.fill_product_attributes(pc_object)
 
-        if isinstance(pc_object, OfferSQLEntity):
+        if isinstance(pc_object, Offer):
             self.fill_offer_attributes(pc_object)
 
         if isinstance(pc_object, StockSQLEntity):
@@ -118,7 +118,7 @@ class AllocineStocks(LocalProvider):
             allocine_product.id = get_next_product_id_from_database()
         self.last_product_id = allocine_product.id
 
-    def fill_offer_attributes(self, allocine_offer: OfferSQLEntity):
+    def fill_offer_attributes(self, allocine_offer: Offer):
         allocine_offer.venueId = self.venue.id
         allocine_offer.bookingEmail = self.venue.bookingEmail
         if 'description' in self.movie_information:

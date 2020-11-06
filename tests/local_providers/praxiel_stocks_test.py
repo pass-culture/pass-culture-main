@@ -8,7 +8,7 @@ from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 
 from pcapi.local_providers import PraxielStocks
-from pcapi.models import OfferSQLEntity, StockSQLEntity
+from pcapi.models import Offer, StockSQLEntity
 from pcapi.repository import repository
 
 
@@ -48,7 +48,7 @@ class PraxielStocksTest:
             offer_providable_info = praxiel_providable_infos[0]
             stock_providable_info = praxiel_providable_infos[1]
 
-            assert offer_providable_info.type == OfferSQLEntity
+            assert offer_providable_info.type == Offer
             assert offer_providable_info.id_at_providers == '9780199536986@12345678912345'
             assert stock_providable_info.type == StockSQLEntity
             assert stock_providable_info.id_at_providers == '9780199536986@12345678912345'
@@ -81,7 +81,7 @@ class PraxielStocksTest:
             praxiel_stocks_provider.updateObjects()
 
             # Then
-            offer = OfferSQLEntity.query.first()
+            offer = Offer.query.first()
             stock = StockSQLEntity.query.first()
 
             assert offer.type == product.type
@@ -125,7 +125,7 @@ class PraxielStocksTest:
             # Then
             stock = StockSQLEntity.query.one()
             assert stock.quantity == 10
-            assert OfferSQLEntity.query.count() == 1
+            assert Offer.query.count() == 1
 
         @pytest.mark.usefixtures("db_session")
         @patch('pcapi.local_providers.praxiel.praxiel_stocks.api_praxiel_stocks.stocks_information')
@@ -162,7 +162,7 @@ class PraxielStocksTest:
 
             # Then
             assert StockSQLEntity.query.count() == 2
-            assert OfferSQLEntity.query.filter_by(lastProviderId=praxiel_stocks_provider.id).count() == 2
+            assert Offer.query.filter_by(lastProviderId=praxiel_stocks_provider.id).count() == 2
             assert praxiel_stocks_local_provider.last_processed_isbn == '1550199555555'
 
         @pytest.mark.usefixtures("db_session")
@@ -251,7 +251,7 @@ class PraxielStocksTest:
             praxiel_stocks_provider.updateObjects()
 
             # Then
-            offers = OfferSQLEntity.query.all()
+            offers = Offer.query.all()
             stocks = StockSQLEntity.query.all()
             assert len(stocks) == 2
             assert len(offers) == 2

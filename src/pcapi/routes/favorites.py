@@ -6,7 +6,7 @@ from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import list_favorites_of_beneficiary
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
 from pcapi.models import MediationSQLEntity, \
-    OfferSQLEntity, \
+    Offer, \
     FavoriteSQLEntity
 from pcapi.repository import repository
 from pcapi.repository.favorite_queries import find_favorite_for_offer_and_user
@@ -26,7 +26,7 @@ def add_to_favorite():
     mediation_id = request.json.get('mediationId')
     check_offer_id_is_present_in_request(offer_id)
 
-    offer = load_or_404(OfferSQLEntity, offer_id)
+    offer = load_or_404(Offer, offer_id)
     if mediation_id is not None:
         mediation = load_or_404(MediationSQLEntity, mediation_id)
 

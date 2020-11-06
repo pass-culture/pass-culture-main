@@ -13,7 +13,7 @@ from pcapi.domain.price_rule import PriceRule
 from pcapi.models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
     BankInformation, BeneficiaryImport, BeneficiaryImportSources, BeneficiaryImportStatus, Booking, \
     Criterion, Deposit, FavoriteSQLEntity, ImportStatus, IrisFrance, IrisVenues, \
-    MediationSQLEntity, OfferSQLEntity, Offerer, Payment, PaymentMessage, PaymentStatus, \
+    MediationSQLEntity, Offer, Offerer, Payment, PaymentMessage, PaymentStatus, \
     Provider, Recommendation, RightsType, StockSQLEntity, ThingType, UserSQLEntity, UserOfferer, \
     VenueSQLEntity, VenueProvider, SeenOffer
 from pcapi.models.allocine_venue_provider import AllocineVenueProvider
@@ -166,7 +166,7 @@ def create_deposit(user: UserSQLEntity,
 
 def create_favorite(idx: int = None,
                     mediation: MediationSQLEntity = None,
-                    offer: OfferSQLEntity = None,
+                    offer: Offer = None,
                     user: UserSQLEntity = None) -> FavoriteSQLEntity:
     favorite = FavoriteSQLEntity()
     favorite.id = idx
@@ -177,7 +177,7 @@ def create_favorite(idx: int = None,
     return favorite
 
 
-def create_mediation(offer: OfferSQLEntity = None,
+def create_mediation(offer: Offer = None,
                      author: UserSQLEntity = None,
                      credit: str = None,
                      date_created: datetime = datetime.utcnow(),
@@ -354,7 +354,7 @@ def create_provider(api_key: str = None,
     return provider
 
 
-def create_recommendation(offer: OfferSQLEntity = None,
+def create_recommendation(offer: Offer = None,
                           user: UserSQLEntity = None,
                           date_created: datetime = datetime.utcnow(),
                           date_read: datetime = None,
@@ -381,7 +381,7 @@ def create_recommendation(offer: OfferSQLEntity = None,
     return recommendation
 
 
-def create_seen_offer(offer: OfferSQLEntity, user: UserSQLEntity, date_seen: Optional[datetime] = None) -> SeenOffer:
+def create_seen_offer(offer: Offer, user: UserSQLEntity, date_seen: Optional[datetime] = None) -> SeenOffer:
     if not date_seen:
         date_seen = datetime.utcnow()
     seen_offer = SeenOffer()
@@ -401,7 +401,7 @@ def create_stock(beginning_datetime: Optional[datetime] = None,
                  id_at_providers: Optional[str] = None,
                  is_soft_deleted: bool = False,
                  last_provider_id: Optional[int] = None,
-                 offer: Optional[OfferSQLEntity] = None,
+                 offer: Optional[Offer] = None,
                  price: float = 10,
                  quantity: Optional[int] = None) -> StockSQLEntity:
     stock = StockSQLEntity()

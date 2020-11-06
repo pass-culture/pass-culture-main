@@ -7,7 +7,7 @@ from pcapi.models import ApiKey, \
     Payment, \
     PaymentStatus, \
     Product, \
-    OfferSQLEntity, \
+    Offer, \
     Offerer, \
     Recommendation, \
     StockSQLEntity, \
@@ -57,7 +57,7 @@ def clean_all_database(*args, **kwargs):
     OfferCriterion.query.delete()
     Criterion.query.delete()
     SeenOffer.query.delete()
-    OfferSQLEntity.query.delete()
+    Offer.query.delete()
     Product.query.delete()
     BankInformation.query.delete()
     IrisVenues.query.delete()

@@ -4,7 +4,7 @@ from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBoo
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
 from pcapi.infrastructure.repository.beneficiary_bookings import stock_domain_converter, active_mediation_domain_converter
-from pcapi.models import Booking, UserSQLEntity, StockSQLEntity, OfferSQLEntity, VenueSQLEntity, MediationSQLEntity, Product
+from pcapi.models import Booking, UserSQLEntity, StockSQLEntity, Offer, VenueSQLEntity, MediationSQLEntity, Product
 
 
 class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
@@ -66,7 +66,7 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
 
 def _get_mediations_information(offers_ids: List[int]) -> List[object]:
     return MediationSQLEntity.query \
-        .join(OfferSQLEntity, OfferSQLEntity.id == MediationSQLEntity.offerId) \
+        .join(Offer, Offer.id == MediationSQLEntity.offerId) \
         .filter(MediationSQLEntity.offerId.in_(offers_ids)) \
         .filter(MediationSQLEntity.isActive == True) \
         .with_entities(MediationSQLEntity.id,
@@ -77,7 +77,7 @@ def _get_mediations_information(offers_ids: List[int]) -> List[object]:
 
 def _get_stocks_information(offers_ids: List[int]) -> List[object]:
     return StockSQLEntity.query \
-        .join(OfferSQLEntity, OfferSQLEntity.id == StockSQLEntity.offerId) \
+        .join(Offer, Offer.id == StockSQLEntity.offerId) \
         .filter(StockSQLEntity.offerId.in_(offers_ids)) \
         .with_entities(StockSQLEntity.dateCreated,
                        StockSQLEntity.beginningDatetime,
@@ -88,7 +88,7 @@ def _get_stocks_information(offers_ids: List[int]) -> List[object]:
                        StockSQLEntity.price,
                        StockSQLEntity.id,
                        StockSQLEntity.isSoftDeleted,
-                       OfferSQLEntity.isActive) \
+                       Offer.isActive) \
         .all()
 
 
@@ -97,11 +97,11 @@ def _get_bookings_information(beneficiary_id: int) -> List[object]:
     return Booking.query \
         .join(UserSQLEntity, UserSQLEntity.id == Booking.userId) \
         .join(StockSQLEntity, StockSQLEntity.id == Booking.stockId) \
-        .join(OfferSQLEntity) \
-        .join(Product, OfferSQLEntity.productId == Product.id) \
+        .join(Offer) \
+        .join(Product, Offer.productId == Product.id) \
         .join(VenueSQLEntity) \
         .filter(Booking.userId == beneficiary_id) \
-        .filter(OfferSQLEntity.type.notin_(offer_activation_types)) \
+        .filter(Offer.type.notin_(offer_activation_types)) \
         .distinct(Booking.stockId) \
         .order_by(Booking.stockId,
                   Booking.isCancelled,
@@ -119,17 +119,17 @@ def _get_bookings_information(beneficiary_id: int) -> List[object]:
                        Booking.stockId,
                        Booking.token,
                        Booking.userId,
-                       OfferSQLEntity.id.label("offerId"),
-                       OfferSQLEntity.name,
-                       OfferSQLEntity.type,
-                       OfferSQLEntity.url,
-                       OfferSQLEntity.withdrawalDetails,
-                       OfferSQLEntity.isDuo,
-                       OfferSQLEntity.extraData,
-                       OfferSQLEntity.durationMinutes,
-                       OfferSQLEntity.description,
-                       OfferSQLEntity.mediaUrls,
-                       OfferSQLEntity.isNational,
+                       Offer.id.label("offerId"),
+                       Offer.name,
+                       Offer.type,
+                       Offer.url,
+                       Offer.withdrawalDetails,
+                       Offer.isDuo,
+                       Offer.extraData,
+                       Offer.durationMinutes,
+                       Offer.description,
+                       Offer.mediaUrls,
+                       Offer.isNational,
                        Product.id.label("productId"),
                        Product.thumbCount,
                        UserSQLEntity.email,

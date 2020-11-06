@@ -4,7 +4,7 @@ from sqlalchemy import or_
 
 from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
-from pcapi.models import Offerer, VenueSQLEntity, OfferSQLEntity, UserOfferer, UserSQLEntity, StockSQLEntity, ThingType, \
+from pcapi.models import Offerer, VenueSQLEntity, Offer, UserOfferer, UserSQLEntity, StockSQLEntity, ThingType, \
     EventType
 from pcapi.models.db import db
 
@@ -44,7 +44,7 @@ def find_by_siren(siren):
 
 
 def get_by_offer_id(offer_id):
-    return Offerer.query.join(VenueSQLEntity).join(OfferSQLEntity).filter_by(id=offer_id).first()
+    return Offerer.query.join(VenueSQLEntity).join(Offer).filter_by(id=offer_id).first()
 
 
 def find_new_offerer_user_email(offerer_id):
@@ -301,12 +301,12 @@ def _filter_by_has_venue_with_siret(query, has_venue_with_siret):
 
 def _filter_by_offer_status(query, offer_status):
     if offer_status == 'ALL':
-        query = query.join(OfferSQLEntity)
+        query = query.join(Offer)
     elif offer_status == "WITHOUT":
         query = query.filter(~VenueSQLEntity.offers.any())
 
     elif offer_status == "VALID" or offer_status == "EXPIRED":
-        query = query.join(OfferSQLEntity)
+        query = query.join(Offer)
         is_not_soft_deleted_thing = StockSQLEntity.isSoftDeleted == False
         can_still_be_booked_thing = ((StockSQLEntity.bookingLimitDatetime == None)
                                      | (StockSQLEntity.bookingLimitDatetime >= datetime.utcnow()))
@@ -381,7 +381,7 @@ def _query_offerers_with_user_offerer():
 def _query_offerers_with_stock():
     return _query_offerers_with_user_offerer() \
         .join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id) \
-        .join(OfferSQLEntity) \
+        .join(Offer) \
         .join(StockSQLEntity) \
-        .filter(OfferSQLEntity.type != str(ThingType.ACTIVATION)) \
-        .filter(OfferSQLEntity.type != str(EventType.ACTIVATION))
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
+        .filter(Offer.type != str(EventType.ACTIVATION))

@@ -1,7 +1,7 @@
 import csv
 from typing import List, Iterable
 
-from pcapi.models import Booking, StockSQLEntity, OfferSQLEntity, ApiErrors
+from pcapi.models import Booking, StockSQLEntity, Offer, ApiErrors
 from pcapi.repository import repository
 from pcapi.utils.logger import logger
 
@@ -74,6 +74,6 @@ def _get_bookings_from_offer(offer_id: int) -> List[Booking]:
     return Booking.query \
         .filter(Booking.token.notin_(BOOKINGS_TOKEN_NOT_TO_UPDATE)) \
         .join(StockSQLEntity, StockSQLEntity.id == Booking.stockId) \
-        .join(OfferSQLEntity, OfferSQLEntity.id == StockSQLEntity.offerId) \
-        .filter(OfferSQLEntity.id == offer_id) \
+        .join(Offer, Offer.id == StockSQLEntity.offerId) \
+        .filter(Offer.id == offer_id) \
         .all()

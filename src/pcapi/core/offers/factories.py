@@ -72,7 +72,7 @@ class ProductFactory(BaseFactory):
 
 class OfferFactory(BaseFactory):
     class Meta:
-        model = models.OfferSQLEntity
+        model = models.Offer
 
     product = factory.SubFactory(ProductFactory)
     venue = factory.SubFactory(VenueFactory)

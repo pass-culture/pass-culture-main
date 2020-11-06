@@ -9,7 +9,7 @@ from sqlalchemy.util._collections import AbstractKeyedTuple
 
 import pcapi.domain.expenses
 from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import OfferSQLEntity
+from pcapi.core.offers.models import Offer
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap, BookingRecap, EventBookingRecap, ThingBookingRecap
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.domain.postal_code.postal_code import PostalCode
@@ -66,7 +66,7 @@ def count_cancelled_by_departement(departement_code: str) -> int:
 
 def find_from_recommendation(recommendation: Recommendation, user_id: int) -> List[Booking]:
     return _build_find_ordered_user_bookings(user_id=user_id) \
-        .filter(OfferSQLEntity.id == recommendation.offerId) \
+        .filter(Offer.id == recommendation.offerId) \
         .all()
 
 
@@ -80,7 +80,7 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
     if offer_id:
         query_offer = Booking.query \
             .join(StockSQLEntity) \
-            .join(OfferSQLEntity) \
+            .join(Offer) \
             .filter_by(id=offer_id)
         query = query.intersect_all(query_offer)
 
@@ -151,13 +151,13 @@ def find_date_used(booking: Booking) -> datetime:
 
 
 def find_user_activation_booking(user: UserSQLEntity) -> Booking:
-    is_activation_offer = (OfferSQLEntity.type == str(ThingType.ACTIVATION)) | (
-            OfferSQLEntity.type == str(EventType.ACTIVATION))
+    is_activation_offer = (Offer.type == str(ThingType.ACTIVATION)) | (
+            Offer.type == str(EventType.ACTIVATION))
 
     return Booking.query \
         .join(UserSQLEntity) \
         .join(StockSQLEntity, Booking.stockId == StockSQLEntity.id) \
-        .join(OfferSQLEntity) \
+        .join(Offer) \
         .filter(is_activation_offer) \
         .filter(UserSQLEntity.id == user.id) \
         .first()
@@ -180,11 +180,11 @@ def find_user_bookings_for_recommendation(user_id: int) -> List[Booking]:
 
 
 def get_only_offer_ids_from_bookings(user: UserSQLEntity) -> List[int]:
-    offers_booked = OfferSQLEntity.query \
+    offers_booked = Offer.query \
         .join(StockSQLEntity) \
         .join(Booking) \
         .filter_by(userId=user.id) \
-        .with_entities(OfferSQLEntity.id) \
+        .with_entities(Offer.id) \
         .all()
     return [offer.id for offer in offers_booked]
 
@@ -220,8 +220,8 @@ def _query_keep_on_non_activation_offers() -> Query:
 
     return Booking.query \
         .join(StockSQLEntity) \
-        .join(OfferSQLEntity) \
-        .filter(~OfferSQLEntity.type.in_(offer_types))
+        .join(Offer) \
+        .filter(~Offer.type.in_(offer_types))
 
 
 def _query_cancelled_bookings_on_non_activation_offers() -> Query:
@@ -240,7 +240,7 @@ def _build_bookings_recap_query(user_id: int) -> Query:
         .reset_joinpoint() \
         .join(UserSQLEntity) \
         .join(StockSQLEntity) \
-        .join(OfferSQLEntity) \
+        .join(Offer) \
         .join(VenueSQLEntity) \
         .join(Offerer) \
         .join(UserOfferer) \
@@ -257,9 +257,9 @@ def _build_bookings_recap_query(user_id: int) -> Query:
         Booking.cancellationDate.label("cancellationDate"),
         Booking.confirmationDate.label("confirmationDate"),
         Booking.isConfirmed.label("isConfirmed"),
-        OfferSQLEntity.name.label("offerName"),
-        OfferSQLEntity.id.label("offerId"),
-        OfferSQLEntity.extraData.label("offerExtraData"),
+        Offer.name.label("offerName"),
+        Offer.id.label("offerId"),
+        Offer.extraData.label("offerExtraData"),
         Payment.currentStatus.label("paymentStatus"),
         Payment.lastProcessedDate.label("paymentDate"),
         UserSQLEntity.firstName.label("beneficiaryFirstname"),
@@ -436,11 +436,11 @@ def find_user_bookings_for_recommendation(user_id: int) -> List[Booking]:
 
 
 def get_only_offer_ids_from_bookings(user: UserSQLEntity) -> List[int]:
-    offers_booked = OfferSQLEntity.query \
+    offers_booked = Offer.query \
         .join(StockSQLEntity) \
         .join(Booking) \
         .filter_by(userId=user.id) \
-        .with_entities(OfferSQLEntity.id) \
+        .with_entities(Offer.id) \
         .all()
     return [offer.id for offer in offers_booked]
 
@@ -474,7 +474,7 @@ def find_first_matching_from_offer_by_user(offer_id: int, user_id: int) -> Optio
 def _build_find_ordered_user_bookings(user_id: int) -> Query:
     return Booking.query \
         .join(StockSQLEntity) \
-        .join(OfferSQLEntity) \
+        .join(Offer) \
         .distinct(Booking.stockId) \
         .filter(Booking.userId == user_id) \
         .order_by(Booking.stockId, Booking.isCancelled, Booking.dateCreated.desc()) \

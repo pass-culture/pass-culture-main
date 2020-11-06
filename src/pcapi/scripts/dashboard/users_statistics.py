@@ -6,7 +6,7 @@ from sqlalchemy.orm import Query
 
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.repository.user_queries as user_repository
-from pcapi.models import Booking, UserSQLEntity, StockSQLEntity, OfferSQLEntity, ThingType, EventType
+from pcapi.models import Booking, UserSQLEntity, StockSQLEntity, Offer, ThingType, EventType
 from pcapi.models.db import db
 
 
@@ -60,9 +60,9 @@ def _query_amount_spent_by_departement(departement_code: str) -> Query:
             .filter(UserSQLEntity.departementCode == departement_code)
 
     query = query.join(StockSQLEntity, StockSQLEntity.id == Booking.stockId) \
-        .join(OfferSQLEntity) \
-        .filter(OfferSQLEntity.type != str(ThingType.ACTIVATION)) \
-        .filter(OfferSQLEntity.type != str(EventType.ACTIVATION))
+        .join(Offer) \
+        .filter(Offer.type != str(ThingType.ACTIVATION)) \
+        .filter(Offer.type != str(EventType.ACTIVATION))
 
     return query.filter(Booking.isCancelled == False)
 

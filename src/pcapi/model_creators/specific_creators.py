@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Dict, List, Optional
 
-from pcapi.models import Booking, EventType, OfferSQLEntity, Offerer, Product, StockSQLEntity, ThingType, UserSQLEntity, \
+from pcapi.models import Booking, EventType, Offer, Offerer, Product, StockSQLEntity, ThingType, UserSQLEntity, \
     VenueSQLEntity, Provider, Criterion
 from pcapi.utils.token import random_token
 
@@ -16,7 +16,7 @@ def create_booking_for_event(amount: int = 50,
                              type: EventType = EventType.CINEMA,
                              user: UserSQLEntity = None) -> Booking:
     product = Product(from_dict={'type': str(type)})
-    offer = OfferSQLEntity()
+    offer = Offer()
     stock = StockSQLEntity()
     booking = Booking(from_dict={'amount': amount})
     offer.product = product
@@ -39,7 +39,7 @@ def create_booking_for_thing(amount: int = 50,
                              url: str = None,
                              user: UserSQLEntity = None) -> Booking:
     product = Product(from_dict={'url': url, 'type': str(product_type)})
-    offer = OfferSQLEntity(from_dict={'url': url, 'type': str(product_type)})
+    offer = Offer(from_dict={'url': url, 'type': str(product_type)})
     stock = StockSQLEntity()
     booking = Booking(from_dict={'amount': amount})
     offer.product = product
@@ -70,8 +70,8 @@ def create_offer_with_event_product(venue: VenueSQLEntity = None,
                                     product: Product = None,
                                     last_provider: Provider = None,
                                     thumb_count: int = 0,
-                                    withdrawal_details: Optional[str] = None) -> OfferSQLEntity:
-    offer = OfferSQLEntity()
+                                    withdrawal_details: Optional[str] = None) -> Offer:
+    offer = Offer()
     if product is None:
         product = create_product_with_event_type(event_name=event_name, event_type=event_type,
                                                  duration_minutes=duration_minutes,
@@ -98,7 +98,7 @@ def create_offer_with_event_product(venue: VenueSQLEntity = None,
     return offer
 
 
-def create_event_occurrence(offer: OfferSQLEntity,
+def create_event_occurrence(offer: Offer,
                             beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=2)) -> Dict:
     event_occurrence = {}
     event_occurrence['offer'] = offer
@@ -132,8 +132,8 @@ def create_offer_with_thing_product(
         extra_data: Dict = None,
         withdrawal_details: Optional[str] = None,
         date_modified_at_last_provider: Optional[datetime] = datetime.utcnow()
-    ) -> OfferSQLEntity:
-    offer = OfferSQLEntity()
+    ) -> Offer:
+    offer = Offer()
     if product:
         offer.product = product
         offer.productId = product.id
@@ -273,7 +273,7 @@ def create_stock_from_event_occurrence(event_occurrence: Dict, price: int = 10, 
     return stock
 
 
-def create_stock_from_offer(offer: OfferSQLEntity, price: float = 9.90, quantity: Optional[int] = 10, soft_deleted: bool = False,
+def create_stock_from_offer(offer: Offer, price: float = 9.90, quantity: Optional[int] = 10, soft_deleted: bool = False,
                             booking_limit_datetime: datetime = None, beginning_datetime: datetime = None, idx: int = None,
                             date_modified: datetime = datetime.utcnow()) -> StockSQLEntity:
     stock = StockSQLEntity()
@@ -318,7 +318,7 @@ def create_stock_with_event_offer(offerer: Offerer, venue: VenueSQLEntity, price
     return stock
 
 
-def create_stock_with_thing_offer(offerer: Offerer, venue: VenueSQLEntity, offer: OfferSQLEntity = None,
+def create_stock_with_thing_offer(offerer: Offerer, venue: VenueSQLEntity, offer: Offer = None,
                                   price: Optional[Decimal] = 10,
                                   quantity: int = 50, name: str = 'Test Book',
                                   booking_email: str = 'offer.booking.email@example.com', soft_deleted: bool = False,
