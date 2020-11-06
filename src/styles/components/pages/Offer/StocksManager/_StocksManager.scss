@@ -54,6 +54,11 @@
     span {
       display: block;
     }
+
+    .selw-emphasis {
+      @include caption();
+      font-size: rem(12px);
+    }
   }
 
   .stocks-table-wrapper {
