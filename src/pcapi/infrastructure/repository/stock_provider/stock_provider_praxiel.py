@@ -7,7 +7,7 @@ from pcapi.infrastructure.repository.stock_provider.provider_api import Provider
 
 class StockProviderPraxielRepository(StockProviderRepository):
     def __init__(self) -> None:
-        self.praxiel_api = ProviderAPI(api_url='https://www.praxiel-passculture.fr/3027011420000/stocks',
+        self.praxiel_api = ProviderAPI(api_url='https://www.praxiel-passculture.fr/stocks',
                                        name='Praxiel/Inference')
 
     def stocks_information(self, siret: str,
