@@ -116,7 +116,7 @@ class Returns200:
         offer2 = create_offer_with_thing_product(venue)
         repository.save(user_offerer, offer1, offer2)
         list_offers_mock.return_value = to_domain(
-            offer_sql_entities=[offer1], current_page=1, total_pages=1, total_offers=2
+            offers=[offer1], current_page=1, total_pages=1, total_offers=2
         )
 
         # when

@@ -64,7 +64,7 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
 
     # FIXME (cgaunet, 2020-11-03): we should not have serialization logic in the repository
     return to_domain(
-        offer_sql_entities=query.items,
+        offers=query.items,
         current_page=query.page,
         total_pages=total_pages,
         total_offers=total_offers,
