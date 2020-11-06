@@ -305,7 +305,7 @@ class GetOfferResponseModel(BaseModel):
     activeMediation: Optional[GetOfferMediationResponseModel]
     ageMax: Optional[int]
     ageMin: Optional[int]
-    bookingEmail: str
+    bookingEmail: Optional[str]
     conditions: Optional[str]
     dateCreated: str
     dateModifiedAtLastProvider: str
