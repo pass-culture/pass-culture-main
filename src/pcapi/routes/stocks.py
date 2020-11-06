@@ -162,7 +162,8 @@ def edit_stock(stock_id: str, body: PutStockBodyModel) -> StockResponseIdModel:
 
 @private_api.route("/stocks/<id>", methods=["DELETE"])
 @login_or_api_key_required
-def delete_stock(id):
+@spectree_serialize(response_model=StockResponseIdModel)
+def delete_stock(id: str) -> StockResponseIdModel:
     stock = load_or_404(StockSQLEntity, id)
     offerer_id = stock.offer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
@@ -182,4 +183,4 @@ def delete_stock(id):
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
-    return jsonify(as_dict(stock)), 200
+    return StockResponseIdModel.from_orm(stock)

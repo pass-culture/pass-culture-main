@@ -43,22 +43,8 @@ class Returns200:
 
         # then
         assert response.status_code == 200
-        assert response.json == {
-            "beginningDatetime": None,
-            "bookingLimitDatetime": None,
-            "dateCreated": "2020-10-15T00:00:00Z",
-            "dateModified": "2020-10-15T00:00:00Z",
-            "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
-            "fieldsUpdated": [],
-            "hasBeenMigrated": None,
-            "id": humanize(stock.id),
-            "idAtProviders": None,
-            "isSoftDeleted": True,
-            "lastProviderId": None,
-            "offerId": humanize(offer.id),
-            "price": 100.0,
-            "quantity": 10,
-        }
+        assert response.json == {"id": humanize(stock.id)}
+        assert stock.isSoftDeleted is True
 
     def expect_bookings_to_be_cancelled(self, app, db_session):
         # given
@@ -91,6 +77,7 @@ class Returns200:
         bookings = Booking.query.filter_by(isCancelled=True).all()
         assert booking1 in bookings
         assert booking2 in bookings
+        assert stock.isSoftDeleted is True
 
     @freeze_time("2020-10-15 00:00:00")
     def expect_booking_to_be_cancelled_when_stock_is_an_event_that_ended_less_than_two_days_ago(
@@ -126,6 +113,7 @@ class Returns200:
         assert response.status_code == 200
         booking_from_db = Booking.query.filter_by(isCancelled=True).one()
         assert booking == booking_from_db
+        assert stock.isSoftDeleted is True
 
     def when_stock_is_on_an_offer_from_allocine_provider(self, app, db_session):
         # Given
@@ -154,7 +142,7 @@ class Returns200:
 
         # Then
         assert response.status_code == 200
-        assert response.json["isSoftDeleted"] is True
+        assert stock.isSoftDeleted is True
 
     @override_features(SYNCHRONIZE_ALGOLIA=True)
     @patch("pcapi.routes.stocks.redis.add_offer_id")
@@ -174,6 +162,7 @@ class Returns200:
 
         # then
         assert response.status_code == 200
+        assert stock.isSoftDeleted is True
         mock_redis.assert_called_once_with(
             client=app.redis_client, offer_id=stock.offerId
         )
