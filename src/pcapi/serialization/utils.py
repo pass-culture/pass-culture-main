@@ -22,17 +22,17 @@ def before_handler(
 
     This handler is automatically called through the ``spectree_serialize()`` decorator.
     """
+    error_messages = {
+        "value_error.extra": "Vous ne pouvez pas changer cette information",
+        "value_error.missing": "Ce champ est obligatoire",
+        "type_error.integer": "Saisissez un nombre valide",
+    }
+
     if pydantic_error and pydantic_error.errors():
         api_errors = ApiErrors()
         for error in pydantic_error.errors():
-            if error["type"] == "value_error.extra":
-                api_errors.add_error(
-                    error["loc"][0], "Vous ne pouvez pas changer cette information"
-                )
-            elif error["type"] == "value_error.missing":
-                api_errors.add_error(error["loc"][0], "Ce champ est obligatoire")
-            else:
-                api_errors.add_error(error["loc"][0], error["msg"])
+            message = error_messages.get(error["type"], error["msg"])
+            api_errors.add_error(error["loc"][0], message)
         raise api_errors
 
 
