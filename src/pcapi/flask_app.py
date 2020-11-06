@@ -29,7 +29,7 @@ from pcapi.models.db import db
 from pcapi.repository.feature_queries import feature_request_profiling_enabled
 from pcapi.serialization.utils import before_handler
 from pcapi.utils.config import IS_DEV, \
-    ENV, REDIS_URL, SENTRY_SAMPLE_RATE
+    ENV, REDIS_URL
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.logger import json_logger
@@ -43,7 +43,7 @@ if IS_DEV is False:
         integrations=[FlaskIntegration(), RqIntegration()],
         release=read_version_from_file(),
         environment=ENV,
-        traces_sample_rate=float(SENTRY_SAMPLE_RATE) if SENTRY_SAMPLE_RATE else None
+        traces_sample_rate=float(os.environ.get('SENTRY_SAMPLE_RATE', 0))
     )
 
 app = Flask(__name__, static_url_path='/static')
