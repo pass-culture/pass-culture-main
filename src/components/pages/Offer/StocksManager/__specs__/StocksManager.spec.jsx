@@ -6,7 +6,8 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { configureTestStore } from '../../../../../store/testUtils'
+import { configureTestStore } from 'store/testUtils'
+
 import StocksManager from '../StocksManager'
 
 const renderStocksManager = (props, storeItem) => {
@@ -81,8 +82,8 @@ describe('offer | StocksManager', () => {
         "Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 72h avant le début de l'événement."
       const legalTextSecondSentence =
         "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente."
-      expect(screen.queryByText(legalTextFirstSentence, { selector: 'span' })).toBeInTheDocument()
-      expect(screen.queryByText(legalTextSecondSentence, { selector: 'span' })).toBeInTheDocument()
+      expect(screen.getByText(legalTextFirstSentence)).toBeInTheDocument()
+      expect(screen.getByText(legalTextSecondSentence)).toBeInTheDocument()
     })
   })
 
@@ -99,12 +100,8 @@ describe('offer | StocksManager', () => {
         "Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement."
       const legalTextSecondSentence =
         "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente."
-      expect(
-        screen.queryByText(legalTextFirstSentence, { selector: 'span' })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByText(legalTextSecondSentence, { selector: 'span' })
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText(legalTextFirstSentence)).not.toBeInTheDocument()
+      expect(screen.queryByText(legalTextSecondSentence)).not.toBeInTheDocument()
     })
   })
 
@@ -158,7 +155,7 @@ describe('offer | StocksManager', () => {
       // then
       expect(query.changeToReadOnly).toHaveBeenCalledWith(null, { key: 'stock' })
     })
-  }) // todo not done
+  })
 
   describe('handleEnterKey', () => {
     describe('when all stocks are read only', () => {
@@ -228,11 +225,10 @@ describe('offer | StocksManager', () => {
         expect(submitElement.click).toHaveBeenCalledWith()
       })
     })
-  }) // todo not done
+  })
 
   describe('render', () => {
     it('should display an error message', async () => {
-      // todo not working
       // given
       props.query = { context: () => ({}) }
       const wrapper = shallow(<StocksManager {...props} />)
