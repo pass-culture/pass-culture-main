@@ -7,7 +7,7 @@ import TextField from 'components/layout/form/fields/TextField'
 
 import AddressField from './AddressField'
 
-const COORDINATE_ACCURACY = 0.00001
+const COORDINATE_ACCURACY = 0.000001
 
 const LocationFields = ({
   fieldReadOnlyBecauseFrozenFormSiret,
