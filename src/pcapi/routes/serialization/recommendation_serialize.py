@@ -5,6 +5,7 @@ import pcapi.core.bookings.repository as booking_repository
 from pcapi.models import Booking
 from pcapi.models import Recommendation
 from pcapi.routes.serialization import as_dict
+from pcapi.utils.cancellation_date import get_cancellation_limit_date
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import RECOMMENDATION_INCLUDES
 
@@ -34,12 +35,21 @@ def serialize_recommendation(recommendation: Recommendation, user_id: int, query
 
     add_offer_and_stock_information(serialized_recommendation)
 
+    add_cancellation_limit_date(serialized_recommendation)
+
     return serialized_recommendation
+
+
+def add_cancellation_limit_date(serialized_recommendation: Dict) -> None:
+    for index, _stock in enumerate(serialized_recommendation["offer"]["stocks"]):
+        serialized_recommendation["offer"]["stocks"][index]["cancellationLimitDate"] = get_cancellation_limit_date(
+            serialized_recommendation["offer"]["stocks"][index]["beginningDatetime"]
+        )
 
 
 def add_offer_and_stock_information(serialized_recommendation: Dict) -> None:
     serialized_recommendation["offer"]["isBookable"] = True
-    for index, stock in enumerate(serialized_recommendation["offer"]["stocks"]):
+    for index, _stock in enumerate(serialized_recommendation["offer"]["stocks"]):
         serialized_recommendation["offer"]["stocks"][index]["isBookable"] = True
         serialized_recommendation["offer"]["stocks"][index]["remainingQuantity"] = "unlimited"
 
@@ -49,7 +59,7 @@ def _serialize_bookings(bookings: List[Booking]) -> List[Dict]:
 
 
 def _get_bookings_by_offer(bookings: List[Booking]) -> Dict:
-    bookings_by_offer = {}
+    bookings_by_offer: Dict = {}
 
     for booking in bookings:
         offer_id = booking.stock.offerId

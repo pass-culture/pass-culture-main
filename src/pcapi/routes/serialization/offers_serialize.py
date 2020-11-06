@@ -12,6 +12,7 @@ from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.cancellation_date import get_cancellation_limit_date
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 from pcapi.validation.routes.offers import check_offer_type_is_valid
@@ -205,6 +206,7 @@ class GetOfferStockResponseModel(BaseModel):
     beginningDatetime: Optional[str]
     bookingLimitDatetime: Optional[str]
     bookingsQuantity: int
+    cancellationLimitDate: Optional[str]
     dateCreated: str
     dateModified: str
     dateModifiedAtLastProvider: Optional[str]
@@ -220,6 +222,10 @@ class GetOfferStockResponseModel(BaseModel):
     price: float
     quantity: Optional[int]
     remainingQuantity: Optional[Union[int, str]]
+
+    @validator("cancellationLimitDate", pre=True, always=True)
+    def validate_cancellation_limit_date(cls, cancellation_limit_date, values):
+        return get_cancellation_limit_date(values.get("beginningDatetime"), cancellation_limit_date)
 
 
 class GetOfferManagingOffererResponseModel(BaseModel):

@@ -1,8 +1,9 @@
 from datetime import datetime
 
+from freezegun import freeze_time
+import pytest
+
 from pcapi.model_creators.generic_creators import create_bank_information
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
@@ -10,6 +11,7 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
@@ -17,7 +19,8 @@ from tests.conftest import TestClient
 
 
 class Returns200:
-    def when_user_has_rights_on_managing_offerer(self, app, db_session):
+    @pytest.mark.usefixtures("db_session")
+    def when_user_has_rights_on_managing_offerer(self, app):
         # Given
         beneficiary = create_user()
         offerer = create_offerer()
@@ -41,7 +44,8 @@ class Returns200:
         assert "validationToken" not in response_json["venue"]["managingOfferer"]
         assert "thumbUrl" in response_json
 
-    def when_returns_an_active_mediation(self, app, db_session):
+    @pytest.mark.usefixtures("db_session")
+    def when_returns_an_active_mediation(self, app):
         # Given
         beneficiary = create_user()
         offerer = create_offerer()
@@ -57,7 +61,9 @@ class Returns200:
         assert response.status_code == 200
         assert response.json["activeMediation"] is not None
 
-    def when_returns_an_event_stock(self, app, db_session):
+    @pytest.mark.usefixtures("db_session")
+    @freeze_time("2019-10-15 00:00:00")
+    def when_returns_an_event_stock(self, app):
         # Given
         date_now = datetime(2020, 10, 15)
 
@@ -97,11 +103,11 @@ class Returns200:
             "durationMinutes": 60,
             "extraData": None,
             "fieldsUpdated": [],
-            "hasBookingLimitDatetimesPassed": True,
+            "hasBookingLimitDatetimesPassed": False,
             "id": humanize(stock.offer.id),
             "idAtProviders": None,
             "isActive": True,
-            "isBookable": False,
+            "isBookable": True,
             "isDigital": False,
             "isDuo": False,
             "isEditable": True,
@@ -153,15 +159,16 @@ class Returns200:
                     "beginningDatetime": "2020-10-15T00:00:00Z",
                     "bookingLimitDatetime": "2020-10-15T00:00:00Z",
                     "bookingsQuantity": 0,
+                    "cancellationLimitDate": "2019-10-17T00:00:00Z",
                     "dateCreated": "2020-10-15T00:00:00Z",
                     "dateModified": "2020-10-15T00:00:00Z",
                     "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
                     "fieldsUpdated": [],
                     "id": humanize(stock.id),
                     "idAtProviders": None,
-                    "isBookable": False,
-                    "isEventDeletable": False,
-                    "isEventExpired": True,
+                    "isBookable": True,
+                    "isEventDeletable": True,
+                    "isEventExpired": False,
                     "isSoftDeleted": False,
                     "lastProviderId": None,
                     "offerId": humanize(stock.offer.id),
@@ -221,3 +228,23 @@ class Returns200:
             "venueId": humanize(venue.id),
             "withdrawalDetails": None,
         }
+
+    @freeze_time("2019-10-15 00:00:00")
+    @pytest.mark.usefixtures("db_session")
+    def when_returns_an_thing_stock(self, app):
+        # Given
+        beneficiary = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue)
+        repository.save(beneficiary, stock)
+
+        # When
+        response = (
+            TestClient(app.test_client()).with_auth(email=beneficiary.email).get(f"/offers/{humanize(stock.offer.id)}")
+        )
+
+        # Then
+        assert response.status_code == 200
+        data = response.json
+        assert data["stocks"][0]["cancellationLimitDate"] is None
