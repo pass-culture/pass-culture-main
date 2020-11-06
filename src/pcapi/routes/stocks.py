@@ -25,8 +25,8 @@ from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.repository.stock_queries import find_stocks_with_possible_filters
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.stock_serialize import (
-    PostStockBodyModel,
-    PutStockBodyModel,
+    StockCreationBodyModel,
+    StockEditionBodyModel,
     StockResponseIdModel,
 )
 from pcapi.serialization.decorator import spectree_serialize
@@ -91,7 +91,7 @@ def get_stock(stock_id, mediation_id):
 @private_api.route("/stocks", methods=["POST"])
 @login_or_api_key_required
 @spectree_serialize(on_success_status=201, response_model=StockResponseIdModel)
-def create_stock(body: PostStockBodyModel) -> StockResponseIdModel:
+def create_stock(body: StockCreationBodyModel) -> StockResponseIdModel:
     offer = get_offer_by_id(body.offer_id)
     body_dict = body.dict(by_alias=True, exclude_unset=True)
 
@@ -115,7 +115,7 @@ def create_stock(body: PostStockBodyModel) -> StockResponseIdModel:
 @private_api.route("/stocks/<stock_id>", methods=["PATCH"])
 @login_or_api_key_required
 @spectree_serialize(response_model=StockResponseIdModel)
-def edit_stock(stock_id: str, body: PutStockBodyModel) -> StockResponseIdModel:
+def edit_stock(stock_id: str, body: StockEditionBodyModel) -> StockResponseIdModel:
     query = StockSQLEntity.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id))
     stock = query.first_or_404()
     stock_data = body.dict(by_alias=True, exclude_unset=True)

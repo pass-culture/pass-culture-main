@@ -8,7 +8,7 @@ from pcapi.serialization.utils import (
 )
 
 
-class PostStockBodyModel(BaseModel):
+class StockCreationBodyModel(BaseModel):
     beginning_datetime: Optional[str]
     booking_limit_datetime: Optional[str]
     offer_id: int
@@ -28,7 +28,7 @@ class PostStockBodyModel(BaseModel):
         extra = "forbid"
 
 
-class PutStockBodyModel(BaseModel):
+class StockEditionBodyModel(BaseModel):
     beginning_datetime: Optional[str]
     booking_limit_datetime: Optional[str]
     offer_id: Optional[int]
