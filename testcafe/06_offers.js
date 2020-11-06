@@ -136,7 +136,7 @@ test('une offre Event est duo par défaut', async t => {
     .typeText(nameInput, 'Offre Duo')
     .click(typeInput)
     .click(typeOption.withText('Spectacle vivant')) // choose an event
-    // .click(isDuo) // TODO: remove. We shouldn't need this. 
+    .click(isDuo) // TODO: remove. We shouldn't need this. 
     .expect(isDuo.checked)
     .ok() // First fail: isDuo should be checked by default for events
     .click(isDuo)
@@ -153,5 +153,5 @@ test('une offre Event est duo par défaut', async t => {
     .click(isDuo) // Uncheck isDuo
     .click(submitButton)
     .expect(isDuo.checked)
-    .notOk() // Second fail: TODO: this should be true
+    .notOk()
 })

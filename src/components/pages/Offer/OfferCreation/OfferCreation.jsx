@@ -651,10 +651,10 @@ class OfferCreation extends PureComponent {
                   <div className="select-duo-offer">
                     <input
                       className="offer-duo-checkbox input"
-                      defaultChecked={formInitialValues.isDuo}
+                      checked={formInitialValues.isDuo}
                       disabled={readOnly ? 'disabled' : ''}
                       id="isDuo"
-                      onClick={this.handleCheckIsDuo}
+                      onChange={this.handleCheckIsDuo}
                       type="checkbox"
                     />
                     <label htmlFor="isDuo">

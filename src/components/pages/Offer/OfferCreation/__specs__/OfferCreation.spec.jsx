@@ -917,7 +917,7 @@ describe('src | OfferCreation', () => {
         const isDuoCheckbox = wrapper.find('.offer-duo-checkbox')
 
         // then
-        expect(isDuoCheckbox.prop('defaultChecked')).toBe(true)
+        expect(isDuoCheckbox.prop('checked')).toBe(true)
       })
 
       it('should display unchecked isDuo checkbox when offer is not duo', () => {
@@ -929,7 +929,7 @@ describe('src | OfferCreation', () => {
         const isDuoCheckbox = wrapper.find('.offer-duo-checkbox')
 
         // then
-        expect(isDuoCheckbox.prop('defaultChecked')).toBe(false)
+        expect(isDuoCheckbox.prop('checked')).toBe(false)
       })
     })
   })
