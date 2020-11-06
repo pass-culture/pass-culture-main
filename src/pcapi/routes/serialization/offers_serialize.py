@@ -253,7 +253,7 @@ class GetOfferVenueResponseModel(BaseModel):
     city: Optional[str]
     comment: Optional[str]
     dateCreated: str
-    dateModifiedAtLastProvider: str
+    dateModifiedAtLastProvider: Optional[str]
     departementCode: Optional[str]
     fieldsUpdated: List[str]
     iban: Optional[str]
