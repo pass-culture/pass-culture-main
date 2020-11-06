@@ -26,6 +26,7 @@ from pcapi.repository.stock_queries import find_stocks_with_possible_filters
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.stock_serialize import (
     PostStockBodyModel,
+    PutStockBodyModel,
     StockResponseIdModel,
 )
 from pcapi.serialization.decorator import spectree_serialize
@@ -33,7 +34,6 @@ from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.mailing import MailServiceException, send_raw_email
 from pcapi.utils.rest import (
     ensure_current_user_has_rights,
-    expect_json_data,
     handle_rest_get_list,
     load_or_404,
     login_or_api_key_required,
@@ -91,7 +91,7 @@ def get_stock(stock_id, mediation_id):
 @private_api.route("/stocks", methods=["POST"])
 @login_or_api_key_required
 @spectree_serialize(on_success_status=201, response_model=StockResponseIdModel)
-def create_stock(body: PostStockBodyModel):
+def create_stock(body: PostStockBodyModel) -> StockResponseIdModel:
     offer = get_offer_by_id(body.offer_id)
     body_dict = body.dict(by_alias=True, exclude_unset=True)
 
@@ -114,11 +114,11 @@ def create_stock(body: PostStockBodyModel):
 
 @private_api.route("/stocks/<stock_id>", methods=["PATCH"])
 @login_or_api_key_required
-@expect_json_data
-def edit_stock(stock_id):
-    stock_data = request.json
+@spectree_serialize(response_model=StockResponseIdModel)
+def edit_stock(stock_id: str, body: PutStockBodyModel) -> StockResponseIdModel:
     query = StockSQLEntity.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id))
     stock = query.first_or_404()
+    stock_data = body.dict(by_alias=True, exclude_unset=True)
 
     check_stock_is_updatable(stock)
     check_dates_are_allowed_on_existing_stock(stock_data, stock.offer)
@@ -157,7 +157,7 @@ def edit_stock(stock_id):
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
-    return jsonify(as_dict(stock)), 200
+    return StockResponseIdModel.from_orm(stock)
 
 
 @private_api.route("/stocks/<id>", methods=["DELETE"])

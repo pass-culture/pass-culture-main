@@ -124,22 +124,7 @@ class Returns200:
 
         # Then
         assert response.status_code == 200
-        assert response.json == {
-            "beginningDatetime": None,
-            "bookingLimitDatetime": None,
-            "dateCreated": "2020-10-15T00:00:00Z",
-            "dateModified": "2020-10-15T00:00:00Z",
-            "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
-            "fieldsUpdated": [],
-            "hasBeenMigrated": None,
-            "id": humanize(stock.id),
-            "idAtProviders": None,
-            "isSoftDeleted": False,
-            "lastProviderId": None,
-            "offerId": humanize(stock.offer.id),
-            "price": 120.0,
-            "quantity": 1000,
-        }
+        assert response.json["id"] == humanize(stock.id)
 
     @override_features(SYNCHRONIZE_ALGOLIA=True)
     @patch("pcapi.routes.stocks.redis.add_offer_id")
@@ -205,25 +190,6 @@ class Returns200:
 
         # then
         assert request_update.status_code == 200
-
-        date_modified = request_update.json["dateModified"]
-        assert request_update.json == {
-            "beginningDatetime": None,
-            "bookingLimitDatetime": None,
-            "dateCreated": "2020-10-15T00:00:00Z",
-            "dateModified": date_modified,
-            "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
-            "fieldsUpdated": [],
-            "hasBeenMigrated": None,
-            "id": humanize(stock.id),
-            "idAtProviders": None,
-            "isSoftDeleted": False,
-            "lastProviderId": None,
-            "offerId": humanize(offer.id),
-            "price": 20.0,
-            "quantity": 5,
-        }
-
         updated_stock = StockSQLEntity.query.one()
         assert updated_stock.quantity == 5
         assert updated_stock.price == 20
