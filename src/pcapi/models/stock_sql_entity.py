@@ -66,8 +66,6 @@ class StockSQLEntity(PcObject,
 
     bookingLimitDatetime = Column(DateTime, nullable=True)
 
-    hasBeenMigrated = Column(Boolean, nullable=True)
-
     @property
     def isBookable(self):
         if self.hasBookingLimitDatetimePassed:

@@ -259,7 +259,7 @@ def create_offer_with_event_product(venue: VenueSQLEntity = None,
 
 def create_stock(quantity: int = None, booking_limit_datetime: datetime = None, beginning_datetime: datetime = None,
                  date_created: datetime = datetime.utcnow(), date_modified: datetime = datetime.utcnow(),
-                 date_modified_at_last_provider: datetime = None, has_been_migrated: bool = None, idx: int = None,
+                 date_modified_at_last_provider: datetime = None, idx: int = None,
                  id_at_providers: str = None, is_soft_deleted: bool = False, last_provider_id: int = None,
                  offer: Offer = None, price: float = 10) -> StockSQLEntity:
     stock = StockSQLEntity()
@@ -269,7 +269,6 @@ def create_stock(quantity: int = None, booking_limit_datetime: datetime = None, 
     stock.dateCreated = date_created
     stock.dateModified = date_modified
     stock.dateModifiedAtLastProvider = date_modified_at_last_provider
-    stock.hasBeenMigrated = has_been_migrated
     stock.id = idx
     stock.idAtProviders = id_at_providers
     stock.isSoftDeleted = is_soft_deleted

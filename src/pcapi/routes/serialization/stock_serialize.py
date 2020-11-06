@@ -14,7 +14,6 @@ class StockCreationBodyModel(BaseModel):
     offer_id: int
     price: float
     quantity: Optional[int]
-    has_been_migrated: Optional[bool]
 
     # FIXME (cgaunet, 2020-11-05): these two fields are actually
     # unused for the stock creation
@@ -34,7 +33,6 @@ class StockEditionBodyModel(BaseModel):
     offer_id: Optional[int]
     price: Optional[float]
     quantity: Optional[int]
-    has_been_migrated: Optional[bool]
 
     # FIXME (cgaunet, 2020-11-05): these three fields are actually
     # unused for the stock edition

@@ -32,7 +32,6 @@ class Returns200:
                 stock.dateModifiedAtLastProvider
             ),
             "fieldsUpdated": [],
-            "hasBeenMigrated": None,
             "id": humanized_stock_id,
             "idAtProviders": None,
             "isSoftDeleted": False,

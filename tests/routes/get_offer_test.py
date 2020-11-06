@@ -171,7 +171,6 @@ class Returns200:
                     "dateModified": "2020-10-15T00:00:00Z",
                     "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
                     "fieldsUpdated": [],
-                    "hasBeenMigrated": None,
                     "id": humanize(stock.id),
                     "idAtProviders": None,
                     "isBookable": False,

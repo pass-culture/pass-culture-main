@@ -213,7 +213,6 @@ class GetOfferStockResponseModel(BaseModel):
     dateModified: str
     dateModifiedAtLastProvider: Optional[str]
     fieldsUpdated: List[str]
-    hasBeenMigrated: Optional[bool]
     id: str
     idAtProviders: Optional[str]
     isBookable: bool
