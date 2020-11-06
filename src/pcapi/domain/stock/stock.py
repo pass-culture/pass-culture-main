@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 
 from pcapi.models import Booking
-from pcapi.models.offer_sql_entity import OfferSQLEntity
+from pcapi.models import OfferSQLEntity
 
 
 class Stock(object):

@@ -2,8 +2,8 @@ from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, UniqueC
 from sqlalchemy.orm import relationship, column_property
 
 from pcapi.models.db import Model
+from pcapi.core.offers.models import OfferSQLEntity
 from pcapi.models.deactivable_mixin import DeactivableMixin
-from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.provider import Provider

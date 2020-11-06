@@ -1,9 +1,7 @@
+from pcapi.core.offers.models import OfferSQLEntity
 from pcapi.models import BankInformation, StockSQLEntity, ThingType
-
-from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.offer_type import EventType
 from pcapi.models.offerer import Offerer
-
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 from pcapi.repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer

@@ -2,8 +2,9 @@ from decimal import Decimal
 from typing import Dict, List
 
 from pcapi.core.bookings.models import Booking
-from pcapi.models.offer_sql_entity import OfferSQLEntity
+from pcapi.core.offers.models import OfferSQLEntity
 from pcapi.models.offer_type import ThingType
+
 
 PHYSICAL_EXPENSES_CAPPED_TYPES = [
     ThingType.AUDIOVISUEL,

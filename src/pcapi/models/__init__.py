@@ -6,6 +6,7 @@ from pcapi.models.beneficiary_import import BeneficiaryImport, BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus, \
     ImportStatus
 from pcapi.core.bookings.models import Booking
+from pcapi.core.offers.models import OfferSQLEntity
 from pcapi.models.criterion import Criterion
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.deposit import Deposit
@@ -21,7 +22,6 @@ from pcapi.models.iris_venues import IrisVenues
 from pcapi.models.local_provider_event import LocalProviderEvent
 from pcapi.models.mediation_sql_entity import MediationSQLEntity
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
-from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.offer_type import EventType, ThingType
 from pcapi.models.offerer import Offerer

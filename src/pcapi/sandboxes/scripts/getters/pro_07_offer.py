@@ -1,6 +1,6 @@
+from pcapi.core.offers.models import OfferSQLEntity
 from pcapi.models import Offerer
 from pcapi.models import ThingType
-from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.offer_type import EventType
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.models import VenueSQLEntity

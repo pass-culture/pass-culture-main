@@ -1,5 +1,5 @@
 from pcapi.core.bookings.models import Booking
-from pcapi.models.offer_sql_entity import OfferSQLEntity
+from pcapi.core.offers.models import OfferSQLEntity
 from pcapi.models.recommendation import Recommendation
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository.user_queries import keep_only_webapp_users

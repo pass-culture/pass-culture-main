@@ -3,8 +3,8 @@ from typing import List
 
 from sqlalchemy.sql.sqltypes import DateTime
 from pcapi.core.bookings.models import Booking
+from pcapi.core.offers.models import OfferSQLEntity
 from pcapi.repository import repository
-from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.repository.venue_queries import find_by_id
 from pcapi.utils.human_ids import dehumanize

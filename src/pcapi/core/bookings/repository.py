@@ -9,13 +9,13 @@ from sqlalchemy.util._collections import AbstractKeyedTuple
 
 import pcapi.domain.expenses
 from pcapi.core.bookings.models import Booking
+from pcapi.core.offers.models import OfferSQLEntity
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap, BookingRecap, EventBookingRecap, ThingBookingRecap
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import UserOfferer, VenueSQLEntity
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.db import db
-from pcapi.models.offer_sql_entity import OfferSQLEntity
 from pcapi.models.offer_type import EventType, ThingType
 from pcapi.models.offerer import Offerer
 from pcapi.models.payment import Payment

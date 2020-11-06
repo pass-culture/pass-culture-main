@@ -9,7 +9,8 @@ def install_scripts():
     from pcapi.models.has_thumb_mixin import HasThumbMixin
     from pcapi.models.needs_validation_mixin import NeedsValidationMixin
     from pcapi.models.providable_mixin import ProvidableMixin
-    from pcapi.core.bookings.models import Booking
+    from pcapi.core.bookings import models
+    from pcapi.core.offers import models
 
     from pcapi.models.mediation_sql_entity import MediationSQLEntity
     from pcapi.models.stock_sql_entity import StockSQLEntity
@@ -17,7 +18,6 @@ def install_scripts():
     from pcapi.models.venue_provider import VenueProvider
     from pcapi.models.local_provider_event import LocalProviderEvent
     from pcapi.local_providers.local_provider import LocalProvider
-    from pcapi.models.offer_sql_entity import OfferSQLEntity
     from pcapi.models.provider import Provider
     from pcapi.models.recommendation import Recommendation
 
