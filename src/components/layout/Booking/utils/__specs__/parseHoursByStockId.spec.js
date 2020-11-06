@@ -62,9 +62,23 @@ describe('src | components | booking | utils | parseHoursByStockId', () => {
     const price = 1
     const time = moment().format(format)
     const devisedPrice = getDisplayPrice(price)
-    const expected = [{ id: 'AAAAA', label: `${time} - ${devisedPrice}` }]
+    const expected = [
+      {
+        cancellationLimitDate: '2020-11-10T14:35:00.00Z',
+        id: 'AAAAA',
+        label: `${time} - ${devisedPrice}`,
+      },
+    ]
     const value = {
-      bookables: [{ beginningDatetime: now }, { beginningDatetime: now, id: 'AAAAA', price }],
+      bookables: [
+        { beginningDatetime: now },
+        {
+          cancellationLimitDate: '2020-11-10T14:35:00.00Z',
+          beginningDatetime: now,
+          id: 'AAAAA',
+          price,
+        },
+      ],
       date: now,
     }
     const result = parseHoursByStockId(value)

@@ -22,7 +22,7 @@ const parseHoursByStockId = (allFormValues, format = 'HH:mm') => {
       const time = obj.beginningDatetime.format(format)
       const devised = getDisplayPrice(obj.price)
       const label = `${time} - ${devised}`
-      return { id: obj.id, label }
+      return { id: obj.id, label, cancellationLimitDate: obj.cancellationLimitDate }
     })
 }
 

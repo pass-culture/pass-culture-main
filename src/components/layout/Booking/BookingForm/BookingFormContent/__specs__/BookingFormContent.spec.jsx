@@ -89,26 +89,30 @@ describe('bookingFormContent', () => {
       props.isEvent = true
     })
 
-    it('should display a notice regarding the withdrawal period', () => {
+    it('should display a notice regarding the cancellation period', () => {
       // given
+      const dateOf2020_11_06T14h35 = 1604669693
+      jest.spyOn(Date, 'now').mockImplementation(() => dateOf2020_11_06T14h35)
+      const beginningDatetime = moment().add(5, 'days')
       props.isEvent = true
       props.values = {
         bookables: [
           {
-            id: 'B1',
+            beginningDatetime,
+            cancellationLimitDate: '2020-11-10T14:35:00.00Z',
+            id: 'AE',
           },
         ],
-        date: '21/10/2001',
-        price: 5,
+        date: beginningDatetime,
       }
 
       // when
       const wrapper = shallow(<BookingFormContent {...props} />)
 
       // then
-      expect(wrapper.find(
-        { children: 'Réservation annulable dans les 48h suivants la réservation et moins de 72h avant la date de l’évènement (si applicable)' }
-      )).toHaveLength(1)
+      expect(
+        wrapper.find({ children: 'Réservation annulable jusqu’au 10/11/2020 14:35' })
+      ).toHaveLength(1)
     })
 
     it('should render a Field component with the proper props', () => {
@@ -138,11 +142,13 @@ describe('bookingFormContent', () => {
         bookables: [
           {
             beginningDatetime: date,
+            cancellationLimitDate: '2020-11-10T14:35:00.00Z',
             id: 'AE',
             price: 12,
           },
           {
             beginningDatetime: date,
+            cancellationLimitDate: '2020-11-10T14:35:00.00Z',
             id: 'AF',
             price: 13,
           },
@@ -165,10 +171,12 @@ describe('bookingFormContent', () => {
         placeholder: 'Heure et prix',
         options: [
           {
+            cancellationLimitDate: '2020-11-10T14:35:00.00Z',
             id: 'AE',
             label: `${date.format('HH:mm')} - 12\u00A0€`,
           },
           {
+            cancellationLimitDate: '2020-11-10T14:35:00.00Z',
             id: 'AF',
             label: `${date.format('HH:mm')} - 13\u00A0€`,
           },

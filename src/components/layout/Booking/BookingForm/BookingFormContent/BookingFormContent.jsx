@@ -1,3 +1,4 @@
+import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Field } from 'react-final-form'
@@ -137,11 +138,11 @@ class BookingFormContent extends PureComponent {
           </p>
         )}
 
-        {isEvent && (
-          <p className="bc-retractation-delay">
-            {
-              'Réservation annulable dans les 48h suivants la réservation et moins de 72h avant la date de l’évènement (si applicable)'
-            }
+        {bookableTimes && hasBookableTimes && isEvent && (
+          <p className="bc-cancellation-delay">
+            {`Réservation annulable jusqu’au ${moment(
+              bookableTimes[0].cancellationLimitDate
+            ).format('DD/MM/YYYY H:mm')}`}
           </p>
         )}
       </form>
