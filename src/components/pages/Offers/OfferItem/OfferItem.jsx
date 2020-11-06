@@ -35,16 +35,6 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
     selectOffer(offer.id, !isSelected)
   }
 
-  const buildStocksDetail = (offer, stockSize) => {
-    if (offer.isThing) {
-      return `${stockSize} prix`
-    }
-
-    if (offer.isEvent) {
-      return pluralize(stockSize, 'date')
-    }
-  }
-
   const computeNumberOfSoldOutStocks = () =>
     stocks.filter(stock => stock.remainingQuantity === 0).length
 
@@ -94,28 +84,24 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
         >
           {offer.name}
         </Link>
-        <span className="stocks">
-          <Link
-            className="quaternary-link"
-            title="Afficher le détail des stocks"
-            to={`/offres/${offer.id}?gestion`}
-          >
-            {buildStocksDetail(offer, stockSize)}
-          </Link>
-          {shouldShowSoldOutWarning && (
-            <div>
-              <Icon
-                className="sold-out-icon"
-                svg="ico-warning-stocks"
-                tabIndex={0}
-              />
-              <span className="sold-out-dates">
-                <Icon svg="ico-warning-stocks" />
-                {pluralize(computeNumberOfSoldOutStocks(stocks), 'date épuisée')}
-              </span>
-            </div>
-          )}
-        </span>
+        {offer.isEvent && (
+          <span className="stocks">
+            {pluralize(stockSize, 'date')}
+            {shouldShowSoldOutWarning && (
+              <div>
+                <Icon
+                  className="sold-out-icon"
+                  svg="ico-warning-stocks"
+                  tabIndex={0}
+                />
+                <span className="sold-out-dates">
+                  <Icon svg="ico-warning-stocks" />
+                  {pluralize(computeNumberOfSoldOutStocks(stocks), 'date épuisée')}
+                </span>
+              </div>
+            )}
+          </span>
+        )}
       </td>
       <td className="venue-column">
         {venue && computeVenueDisplayName(venue)}
