@@ -650,8 +650,9 @@ class OfferCreation extends PureComponent {
                 {isEventType && (
                   <div className="select-duo-offer">
                     <input
-                      className="offer-duo-checkbox input"
                       checked={formInitialValues.isDuo}
+                      className="offer-duo-checkbox input"
+                      defaultChecked
                       disabled={readOnly ? 'disabled' : ''}
                       id="isDuo"
                       onChange={this.handleCheckIsDuo}
