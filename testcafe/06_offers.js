@@ -15,6 +15,7 @@ const venueOption = Selector('#offer-venueId option')
 const typeOption = Selector('#offer-type option')
 const durationMinutesInput = Selector('input.field-duration')
 const descriptionInput = Selector('#offer-description')
+const isDuo = Selector('#isDuo')
 const submitButton = Selector('button').withText('Enregistrer')
 
 fixture('En étant sur la page des offres,')
@@ -118,4 +119,39 @@ test('je peux créer une offre avec des sous-types', async t => {
     .ok()
     .expect(musicSubTypeOption.withText(eventMusicSubType).selected)
     .ok()
+})
+
+
+
+test('une offre Event est duo par défaut', async t => {
+  const { user } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
+  )
+  const buttonClose = Selector('#close-manager')
+  const buttonModifyOffer = Selector('#modify-offer-button')
+  await navigateToNewOfferAs(user)(t)
+
+  await t
+    .typeText(nameInput, 'Offre Duo')
+    .click(typeInput)
+    .click(typeOption.withText('Spectacle vivant')) // choose an event
+    // .click(isDuo) // TODO: remove. We shouldn't need this. 
+    .expect(isDuo.checked)
+    .ok() // First fail: isDuo should be checked by default for events
+    .click(isDuo)
+    .expect(isDuo.checked) // Make sure we can uncheck
+    .notOk()
+    .click(isDuo)
+    .click(submitButton)
+    .click(buttonClose)
+    .expect(isDuo.checked)
+    .ok()
+    .click(buttonModifyOffer)
+    .expect(isDuo.checked)
+    .ok()
+    .click(isDuo) // Uncheck isDuo
+    .click(submitButton)
+    .expect(isDuo.checked)
+    .notOk() // Second fail: TODO: this should be true
 })
