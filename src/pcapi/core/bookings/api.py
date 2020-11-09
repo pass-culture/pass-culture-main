@@ -44,8 +44,8 @@ def book_offer(
     validation.check_quantity(stock.offer, quantity)
     validation.check_stock_is_bookable(stock)
 
-    # FIXME: this is not right. PcOject's constructor should allow to
-    # call it with `Booking(stock=stock, ...)`
+    # FIXME (dbaty, 2020-11-06): this is not right. PcOject's constructor
+    # should allow to call it with `Booking(stock=stock, ...)`
     booking = Booking()
     # FIXME (dbaty, 2020-10-20): if we directly set relations (for
     # example with `booking.user = beneficiary`) instead of foreign keys,

@@ -29,9 +29,10 @@ def before_handler(
     This handler is automatically called through the ``spectree_serialize()`` decorator.
     """
     error_messages = {
+        "type_error.integer": "Saisissez un nombre valide",
+        "value_error.datetime": "Format de date invalide",
         "value_error.extra": "Vous ne pouvez pas changer cette information",
         "value_error.missing": "Ce champ est obligatoire",
-        "type_error.integer": "Saisissez un nombre valide",
     }
 
     if pydantic_error and pydantic_error.errors():

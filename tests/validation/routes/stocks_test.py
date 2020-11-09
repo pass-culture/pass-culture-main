@@ -10,155 +10,15 @@ from pcapi.model_creators.specific_creators import create_offer_with_event_produ
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.models import ApiErrors
-from pcapi.models import Provider
 from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import humanize
 from pcapi.validation.routes.stocks import check_dates_are_allowed_on_existing_stock
-from pcapi.validation.routes.stocks import check_dates_are_allowed_on_new_stock
 from pcapi.validation.routes.stocks import check_only_editable_fields_will_be_updated
 from pcapi.validation.routes.stocks import check_stock_is_updatable
-from pcapi.validation.routes.stocks import check_stocks_are_editable_for_offer
 from pcapi.validation.routes.stocks import get_only_fields_with_value_to_be_updated
-
-
-class CheckDatesAreAllowedOnNewStockTest:
-    class OfferIsOnThingTest:
-        def should_raise_error_with_beginning_datetime(self):
-            # Given
-            offer = create_offer_with_thing_product(VenueSQLEntity())
-            beginningDatetime = datetime(2019, 2, 14)
-
-            data = {
-                'price': 0,
-                'offerId': humanize(offer.id),
-                'beginningDatetime': serialize(beginningDatetime)
-            }
-
-            # When
-            with pytest.raises(ApiErrors) as e:
-                check_dates_are_allowed_on_new_stock(data, offer)
-
-            # Then
-            assert e.value.errors['global'] == [
-                "Impossible de mettre une date de début si l'offre ne porte pas sur un événement"
-            ]
-
-
-        def should_not_raise_error_with_missing_booking_limit_datetime(self):
-            # Given
-            offer = create_offer_with_thing_product(VenueSQLEntity())
-
-            data = {
-                'price': 0,
-                'offerId': humanize(offer.id)
-            }
-
-            # When
-            try:
-                check_dates_are_allowed_on_new_stock(data, offer)
-
-            except ApiErrors:
-                # Then
-                assert pytest.fail("Should not fail with valid params")
-
-        def should_not_raise_error_with_none_booking_limit_datetime(self):
-            # Given
-            offer = create_offer_with_thing_product(VenueSQLEntity())
-            data = {
-                'price': 0,
-                'offerId': humanize(offer.id),
-                'bookingLimitDatetime': None
-            }
-
-            # When
-            try:
-                check_dates_are_allowed_on_new_stock(data, offer)
-
-            except ApiErrors:
-                # Then
-                assert pytest.fail("Should not fail with valid params")
-
-    class OfferIsOnEventTest:
-        def should_raise_error_with_missing_beginning_datetime(self):
-            # Given
-            offer = create_offer_with_event_product()
-            beginningDatetime = datetime(2019, 2, 14)
-
-            data = {
-                'price': 0,
-                'offerId': humanize(offer.id),
-                'bookingLimitDatetime': serialize(datetime(2019, 2, 14)),
-            }
-
-            # When
-            with pytest.raises(ApiErrors) as e:
-                check_dates_are_allowed_on_new_stock(data, offer)
-
-            # Then
-            assert e.value.errors['beginningDatetime'] == [
-                'Ce paramètre est obligatoire'
-            ]
-
-        def should_raise_error_with_none_beginning_datetime(self):
-            # Given
-            offer = create_offer_with_event_product()
-            data = {
-                'price': 0,
-                'offerId': humanize(offer.id),
-                'beginningDatetime': None,
-                'bookingLimitDatetime': serialize(datetime(2019, 2, 14))
-            }
-
-            # When
-            with pytest.raises(ApiErrors) as e:
-                check_dates_are_allowed_on_new_stock(data, offer)
-
-            # Then
-            assert e.value.errors['beginningDatetime'] == [
-                'Ce paramètre est obligatoire'
-            ]
-
-        def should_raise_error_with_missing_booking_limit_datetime(self):
-            # Given
-            offer = create_offer_with_event_product()
-            beginningDatetime = datetime(2019, 2, 14)
-
-            data = {
-                'price': 0,
-                'offerId': humanize(offer.id),
-                'beginningDatetime': serialize(beginningDatetime)
-            }
-
-            # When
-            with pytest.raises(ApiErrors) as e:
-                check_dates_are_allowed_on_new_stock(data, offer)
-
-            # Then
-            assert e.value.errors['bookingLimitDatetime'] == [
-                'Ce paramètre est obligatoire'
-            ]
-
-        def should_raise_error_with_none_booking_limit_datetime(self):
-            # Given
-            offer = create_offer_with_event_product()
-            data = {
-                'price': 0,
-                'offerId': humanize(offer.id),
-                'bookingLimitDatetime': None,
-                'beginningDatetime': serialize(datetime(2019, 2, 14))
-            }
-
-            # When
-            with pytest.raises(ApiErrors) as e:
-                check_dates_are_allowed_on_new_stock(data, offer)
-
-            # Then
-            assert e.value.errors['bookingLimitDatetime'] == [
-                'Ce paramètre est obligatoire'
-            ]
 
 
 class CheckDatesAreAllowedOnExistingStockTest:
@@ -246,37 +106,6 @@ class CheckDatesAreAllowedOnExistingStockTest:
             assert e.value.errors['bookingLimitDatetime'] == [
                 'Ce paramètre est obligatoire'
             ]
-
-
-class CheckStocksAreEditableForOfferTest:
-    def should_fail_when_offer_is_from_provider(self, app):
-        # Given
-        provider = Provider()
-        provider.name = 'myProvider'
-        provider.localClass = 'TiteLiveClass'
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        offer.lastProviderId = 21
-        offer.lastProvider = provider
-
-        # When
-        with pytest.raises(ApiErrors) as e:
-            check_stocks_are_editable_for_offer(offer)
-
-        # Then
-        assert e.value.errors['global'] == [
-            'Les offres importées ne sont pas modifiables'
-        ]
-
-    def should_not_raise_an_error_when_offer_is_not_from_provider(self):
-        # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, last_provider_id=None)
-
-        # when
-        check_stocks_are_editable_for_offer(offer)
 
 
 class CheckStockIsUpdatableTest:

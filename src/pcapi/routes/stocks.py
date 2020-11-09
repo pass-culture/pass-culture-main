@@ -5,6 +5,7 @@ from flask_login import current_user
 
 from pcapi.connectors import redis
 from pcapi.core.bookings.repository import find_not_cancelled_bookings_by_stock
+import pcapi.core.offers.api as offers_api
 from pcapi.domain.allocine import get_editable_fields_for_allocine_stocks
 from pcapi.domain.stocks import delete_stock_and_cancel_bookings
 from pcapi.domain.stocks import have_beginning_date_been_modified
@@ -35,12 +36,9 @@ from pcapi.utils.rest import ensure_current_user_has_rights
 from pcapi.utils.rest import handle_rest_get_list
 from pcapi.utils.rest import load_or_404
 from pcapi.utils.rest import login_or_api_key_required
-from pcapi.validation.routes.offers import check_offer_is_editable
 from pcapi.validation.routes.stocks import check_dates_are_allowed_on_existing_stock
-from pcapi.validation.routes.stocks import check_dates_are_allowed_on_new_stock
 from pcapi.validation.routes.stocks import check_only_editable_fields_will_be_updated
 from pcapi.validation.routes.stocks import check_stock_is_updatable
-from pcapi.validation.routes.stocks import check_stocks_are_editable_for_offer
 from pcapi.validation.routes.stocks import get_only_fields_with_value_to_be_updated
 
 
@@ -88,24 +86,20 @@ def get_stock(stock_id, mediation_id):
 @login_or_api_key_required
 @spectree_serialize(on_success_status=201, response_model=StockResponseIdModel)
 def create_stock(body: StockCreationBodyModel) -> StockResponseIdModel:
-    offer = get_offer_by_id(body.offer_id)
-    body_dict = body.dict(by_alias=True, exclude_unset=True)
-
-    check_offer_is_editable(offer)
-
-    check_dates_are_allowed_on_new_stock(body_dict, offer)
     offerer = offerer_queries.get_by_offer_id(body.offer_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
 
-    check_stocks_are_editable_for_offer(offer)
+    offer = get_offer_by_id(body.offer_id)
 
-    new_stock = StockSQLEntity(from_dict=body_dict)
-    repository.save(new_stock)
+    stock = offers_api.create_stock(
+        offer=offer,
+        price=body.price,
+        quantity=body.quantity,
+        beginning=body.beginning_datetime,
+        booking_limit_datetime=body.booking_limit_datetime,
+    )
 
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=body.offer_id)
-
-    return StockResponseIdModel.from_orm(new_stock)
+    return StockResponseIdModel.from_orm(stock)
 
 
 @private_api.route("/stocks/<stock_id>", methods=["PATCH"])

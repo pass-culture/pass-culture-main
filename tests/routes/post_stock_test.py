@@ -1,37 +1,30 @@
 from datetime import datetime
 from datetime import timedelta
-from unittest.mock import patch
 
+import pytest
+
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import EventType
 from pcapi.models import StockSQLEntity
-from pcapi.models import ThingType
-from pcapi.models.feature import override_features
-from pcapi.repository import repository
-from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.routes.serialization import serialize
-from pcapi.utils.date import DATE_ISO_FORMAT
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
 
+@pytest.mark.usefixtures("db_session")
 class Returns201:
-    @override_features(SYNCHRONIZE_ALGOLIA=True)
-    @patch("pcapi.routes.stocks.redis.add_offer_id")
-    def when_user_has_rights(self, mock_add_offer_id_to_redis, app, db_session):
-        # Given
-        offer = offers_factories.OfferFactory(product__type=str(ThingType.AUDIOVISUEL))
-        user_offerer = offers_factories.UserOffererFactory(
+    def test_create_stock(self, app):
+        offer = offers_factories.ThingOfferFactory()
+        offers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
 
-        stock_data = {"price": 1222, "offerId": humanize(offer.id)}
-
         # When
+        stock_data = {"price": 1222, "offerId": humanize(offer.id)}
         response = (
             TestClient(app.test_client())
             .with_auth("user@example.com")
@@ -44,15 +37,11 @@ class Returns201:
         # This are variables we do not have control over with but we still want to check
         # the response body has the right format
         id = response.json["id"]
-        assert type(id) == str
+        assert isinstance(id, str)
 
         stock = StockSQLEntity.query.filter_by(id=dehumanize(id)).first()
         assert stock.price == 1222
         assert stock.bookingLimitDatetime is None
-
-        mock_add_offer_id_to_redis.assert_called()
-        mock_args, mock_kwargs = mock_add_offer_id_to_redis.call_args
-        assert mock_kwargs["offer_id"] == offer.id
 
 
 class Returns400:
@@ -74,7 +63,7 @@ class Returns400:
     def when_booking_limit_datetime_after_beginning_datetime(self, app, db_session):
         # Given
         user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
-        offer = offers_factories.OfferFactory(product__type=str(EventType.JEUX))
+        offer = offers_factories.EventOfferFactory()
 
         beginningDatetime = datetime(2019, 2, 14)
 
@@ -103,7 +92,7 @@ class Returns400:
     def when_invalid_format_for_booking_limit_datetime(self, app, db_session):
         # Given
         user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
-        offer = offers_factories.OfferFactory(product__type=str(EventType.JEUX))
+        offer = offers_factories.EventOfferFactory()
 
         data = {
             "price": 0,
@@ -126,7 +115,7 @@ class Returns400:
     def when_booking_limit_datetime_is_none_for_event(self, app, db_session):
         # Given
         user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
-        offer = offers_factories.OfferFactory(product__type=str(EventType.JEUX))
+        offer = offers_factories.EventOfferFactory()
 
         beginningDatetime = datetime(2019, 2, 14)
         data = {
@@ -152,7 +141,7 @@ class Returns400:
     def when_setting_beginning_datetime_on_offer_with_thing(self, app, db_session):
         # Given
         user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
-        offer = offers_factories.OfferFactory(product__type=str(ThingType.AUDIOVISUEL))
+        offer = offers_factories.ThingOfferFactory()
 
         beginningDatetime = datetime(2019, 2, 14)
 
@@ -180,21 +169,13 @@ class Returns400:
 
     def when_stock_is_on_offer_coming_from_provider(self, app, db_session):
         # given
-        tite_live_provider = get_provider_by_local_class("TiteLiveThings")
-
         user = users_factories.UserFactory()
         offerer = offers_factories.OffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
-        user_offerer = offers_factories.UserOffererFactory(user=user, offerer=offerer)
-        product = offers_factories.ProductFactory(type=str(ThingType.AUDIOVISUEL))
-        idAtProviders = f"{product.idAtProviders}@{venue.siret}"
-
-        offer = offers_factories.OfferFactory(
-            product=product,
-            venue=venue,
-            lastProviderId=tite_live_provider.id,
-            lastProvider=tite_live_provider,
-            idAtProviders=idAtProviders,
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+        offer = offers_factories.ThingOfferFactory(
+            lastProvider=offerers_factories.ProviderFactory(),
+            idAtProviders='1',
+            venue__managingOfferer=offerer,
         )
 
         stock_data = {"price": 1222, "offerId": humanize(offer.id)}
@@ -217,7 +198,7 @@ class Returns403:
     def when_user_has_no_rights_and_creating_stock_from_offer_id(self, app, db_session):
         # Given
         user = users_factories.UserFactory(email="wrong@example.com")
-        offer = offers_factories.OfferFactory(product__type=str(ThingType.AUDIOVISUEL))
+        offer = offers_factories.ThingOfferFactory()
         user_offerer = offers_factories.UserOffererFactory(
             user__email="right@example.com", offerer=offer.venue.managingOfferer
         )

@@ -29,14 +29,6 @@ def check_offer_id_is_present_in_request(offer_id: str):
         raise errors
 
 
-def check_offer_is_editable(offer: Offer):
-    if not offer.isEditable:
-        error = ApiErrors()
-        error.status_code = 400
-        error.add_error('global', "Les offres importées ne sont pas modifiables")
-        raise error
-
-
 def check_edition_for_allocine_offer_is_valid(payload: dict):
     editable_fields_for_offer = get_editable_fields_for_allocine_offers()
 

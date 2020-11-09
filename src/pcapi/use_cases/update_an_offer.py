@@ -1,13 +1,13 @@
 from flask import current_app as app
 
 from pcapi.connectors import redis
+from pcapi.core.offers.validation import check_offer_is_editable
 from pcapi.domain.offers import is_from_allocine
 from pcapi.models import Offer
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.validation.routes.offers import check_edition_for_allocine_offer_is_valid
-from pcapi.validation.routes.offers import check_offer_is_editable
 
 
 def update_an_offer(offer: Offer, modifications: dict) -> Offer:

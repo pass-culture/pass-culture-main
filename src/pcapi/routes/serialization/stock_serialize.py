@@ -1,3 +1,4 @@
+import datetime
 from typing import Any
 from typing import Optional
 
@@ -9,16 +10,11 @@ from pcapi.serialization.utils import to_camel
 
 
 class StockCreationBodyModel(BaseModel):
-    beginning_datetime: Optional[str]
-    booking_limit_datetime: Optional[str]
+    beginning_datetime: Optional[datetime.datetime]
+    booking_limit_datetime: Optional[datetime.datetime]
     offer_id: int
     price: float
     quantity: Optional[int]
-
-    # FIXME (cgaunet, 2020-11-05): these two fields are actually
-    # unused for the stock creation
-    beginning_time: Optional[str]
-    offerer_id: Optional[str]
 
     _dehumanize_offer_id = dehumanize_field("offer_id")
 

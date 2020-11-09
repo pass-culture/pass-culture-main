@@ -69,6 +69,14 @@ class ProductFactory(BaseFactory):
     description = factory.Sequence("A passionate description of product {}".format)
 
 
+class EventProductFactory(ProductFactory):
+    type = str(offer_type.EventType.CINEMA)
+
+
+class ThingProductFactory(ProductFactory):
+    type = str(offer_type.ThingType.AUDIOVISUEL)
+
+
 class OfferFactory(BaseFactory):
     class Meta:
         model = models.Offer
@@ -79,6 +87,14 @@ class OfferFactory(BaseFactory):
     name = factory.SelfAttribute('product.name')
     description = factory.SelfAttribute('product.description')
     url = factory.SelfAttribute('product.url')
+
+
+class EventOfferFactory(OfferFactory):
+    product = factory.SubFactory(EventProductFactory)
+
+
+class ThingOfferFactory(OfferFactory):
+    product = factory.SubFactory(ThingProductFactory)
 
 
 class StockFactory(BaseFactory):

@@ -7,14 +7,6 @@ from pcapi.models import Offer
 from pcapi.models import StockSQLEntity
 
 
-def check_stocks_are_editable_for_offer(offer: Offer) -> None:
-    if offer.isFromProvider:
-        api_errors = ApiErrors()
-        api_errors.add_error('global', 'Les offres importées ne sont pas modifiables')
-        raise api_errors
-
-
-
 def check_stock_is_updatable(stock: StockSQLEntity) -> None:
     check_stock_is_not_imported(stock)
 
@@ -22,17 +14,6 @@ def check_stock_is_updatable(stock: StockSQLEntity) -> None:
         api_errors = ApiErrors()
         api_errors.add_error('global', 'Les événements passés ne sont pas modifiables')
         raise api_errors
-
-
-def check_dates_are_allowed_on_new_stock(request_data: dict, offer: Offer) -> None:
-    if offer.isThing:
-        _forbid_dates_on_stock_for_thing_offer(request_data)
-    else:
-        if request_data.get('beginningDatetime', None) is None:
-            raise ApiErrors({'beginningDatetime': ['Ce paramètre est obligatoire']})
-
-        if request_data.get('bookingLimitDatetime', None) is None:
-            raise ApiErrors({'bookingLimitDatetime': ['Ce paramètre est obligatoire']})
 
 
 def check_dates_are_allowed_on_existing_stock(request_data: dict, offer: Offer) -> None:

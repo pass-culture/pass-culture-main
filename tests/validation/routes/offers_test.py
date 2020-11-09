@@ -1,13 +1,9 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import ApiErrors
 from pcapi.models import EventType
-from pcapi.models import Offer
 from pcapi.models import ThingType
 from pcapi.validation.routes.offers import check_edition_for_allocine_offer_is_valid
-from pcapi.validation.routes.offers import check_offer_is_editable
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 from pcapi.validation.routes.offers import check_offer_type_is_valid
 
@@ -55,30 +51,6 @@ class CheckOfferNameIsValidTest:
         # When
         try:
             check_offer_name_length_is_valid(offer_title_less_than_90_characters)
-        except:
-            assert False
-
-
-class CheckOfferIsEditableTest:
-    def test_raises_error_when_offer_is_not_editable(self):
-        # given
-        offer = Offer()
-        offer.lastProviderId = "42"
-
-        # when
-        with pytest.raises(ApiErrors) as error:
-            check_offer_is_editable(offer)
-
-        # then
-        assert error.value.errors['global'] == ["Les offres importées ne sont pas modifiables"]
-
-    def test_does_not_raise_error_when_offer_type_is_editable(self):
-        # given
-        offer = Offer()
-
-        # when
-        try:
-            check_offer_is_editable(offer)
         except:
             assert False
 

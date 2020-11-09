@@ -1,14 +1,20 @@
+import datetime
 from typing import Optional
 
+from flask import current_app as app
+
+from pcapi.connectors import redis
 from pcapi.core.offers.repository import get_paginated_offers_for_offerer_venue_and_keywords
 from pcapi.domain.admin_emails import send_offer_creation_notification_to_administration
 from pcapi.domain.create_offer import fill_offer_with_new_data
 from pcapi.domain.create_offer import initialize_offer_from_product_id
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
-from pcapi.models import Offer
 from pcapi.models import RightsType
+from pcapi.models import StockSQLEntity
 from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository import user_offerer_queries
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
@@ -17,6 +23,7 @@ from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.rest import ensure_current_user_has_rights
 from pcapi.utils.rest import load_or_raise_error
 
+from . import models
 from . import validation
 
 
@@ -62,7 +69,7 @@ def list_offers_for_pro_user(
     )
 
 
-def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> Offer:
+def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> models.Offer:
     venue = load_or_raise_error(VenueSQLEntity, offer_data.venue_id)
 
     ensure_current_user_has_rights(
@@ -83,3 +90,32 @@ def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> Offer:
     )
 
     return offer
+
+
+def create_stock(
+    offer: models.Offer,
+    price: float,
+    quantity: int = None,
+    beginning: datetime.datetime = None,
+    booking_limit_datetime: datetime.datetime = None,
+) -> StockSQLEntity:
+    """Return the new stock or raise an exception if it's not possible."""
+    validation.check_required_dates_for_stock(offer, beginning, booking_limit_datetime)
+    validation.check_offer_is_editable(offer)
+    validation.check_stocks_are_editable_for_offer(offer)
+
+    # FIXME (dbaty, 2020-11-06): this is not right. PcOject's constructor
+    # should allow to call it with `Stock(offer=offer, ...)`
+    stock = models.StockSQLEntity()
+    stock.offer = offer
+    stock.price = price
+    stock.quantity = quantity
+    stock.beginningDatetime = beginning
+    stock.bookingLimitDatetime = booking_limit_datetime
+
+    repository.save(stock)
+
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+
+    return stock
