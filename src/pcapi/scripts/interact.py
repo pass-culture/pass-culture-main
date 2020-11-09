@@ -42,7 +42,7 @@ from pcapi.scripts.booking import *
 
 
 def set_python_prompt():
-    env = os.environ['ENV']
+    env = os.environ.get('ENV')
     if env == 'production':
         color = '\x1b[1;49;31m'  # red
     elif env == 'staging':
