@@ -43,8 +43,8 @@ jobs:
       - run:
           name: Install pcapi Python package
           command: |
-              venv/bin/pip install -e .
-              venv/bin/pip freeze
+            venv/bin/pip install -e .
+            venv/bin/pip freeze
       - run:
           name: Check for alembic multiple heads
           command: |
@@ -52,6 +52,9 @@ jobs:
             . venv/bin/activate
             python -m nltk.downloader punkt stopwords &> /dev/null
             if [ ! -z "$(alembic branches)" ]; then echo "Multiple alembic heads found"; exit 1; fi
+      - run:
+          name: Check imports are sorted
+          command: venv/bin/isort . --check-only
       - when:
           condition: << parameters.is_nightly_build >>
           steps:
