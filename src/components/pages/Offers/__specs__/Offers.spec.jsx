@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { mount } from 'enzyme'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -14,10 +14,10 @@ import {
   ALL_OFFERERS,
   ALL_OFFERS,
   ALL_STATUS,
-  ALL_VENUES,
-  ALL_VENUES_OPTION,
   ALL_TYPES,
   ALL_TYPES_OPTION,
+  ALL_VENUES,
+  ALL_VENUES_OPTION,
   DEFAULT_PAGE,
 } from '../_constants'
 import Offers from '../Offers'
@@ -198,8 +198,9 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => expect(screen.queryByText('My other offer')).not.toBeNull())
     })
 
-    it('should display a unchecked by default checkbox to select all offers', async () => {
+    it('should display a unchecked by default checkbox to select all offers when user is not admin', async () => {
       // Given
+      props.currentUser.isAdmin = false
       props.offers = [
         {
           id: 'M4',
@@ -232,8 +233,45 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       const selectAllOffersCheckbox = screen.queryByLabelText('Tout sélectionner')
-      expect(selectAllOffersCheckbox).not.toBeNull()
+      expect(selectAllOffersCheckbox).toBeInTheDocument()
       expect(selectAllOffersCheckbox).not.toBeChecked()
+    })
+
+    it('should not display a unchecked by default checkbox to select all offers when user is admin', async () => {
+      // Given
+      props.currentUser.isAdmin = true
+      props.offers = [
+        {
+          id: 'M4',
+          isActive: true,
+          isEditable: true,
+          isFullyBooked: false,
+          isEvent: true,
+          isThing: false,
+          hasBookingLimitDatetimesPassed: false,
+          name: 'My little offer',
+          thumbUrl: '/my-fake-thumb',
+          venueId: 'JI',
+        },
+        {
+          id: 'AE3',
+          isActive: true,
+          isEditable: true,
+          isFullyBooked: true,
+          isEvent: false,
+          isThing: true,
+          hasBookingLimitDatetimesPassed: false,
+          name: 'My other offer',
+          thumbUrl: '/my-other-fake-thumb',
+          venueId: 'JI',
+        },
+      ]
+
+      // When
+      await renderOffers(props, store)
+
+      // Then
+      expect(screen.queryByLabelText('Tout sélectionner')).not.toBeInTheDocument()
     })
 
     describe('total number of offers', () => {
@@ -829,7 +867,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(props.setSelectedOfferIds).toHaveBeenLastCalledWith([])
     })
 
-    it('should hide action bar',  () => {
+    it('should hide action bar', () => {
       // Given
       props = {
         ...props,

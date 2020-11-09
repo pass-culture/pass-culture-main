@@ -365,20 +365,29 @@ class Offers extends PureComponent {
               <table>
                 <thead>
                   <tr>
-                    <th className="th-checkbox">
-                      <input
-                        checked={areAllOffersSelected}
-                        className="select-offer-checkbox"
-                        id="select-offer-checkbox"
-                        onChange={this.selectAllOffers}
-                        type="checkbox"
-                      />
-                    </th>
-                    <th className="th-checkbox-label">
-                      <label htmlFor="select-offer-checkbox">
-                        {areAllOffersSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
-                      </label>
-                    </th>
+                    {isAdmin ? (
+                      <Fragment>
+                        <th />
+                        <th />
+                      </Fragment>
+                    ) : (
+                      <Fragment>
+                        <th className="th-checkbox">
+                          <input
+                            checked={areAllOffersSelected}
+                            className="select-offer-checkbox"
+                            id="select-offer-checkbox"
+                            onChange={this.selectAllOffers}
+                            type="checkbox"
+                          />
+                        </th>
+                        <th className="th-checkbox-label">
+                          <label htmlFor="select-offer-checkbox">
+                            {areAllOffersSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
+                          </label>
+                        </th>
+                      </Fragment>
+                    )}
                     <th />
                     <th>
                       {'Lieu'}
