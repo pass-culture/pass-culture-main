@@ -10,7 +10,9 @@
 
   .actions-container {
     display: flex;
-    flex: auto;
-    justify-content: space-around;
+    margin: auto;
+    button {
+      margin-left: 40px;
+    }
   }
 }
