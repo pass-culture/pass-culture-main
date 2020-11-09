@@ -1,29 +1,14 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
+import Banner from 'components/layout/Banner'
 
 export const ApplicationBanner = ({ applicationId }) => (
-  <div className="bi-banner">
-    <p>
-      {'Votre dossier est en cours pour ce lieu'}
-    </p>
-
-    <p>
-      <a
-        className="bi-external-link"
-        href={`https://www.demarches-simplifiees.fr/dossiers/${applicationId}`}
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        <Icon
-          alt=""
-          svg="ico-external-site"
-        />
-        {'Accéder au dossier'}
-      </a>
-    </p>
-  </div>
+  <Banner
+    href={`https://www.demarches-simplifiees.fr/dossiers/${applicationId}`}
+    linkTitle="Accéder au dossier"
+    subtitle="Votre dossier est en cours pour ce lieu"
+  />
 )
 
 ApplicationBanner.propTypes = {

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 
-import Icon from 'components/layout/Icon'
+import Banner from 'components/layout/Banner'
 import { DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
 import { ApplicationBanner } from './ApplicationBanner'
@@ -39,28 +39,11 @@ const BankInformation = ({ venue, offerer }) => {
               <p className="bi-subtitle">
                 {'Aucune coordonnée bancaire renseignée'}
               </p>
-              <div className="bi-banner">
-                <p>
-                  {
-                    'Renseignez vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles'
-                  }
-                </p>
-
-                <p>
-                  <a
-                    className="bi-external-link"
-                    href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    <Icon
-                      alt=""
-                      svg="ico-external-site"
-                    />
-                    {'Renseignez les coordonnées bancaires du lieu'}
-                  </a>
-                </p>
-              </div>
+              <Banner
+                href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
+                linkTitle="Renseignez les coordonnées bancaires du lieu"
+                subtitle="Renseignez vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles"
+              />
             </Fragment>
           )}
         </div>

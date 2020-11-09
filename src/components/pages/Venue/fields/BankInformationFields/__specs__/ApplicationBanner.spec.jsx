@@ -14,14 +14,11 @@ describe('when offerer has no bank informations', () => {
     const wrapper = shallow(<ApplicationBanner {...props} />)
 
     // then
-    const bankInstructions = wrapper.find({
-      children: 'Votre dossier est en cours pour ce lieu',
+    expect(wrapper.find('Banner').props()).toStrictEqual({
+      subtitle: 'Votre dossier est en cours pour ce lieu',
+      linkTitle: 'Accéder au dossier',
+      href: 'https://www.demarches-simplifiees.fr/dossiers/12',
+      icon: 'ico-external-site',
     })
-    expect(bankInstructions).toHaveLength(1)
-
-    const linkToDemarcheSimplifieeProcedure = wrapper.find('a')
-    expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
-      'https://www.demarches-simplifiees.fr/dossiers/12'
-    )
   })
 })

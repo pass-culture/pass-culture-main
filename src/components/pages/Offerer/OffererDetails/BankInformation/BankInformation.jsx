@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 
+import Banner from 'components/layout/Banner'
 import Icon from 'components/layout/Icon'
 import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
@@ -49,51 +50,21 @@ const BankInformation = ({ offerer }) => (
         </div>
       </Fragment>
     ) : offerer.demarchesSimplifieesApplicationId ? (
-      <div className="bi-banner">
-        <p>
-          {'Votre dossier est en cours pour cette structure'}
-        </p>
-
-        <p>
-          <a
-            className="bi-external-link"
-            href={`https://www.demarches-simplifiees.fr/dossiers/${offerer.demarchesSimplifieesApplicationId}`}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <Icon
-              alt=""
-              svg="ico-external-site"
-            />
-            {'Accéder au dossier'}
-          </a>
-        </p>
-      </div>
+      <Banner
+        href={`https://www.demarches-simplifiees.fr/dossiers/${offerer.demarchesSimplifieesApplicationId}`}
+        linkTitle="Accéder au dossier"
+        subtitle="Votre dossier est en cours pour cette structure"
+      />
     ) : (
       <Fragment>
         <p className="bi-subtitle">
           {'Aucune coordonnée bancaire renseignée'}
         </p>
-        <div className="bi-banner">
-          <p>
-            {'Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles'}
-          </p>
-
-          <p>
-            <a
-              className="bi-external-link"
-              href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <Icon
-                alt=""
-                svg="ico-external-site"
-              />
-              {'Renseignez les coordonnées bancaires de la structure'}
-            </a>
-          </p>
-        </div>
+        <Banner
+          href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
+          linkTitle="Renseignez les coordonnées bancaires de la structure"
+          subtitle="Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles"
+        />
       </Fragment>
     )}
   </div>

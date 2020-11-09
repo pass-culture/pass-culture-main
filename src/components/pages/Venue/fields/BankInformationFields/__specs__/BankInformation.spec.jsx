@@ -41,15 +41,13 @@ describe('src | Venue | BankInformation', () => {
         const wrapper = shallow(<BankInformation {...props} />)
 
         // then
-        const bankInstructions = wrapper.find({
-          children:
+        expect(wrapper.find('Banner').props()).toStrictEqual({
+          subtitle:
             'Renseignez vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles',
+          linkTitle: 'Renseignez les coordonnées bancaires du lieu',
+          href: 'link/to/venue/demarchesSimplifiees/procedure',
+          icon: 'ico-external-site',
         })
-        const linkToDemarcheSimplifieeProcedure = wrapper.find('a')
-        expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
-          'link/to/venue/demarchesSimplifiees/procedure'
-        )
-        expect(bankInstructions).toHaveLength(1)
       })
     })
 

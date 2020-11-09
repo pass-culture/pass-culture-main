@@ -24,14 +24,12 @@ describe('src | Offerer | BankInformation', () => {
     const wrapper = shallow(<BankInformation offerer={offererWithoutBankInformation} />)
 
     // then
-    const bankInstructions = wrapper.find({
-      children: 'Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles',
+    expect(wrapper.find('Banner').props()).toStrictEqual({
+      subtitle: 'Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles',
+      linkTitle: 'Renseignez les coordonnées bancaires de la structure',
+      href: 'link/to/offerer/demarchesSimplifiees/procedure',
+      icon: 'ico-external-site',
     })
-    const linkToDemarcheSimplifieeProcedure = wrapper.find('a')
-    expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
-      'link/to/offerer/demarchesSimplifiees/procedure'
-    )
-    expect(bankInstructions).toHaveLength(1)
   })
 
   it('should render instruction block when BIC and IBAN are provided', () => {
@@ -79,13 +77,11 @@ describe('src | Offerer | BankInformation', () => {
     const wrapper = shallow(<BankInformation offerer={offererWithoutBankInformation} />)
 
     // then
-    const bankInstructions = wrapper.find({
-      children: 'Votre dossier est en cours pour cette structure',
+    expect(wrapper.find('Banner').props()).toStrictEqual({
+      subtitle: 'Votre dossier est en cours pour cette structure',
+      linkTitle: 'Accéder au dossier',
+      href: 'https://www.demarches-simplifiees.fr/dossiers/12',
+      icon: 'ico-external-site',
     })
-    const linkToDemarcheSimplifieeProcedure = wrapper.find('a')
-    expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
-      'https://www.demarches-simplifiees.fr/dossiers/12'
-    )
-    expect(bankInstructions).toHaveLength(1)
   })
 })
