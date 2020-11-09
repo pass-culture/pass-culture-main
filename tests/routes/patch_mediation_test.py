@@ -3,8 +3,13 @@ from unittest.mock import patch
 from pcapi.models import MediationSQLEntity
 from pcapi.repository import repository
 import pytest
+
+from pcapi.utils.date import format_into_utc_date
 from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
+from pcapi.model_creators.generic_creators import create_user, \
+    create_offerer, \
+    create_venue, \
+    create_user_offerer, \
     create_mediation
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.utils.human_ids import humanize
@@ -34,9 +39,46 @@ class Patch:
             mediation = MediationSQLEntity.query.get(mediation_id)
             assert response.status_code == 200
             assert response.json['id'] == humanize(mediation.id)
-            assert response.json['isActive'] == mediation.isActive
             assert response.json['thumbUrl'] == mediation.thumbUrl
             assert mediation.isActive == data['isActive']
+
+            assert response.json == {
+                'authorId': None,
+                'credit': None,
+                'dateCreated': format_into_utc_date(mediation.dateCreated),
+                'dateModifiedAtLastProvider': format_into_utc_date(mediation.dateModifiedAtLastProvider),
+                'fieldsUpdated': [],
+                'id': humanize(mediation.id),
+                'idAtProviders': None,
+                'isActive': data['isActive'],
+                'lastProviderId': None,
+                'offerId': humanize(offer.id),
+                'thumbCount': 0,
+                'thumbUrl': None
+            }
+
+        @pytest.mark.usefixtures("db_session")
+        def should_match_a_mediation_description(self, app):
+            # given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+            user_offerer = create_user_offerer(user, offerer)
+            mediation = create_mediation(offer)
+            repository.save(mediation)
+            repository.save(user, venue, offerer, user_offerer)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+            data = {'isActive': False}
+
+            # when
+            response = auth_request.patch('/mediations/%s' % humanize(mediation.id), json=data)
+
+            # then
+            assert response.status_code == 200
+            assert set(response.json) == {'authorId', 'credit', 'dateCreated', 'dateModifiedAtLastProvider',
+                                          'fieldsUpdated', 'id', 'idAtProviders', 'isActive', 'lastProviderId',
+                                          'offerId', 'thumbCount', 'thumbUrl'}
 
         @pytest.mark.usefixtures("db_session")
         @patch('pcapi.routes.mediations.feature_queries.is_active', return_value=True)
@@ -63,7 +105,6 @@ class Patch:
             mock_args, mock_kwargs = mock_redis.call_args
             assert mock_kwargs['offer_id'] == offer.id
 
-
     class Returns403:
         @pytest.mark.usefixtures("db_session")
         def when_current_user_is_not_attached_to_offerer_of_mediation(self, app):
@@ -85,6 +126,9 @@ class Patch:
 
             # then
             assert response.status_code == 403
+            assert response.json == {
+                'global': ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+            }
 
     class Returns404:
         @pytest.mark.usefixtures("db_session")
@@ -99,3 +143,4 @@ class Patch:
 
             # then
             assert response.status_code == 404
+            assert response.json == {}
