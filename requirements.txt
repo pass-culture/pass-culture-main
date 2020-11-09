@@ -32,6 +32,7 @@ pydantic[email]==1.6.1
 pygsheets==2.0.3.1
 PyJWT==1.7.1
 pylint==2.6.0
+pylint-strict-informational
 PyMemoize==1.0.3
 pytest-cov==2.10.1
 pytest-flask==1.0.0
