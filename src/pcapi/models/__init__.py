@@ -22,7 +22,6 @@ from pcapi.models.favorite_sql_entity import FavoriteSQLEntity
 from pcapi.models.feature import Feature
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
-from pcapi.models.iris_france import IrisFrance
 from pcapi.models.iris_venues import IrisVenues
 from pcapi.models.local_provider_event import LocalProviderEvent
 from pcapi.models.mediation_sql_entity import MediationSQLEntity
@@ -52,6 +51,9 @@ from pcapi.models.venue_sql_entity import VenueSQLEntity
 from pcapi.models.venue_type import VenueType
 from pcapi.models.versioned_mixin import VersionedMixin
 
+
+# TODO: fix circular import
+from pcapi.models.iris_france import IrisFrance #isort:skip
 
 __all__ = (
     'VersionedMixin',
