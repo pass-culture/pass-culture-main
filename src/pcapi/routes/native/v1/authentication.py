@@ -1,4 +1,5 @@
 from flask import current_app as app
+from flask import jsonify
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -32,7 +33,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
         errors.status_code = 400
         errors.add_error("general", "Identifiant ou Mot de passe incorrect")
         raise errors from exc
-    # TODO: Should we fill the token with some less trivial data ?
+
     return authentication.SigninResponse(
         access_token=create_access_token(identity=body.identifier),
         refresh_token=create_refresh_token(identity=body.identifier),
@@ -69,12 +70,9 @@ def password_reset_request(body: PasswordResetRequestRequest) -> None:
         raise errors
 
 
-# TODO: temporary resource to test JWT authentication on a resource
 @blueprint.native_v1.route("/protected", methods=["GET"])
 @jwt_required
-def protected() -> any:
+def protected() -> any:  # type: ignore
     # Access the identity of the current user with get_jwt_identity
-    from flask import jsonify
-
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
