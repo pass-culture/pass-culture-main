@@ -16,7 +16,7 @@ from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.v1.serialization.authentication import PasswordResetRequestRequest
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.mailing import MailServiceException, send_raw_email
+from pcapi.utils.mailing import send_raw_email
 
 from . import blueprint
 from .serialization import authentication
@@ -48,7 +48,7 @@ def refresh() -> authentication.RefreshResponse:
 
 
 @blueprint.native_v1.route("/password_reset_request", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[503])  # type: ignore
+@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])  # type: ignore
 def password_reset_request(body: PasswordResetRequestRequest) -> None:
     user = find_user_by_email(body.email)
 
