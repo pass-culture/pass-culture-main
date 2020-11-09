@@ -41,12 +41,21 @@ describe('src | Venue | BankInformation', () => {
         const wrapper = shallow(<BankInformation {...props} />)
 
         // then
-        expect(wrapper.find('Banner').props()).toStrictEqual({
+        expect(wrapper.find('Banner').first().props()).toStrictEqual({
+          type: 'attention',
           subtitle:
             'Renseignez vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles',
           linkTitle: 'Renseignez les coordonnées bancaires du lieu',
           href: 'link/to/venue/demarchesSimplifiees/procedure',
           icon: 'ico-external-site',
+        })
+        expect(wrapper.find('Banner').last().props()).toStrictEqual({
+          type: 'notification-info',
+          linkTitle: 'En savoir plus sur les remboursements',
+          href:
+            'https://aide.passculture.app/fr/article/acteurs-determiner-ses-modalites-de-remboursement-1ab6g2m/',
+          icon: 'ico-external-site',
+          subtitle: '',
         })
       })
     })

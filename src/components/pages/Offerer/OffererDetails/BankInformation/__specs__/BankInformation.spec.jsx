@@ -9,6 +9,17 @@ jest.mock('utils/config', () => ({
     'link/to/offerer/demarchesSimplifiees/procedure',
 }))
 
+const reimbursementBannerPresent = wrapper => {
+  expect(wrapper.find('Banner').last().props()).toStrictEqual({
+    type: 'notification-info',
+    linkTitle: 'En savoir plus sur les remboursements',
+    href:
+      'https://aide.passculture.app/fr/article/acteurs-determiner-ses-modalites-de-remboursement-1ab6g2m/',
+    icon: 'ico-external-site',
+    subtitle: '',
+  })
+}
+
 describe('src | Offerer | BankInformation', () => {
   it('should render instruction block when banking information are not provided', () => {
     // Given
@@ -24,12 +35,14 @@ describe('src | Offerer | BankInformation', () => {
     const wrapper = shallow(<BankInformation offerer={offererWithoutBankInformation} />)
 
     // then
-    expect(wrapper.find('Banner').props()).toStrictEqual({
+    expect(wrapper.find('Banner').first().props()).toStrictEqual({
+      type: 'attention',
       subtitle: 'Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles',
       linkTitle: 'Renseignez les coordonnées bancaires de la structure',
       href: 'link/to/offerer/demarchesSimplifiees/procedure',
       icon: 'ico-external-site',
     })
+    reimbursementBannerPresent(wrapper)
   })
 
   it('should render instruction block when BIC and IBAN are provided', () => {
@@ -60,6 +73,7 @@ describe('src | Offerer | BankInformation', () => {
     expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
       'link/to/offerer/demarchesSimplifiees/procedure'
     )
+    reimbursementBannerPresent(wrapper)
   })
 
   it('should render current application detail when demarchesSimplifieesApplicationId is provided', () => {
@@ -77,11 +91,13 @@ describe('src | Offerer | BankInformation', () => {
     const wrapper = shallow(<BankInformation offerer={offererWithoutBankInformation} />)
 
     // then
-    expect(wrapper.find('Banner').props()).toStrictEqual({
+    expect(wrapper.find('Banner').first().props()).toStrictEqual({
+      type: 'attention',
       subtitle: 'Votre dossier est en cours pour cette structure',
       linkTitle: 'Accéder au dossier',
       href: 'https://www.demarches-simplifiees.fr/dossiers/12',
       icon: 'ico-external-site',
     })
+    reimbursementBannerPresent(wrapper)
   })
 })

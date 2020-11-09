@@ -1,5 +1,12 @@
 .bi-banner {
-  background: $attention;
+  &.attention {
+    background: $attention;
+  }
+  
+  &.notification-info {
+    background: $notification-info;
+  }
+
   border-radius: 6px;
   margin: rem(16px) 0;
   padding: rem(7px) rem(15px);

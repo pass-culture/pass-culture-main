@@ -3,9 +3,9 @@ import React from 'react'
 
 import Icon from 'components/layout/Icon'
 
-const Banner = ({ subtitle, href, linkTitle, icon }) => {
+const Banner = ({ icon, href, linkTitle, subtitle, type }) => {
   return (
-    <div className="bi-banner">
+    <div className={`bi-banner ${type}`}>
       <p>
         {subtitle}
       </p>
@@ -17,10 +17,7 @@ const Banner = ({ subtitle, href, linkTitle, icon }) => {
           rel="noopener noreferrer"
           target="_blank"
         >
-          <Icon
-            alt=""
-            svg={icon}
-          />
+          <Icon svg={icon} />
           {linkTitle}
         </a>
       </p>
@@ -30,13 +27,16 @@ const Banner = ({ subtitle, href, linkTitle, icon }) => {
 
 Banner.defaultProps = {
   icon: 'ico-external-site',
+  subtitle: '',
+  type: 'attention',
 }
 
 Banner.propTypes = {
   href: PropTypes.string.isRequired,
   icon: PropTypes.string,
   linkTitle: PropTypes.string.isRequired,
-  subtitle: PropTypes.string.isRequired,
+  subtitle: PropTypes.string,
+  type: PropTypes.oneOf(['notification-info', 'attention']),
 }
 
 export default Banner

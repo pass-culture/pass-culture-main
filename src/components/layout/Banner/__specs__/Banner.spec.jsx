@@ -5,14 +5,13 @@ import Banner from '../Banner'
 
 describe('src | components | layout | Banner', () => {
   describe('render', () => {
-    it('should render the Banner with the correct props', () => {
-      // given
-      const props = {
-        subtitle: 'subtitle',
-        href: 'href',
-        linkTitle: 'linkTitle',
-      }
+    let props = {
+      subtitle: 'subtitle',
+      href: '/some/site',
+      linkTitle: 'linkTitle',
+    }
 
+    it('should render the Banner with the default props', () => {
       // when
       const wrapper = shallow(<Banner {...props} />)
 
@@ -21,11 +20,31 @@ describe('src | components | layout | Banner', () => {
       expect(subtitleComponent).toHaveLength(1)
 
       const linkToHref = wrapper.find('a')
-      expect(linkToHref.prop('href')).toBe('href')
+      expect(linkToHref.prop('href')).toBe(props.href)
 
       const icon = wrapper.find('Icon')
-      expect(icon.prop('svg')).toBe('ico-external-site') // by default
+      expect(icon.prop('svg')).toBe('ico-external-site')
       expect(linkToHref.text()).toContain('linkTitle')
+    })
+
+    it('should change the background color - attention', () => {
+      // when
+      const wrapper = shallow(<Banner {...props} />)
+
+      // then
+      const container = wrapper.find('div')
+      expect(container.prop('className')).toBe('bi-banner attention')
+    })
+
+    it('should change the background color - notification-info', () => {
+      props.type = 'notification-info'
+
+      // when
+      const wrapper = shallow(<Banner {...props} />)
+
+      // then
+      const container = wrapper.find('div')
+      expect(container.prop('className')).toBe('bi-banner notification-info')
     })
   })
 })

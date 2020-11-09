@@ -57,5 +57,20 @@ describe('src | components | pages | Reimbursements', () => {
       expect(displayButtonContainer).toHaveLength(1)
       expect(displayButtonContainer.prop('href')).toBe(`${API_URL}/reimbursements/csv`)
     })
+
+    it('should display the Reimbursement Banner', () => {
+      // when
+      const wrapper = shallow(<Reimbursements />)
+
+      // then
+      expect(wrapper.find('Banner').props()).toStrictEqual({
+        type: 'notification-info',
+        linkTitle: 'En savoir plus sur les prochains remboursements',
+        href:
+          'https://aide.passculture.app/fr/article/acteurs-calendrier-des-prochains-remboursements-54t3e/',
+        icon: 'ico-external-site',
+        subtitle: '',
+      })
+    })
   })
 })

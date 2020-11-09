@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 
-import Banner from 'components/layout/Banner'
+import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
@@ -67,6 +67,11 @@ const BankInformation = ({ offerer }) => (
         />
       </Fragment>
     )}
+    <Banner
+      href="https://aide.passculture.app/fr/article/acteurs-determiner-ses-modalites-de-remboursement-1ab6g2m/"
+      linkTitle="En savoir plus sur les remboursements"
+      type="notification-info"
+    />
   </div>
 )
 

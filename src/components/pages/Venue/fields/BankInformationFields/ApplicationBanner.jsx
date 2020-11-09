@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Banner from 'components/layout/Banner'
+import Banner from 'components/layout/Banner/Banner'
 
 export const ApplicationBanner = ({ applicationId }) => (
   <Banner

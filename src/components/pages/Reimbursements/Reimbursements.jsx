@@ -1,5 +1,6 @@
 import React from 'react'
 
+import Banner from 'components/layout/Banner/Banner'
 import CsvTableButtonContainer from 'components/layout/CsvTableButton/CsvTableButtonContainer'
 import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
 import Main from 'components/layout/Main'
@@ -17,6 +18,11 @@ const Reimbursements = () => (
     <p className="advice">
       {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
     </p>
+    <Banner
+      href="https://aide.passculture.app/fr/article/acteurs-calendrier-des-prochains-remboursements-54t3e/"
+      linkTitle="En savoir plus sur les prochains remboursements"
+      type="notification-info"
+    />
     <hr />
     <div className="flex-end">
       <DownloadButtonContainer
