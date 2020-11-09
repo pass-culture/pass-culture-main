@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel
 from pcapi.serialization.utils import (
@@ -36,10 +36,11 @@ class StockEditionBodyModel(BaseModel):
     quantity: Optional[int]
     has_been_migrated: Optional[bool]
 
-    # FIXME (cgaunet, 2020-11-05): these two fields are actually
-    # unused for the stock creation
+    # FIXME (cgaunet, 2020-11-05): these three fields are actually
+    # unused for the stock edition
     beginning_time: Optional[str]
     offerer_id: Optional[str]
+    id: Optional[Any]
 
     _dehumanize_offer_id = dehumanize_field("offer_id")
 
