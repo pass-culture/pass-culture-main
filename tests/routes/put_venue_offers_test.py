@@ -1,14 +1,21 @@
 from unittest.mock import patch
 
+import pytest
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models import Offer
 from pcapi.repository import repository
-import pytest
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
-    create_user_offerer
-from pcapi.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
-    create_offer_with_event_product
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
+
 
 API_URL = '/venues/'
 

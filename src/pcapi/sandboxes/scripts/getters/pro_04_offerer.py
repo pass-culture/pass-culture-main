@@ -1,7 +1,8 @@
 from pcapi.models.offerer import Offerer
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.models.user_offerer import UserOfferer
-from pcapi.sandboxes.scripts.utils.helpers import get_offerer_helper, get_pro_helper
+from pcapi.models.user_sql_entity import UserSQLEntity
+from pcapi.sandboxes.scripts.utils.helpers import get_offerer_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
 
 
 def get_existing_pro_validated_user_with_first_offerer():

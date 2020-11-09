@@ -1,9 +1,9 @@
 from pcapi.domain.stock.stock import Stock
 from pcapi.domain.stock.stock_exceptions import StockDoesntExist
 from pcapi.domain.stock.stock_repository import StockRepository
+from pcapi.infrastructure.repository.stock import stock_domain_converter
 from pcapi.models import StockSQLEntity
 from pcapi.models.db import db
-from pcapi.infrastructure.repository.stock import stock_domain_converter
 
 
 class StockSQLRepository(StockRepository):

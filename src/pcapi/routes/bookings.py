@@ -1,44 +1,61 @@
 from datetime import datetime
-from typing import Union, Dict
+from typing import Dict
+from typing import Union
 
 from flask import current_app as app
-from flask import jsonify, request
-from flask_login import current_user, login_required
+from flask import jsonify
+from flask import request
+from flask_login import current_user
+from flask_login import login_required
 from spectree import Response
 
-from pcapi.flask_app import private_api, public_api
-from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.api as bookings_api
-import pcapi.core.bookings.validation as bookings_validation
+from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
-from pcapi.domain.user_activation import create_initial_deposit, is_activation_booking
+import pcapi.core.bookings.validation as bookings_validation
+from pcapi.domain.user_activation import create_initial_deposit
+from pcapi.domain.user_activation import is_activation_booking
 from pcapi.domain.user_emails import send_activation_email
+from pcapi.domain.users import check_is_authorized_to_access_bookings_recap
+from pcapi.flask_app import private_api
+from pcapi.flask_app import public_api
 from pcapi.infrastructure.container import get_bookings_for_beneficiary
-from pcapi.models import EventType, RightsType, ApiKey, UserSQLEntity, StockSQLEntity, Recommendation
+from pcapi.models import ApiKey
+from pcapi.models import EventType
+from pcapi.models import Recommendation
+from pcapi.models import RightsType
+from pcapi.models import StockSQLEntity
+from pcapi.models import UserSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ProductType
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.api_key_queries import find_api_key_by_value
-from pcapi.routes.serialization import as_dict, serialize, serialize_booking
+from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization import serialize
+from pcapi.routes.serialization import serialize_booking
 from pcapi.routes.serialization.beneficiary_bookings_serialize import serialize_beneficiary_bookings
 from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
-from pcapi.routes.serialization.bookings_serialize import serialize_booking_minimal, PostBookingBodyModel, PostBookingResponseModel
-from pcapi.utils.human_ids import dehumanize, humanize
+from pcapi.routes.serialization.bookings_serialize import PostBookingBodyModel
+from pcapi.routes.serialization.bookings_serialize import PostBookingResponseModel
+from pcapi.routes.serialization.bookings_serialize import serialize_booking_minimal
+from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.human_ids import humanize
 from pcapi.utils.includes import WEBAPP_GET_BOOKING_INCLUDES
 from pcapi.utils.mailing import send_raw_email
-from pcapi.utils.rest import ensure_current_user_has_rights, expect_json_data
-from pcapi.domain.users import check_is_authorized_to_access_bookings_recap
+from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import expect_json_data
 from pcapi.validation.routes.bookings import check_email_and_offer_id_for_anonymous_user
 from pcapi.validation.routes.bookings import check_page_format_is_number
-from pcapi.validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
-    login_or_api_key_required_v2
-from pcapi.validation.routes.users_authorizations import \
-    check_api_key_allows_to_cancel_booking, \
-    check_api_key_allows_to_validate_booking, check_user_can_validate_activation_offer, \
-    check_user_can_validate_bookings, \
-    check_user_can_validate_bookings_v2
-from pcapi.serialization.decorator import spectree_serialize
+from pcapi.validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided
+from pcapi.validation.routes.users_authentifications import login_or_api_key_required_v2
+from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_cancel_booking
+from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_validate_booking
+from pcapi.validation.routes.users_authorizations import check_user_can_validate_activation_offer
+from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings
+from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
+
 
 @private_api.route('/bookings/pro', methods=['GET'])
 @login_required

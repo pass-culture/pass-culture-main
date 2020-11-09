@@ -1,9 +1,9 @@
 import pytest
 
-from pcapi.models import ApiErrors, ApiKey
-from pcapi.repository import repository
-import pytest
 from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.models import ApiErrors
+from pcapi.models import ApiKey
+from pcapi.repository import repository
 from pcapi.utils.token import random_token
 
 

@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Boolean
+from sqlalchemy import Boolean
+from sqlalchemy import Column
 
 
 class SoftDeletableMixin(object):

@@ -3,10 +3,13 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from pcapi.models import AllocineVenueProvider, AllocineVenueProviderPriceRule
-from pcapi.repository import repository
-from pcapi.model_creators.generic_creators import create_allocine_pivot, create_offerer, create_venue
+from pcapi.model_creators.generic_creators import create_allocine_pivot
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.provider_creators import activate_provider
+from pcapi.models import AllocineVenueProvider
+from pcapi.models import AllocineVenueProviderPriceRule
+from pcapi.repository import repository
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 from pcapi.utils.human_ids import humanize
 

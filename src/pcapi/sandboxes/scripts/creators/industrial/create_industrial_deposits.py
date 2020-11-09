@@ -1,5 +1,5 @@
-from pcapi.repository import repository
 from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.repository import repository
 from pcapi.utils.logger import logger
 
 

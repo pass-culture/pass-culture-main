@@ -1,11 +1,16 @@
+from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
+    BankInformationsSQLRepository,
+)
 from pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository import BeneficiaryJouveRepository
 from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from pcapi.infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
-from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import VenueWithBasicInformationSQLRepository
-from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import BankInformationsSQLRepository
+from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import (
+    VenueWithBasicInformationSQLRepository,
+)
 from pcapi.use_cases.create_beneficiary_from_application import CreateBeneficiaryFromApplication
 from pcapi.use_cases.save_offerer_bank_informations import SaveOffererBankInformations
 from pcapi.use_cases.save_venue_bank_informations import SaveVenueBankInformations
+
 
 # Repositories
 beneficiary_pre_subscription_repository = BeneficiaryJouveRepository()

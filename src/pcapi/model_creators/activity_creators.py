@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from pcapi.models.db import db, versioning_manager
+from pcapi.models.db import db
+from pcapi.models.db import versioning_manager
 
 
 def create_venue_activity(venue, verb, issued_at=datetime.utcnow):

@@ -2,8 +2,8 @@ import datetime
 
 import pytest
 
-from pcapi.models import UserSession
 from pcapi.model_creators.generic_creators import create_user
+from pcapi.models import UserSession
 from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize

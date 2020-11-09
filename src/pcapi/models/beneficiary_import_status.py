@@ -1,7 +1,12 @@
-import enum
 from datetime import datetime
+import enum
 
-from sqlalchemy import Column, DateTime, BigInteger, String, ForeignKey, Enum
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import Enum
+from sqlalchemy import ForeignKey
+from sqlalchemy import String
 from sqlalchemy.orm import relationship
 
 from pcapi.models.db import Model

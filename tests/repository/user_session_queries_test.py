@@ -5,7 +5,6 @@ import pytest
 from pcapi.models import UserSession
 from pcapi.repository import repository
 from pcapi.repository.user_session_queries import delete_user_session
-import pytest
 
 
 class DeleteUserSessionTest:

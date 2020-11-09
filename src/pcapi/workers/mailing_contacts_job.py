@@ -1,8 +1,9 @@
 from rq.decorators import job
 
-from pcapi.workers import worker
-from pcapi.workers.decorators import job_context, log_job
 from pcapi.infrastructure.container import add_contact_in_eligibility_list
+from pcapi.workers import worker
+from pcapi.workers.decorators import job_context
+from pcapi.workers.decorators import log_job
 
 
 @job(worker.redis_queue, connection=worker.conn)

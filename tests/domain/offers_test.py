@@ -1,16 +1,18 @@
 from datetime import datetime
 
-from pcapi.domain.offers import is_from_allocine, update_is_active_status
-from pcapi.models import Offer
 import pytest
-from pcapi.model_creators.generic_creators import (create_booking,
-                                                   create_deposit,
-                                                   create_offerer,
-                                                   create_provider,
-                                                   create_stock, create_user,
-                                                   create_venue)
-from pcapi.model_creators.specific_creators import \
-    create_offer_with_event_product
+
+from pcapi.domain.offers import is_from_allocine
+from pcapi.domain.offers import update_is_active_status
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_provider
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.models import Offer
 
 
 class UpdateIsActiveStatusTest:

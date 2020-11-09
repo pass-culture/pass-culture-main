@@ -10,6 +10,7 @@ import enum
 from alembic import op
 import sqlalchemy as sa
 
+
 # revision identifiers, used by Alembic.
 revision = '44d783e1c855'
 down_revision = '04928427ce14'

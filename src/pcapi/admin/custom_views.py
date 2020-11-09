@@ -1,12 +1,18 @@
 from flask_admin.helpers import get_form_data
 from flask_login import current_user
-from wtforms import Form, StringField, TextAreaField, SelectField
+from wtforms import Form
+from wtforms import SelectField
+from wtforms import StringField
+from wtforms import TextAreaField
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.connectors import redis
-from pcapi.domain.user_activation import is_import_status_change_allowed, IMPORT_STATUS_MODIFICATION_RULE
+from pcapi.domain.user_activation import IMPORT_STATUS_MODIFICATION_RULE
+from pcapi.domain.user_activation import is_import_status_change_allowed
 from pcapi.flask_app import app
-from pcapi.models import ImportStatus, BeneficiaryImport, Offer
+from pcapi.models import BeneficiaryImport
+from pcapi.models import ImportStatus
+from pcapi.models import Offer
 from pcapi.repository import repository
 
 

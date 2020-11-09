@@ -1,35 +1,35 @@
 import copy
 
 from flask import current_app as app
-from flask import jsonify, \
-    request
-from flask_login import current_user, \
-    login_required
+from flask import jsonify
+from flask import request
+from flask_login import current_user
+from flask_login import login_required
 
-from pcapi.flask_app import private_api
 from pcapi.connectors import redis
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.iris import link_valid_venue_to_irises
 from pcapi.domain.offers import update_is_active_status
 from pcapi.domain.venues import is_algolia_indexing
+from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import get_all_venues_by_pro_user
 from pcapi.models import VenueSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import RightsType
-from pcapi.repository import feature_queries, \
-    repository
+from pcapi.repository import feature_queries
+from pcapi.repository import repository
 from pcapi.repository.iris_venues_queries import delete_venue_from_iris_venues
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.venues_serialize import serialize_venues_with_offerer_name
 from pcapi.use_cases.create_venue import create_venue
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.includes import OFFER_INCLUDES, \
-    VENUE_INCLUDES
-from pcapi.utils.rest import ensure_current_user_has_rights, \
-    expect_json_data, \
-    load_or_404
-from pcapi.validation.routes.venues import check_valid_edition, \
-    validate_coordinates
+from pcapi.utils.includes import OFFER_INCLUDES
+from pcapi.utils.includes import VENUE_INCLUDES
+from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import expect_json_data
+from pcapi.utils.rest import load_or_404
+from pcapi.validation.routes.venues import check_valid_edition
+from pcapi.validation.routes.venues import validate_coordinates
 
 
 @private_api.route('/venues/<venue_id>', methods=['GET'])

@@ -1,17 +1,17 @@
-from flask import current_app as app, \
-    jsonify, \
-    request, \
-    redirect
+from flask import current_app as app
+from flask import jsonify
+from flask import redirect
+from flask import request
 
-from pcapi.flask_app import private_api
 from pcapi.connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from pcapi.domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.user_emails import send_user_validation_email
-from pcapi.models import ApiErrors, \
-    Deposit, \
-    Offerer, \
-    UserSQLEntity
+from pcapi.flask_app import private_api
+from pcapi.models import ApiErrors
+from pcapi.models import Deposit
+from pcapi.models import Offerer
+from pcapi.models import UserSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import RightsType
 from pcapi.models.venue_sql_entity import create_digital_venue
@@ -19,15 +19,14 @@ from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.config import IS_INTEGRATION
 from pcapi.utils.feature import feature_required
-from pcapi.utils.includes import BENEFICIARY_INCLUDES, \
-    USER_INCLUDES
+from pcapi.utils.includes import BENEFICIARY_INCLUDES
+from pcapi.utils.includes import USER_INCLUDES
 from pcapi.utils.logger import logger
-from pcapi.utils.mailing import \
-    subscribe_newsletter, \
-    MailServiceException, \
-    send_raw_email
-from pcapi.validation.routes.users import check_valid_signup_webapp, \
-    check_valid_signup_pro
+from pcapi.utils.mailing import MailServiceException
+from pcapi.utils.mailing import send_raw_email
+from pcapi.utils.mailing import subscribe_newsletter
+from pcapi.validation.routes.users import check_valid_signup_pro
+from pcapi.validation.routes.users import check_valid_signup_webapp
 
 
 @private_api.route("/users/signup", methods=["POST"])

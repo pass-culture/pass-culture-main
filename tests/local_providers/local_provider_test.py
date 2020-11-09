@@ -4,15 +4,25 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.local_providers.local_provider import _save_same_thumb_from_thumb_count_to_index
-from pcapi.models import Product, ThingType, VenueProvider, ApiErrors, LocalProviderEvent
-from pcapi.models.local_provider_event import LocalProviderEventType
-from pcapi.repository import repository
-from tests.conftest import clean_database
-from tests.local_providers.provider_test_utils import TestLocalProvider, TestLocalProviderWithApiErrors, \
-    TestLocalProviderNoCreation, TestLocalProviderWithThumb, TestLocalProviderWithThumbIndexAt4
-from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_provider
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_provider
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.provider_creators import create_providable_info
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.models import ApiErrors
+from pcapi.models import LocalProviderEvent
+from pcapi.models import Product
+from pcapi.models import ThingType
+from pcapi.models import VenueProvider
+from pcapi.models.local_provider_event import LocalProviderEventType
+from pcapi.repository import repository
+
+from tests.conftest import clean_database
+from tests.local_providers.provider_test_utils import TestLocalProvider
+from tests.local_providers.provider_test_utils import TestLocalProviderNoCreation
+from tests.local_providers.provider_test_utils import TestLocalProviderWithApiErrors
+from tests.local_providers.provider_test_utils import TestLocalProviderWithThumb
+from tests.local_providers.provider_test_utils import TestLocalProviderWithThumbIndexAt4
 
 
 class LocalProviderTest:

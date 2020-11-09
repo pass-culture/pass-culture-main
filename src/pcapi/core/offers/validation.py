@@ -3,6 +3,7 @@ from typing import Optional
 from pcapi.models import UserOfferer
 from pcapi.models.api_errors import ApiErrors
 
+
 # FIXME (cgaunet, 2020-11-02): I moved this function from validation/routes/offers.py. It
 # should not raise HTTP-related exceptions. It should rather raise
 # generic exceptions such as `UserHasNotSufficientRights` and the calling

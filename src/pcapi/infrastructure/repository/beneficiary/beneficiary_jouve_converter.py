@@ -1,8 +1,7 @@
 from datetime import datetime
 from typing import Dict
 
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
-    BeneficiaryPreSubscription
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.models import BeneficiaryImportSources
 
 

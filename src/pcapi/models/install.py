@@ -1,13 +1,13 @@
 from sqlalchemy import orm
 from sqlalchemy.exc import ProgrammingError
 
-from pcapi.models.db import db, \
-    versioning_manager
-from pcapi.models.feature import FeatureToggle, \
-    Feature
-from pcapi.repository import repository, \
-    discovery_view_queries, \
-    discovery_view_v3_queries
+from pcapi.models.db import db
+from pcapi.models.db import versioning_manager
+from pcapi.models.feature import Feature
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import discovery_view_queries
+from pcapi.repository import discovery_view_v3_queries
+from pcapi.repository import repository
 
 
 def install_activity():

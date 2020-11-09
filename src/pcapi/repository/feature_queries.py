@@ -3,7 +3,8 @@ import os
 from pcapi.models import Feature
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.feature import FeatureToggle
-from pcapi.utils.config import IS_PROD, IS_INTEGRATION
+from pcapi.utils.config import IS_INTEGRATION
+from pcapi.utils.config import IS_PROD
 
 
 def find_all():

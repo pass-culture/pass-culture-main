@@ -1,22 +1,28 @@
+from datetime import datetime
 import os
 import re
-from datetime import datetime
-from typing import Callable, Dict, List
+from typing import Callable
+from typing import Dict
+from typing import List
 
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
-from pcapi.domain.demarches_simplifiees import \
-    get_closed_application_ids_for_demarche_simplifiee
+from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from pcapi.domain.user_activation import create_beneficiary_from_application
 from pcapi.domain.user_emails import send_activation_email
-from pcapi.models import ApiErrors, ImportStatus, UserSQLEntity
+from pcapi.models import ApiErrors
+from pcapi.models import ImportStatus
+from pcapi.models import UserSQLEntity
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.repository import repository
-from pcapi.repository.beneficiary_import_queries import (
-    find_applications_ids_to_retry, is_already_imported,
-    save_beneficiary_import_with_status)
-from pcapi.repository.user_queries import find_by_civility, find_user_by_email
+from pcapi.repository.beneficiary_import_queries import find_applications_ids_to_retry
+from pcapi.repository.beneficiary_import_queries import is_already_imported
+from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
+from pcapi.repository.user_queries import find_by_civility
+from pcapi.repository.user_queries import find_user_by_email
 from pcapi.utils.logger import logger
-from pcapi.utils.mailing import MailServiceException, send_raw_email
+from pcapi.utils.mailing import MailServiceException
+from pcapi.utils.mailing import send_raw_email
+
 
 TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
 

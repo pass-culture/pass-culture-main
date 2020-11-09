@@ -1,13 +1,19 @@
-from datetime import datetime, timedelta
-from unittest.mock import Mock, patch
+from datetime import datetime
+from datetime import timedelta
+from unittest.mock import Mock
+from unittest.mock import patch
 
-from pcapi.models import UserSQLEntity, Booking
-from pcapi.scripts.beneficiary.file_import import fill_user_from, \
-    create_booking_for, \
-    create_users_with_activation_bookings, \
-    split_rows_in_chunks_with_no_duplicated_emails
-from pcapi.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.models import Booking
+from pcapi.models import UserSQLEntity
+from pcapi.scripts.beneficiary.file_import import create_booking_for
+from pcapi.scripts.beneficiary.file_import import create_users_with_activation_bookings
+from pcapi.scripts.beneficiary.file_import import fill_user_from
+from pcapi.scripts.beneficiary.file_import import split_rows_in_chunks_with_no_duplicated_emails
 from pcapi.utils.token import random_token
 
 

@@ -1,10 +1,9 @@
 from pcapi.domain.beneficiary.beneficiary import Beneficiary
 from pcapi.domain.beneficiary.beneficiary_exceptions import BeneficiaryDoesntExist
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
-    BeneficiaryPreSubscription
 from pcapi.domain.beneficiary.beneficiary_repository import BeneficiaryRepository
-from pcapi.infrastructure.repository.beneficiary import beneficiary_pre_subscription_sql_converter, \
-    beneficiary_sql_converter
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from pcapi.infrastructure.repository.beneficiary import beneficiary_pre_subscription_sql_converter
+from pcapi.infrastructure.repository.beneficiary import beneficiary_sql_converter
 from pcapi.models import UserSQLEntity
 from pcapi.models.db import db
 from pcapi.repository import repository

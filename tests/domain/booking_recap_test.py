@@ -1,9 +1,14 @@
 from datetime import datetime
 
 from pcapi.domain.booking_recap.booking_recap import BookingRecapStatus
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory, BookingRecapHistory, BookingRecapValidatedHistory, \
-    BookingRecapReimbursedHistory, BookingRecapCancelledHistory
-from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapCancelledHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapReimbursedHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapValidatedHistory
+
+from tests.domain_creators.generic_creators import create_domain_event_booking_recap
+from tests.domain_creators.generic_creators import create_domain_thing_booking_recap
 
 
 class BookingRecapTest:

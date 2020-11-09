@@ -1,13 +1,18 @@
 import os
 import re
-from typing import Callable, Optional, List
+from typing import Callable
+from typing import List
+from typing import Optional
 
 import requests
 
 from pcapi.models import Product
-from pcapi.scripts.performance_toolkit import bulk_update_pc_objects, get_pc_object_by_id_in_database, CHUNK_SIZE
+from pcapi.scripts.performance_toolkit import CHUNK_SIZE
+from pcapi.scripts.performance_toolkit import bulk_update_pc_objects
+from pcapi.scripts.performance_toolkit import get_pc_object_by_id_in_database
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.logger import logger
+
 
 OBJECT_STORAGE_URL = os.environ.get('OBJECT_STORAGE_URL')
 

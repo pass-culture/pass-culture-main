@@ -1,10 +1,17 @@
 from typing import List
 
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
-from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
-from pcapi.infrastructure.repository.beneficiary_bookings import stock_domain_converter, active_mediation_domain_converter
-from pcapi.models import Booking, UserSQLEntity, StockSQLEntity, Offer, VenueSQLEntity, MediationSQLEntity, Product
+from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
+from pcapi.infrastructure.repository.beneficiary_bookings import active_mediation_domain_converter
+from pcapi.infrastructure.repository.beneficiary_bookings import stock_domain_converter
+from pcapi.models import Booking
+from pcapi.models import MediationSQLEntity
+from pcapi.models import Offer
+from pcapi.models import Product
+from pcapi.models import StockSQLEntity
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueSQLEntity
 
 
 class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):

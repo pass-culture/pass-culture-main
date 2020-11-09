@@ -1,6 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
-from pcapi.models import LocalProviderEvent, Provider
+from pcapi.models import LocalProviderEvent
+from pcapi.models import Provider
 from pcapi.models.local_provider_event import LocalProviderEventType
 
 

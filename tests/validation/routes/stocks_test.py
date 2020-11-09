@@ -1,20 +1,27 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
 import pytest
 
-from pcapi.models import ApiErrors, VenueSQLEntity, Provider
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer
+from pcapi.models import ApiErrors
+from pcapi.models import Provider
+from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.routes.serialization import serialize
-import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_stock
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product, \
-    create_stock_with_event_offer
 from pcapi.utils.human_ids import humanize
-from pcapi.validation.routes.stocks import check_dates_are_allowed_on_new_stock, \
-    check_dates_are_allowed_on_existing_stock, \
-    check_stocks_are_editable_for_offer, check_stock_is_updatable, get_only_fields_with_value_to_be_updated, \
-    check_only_editable_fields_will_be_updated
+from pcapi.validation.routes.stocks import check_dates_are_allowed_on_existing_stock
+from pcapi.validation.routes.stocks import check_dates_are_allowed_on_new_stock
+from pcapi.validation.routes.stocks import check_only_editable_fields_will_be_updated
+from pcapi.validation.routes.stocks import check_stock_is_updatable
+from pcapi.validation.routes.stocks import check_stocks_are_editable_for_offer
+from pcapi.validation.routes.stocks import get_only_fields_with_value_to_be_updated
 
 
 class CheckDatesAreAllowedOnNewStockTest:

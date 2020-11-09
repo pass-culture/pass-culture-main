@@ -1,11 +1,11 @@
-from typing import Any, Optional
+from typing import Any
+from typing import Optional
 
 from pydantic import BaseModel
-from pcapi.serialization.utils import (
-    to_camel,
-    dehumanize_field,
-    humanize_field,
-)
+
+from pcapi.serialization.utils import dehumanize_field
+from pcapi.serialization.utils import humanize_field
+from pcapi.serialization.utils import to_camel
 
 
 class StockCreationBodyModel(BaseModel):

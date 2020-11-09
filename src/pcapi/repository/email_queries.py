@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from pcapi.models.email import Email, EmailStatus
+from pcapi.models.email import Email
+from pcapi.models.email import EmailStatus
 from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
 

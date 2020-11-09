@@ -1,24 +1,20 @@
 from datetime import datetime
-from typing import Optional, \
-    List, \
-    Union, \
-    Any
+from typing import Any
+from typing import List
+from typing import Optional
+from typing import Union
 
-from pydantic import BaseModel, \
-    validator
+from pydantic import BaseModel
+from pydantic import validator
 
-from pcapi.serialization.utils import (
-    to_camel,
-    dehumanize_field,
-    humanize_field,
-    dehumanize_list_field,
-    cast_optional_field_str_to_int,
-)
+from pcapi.serialization.utils import cast_optional_field_str_to_int
+from pcapi.serialization.utils import dehumanize_field
+from pcapi.serialization.utils import dehumanize_list_field
+from pcapi.serialization.utils import humanize_field
+from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-from pcapi.validation.routes.offers import (
-    check_offer_name_length_is_valid,
-    check_offer_type_is_valid,
-)
+from pcapi.validation.routes.offers import check_offer_name_length_is_valid
+from pcapi.validation.routes.offers import check_offer_type_is_valid
 
 
 class PostOfferBodyModel(BaseModel):

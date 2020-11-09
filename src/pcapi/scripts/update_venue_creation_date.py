@@ -1,8 +1,11 @@
 import csv
 from typing import List
+
+from pcapi.models import ApiErrors
+from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
-from pcapi.models import VenueSQLEntity, ApiErrors
 from pcapi.utils.logger import logger
+
 
 def update_venue_creation_date(file_path: str):
     updated_venue_count = 0

@@ -1,9 +1,15 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from pcapi.emails.user_notification_after_stock_update import retrieve_data_to_warn_user_after_stock_update_affecting_booking
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_booking, \
-    create_stock, create_deposit
+from pcapi.emails.user_notification_after_stock_update import (
+    retrieve_data_to_warn_user_after_stock_update_affecting_booking,
+)
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 
 

@@ -1,13 +1,23 @@
+from datetime import datetime
+from datetime import timedelta
+
 import pytest
 
+from pcapi.model_creators.activity_creators import create_venue_activity
+from pcapi.model_creators.activity_creators import save_all_activities
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.repository import repository
-from pcapi.repository.venue_queries import find_filtered_venues, find_by_managing_user, \
-    find_by_managing_offerer_id_and_siret
-from pcapi.model_creators.activity_creators import create_venue_activity, save_all_activities
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
-from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_with_thing_offer, \
-    create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
-from datetime import datetime, timedelta
+from pcapi.repository.venue_queries import find_by_managing_offerer_id_and_siret
+from pcapi.repository.venue_queries import find_by_managing_user
+from pcapi.repository.venue_queries import find_filtered_venues
 
 
 @pytest.mark.usefixtures("db_session")

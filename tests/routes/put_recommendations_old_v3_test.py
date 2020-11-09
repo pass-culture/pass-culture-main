@@ -1,6 +1,8 @@
 import pytest
-from tests.conftest import TestClient
+
 from pcapi.model_creators.generic_creators import create_user
+
+from tests.conftest import TestClient
 
 
 RECOMMENDATION_V3_URL = '/recommendations/v3'

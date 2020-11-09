@@ -2,21 +2,26 @@ from abc import abstractmethod
 from collections.abc import Iterator
 from datetime import datetime
 
-from pcapi.models.feature import FeatureToggle
-from pcapi.validation.models import entity_validator
 from pcapi.connectors.redis import send_venue_provider_data_to_redis
 from pcapi.connectors.thumb_storage import save_provider_thumb
-from pcapi.local_providers.chunk_manager import get_existing_pc_obj, save_chunks
+from pcapi.local_providers.chunk_manager import get_existing_pc_obj
+from pcapi.local_providers.chunk_manager import save_chunks
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import ApiErrors
-from pcapi.models.db import Model, db
+from pcapi.models.db import Model
+from pcapi.models.db import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.has_thumb_mixin import HasThumbMixin
-from pcapi.models.local_provider_event import LocalProviderEvent, LocalProviderEventType
-from pcapi.repository import repository, feature_queries
+from pcapi.models.local_provider_event import LocalProviderEvent
+from pcapi.models.local_provider_event import LocalProviderEventType
+from pcapi.repository import feature_queries
+from pcapi.repository import repository
 from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.utils.logger import logger
 from pcapi.utils.object_storage import build_thumb_path
+from pcapi.validation.models import entity_validator
+
 
 CHUNK_MAX_SIZE = 1000
 

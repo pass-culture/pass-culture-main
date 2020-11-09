@@ -1,9 +1,15 @@
-from typing import Dict, Optional, Union
-from pydantic import BaseModel, Field
+from typing import Dict
+from typing import Optional
+from typing import Union
 
-from pcapi.serialization.utils import to_camel
-from pcapi.models import Booking, EventType, ThingType
+from pydantic import BaseModel
+from pydantic import Field
+
+from pcapi.models import Booking
+from pcapi.models import EventType
+from pcapi.models import ThingType
 from pcapi.routes.serialization import serialize
+from pcapi.serialization.utils import to_camel
 from pcapi.utils.human_ids import humanize
 
 

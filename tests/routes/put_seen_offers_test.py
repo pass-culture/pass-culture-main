@@ -2,16 +2,18 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.models import SeenOffer
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
-import pytest
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_user
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from tests.test_utils import deactivate_feature
 from pcapi.utils.human_ids import humanize
 from pcapi.validation.routes.seen_offers import PayloadMissing
+
+from tests.conftest import TestClient
+from tests.test_utils import deactivate_feature
 
 
 class Put:

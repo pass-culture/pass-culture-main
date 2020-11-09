@@ -1,5 +1,5 @@
-import os
 from datetime import datetime
+import os
 from pathlib import Path
 from unittest.mock import patch
 
@@ -7,13 +7,19 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.local_providers import AllocineStocks
-from pcapi.models import Offer, EventType, Product, StockSQLEntity
+from pcapi.model_creators.generic_creators import create_allocine_venue_provider
+from pcapi.model_creators.generic_creators import create_allocine_venue_provider_price_rule
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.provider_creators import activate_provider
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_product_with_event_type
+from pcapi.models import EventType
+from pcapi.models import Offer
+from pcapi.models import Product
+from pcapi.models import StockSQLEntity
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
-from pcapi.model_creators.generic_creators import create_offerer, create_venue, \
-    create_allocine_venue_provider_price_rule, create_allocine_venue_provider
-from pcapi.model_creators.provider_creators import activate_provider
-from pcapi.model_creators.specific_creators import create_product_with_event_type, create_offer_with_event_product
 import pcapi.sandboxes
 from pcapi.utils.human_ids import humanize
 

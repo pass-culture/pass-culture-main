@@ -1,12 +1,20 @@
 from unittest.mock import patch
 
-from pcapi.models import ThingType, Booking
-from pcapi.repository import repository
-from pcapi.scripts.booking.create_booking_for_user_on_specific_stock import create_booking_for_user_on_specific_stock_bypassing_capping_limits
 import pytest
-from pcapi.model_creators.generic_creators import create_user, create_stock, create_venue, create_offerer, \
-    create_booking, create_deposit
+
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.models import Booking
+from pcapi.models import ThingType
+from pcapi.repository import repository
+from pcapi.scripts.booking.create_booking_for_user_on_specific_stock import (
+    create_booking_for_user_on_specific_stock_bypassing_capping_limits,
+)
 
 
 class CreateBookingForUserOnSpecificStockBypassingCappingLimitsTest:

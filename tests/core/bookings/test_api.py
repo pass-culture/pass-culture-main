@@ -1,13 +1,14 @@
-from datetime import datetime, timedelta
-import pytz
+from datetime import datetime
+from datetime import timedelta
 from unittest import mock
 
 from flask import current_app as app
 import pytest
+import pytz
 
 from pcapi.core.bookings import api
-from pcapi.core.bookings import factories
 from pcapi.core.bookings import exceptions
+from pcapi.core.bookings import factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.recommendations.factories as recommendations_factories

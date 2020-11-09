@@ -1,8 +1,11 @@
-from typing import Dict, Optional
+from typing import Dict
+from typing import Optional
 
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models.db import Model
-from pcapi.repository.providable_queries import get_existing_object, insert_chunk, update_chunk
+from pcapi.repository.providable_queries import get_existing_object
+from pcapi.repository.providable_queries import insert_chunk
+from pcapi.repository.providable_queries import update_chunk
 
 
 def get_existing_pc_obj(providable_info: ProvidableInfo,

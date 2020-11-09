@@ -1,4 +1,5 @@
-from pcapi.models import AllocineVenueProvider, VenueSQLEntity
+from pcapi.models import AllocineVenueProvider
+from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
 
 

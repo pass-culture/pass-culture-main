@@ -1,5 +1,6 @@
 from geoalchemy2 import Geometry
-from sqlalchemy import Column, VARCHAR
+from sqlalchemy import Column
+from sqlalchemy import VARCHAR
 
 from pcapi.models import PcObject
 from pcapi.models.db import Model

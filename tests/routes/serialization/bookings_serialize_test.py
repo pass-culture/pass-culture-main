@@ -4,13 +4,20 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
-from pcapi.models import EventType, ThingType
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.models import EventType
+from pcapi.models import ThingType
 from pcapi.routes.serialization import serialize_booking
 from pcapi.routes.serialization.bookings_serialize import serialize_booking_minimal
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue
-from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence, create_product_with_thing_type, \
-    create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 from pcapi.utils.human_ids import humanize
 
 

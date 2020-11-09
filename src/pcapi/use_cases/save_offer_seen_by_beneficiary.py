@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from pcapi.models import SeenOffer
-from pcapi.repository import repository, seen_offer_queries
+from pcapi.repository import repository
+from pcapi.repository import seen_offer_queries
 
 
 def save_seen_offer(user_id: int, offer_id: int) -> None:

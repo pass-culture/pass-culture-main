@@ -4,8 +4,9 @@ Revision ID: e8c43e6dc0d8
 Create Date: 2018-07-26 11:52:17.853134
 
 """
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
+
 
 # revision identifiers, used by Alembic.
 

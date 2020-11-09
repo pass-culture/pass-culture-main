@@ -1,6 +1,7 @@
-import os
 from datetime import datetime
-from pathlib import Path, PurePath
+import os
+from pathlib import Path
+from pathlib import PurePath
 
 import swiftclient
 

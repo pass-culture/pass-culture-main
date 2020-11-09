@@ -2,6 +2,7 @@ import typing
 from unittest.mock import patch
 
 from pcapi.connectors.api_recaptcha import ReCaptchaException
+
 from tests.conftest import TestClient
 
 

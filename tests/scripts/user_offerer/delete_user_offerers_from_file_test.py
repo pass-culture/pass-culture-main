@@ -1,15 +1,11 @@
 import pytest
 
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.models import UserOfferer
 from pcapi.repository import repository
-from pcapi.scripts.user_offerer.delete_user_offerer_from_csv import (
-    _delete_user_offerers_from_rows,
-)
-from pcapi.model_creators.generic_creators import (
-    create_user,
-    create_user_offerer,
-    create_offerer,
-)
+from pcapi.scripts.user_offerer.delete_user_offerer_from_csv import _delete_user_offerers_from_rows
 
 
 class DeleteUserOfferersFromFileTest:

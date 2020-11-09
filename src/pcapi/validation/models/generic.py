@@ -1,5 +1,9 @@
 import sqlalchemy
-from sqlalchemy import CHAR, Column, Float, Integer, String
+from sqlalchemy import CHAR
+from sqlalchemy import Column
+from sqlalchemy import Float
+from sqlalchemy import Integer
+from sqlalchemy import String
 
 from pcapi.models import ApiErrors
 from pcapi.models.db import Model

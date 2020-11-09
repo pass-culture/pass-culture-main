@@ -1,8 +1,12 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Dict
+from typing import Dict
+from typing import List
 
-from pcapi.models import Booking, StockSQLEntity, ApiErrors
+from pcapi.models import ApiErrors
+from pcapi.models import Booking
+from pcapi.models import StockSQLEntity
+
 
 class LocalProviderNames(Enum):
     titelive = 'TiteLiveStocks'

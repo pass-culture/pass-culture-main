@@ -1,13 +1,13 @@
 import contextlib
 import math
 
-import flask
-import sqlalchemy.orm
-
 import factory.alchemy
+import flask
 import pytest
 import sqlalchemy.engine
 import sqlalchemy.event
+import sqlalchemy.orm
+
 
 # 1. SELECT the user (beneficiary).
 # 2. INSERT into the user session table

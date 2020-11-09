@@ -1,6 +1,7 @@
 from flask import current_app as app
 
-from pcapi.scripts.payment.banishment import do_ban_payments, parse_raw_payments_ids
+from pcapi.scripts.payment.banishment import do_ban_payments
+from pcapi.scripts.payment.banishment import parse_raw_payments_ids
 from pcapi.utils.logger import logger
 
 

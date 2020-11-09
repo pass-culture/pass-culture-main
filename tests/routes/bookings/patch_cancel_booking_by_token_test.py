@@ -1,11 +1,20 @@
-from pcapi.models import ApiKey, Booking
-from pcapi.repository import repository
 import pytest
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
-    create_deposit, create_user_offerer
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.models import ApiKey
+from pcapi.models import Booking
+from pcapi.repository import repository
 from pcapi.utils.token import random_token
+
+from tests.conftest import TestClient
 
 
 def create_api_key_for_offerer(offerer, token):

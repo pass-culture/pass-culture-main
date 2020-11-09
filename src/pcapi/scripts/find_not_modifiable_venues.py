@@ -1,11 +1,15 @@
 import csv
 from io import StringIO
 
-from sqlalchemy import or_, not_, and_
+from sqlalchemy import and_
+from sqlalchemy import not_
+from sqlalchemy import or_
 
-from pcapi.models import VenueSQLEntity, Offerer
+from pcapi.models import Offerer
+from pcapi.models import VenueSQLEntity
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.logger import logger
+
 
 CSV_HEADER = [
     "offerer_id",

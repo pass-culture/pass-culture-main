@@ -1,10 +1,16 @@
 import pytest
 
+from pcapi.model_creators.generic_creators import API_URL
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_provider
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import Offer
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, API_URL, create_provider
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+
 from tests.conftest import TestClient
 
 

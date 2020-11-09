@@ -1,5 +1,6 @@
-from pcapi.models import EventType, Product
 from pcapi.model_creators.specific_creators import create_product_with_event_type
+from pcapi.models import EventType
+from pcapi.models import Product
 
 
 def test_an_event_is_always_physical_and_cannot_be_digital():

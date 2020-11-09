@@ -1,11 +1,13 @@
 import pytest
 
-from pcapi.models import ApiErrors, StockSQLEntity
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.models import ApiErrors
+from pcapi.models import StockSQLEntity
 from pcapi.repository import repository
-import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_venue
-from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence, create_offer_with_event_product, \
-    create_event_occurrence
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.rest import handle_rest_get_list
 

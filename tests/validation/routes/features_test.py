@@ -2,9 +2,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from pcapi.models.feature import FeatureToggle, Feature
-import pytest
-from pcapi.validation.routes.features import InconsistentFeaturesException, check_feature_consistency
+from pcapi.models.feature import Feature
+from pcapi.models.feature import FeatureToggle
+from pcapi.validation.routes.features import InconsistentFeaturesException
+from pcapi.validation.routes.features import check_feature_consistency
 
 
 class CheckFeatureConsistencyTest:

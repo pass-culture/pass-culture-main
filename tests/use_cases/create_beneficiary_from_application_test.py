@@ -1,22 +1,23 @@
 from datetime import datetime
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
-from tests.domain_creators.generic_creators import \
-    create_domain_beneficiary_pre_subcription
-from pcapi.model_creators.generic_creators import create_user
 
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
-    BeneficiaryIsADuplicate, BeneficiaryIsNotEligible, CantRegisterBeneficiary
-from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import \
-    BeneficiarySQLRepository
-from pcapi.models import BeneficiaryImport, UserSQLEntity
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
+from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.models import BeneficiaryImport
+from pcapi.models import UserSQLEntity
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.deposit import Deposit
 from pcapi.repository import repository
-from pcapi.use_cases.create_beneficiary_from_application import \
-    CreateBeneficiaryFromApplication
+from pcapi.use_cases.create_beneficiary_from_application import CreateBeneficiaryFromApplication
+
+from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
 
 
 @patch('pcapi.use_cases.create_beneficiary_from_application.send_raw_email')

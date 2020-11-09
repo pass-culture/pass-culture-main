@@ -5,21 +5,22 @@ from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from pcapi.admin.install import install_admin_views
 from pcapi.documentation import install_documentation
-from pcapi.flask_app import app, \
-    db, \
-    admin
+from pcapi.flask_app import admin
+from pcapi.flask_app import app
+from pcapi.flask_app import db
 from pcapi.load_environment_variables import load_environment_variables
 from pcapi.local_providers.install import install_local_providers
-from pcapi.models.install import install_activity, \
-    install_features, \
-    install_materialized_views
+from pcapi.models.install import install_activity
+from pcapi.models.install import install_features
+from pcapi.models.install import install_materialized_views
 from pcapi.repository.feature_queries import feature_request_profiling_enabled
 from pcapi.routes import install_routes
-from pcapi.utils.config import IS_DEV
 from pcapi.routes.native.v1.blueprint import native_v1
+from pcapi.utils.config import IS_DEV
 from pcapi.utils.health_checker import read_version_from_file
-from pcapi.utils.logger import configure_json_logger, \
-    disable_werkzeug_request_logs
+from pcapi.utils.logger import configure_json_logger
+from pcapi.utils.logger import disable_werkzeug_request_logs
+
 
 configure_json_logger()
 disable_werkzeug_request_logs()

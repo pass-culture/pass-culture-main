@@ -2,14 +2,20 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from pcapi.models import Offer, Booking
-from pcapi.repository import repository
-from pcapi.scripts.update_offer_and_booking_status import _read_booking_tokens_from_file, \
-    update_offer_and_booking_status
 import pytest
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_stock, \
-    create_booking
-from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.models import Booking
+from pcapi.models import Offer
+from pcapi.repository import repository
+from pcapi.scripts.update_offer_and_booking_status import _read_booking_tokens_from_file
+from pcapi.scripts.update_offer_and_booking_status import update_offer_and_booking_status
 
 
 class UpdateOfferAndBookingStatusTest:

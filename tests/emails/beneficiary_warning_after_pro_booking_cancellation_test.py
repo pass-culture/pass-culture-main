@@ -1,11 +1,19 @@
-from datetime import datetime, timezone
+from datetime import datetime
+from datetime import timezone
 from unittest.mock import patch
 
-from pcapi.emails.beneficiary_warning_after_pro_booking_cancellation import \
-    retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
-from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
-    create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
+from pcapi.emails.beneficiary_warning_after_pro_booking_cancellation import (
+    retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation,
+)
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_from_offer
 
 
 class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:

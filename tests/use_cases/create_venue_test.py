@@ -1,4 +1,5 @@
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
+from unittest.mock import patch
 
 from pcapi.models import VenueSQLEntity
 from pcapi.use_cases.create_venue import create_venue

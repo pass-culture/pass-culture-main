@@ -5,9 +5,11 @@ Revises: 3a5629a53c17
 Create Date: 2020-05-26 15:06:20.076645
 
 """
+import enum
+
 from alembic import op
 import sqlalchemy as sa
-import enum
+
 
 # revision identifiers, used by Alembic.
 revision = '1cc3d2f75586'

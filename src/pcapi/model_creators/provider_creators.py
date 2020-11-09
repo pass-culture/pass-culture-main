@@ -4,13 +4,16 @@ from inspect import isclass
 
 import pytest
 
-import pcapi.models
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import PcObject, Provider, Product
+import pcapi.models
+from pcapi.models import PcObject
+from pcapi.models import Product
+from pcapi.models import Provider
 from pcapi.models.db import Model
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.utils.object_storage import STORAGE_DIR
+
 
 SAVED_COUNTS = {}
 

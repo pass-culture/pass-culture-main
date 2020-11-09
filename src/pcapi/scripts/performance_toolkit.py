@@ -1,9 +1,13 @@
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 from sqlalchemy import select
 
-from pcapi.models.db import db, Model
-from pcapi.repository.providable_queries import _dict_to_object, dictify_pc_object
+from pcapi.models.db import Model
+from pcapi.models.db import db
+from pcapi.repository.providable_queries import _dict_to_object
+from pcapi.repository.providable_queries import dictify_pc_object
+
 
 CHUNK_SIZE = 1000
 

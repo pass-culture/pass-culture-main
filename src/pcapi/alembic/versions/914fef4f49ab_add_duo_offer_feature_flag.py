@@ -7,8 +7,8 @@ Create Date: 2019-10-09 12:05:13.610887
 """
 from enum import Enum
 
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 
 
 class FeatureToggle(Enum):

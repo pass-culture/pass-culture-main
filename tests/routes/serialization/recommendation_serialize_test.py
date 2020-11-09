@@ -1,9 +1,16 @@
 from unittest.mock import patch
 
-from pcapi.model_creators.generic_creators import create_booking, create_mediation, create_offerer, create_recommendation, create_stock, create_user, create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
-
-from pcapi.routes.serialization.recommendation_serialize import serialize_recommendation, serialize_recommendations
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_mediation
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_recommendation
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.routes.serialization.recommendation_serialize import serialize_recommendation
+from pcapi.routes.serialization.recommendation_serialize import serialize_recommendations
 
 
 class SerializeRecommendationTest:

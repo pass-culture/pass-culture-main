@@ -1,21 +1,21 @@
 from typing import List
 
-from flask import current_app as app, \
-    jsonify, \
-    request
-from flask_login import current_user, \
-    login_required
+from flask import current_app as app
+from flask import jsonify
+from flask import request
+from flask_login import current_user
+from flask_login import login_required
 
-from pcapi.flask_app import private_api
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
-from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro, \
-    send_pro_user_waiting_for_validation_by_admin_email
+from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
+from pcapi.domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email
+from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import list_offerers_for_pro_user
-from pcapi.models import Offerer, \
-    RightsType, \
-    UserSQLEntity, \
-    UserOfferer, \
-    ApiErrors
+from pcapi.models import ApiErrors
+from pcapi.models import Offerer
+from pcapi.models import RightsType
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
 from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_by_siren
@@ -23,12 +23,12 @@ from pcapi.routes.serialization import as_dict
 from pcapi.use_cases.list_offerers_for_pro_user import OfferersRequestParameters
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFERER_INCLUDES
-from pcapi.utils.mailing import MailServiceException, \
-    send_raw_email
-from pcapi.utils.rest import ensure_current_user_has_rights, \
-    expect_json_data, \
-    load_or_404, \
-    login_or_api_key_required
+from pcapi.utils.mailing import MailServiceException
+from pcapi.utils.mailing import send_raw_email
+from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import expect_json_data
+from pcapi.utils.rest import load_or_404
+from pcapi.utils.rest import login_or_api_key_required
 from pcapi.validation.routes.offerers import check_valid_edition
 
 

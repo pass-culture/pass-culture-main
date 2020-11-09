@@ -1,11 +1,14 @@
 from unittest.mock import patch
 
-from pcapi.domain.password import validate_change_password_request
-from pcapi.models import UserSQLEntity, ApiErrors
-from pcapi.repository import repository
 import pytest
-from tests.conftest import TestClient
+
+from pcapi.domain.password import validate_change_password_request
 from pcapi.model_creators.generic_creators import create_user
+from pcapi.models import ApiErrors
+from pcapi.models import UserSQLEntity
+from pcapi.repository import repository
+
+from tests.conftest import TestClient
 
 
 class PostChangePassword:

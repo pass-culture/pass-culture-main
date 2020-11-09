@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column
+from sqlalchemy import Integer
 
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.object_storage import get_storage_base_url, build_thumb_path
+from pcapi.utils.object_storage import build_thumb_path
+from pcapi.utils.object_storage import get_storage_base_url
 from pcapi.utils.string_processing import get_model_plural_name
 
 

@@ -1,12 +1,18 @@
 from datetime import datetime
+
 import pytest
 
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.models import Booking
 from pcapi.repository import repository
-from pcapi.scripts.booking.cancel_bookings_of_events_from_file import _cancel_bookings_of_offers_from_rows
 from pcapi.repository.clean_database import clean_all_database
-from pcapi.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, create_booking, create_deposit
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.scripts.booking.cancel_bookings_of_events_from_file import _cancel_bookings_of_offers_from_rows
 
 
 class CancelBookingsOfEventsFromFileTest:

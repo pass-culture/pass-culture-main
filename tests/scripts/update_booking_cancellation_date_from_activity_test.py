@@ -1,10 +1,13 @@
 import pytest
 
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import Booking
 from pcapi.models.db import db
 from pcapi.repository import repository
 from pcapi.scripts.update_booking_cancellation_date_from_activity import update_booking_cancellation_date_from_activity
-from pcapi.model_creators.generic_creators import create_user, create_stock, create_booking, create_deposit
 
 
 class UpdateBookingCancellationDateFromActivityTest:

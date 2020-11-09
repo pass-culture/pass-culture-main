@@ -1,7 +1,8 @@
 from typing import List
 
 from pcapi.domain.departments import get_departement_codes_from_user
-from pcapi.models import Offer, UserSQLEntity
+from pcapi.models import Offer
+from pcapi.models import UserSQLEntity
 from pcapi.repository.offer_queries import get_offers_for_recommendation
 
 

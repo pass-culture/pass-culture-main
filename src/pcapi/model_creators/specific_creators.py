@@ -1,11 +1,23 @@
+from datetime import datetime
+from datetime import timedelta
+from decimal import Decimal
 import random
 import string
-from datetime import datetime, timedelta
-from decimal import Decimal
-from typing import Dict, List, Optional
+from typing import Dict
+from typing import List
+from typing import Optional
 
-from pcapi.models import Booking, EventType, Offer, Offerer, Product, StockSQLEntity, ThingType, UserSQLEntity, \
-    VenueSQLEntity, Provider, Criterion
+from pcapi.models import Booking
+from pcapi.models import Criterion
+from pcapi.models import EventType
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import Product
+from pcapi.models import Provider
+from pcapi.models import StockSQLEntity
+from pcapi.models import ThingType
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueSQLEntity
 from pcapi.utils.token import random_token
 
 

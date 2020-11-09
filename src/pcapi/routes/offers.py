@@ -1,39 +1,33 @@
 from flask import request
-from flask_login import current_user, login_required
+from flask_login import current_user
+from flask_login import login_required
 
+from pcapi.core.offers.api import create_offer
+from pcapi.core.offers.api import list_offers_for_pro_user
 from pcapi.flask_app import private_api
-from pcapi.models import Offer, RightsType
+from pcapi.models import Offer
+from pcapi.models import RightsType
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import offer_queries
-
-from pcapi.routes.serialization.offers_recap_serialize import (
-    serialize_offers_recap_paginated,
-)
-from pcapi.routes.serialization.offers_serialize import (
-    PostOfferBodyModel,
-    OfferResponseIdModel,
-    PatchOfferBodyModel,
-    PatchOfferActiveStatusBodyModel,
-    ListOffersResponseModel,
-    ListOffersQueryModel,
-    GetOfferResponseModel,
-)
-from pcapi.serialization.decorator import spectree_serialize
-from pcapi.core.offers.api import list_offers_for_pro_user, create_offer
-from pcapi.use_cases.update_an_offer import update_an_offer
-from pcapi.use_cases.update_offers_active_status import (
-    update_offers_active_status,
-    update_all_offers_active_status,
-)
-from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.rest import (
-    ensure_current_user_has_rights,
-    load_or_404,
-    login_or_api_key_required,
-    expect_json_data,
-)
-from pcapi.utils.includes import OFFER_INCLUDES
 from pcapi.routes.serialization.dictifier import as_dict
+from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
+from pcapi.routes.serialization.offers_serialize import GetOfferResponseModel
+from pcapi.routes.serialization.offers_serialize import ListOffersQueryModel
+from pcapi.routes.serialization.offers_serialize import ListOffersResponseModel
+from pcapi.routes.serialization.offers_serialize import OfferResponseIdModel
+from pcapi.routes.serialization.offers_serialize import PatchOfferActiveStatusBodyModel
+from pcapi.routes.serialization.offers_serialize import PatchOfferBodyModel
+from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
+from pcapi.serialization.decorator import spectree_serialize
+from pcapi.use_cases.update_an_offer import update_an_offer
+from pcapi.use_cases.update_offers_active_status import update_all_offers_active_status
+from pcapi.use_cases.update_offers_active_status import update_offers_active_status
+from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.includes import OFFER_INCLUDES
+from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import expect_json_data
+from pcapi.utils.rest import load_or_404
+from pcapi.utils.rest import login_or_api_key_required
 
 
 @private_api.route("/offers", methods=["GET"])

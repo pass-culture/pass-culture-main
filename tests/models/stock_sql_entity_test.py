@@ -1,22 +1,26 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
-import pytest
 from freezegun import freeze_time
+import pytest
 from pytest import approx
 
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_offer
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models import ApiErrors
 from pcapi.models.pc_object import DeletedRecordException
 from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.repository import repository
-import pytest
-from pcapi.model_creators.generic_creators import (create_booking,
-                                                   create_offerer,
-                                                   create_stock, create_user,
-                                                   create_venue)
-from pcapi.model_creators.specific_creators import (
-    create_offer_with_event_product, create_offer_with_thing_product,
-    create_stock_from_offer, create_stock_with_event_offer, create_stock_with_thing_offer)
+
 
 EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST = timedelta(hours=72)
 

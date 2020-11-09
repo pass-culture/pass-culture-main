@@ -1,7 +1,10 @@
-import enum
 from datetime import datetime
+import enum
 
-from sqlalchemy import Column, DateTime, JSON, Enum
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import Enum
+from sqlalchemy import JSON
 
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject

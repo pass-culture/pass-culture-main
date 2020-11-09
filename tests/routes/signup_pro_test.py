@@ -1,12 +1,18 @@
 from unittest.mock import patch
 
-from pcapi.models.offerer import Offerer
-from pcapi.models.user_sql_entity import UserSQLEntity
-from pcapi.models.user_offerer import UserOfferer, RightsType
-from pcapi.repository import repository
 import pytest
+
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue_type
+from pcapi.models.offerer import Offerer
+from pcapi.models.user_offerer import RightsType
+from pcapi.models.user_offerer import UserOfferer
+from pcapi.models.user_sql_entity import UserSQLEntity
+from pcapi.repository import repository
+
 from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_user, create_user_offerer, create_venue_type
+
 
 BASE_DATA_PRO = {
     'email': 'toto_pro@btmx.fr',

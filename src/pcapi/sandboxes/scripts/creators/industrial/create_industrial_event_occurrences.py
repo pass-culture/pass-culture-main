@@ -1,9 +1,11 @@
 from datetime import timedelta
 
-from pcapi.sandboxes.scripts.utils.select import remove_every
 from pcapi.model_creators.specific_creators import create_event_occurrence
-from pcapi.utils.date import strftime, TODAY
+from pcapi.sandboxes.scripts.utils.select import remove_every
+from pcapi.utils.date import TODAY
+from pcapi.utils.date import strftime
 from pcapi.utils.logger import logger
+
 
 EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
     TODAY,

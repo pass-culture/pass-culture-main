@@ -1,8 +1,11 @@
-from pcapi.repository import repository
 import pytest
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_user, create_offerer
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
 
 
 class Post:

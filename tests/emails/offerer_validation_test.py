@@ -1,12 +1,15 @@
 import secrets
 
 from bs4 import BeautifulSoup
-
 import pytest
-from tests.conftest import mocked_mail
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
-from tests.utils.mailing_test import get_by_siren_stub
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.utils.mailing import make_validation_email_object
+
+from tests.conftest import mocked_mail
+from tests.utils.mailing_test import get_by_siren_stub
 
 
 @mocked_mail

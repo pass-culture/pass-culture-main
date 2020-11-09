@@ -1,8 +1,8 @@
 import os
 from typing import Dict
 
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
-    BeneficiaryPreSubscription
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
+
 
 SUPPORT_EMAIL_ADDRESS = os.environ.get('SUPPORT_EMAIL_ADDRESS')
 

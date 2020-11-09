@@ -1,6 +1,10 @@
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock
+from unittest.mock import call
+from unittest.mock import patch
 
-from pcapi.scheduled_tasks.decorators import cron_context, log_cron, cron_require_feature
+from pcapi.scheduled_tasks.decorators import cron_context
+from pcapi.scheduled_tasks.decorators import cron_require_feature
+from pcapi.scheduled_tasks.decorators import log_cron
 from pcapi.scheduled_tasks.logger import CronStatus
 
 

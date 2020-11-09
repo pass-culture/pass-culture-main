@@ -1,10 +1,11 @@
 from random import randrange
 
+import pytest
+
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
 from pcapi.models import Product
 from pcapi.repository import repository
 from pcapi.scripts.product_thumb.reset_thumb_count import reset_thumb_count
-import pytest
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
 
 
 @pytest.mark.usefixtures("db_session")

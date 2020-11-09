@@ -1,15 +1,21 @@
 import csv
+from datetime import datetime
 import os
 import re
-from datetime import datetime
-from typing import List, Set, Iterable, Callable
+from typing import Callable
+from typing import Iterable
+from typing import List
+from typing import Set
 
+from pcapi.core.bookings.models import ActivationUser
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.domain.admin_emails import send_users_activation_report
-from pcapi.domain.password import generate_reset_token, random_password
+from pcapi.domain.password import generate_reset_token
+from pcapi.domain.password import random_password
 from pcapi.domain.user_activation import generate_activation_users_csv
-from pcapi.models import UserSQLEntity, Booking, StockSQLEntity
-from pcapi.core.bookings.models import ActivationUser
+from pcapi.models import Booking
+from pcapi.models import StockSQLEntity
+from pcapi.models import UserSQLEntity
 from pcapi.models.user_sql_entity import hash_password
 from pcapi.repository import repository
 from pcapi.repository.stock_queries import find_online_activation_stock
@@ -17,8 +23,11 @@ from pcapi.repository.user_queries import find_user_by_email
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from pcapi.scripts.interact import app
 from pcapi.utils.logger import logger
-from pcapi.utils.mailing import MailServiceException, parse_email_addresses, send_raw_email
+from pcapi.utils.mailing import MailServiceException
+from pcapi.utils.mailing import parse_email_addresses
+from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.token import random_token
+
 
 LAST_NAME_COLUMN_INDEX = 1
 FIRST_NAME_COLUMN_INDEX = 2

@@ -1,10 +1,11 @@
 from datetime import datetime
 
+from pcapi.model_creators.generic_creators import create_booking
 from pcapi.models.offer_type import EventType
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.utils.select import remove_every
-from pcapi.model_creators.generic_creators import create_booking
 from pcapi.utils.logger import logger
+
 
 RECOMMENDATIONS_WITH_BOOKINGS_REMOVE_RATIO = 3
 RECOMMENDATIONS_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 2

@@ -1,14 +1,22 @@
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 from flask import render_template
 from sqlalchemy import text
 
 from pcapi.domain.payments import keep_only_not_processable_payments
-from pcapi.models import BankInformation, Booking, Offer, Offerer, Payment, \
-    PaymentMessage, PaymentStatus, StockSQLEntity, VenueSQLEntity
+from pcapi.models import BankInformation
+from pcapi.models import Booking
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import Payment
+from pcapi.models import PaymentMessage
+from pcapi.models import PaymentStatus
+from pcapi.models import StockSQLEntity
+from pcapi.models import VenueSQLEntity
+from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.db import db
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.models.bank_information import BankInformationStatus
 
 
 def find_message_checksum(message_name: str) -> Optional[str]:

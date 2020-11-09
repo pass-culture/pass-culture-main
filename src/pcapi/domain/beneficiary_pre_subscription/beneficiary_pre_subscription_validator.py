@@ -1,12 +1,12 @@
 from datetime import datetime
 from typing import List
 
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
-    BeneficiaryPreSubscription
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
-    BeneficiaryIsADuplicate, BeneficiaryIsNotEligible
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
 from pcapi.models import UserSQLEntity
-from pcapi.repository.user_queries import find_by_civility, find_user_by_email
+from pcapi.repository.user_queries import find_by_civility
+from pcapi.repository.user_queries import find_user_by_email
 
 
 ELIGIBLE_DEPARTMENTS = [

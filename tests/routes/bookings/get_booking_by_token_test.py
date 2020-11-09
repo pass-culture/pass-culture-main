@@ -1,16 +1,25 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from urllib.parse import urlencode
 
+import pytest
+
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models import EventType
 from pcapi.repository import repository
 from pcapi.routes.serialization import serialize
-import pytest
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_user_offerer
-from pcapi.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
-    create_stock_with_thing_offer, create_offer_with_event_product, create_event_occurrence
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
 
 
 class Get:

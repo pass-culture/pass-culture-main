@@ -1,5 +1,5 @@
-from typing import Dict, \
-    List
+from typing import Dict
+from typing import List
 
 from pcapi.models import Offerer
 from pcapi.utils import requests

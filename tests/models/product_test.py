@@ -1,8 +1,9 @@
 from unittest.mock import patch
 
-from pcapi.repository import repository
 import pytest
+
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
 

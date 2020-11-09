@@ -11,6 +11,7 @@ from postgresql_audit.base import VersioningManager
 # revision identifiers, used by Alembic.
 from pcapi.models import MediationSQLEntity
 
+
 revision = '09857d7d7492'
 down_revision = '253b0a83eead'
 branch_labels = None

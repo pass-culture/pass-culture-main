@@ -1,4 +1,6 @@
-from pcapi.models import ApiErrors, RightsType, ApiKey
+from pcapi.models import ApiErrors
+from pcapi.models import ApiKey
+from pcapi.models import RightsType
 from pcapi.models.api_errors import ForbiddenError
 
 

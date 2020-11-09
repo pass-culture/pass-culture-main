@@ -1,4 +1,5 @@
 from flask import Request
+
 from pcapi.models.api_errors import ApiErrors
 
 

@@ -1,20 +1,24 @@
-from pcapi.repository import discovery_view_queries, discovery_view_v3_queries
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_activation_offers import \
-    create_industrial_activation_offers
+from pcapi.repository import discovery_view_queries
+from pcapi.repository import discovery_view_v3_queries
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_activation_offers import (
+    create_industrial_activation_offers,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_algolia_objects import \
-    create_industrial_algolia_indexed_objects
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_algolia_objects import (
+    create_industrial_algolia_indexed_objects,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import \
-    associate_criterion_to_one_offer_with_mediation, create_industrial_criteria
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import (
+    associate_criterion_to_one_offer_with_mediation,
+)
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import create_industrial_criteria
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_deposits import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_products import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_iris import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_iris_venues import \
-    create_industrial_iris_venues
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_iris_venues import create_industrial_iris_venues
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_payments import *

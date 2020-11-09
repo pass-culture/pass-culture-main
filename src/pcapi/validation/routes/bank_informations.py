@@ -1,8 +1,11 @@
 import os
-from flask import request
 from typing import Dict
 
-from pcapi.models.api_errors import ApiErrors, ForbiddenError
+from flask import request
+
+from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ForbiddenError
+
 
 DEMARCHES_SIMPLIFIEES_WEBHOOK_TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_WEBHOOK_TOKEN')
 

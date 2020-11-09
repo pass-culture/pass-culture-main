@@ -1,7 +1,14 @@
 from unittest.mock import patch
 
-from pcapi.model_creators.generic_creators import create_mediation, create_offerer, create_recommendation, create_user, create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_product_with_event_type, create_product_with_thing_type
+from pcapi.model_creators.generic_creators import create_mediation
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_recommendation
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_event_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
 
 
 @patch('pcapi.models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')

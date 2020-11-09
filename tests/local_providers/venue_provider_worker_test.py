@@ -1,11 +1,16 @@
-from unittest.mock import patch, call
+from unittest.mock import call
+from unittest.mock import patch
 
-from pcapi.local_providers.venue_provider_worker import update_venues_for_specific_provider, do_sync_venue_provider
+import pytest
+
+from pcapi.local_providers.venue_provider_worker import do_sync_venue_provider
+from pcapi.local_providers.venue_provider_worker import update_venues_for_specific_provider
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.generic_creators import create_venue_provider
+from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.models import VenueProvider
 from pcapi.repository import repository
-import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider
-from pcapi.model_creators.provider_creators import activate_provider
 
 
 class UpdateVenuesForSpecificProviderTest:

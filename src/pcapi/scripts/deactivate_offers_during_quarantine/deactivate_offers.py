@@ -1,11 +1,13 @@
 from datetime import datetime
-from typing import List, Callable
+from typing import Callable
+from typing import List
 
 from sqlalchemy import func
 
 from pcapi.algolia.usecase.orchestrator import delete_expired_offers
 from pcapi.flask_app import app
-from pcapi.models import Offer, StockSQLEntity
+from pcapi.models import Offer
+from pcapi.models import StockSQLEntity
 from pcapi.models.db import db
 from pcapi.repository import repository
 

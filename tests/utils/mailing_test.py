@@ -1,27 +1,41 @@
+from datetime import datetime
+from datetime import timezone
 import re
-from datetime import datetime, timezone
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 from freezegun import freeze_time
+import pytest
 from requests import Timeout
 
 from pcapi.domain.user_emails import _build_recipients_list
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models import ThingType
-from pcapi.models.email import Email, EmailStatus
+from pcapi.models.email import Email
+from pcapi.models.email import EmailStatus
 from pcapi.repository import repository
-import pytest
+from pcapi.utils.human_ids import humanize
+from pcapi.utils.mailing import add_contact_informations
+from pcapi.utils.mailing import add_contact_to_list
+from pcapi.utils.mailing import build_pc_pro_offer_link
+from pcapi.utils.mailing import compute_email_html_part_and_recipients
+from pcapi.utils.mailing import create_contact
+from pcapi.utils.mailing import extract_users_information_from_bookings
+from pcapi.utils.mailing import format_booking_date_for_email
+from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.utils.mailing import make_validation_email_object
+from pcapi.utils.mailing import parse_email_addresses
+from pcapi.utils.mailing import send_raw_email
+
 from tests.conftest import mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_user_offerer
-from pcapi.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
-    create_offer_with_event_product
-from pcapi.utils.human_ids import humanize
-from pcapi.utils.mailing import parse_email_addresses, \
-    send_raw_email, \
-    compute_email_html_part_and_recipients, \
-    extract_users_information_from_bookings, build_pc_pro_offer_link, format_booking_date_for_email, \
-    format_booking_hours_for_email, make_validation_email_object, create_contact, add_contact_to_list, add_contact_informations
 
 
 def get_mocked_response_status_200(entity):

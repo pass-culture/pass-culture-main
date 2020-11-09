@@ -1,8 +1,12 @@
 from datetime import datetime
-from pcapi.repository import repository
+
 import pytest
+
 from pcapi.model_creators.generic_creators import create_user
-from pcapi.use_cases.update_user_informations import AlterableUserInformations, update_user_informations
+from pcapi.repository import repository
+from pcapi.use_cases.update_user_informations import AlterableUserInformations
+from pcapi.use_cases.update_user_informations import update_user_informations
+
 
 class UpdateUserInformationsTest:
     @pytest.mark.usefixtures("db_session")

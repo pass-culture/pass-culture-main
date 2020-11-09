@@ -1,9 +1,10 @@
 import pytest
 
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
-import pytest
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
 
 @pytest.mark.usefixtures("db_session")

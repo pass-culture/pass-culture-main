@@ -1,12 +1,19 @@
 from unittest.mock import patch
 
+import pytest
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.generic_creators import create_venue_label
+from pcapi.model_creators.generic_creators import create_venue_type
 from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
+from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.human_ids import humanize
+
 from tests.conftest import TestClient
-import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_user, \
-    create_user_offerer, create_venue, create_venue_type, create_venue_label
-from pcapi.utils.human_ids import dehumanize, humanize
 
 
 class Post:

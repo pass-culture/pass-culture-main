@@ -1,11 +1,16 @@
-from typing import List, Dict
+from typing import Dict
+from typing import List
 
 from pcapi.core.bookings.models import Booking
-from pcapi.models.offer_type import ProductType
 import pcapi.core.bookings.repository as booking_repository
-from pcapi.utils.mailing import build_pc_pro_offer_link, format_environment_for_email, SUPPORT_EMAIL_ADDRESS, \
-    create_email_recipients, extract_users_information_from_bookings, format_booking_date_for_email, \
-    format_booking_hours_for_email
+from pcapi.models.offer_type import ProductType
+from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS
+from pcapi.utils.mailing import build_pc_pro_offer_link
+from pcapi.utils.mailing import create_email_recipients
+from pcapi.utils.mailing import extract_users_information_from_bookings
+from pcapi.utils.mailing import format_booking_date_for_email
+from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.utils.mailing import format_environment_for_email
 
 
 def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: List[str]) -> Dict:

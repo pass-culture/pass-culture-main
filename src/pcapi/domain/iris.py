@@ -1,7 +1,9 @@
 from typing import Callable
 
 from pcapi.models import VenueSQLEntity
-from pcapi.repository.iris_venues_queries import find_ids_of_irises_located_near_venue, insert_venue_in_iris_venue
+from pcapi.repository.iris_venues_queries import find_ids_of_irises_located_near_venue
+from pcapi.repository.iris_venues_queries import insert_venue_in_iris_venue
+
 
 MAXIMUM_DISTANCE_IN_METERS = 100000
 

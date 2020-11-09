@@ -1,14 +1,24 @@
-from unittest.mock import MagicMock, patch, ANY
+from unittest.mock import ANY
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
-from pcapi.local_providers.provider_manager import do_update, _remove_worker_id_after_venue_provider_sync_error, \
-    synchronize_venue_provider, synchronize_venue_providers_for_provider, synchronize_data_for_provider
+import pytest
+
+from pcapi.local_providers.provider_manager import _remove_worker_id_after_venue_provider_sync_error
+from pcapi.local_providers.provider_manager import do_update
+from pcapi.local_providers.provider_manager import synchronize_data_for_provider
+from pcapi.local_providers.provider_manager import synchronize_venue_provider
+from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
+from pcapi.model_creators.generic_creators import create_allocine_venue_provider
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_provider
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.generic_creators import create_venue_provider
+from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.models import VenueProvider
 from pcapi.repository import repository
-import pytest
+
 from tests.local_providers.provider_test_utils import TestLocalProvider
-from pcapi.model_creators.generic_creators import create_allocine_venue_provider
-from pcapi.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_provider
-from pcapi.model_creators.provider_creators import activate_provider
 from tests.test_utils import fake
 
 

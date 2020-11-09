@@ -1,6 +1,9 @@
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock
+from unittest.mock import call
+from unittest.mock import patch
 
-from pcapi.algolia.infrastructure.worker import process_multi_indexing, _run_indexing
+from pcapi.algolia.infrastructure.worker import _run_indexing
+from pcapi.algolia.infrastructure.worker import process_multi_indexing
 
 
 class ProcessMultiIndexingTest:

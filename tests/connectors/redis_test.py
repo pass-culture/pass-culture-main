@@ -1,20 +1,38 @@
 import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 import redis
 
-from pcapi.connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids, \
-    add_venue_id, \
-    get_venue_ids, delete_venue_ids, _add_venue_provider, get_venue_providers, \
-    delete_venue_providers, send_venue_provider_data_to_redis, add_to_indexed_offers, \
-    delete_indexed_offers, \
-    check_offer_exists, get_offer_details, delete_all_indexed_offers, add_venue_provider_currently_in_sync, \
-    delete_venue_provider_currently_in_sync, get_number_of_venue_providers_currently_in_sync, add_offer_ids_in_error, \
-    get_offer_ids_in_error, delete_offer_ids_in_error
+from pcapi.connectors.redis import _add_venue_provider
+from pcapi.connectors.redis import add_offer_id
+from pcapi.connectors.redis import add_offer_ids_in_error
+from pcapi.connectors.redis import add_to_indexed_offers
+from pcapi.connectors.redis import add_venue_id
+from pcapi.connectors.redis import add_venue_provider_currently_in_sync
+from pcapi.connectors.redis import check_offer_exists
+from pcapi.connectors.redis import delete_all_indexed_offers
+from pcapi.connectors.redis import delete_indexed_offers
+from pcapi.connectors.redis import delete_offer_ids
+from pcapi.connectors.redis import delete_offer_ids_in_error
+from pcapi.connectors.redis import delete_venue_ids
+from pcapi.connectors.redis import delete_venue_provider_currently_in_sync
+from pcapi.connectors.redis import delete_venue_providers
+from pcapi.connectors.redis import get_number_of_venue_providers_currently_in_sync
+from pcapi.connectors.redis import get_offer_details
+from pcapi.connectors.redis import get_offer_ids
+from pcapi.connectors.redis import get_offer_ids_in_error
+from pcapi.connectors.redis import get_venue_ids
+from pcapi.connectors.redis import get_venue_providers
+from pcapi.connectors.redis import send_venue_provider_data_to_redis
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_provider
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.repository import repository
-from pcapi.model_creators.generic_creators import create_venue_provider, create_venue, create_user, create_offerer, \
-    create_user_offerer, create_provider
 
 
 class RedisTest:

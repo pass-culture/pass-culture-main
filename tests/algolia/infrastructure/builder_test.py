@@ -1,14 +1,19 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from decimal import Decimal
 
 from freezegun import freeze_time
+import pytest
 
 from pcapi.algolia.infrastructure.builder import build_object
+from pcapi.model_creators.generic_creators import create_criterion
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import EventType
 from pcapi.repository import repository
-import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_stock, create_venue, create_criterion
-from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 from pcapi.utils.human_ids import humanize
 
 

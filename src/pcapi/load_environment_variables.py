@@ -1,8 +1,10 @@
 import os
-from dotenv import load_dotenv
 from pathlib import Path
 
-from pcapi.utils.config import IS_DEV, ENV
+from dotenv import load_dotenv
+
+from pcapi.utils.config import ENV
+from pcapi.utils.config import IS_DEV
 
 
 def load_environment_variables():

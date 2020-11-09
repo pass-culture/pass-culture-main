@@ -1,12 +1,16 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from typing import List
 
-from pcapi.models import MediationSQLEntity, Offer, Recommendation
+from pcapi.models import MediationSQLEntity
+from pcapi.models import Offer
+from pcapi.models import Recommendation
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.db import db
 from pcapi.repository import mediation_queries
 from pcapi.repository.offer_queries import find_searchable_offer
 from pcapi.utils.human_ids import dehumanize
+
 
 EIGHT_DAYS_AGO = datetime.utcnow() - timedelta(days=8)
 

@@ -1,8 +1,8 @@
 from typing import Callable
 
-import sqlalchemy
 from flask import Flask
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+import sqlalchemy
 from sqlalchemy.orm import Session
 from sqlalchemy_utils import refresh_materialized_view
 

@@ -2,11 +2,15 @@ import os
 from pathlib import Path
 
 import pandas
-from shapely.geometry import Point, Polygon
 import pytest
+from shapely.geometry import Point
+from shapely.geometry import Polygon
 
 from pcapi.models import IrisFrance
-from pcapi.scripts.iris.import_iris import create_centroid_from_polygon, fill_iris_from, import_iris_shape_file_to_table, read_iris_shape_file
+from pcapi.scripts.iris.import_iris import create_centroid_from_polygon
+from pcapi.scripts.iris.import_iris import fill_iris_from
+from pcapi.scripts.iris.import_iris import import_iris_shape_file_to_table
+from pcapi.scripts.iris.import_iris import read_iris_shape_file
 
 
 def test_read_iris_shape_file_should_read_shape_file_and_return_correct_data_in_wgs84_format():

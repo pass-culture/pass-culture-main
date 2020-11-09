@@ -5,6 +5,7 @@ from pcapi.models import Offer
 from pcapi.utils.date import get_time_in_seconds_from_datetime
 from pcapi.utils.human_ids import humanize
 
+
 DEFAULT_LONGITUDE_FOR_NUMERIC_OFFER = 2.409289
 DEFAULT_LATITUDE_FOR_NUMERIC_OFFER = 47.158459
 

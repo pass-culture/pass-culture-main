@@ -1,10 +1,10 @@
-from unittest.mock import patch, \
-    MagicMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.api_entreprises import ApiEntrepriseException, \
-    get_by_offerer
+from pcapi.connectors.api_entreprises import ApiEntrepriseException
+from pcapi.connectors.api_entreprises import get_by_offerer
 from pcapi.model_creators.generic_creators import create_offerer
 
 

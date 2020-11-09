@@ -1,43 +1,41 @@
 from flask import current_app as app
-from flask import jsonify, \
-    request
-from flask_login import current_user, \
-    login_required
+from flask import jsonify
+from flask import request
+from flask_login import current_user
+from flask_login import login_required
 
-from pcapi.flask_app import private_api, \
-    public_api
 from pcapi.connectors import redis
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.iris import link_valid_venue_to_irises
-from pcapi.domain.payments import generate_file_checksum, \
-    read_message_name_in_message_file
-from pcapi.domain.user_emails import \
-    send_attachment_validation_email_to_pro_offerer, \
-    send_ongoing_offerer_attachment_information_email_to_pro, \
-    send_pro_user_waiting_for_validation_by_admin_email, \
-    send_validation_confirmation_email_to_pro, \
-    send_venue_validation_confirmation_email
-from pcapi.models import ApiErrors, \
-    Offerer, \
-    UserOfferer, \
-    VenueSQLEntity
-from pcapi.models.api_errors import ForbiddenError, \
-    ResourceNotFoundError
+from pcapi.domain.payments import generate_file_checksum
+from pcapi.domain.payments import read_message_name_in_message_file
+from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
+from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
+from pcapi.domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email
+from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
+from pcapi.domain.user_emails import send_venue_validation_confirmation_email
+from pcapi.flask_app import private_api
+from pcapi.flask_app import public_api
+from pcapi.models import ApiErrors
+from pcapi.models import Offerer
+from pcapi.models import UserOfferer
+from pcapi.models import VenueSQLEntity
+from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries, \
-    repository, \
-    user_offerer_queries, \
-    user_queries
+from pcapi.repository import feature_queries
+from pcapi.repository import repository
+from pcapi.repository import user_offerer_queries
+from pcapi.repository import user_queries
 from pcapi.repository.payment_queries import find_message_checksum
 from pcapi.repository.user_offerer_queries import count_pro_attached_to_offerer
 from pcapi.utils.config import IS_INTEGRATION
-from pcapi.utils.mailing import MailServiceException, \
-    send_raw_email
-from pcapi.validation.routes.users import \
-    check_validation_token_has_been_already_used
-from pcapi.validation.routes.validate import check_valid_token_for_user_validation, \
-    check_validation_request, \
-    check_venue_found
+from pcapi.utils.mailing import MailServiceException
+from pcapi.utils.mailing import send_raw_email
+from pcapi.validation.routes.users import check_validation_token_has_been_already_used
+from pcapi.validation.routes.validate import check_valid_token_for_user_validation
+from pcapi.validation.routes.validate import check_validation_request
+from pcapi.validation.routes.validate import check_venue_found
 
 
 @public_api.route("/validate/user-offerer/<token>", methods=["GET"])

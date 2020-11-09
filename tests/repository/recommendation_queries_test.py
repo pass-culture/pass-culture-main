@@ -1,14 +1,19 @@
 from datetime import datetime
 
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_recommendation
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.repository import repository
 from pcapi.repository.recommendation_queries import update_read_recommendations
-from tests.conftest import clean_database
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, \
-    create_recommendation
-from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
-    create_offer_with_thing_product, create_offer_with_event_product, \
-    create_event_occurrence
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import clean_database
 
 
 class UpdateReadRecommendationsTest:

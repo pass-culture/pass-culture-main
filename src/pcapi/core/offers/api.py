@@ -1,22 +1,24 @@
 from typing import Optional
 
-from pcapi.core.offers.repository import (
-    get_paginated_offers_for_offerer_venue_and_keywords,
-)
+from pcapi.core.offers.repository import get_paginated_offers_for_offerer_venue_and_keywords
 from pcapi.domain.admin_emails import send_offer_creation_notification_to_administration
-from pcapi.domain.create_offer import (
-    fill_offer_with_new_data,
-    initialize_offer_from_product_id,
-)
+from pcapi.domain.create_offer import fill_offer_with_new_data
+from pcapi.domain.create_offer import initialize_offer_from_product_id
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
-from pcapi.models import Offer, RightsType, UserSQLEntity, VenueSQLEntity
-from pcapi.repository import repository, user_offerer_queries
+from pcapi.models import Offer
+from pcapi.models import RightsType
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueSQLEntity
+from pcapi.repository import repository
+from pcapi.repository import user_offerer_queries
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.utils.config import PRO_URL
 from pcapi.utils.mailing import send_raw_email
-from pcapi.utils.rest import ensure_current_user_has_rights, load_or_raise_error
+from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import load_or_raise_error
 
 from . import validation
+
 
 DEFAULT_OFFERS_PER_PAGE = 20
 DEFAULT_PAGE = 1

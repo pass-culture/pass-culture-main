@@ -1,15 +1,19 @@
 from datetime import datetime
 
 from freezegun import freeze_time
+import pytest
 
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import Booking
 from pcapi.repository import repository
 from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
-import pytest
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue, \
-    create_deposit
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 
 
 class UpdateBookingUsedTest:

@@ -1,11 +1,15 @@
 from unittest.mock import patch
 
-from pcapi.models import Offer, Product
+import pytest
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.models import Offer
+from pcapi.models import Product
 from pcapi.repository import repository
 from pcapi.scripts.deactivate_inappropriate_offers import deactivate_inappropriate_offers
-import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
 
 
 class DeactivateInappropriateOffersTest:

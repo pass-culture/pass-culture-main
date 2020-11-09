@@ -1,16 +1,25 @@
-from datetime import date, datetime, timedelta
-from unittest.mock import call, patch
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from unittest.mock import call
+from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
 
 from pcapi.local_providers import TiteLiveStocks
-from pcapi.models import Offer, StockSQLEntity
-from pcapi.repository import repository
-from pcapi.model_creators.generic_creators import create_booking, create_offerer, create_stock, create_user, \
-    create_venue, create_venue_provider
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.models import Offer
+from pcapi.models import StockSQLEntity
+from pcapi.repository import repository
 
 
 class TiteliveStocksTest:

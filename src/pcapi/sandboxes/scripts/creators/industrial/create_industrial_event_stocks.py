@@ -1,10 +1,11 @@
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
 from pcapi.models.offer_type import EventType
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.utils.select import remove_every
-from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
 from pcapi.utils.logger import logger
 
-from .utils import get_price_by_short_name, get_occurrence_short_name
+from .utils import get_occurrence_short_name
+from .utils import get_price_by_short_name
 
 
 EVENT_OCCURRENCES_WITH_STOCKS_REMOVE_MODULO = 4

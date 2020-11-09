@@ -1,11 +1,14 @@
 import os
 from time import sleep
 
-from pcapi.connectors.scalingo_api import run_process_in_one_off_container, ScalingoApiException
+from pcapi.connectors.scalingo_api import ScalingoApiException
+from pcapi.connectors.scalingo_api import run_process_in_one_off_container
 from pcapi.models import VenueProvider
 from pcapi.repository import repository
-from pcapi.repository.venue_provider_queries import get_venue_providers_to_sync, get_nb_containers_at_work
+from pcapi.repository.venue_provider_queries import get_nb_containers_at_work
+from pcapi.repository.venue_provider_queries import get_venue_providers_to_sync
 from pcapi.utils.logger import logger
+
 
 WAIT_TIME_FOR_AVAILABLE_WORKER = 60
 DEFAULT_WORKERS_POOL_SIZE = 5

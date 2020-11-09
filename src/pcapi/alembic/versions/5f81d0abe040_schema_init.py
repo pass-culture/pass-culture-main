@@ -10,6 +10,7 @@ from pathlib import Path
 
 from alembic import op
 
+
 # revision identifiers, used by Alembic.
 revision = '5f81d0abe040'
 down_revision = None

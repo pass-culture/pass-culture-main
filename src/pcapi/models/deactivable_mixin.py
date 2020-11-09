@@ -1,5 +1,6 @@
 """ deactivable mixin """
-from sqlalchemy import Boolean, Column
+from sqlalchemy import Boolean
+from sqlalchemy import Column
 from sqlalchemy.sql import expression
 
 

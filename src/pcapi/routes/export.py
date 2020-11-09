@@ -1,20 +1,20 @@
 """ user mediations routes """
 import csv
-import os
 from datetime import datetime
 from inspect import isclass
-from io import BytesIO, \
-    StringIO
+from io import BytesIO
+from io import StringIO
+import os
 
-from flask import jsonify, \
-    request, \
-    send_file
-from flask_login import current_user, \
-    login_required
+from flask import jsonify
+from flask import request
+from flask import send_file
+from flask_login import current_user
+from flask_login import login_required
 
+from pcapi.flask_app import private_api
+from pcapi.flask_app import public_api
 import pcapi.models
-from pcapi.flask_app import private_api, \
-    public_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.pc_object import PcObject
 from pcapi.repository import offerer_queries
@@ -23,9 +23,9 @@ from pcapi.repository.venue_queries import find_filtered_venues
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.includes import OFFERER_FOR_PENDING_VALIDATION_INCLUDES
 from pcapi.utils.rest import expect_json_data
-from pcapi.validation.routes.exports import check_user_is_admin, \
-    check_get_venues_params, \
-    check_get_offerers_params
+from pcapi.validation.routes.exports import check_get_offerers_params
+from pcapi.validation.routes.exports import check_get_venues_params
+from pcapi.validation.routes.exports import check_user_is_admin
 
 
 @public_api.route('/exports/models', methods=['GET'])

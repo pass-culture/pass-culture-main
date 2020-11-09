@@ -1,27 +1,27 @@
-from flask import jsonify, \
-    request
-from flask_login import current_user, \
-    login_required, \
-    logout_user, \
-    login_user
+from flask import jsonify
+from flask import request
+from flask_login import current_user
+from flask_login import login_required
+from flask_login import login_user
+from flask_login import logout_user
 
 from pcapi.core.users import api as user_api
 from pcapi.core.users import exceptions as user_exceptions
 from pcapi.flask_app import private_api
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.user_queries import find_user_by_reset_password_token, \
-    find_user_by_email
+from pcapi.repository.user_queries import find_user_by_email
+from pcapi.repository.user_queries import find_user_by_reset_password_token
 from pcapi.routes.serialization import as_dict
-from pcapi.routes.serialization.users import PatchUserBodyModel, \
-    PatchUserResponseModel
+from pcapi.routes.serialization.users import PatchUserBodyModel
+from pcapi.routes.serialization.users import PatchUserResponseModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.use_cases.update_user_informations import update_user_informations, \
-    AlterableUserInformations
+from pcapi.use_cases.update_user_informations import AlterableUserInformations
+from pcapi.use_cases.update_user_informations import update_user_informations
 from pcapi.utils.includes import USER_INCLUDES
-from pcapi.utils.login_manager import stamp_session, \
-    discard_session
-from pcapi.utils.rest import expect_json_data, \
-    login_or_api_key_required
+from pcapi.utils.login_manager import discard_session
+from pcapi.utils.login_manager import stamp_session
+from pcapi.utils.rest import expect_json_data
+from pcapi.utils.rest import login_or_api_key_required
 from pcapi.validation.routes.users import check_valid_signin
 
 

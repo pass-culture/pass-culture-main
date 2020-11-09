@@ -1,6 +1,6 @@
 from pcapi.domain.identifier.identifier import Identifier
-
-from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap
+from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecap
+from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 
 

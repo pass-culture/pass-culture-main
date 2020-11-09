@@ -1,9 +1,10 @@
 """ provider """
-from sqlalchemy import BigInteger, \
-    CheckConstraint, \
-    Column, \
-    DateTime, \
-    String, Boolean
+from sqlalchemy import BigInteger
+from sqlalchemy import Boolean
+from sqlalchemy import CheckConstraint
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import CHAR
 
 from pcapi.models.db import Model

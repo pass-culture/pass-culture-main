@@ -1,18 +1,28 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
 from freezegun import freeze_time
+import pytest
 
+from pcapi.model_creators.generic_creators import create_api_key
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models import EventType
 from pcapi.repository import repository
-import pytest
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_deposit, \
-    create_user_offerer, create_api_key
-from pcapi.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
-    create_stock_with_thing_offer, create_offer_with_event_product, create_event_occurrence
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
+
 
 API_KEY_VALUE = 'A_MOCKED_API_KEY'
 

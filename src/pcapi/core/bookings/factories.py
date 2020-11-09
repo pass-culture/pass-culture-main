@@ -1,13 +1,13 @@
 import factory
 
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.users.factories as users_factories
 from pcapi.core.testing import BaseFactory
+import pcapi.core.users.factories as users_factories
 from pcapi.repository import repository
 from pcapi.utils.token import random_token
 
-
-from . import api, models
+from . import api
+from . import models
 
 
 class BookingFactory(BaseFactory):

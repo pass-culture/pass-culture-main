@@ -1,12 +1,17 @@
 import pytest
 
-from pcapi.models import AllocineVenueProvider, VenueProvider
-from pcapi.repository import repository
-from pcapi.repository.venue_provider_queries import get_venue_providers_to_sync, get_nb_containers_at_work, \
-    get_venue_provider_by_id, get_active_venue_providers_for_specific_provider
-from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider, \
-    create_allocine_venue_provider
+from pcapi.model_creators.generic_creators import create_allocine_venue_provider
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
+from pcapi.models import AllocineVenueProvider
+from pcapi.models import VenueProvider
+from pcapi.repository import repository
+from pcapi.repository.venue_provider_queries import get_active_venue_providers_for_specific_provider
+from pcapi.repository.venue_provider_queries import get_nb_containers_at_work
+from pcapi.repository.venue_provider_queries import get_venue_provider_by_id
+from pcapi.repository.venue_provider_queries import get_venue_providers_to_sync
 
 
 class GetActiveVenueProvidersForSpecificProviderTest:

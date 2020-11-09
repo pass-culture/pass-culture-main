@@ -1,10 +1,13 @@
+from datetime import datetime
+from datetime import timedelta
 import re
-from datetime import datetime, timedelta
 from typing import Dict
 
-from pcapi.models import ApiErrors, UserSQLEntity
+from pcapi.models import ApiErrors
+from pcapi.models import UserSQLEntity
 from pcapi.models.user_sql_entity import hash_password
 from pcapi.utils.token import random_token
+
 
 RESET_PASSWORD_TOKEN_LENGTH = 10
 

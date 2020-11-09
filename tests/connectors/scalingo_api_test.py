@@ -1,9 +1,11 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.scalingo_api import _get_application_bearer_token, ScalingoApiException, \
-    run_process_in_one_off_container
+from pcapi.connectors.scalingo_api import ScalingoApiException
+from pcapi.connectors.scalingo_api import _get_application_bearer_token
+from pcapi.connectors.scalingo_api import run_process_in_one_off_container
 
 
 class GetApplicationBearerTokenTest:

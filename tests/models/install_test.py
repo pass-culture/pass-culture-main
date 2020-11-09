@@ -1,7 +1,8 @@
+import pytest
+
 from pcapi.models import Feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.install import install_features
-import pytest
 
 
 class InstallFeaturesTest:

@@ -1,7 +1,9 @@
 from typing import List
 
-from pcapi.models import VenueSQLEntity, Offerer
-from pcapi.repository.iris_venues_queries import find_ids_of_irises_located_near_venue, insert_venue_in_iris_venue
+from pcapi.models import Offerer
+from pcapi.models import VenueSQLEntity
+from pcapi.repository.iris_venues_queries import find_ids_of_irises_located_near_venue
+from pcapi.repository.iris_venues_queries import insert_venue_in_iris_venue
 
 
 def link_irises_to_existing_physical_venues(search_radius: int):

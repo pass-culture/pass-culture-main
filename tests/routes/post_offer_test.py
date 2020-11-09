@@ -1,20 +1,22 @@
 from datetime import datetime
 
-from pcapi.models import EventType, Offer, ThingType, Product, Offerer
+from pcapi.model_creators.generic_creators import API_URL
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_product_with_event_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.models import EventType
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import Product
+from pcapi.models import ThingType
 from pcapi.repository import repository
+from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.human_ids import humanize
+
 from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import (
-    create_user,
-    create_offerer,
-    create_venue,
-    create_user_offerer,
-    API_URL,
-)
-from pcapi.model_creators.specific_creators import (
-    create_product_with_thing_type,
-    create_product_with_event_type,
-)
-from pcapi.utils.human_ids import humanize, dehumanize
 
 
 class Returns400:

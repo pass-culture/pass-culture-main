@@ -1,8 +1,15 @@
-from pcapi.models import StockSQLEntity, EventType, ThingType, MediationSQLEntity, Offer, VenueSQLEntity, Offerer
+from pcapi.models import EventType
+from pcapi.models import MediationSQLEntity
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import StockSQLEntity
+from pcapi.models import ThingType
+from pcapi.models import VenueSQLEntity
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository.offer_queries import _filter_bookable_stocks_for_discovery
 from pcapi.repository.user_queries import keep_only_webapp_users
-from pcapi.sandboxes.scripts.utils.helpers import get_beneficiary_helper, get_offer_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_beneficiary_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_offer_helper
 from pcapi.utils.human_ids import humanize
 
 

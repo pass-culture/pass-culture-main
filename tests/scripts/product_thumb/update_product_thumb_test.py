@@ -1,13 +1,18 @@
 import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.repository import repository
+from pcapi.scripts.product_thumb.update_product_thumb import OBJECT_STORAGE_URL
+from pcapi.scripts.product_thumb.update_product_thumb import _compute_product_id_from_uri
+from pcapi.scripts.product_thumb.update_product_thumb import _get_product_thumb
+from pcapi.scripts.product_thumb.update_product_thumb import process_file
+from pcapi.scripts.product_thumb.update_product_thumb import process_product_thumb
+from pcapi.utils.human_ids import humanize
 
 from tests.conftest import clean_database
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
 from tests.scripts.product_thumb.test_image_as_bytes import IMAGE_AS_BYTES
-
-from pcapi.repository import repository
-from pcapi.scripts.product_thumb.update_product_thumb import OBJECT_STORAGE_URL, _compute_product_id_from_uri, _get_product_thumb, process_file, process_product_thumb
-from pcapi.utils.human_ids import humanize
 
 
 class GetProductThumbTest:

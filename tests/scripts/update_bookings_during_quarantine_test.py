@@ -1,15 +1,21 @@
+from datetime import datetime
+from datetime import timedelta
+
 from _decimal import Decimal
-from datetime import datetime, timedelta
+import pytest
 
 from pcapi.domain.payments import create_payment_for_booking
-from pcapi.domain.reimbursement import BookingReimbursement, ReimbursementRules
-from pcapi.scripts.cancel_bookings_during_quarantine import cancel_booking_status_for_events_happening_during_quarantine
-import pytest
+from pcapi.domain.reimbursement import BookingReimbursement
+from pcapi.domain.reimbursement import ReimbursementRules
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.models import Booking
 from pcapi.repository import repository
-from pcapi.model_creators.generic_creators import create_user, create_stock, create_booking, create_venue, \
-    create_offerer
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.scripts.cancel_bookings_during_quarantine import cancel_booking_status_for_events_happening_during_quarantine
 
 
 class UpdateBookingDuringQuarantineTest:

@@ -1,7 +1,9 @@
+import pytest
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
-import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_venue
 from pcapi.validation.models.venue import validate
 
 

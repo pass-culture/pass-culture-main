@@ -1,9 +1,17 @@
-from typing import List, Tuple
+from typing import List
+from typing import Tuple
 
 import pandas
-from sqlalchemy import func, text
+from sqlalchemy import func
+from sqlalchemy import text
 
-from pcapi.models import Deposit, Booking, Payment, UserSQLEntity, StockSQLEntity, Offer, VenueSQLEntity
+from pcapi.models import Booking
+from pcapi.models import Deposit
+from pcapi.models import Offer
+from pcapi.models import Payment
+from pcapi.models import StockSQLEntity
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueSQLEntity
 from pcapi.models.db import db
 from pcapi.models.payment_status import TransactionStatus
 

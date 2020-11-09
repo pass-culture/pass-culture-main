@@ -3,11 +3,13 @@ from typing import Optional
 
 from pcapi.core.bookings.api import compute_confirmation_date
 from pcapi.domain.beneficiary.beneficiary import Beneficiary
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
-    BeneficiaryPreSubscription
-from pcapi.domain.booking_recap.booking_recap import BookBookingRecap, EventBookingRecap, ThingBookingRecap
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
+from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
+from pcapi.domain.booking_recap.booking_recap import ThingBookingRecap
 from pcapi.domain.favorite.favorite import Favorite
-from pcapi.models import MediationSQLEntity, Offer
+from pcapi.models import MediationSQLEntity
+from pcapi.models import Offer
 
 
 def create_domain_beneficiary(identifier: int = None,

@@ -1,22 +1,22 @@
-from typing import Tuple, \
-    Dict
+from typing import Dict
+from typing import Tuple
 
+from flask import current_app as app
+from flask import jsonify
+from flask import request
 import simplejson as json
-from flask import current_app as app, \
-    jsonify, \
-    request
-from werkzeug.exceptions import NotFound, \
-    MethodNotAllowed
+from werkzeug.exceptions import MethodNotAllowed
+from werkzeug.exceptions import NotFound
 
 from pcapi.domain.identifier.identifier import NonProperlyFormattedScrambledId
 from pcapi.domain.stocks import TooLateToDeleteError
 from pcapi.domain.user_activation import AlreadyActivatedException
-from pcapi.models.api_errors import ApiErrors, \
-    ResourceGoneError, \
-    ResourceNotFoundError, \
-    ForbiddenError, \
-    DecimalCastError, \
-    DateTimeCastError
+from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import DateTimeCastError
+from pcapi.models.api_errors import DecimalCastError
+from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.api_errors import ResourceGoneError
+from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.utils.human_ids import NonDehumanizableId
 
 

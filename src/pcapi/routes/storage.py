@@ -1,15 +1,15 @@
 """ storage """
 import os.path
 
-from flask import jsonify, \
-    request, \
-    send_file
+from flask import jsonify
+from flask import request
+from flask import send_file
 from flask_login import login_required
 
-import pcapi.models
-from pcapi.flask_app import private_api, \
-    public_api
 from pcapi.connectors.thumb_storage import create_thumb
+from pcapi.flask_app import private_api
+from pcapi.flask_app import public_api
+import pcapi.models
 from pcapi.models import RightsType
 from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
@@ -17,6 +17,7 @@ from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.inflect_engine import inflect_engine
 from pcapi.utils.object_storage import local_path
 from pcapi.utils.rest import ensure_current_user_has_rights
+
 
 print('LOCAL DEV MODE: Using disk based object storage')
 

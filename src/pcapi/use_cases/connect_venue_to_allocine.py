@@ -1,11 +1,16 @@
 from decimal import Decimal
-from typing import Callable, Dict
+from typing import Callable
+from typing import Dict
 
 from pcapi.domain.price_rule import PriceRule
-from pcapi.models import AllocineVenueProvider, AllocineVenueProviderPriceRule, VenueProvider, VenueSQLEntity
+from pcapi.models import AllocineVenueProvider
+from pcapi.models import AllocineVenueProviderPriceRule
+from pcapi.models import VenueProvider
+from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.human_ids import dehumanize
 from pcapi.validation.routes.venues import check_existing_venue
+
 
 ERROR_CODE_PROVIDER_NOT_SUPPORTED = 400
 ERROR_CODE_SIRET_NOT_SUPPORTED = 422

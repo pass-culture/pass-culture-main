@@ -1,9 +1,11 @@
-from typing import Any, Callable
+from typing import Any
+from typing import Callable
 
 import requests
 from requests import Response
 
 from pcapi.utils.logger import json_logger
+
 
 REQUEST_TIMEOUT_IN_SECOND = 10
 

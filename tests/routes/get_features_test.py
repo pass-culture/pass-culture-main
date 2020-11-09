@@ -1,8 +1,10 @@
 import pytest
 
+from pcapi.model_creators.generic_creators import API_URL
+from pcapi.model_creators.generic_creators import create_user
 from pcapi.repository import repository
+
 from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_user, API_URL
 
 
 class Get:

@@ -1,7 +1,9 @@
 import contextlib
 import enum
 
-from sqlalchemy import String, Column, Enum
+from sqlalchemy import Column
+from sqlalchemy import Enum
+from sqlalchemy import String
 
 from pcapi.models.db import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin

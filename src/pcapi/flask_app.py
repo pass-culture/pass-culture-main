@@ -1,17 +1,19 @@
+from datetime import datetime
 import os
 import re
 import typing
-from datetime import datetime
 
 # Loading variables should always be the first thing, before any other load
 from pcapi.load_environment_variables import load_environment_variables
+
+
 load_environment_variables()
 
+from flask import Blueprint
+from flask import Flask
+from flask import g
+from flask import request
 import flask.wrappers
-from flask import Flask, \
-    g, \
-    request, \
-    Blueprint
 from flask_admin import Admin
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
@@ -28,13 +30,14 @@ from werkzeug.middleware.profiler import ProfilerMiddleware
 from pcapi.models.db import db
 from pcapi.repository.feature_queries import feature_request_profiling_enabled
 from pcapi.serialization.utils import before_handler
-from pcapi.utils.config import IS_DEV, \
-    ENV, REDIS_URL
+from pcapi.utils.config import ENV
+from pcapi.utils.config import IS_DEV
+from pcapi.utils.config import REDIS_URL
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.logger import json_logger
-from pcapi.utils.mailing import MAILJET_API_KEY, \
-    MAILJET_API_SECRET
+from pcapi.utils.mailing import MAILJET_API_KEY
+from pcapi.utils.mailing import MAILJET_API_SECRET
 
 
 if IS_DEV is False:

@@ -1,11 +1,13 @@
 from unittest.mock import patch
 
+import pytest
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models.db import db
 from pcapi.repository import repository
 from pcapi.scripts.venue.move_all_offers_for_venue import move_all_offers_from_venue_to_other_venue
-import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 
 
 class MoveAllOffersFromVenueToOtherVenueTest:

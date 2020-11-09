@@ -2,14 +2,17 @@ import csv
 from io import StringIO
 from typing import Iterable
 
-from pcapi.domain.password import random_password, generate_reset_token
-from pcapi.models.deposit import Deposit
-from pcapi.models.offer_type import EventType, ThingType
-from pcapi.models.api_errors import ApiErrors
-from pcapi.models.user_sql_entity import UserSQLEntity
-from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.core.bookings.models import ActivationUser
+from pcapi.domain.password import generate_reset_token
+from pcapi.domain.password import random_password
+from pcapi.models.api_errors import ApiErrors
+from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.models.deposit import Deposit
+from pcapi.models.offer_type import EventType
+from pcapi.models.offer_type import ThingType
+from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
+
 
 IMPORT_STATUS_MODIFICATION_RULE = 'Seuls les dossiers au statut DUPLICATE peuvent être modifiés (aux statuts REJECTED ou RETRY uniquement)'
 

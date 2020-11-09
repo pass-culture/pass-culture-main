@@ -1,6 +1,8 @@
+from abc import ABC
+from abc import abstractmethod
 import datetime
-from abc import ABC, abstractmethod
-from typing import Iterator, Dict
+from typing import Dict
+from typing import Iterator
 
 
 class StockProviderRepository(ABC):

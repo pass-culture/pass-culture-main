@@ -2,12 +2,15 @@ import uuid
 
 import pytest
 
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_payment
+from pcapi.model_creators.generic_creators import create_payment_message
+from pcapi.model_creators.generic_creators import create_user
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
-from pcapi.scripts.payment.banishment import do_ban_payments, parse_raw_payments_ids
-import pytest
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_deposit, create_payment, \
-    create_payment_message
+from pcapi.scripts.payment.banishment import do_ban_payments
+from pcapi.scripts.payment.banishment import parse_raw_payments_ids
 
 
 class ParseRawPaymentIdsTest:

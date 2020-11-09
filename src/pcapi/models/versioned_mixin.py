@@ -1,6 +1,7 @@
 from sqlalchemy import text
 
-from pcapi.models.db import db, versioning_manager
+from pcapi.models.db import db
+from pcapi.models.db import versioning_manager
 
 
 class VersionedMixin(object):

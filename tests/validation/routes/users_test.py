@@ -3,8 +3,8 @@ from unittest.mock import Mock
 import pytest
 
 from pcapi.models import ApiErrors
-from pcapi.validation.routes.users import check_valid_signup_webapp, \
-    check_valid_signup_pro
+from pcapi.validation.routes.users import check_valid_signup_pro
+from pcapi.validation.routes.users import check_valid_signup_webapp
 
 
 def test_check_valid_signup_webapp_raises_api_error_if_not_contact_ok():

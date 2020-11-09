@@ -1,13 +1,20 @@
 from datetime import datetime
 
+import pytest
+
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_recommendation
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models import ThingType
 from pcapi.repository import repository
-import pytest
+
 from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_deposit, \
-    create_user_offerer, create_recommendation
-from pcapi.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
 
 
 class Get:

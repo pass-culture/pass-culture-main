@@ -1,5 +1,7 @@
-from pcapi.scripts.beneficiary.file_import import run
 import sys
+
+from pcapi.scripts.beneficiary.file_import import run
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:

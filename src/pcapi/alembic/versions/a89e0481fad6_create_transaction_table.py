@@ -5,11 +5,12 @@ Revises: a6bdec6dde59
 Create Date: 2019-06-12 13:15:26.579574
 
 """
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 # revision identifiers, used by Alembic.
 from sqlalchemy.engine.reflection import Inspector
+
 
 revision = 'a89e0481fad6'
 down_revision = 'a6bdec6dde59'

@@ -1,5 +1,6 @@
 from pcapi.sandboxes.scripts.utils.ban import get_locations_from_postal_code
 
+
 OFFERER_PLACES = [
     {
         "address": "148 RUE HENRI LANGLOIS",

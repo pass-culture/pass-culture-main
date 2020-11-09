@@ -1,27 +1,27 @@
-from flask import jsonify, \
-    request
-from flask_login import current_user, \
-    login_required, \
-    login_user
+from flask import jsonify
+from flask import request
+from flask_login import current_user
+from flask_login import login_required
+from flask_login import login_user
 
 from pcapi.core.users import api as user_api
 from pcapi.core.users import exceptions as user_exceptions
 from pcapi.domain.beneficiary.beneficiary_licence import is_licence_token_valid
-from pcapi.flask_app import private_api, \
-    public_api
+from pcapi.flask_app import private_api
+from pcapi.flask_app import public_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import as_dict
-from pcapi.use_cases.update_user_informations import update_user_informations, \
-    AlterableUserInformations
+from pcapi.use_cases.update_user_informations import AlterableUserInformations
+from pcapi.use_cases.update_user_informations import update_user_informations
 from pcapi.utils.includes import BENEFICIARY_INCLUDES
 from pcapi.utils.login_manager import stamp_session
-from pcapi.utils.rest import expect_json_data, \
-    login_or_api_key_required
-from pcapi.validation.routes.beneficiaries import check_application_update_payload, \
-    check_verify_licence_token_payload, \
-    parse_application_id
-from pcapi.validation.routes.users import check_allowed_changes_for_user, \
-    check_valid_signin
+from pcapi.utils.rest import expect_json_data
+from pcapi.utils.rest import login_or_api_key_required
+from pcapi.validation.routes.beneficiaries import check_application_update_payload
+from pcapi.validation.routes.beneficiaries import check_verify_licence_token_payload
+from pcapi.validation.routes.beneficiaries import parse_application_id
+from pcapi.validation.routes.users import check_allowed_changes_for_user
+from pcapi.validation.routes.users import check_valid_signin
 from pcapi.workers.beneficiary_job import beneficiary_job
 
 

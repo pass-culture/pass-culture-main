@@ -1,4 +1,6 @@
-from sqlalchemy import BigInteger, Column, ForeignKey
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
 from pcapi.models.db import Model

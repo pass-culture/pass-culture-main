@@ -3,8 +3,12 @@ from datetime import datetime
 from freezegun import freeze_time
 
 from pcapi.domain.stock.stock import Stock
-from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_user, create_booking
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_offer
 
 
 class HasBookingLimitDatetimePassedTest:

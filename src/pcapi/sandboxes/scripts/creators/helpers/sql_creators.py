@@ -1,14 +1,33 @@
-import string
-from hashlib import sha256
 from datetime import datetime
+from hashlib import sha256
 import random
-from typing import Optional, List, Dict
+import string
+from typing import Dict
+from typing import List
+from typing import Optional
 
 from pcapi.core.bookings import api as bookings_api
-from pcapi.models import UserSQLEntity, Deposit, Offerer, UserOfferer, RightsType, VenueSQLEntity, Offer, Product, Provider, \
-    EventType, StockSQLEntity, ThingType, Booking, Recommendation, MediationSQLEntity, PaymentMessage, Payment
-from pcapi.models.payment_status import TransactionStatus, PaymentStatus
+from pcapi.models import Booking
+from pcapi.models import Deposit
+from pcapi.models import EventType
+from pcapi.models import MediationSQLEntity
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import Payment
+from pcapi.models import PaymentMessage
+from pcapi.models import Product
+from pcapi.models import Provider
+from pcapi.models import Recommendation
+from pcapi.models import RightsType
+from pcapi.models import StockSQLEntity
+from pcapi.models import ThingType
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueSQLEntity
+from pcapi.models.payment_status import PaymentStatus
+from pcapi.models.payment_status import TransactionStatus
 from pcapi.utils.token import random_token
+
 
 PLAIN_DEFAULT_TESTING_PASSWORD = 'user@AZERTY123'
 

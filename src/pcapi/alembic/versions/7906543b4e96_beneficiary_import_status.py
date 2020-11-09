@@ -5,12 +5,14 @@ Revises: 8388f49ba035
 Create Date: 2019-07-17 07:49:02.562498
 
 """
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 # revision identifiers, used by Alembic.
-from sqlalchemy import func, ForeignKey
+from sqlalchemy import ForeignKey
+from sqlalchemy import func
 
 from pcapi.models import ImportStatus
+
 
 revision = '7906543b4e96'
 down_revision = '8388f49ba035'

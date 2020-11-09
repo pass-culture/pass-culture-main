@@ -1,4 +1,7 @@
-from sqlalchemy import BigInteger, Column, ForeignKey, UniqueConstraint
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from pcapi.models.db import Model

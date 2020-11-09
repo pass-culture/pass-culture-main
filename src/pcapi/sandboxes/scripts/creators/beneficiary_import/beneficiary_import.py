@@ -1,8 +1,12 @@
 from typing import List
 
-from pcapi.models import ImportStatus, UserSQLEntity, BeneficiaryImport, BeneficiaryImportSources
+from pcapi.model_creators.generic_creators import create_beneficiary_import
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.models import BeneficiaryImport
+from pcapi.models import BeneficiaryImportSources
+from pcapi.models import ImportStatus
+from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
-from pcapi.model_creators.generic_creators import create_user, create_beneficiary_import
 from pcapi.utils.logger import logger
 
 

@@ -1,15 +1,23 @@
-from datetime import datetime, timedelta
-from unittest.mock import patch, call, MagicMock
+from datetime import datetime
+from datetime import timedelta
+from unittest.mock import MagicMock
+from unittest.mock import call
+from unittest.mock import patch
 
 from algoliasearch.exceptions import AlgoliaException
 from freezegun import freeze_time
-
-from pcapi.algolia.usecase.orchestrator import delete_expired_offers, process_eligible_offers
-from pcapi.repository import repository
 import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_stock, create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+
+from pcapi.algolia.usecase.orchestrator import delete_expired_offers
+from pcapi.algolia.usecase.orchestrator import process_eligible_offers
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
+
 
 TOMORROW = datetime.now() + timedelta(days=1)
 

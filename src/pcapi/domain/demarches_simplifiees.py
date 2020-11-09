@@ -1,18 +1,19 @@
-import os
 from datetime import datetime
-from typing import Dict, \
-    List, \
-    Optional, \
-    Union
+import os
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
-from pcapi.models.bank_information import BankInformationStatus
-from pcapi.connectors.api_demarches_simplifiees import get_all_applications_for_procedure, \
-    DmsApplicationStates, \
-    get_application_details
+from pcapi.connectors.api_demarches_simplifiees import DmsApplicationStates
+from pcapi.connectors.api_demarches_simplifiees import get_all_applications_for_procedure
+from pcapi.connectors.api_demarches_simplifiees import get_application_details
 from pcapi.domain.bank_account import format_raw_iban_and_bic
+from pcapi.domain.bank_information import CannotRegisterBankInformation
+from pcapi.models.bank_information import BankInformationStatus
 from pcapi.utils.date import DATE_ISO_FORMAT
 from pcapi.utils.logger import logger
-from pcapi.domain.bank_information import CannotRegisterBankInformation
+
 
 OFFERER_PROCEDURE_ID = os.environ.get(
     'DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID')

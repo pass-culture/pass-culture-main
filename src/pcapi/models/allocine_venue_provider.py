@@ -1,4 +1,9 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, BigInteger, true
+from sqlalchemy import BigInteger
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import true
 
 from pcapi.models.venue_provider import VenueProvider
 

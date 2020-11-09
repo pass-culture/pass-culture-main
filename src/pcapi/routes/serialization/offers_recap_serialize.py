@@ -1,7 +1,12 @@
-from typing import Dict, List, Any
+from typing import Any
+from typing import Dict
+from typing import List
 
 from pcapi.domain.identifier.identifier import Identifier
-from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap, OfferRecapStock, OfferRecapVenue
+from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecap
+from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecapStock
+from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecapVenue
+from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 
 
 def serialize_offers_recap_paginated(paginated_offers: PaginatedOffersRecap) -> Dict[str, Any]:

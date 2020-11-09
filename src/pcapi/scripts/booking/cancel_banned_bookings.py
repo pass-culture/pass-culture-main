@@ -1,12 +1,18 @@
-from datetime import datetime, date
+from datetime import date
+from datetime import datetime
 from typing import List
 
-from sqlalchemy import Date, cast
+from sqlalchemy import Date
+from sqlalchemy import cast
 
-from pcapi.models import Booking, Payment, ApiErrors, PaymentStatus
+from pcapi.models import ApiErrors
+from pcapi.models import Booking
+from pcapi.models import Payment
+from pcapi.models import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.utils.logger import logger
+
 
 WANTED_SENT_DATE = date.fromisoformat("2020-04-16")
 WANTED_BANNED_DATE = date.fromisoformat("2020-04-17")

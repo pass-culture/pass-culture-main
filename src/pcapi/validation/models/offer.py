@@ -1,4 +1,5 @@
-from pcapi.models import ApiErrors, Offer
+from pcapi.models import ApiErrors
+from pcapi.models import Offer
 from pcapi.repository import venue_queries
 
 

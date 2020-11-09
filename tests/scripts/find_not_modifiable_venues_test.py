@@ -1,7 +1,10 @@
-from pcapi.repository import repository
-from pcapi.scripts.find_not_modifiable_venues import generate_non_editable_venues_csv, _get_non_editable_venues
 import pytest
-from pcapi.model_creators.generic_creators import create_venue, create_offerer
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.repository import repository
+from pcapi.scripts.find_not_modifiable_venues import _get_non_editable_venues
+from pcapi.scripts.find_not_modifiable_venues import generate_non_editable_venues_csv
 
 
 class GetNonEditableVenuesTest:

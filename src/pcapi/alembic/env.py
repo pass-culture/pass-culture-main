@@ -1,16 +1,16 @@
 from __future__ import with_statement
 
-import os
 from logging.config import fileConfig
+import os
 
 from alembic import context
 from sqlalchemy import create_engine
 
 from pcapi.models.db import db
-
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 from pcapi.utils.config import IS_DEV
+
 
 config = context.config
 

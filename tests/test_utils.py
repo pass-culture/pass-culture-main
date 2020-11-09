@@ -4,7 +4,8 @@ from unittest.mock import Mock
 from shapely.geometry import Polygon
 
 from pcapi.models import Booking
-from pcapi.models.feature import Feature, FeatureToggle
+from pcapi.models.feature import Feature
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 
 

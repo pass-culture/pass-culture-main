@@ -6,6 +6,7 @@ import pytest
 from pcapi.models import ApiErrors
 from pcapi.validation.routes.mediations import check_thumb_quality
 
+
 MODULE_PATH = Path(os.path.dirname(os.path.realpath(__file__)))
 
 

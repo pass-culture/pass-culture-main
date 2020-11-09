@@ -1,7 +1,7 @@
 import pytest
 
-import pcapi.core.recommendations.factories as recommendations_factories
 from pcapi.core import testing
+import pcapi.core.recommendations.factories as recommendations_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 

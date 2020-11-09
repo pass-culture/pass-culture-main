@@ -1,10 +1,16 @@
+import pytest
+
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_mediation
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_product_with_event_type
 from pcapi.models import StockSQLEntity
 from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
-import pytest
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_user_offerer, create_mediation
-from pcapi.model_creators.specific_creators import create_product_with_event_type, create_offer_with_event_product
 
 
 class AsDictTest:

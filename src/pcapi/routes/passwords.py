@@ -1,25 +1,24 @@
-from flask import current_app as app, \
-    request
-from flask_login import current_user, \
-    login_required
+from flask import current_app as app
+from flask import request
+from flask_login import current_user
+from flask_login import login_required
 
+from pcapi.domain.password import check_password_strength
+from pcapi.domain.password import check_password_validity
+from pcapi.domain.password import check_reset_token_validity
+from pcapi.domain.password import generate_reset_token
+from pcapi.domain.password import validate_change_password_request
+from pcapi.domain.password import validate_new_password_request
+from pcapi.domain.password import validate_reset_request
+from pcapi.domain.user_emails import send_reset_password_email_to_pro
+from pcapi.domain.user_emails import send_reset_password_email_to_user
 from pcapi.flask_app import private_api
-from pcapi.domain.password import validate_reset_request, \
-    check_reset_token_validity, \
-    validate_new_password_request, \
-    check_password_strength, \
-    generate_reset_token, \
-    validate_change_password_request, \
-    check_password_validity
-from pcapi.domain.user_emails import send_reset_password_email_to_user, \
-    send_reset_password_email_to_pro
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
-from pcapi.repository.user_queries import find_user_by_email, \
-    find_user_by_reset_password_token
-from pcapi.utils.mailing import \
-    MailServiceException, \
-    send_raw_email
+from pcapi.repository.user_queries import find_user_by_email
+from pcapi.repository.user_queries import find_user_by_reset_password_token
+from pcapi.utils.mailing import MailServiceException
+from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.rest import expect_json_data
 
 

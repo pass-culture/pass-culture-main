@@ -1,7 +1,9 @@
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
 import pcapi.core.bookings.repository as booking_repository
-from pcapi.models import Booking, Recommendation
+from pcapi.models import Booking
+from pcapi.models import Recommendation
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import RECOMMENDATION_INCLUDES

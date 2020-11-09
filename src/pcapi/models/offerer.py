@@ -1,10 +1,10 @@
 """ offerer """
 from datetime import datetime
 
-from sqlalchemy import BigInteger, \
-    Column, \
-    DateTime, \
-    String
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import String
 from sqlalchemy.orm import relationship
 
 from pcapi.domain.ts_vector import create_ts_vector_and_table_args

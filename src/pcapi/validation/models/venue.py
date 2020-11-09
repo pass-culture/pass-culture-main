@@ -1,4 +1,5 @@
-from pcapi.models import ApiErrors, VenueSQLEntity
+from pcapi.models import ApiErrors
+from pcapi.models import VenueSQLEntity
 from pcapi.repository import offerer_queries
 from pcapi.repository import venue_queries
 

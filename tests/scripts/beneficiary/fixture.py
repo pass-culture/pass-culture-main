@@ -1,6 +1,7 @@
 import copy
 from typing import Dict
 
+
 APPLICATION_DETAIL_STANDARD_RESPONSE = {
     "dossier": {
         "id": 123,

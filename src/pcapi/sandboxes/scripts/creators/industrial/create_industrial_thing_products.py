@@ -1,14 +1,15 @@
 from pcapi.domain.music_types import music_types
 from pcapi.domain.types import get_formatted_active_product_types
-from pcapi.repository import repository
-from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES, \
-    MOCK_DESCRIPTIONS, \
-    MOCK_NAMES
-from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES, \
-    MOCK_LAST_NAMES
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.repository import repository
+from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES
+from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_DESCRIPTIONS
+from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_NAMES
+from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES
+from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_LAST_NAMES
 from pcapi.utils.logger import logger
 from pcapi.utils.token import random_token
+
 
 THINGS_PER_TYPE = 7
 

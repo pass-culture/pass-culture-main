@@ -1,7 +1,9 @@
 import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import Offer
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class

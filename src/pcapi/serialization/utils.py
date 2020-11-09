@@ -1,10 +1,16 @@
-from typing import Optional, Any, Union
+from typing import Any
+from typing import Optional
+from typing import Union
 
-from pydantic import ValidationError, validator
-from flask import Response, Request
+from flask import Request
+from flask import Response
+from pydantic import ValidationError
+from pydantic import validator
 
 from pcapi.models import ApiErrors
-from pcapi.utils.human_ids import humanize, dehumanize, dehumanize_ids_list
+from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.human_ids import dehumanize_ids_list
+from pcapi.utils.human_ids import humanize
 
 
 def to_camel(string: str) -> str:

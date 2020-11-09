@@ -5,12 +5,13 @@ Revises: f13c246d86dd
 Create Date: 2018-12-27 09:47:46.706893
 
 """
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 # revision identifiers, used by Alembic.
 from sqlalchemy import ForeignKey
 
 from pcapi.models.payment_status import TransactionStatus
+
 
 revision = 'b73fa4d77710'
 down_revision = 'f13c246d86dd'

@@ -1,10 +1,13 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
+import pytest
+
+from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
-import pytest
+
 from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_user
 
 
 class PostNewPassword:

@@ -1,13 +1,19 @@
-from typing import Tuple, List
+from typing import List
+from typing import Tuple
 
 import pandas
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
 import pcapi.core.bookings.repository as booking_repository
-import pcapi.repository.user_queries as user_repository
-from pcapi.models import Booking, UserSQLEntity, StockSQLEntity, Offer, ThingType, EventType
+from pcapi.models import Booking
+from pcapi.models import EventType
+from pcapi.models import Offer
+from pcapi.models import StockSQLEntity
+from pcapi.models import ThingType
+from pcapi.models import UserSQLEntity
 from pcapi.models.db import db
+import pcapi.repository.user_queries as user_repository
 
 
 def count_activated_users(departement_code: str = None) -> int:

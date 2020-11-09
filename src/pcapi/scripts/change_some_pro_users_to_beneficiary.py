@@ -1,7 +1,9 @@
 from typing import List
-from pcapi.models import UserSQLEntity, UserOfferer
-from pcapi.repository import repository
+
 from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
+from pcapi.repository import repository
 
 
 def change_pro_users_to_beneficiary(pro_users_ids: List[int]) -> None:

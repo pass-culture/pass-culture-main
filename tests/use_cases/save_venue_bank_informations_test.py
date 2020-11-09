@@ -4,20 +4,28 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.domain.bank_information import CannotRegisterBankInformation
-from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import BankInformationsSQLRepository
+from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
+    BankInformationsSQLRepository,
+)
 from pcapi.infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
-from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import \
-    VenueWithBasicInformationSQLRepository
+from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import (
+    VenueWithBasicInformationSQLRepository,
+)
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models import ApiErrors
 from pcapi.models import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.repository import repository
-import pytest
-from tests.connector_creators.demarches_simplifiees_creators import \
-    venue_demarche_simplifiee_application_detail_response_with_siret, \
-    venue_demarche_simplifiee_application_detail_response_without_siret
-from pcapi.model_creators.generic_creators import create_bank_information, create_offerer, create_venue
 from pcapi.use_cases.save_venue_bank_informations import SaveVenueBankInformations
+
+from tests.connector_creators.demarches_simplifiees_creators import (
+    venue_demarche_simplifiee_application_detail_response_with_siret,
+)
+from tests.connector_creators.demarches_simplifiees_creators import (
+    venue_demarche_simplifiee_application_detail_response_without_siret,
+)
 
 
 class SaveVenueBankInformationsTest:

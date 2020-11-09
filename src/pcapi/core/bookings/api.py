@@ -1,26 +1,26 @@
 import base64
 import datetime
 import io
-import pytz
 import typing
 
+from PIL import Image
 from flask import current_app as app
+import pytz
 import qrcode
 import qrcode.image.svg
-from PIL import Image
 
 from pcapi.connectors import redis
-from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings import conf
+from pcapi.core.bookings.models import Booking
+from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.recommendation import Recommendation
 from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.user_sql_entity import UserSQLEntity
-from pcapi.repository import repository
 from pcapi.repository import feature_queries
+from pcapi.repository import repository
 from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.token import random_token
-from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 
 from . import repository as booking_repository
 from . import validation

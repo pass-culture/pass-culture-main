@@ -1,23 +1,25 @@
-import os
 from io import BytesIO
+import os
 from pathlib import Path
-from unittest.mock import patch, \
-    MagicMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 
-import tests
-from pcapi.model_creators.generic_creators import create_user, \
-    create_offerer, \
-    create_venue, \
-    create_user_offerer
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.models import MediationSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
-from tests.conftest import clean_database, \
-    TestClient
+
+import tests
+from tests.conftest import TestClient
+from tests.conftest import clean_database
+
 
 MODULE_PATH = Path(os.path.dirname(os.path.realpath(__file__)))
 TEST_IMAGE_PATH = Path(tests.__path__[0]) / 'files' / 'pixel.png'

@@ -1,5 +1,6 @@
 from pcapi.domain.bank_account import format_raw_iban_and_bic
 
+
 class FormatRawIbanAndBicTest:
   def test_return_nothing_if_given_data_is_none(self):
       # given

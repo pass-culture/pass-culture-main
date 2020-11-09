@@ -1,11 +1,13 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from typing import List
 
 from sqlalchemy.sql.sqltypes import DateTime
+
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
-from pcapi.repository import repository
 from pcapi.models.stock_sql_entity import StockSQLEntity
+from pcapi.repository import repository
 from pcapi.repository.venue_queries import find_by_id
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.logger import logger

@@ -1,52 +1,48 @@
 from flask import current_app as app
-from flask import jsonify, request
+from flask import jsonify
+from flask import request
 from flask_login import current_user
 
 from pcapi.connectors import redis
 from pcapi.core.bookings.repository import find_not_cancelled_bookings_by_stock
 from pcapi.domain.allocine import get_editable_fields_for_allocine_stocks
-from pcapi.domain.stocks import (
-    delete_stock_and_cancel_bookings,
-    have_beginning_date_been_modified,
-)
-from pcapi.domain.user_emails import (
-    send_batch_cancellation_emails_to_users,
-    send_batch_stock_postponement_emails_to_users,
-    send_offerer_bookings_recap_email_after_offerer_cancellation,
-)
+from pcapi.domain.stocks import delete_stock_and_cancel_bookings
+from pcapi.domain.stocks import have_beginning_date_been_modified
+from pcapi.domain.user_emails import send_batch_cancellation_emails_to_users
+from pcapi.domain.user_emails import send_batch_stock_postponement_emails_to_users
+from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.flask_app import private_api
-from pcapi.models import Product, VenueSQLEntity
+from pcapi.models import Product
+from pcapi.models import VenueSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.mediation_sql_entity import MediationSQLEntity
 from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.user_offerer import RightsType
-from pcapi.repository import feature_queries, offerer_queries, repository
+from pcapi.repository import feature_queries
+from pcapi.repository import offerer_queries
+from pcapi.repository import repository
 from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.repository.stock_queries import find_stocks_with_possible_filters
 from pcapi.routes.serialization import as_dict
-from pcapi.routes.serialization.stock_serialize import (
-    StockCreationBodyModel,
-    StockEditionBodyModel,
-    StockResponseIdModel,
-)
+from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
+from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
+from pcapi.routes.serialization.stock_serialize import StockResponseIdModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.mailing import MailServiceException, send_raw_email
-from pcapi.utils.rest import (
-    ensure_current_user_has_rights,
-    handle_rest_get_list,
-    load_or_404,
-    login_or_api_key_required,
-)
+from pcapi.utils.mailing import MailServiceException
+from pcapi.utils.mailing import send_raw_email
+from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import handle_rest_get_list
+from pcapi.utils.rest import load_or_404
+from pcapi.utils.rest import login_or_api_key_required
 from pcapi.validation.routes.offers import check_offer_is_editable
-from pcapi.validation.routes.stocks import (
-    check_dates_are_allowed_on_existing_stock,
-    check_dates_are_allowed_on_new_stock,
-    check_only_editable_fields_will_be_updated,
-    check_stock_is_updatable,
-    check_stocks_are_editable_for_offer,
-    get_only_fields_with_value_to_be_updated,
-)
+from pcapi.validation.routes.stocks import check_dates_are_allowed_on_existing_stock
+from pcapi.validation.routes.stocks import check_dates_are_allowed_on_new_stock
+from pcapi.validation.routes.stocks import check_only_editable_fields_will_be_updated
+from pcapi.validation.routes.stocks import check_stock_is_updatable
+from pcapi.validation.routes.stocks import check_stocks_are_editable_for_offer
+from pcapi.validation.routes.stocks import get_only_fields_with_value_to_be_updated
+
 
 search_models = [
     # Order is important

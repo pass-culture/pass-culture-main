@@ -1,5 +1,5 @@
-from pcapi.domain.offerer.offerer_repository import OffererRepository
 from pcapi.domain.offerer.offerer import Offerer
+from pcapi.domain.offerer.offerer_repository import OffererRepository
 from pcapi.infrastructure.repository.offerer import offerer_domain_converter
 from pcapi.models import Offerer as OffererSQLEntity
 

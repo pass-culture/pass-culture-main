@@ -1,4 +1,5 @@
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 from pcapi.models.provider import Provider
 

@@ -1,10 +1,12 @@
 from unittest.mock import patch
 
+import pytest
+
 from pcapi.models import Feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.scripts.payment.batch import generate_and_send_payments
-import pytest
+
 from tests.test_utils import deactivate_feature
 
 

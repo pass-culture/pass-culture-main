@@ -4,6 +4,7 @@ import requests
 
 from pcapi.utils.config import API_APPLICATION_NAME
 
+
 SCALINGO_AUTH_URL = 'https://auth.scalingo.com/v1'
 SCALINGO_API_URL = 'https://api.osc-fr1.scalingo.com/v1'
 SCALINGO_API_REGION = "osc-fr1"

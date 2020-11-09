@@ -1,4 +1,5 @@
-from typing import List, Dict
+from typing import Dict
+from typing import List
 
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks

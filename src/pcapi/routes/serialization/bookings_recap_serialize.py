@@ -1,9 +1,17 @@
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Any
+from typing import Dict
+from typing import List
 
-from pcapi.domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, BookBookingRecap, BookingRecapStatus
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory, BookingRecapHistory, BookingRecapValidatedHistory, \
-    BookingRecapCancelledHistory, BookingRecapReimbursedHistory
+from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
+from pcapi.domain.booking_recap.booking_recap import BookingRecap
+from pcapi.domain.booking_recap.booking_recap import BookingRecapStatus
+from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapCancelledHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapReimbursedHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapValidatedHistory
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.human_ids import humanize

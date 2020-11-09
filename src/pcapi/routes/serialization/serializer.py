@@ -1,12 +1,13 @@
-import enum
 from datetime import datetime
+import enum
 from functools import singledispatch
 
-import sqlalchemy
 from psycopg2._range import DateTimeRange
+import sqlalchemy
 from sqlalchemy import Integer
 
-from pcapi.utils.date import DateTimes, format_into_utc_date
+from pcapi.utils.date import DateTimes
+from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
 

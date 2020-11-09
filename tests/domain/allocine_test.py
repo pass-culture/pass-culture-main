@@ -1,7 +1,11 @@
-from unittest.mock import Mock, MagicMock
+from unittest.mock import MagicMock
+from unittest.mock import Mock
 
-from pcapi.domain.allocine import get_movies_showtimes, get_movie_poster, _exclude_movie_showtimes_with_special_event_type, \
-    get_editable_fields_for_allocine_stocks, get_editable_fields_for_allocine_offers
+from pcapi.domain.allocine import _exclude_movie_showtimes_with_special_event_type
+from pcapi.domain.allocine import get_editable_fields_for_allocine_offers
+from pcapi.domain.allocine import get_editable_fields_for_allocine_stocks
+from pcapi.domain.allocine import get_movie_poster
+from pcapi.domain.allocine import get_movies_showtimes
 
 
 class GetMovieShowtimeListFromAllocineTest:

@@ -1,16 +1,31 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
-from sqlalchemy import ARRAY, Boolean, CheckConstraint, false, Integer, Text
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String
+from sqlalchemy import ARRAY
+from sqlalchemy import BigInteger
+from sqlalchemy import Boolean
+from sqlalchemy import CheckConstraint
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Text
+from sqlalchemy import false
 from sqlalchemy.orm import relationship
 
-from pcapi.domain.ts_vector import create_ts_vector, create_fts_index
-from pcapi.models.db import db, Model
+from pcapi.domain.ts_vector import create_fts_index
+from pcapi.domain.ts_vector import create_ts_vector
+from pcapi.models.db import Model
+from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.mediation_sql_entity import MediationSQLEntity
-from pcapi.models.offer_type import ThingType, EventType, ProductType, Category
+from pcapi.models.offer_type import Category
+from pcapi.models.offer_type import EventType
+from pcapi.models.offer_type import ProductType
+from pcapi.models.offer_type import ThingType
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.stock_sql_entity import StockSQLEntity

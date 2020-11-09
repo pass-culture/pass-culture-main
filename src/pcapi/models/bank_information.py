@@ -1,7 +1,15 @@
 from datetime import datetime
 import enum
-from sqlalchemy import Column, BigInteger, DateTime, ForeignKey, String, Integer, Enum
-from sqlalchemy.orm import relationship, backref
+
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import Enum
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy.orm import backref
+from sqlalchemy.orm import relationship
 
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject

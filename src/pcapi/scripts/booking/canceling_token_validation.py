@@ -1,5 +1,6 @@
 import pcapi.core.bookings.repository as booking_repository
-from pcapi.repository import payment_queries, repository
+from pcapi.repository import payment_queries
+from pcapi.repository import repository
 
 
 def canceling_token_validation(token: str) -> None:

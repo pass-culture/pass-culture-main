@@ -1,11 +1,11 @@
-from unittest.mock import patch, \
-    MagicMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine, \
-    AllocineException, \
-    get_movie_poster_from_allocine
+from pcapi.connectors.api_allocine import AllocineException
+from pcapi.connectors.api_allocine import get_movie_poster_from_allocine
+from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine
 
 
 class GetMovieShowtimeListTest:

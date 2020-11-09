@@ -1,12 +1,21 @@
 import copy
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
-from pcapi.models import Offerer, RightsType, UserOfferer
-from pcapi.repository import repository
 import pytest
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue_type
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue_type
+from pcapi.models import Offerer
+from pcapi.models import RightsType
+from pcapi.models import UserOfferer
+from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
+
 
 api_entreprise_json_mock = {"unite_legale": {
     "etablissement_siege": {},

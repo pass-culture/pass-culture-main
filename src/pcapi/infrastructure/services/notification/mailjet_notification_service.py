@@ -1,15 +1,20 @@
+from datetime import datetime
 import os
 from typing import Callable
-from datetime import datetime
 
 from pcapi.core.bookings.models import Booking
 from pcapi.domain.beneficiary_contact.beneficiary_contact import BeneficiaryContact
-from pcapi.domain.services.notification.notification_service import NotificationService
-from pcapi.domain.user_emails import send_booking_recap_emails, send_booking_confirmation_email_to_beneficiary, \
-    send_booking_cancellation_emails_to_user_and_offerer
-from pcapi.utils.logger import logger
-from pcapi.utils.mailing import send_raw_email, create_contact, add_contact_informations, add_contact_to_list, MailServiceException
 from pcapi.domain.beneficiary_contact.beneficiary_contact_exceptions import AddNewBeneficiaryContactException
+from pcapi.domain.services.notification.notification_service import NotificationService
+from pcapi.domain.user_emails import send_booking_cancellation_emails_to_user_and_offerer
+from pcapi.domain.user_emails import send_booking_confirmation_email_to_beneficiary
+from pcapi.domain.user_emails import send_booking_recap_emails
+from pcapi.utils.logger import logger
+from pcapi.utils.mailing import MailServiceException
+from pcapi.utils.mailing import add_contact_informations
+from pcapi.utils.mailing import add_contact_to_list
+from pcapi.utils.mailing import create_contact
+from pcapi.utils.mailing import send_raw_email
 
 
 class MailjetNotificationService(NotificationService):

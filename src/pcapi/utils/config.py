@@ -1,7 +1,8 @@
 """ config """
-import os
 from logging import INFO as LOG_LEVEL_INFO
+import os
 from pathlib import Path
+
 
 API_ROOT_PATH = Path(os.path.dirname(os.path.realpath(__file__))) / '..'
 ENV = os.environ.get('ENV', 'development')

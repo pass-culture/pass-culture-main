@@ -5,10 +5,11 @@ Revises: 202da1fda17c
 Create Date: 2018-09-17 12:36:46.498574
 
 """
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 # revision identifiers, used by Alembic.
 from sqlalchemy.sql import expression
+
 
 revision = '5f072f461580'
 down_revision = '202da1fda17c'

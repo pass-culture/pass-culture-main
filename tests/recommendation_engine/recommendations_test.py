@@ -3,12 +3,20 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.recommendations_engine import give_requested_recommendation_to_user, create_recommendations_for_discovery
-from pcapi.models import Offerer, StockSQLEntity
-from pcapi.repository import repository, discovery_view_queries
-from pcapi.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
-    create_recommendation, create_mediation
-from pcapi.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
+from pcapi.model_creators.generic_creators import create_mediation
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_recommendation
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_offer
+from pcapi.models import Offerer
+from pcapi.models import StockSQLEntity
+from pcapi.recommendations_engine import create_recommendations_for_discovery
+from pcapi.recommendations_engine import give_requested_recommendation_to_user
+from pcapi.repository import discovery_view_queries
+from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
 

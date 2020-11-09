@@ -1,8 +1,10 @@
+import pytest
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models.db import db
 from pcapi.repository import repository
 from pcapi.scripts.correct_venue_departement import correct_venue_departement
-import pytest
-from pcapi.model_creators.generic_creators import create_venue, create_offerer
 
 
 class CorrectVenueDepartementTest:

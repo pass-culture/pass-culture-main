@@ -1,8 +1,10 @@
+import pytest
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models import AllocinePivot
 from pcapi.repository import repository
 from pcapi.scripts.link_theater_and_siret_in_allocine_pivot import link_theater_to_siret
-import pytest
-from pcapi.model_creators.generic_creators import create_venue, create_offerer
 
 
 @pytest.mark.usefixtures("db_session")

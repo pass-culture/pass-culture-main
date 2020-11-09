@@ -1,9 +1,10 @@
-from unittest.mock import MagicMock, \
-    patch
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 
-from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI, ProviderAPIException
+from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
+from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPIException
 
 
 class ProviderAPITest:

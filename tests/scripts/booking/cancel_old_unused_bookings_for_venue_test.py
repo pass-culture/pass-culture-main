@@ -1,13 +1,13 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
+
 import pytest
-from pcapi.core.bookings.models import Booking
-from pcapi.scripts.booking.cancel_old_unused_bookings_for_venue import (
-    cancel_old_unused_bookings_for_venue,
-)
-from pcapi.utils.human_ids import humanize
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import Booking
 import pcapi.core.offers.factories as offers_factories
+from pcapi.scripts.booking.cancel_old_unused_bookings_for_venue import cancel_old_unused_bookings_for_venue
+from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")

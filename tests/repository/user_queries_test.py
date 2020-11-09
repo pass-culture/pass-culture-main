@@ -1,20 +1,30 @@
-from datetime import MINYEAR, datetime, timedelta
+from datetime import MINYEAR
+from datetime import datetime
+from datetime import timedelta
 
 import pytest
 
-from pcapi.models import EventType, ImportStatus, ThingType, BeneficiaryImportSources
+from pcapi.model_creators.generic_creators import create_beneficiary_import
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.models import BeneficiaryImportSources
+from pcapi.models import EventType
+from pcapi.models import ImportStatus
+from pcapi.models import ThingType
 from pcapi.repository import repository
-from pcapi.repository.user_queries import \
-    count_all_activated_users, count_all_activated_users_by_departement, \
-    count_users_having_booked, count_users_having_booked_by_departement_code, \
-    find_by_civility, \
-    find_most_recent_beneficiary_creation_date_for_source, \
-    get_all_users_wallet_balances
-from pcapi.model_creators.generic_creators import create_beneficiary_import, \
-    create_booking, create_deposit, create_offerer, create_stock, create_user, \
-    create_venue
-from pcapi.model_creators.specific_creators import \
-    create_offer_with_event_product, create_offer_with_thing_product
+from pcapi.repository.user_queries import count_all_activated_users
+from pcapi.repository.user_queries import count_all_activated_users_by_departement
+from pcapi.repository.user_queries import count_users_having_booked
+from pcapi.repository.user_queries import count_users_having_booked_by_departement_code
+from pcapi.repository.user_queries import find_by_civility
+from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
+from pcapi.repository.user_queries import get_all_users_wallet_balances
 
 
 class GetAllUsersWalletBalancesTest:

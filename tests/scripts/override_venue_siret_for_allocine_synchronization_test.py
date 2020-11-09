@@ -1,8 +1,11 @@
+import pytest
+
+from pcapi.model_creators.generic_creators import create_allocine_pivot
 from pcapi.models import AllocinePivot
 from pcapi.repository import repository
-from pcapi.scripts.override_venue_siret_for_allocine_synchronization import override_venue_siret_for_allocine_synchronization
-import pytest
-from pcapi.model_creators.generic_creators import create_allocine_pivot
+from pcapi.scripts.override_venue_siret_for_allocine_synchronization import (
+    override_venue_siret_for_allocine_synchronization,
+)
 
 
 @pytest.mark.usefixtures("db_session")

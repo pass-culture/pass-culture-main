@@ -5,7 +5,8 @@ from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
 from pcapi.connectors import redis
-from pcapi.models import StockSQLEntity, Booking
+from pcapi.models import Booking
+from pcapi.models import StockSQLEntity
 from pcapi.repository import repository
 
 

@@ -1,9 +1,13 @@
 import csv
 from datetime import datetime
-from typing import List, Callable
+from typing import Callable
+from typing import List
 
-from pcapi.domain.password import random_password, generate_reset_token
-from pcapi.models import Offerer, UserSQLEntity, UserOfferer
+from pcapi.domain.password import generate_reset_token
+from pcapi.domain.password import random_password
+from pcapi.models import Offerer
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
 from pcapi.models.user_offerer import RightsType
 from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.repository import repository
@@ -12,6 +16,7 @@ from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id_an
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.repository.venue_queries import find_by_managing_offerer_id
 from pcapi.utils.logger import logger
+
 
 USER_LAST_NAME_COLUMN_INDEX = 0
 USER_FIRST_NAME_COLUMN_INDEX = 1

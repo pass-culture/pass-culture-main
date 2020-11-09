@@ -1,8 +1,8 @@
 from typing import List
 
+from pcapi.model_creators.generic_creators import create_venue_type
 from pcapi.models.venue_type import VenueType
 from pcapi.repository import repository
-from pcapi.model_creators.generic_creators import create_venue_type
 from pcapi.utils.logger import logger
 
 

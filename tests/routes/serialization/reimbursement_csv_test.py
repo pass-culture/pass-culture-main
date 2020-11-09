@@ -1,18 +1,25 @@
 from freezegun import freeze_time
+import pytest
 
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_payment
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.repository.reimbursement_queries import find_all_offerer_payments
-from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv, \
-    ReimbursementDetails, \
-    find_all_offerer_reimbursement_details
+from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
+from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offerer_reimbursement_details
+from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
 from pcapi.scripts.payment.batch_steps import generate_new_payments
-import pytest
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_deposit, \
-    create_user_offerer, create_bank_information, create_payment
-from pcapi.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
+
 from tests.test_utils import deactivate_feature
 
 

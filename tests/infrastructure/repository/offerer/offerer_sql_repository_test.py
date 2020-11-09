@@ -1,8 +1,10 @@
+import pytest
+
 from pcapi.infrastructure.repository.offerer import offerer_domain_converter
 from pcapi.infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
-from pcapi.repository import repository
-import pytest
 from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.repository import repository
+
 
 class OffererSQLRepositoryTest:
     def setup_method(self):

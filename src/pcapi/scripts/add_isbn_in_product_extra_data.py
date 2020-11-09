@@ -1,11 +1,14 @@
-from typing import List, Dict
+from typing import Dict
+from typing import List
 
 from sqlalchemy.engine import Connection
 
-from pcapi.models import Product, Offer
+from pcapi.models import Offer
+from pcapi.models import Product
 from pcapi.models.db import db
 from pcapi.repository.providable_queries import _dict_to_object
 from pcapi.scripts.performance_toolkit import bulk_update_pc_objects
+
 
 CHUNK_SIZE = 500
 

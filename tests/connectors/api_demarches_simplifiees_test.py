@@ -1,11 +1,11 @@
-from unittest.mock import MagicMock, \
-    patch
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.api_demarches_simplifiees import get_all_applications_for_procedure, \
-    ApiDemarchesSimplifieesException, \
-    get_application_details
+from pcapi.connectors.api_demarches_simplifiees import ApiDemarchesSimplifieesException
+from pcapi.connectors.api_demarches_simplifiees import get_all_applications_for_procedure
+from pcapi.connectors.api_demarches_simplifiees import get_application_details
 
 
 class GetAllApplicationsForProcedureTest:

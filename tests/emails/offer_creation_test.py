@@ -2,11 +2,14 @@ from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 
-from pcapi.models import ThingType
-from pcapi.model_creators.generic_creators import create_offerer, create_user, create_venue
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from tests.utils.mailing_test import _remove_whitespaces
+from pcapi.models import ThingType
 from pcapi.utils.mailing import make_offer_creation_notification_email
+
+from tests.utils.mailing_test import _remove_whitespaces
 
 
 class MakeOfferCreationNotificationEmailTest:

@@ -1,14 +1,19 @@
 import os
-from typing import List, Tuple
+from typing import List
+from typing import Tuple
 
 from pcapi.models import Feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
 from pcapi.repository import feature_queries
 from pcapi.repository.payment_queries import get_payments_by_message_id
-from pcapi.scripts.payment.batch_steps import generate_new_payments, concatenate_payments_with_errors_and_retries, \
-    send_transactions, send_payments_report, send_payments_details, send_wallet_balances, \
-    set_not_processable_payments_with_bank_information_to_retry
+from pcapi.scripts.payment.batch_steps import concatenate_payments_with_errors_and_retries
+from pcapi.scripts.payment.batch_steps import generate_new_payments
+from pcapi.scripts.payment.batch_steps import send_payments_details
+from pcapi.scripts.payment.batch_steps import send_payments_report
+from pcapi.scripts.payment.batch_steps import send_transactions
+from pcapi.scripts.payment.batch_steps import send_wallet_balances
+from pcapi.scripts.payment.batch_steps import set_not_processable_payments_with_bank_information_to_retry
 from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
 from pcapi.utils.logger import logger
 from pcapi.utils.mailing import parse_email_addresses

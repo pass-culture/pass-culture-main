@@ -3,24 +3,26 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.model_creators.activity_creators import create_venue_activity, \
-    save_all_activities
-from pcapi.model_creators.generic_creators import create_user, \
-    create_offerer, \
-    create_venue, \
-    create_user_offerer, \
-    create_bank_information
-from pcapi.model_creators.specific_creators import create_stock_with_event_offer, \
-    create_stock_from_event_occurrence, \
-    create_stock_with_thing_offer, \
-    create_offer_with_event_product, \
-    create_event_occurrence
-from pcapi.models import VenueSQLEntity, \
-    Offerer
+from pcapi.model_creators.activity_creators import create_venue_activity
+from pcapi.model_creators.activity_creators import save_all_activities
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
+from pcapi.models import Offerer
+from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import humanize
+
 from tests.conftest import TestClient
+
 
 fake_export_token = 'fake'
 

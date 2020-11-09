@@ -4,7 +4,9 @@ import pytest
 
 from pcapi.core.users import factories as user_factories
 from pcapi.core.users.factories import UserFactory
+
 from tests.conftest import TestClient
+
 
 pytestmark = pytest.mark.usefixtures("db_session")
 

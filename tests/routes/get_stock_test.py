@@ -1,11 +1,12 @@
 import json
 
-from tests.conftest import TestClient
-from pcapi.repository import repository
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.human_ids import humanize
+from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
 
 
 class Returns200:

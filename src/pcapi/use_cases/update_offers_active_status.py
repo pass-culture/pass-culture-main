@@ -1,13 +1,12 @@
-from flask import current_app as app
 from typing import Optional
+
+from flask import current_app as app
 
 from pcapi.connectors import redis
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
-from pcapi.repository.offer_queries import (
-    update_offers_is_active_status,
-    get_all_offers_id_by_filters,
-)
+from pcapi.repository.offer_queries import get_all_offers_id_by_filters
+from pcapi.repository.offer_queries import update_offers_is_active_status
 
 
 def update_all_offers_active_status(

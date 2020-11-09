@@ -1,5 +1,6 @@
+from base64 import b32decode
+from base64 import b32encode
 import binascii
-from base64 import b32encode, b32decode
 
 
 class NonStricltyPositiveIdentifierException(Exception):

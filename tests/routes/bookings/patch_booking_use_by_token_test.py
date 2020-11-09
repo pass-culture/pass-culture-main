@@ -1,4 +1,5 @@
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
+from unittest.mock import patch
 
 import pytest
 
@@ -6,14 +7,26 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.user_emails import send_activation_email
-from pcapi.models import db, EventType, Deposit, Booking, UserSQLEntity
+from pcapi.model_creators.generic_creators import create_api_key
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer
+from pcapi.models import Booking
+from pcapi.models import Deposit
+from pcapi.models import EventType
+from pcapi.models import UserSQLEntity
+from pcapi.models import db
 from pcapi.repository import repository
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue, \
-    create_deposit, create_user_offerer, create_api_key
-from pcapi.model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product
 from pcapi.utils.token import random_token
+
+from tests.conftest import TestClient
+
 
 API_KEY_VALUE = random_token(64)
 

@@ -1,8 +1,12 @@
 from unittest.mock import patch
 
-from pcapi.model_creators.generic_creators import create_offerer, create_bank_information, create_venue, create_stock, \
-    create_user
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
 from pcapi.validation.models.entity_validator import validate
 
 

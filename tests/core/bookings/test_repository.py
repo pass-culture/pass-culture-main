@@ -1,24 +1,42 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
 from dateutil import tz
 from freezegun import freeze_time
 import pytest
 from pytest import fixture
 
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
-from pcapi.model_creators.activity_creators import create_booking_activity, save_all_activities
-from pcapi.model_creators.generic_creators import create_booking, create_deposit, create_offerer, create_payment, create_recommendation, create_stock, create_user, create_user_offerer, create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, create_stock_from_offer, create_stock_with_event_offer, \
-    create_stock_with_thing_offer
-
 import pcapi.core.bookings.repository as booking_repository
-from pcapi.domain.booking_recap.booking_recap import BookBookingRecap, EventBookingRecap
-from pcapi.repository import repository
-from pcapi.models import Booking, EventType, ThingType
-from pcapi.models.api_errors import ApiErrors, ResourceNotFoundError
+from pcapi.core.bookings.repository import find_by_pro_user_id
+from pcapi.core.bookings.repository import find_first_matching_from_offer_by_user
+from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
+from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
+from pcapi.model_creators.activity_creators import create_booking_activity
+from pcapi.model_creators.activity_creators import save_all_activities
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_payment
+from pcapi.model_creators.generic_creators import create_recommendation
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_offer
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
+from pcapi.models import Booking
+from pcapi.models import EventType
+from pcapi.models import ThingType
+from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY
-from pcapi.core.bookings.repository import find_by_pro_user_id, find_first_matching_from_offer_by_user
+from pcapi.repository import repository
+
 
 NOW = datetime.utcnow()
 TWO_DAYS_AGO = NOW - timedelta(days=2)

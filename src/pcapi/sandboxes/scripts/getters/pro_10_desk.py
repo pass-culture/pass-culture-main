@@ -1,14 +1,15 @@
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
+from pcapi.models import VenueSQLEntity
 from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.user_sql_entity import UserSQLEntity
-from pcapi.models import VenueSQLEntity
 from pcapi.repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer
-from pcapi.sandboxes.scripts.utils.helpers import get_booking_helper, \
-                                            get_offer_helper, \
-                                            get_offerer_helper, \
-                                            get_pro_helper, \
-                                            get_venue_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_booking_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_offer_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_offerer_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_venue_helper
+
 
 def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_offerer_with_thing_offer_with_stock_with_not_used_booking():
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)

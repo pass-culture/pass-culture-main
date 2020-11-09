@@ -1,5 +1,7 @@
 # Loading variables should always be the first thing, before any other load
 from pcapi.load_environment_variables import load_environment_variables
+
+
 load_environment_variables()
 
 import os
@@ -7,22 +9,26 @@ import os
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from pcapi.flask_app import app
-from pcapi.local_providers.provider_manager import \
-    synchronize_venue_providers_for_provider
+from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import discovery_view_queries, discovery_view_v3_queries, feature_queries
-from pcapi.repository.feature_queries import feature_write_dashboard_enabled, feature_clean_seen_offers_enabled
+from pcapi.repository import discovery_view_queries
+from pcapi.repository import discovery_view_v3_queries
+from pcapi.repository import feature_queries
+from pcapi.repository.feature_queries import feature_clean_seen_offers_enabled
+from pcapi.repository.feature_queries import feature_write_dashboard_enabled
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.repository.seen_offer_queries import remove_old_seen_offers
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
-from pcapi.scheduled_tasks.decorators import cron_context, cron_require_feature, \
-    log_cron
 from pcapi.scheduled_tasks import utils
-from pcapi.scripts.beneficiary import old_remote_import, remote_import
+from pcapi.scheduled_tasks.decorators import cron_context
+from pcapi.scheduled_tasks.decorators import cron_require_feature
+from pcapi.scheduled_tasks.decorators import log_cron
+from pcapi.scripts.beneficiary import old_remote_import
+from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.dashboard.write_dashboard import write_dashboard
-from pcapi.scripts.update_booking_used import \
-    update_booking_used_after_stock_occurrence
+from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
+
 
 DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID',
                                                                    None)

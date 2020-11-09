@@ -3,8 +3,12 @@ from typing import List
 from sqlalchemy import func
 
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information import VenueWithBasicInformation
-from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information_repository import VenueWithBasicInformationRepository
-from pcapi.infrastructure.repository.venue.venue_with_basic_information import venue_with_basic_information_domain_converter
+from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information_repository import (
+    VenueWithBasicInformationRepository,
+)
+from pcapi.infrastructure.repository.venue.venue_with_basic_information import (
+    venue_with_basic_information_domain_converter,
+)
 from pcapi.models import VenueSQLEntity
 
 

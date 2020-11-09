@@ -1,12 +1,18 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from decimal import Decimal
 
 from freezegun import freeze_time
 
-from pcapi.domain.reimbursement import ReimbursementRules, find_all_booking_reimbursements, ReimbursementRule, CURRENT_RULES, \
-    NEW_RULES
-from pcapi.models import Booking, ThingType
-from pcapi.model_creators.specific_creators import create_booking_for_thing, create_booking_for_event
+from pcapi.domain.reimbursement import CURRENT_RULES
+from pcapi.domain.reimbursement import NEW_RULES
+from pcapi.domain.reimbursement import ReimbursementRule
+from pcapi.domain.reimbursement import ReimbursementRules
+from pcapi.domain.reimbursement import find_all_booking_reimbursements
+from pcapi.model_creators.specific_creators import create_booking_for_event
+from pcapi.model_creators.specific_creators import create_booking_for_thing
+from pcapi.models import Booking
+from pcapi.models import ThingType
 
 
 class DigitalThingsReimbursementTest:

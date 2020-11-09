@@ -1,4 +1,5 @@
-from pcapi.models import UserOfferer, UserSQLEntity
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
 
 
 def find_user_offerer_email(user_offerer_id):

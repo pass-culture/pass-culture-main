@@ -2,7 +2,8 @@ from typing import List
 
 from sqlalchemy.orm.query import Query
 
-from pcapi.models import FavoriteSQLEntity, UserSQLEntity
+from pcapi.models import FavoriteSQLEntity
+from pcapi.models import UserSQLEntity
 
 
 def find_favorite_for_offer_and_user(offer_id: int, user_id: int) -> Query:

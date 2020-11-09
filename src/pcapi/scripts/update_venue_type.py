@@ -1,8 +1,10 @@
 import csv
 from typing import List
 
+from pcapi.models import ApiErrors
+from pcapi.models import VenueSQLEntity
+from pcapi.models import VenueType
 from pcapi.repository import repository
-from pcapi.models import VenueSQLEntity, VenueType, ApiErrors
 
 
 def update_venue_type(file_path: str):

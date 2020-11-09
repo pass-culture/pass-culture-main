@@ -4,13 +4,14 @@ from typing import Dict
 
 from redis import Redis
 
-from pcapi.connectors.redis import \
-    get_venue_providers, \
-    get_number_of_venue_providers_currently_in_sync, \
-    add_venue_provider_currently_in_sync, \
-    delete_venue_providers
-from pcapi.connectors.scalingo_api import run_process_in_one_off_container, ScalingoApiException
+from pcapi.connectors.redis import add_venue_provider_currently_in_sync
+from pcapi.connectors.redis import delete_venue_providers
+from pcapi.connectors.redis import get_number_of_venue_providers_currently_in_sync
+from pcapi.connectors.redis import get_venue_providers
+from pcapi.connectors.scalingo_api import ScalingoApiException
+from pcapi.connectors.scalingo_api import run_process_in_one_off_container
 from pcapi.utils.logger import logger
+
 
 ALGOLIA_WAIT_TIME_FOR_AVAILABLE_WORKER = 60
 ALGOLIA_DEFAULT_SYNC_WORKERS_POOL_SIZE = 10

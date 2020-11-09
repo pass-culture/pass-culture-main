@@ -1,12 +1,12 @@
 """ providable mixin """
 from datetime import datetime
 
-from sqlalchemy import BigInteger, \
-    CheckConstraint, \
-    Column, \
-    DateTime, \
-    ForeignKey, \
-    String
+from sqlalchemy import BigInteger
+from sqlalchemy import CheckConstraint
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship

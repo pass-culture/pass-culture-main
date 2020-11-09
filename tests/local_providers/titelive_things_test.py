@@ -4,14 +4,21 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.local_providers import TiteLiveThings
-from pcapi.models import Product, BookFormat, LocalProviderEvent, Offer
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.provider_creators import activate_provider
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.models import BookFormat
+from pcapi.models import LocalProviderEvent
+from pcapi.models import Offer
+from pcapi.models import Product
 from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue
-from pcapi.model_creators.provider_creators import activate_provider
-from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
 
 class TiteliveThingsTest:

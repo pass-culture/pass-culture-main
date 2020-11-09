@@ -1,15 +1,22 @@
 from datetime import datetime
 
-from sqlalchemy import TEXT, BigInteger, Boolean, CheckConstraint, Column, \
-    DateTime, ForeignKey, Integer, Numeric, String
+from sqlalchemy import BigInteger
+from sqlalchemy import Boolean
+from sqlalchemy import CheckConstraint
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import Numeric
+from sqlalchemy import String
+from sqlalchemy import TEXT
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 
 from pcapi.core.offers.models import Offer
-from pcapi.domain.ts_vector import create_ts_vector_and_table_args
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.models.venue_type import VenueType
+from pcapi.domain.ts_vector import create_ts_vector_and_table_args
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.db import Model
 from pcapi.models.has_address_mixin import HasAddressMixin
@@ -17,7 +24,9 @@ from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
+from pcapi.models.venue_type import VenueType
 from pcapi.models.versioned_mixin import VersionedMixin
+
 
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
 (

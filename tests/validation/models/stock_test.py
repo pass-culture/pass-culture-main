@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from pcapi.models import ApiErrors
 from pcapi.model_creators.generic_creators import create_stock
+from pcapi.models import ApiErrors
 from pcapi.validation.models.stock import validate
 
 

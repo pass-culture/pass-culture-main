@@ -3,14 +3,14 @@ from decimal import Decimal
 
 import pytest
 
-from pcapi.models import ApiErrors
-from pcapi.models import db
-from pcapi.models import EventType
-from pcapi.models import ThingType
 from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
 import pcapi.core.recommendations.factories as recommendations_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.models import ApiErrors
+from pcapi.models import EventType
+from pcapi.models import ThingType
+from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 

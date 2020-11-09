@@ -1,6 +1,8 @@
 from decimal import Decimal
 
-from pcapi.models import AllocineVenueProvider, AllocineVenueProviderPriceRule, VenueSQLEntity
+from pcapi.models import AllocineVenueProvider
+from pcapi.models import AllocineVenueProviderPriceRule
+from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.logger import logger
 

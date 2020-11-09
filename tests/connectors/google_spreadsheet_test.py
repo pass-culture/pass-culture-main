@@ -2,7 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.google_spreadsheet import get_credentials, MissingGoogleKeyException
+from pcapi.connectors.google_spreadsheet import MissingGoogleKeyException
+from pcapi.connectors.google_spreadsheet import get_credentials
 
 
 class GetCredentialsTest:

@@ -1,14 +1,19 @@
-import pytest
 from datetime import datetime
 
-from pcapi.domain.bank_informations.bank_informations import BankInformations
-from pcapi.models.bank_information import BankInformationStatus, BankInformation as BankInformationsSQLEntity
-from pcapi.infrastructure.repository.bank_informations import bank_informations_domain_converter
-from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import BankInformationsSQLRepository
-from pcapi.repository import repository
 import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_bank_information, create_venue
+
+from pcapi.domain.bank_informations.bank_informations import BankInformations
+from pcapi.infrastructure.repository.bank_informations import bank_informations_domain_converter
+from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
+    BankInformationsSQLRepository,
+)
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models import ApiErrors
+from pcapi.models.bank_information import BankInformation as BankInformationsSQLEntity
+from pcapi.models.bank_information import BankInformationStatus
+from pcapi.repository import repository
 
 
 class BankInformationsSQLRepositoryTest:

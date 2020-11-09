@@ -1,23 +1,32 @@
 from unittest.mock import Mock
 
-import pytest
 from freezegun import freeze_time
 from lxml.etree import DocumentInvalid
-
-from pcapi.models.payment import Payment
-from pcapi.models.payment_status import TransactionStatus, PaymentStatus
-from pcapi.repository import repository
-from pcapi.scripts.payment.batch_steps import send_transactions, send_payments_details, \
-    send_wallet_balances, \
-    send_payments_report, concatenate_payments_with_errors_and_retries, \
-    set_not_processable_payments_with_bank_information_to_retry
 import pytest
-from tests.conftest import mocked_mail
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_deposit, \
-    create_payment, create_bank_information
-from pcapi.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
+
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_payment
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models.bank_information import BankInformationStatus
+from pcapi.models.payment import Payment
+from pcapi.models.payment_status import PaymentStatus
+from pcapi.models.payment_status import TransactionStatus
+from pcapi.repository import repository
+from pcapi.scripts.payment.batch_steps import concatenate_payments_with_errors_and_retries
+from pcapi.scripts.payment.batch_steps import send_payments_details
+from pcapi.scripts.payment.batch_steps import send_payments_report
+from pcapi.scripts.payment.batch_steps import send_transactions
+from pcapi.scripts.payment.batch_steps import send_wallet_balances
+from pcapi.scripts.payment.batch_steps import set_not_processable_payments_with_bank_information_to_retry
+
+from tests.conftest import mocked_mail
+
 
 class ConcatenatePaymentsWithErrorsAndRetriesTest:
     @pytest.mark.usefixtures("db_session")

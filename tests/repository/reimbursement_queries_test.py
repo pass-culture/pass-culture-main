@@ -1,15 +1,20 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from decimal import Decimal
 
 import pytest
 
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_payment
+from pcapi.model_creators.generic_creators import create_payment_status
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.repository.reimbursement_queries import find_all_offerer_payments
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_deposit, \
-    create_payment, create_payment_status
-from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 
 
 class FindAllOffererPaymentsTest:

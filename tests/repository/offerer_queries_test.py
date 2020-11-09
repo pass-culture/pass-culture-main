@@ -1,20 +1,39 @@
+from datetime import datetime
+from datetime import timedelta
 import secrets
-from datetime import datetime, timedelta
 
 import pytest
 
-from pcapi.models import Offerer, VenueSQLEntity, ThingType
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
+from pcapi.models import Offerer
+from pcapi.models import ThingType
+from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
-from pcapi.repository.offerer_queries import find_all_offerers_with_managing_user_information, \
-    find_all_offerers_with_managing_user_information_and_venue, \
-    find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
-    find_all_offerers_with_venue, find_first_by_user_offerer_id, find_all_pending_validation, \
-    find_filtered_offerers, filter_offerers_with_keywords_string, find_by_id, count_offerer, count_offerer_with_stock, \
-    count_offerer_by_departement, count_offerer_with_stock_by_departement, find_new_offerer_user_email
+from pcapi.repository.offerer_queries import count_offerer
+from pcapi.repository.offerer_queries import count_offerer_by_departement
+from pcapi.repository.offerer_queries import count_offerer_with_stock
+from pcapi.repository.offerer_queries import count_offerer_with_stock_by_departement
+from pcapi.repository.offerer_queries import filter_offerers_with_keywords_string
+from pcapi.repository.offerer_queries import find_all_offerers_with_managing_user_information
+from pcapi.repository.offerer_queries import find_all_offerers_with_managing_user_information_and_not_virtual_venue
+from pcapi.repository.offerer_queries import find_all_offerers_with_managing_user_information_and_venue
+from pcapi.repository.offerer_queries import find_all_offerers_with_venue
+from pcapi.repository.offerer_queries import find_all_pending_validation
+from pcapi.repository.offerer_queries import find_by_id
+from pcapi.repository.offerer_queries import find_filtered_offerers
+from pcapi.repository.offerer_queries import find_first_by_user_offerer_id
+from pcapi.repository.offerer_queries import find_new_offerer_user_email
 from pcapi.repository.user_queries import find_all_emails_of_user_offerers_admins
-from pcapi.model_creators.generic_creators import create_bank_information, create_offerer, create_stock, create_user, create_user_offerer, create_venue
-from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_with_thing_offer, \
-    create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 
 
 class OffererQueriesTest:

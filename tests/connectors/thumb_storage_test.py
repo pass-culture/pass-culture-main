@@ -6,7 +6,8 @@ import pytest
 from werkzeug.datastructures import FileStorage
 
 from pcapi.connectors.thumb_storage import read_thumb
-from pcapi.models import ApiErrors, EventType
+from pcapi.models import ApiErrors
+from pcapi.models import EventType
 import pcapi.sandboxes
 
 

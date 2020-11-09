@@ -1,9 +1,13 @@
-from pcapi.models import AllocineVenueProvider, VenueSQLEntity
+import pytest
+
+from pcapi.model_creators.generic_creators import create_allocine_venue_provider
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_provider
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.models import AllocineVenueProvider
+from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
 from pcapi.scripts.change_default_number_of_entries_for_theater import change_quantity_for_allocine_venue_provider
-import pytest
-from pcapi.model_creators.generic_creators import create_venue, create_offerer, create_provider, \
-    create_allocine_venue_provider
 
 
 @pytest.mark.usefixtures("db_session")

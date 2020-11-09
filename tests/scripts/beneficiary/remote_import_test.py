@@ -1,17 +1,24 @@
-from datetime import datetime, timedelta
-from unittest.mock import ANY, Mock, patch
+from datetime import datetime
+from datetime import timedelta
+from unittest.mock import ANY
+from unittest.mock import Mock
+from unittest.mock import patch
 
 from mailjet_rest import Client
+import pytest
 
-from pcapi.models import ApiErrors, BeneficiaryImport, ImportStatus, UserSQLEntity
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.models import ApiErrors
+from pcapi.models import BeneficiaryImport
+from pcapi.models import ImportStatus
+from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.beneficiary.remote_import import parse_beneficiary_information
-import pytest
-from pcapi.model_creators.generic_creators import create_user
-from tests.scripts.beneficiary.fixture import \
-    APPLICATION_DETAIL_STANDARD_RESPONSE, \
-    make_new_beneficiary_application_details
+
+from tests.scripts.beneficiary.fixture import APPLICATION_DETAIL_STANDARD_RESPONSE
+from tests.scripts.beneficiary.fixture import make_new_beneficiary_application_details
+
 
 NOW = datetime.utcnow()
 ONE_WEEK_AGO = NOW - timedelta(days=7)

@@ -1,21 +1,24 @@
-from unittest.mock import patch
 from datetime import datetime
+from unittest.mock import patch
 
 import pytest
 
-from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import BankInformationsSQLRepository
-from pcapi.infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
-from pcapi.use_cases.save_offerer_bank_informations import SaveOffererBankInformations
-from pcapi.models import ApiErrors
-
-from pcapi.models.bank_information import BankInformationStatus
-from pcapi.model_creators.generic_creators import create_bank_information, create_offerer
-from tests.connector_creators.demarches_simplifiees_creators import \
-    offerer_demarche_simplifiee_application_detail_response
-from pcapi.repository import repository
-import pytest
-from pcapi.models import BankInformation
 from pcapi.domain.bank_information import CannotRegisterBankInformation
+from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
+    BankInformationsSQLRepository,
+)
+from pcapi.infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.models import ApiErrors
+from pcapi.models import BankInformation
+from pcapi.models.bank_information import BankInformationStatus
+from pcapi.repository import repository
+from pcapi.use_cases.save_offerer_bank_informations import SaveOffererBankInformations
+
+from tests.connector_creators.demarches_simplifiees_creators import (
+    offerer_demarche_simplifiee_application_detail_response,
+)
 
 
 class SaveOffererBankInformationsTest:

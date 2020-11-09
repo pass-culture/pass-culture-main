@@ -1,15 +1,17 @@
-import re
 from datetime import datetime
 from pathlib import PurePath
+import re
 from typing import List
 
-from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_zip_file_from_ftp
+from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
+from pcapi.connectors.ftp_titelive import get_zip_file_from_ftp
 from pcapi.domain.titelive import get_date_from_filename
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Product
 from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import local_provider_event_queries
+
 
 DATE_REGEXP = re.compile(r'livres_tl(\d+).zip')
 THUMB_FOLDER_NAME_TITELIVE = 'Atoo'

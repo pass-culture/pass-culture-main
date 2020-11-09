@@ -3,8 +3,10 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.emails.offerer_ongoing_attachment import retrieve_data_for_offerer_ongoing_attachment_email
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.repository import repository
-from pcapi.model_creators.generic_creators import create_offerer, create_user, create_user_offerer
 
 
 class ProOffererAttachmentValidationEmailTest:

@@ -1,4 +1,5 @@
-from pcapi.scheduled_tasks.logger import build_cron_log_message, CronStatus
+from pcapi.scheduled_tasks.logger import CronStatus
+from pcapi.scheduled_tasks.logger import build_cron_log_message
 
 
 class CronLoggerMessageBuilderTest():

@@ -1,35 +1,42 @@
-from unittest.mock import Mock, call, patch
+from unittest.mock import Mock
+from unittest.mock import call
+from unittest.mock import patch
 
 import pytest
 
-from tests.domain_creators.generic_creators import create_domain_beneficiary, \
-    create_domain_beneficiary_pre_subcription
-from pcapi.model_creators.generic_creators import create_booking, \
-    create_deposit, create_offerer, create_user, create_user_offerer, \
-    create_venue
-from pcapi.model_creators.specific_creators import create_stock_with_event_offer
-from tests.test_utils import create_mocked_bookings
-
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
-    BeneficiaryIsADuplicate, BeneficiaryIsNotEligible
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.domain.user_emails import send_activation_email, \
-    send_attachment_validation_email_to_pro_offerer, \
-    send_batch_cancellation_emails_to_users, \
-    send_beneficiary_booking_cancellation_email, \
-    send_booking_confirmation_email_to_beneficiary, \
-    send_booking_recap_emails, \
-    send_offerer_bookings_recap_email_after_offerer_cancellation, \
-    send_offerer_driven_cancellation_email_to_offerer, \
-    send_ongoing_offerer_attachment_information_email_to_pro, \
-    send_rejection_email_to_beneficiary_pre_subscription, \
-    send_reset_password_email_to_pro, send_reset_password_email_to_user, \
-    send_user_driven_cancellation_email_to_offerer, \
-    send_user_validation_email, send_validation_confirmation_email_to_pro, \
-    send_venue_validation_confirmation_email, \
-    send_warning_to_beneficiary_after_pro_booking_cancellation
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
+from pcapi.domain.user_emails import send_activation_email
+from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
+from pcapi.domain.user_emails import send_batch_cancellation_emails_to_users
+from pcapi.domain.user_emails import send_beneficiary_booking_cancellation_email
+from pcapi.domain.user_emails import send_booking_confirmation_email_to_beneficiary
+from pcapi.domain.user_emails import send_booking_recap_emails
+from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
+from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
+from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
+from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
+from pcapi.domain.user_emails import send_reset_password_email_to_pro
+from pcapi.domain.user_emails import send_reset_password_email_to_user
+from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
+from pcapi.domain.user_emails import send_user_validation_email
+from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
+from pcapi.domain.user_emails import send_venue_validation_confirmation_email
+from pcapi.domain.user_emails import send_warning_to_beneficiary_after_pro_booking_cancellation
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.models import Offerer
 from pcapi.repository import repository
+
+from tests.domain_creators.generic_creators import create_domain_beneficiary
+from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
+from tests.test_utils import create_mocked_bookings
 
 
 class SendBeneficiaryBookingCancellationEmailTest:

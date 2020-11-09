@@ -1,6 +1,7 @@
 from typing import List
 
-from pcapi.models.offer_type import EventType, ThingType
+from pcapi.models.offer_type import EventType
+from pcapi.models.offer_type import ThingType
 
 
 def get_formatted_active_product_types() -> List:

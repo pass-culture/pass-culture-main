@@ -3,29 +3,31 @@ from decimal import Decimal
 from hashlib import md5
 
 import bcrypt
-from sqlalchemy import LargeBinary, \
-    Boolean, \
-    CheckConstraint, \
-    Column, \
-    func, \
-    DateTime, \
-    String, \
-    Text
+from sqlalchemy import Boolean
+from sqlalchemy import CheckConstraint
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import LargeBinary
+from sqlalchemy import String
+from sqlalchemy import Text
+from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship, joinedload
+from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
-from pcapi.domain.expenses import get_expenses
 from pcapi.core.bookings.models import Booking
-from pcapi.models.db import Model, db
+from pcapi.domain.expenses import get_expenses
+from pcapi.models.db import Model
+from pcapi.models.db import db
 from pcapi.models.deposit import Deposit
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.stock_sql_entity import StockSQLEntity
-from pcapi.models.user_offerer import UserOfferer, RightsType
+from pcapi.models.user_offerer import RightsType
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.versioned_mixin import VersionedMixin
 from pcapi.utils.config import IS_DEV
-
 
 
 def _hash_password_with_bcrypt(clear_text: str) -> bytes:

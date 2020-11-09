@@ -1,18 +1,28 @@
-import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from decimal import Decimal
+import uuid
 
 import pytest
-from sqlalchemy import BigInteger, Column, DateTime, Integer, Float
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import Float
+from sqlalchemy import Integer
 from sqlalchemy.dialects.postgresql import UUID
 
-from pcapi.models import PcObject, Offer, UserSQLEntity
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.models import Offer
+from pcapi.models import PcObject
 from pcapi.models import ThingType
-from pcapi.models.api_errors import DecimalCastError, DateTimeCastError, UuidCastError
+from pcapi.models import UserSQLEntity
+from pcapi.models.api_errors import DateTimeCastError
+from pcapi.models.api_errors import DecimalCastError
+from pcapi.models.api_errors import UuidCastError
 from pcapi.models.db import Model
 from pcapi.routes.serialization import serialize
-from pcapi.model_creators.generic_creators import create_stock
-from pcapi.utils.human_ids import dehumanize, NonDehumanizableId
+from pcapi.utils.human_ids import NonDehumanizableId
+from pcapi.utils.human_ids import dehumanize
 
 
 class TimeInterval(PcObject, Model):

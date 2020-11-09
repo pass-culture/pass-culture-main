@@ -5,6 +5,7 @@ from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_informatio
 from pcapi.models import Offerer
 from pcapi.models.bank_information import BankInformationStatus
 
+
 status_weight = {
     BankInformationStatus.ACCEPTED: 2,
     BankInformationStatus.DRAFT: 1,

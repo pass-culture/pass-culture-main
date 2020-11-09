@@ -1,4 +1,7 @@
-from sqlalchemy import BigInteger, ForeignKey, Column, DateTime
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
 from pcapi.models import PcObject

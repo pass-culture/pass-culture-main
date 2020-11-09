@@ -1,20 +1,20 @@
+from functools import wraps
 import os
 from pathlib import Path
-from functools import wraps
 from pprint import pprint
 from unittest.mock import Mock
 
-import pytest
 from alembic import command
 from alembic.config import Config
-from flask import Flask, \
-    jsonify, \
-    Blueprint
+from flask import Blueprint
+from flask import Flask
+from flask import jsonify
 from flask.testing import FlaskClient
 from flask_jwt_extended import JWTManager
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager
+from flask_login import login_user
 from mailjet_rest import Client
-from pcapi.routes.native.v1.blueprint import native_v1
+import pytest
 from requests import Response
 from requests.auth import _basic_auth_str
 
@@ -22,20 +22,25 @@ from requests.auth import _basic_auth_str
 # because some env variables will get evaluated as soon as the
 # module is imported (utils.mailing for example)
 from pcapi.load_environment_variables import load_environment_variables
+from pcapi.routes.native.v1.blueprint import native_v1
+
+
 load_environment_variables()
 
 import pcapi
 import pcapi.core.testing
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.local_providers.install import install_local_providers
+from pcapi.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from pcapi.models.db import db
-from pcapi.models.install import install_activity, install_materialized_views
+from pcapi.models.install import install_activity
+from pcapi.models.install import install_materialized_views
 from pcapi.repository.clean_database import clean_all_database
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes import install_routes
 from pcapi.routes.native.v1.blueprint import native_v1
-from pcapi.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from pcapi.utils.json_encoder import EnumJSONEncoder
+
 
 def run_migrations():
     alembic_cfg = Config("alembic.ini")

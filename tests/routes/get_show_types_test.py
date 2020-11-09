@@ -1,8 +1,10 @@
-from pcapi.domain.show_types import show_types
-from pcapi.repository import repository
 import pytest
-from tests.conftest import TestClient
+
+from pcapi.domain.show_types import show_types
 from pcapi.model_creators.generic_creators import create_user
+from pcapi.repository import repository
+
+from tests.conftest import TestClient
 
 
 class Get:

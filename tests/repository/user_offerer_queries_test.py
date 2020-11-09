@@ -1,14 +1,22 @@
 import pytest
 from sqlalchemy.orm.exc import MultipleResultsFound
 
-from pcapi.models import Offer, Offerer, UserOfferer, VenueSQLEntity
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_event_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import UserOfferer
+from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
-from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id, \
-    find_user_offerer_email, \
-    filter_query_where_user_is_user_offerer_and_is_validated
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
-from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_product_with_event_type, \
-    create_offer_with_thing_product, create_offer_with_event_product
+from pcapi.repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
+from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id
+from pcapi.repository.user_offerer_queries import find_user_offerer_email
 
 
 @pytest.mark.usefixtures("db_session")

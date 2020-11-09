@@ -2,7 +2,6 @@ from typing import List
 from typing import Optional
 
 from pcapi.domain.identifier.identifier import Identifier
-
 from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
 from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name_repository import VenueWithOffererNameRepository
 

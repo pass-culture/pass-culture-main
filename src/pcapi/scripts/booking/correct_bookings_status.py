@@ -1,7 +1,10 @@
 from typing import List
 
-from pcapi.models import Booking, Payment, ApiErrors
+from pcapi.models import ApiErrors
+from pcapi.models import Booking
+from pcapi.models import Payment
 from pcapi.repository import repository
+
 
 EXCLUDED_TOKENS = ['2QLYYA', 'BMTUME', 'LUJ9AM', 'DA8YLU', 'Q46YHM']
 

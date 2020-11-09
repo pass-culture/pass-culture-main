@@ -1,14 +1,21 @@
 from unittest.mock import patch
 
-from pcapi.recommendations_engine.recommendations import create_recommendations_for_discovery_v3
-from pcapi.repository import repository, discovery_view_v3_queries
 import pytest
-from pcapi.model_creators.generic_creators import create_mediation, \
-    create_offerer, create_user, create_venue, create_iris, create_iris_venue
-from pcapi.model_creators.specific_creators import \
-    create_offer_with_thing_product, create_stock_from_offer
-from tests.test_utils import POLYGON_TEST
+
+from pcapi.model_creators.generic_creators import create_iris
+from pcapi.model_creators.generic_creators import create_iris_venue
+from pcapi.model_creators.generic_creators import create_mediation
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_offer
+from pcapi.recommendations_engine.recommendations import create_recommendations_for_discovery_v3
+from pcapi.repository import discovery_view_v3_queries
+from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
+
+from tests.test_utils import POLYGON_TEST
 
 
 class CreateRecommendationsForDiscoveryTest:

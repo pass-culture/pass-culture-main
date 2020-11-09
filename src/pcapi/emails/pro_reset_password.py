@@ -2,8 +2,10 @@ from typing import Dict
 
 from pcapi.models import UserSQLEntity
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
-from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS, DEV_EMAIL_ADDRESS, format_environment_for_email
 from pcapi.utils.config import PRO_URL
+from pcapi.utils.mailing import DEV_EMAIL_ADDRESS
+from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS
+from pcapi.utils.mailing import format_environment_for_email
 
 
 def retrieve_data_for_reset_password_pro_email(user: UserSQLEntity) -> Dict:

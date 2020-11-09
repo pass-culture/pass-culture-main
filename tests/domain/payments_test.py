@@ -1,23 +1,38 @@
-import uuid
 from datetime import datetime
 from decimal import Decimal
 from unittest.mock import Mock
+import uuid
 
-import pytest
 from freezegun import freeze_time
+import pytest
 
-from pcapi.domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, create_payment_details, \
-    create_all_payments_details, make_transaction_label, group_payments_by_status, \
-    filter_out_bookings_without_cost, keep_only_pending_payments, keep_only_not_processable_payments, apply_banishment, \
-    UnmatchedPayments
-from pcapi.domain.reimbursement import BookingReimbursement, ReimbursementRules
-from pcapi.models import Offer, VenueSQLEntity, Booking, Offerer
+from pcapi.domain.payments import UnmatchedPayments
+from pcapi.domain.payments import apply_banishment
+from pcapi.domain.payments import create_all_payments_details
+from pcapi.domain.payments import create_payment_details
+from pcapi.domain.payments import create_payment_for_booking
+from pcapi.domain.payments import filter_out_already_paid_for_bookings
+from pcapi.domain.payments import filter_out_bookings_without_cost
+from pcapi.domain.payments import group_payments_by_status
+from pcapi.domain.payments import keep_only_not_processable_payments
+from pcapi.domain.payments import keep_only_pending_payments
+from pcapi.domain.payments import make_transaction_label
+from pcapi.domain.reimbursement import BookingReimbursement
+from pcapi.domain.reimbursement import ReimbursementRules
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_payment
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.models import Booking
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import VenueSQLEntity
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue, \
-    create_payment, create_bank_information
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.utils.human_ids import humanize
 
 

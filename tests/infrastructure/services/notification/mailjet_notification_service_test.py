@@ -1,10 +1,14 @@
-import pytest
-from unittest.mock import MagicMock, patch, Mock
+from unittest.mock import MagicMock
+from unittest.mock import Mock
+from unittest.mock import patch
 
-from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
+import pytest
+from requests import Response
+
 from pcapi.domain.beneficiary_contact.beneficiary_contact import BeneficiaryContact
 from pcapi.domain.beneficiary_contact.beneficiary_contact_exceptions import AddNewBeneficiaryContactException
-from requests import Response
+from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
+
 
 MOCK_MAILJET_LIST_ID = 'mailjetListId'
 

@@ -6,10 +6,14 @@ from redis import Redis
 from redis.client import Pipeline
 
 from pcapi.algolia.domain.rules_engine import is_eligible_for_reindexing
-from pcapi.algolia.infrastructure.api import add_objects, delete_objects
+from pcapi.algolia.infrastructure.api import add_objects
+from pcapi.algolia.infrastructure.api import delete_objects
 from pcapi.algolia.infrastructure.builder import build_object
-from pcapi.connectors.redis import add_to_indexed_offers, check_offer_exists, delete_indexed_offers, get_offer_details, \
-    add_offer_ids_in_error
+from pcapi.connectors.redis import add_offer_ids_in_error
+from pcapi.connectors.redis import add_to_indexed_offers
+from pcapi.connectors.redis import check_offer_exists
+from pcapi.connectors.redis import delete_indexed_offers
+from pcapi.connectors.redis import get_offer_details
 from pcapi.models import Offer
 from pcapi.repository import offer_queries
 from pcapi.utils.human_ids import humanize

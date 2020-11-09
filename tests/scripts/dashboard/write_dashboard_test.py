@@ -1,7 +1,10 @@
 from unittest import mock
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
-from pcapi.scripts.dashboard.write_dashboard import write_dashboard, write_dashboard_worksheet, _get_departement_code
+from pcapi.scripts.dashboard.write_dashboard import _get_departement_code
+from pcapi.scripts.dashboard.write_dashboard import write_dashboard
+from pcapi.scripts.dashboard.write_dashboard import write_dashboard_worksheet
 
 
 class WriteDashboardTest:

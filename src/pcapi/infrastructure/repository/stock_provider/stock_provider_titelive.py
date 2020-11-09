@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Dict, Iterator
+from typing import Dict
+from typing import Iterator
 
 from pcapi.domain.stock_provider.stock_provider_repository import StockProviderRepository
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI

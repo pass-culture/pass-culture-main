@@ -2,18 +2,23 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import BigInteger, \
-    Column, \
-    ForeignKey, \
-    String, \
-    Numeric, \
-    Text, CheckConstraint, desc
+from sqlalchemy import BigInteger
+from sqlalchemy import CheckConstraint
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
+from sqlalchemy import Numeric
+from sqlalchemy import String
+from sqlalchemy import Text
+from sqlalchemy import desc
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import backref
+from sqlalchemy.orm import relationship
 
-from pcapi.models.db import Model, db
-from pcapi.models.payment_status import TransactionStatus, PaymentStatus
+from pcapi.models.db import Model
+from pcapi.models.db import db
+from pcapi.models.payment_status import PaymentStatus
+from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.pc_object import PcObject
 
 

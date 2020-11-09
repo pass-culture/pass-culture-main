@@ -1,13 +1,25 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
+
+import pytest
 
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
-from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import \
-    BeneficiaryBookingsSQLRepository, _get_stocks_information
+from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import (
+    BeneficiaryBookingsSQLRepository,
+)
+from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import (
+    _get_stocks_information,
+)
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_recommendation
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.repository import repository
-import pytest
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_stock, \
-    create_booking, create_deposit, create_recommendation
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
 from pcapi.utils.human_ids import humanize
 
 

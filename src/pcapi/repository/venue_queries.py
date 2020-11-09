@@ -1,13 +1,18 @@
+from datetime import datetime
 from typing import List
 
+from sqlalchemy import and_
 from sqlalchemy.sql import selectable
 
-from pcapi.models import VenueSQLEntity, Offer, StockSQLEntity, Offerer, UserOfferer, UserSQLEntity
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import StockSQLEntity
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueSQLEntity
 from pcapi.models.activity import load_activity
 from pcapi.models.db import db
 from pcapi.repository.offerer_queries import _filter_by_sirens
-from sqlalchemy import and_
-from datetime import datetime
 
 
 def find_by_id(venue_id: int) -> VenueSQLEntity:

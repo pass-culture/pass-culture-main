@@ -1,6 +1,11 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, String
+from sqlalchemy import BigInteger
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 

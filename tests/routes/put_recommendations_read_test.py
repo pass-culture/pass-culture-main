@@ -1,12 +1,19 @@
-from pcapi.repository import repository
-from tests.conftest import TestClient
 import pytest
-from pcapi.model_creators.generic_creators import create_offerer, \
-    create_recommendation, create_user, create_venue
-from pcapi.model_creators.specific_creators import create_event_occurrence, \
-    create_offer_with_event_product, create_offer_with_thing_product, \
-    create_stock_from_event_occurrence, create_stock_from_offer
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_recommendation
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_from_offer
+from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
+
 
 RECOMMENDATION_URL = '/recommendations'
 

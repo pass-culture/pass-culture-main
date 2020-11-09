@@ -1,15 +1,22 @@
 from datetime import datetime
-from unittest.mock import patch, call
+from unittest.mock import call
+from unittest.mock import patch
 
 import pytest
 
 from pcapi.local_providers.fnac.fnac_stocks import FnacStocks
-from pcapi.models import Offer, StockSQLEntity
-from pcapi.repository import repository
-from pcapi.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_stock, \
-    create_booking, create_user
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
-from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.models import Offer
+from pcapi.models import StockSQLEntity
+from pcapi.repository import repository
 
 
 class FnacStocksTest:

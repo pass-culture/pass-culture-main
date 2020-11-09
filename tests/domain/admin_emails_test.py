@@ -1,9 +1,17 @@
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock
+from unittest.mock import Mock
+from unittest.mock import patch
 
-from pcapi.domain.admin_emails import maybe_send_offerer_validation_email, send_payment_details_email, \
-    send_wallet_balances_email, send_payments_report_emails, \
-    send_offer_creation_notification_to_administration, send_payment_message_email
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
+from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
+from pcapi.domain.admin_emails import send_offer_creation_notification_to_administration
+from pcapi.domain.admin_emails import send_payment_details_email
+from pcapi.domain.admin_emails import send_payment_message_email
+from pcapi.domain.admin_emails import send_payments_report_emails
+from pcapi.domain.admin_emails import send_wallet_balances_email
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.utils.mailing import MailServiceException
 

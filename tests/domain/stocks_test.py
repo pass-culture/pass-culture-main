@@ -1,13 +1,20 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
-import pytest
 from freezegun import freeze_time
+import pytest
 
-from pcapi.domain.stocks import delete_stock_and_cancel_bookings, TooLateToDeleteError, \
-    have_beginning_date_been_modified
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_provider
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from pcapi.domain.stocks import TooLateToDeleteError
+from pcapi.domain.stocks import delete_stock_and_cancel_bookings
+from pcapi.domain.stocks import have_beginning_date_been_modified
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_provider
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import ApiErrors
+
 
 user1 = create_user()
 user2 = create_user()

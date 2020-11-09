@@ -1,20 +1,20 @@
 import subprocess
 
-from flask import jsonify, \
-    request
+from flask import jsonify
+from flask import request
 from flask_login import login_required
 
-import pcapi.local_providers
-from pcapi.flask_app import private_api
 from pcapi.domain.stock_provider.stock_provider_repository import StockProviderRepository
-from pcapi.infrastructure.container import api_fnac_stocks, \
-    api_libraires_stocks, \
-    api_praxiel_stocks, \
-    api_titelive_stocks
-from pcapi.local_providers import FnacStocks, \
-    LibrairesStocks, \
-    PraxielStocks, \
-    AllocineStocks
+from pcapi.flask_app import private_api
+from pcapi.infrastructure.container import api_fnac_stocks
+from pcapi.infrastructure.container import api_libraires_stocks
+from pcapi.infrastructure.container import api_praxiel_stocks
+from pcapi.infrastructure.container import api_titelive_stocks
+import pcapi.local_providers
+from pcapi.local_providers import AllocineStocks
+from pcapi.local_providers import FnacStocks
+from pcapi.local_providers import LibrairesStocks
+from pcapi.local_providers import PraxielStocks
 from pcapi.local_providers.titelive_stocks.titelive_stocks import TiteLiveStocks
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.venue_provider import VenueProvider
@@ -27,10 +27,10 @@ from pcapi.use_cases.connect_venue_to_provider import connect_venue_to_provider
 from pcapi.utils.config import API_ROOT_PATH
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import VENUE_PROVIDER_INCLUDES
-from pcapi.utils.rest import expect_json_data, \
-    load_or_404
-from pcapi.validation.routes.venue_providers import check_existing_provider, \
-    check_new_venue_provider_information
+from pcapi.utils.rest import expect_json_data
+from pcapi.utils.rest import load_or_404
+from pcapi.validation.routes.venue_providers import check_existing_provider
+from pcapi.validation.routes.venue_providers import check_new_venue_provider_information
 
 
 @private_api.route('/venueProviders', methods=['GET'])

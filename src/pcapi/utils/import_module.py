@@ -1,5 +1,5 @@
-from importlib.util import module_from_spec, \
-    spec_from_file_location
+from importlib.util import module_from_spec
+from importlib.util import spec_from_file_location
 
 
 def get_imported_module(file_name, folder_path='/tmp/uploads/', module_name=None):

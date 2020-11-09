@@ -1,5 +1,5 @@
-import csv
 from collections import namedtuple
+import csv
 from io import StringIO
 from typing import List
 

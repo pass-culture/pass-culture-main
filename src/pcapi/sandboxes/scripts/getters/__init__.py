@@ -11,7 +11,6 @@ import pcapi.sandboxes.scripts.getters.pro_10_desk
 import pcapi.sandboxes.scripts.getters.pro_11_lost_password
 import pcapi.sandboxes.scripts.getters.pro_12_bookings
 import pcapi.sandboxes.scripts.getters.pro_13_reimbursements
-
 import pcapi.sandboxes.scripts.getters.webapp_01_activation
 import pcapi.sandboxes.scripts.getters.webapp_02_signin
 import pcapi.sandboxes.scripts.getters.webapp_02_signup

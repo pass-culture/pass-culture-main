@@ -1,15 +1,25 @@
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from pcapi.infrastructure.container import api_libraires_stocks
 from pcapi.local_providers import LibrairesStocks
-from pcapi.models import AllocineVenueProvider, ApiErrors, VenueProvider
-from pcapi.repository import repository
-from tests.conftest import TestClient, clean_database
-from pcapi.model_creators.generic_creators import create_allocine_pivot, create_offerer, create_user, create_venue, create_venue_provider
+from pcapi.model_creators.generic_creators import create_allocine_pivot
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
+from pcapi.models import AllocineVenueProvider
+from pcapi.models import ApiErrors
+from pcapi.models import VenueProvider
+from pcapi.repository import repository
 from pcapi.utils.config import API_ROOT_PATH
-from pcapi.utils.human_ids import dehumanize, humanize
+from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
+from tests.conftest import clean_database
 
 
 class Post:

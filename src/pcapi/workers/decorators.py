@@ -1,7 +1,9 @@
 from functools import wraps
-from pcapi.utils.logger import logger
-from pcapi.workers.logger import build_job_log_message, JobStatus
+
 from pcapi.flask_app import app
+from pcapi.utils.logger import logger
+from pcapi.workers.logger import JobStatus
+from pcapi.workers.logger import build_job_log_message
 
 
 def job_context(func):

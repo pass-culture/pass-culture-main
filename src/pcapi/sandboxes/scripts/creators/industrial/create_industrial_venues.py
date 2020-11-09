@@ -1,13 +1,15 @@
 import random
 import re
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models.venue_type import VenueType
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
-from pcapi.model_creators.generic_creators import create_bank_information, \
-    create_venue
 from pcapi.utils.logger import logger
+
 
 OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO = 3
 OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO = OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO * 2

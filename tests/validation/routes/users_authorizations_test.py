@@ -1,14 +1,19 @@
-import pytest
 from flask_login import AnonymousUserMixin
-
-from pcapi.models import ApiErrors, ApiKey, UserSQLEntity
-from pcapi.repository import repository
 import pytest
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.models import ApiErrors
+from pcapi.models import ApiKey
+from pcapi.models import UserSQLEntity
+from pcapi.repository import repository
 from pcapi.utils.token import random_token
-from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings, \
-    check_user_can_validate_bookings_v2, \
-    check_api_key_allows_to_validate_booking, check_user_can_validate_activation_offer
+from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_validate_booking
+from pcapi.validation.routes.users_authorizations import check_user_can_validate_activation_offer
+from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings
+from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
+
 
 class CheckUserCanValidateBookingTest:
     @pytest.mark.usefixtures("db_session")

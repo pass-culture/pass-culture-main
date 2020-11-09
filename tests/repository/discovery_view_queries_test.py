@@ -1,10 +1,11 @@
-import time
 from datetime import datetime
+import time
 
 import pytz
 
 from pcapi.models.db import db
 from pcapi.repository import discovery_view_queries
+
 from tests.conftest import clean_database
 
 

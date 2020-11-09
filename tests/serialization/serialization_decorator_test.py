@@ -1,10 +1,12 @@
-from pydantic import BaseModel
 from typing import Optional
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
+from pydantic import BaseModel
 from spectree import Response as SpectreeResponse
 
-from pcapi.serialization.decorator import spectree_serialize
 from pcapi.flask_app import api
+from pcapi.serialization.decorator import spectree_serialize
 
 
 class TestBodyModel(BaseModel):

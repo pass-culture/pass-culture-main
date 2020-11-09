@@ -1,13 +1,19 @@
+import pytest
 from shapely.geometry import Polygon
 
-import pytest
-
 from pcapi.domain.iris import MAXIMUM_DISTANCE_IN_METERS
+from pcapi.model_creators.generic_creators import create_iris
+from pcapi.model_creators.generic_creators import create_iris_venue
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models import IrisVenues
 from pcapi.repository import repository
-from pcapi.repository.iris_venues_queries import find_ids_of_irises_located_near_venue, insert_venue_in_iris_venue, \
-    delete_venue_from_iris_venues, get_iris_containing_user_location, find_venues_located_near_iris
-from pcapi.model_creators.generic_creators import create_venue, create_offerer, create_iris, create_iris_venue
+from pcapi.repository.iris_venues_queries import delete_venue_from_iris_venues
+from pcapi.repository.iris_venues_queries import find_ids_of_irises_located_near_venue
+from pcapi.repository.iris_venues_queries import find_venues_located_near_iris
+from pcapi.repository.iris_venues_queries import get_iris_containing_user_location
+from pcapi.repository.iris_venues_queries import insert_venue_in_iris_venue
+
 
 WGS_SPATIAL_REFERENCE_IDENTIFIER = 4326
 

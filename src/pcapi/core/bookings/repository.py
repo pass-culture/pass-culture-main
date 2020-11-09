@@ -1,22 +1,36 @@
+from datetime import date
+from datetime import datetime
 import math
-from datetime import date, datetime
-from typing import List, Optional, Set
+from typing import List
+from typing import Optional
+from typing import Set
 
 from dateutil import tz
-from sqlalchemy import cast, Date, desc, func, text
-from sqlalchemy.orm import Query, joinedload, selectinload
+from sqlalchemy import Date
+from sqlalchemy import cast
+from sqlalchemy import desc
+from sqlalchemy import func
+from sqlalchemy import text
+from sqlalchemy.orm import Query
+from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import selectinload
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
-import pcapi.domain.expenses
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
-from pcapi.domain.booking_recap.booking_recap import BookBookingRecap, BookingRecap, EventBookingRecap, ThingBookingRecap
+from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
+from pcapi.domain.booking_recap.booking_recap import BookingRecap
+from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
+from pcapi.domain.booking_recap.booking_recap import ThingBookingRecap
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
+import pcapi.domain.expenses
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.models import UserOfferer, VenueSQLEntity
+from pcapi.models import UserOfferer
+from pcapi.models import VenueSQLEntity
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.db import db
-from pcapi.models.offer_type import EventType, ThingType
+from pcapi.models.offer_type import EventType
+from pcapi.models.offer_type import ThingType
 from pcapi.models.offerer import Offerer
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
@@ -24,6 +38,7 @@ from pcapi.models.recommendation import Recommendation
 from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.utils.date import get_department_timezone
+
 
 DUO_QUANTITY = 2
 

@@ -1,6 +1,6 @@
+from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.models import ApiErrors
 from pcapi.models.bank_information import BankInformationStatus
-from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.validation.models.bank_information import validate
 
 

@@ -1,16 +1,17 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from pprint import pformat
 
-from sqlalchemy import BigInteger, \
-    Boolean, \
-    CheckConstraint, \
-    Column, \
-    DateTime, \
-    DDL, \
-    event, \
-    ForeignKey, \
-    Integer, \
-    Numeric
+from sqlalchemy import BigInteger
+from sqlalchemy import Boolean
+from sqlalchemy import CheckConstraint
+from sqlalchemy import Column
+from sqlalchemy import DDL
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import Numeric
+from sqlalchemy import event
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import relationship
 
@@ -20,6 +21,7 @@ from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.models.versioned_mixin import VersionedMixin
 from pcapi.utils.logger import logger
+
 
 EVENT_AUTOMATIC_REFUND_DELAY = timedelta(hours=48)
 

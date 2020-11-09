@@ -1,12 +1,16 @@
-from pcapi.models import MediationSQLEntity, Offer, StockSQLEntity, UserSQLEntity, Product
+from pcapi.models import MediationSQLEntity
+from pcapi.models import Offer
+from pcapi.models import Product
+from pcapi.models import StockSQLEntity
+from pcapi.models import UserSQLEntity
 from pcapi.models.recommendation import Recommendation
 from pcapi.repository.user_queries import keep_only_webapp_users
-from pcapi.sandboxes.scripts.utils.bookings import find_offer_compatible_with_bookings, \
-    get_cancellable_bookings_for_user
-from pcapi.sandboxes.scripts.utils.helpers import get_mediation_helper, \
-    get_offer_helper, \
-    get_beneficiary_helper, \
-    get_recommendation_helper
+from pcapi.sandboxes.scripts.utils.bookings import find_offer_compatible_with_bookings
+from pcapi.sandboxes.scripts.utils.bookings import get_cancellable_bookings_for_user
+from pcapi.sandboxes.scripts.utils.helpers import get_beneficiary_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_mediation_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_offer_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_recommendation_helper
 
 
 def get_existing_webapp_user_with_at_least_one_recommendation():

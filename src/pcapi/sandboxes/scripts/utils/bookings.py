@@ -1,5 +1,6 @@
 from pcapi.models import Booking
 
+
 def find_offer_compatible_with_bookings(offer_with_stock_id_tuples, bookings):
     compatible_offer = None
     for offer_with_stock_id_tuple in offer_with_stock_id_tuples:

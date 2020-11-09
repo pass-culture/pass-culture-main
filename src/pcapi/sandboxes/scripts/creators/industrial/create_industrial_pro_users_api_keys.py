@@ -1,6 +1,7 @@
-from pcapi.repository import repository
 from pcapi.model_creators.generic_creators import create_api_key
+from pcapi.repository import repository
 from pcapi.utils.logger import logger
+
 
 PROS_COUNT = 1
 API_KEYS_VALUES = [

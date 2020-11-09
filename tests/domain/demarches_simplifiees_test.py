@@ -1,18 +1,29 @@
 from datetime import datetime
-from unittest.mock import call, patch
+from unittest.mock import call
+from unittest.mock import patch
+
 import pytest
 
-from tests.connector_creators.demarches_simplifiees_creators import \
-    offerer_demarche_simplifiee_application_detail_response, \
-    venue_demarche_simplifiee_application_detail_response_with_siret, \
-    venue_demarche_simplifiee_application_detail_response_without_siret
-from pcapi.domain.demarches_simplifiees import get_all_application_ids_for_demarche_simplifiee, \
-    get_closed_application_ids_for_demarche_simplifiee, DmsApplicationStates, \
-    get_offerer_bank_information_application_details_by_application_id, \
-    get_venue_bank_information_application_details_by_application_id, ApplicationDetail, \
-    _get_status_from_demarches_simplifiees_application_state, CannotRegisterBankInformation
+from pcapi.domain.demarches_simplifiees import ApplicationDetail
+from pcapi.domain.demarches_simplifiees import CannotRegisterBankInformation
+from pcapi.domain.demarches_simplifiees import DmsApplicationStates
+from pcapi.domain.demarches_simplifiees import _get_status_from_demarches_simplifiees_application_state
+from pcapi.domain.demarches_simplifiees import get_all_application_ids_for_demarche_simplifiee
+from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
+from pcapi.domain.demarches_simplifiees import get_offerer_bank_information_application_details_by_application_id
+from pcapi.domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.utils.date import DATE_ISO_FORMAT
+
+from tests.connector_creators.demarches_simplifiees_creators import (
+    offerer_demarche_simplifiee_application_detail_response,
+)
+from tests.connector_creators.demarches_simplifiees_creators import (
+    venue_demarche_simplifiee_application_detail_response_with_siret,
+)
+from tests.connector_creators.demarches_simplifiees_creators import (
+    venue_demarche_simplifiee_application_detail_response_without_siret,
+)
 
 
 @patch('pcapi.domain.demarches_simplifiees.get_all_applications_for_procedure')

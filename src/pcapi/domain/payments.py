@@ -1,24 +1,30 @@
 import csv
-import itertools
-import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from decimal import Decimal
 from hashlib import sha256
-from io import BytesIO, StringIO
-from typing import List, Dict, Tuple, Set
+from io import BytesIO
+from io import StringIO
+import itertools
+from typing import Dict
+from typing import List
+from typing import Set
+from typing import Tuple
+import uuid
 from uuid import UUID
 
 from flask import render_template
 from lxml import etree
 
+import pcapi.core.bookings.repository as booking_repository
 from pcapi.domain.bank_account import format_raw_iban_and_bic
 from pcapi.domain.reimbursement import BookingReimbursement
 from pcapi.models import PaymentMessage
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.user_sql_entity import WalletBalance
-import pcapi.core.bookings.repository as booking_repository
 from pcapi.utils.human_ids import humanize
+
 
 XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
 

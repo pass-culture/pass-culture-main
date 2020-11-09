@@ -1,10 +1,14 @@
-from unittest.mock import patch, call
+from unittest.mock import call
+from unittest.mock import patch
 
+import pytest
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models.db import db
 from pcapi.repository import repository
-import pytest
+
 from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_offerer, create_venue
 
 
 class Get:

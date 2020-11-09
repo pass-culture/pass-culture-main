@@ -1,21 +1,23 @@
 import enum
 
-from sqlalchemy import BigInteger, \
-    Boolean, \
-    CheckConstraint, \
-    Column, \
-    ForeignKey, \
-    Integer, \
-    String, \
-    Text
+from sqlalchemy import BigInteger
+from sqlalchemy import Boolean
+from sqlalchemy import CheckConstraint
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Text
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.expression import false, true
+from sqlalchemy.sql.expression import false
+from sqlalchemy.sql.expression import true
 
 from pcapi.models.db import Model
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
-from pcapi.models.offer_type import EventType, ThingType
+from pcapi.models.offer_type import EventType
+from pcapi.models.offer_type import ThingType
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 

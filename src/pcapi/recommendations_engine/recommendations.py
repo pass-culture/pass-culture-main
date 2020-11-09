@@ -1,13 +1,21 @@
 import random
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 from sqlalchemy.orm import joinedload
 
-from pcapi.models import DiscoveryView, MediationSQLEntity, Offer, Recommendation, UserSQLEntity, VenueSQLEntity
+from pcapi.models import DiscoveryView
+from pcapi.models import MediationSQLEntity
+from pcapi.models import Offer
+from pcapi.models import Recommendation
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueSQLEntity
 from pcapi.models.db import db
 from pcapi.recommendations_engine import get_offers_for_recommendations_discovery
-from pcapi.repository import mediation_queries, repository
-from pcapi.repository.offer_queries import find_searchable_offer, get_offers_for_recommendation_v3
+from pcapi.repository import mediation_queries
+from pcapi.repository import repository
+from pcapi.repository.offer_queries import find_searchable_offer
+from pcapi.repository.offer_queries import get_offers_for_recommendation_v3
 from pcapi.repository.recommendation_queries import find_recommendation_already_created_on_discovery
 
 

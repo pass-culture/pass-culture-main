@@ -1,12 +1,12 @@
 import pytest
 
-from tests.conftest import TestClient
-
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.recommendations.factories as recommendations_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")

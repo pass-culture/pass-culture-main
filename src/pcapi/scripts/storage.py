@@ -1,16 +1,16 @@
 """ sandbox script """
 # -*- coding: utf-8 -*-
 
-import traceback
 from pprint import pprint
+import traceback
 
 from flask import current_app as app
 
-from pcapi.utils.storage_utils import do_list_content, \
-    do_does_file_exist, \
-    do_delete_file, \
-    do_copy_prod_container_content_to_dest_container, \
-    do_local_backup_prod_container
+from pcapi.utils.storage_utils import do_copy_prod_container_content_to_dest_container
+from pcapi.utils.storage_utils import do_delete_file
+from pcapi.utils.storage_utils import do_does_file_exist
+from pcapi.utils.storage_utils import do_list_content
+from pcapi.utils.storage_utils import do_local_backup_prod_container
 
 
 # FIXME (dbaty): review error handling in this mmodule. Do we really

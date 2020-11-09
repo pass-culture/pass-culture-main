@@ -3,11 +3,16 @@ from datetime import datetime
 from freezegun import freeze_time
 import pytest
 
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_seen_offer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import SeenOffer
 from pcapi.repository import repository
-from pcapi.repository.seen_offer_queries import find_by_offer_id_and_user_id, remove_old_seen_offers
-from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_user, create_seen_offer
-from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
+from pcapi.repository.seen_offer_queries import find_by_offer_id_and_user_id
+from pcapi.repository.seen_offer_queries import remove_old_seen_offers
 
 
 class FindByOfferIdAndUserIdTest:

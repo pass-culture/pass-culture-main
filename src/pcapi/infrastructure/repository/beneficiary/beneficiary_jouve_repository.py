@@ -3,10 +3,12 @@ import os
 
 import requests
 
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
-    BeneficiaryPreSubscription
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_repository import BeneficiaryPreSubscriptionRepository
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_repository import (
+    BeneficiaryPreSubscriptionRepository,
+)
 from pcapi.infrastructure.repository.beneficiary import beneficiary_jouve_converter
+
 
 JOUVE_API_DOMAIN = os.environ.get('JOUVE_API_DOMAIN')
 JOUVE_PASSWORD = os.environ.get('JOUVE_PASSWORD')

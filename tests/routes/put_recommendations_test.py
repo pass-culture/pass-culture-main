@@ -1,19 +1,30 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
 
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_iris
+from pcapi.model_creators.generic_creators import create_iris_venue
+from pcapi.model_creators.generic_creators import create_mediation
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_recommendation
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_from_offer
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models import ThingType
 from pcapi.models.recommendation import Recommendation
-from pcapi.repository import repository, discovery_view_queries, discovery_view_v3_queries
-from pcapi.model_creators.generic_creators import create_booking, \
-    create_mediation, create_offerer, create_recommendation, \
-    create_user, create_venue, create_iris_venue, create_iris
-from pcapi.model_creators.specific_creators import create_event_occurrence, \
-    create_offer_with_event_product, \
-    create_offer_with_thing_product, create_stock_from_event_occurrence, \
-    create_stock_from_offer, create_stock_with_thing_offer
+from pcapi.repository import discovery_view_queries
+from pcapi.repository import discovery_view_v3_queries
+from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
+
 from tests.conftest import TestClient
 from tests.test_utils import POLYGON_TEST
 

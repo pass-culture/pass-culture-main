@@ -1,29 +1,30 @@
 from typing import Dict
 
 from flask import Request
-from flask import jsonify, \
-    redirect, \
-    request
-from flask_login import current_user, \
-    login_required
+from flask import jsonify
+from flask import redirect
+from flask import request
+from flask_login import current_user
+from flask_login import login_required
 
-from pcapi.flask_app import private_api
 from pcapi.domain.build_recommendations import move_requested_recommendation_first
+from pcapi.flask_app import private_api
 from pcapi.models import Recommendation
 from pcapi.models.feature import FeatureToggle
-from pcapi.recommendations_engine import create_recommendations_for_discovery, \
-    give_requested_recommendation_to_user
+from pcapi.recommendations_engine import create_recommendations_for_discovery
+from pcapi.recommendations_engine import give_requested_recommendation_to_user
 from pcapi.recommendations_engine.recommendations import create_recommendations_for_discovery_v3
-from pcapi.repository import feature_queries, \
-    repository
+from pcapi.repository import feature_queries
+from pcapi.repository import repository
 from pcapi.repository.iris_venues_queries import get_iris_containing_user_location
 from pcapi.repository.recommendation_queries import update_read_recommendations
-from pcapi.routes.serialization.recommendation_serialize import serialize_recommendation, \
-    serialize_recommendations
+from pcapi.routes.serialization.recommendation_serialize import serialize_recommendation
+from pcapi.routes.serialization.recommendation_serialize import serialize_recommendations
 from pcapi.utils.config import BLOB_SIZE
-from pcapi.utils.human_ids import dehumanize, \
-    dehumanize_ids_list
+from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.human_ids import dehumanize_ids_list
 from pcapi.utils.rest import expect_json_data
+
 
 DEFAULT_PAGE = 1
 

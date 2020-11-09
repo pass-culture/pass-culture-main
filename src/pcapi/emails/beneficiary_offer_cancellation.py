@@ -1,9 +1,15 @@
 from typing import Dict
 
-from pcapi.models import Booking, StockSQLEntity
+from pcapi.models import Booking
+from pcapi.models import StockSQLEntity
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
-from pcapi.utils.mailing import build_pc_pro_offer_link, SUPPORT_EMAIL_ADDRESS, extract_users_information_from_bookings, \
-    DEV_EMAIL_ADDRESS, format_booking_date_for_email, format_booking_hours_for_email, format_environment_for_email
+from pcapi.utils.mailing import DEV_EMAIL_ADDRESS
+from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS
+from pcapi.utils.mailing import build_pc_pro_offer_link
+from pcapi.utils.mailing import extract_users_information_from_bookings
+from pcapi.utils.mailing import format_booking_date_for_email
+from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.utils.mailing import format_environment_for_email
 
 
 def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: Booking, recipients: str) -> Dict:

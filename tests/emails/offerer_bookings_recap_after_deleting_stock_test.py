@@ -1,12 +1,19 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from pcapi.emails.offerer_bookings_recap_after_deleting_stock import \
-    retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_booking
-from pcapi.model_creators.specific_creators import create_offer_with_event_product, create_event_occurrence, \
-    create_stock_from_event_occurrence, create_product_with_thing_type, create_offer_with_thing_product, \
-    create_stock_from_offer
+from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
+    retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation,
+)
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_from_offer
 
 
 class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:

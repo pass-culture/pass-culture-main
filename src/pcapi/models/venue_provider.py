@@ -1,8 +1,18 @@
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, UniqueConstraint, case, select, and_, exists
-from sqlalchemy.orm import relationship, column_property
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import String
+from sqlalchemy import UniqueConstraint
+from sqlalchemy import and_
+from sqlalchemy import case
+from sqlalchemy import exists
+from sqlalchemy import select
+from sqlalchemy.orm import column_property
+from sqlalchemy.orm import relationship
 
-from pcapi.models.db import Model
 from pcapi.core.offers.models import Offer
+from pcapi.models.db import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin

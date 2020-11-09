@@ -1,14 +1,21 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
+import pytest
+
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.models import Booking
 from pcapi.repository import repository
-from tests.conftest import TestClient
-import pytest
-from pcapi.model_creators.generic_creators import create_booking, \
-    create_deposit, create_offerer, create_user, create_venue, create_stock
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
 
 
 class Put:

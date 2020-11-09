@@ -3,7 +3,8 @@ from functools import wraps
 from flask import request
 from flask_login import current_user
 
-from pcapi.models import ApiErrors, UserSQLEntity
+from pcapi.models import ApiErrors
+from pcapi.models import UserSQLEntity
 from pcapi.repository.api_key_queries import find_api_key_by_value
 
 

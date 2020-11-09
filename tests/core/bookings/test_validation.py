@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
 import pytest
 
@@ -8,9 +9,11 @@ from pcapi.core.bookings import validation
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
-
-from pcapi.models import ApiErrors, ThingType, EventType, db
+from pcapi.models import ApiErrors
+from pcapi.models import EventType
+from pcapi.models import ThingType
 from pcapi.models import api_errors
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")

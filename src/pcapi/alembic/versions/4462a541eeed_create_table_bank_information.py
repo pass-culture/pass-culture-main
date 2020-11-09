@@ -7,10 +7,11 @@ Create Date: 2019-02-11 13:15:00.695687
 """
 from datetime import datetime
 
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 # revision identifiers, used by Alembic.
 from sqlalchemy import ForeignKey
+
 
 revision = '4462a541eeed'
 down_revision = 'dd92867bde82'

@@ -7,11 +7,12 @@ Create Date: 2019-03-05 10:32:57.212731
 """
 from datetime import datetime
 
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 from pcapi.models.email import EmailStatus
+
 
 revision = 'ec8d3f04eba3'
 down_revision = 'fdcdc5e96f15'

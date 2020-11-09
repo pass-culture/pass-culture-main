@@ -1,10 +1,14 @@
 from datetime import datetime
-from typing import List, Optional, Dict
+from typing import Dict
+from typing import List
+from typing import Optional
 
 import pcapi.core.bookings.api as bookings_api
 from pcapi.domain.beneficiary_bookings.active_mediation import ActiveMediation
 from pcapi.domain.beneficiary_bookings.thumb_url import ThumbUrl
-from pcapi.models.offer_type import ProductType, ThingType, EventType
+from pcapi.models.offer_type import EventType
+from pcapi.models.offer_type import ProductType
+from pcapi.models.offer_type import ThingType
 from pcapi.utils.human_ids import humanize
 
 

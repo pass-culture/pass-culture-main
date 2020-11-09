@@ -1,13 +1,21 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
+import pytest
+
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_payment
+from pcapi.model_creators.generic_creators import create_payment_status
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import Booking
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.scripts.booking.cancel_banned_bookings import cancel_banned_bookings
-import pytest
-from pcapi.model_creators.generic_creators import create_booking, create_stock, create_venue, create_offerer, \
-    create_user, create_deposit, create_payment, create_payment_status
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 
 
 class CancelBannedBookingsTest:

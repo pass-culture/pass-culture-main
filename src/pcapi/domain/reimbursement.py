@@ -1,10 +1,13 @@
+from abc import ABC
+from abc import abstractmethod
 import datetime
-from abc import ABC, abstractmethod
 from decimal import Decimal
 from enum import Enum
 from typing import List
 
-from pcapi.models import Booking, ThingType
+from pcapi.models import Booking
+from pcapi.models import ThingType
+
 
 MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
 MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)

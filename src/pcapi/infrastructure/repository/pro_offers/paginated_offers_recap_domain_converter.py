@@ -1,9 +1,11 @@
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
 from pcapi.domain.identifier.identifier import Identifier
-
-from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap, OfferRecap
-from pcapi.models import Offer, StockSQLEntity
+from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecap
+from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from pcapi.models import Offer
+from pcapi.models import StockSQLEntity
 
 
 def to_domain(offers: List[Offer], current_page: int, total_pages: int, total_offers: int) -> PaginatedOffersRecap:

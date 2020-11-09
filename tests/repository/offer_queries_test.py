@@ -1,29 +1,41 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
 from freezegun import freeze_time
 import pytest
 from sqlalchemy import func
 
 import pcapi.core.offers.factories as offers_factories
-from pcapi.models import Offer, StockSQLEntity, Product
-from pcapi.models.offer_type import EventType, ThingType
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_provider
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_event_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_from_offer
+from pcapi.models import Offer
+from pcapi.models import Product
+from pcapi.models import StockSQLEntity
+from pcapi.models.offer_type import EventType
+from pcapi.models.offer_type import ThingType
 from pcapi.repository import repository
-from pcapi.repository.offer_queries import department_or_national_offers, \
-    find_activation_offers, \
-    get_offers_by_venue_id, \
-    get_paginated_active_offer_ids, \
-    get_paginated_offer_ids_by_venue_id_and_last_provider_id, \
-    get_paginated_offer_ids_by_venue_id, \
-    get_offers_by_ids, \
-    get_paginated_expired_offer_ids, \
-    update_offers_is_active_status, \
-    get_all_offers_id_by_filters, \
-    _build_bookings_quantity_subquery
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, \
-    create_venue, create_provider, create_user_offerer
-from pcapi.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product, \
-    create_product_with_event_type, create_offer_with_event_product, create_event_occurrence, \
-    create_stock_from_event_occurrence, create_stock_from_offer
+from pcapi.repository.offer_queries import _build_bookings_quantity_subquery
+from pcapi.repository.offer_queries import department_or_national_offers
+from pcapi.repository.offer_queries import find_activation_offers
+from pcapi.repository.offer_queries import get_all_offers_id_by_filters
+from pcapi.repository.offer_queries import get_offers_by_ids
+from pcapi.repository.offer_queries import get_offers_by_venue_id
+from pcapi.repository.offer_queries import get_paginated_active_offer_ids
+from pcapi.repository.offer_queries import get_paginated_expired_offer_ids
+from pcapi.repository.offer_queries import get_paginated_offer_ids_by_venue_id
+from pcapi.repository.offer_queries import get_paginated_offer_ids_by_venue_id_and_last_provider_id
+from pcapi.repository.offer_queries import update_offers_is_active_status
 from pcapi.utils.converter import from_tuple_to_int
 
 

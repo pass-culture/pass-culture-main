@@ -1,27 +1,23 @@
-from datetime import timedelta, datetime
+from datetime import datetime
+from datetime import timedelta
 
 import pytest
 
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers.repository import (
-    get_paginated_offers_for_offerer_venue_and_keywords,
-)
+from pcapi.core.offers.repository import get_paginated_offers_for_offerer_venue_and_keywords
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
-from pcapi.model_creators.generic_creators import (
-    create_offerer,
-    create_user,
-    create_user_offerer,
-    create_venue,
-    create_booking,
-    create_provider,
-)
-from pcapi.model_creators.specific_creators import (
-    create_offer_with_event_product,
-    create_offer_with_thing_product,
-    create_product_with_event_type,
-    create_product_with_thing_type, create_stock_from_offer,
-)
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_provider
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_event_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models import ThingType
 from pcapi.repository import repository
 

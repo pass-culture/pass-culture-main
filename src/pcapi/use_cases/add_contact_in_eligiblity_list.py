@@ -1,5 +1,5 @@
-from pcapi.domain.services.notification.notification_service import NotificationService
 from pcapi.domain.beneficiary_contact.beneficiary_contact import BeneficiaryContact
+from pcapi.domain.services.notification.notification_service import NotificationService
 
 
 class AddContactInEligibilityList:

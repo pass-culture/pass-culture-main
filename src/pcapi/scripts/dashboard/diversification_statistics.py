@@ -1,18 +1,32 @@
-from typing import Callable, List, Tuple
+from typing import Callable
+from typing import List
+from typing import Tuple
 
 import pandas
 from sqlalchemy import text
 from sqlalchemy.sql import selectable
 
 import pcapi.core.bookings.repository as booking_repository
-from pcapi.models import Offerer, UserOfferer, VenueSQLEntity, Offer, StockSQLEntity, Booking, EventType, ThingType, UserSQLEntity, DiscoveryView
-from pcapi.models.db import db
-from pcapi.core.bookings.repository import count_cancelled as query_count_all_cancelled_bookings
 from pcapi.core.bookings.repository import _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers
-from pcapi.repository.offer_queries import get_active_offers_ids_query, _filter_recommendable_offers_for_search, \
-    keep_only_offers_in_venues_or_national
-from pcapi.repository.offerer_queries import count_offerer, count_offerer_with_stock, count_offerer_by_departement, \
-    count_offerer_with_stock_by_departement
+from pcapi.core.bookings.repository import count_cancelled as query_count_all_cancelled_bookings
+from pcapi.models import Booking
+from pcapi.models import DiscoveryView
+from pcapi.models import EventType
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import StockSQLEntity
+from pcapi.models import ThingType
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueSQLEntity
+from pcapi.models.db import db
+from pcapi.repository.offer_queries import _filter_recommendable_offers_for_search
+from pcapi.repository.offer_queries import get_active_offers_ids_query
+from pcapi.repository.offer_queries import keep_only_offers_in_venues_or_national
+from pcapi.repository.offerer_queries import count_offerer
+from pcapi.repository.offerer_queries import count_offerer_by_departement
+from pcapi.repository.offerer_queries import count_offerer_with_stock
+from pcapi.repository.offerer_queries import count_offerer_with_stock_by_departement
 
 
 def get_offerer_count(departement_code: str = None) -> int:

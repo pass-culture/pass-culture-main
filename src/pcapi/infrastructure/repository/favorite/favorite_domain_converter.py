@@ -1,7 +1,6 @@
 from typing import Dict
 
 from pcapi.domain.favorite.favorite import Favorite
-
 from pcapi.models import FavoriteSQLEntity
 
 

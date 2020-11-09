@@ -1,12 +1,15 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
 from pytest import fixture
 
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
-from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
 from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.human_ids import humanize
+
+from tests.domain_creators.generic_creators import create_domain_event_booking_recap
+from tests.domain_creators.generic_creators import create_domain_thing_booking_recap
 
 
 class SerializeBookingRecapTest:

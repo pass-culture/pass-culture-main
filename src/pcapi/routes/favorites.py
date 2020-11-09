@@ -1,18 +1,19 @@
-from flask import jsonify, request
-from flask_login import current_user, \
-    login_required
+from flask import jsonify
+from flask import request
+from flask_login import current_user
+from flask_login import login_required
 
 from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import list_favorites_of_beneficiary
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
-from pcapi.models import MediationSQLEntity, \
-    Offer, \
-    FavoriteSQLEntity
+from pcapi.models import FavoriteSQLEntity
+from pcapi.models import MediationSQLEntity
+from pcapi.models import Offer
 from pcapi.repository import repository
 from pcapi.repository.favorite_queries import find_favorite_for_offer_and_user
 from pcapi.routes.serialization import as_dict
-from pcapi.routes.serialization.favorites_serialize import serialize_favorite, \
-    serialize_favorites
+from pcapi.routes.serialization.favorites_serialize import serialize_favorite
+from pcapi.routes.serialization.favorites_serialize import serialize_favorites
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import load_or_404
 from pcapi.validation.routes.offers import check_offer_id_is_present_in_request

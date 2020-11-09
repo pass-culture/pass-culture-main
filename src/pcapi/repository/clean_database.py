@@ -1,38 +1,41 @@
 from pcapi.local_providers.install import install_local_providers
-from pcapi.models import ApiKey, \
-    BeneficiaryImport, \
-    Booking, \
-    Deposit, \
-    MediationSQLEntity, \
-    Payment, \
-    PaymentStatus, \
-    Product, \
-    Offer, \
-    Offerer, \
-    Recommendation, \
-    StockSQLEntity, \
-    UserSQLEntity, \
-    UserOfferer, \
-    UserSession, \
-    VenueSQLEntity, \
-    Provider, \
-    PaymentMessage, \
-    BankInformation, \
-    LocalProviderEvent, \
-    FavoriteSQLEntity, \
-    BeneficiaryImportStatus, \
-    OfferCriterion, \
-    Criterion, \
-    AllocineVenueProviderPriceRule, \
-    AllocinePivot, VenueProvider, \
-    IrisFrance, IrisVenues, \
-    SeenOffer, VenueType
-
+from pcapi.models import AllocinePivot
+from pcapi.models import AllocineVenueProviderPriceRule
+from pcapi.models import ApiKey
+from pcapi.models import BankInformation
+from pcapi.models import BeneficiaryImport
+from pcapi.models import BeneficiaryImportStatus
+from pcapi.models import Booking
+from pcapi.models import Criterion
+from pcapi.models import Deposit
+from pcapi.models import FavoriteSQLEntity
+from pcapi.models import IrisFrance
+from pcapi.models import IrisVenues
+from pcapi.models import LocalProviderEvent
+from pcapi.models import MediationSQLEntity
+from pcapi.models import Offer
+from pcapi.models import OfferCriterion
+from pcapi.models import Offerer
+from pcapi.models import Payment
+from pcapi.models import PaymentMessage
+from pcapi.models import PaymentStatus
+from pcapi.models import Product
+from pcapi.models import Provider
+from pcapi.models import Recommendation
+from pcapi.models import SeenOffer
+from pcapi.models import StockSQLEntity
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
+from pcapi.models import UserSession
+from pcapi.models import VenueProvider
+from pcapi.models import VenueSQLEntity
+from pcapi.models import VenueType
 from pcapi.models.activity import load_activity
 from pcapi.models.allocine_venue_provider import AllocineVenueProvider
 from pcapi.models.db import db
 from pcapi.models.email import Email
-from pcapi.models.install import install_features, install_materialized_views
+from pcapi.models.install import install_features
+from pcapi.models.install import install_materialized_views
 from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity
 from pcapi.utils.config import ENV
 

@@ -1,15 +1,21 @@
 from datetime import datetime
+from enum import Enum
 
-from sqlalchemy import BigInteger, Column, ForeignKey, desc, Integer, String
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import desc
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
-from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus, \
-    ImportStatus
-from pcapi.models.db import Model, db
+from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
+from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.models.db import Model
+from pcapi.models.db import db
 from pcapi.models.pc_object import PcObject
 from pcapi.models.user_sql_entity import UserSQLEntity
-from enum import Enum
 
 
 class BeneficiaryImportSources(Enum):

@@ -1,22 +1,19 @@
 from datetime import datetime
 
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_mediation
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.repository import repository
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import (
-    create_bank_information,
-    create_booking,
-    create_deposit,
-    create_mediation,
-    create_offerer,
-    create_stock,
-    create_user,
-    create_venue,
-)
-from pcapi.model_creators.specific_creators import (
-    create_offer_with_thing_product,
-    create_stock_with_event_offer,
-)
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
 
 
 class Returns200:

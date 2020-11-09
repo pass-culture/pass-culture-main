@@ -1,5 +1,7 @@
 # Loading variables should always be the first thing, before any other load
 from pcapi.load_environment_variables import load_environment_variables
+
+
 load_environment_variables()
 
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -9,8 +11,10 @@ from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.venue_provider_worker import update_venues_for_specific_provider
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository.provider_queries import get_provider_by_local_class
-from pcapi.scheduled_tasks.decorators import log_cron, cron_context, cron_require_feature
 from pcapi.scheduled_tasks import utils
+from pcapi.scheduled_tasks.decorators import cron_context
+from pcapi.scheduled_tasks.decorators import cron_require_feature
+from pcapi.scheduled_tasks.decorators import log_cron
 
 
 @log_cron

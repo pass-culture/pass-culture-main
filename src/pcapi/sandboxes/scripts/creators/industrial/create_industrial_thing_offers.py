@@ -1,6 +1,7 @@
-from pcapi.repository import repository
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.repository import repository
 from pcapi.utils.logger import logger
+
 
 DEACTIVATED_OFFERS_PICK_MODULO = 3
 THINGS_PER_OFFERER = 5

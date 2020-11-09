@@ -1,6 +1,7 @@
 """ user offerer """
 
-from sqlalchemy import BigInteger, Column
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import UUID
 
 from pcapi.models.db import Model

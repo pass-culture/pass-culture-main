@@ -1,16 +1,16 @@
 from datetime import datetime
 
 import pytest
-import pytest
-from tests.domain_creators.generic_creators import \
-    create_domain_beneficiary_pre_subcription
-from pcapi.model_creators.generic_creators import create_user
 
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
-    BeneficiaryIsADuplicate, BeneficiaryIsNotEligible, CantRegisterBeneficiary
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import \
-    _is_postal_code_eligible, validate
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import _is_postal_code_eligible
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
+from pcapi.model_creators.generic_creators import create_user
 from pcapi.repository import repository
+
+from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
 
 
 @pytest.mark.usefixtures("db_session")

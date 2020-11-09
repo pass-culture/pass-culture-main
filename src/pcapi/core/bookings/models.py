@@ -1,14 +1,15 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, \
-    Boolean, \
-    Column, \
-    DateTime, \
-    DDL, \
-    event, \
-    ForeignKey, \
-    Integer, \
-    String, Numeric
+from sqlalchemy import BigInteger
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import DDL
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import Numeric
+from sqlalchemy import String
+from sqlalchemy import event
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
@@ -136,7 +137,7 @@ class Booking(PcObject, Model, VersionedMixin):
 
     @property
     def qrCode(self):
-        from . import api # avoid import loop
+        from . import api  # avoid import loop
 
         offer = self.stock.offer
         if offer.isEvent:

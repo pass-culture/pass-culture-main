@@ -1,8 +1,9 @@
-from pcapi.models import StockSQLEntity
-
-from pcapi.sandboxes.scripts.save_sandbox import save_sandbox
 import pytest
-from pcapi.model_creators.provider_creators import save_counts, assert_created_counts
+
+from pcapi.model_creators.provider_creators import assert_created_counts
+from pcapi.model_creators.provider_creators import save_counts
+from pcapi.models import StockSQLEntity
+from pcapi.sandboxes.scripts.save_sandbox import save_sandbox
 from pcapi.utils.logger import logger
 
 

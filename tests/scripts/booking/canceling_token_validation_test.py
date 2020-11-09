@@ -1,11 +1,15 @@
 from datetime import datetime
 
+import pytest
+
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_payment
+from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import Booking
 from pcapi.repository import repository
 from pcapi.scripts.booking.canceling_token_validation import canceling_token_validation
-import pytest
-from pcapi.model_creators.generic_creators import create_booking, \
-    create_deposit, create_offerer, create_payment, create_user
 
 
 @pytest.mark.usefixtures("db_session")

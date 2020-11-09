@@ -1,5 +1,6 @@
-from tests.conftest import TestClient
 from unittest.mock import patch
+
+from tests.conftest import TestClient
 
 
 class Post:

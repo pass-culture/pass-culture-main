@@ -1,10 +1,10 @@
 import factory
 
+from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.domain import reimbursement
-from pcapi import models
 
 
 ALL_REIMBURSEMENT_RULES = {t.name for t in list(reimbursement.ReimbursementRules)}

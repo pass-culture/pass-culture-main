@@ -1,10 +1,12 @@
+import pytest
+
+from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
-import pytest
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
 
 
 class Patch:

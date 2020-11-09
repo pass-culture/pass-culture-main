@@ -1,6 +1,8 @@
-from pcapi.routes.serialization import as_dict
 from pcapi.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
-from pcapi.utils.includes import BENEFICIARY_INCLUDES, RECOMMENDATION_INCLUDES, USER_INCLUDES
+from pcapi.routes.serialization import as_dict
+from pcapi.utils.includes import BENEFICIARY_INCLUDES
+from pcapi.utils.includes import RECOMMENDATION_INCLUDES
+from pcapi.utils.includes import USER_INCLUDES
 
 
 def get_booking_helper(booking):

@@ -4,6 +4,7 @@ from typing import List
 import PIL
 from PIL.Image import Image
 
+
 MAX_THUMB_WIDTH = 750
 CONVERSION_QUALITY = 90
 DO_NOT_CROP = [0, 0, 1]

@@ -1,10 +1,13 @@
 import datetime
+from unittest.mock import MagicMock
+from unittest.mock import patch
 import uuid
 
 import pytest
-from unittest.mock import patch, MagicMock
 
-from pcapi.connectors.api_recaptcha import validate_recaptcha_token, RECAPTCHA_API_URL, ReCaptchaException
+from pcapi.connectors.api_recaptcha import RECAPTCHA_API_URL
+from pcapi.connectors.api_recaptcha import ReCaptchaException
+from pcapi.connectors.api_recaptcha import validate_recaptcha_token
 
 
 ORIGINAL_ACTION = 'submit'

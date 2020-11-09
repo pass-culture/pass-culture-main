@@ -6,7 +6,6 @@ import pytest
 from pcapi.local_providers import TiteLiveThingDescriptions
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
-import pytest
 
 
 class TiteLiveThingDescriptionsTest:

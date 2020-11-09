@@ -4,7 +4,8 @@ from pcapi.emails.beneficiary_booking_cancellation import SUPPORT_EMAIL_ADDRESS
 from pcapi.models import Offerer
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
-from pcapi.utils.mailing import format_environment_for_email, DEV_EMAIL_ADDRESS
+from pcapi.utils.mailing import DEV_EMAIL_ADDRESS
+from pcapi.utils.mailing import format_environment_for_email
 
 
 def retrieve_data_for_new_offerer_validation_email(offerer: Offerer) -> Dict:

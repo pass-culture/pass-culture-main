@@ -1,17 +1,23 @@
 # Loading variables should always be the first thing, before any other load
 from pcapi.load_environment_variables import load_environment_variables
+
+
 load_environment_variables()
 
+import logging
 import time
+from typing import Type
 
 import redis
-from rq import Worker, Queue, Connection
+from rq import Connection
+from rq import Queue
+from rq import Worker
 from rq.job import Job
+
 from pcapi.utils.config import REDIS_URL
-from pcapi.workers.logger import build_job_log_message, JobStatus
-import logging
 from pcapi.utils.logger import logger
-from typing import Type
+from pcapi.workers.logger import JobStatus
+from pcapi.workers.logger import build_job_log_message
 
 
 listen = ['default']

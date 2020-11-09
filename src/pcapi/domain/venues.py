@@ -3,6 +3,7 @@ from typing import Dict
 from pcapi.models import VenueSQLEntity
 from pcapi.routes.serialization import as_dict
 
+
 VENUE_ALGOLIA_INDEXED_FIELDS = ['name', 'publicName', 'city']
 
 

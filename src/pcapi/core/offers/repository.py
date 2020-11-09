@@ -1,18 +1,26 @@
-import math
 from datetime import datetime
+import math
 from typing import Optional
 
-from sqlalchemy import or_, func, case, not_
-from sqlalchemy.orm import joinedload, aliased, Query
+from sqlalchemy import case
+from sqlalchemy import func
+from sqlalchemy import not_
+from sqlalchemy import or_
+from sqlalchemy.orm import Query
+from sqlalchemy.orm import aliased
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import coalesce
 
 from pcapi.core.bookings.models import Booking
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.domain.ts_vector import create_filter_on_ts_vector_matching_all_keywords
-from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import (
-    to_domain,
-)
-from pcapi.models import Offerer, Offer, UserOfferer, VenueSQLEntity, StockSQLEntity
+from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import StockSQLEntity
+from pcapi.models import UserOfferer
+from pcapi.models import VenueSQLEntity
+
 
 IMPORTED_CREATION_MODE = 'imported'
 MANUAL_CREATION_MODE = 'manual'

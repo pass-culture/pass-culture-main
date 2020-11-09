@@ -2,12 +2,15 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import StaleDataError
 
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
 from pcapi.models import Product
 from pcapi.models.db import db
 from pcapi.repository import repository
-from pcapi.scripts.performance_toolkit import get_pc_object_by_id_in_database, bulk_update_pc_objects, bulk_insert_pc_objects
+from pcapi.scripts.performance_toolkit import bulk_insert_pc_objects
+from pcapi.scripts.performance_toolkit import bulk_update_pc_objects
+from pcapi.scripts.performance_toolkit import get_pc_object_by_id_in_database
+
 from tests.conftest import clean_database
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
 
 
 class GetPcObjectByIdInDatabaseTest:

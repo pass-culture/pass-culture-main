@@ -1,10 +1,11 @@
 from typing import List
 
+import pytest
+
 from pcapi.domain.venue.venue_label.venue_label import VenueLabel
 from pcapi.infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
-from pcapi.repository import repository
-import pytest
 from pcapi.model_creators.generic_creators import create_venue_label
+from pcapi.repository import repository
 
 
 class VenueLabelSQLRepositoryTest:

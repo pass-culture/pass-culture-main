@@ -2,18 +2,21 @@ import os
 
 from redis import Redis
 
-from pcapi.algolia.usecase.orchestrator import process_eligible_offers, delete_expired_offers
-from pcapi.connectors.redis import \
-    get_venue_ids, \
-    delete_venue_ids, \
-    get_venue_providers, \
-    delete_venue_providers, \
-    get_offer_ids, \
-    delete_venue_provider_currently_in_sync, \
-    delete_offer_ids, get_offer_ids_in_error, delete_offer_ids_in_error
+from pcapi.algolia.usecase.orchestrator import delete_expired_offers
+from pcapi.algolia.usecase.orchestrator import process_eligible_offers
+from pcapi.connectors.redis import delete_offer_ids
+from pcapi.connectors.redis import delete_offer_ids_in_error
+from pcapi.connectors.redis import delete_venue_ids
+from pcapi.connectors.redis import delete_venue_provider_currently_in_sync
+from pcapi.connectors.redis import delete_venue_providers
+from pcapi.connectors.redis import get_offer_ids
+from pcapi.connectors.redis import get_offer_ids_in_error
+from pcapi.connectors.redis import get_venue_ids
+from pcapi.connectors.redis import get_venue_providers
 from pcapi.repository import offer_queries
 from pcapi.utils.converter import from_tuple_to_int
 from pcapi.utils.logger import logger
+
 
 ALGOLIA_DELETING_OFFERS_CHUNK_SIZE = int(os.environ.get('ALGOLIA_DELETING_OFFERS_CHUNK_SIZE', 10000))
 ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE = int(os.environ.get('ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE', 10000))

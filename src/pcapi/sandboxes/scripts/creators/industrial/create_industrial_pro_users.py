@@ -1,8 +1,10 @@
-from datetime import timedelta, datetime
+from datetime import datetime
+from datetime import timedelta
 
-from pcapi.repository import repository
 from pcapi.model_creators.generic_creators import create_user
+from pcapi.repository import repository
 from pcapi.utils.logger import logger
+
 
 PROS_COUNT = 1
 departement_codes = ["93", "97"]

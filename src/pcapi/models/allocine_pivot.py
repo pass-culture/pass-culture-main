@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String
+from sqlalchemy import Column
+from sqlalchemy import String
 
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject

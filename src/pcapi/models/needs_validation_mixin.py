@@ -1,7 +1,8 @@
 """ needs validation mixin """
 import secrets
 
-from sqlalchemy import Column, String
+from sqlalchemy import Column
+from sqlalchemy import String
 
 
 class NeedsValidationMixin(object):

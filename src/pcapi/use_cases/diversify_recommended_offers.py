@@ -1,7 +1,10 @@
 import collections
-from typing import List, Dict, Tuple
+from typing import Dict
+from typing import List
+from typing import Tuple
 
-from pcapi.models import DiscoveryViewV3, Offer
+from pcapi.models import DiscoveryViewV3
+from pcapi.models import Offer
 
 
 def order_offers_by_diversified_types(offers: List[DiscoveryViewV3]) -> List[DiscoveryViewV3]:

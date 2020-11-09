@@ -1,6 +1,8 @@
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.models.user_offerer import UserOfferer
-from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper, get_offerer_helper
+from pcapi.models.user_sql_entity import UserSQLEntity
+from pcapi.sandboxes.scripts.utils.helpers import get_offerer_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
+
 
 def get_existing_pro_user_with_offerer():
     query = UserSQLEntity.query.join(UserOfferer)

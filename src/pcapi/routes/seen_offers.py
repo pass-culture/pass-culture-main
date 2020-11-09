@@ -1,6 +1,6 @@
 from flask import request
-from flask_login import current_user, \
-    login_required
+from flask_login import current_user
+from flask_login import login_required
 
 from pcapi.flask_app import private_api
 from pcapi.models.feature import FeatureToggle

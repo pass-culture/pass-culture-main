@@ -3,7 +3,8 @@ from pcapi.core.offers.models import Offer
 from pcapi.models.recommendation import Recommendation
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository.user_queries import keep_only_webapp_users
-from pcapi.sandboxes.scripts.utils.helpers import get_beneficiary_helper, get_recommendation_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_beneficiary_helper
+from pcapi.sandboxes.scripts.utils.helpers import get_recommendation_helper
 
 
 def get_existing_webapp_user_with_no_date_read():

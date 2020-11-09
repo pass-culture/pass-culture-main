@@ -1,5 +1,5 @@
-from abc import ABC, \
-    abstractmethod
+from abc import ABC
+from abc import abstractmethod
 from typing import Optional
 
 from pcapi.domain.pro_offerers.paginated_offerers import PaginatedOfferers

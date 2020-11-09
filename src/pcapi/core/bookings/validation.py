@@ -1,14 +1,16 @@
 import datetime
+
 import pytz
 
 from pcapi.core.bookings import conf
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
-import pcapi.domain.expenses as payments_api
 from pcapi.domain import user_activation
-from pcapi.models import api_errors, UserSQLEntity
-from pcapi.models.stock_sql_entity import StockSQLEntity
+import pcapi.domain.expenses as payments_api
+from pcapi.models import UserSQLEntity
+from pcapi.models import api_errors
 from pcapi.models.db import db
+from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.repository import payment_queries
 
 

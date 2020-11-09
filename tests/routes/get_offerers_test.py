@@ -1,8 +1,13 @@
-from pcapi.repository import repository
 import pytest
+
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.repository import repository
+
 from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
-    create_bank_information
 
 
 class Get:

@@ -1,10 +1,9 @@
 import factory
 
+from pcapi import models
 from pcapi.core.testing import BaseFactory
-
 import pcapi.core.users.factories as users_factories
 from pcapi.models import offer_type
-from pcapi import models
 
 
 ALL_TYPES = {t.name for t in list(offer_type.EventType) + list(offer_type.ThingType)}

@@ -1,6 +1,7 @@
-from pcapi.flask_app import private_api, \
-    public_api
-from pcapi.utils.health_checker import check_database_connection, read_version_from_file
+from pcapi.flask_app import private_api
+from pcapi.flask_app import public_api
+from pcapi.utils.health_checker import check_database_connection
+from pcapi.utils.health_checker import read_version_from_file
 
 
 @public_api.route('/health/api', methods=['GET'])

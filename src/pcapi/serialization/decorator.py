@@ -1,7 +1,12 @@
 from functools import wraps
-from typing import Callable, Any, List, Optional
+from typing import Any
+from typing import Callable
+from typing import List
+from typing import Optional
 
-from flask import request, make_response, Response
+from flask import Response
+from flask import make_response
+from flask import request
 from pydantic import BaseModel
 from spectree import Response as SpectreeResponse
 from spectree.spec import SpecTree

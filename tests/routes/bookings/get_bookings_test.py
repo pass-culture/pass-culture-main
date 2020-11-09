@@ -1,13 +1,19 @@
 from unittest.mock import patch
 
-from pcapi.repository import repository
 import pytest
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_stock
-from pcapi.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
+
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
+from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
 
 
 class Get:

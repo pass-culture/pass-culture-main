@@ -1,6 +1,7 @@
 from typing import Dict
 
-from pcapi.models import Offer, MediationSQLEntity
+from pcapi.models import MediationSQLEntity
+from pcapi.models import Offer
 
 
 class Favorite(object):

@@ -1,17 +1,27 @@
-from datetime import datetime, timedelta
-from unittest.mock import patch, call, MagicMock
+from datetime import datetime
+from datetime import timedelta
+from unittest.mock import MagicMock
+from unittest.mock import call
+from unittest.mock import patch
 
 import pytest
 
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import StockSQLEntity
 from pcapi.models.db import db
 from pcapi.repository import repository
-from pcapi.scripts.stock.update_stock_quantity_with_new_constraint import update_stock_quantity_with_new_constraint, \
-    _get_old_remaining_quantity, _get_stocks_to_check, _get_stocks_with_negative_remaining_quantity, \
-    update_stock_quantity_for_negative_remaining_quantity
-from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_stock, create_booking, \
-    create_user
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.scripts.stock.update_stock_quantity_with_new_constraint import (
+    update_stock_quantity_for_negative_remaining_quantity,
+)
+from pcapi.scripts.stock.update_stock_quantity_with_new_constraint import _get_old_remaining_quantity
+from pcapi.scripts.stock.update_stock_quantity_with_new_constraint import _get_stocks_to_check
+from pcapi.scripts.stock.update_stock_quantity_with_new_constraint import _get_stocks_with_negative_remaining_quantity
+from pcapi.scripts.stock.update_stock_quantity_with_new_constraint import update_stock_quantity_with_new_constraint
 
 
 class UpdateStockAvailableWithNewConstraintTest:

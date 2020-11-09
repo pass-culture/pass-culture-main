@@ -1,4 +1,7 @@
-from sqlalchemy import Column, String, Text, Integer
+from sqlalchemy import Column
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import Text
 
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject

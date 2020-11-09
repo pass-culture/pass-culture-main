@@ -1,4 +1,5 @@
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
 from pcapi.domain.favorite.favorite import Favorite
 from pcapi.models import UserSQLEntity

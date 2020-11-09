@@ -1,6 +1,7 @@
 """ has address mixin """
 
-from sqlalchemy import Column, String
+from sqlalchemy import Column
+from sqlalchemy import String
 
 
 class HasAddressMixin(object):

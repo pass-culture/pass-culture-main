@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import List
+from typing import Optional
 
 from pcapi.models import Booking
 from pcapi.models import Offer

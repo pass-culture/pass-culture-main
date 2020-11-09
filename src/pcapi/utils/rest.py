@@ -1,8 +1,9 @@
 """ rest """
-import re
 from functools import wraps
+import re
 
-from flask import jsonify, request
+from flask import jsonify
+from flask import request
 from flask_login import current_user
 from sqlalchemy import text
 from sqlalchemy.exc import ProgrammingError

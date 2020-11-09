@@ -1,5 +1,5 @@
-from typing import Dict, Optional
-
+from typing import Dict
+from typing import Optional
 
 
 def offerer_demarche_simplifiee_application_detail_response(siren: str,

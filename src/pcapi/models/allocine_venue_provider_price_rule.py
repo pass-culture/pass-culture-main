@@ -1,9 +1,15 @@
-from sqlalchemy import Column, Enum, BigInteger, ForeignKey, Numeric, CheckConstraint, UniqueConstraint
+from sqlalchemy import BigInteger
+from sqlalchemy import CheckConstraint
+from sqlalchemy import Column
+from sqlalchemy import Enum
+from sqlalchemy import ForeignKey
+from sqlalchemy import Numeric
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from pcapi.domain.price_rule import PriceRule
-from pcapi.models.pc_object import PcObject
 from pcapi.models.db import Model
+from pcapi.models.pc_object import PcObject
 
 
 class AllocineVenueProviderPriceRule(PcObject, Model):

@@ -1,4 +1,5 @@
-from pcapi.models.api_errors import ResourceNotFoundError, ApiErrors
+from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ResourceNotFoundError
 
 
 def check_valid_token_for_user_validation(user_to_validate):

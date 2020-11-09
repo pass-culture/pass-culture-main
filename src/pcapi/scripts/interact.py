@@ -1,6 +1,8 @@
 """ interact """
 # Loading variables should always be the first thing, before any other load
 from pcapi.load_environment_variables import load_environment_variables
+
+
 load_environment_variables()
 
 import os
@@ -11,7 +13,9 @@ from mailjet_rest import Client
 
 from pcapi.models.db import db
 from pcapi.utils import config
-from pcapi.utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
+from pcapi.utils.mailing import MAILJET_API_KEY
+from pcapi.utils.mailing import MAILJET_API_SECRET
+
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
@@ -21,25 +25,26 @@ app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version=
 db.init_app(app)
 db.app = app
 
+from sqlalchemy import *
+
 # IMPORT A LOT OF TOOLS TO MAKE THEM AVAILABLE
 # IN THE PYTHON SHELL
 from pcapi.domain import *
-from pcapi.recommendations_engine import *
 from pcapi.local_providers import *
 from pcapi.models import *
+from pcapi.recommendations_engine import *
 from pcapi.repository.offer_queries import *
 from pcapi.repository.user_queries import *
 from pcapi.sandboxes import *
-from sqlalchemy import *
+from pcapi.scripts.beneficiary import old_remote_import
+from pcapi.scripts.beneficiary import remote_import
+from pcapi.scripts.booking import *
 from pcapi.utils.config import *
 from pcapi.utils.human_ids import *
 from pcapi.utils.import_module import *
 from pcapi.utils.includes import *
 from pcapi.utils.logger import *
 from pcapi.utils.token import *
-from pcapi.scripts.beneficiary import old_remote_import
-from pcapi.scripts.beneficiary import remote_import
-from pcapi.scripts.booking import *
 
 
 def set_python_prompt():

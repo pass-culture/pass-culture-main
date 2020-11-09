@@ -2,9 +2,11 @@ from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 
-from pcapi.model_creators.generic_creators import create_offerer, create_venue
-from tests.utils.mailing_test import _remove_whitespaces
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.utils.mailing import make_venue_validated_email
+
+from tests.utils.mailing_test import _remove_whitespaces
 
 
 @patch('pcapi.utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')

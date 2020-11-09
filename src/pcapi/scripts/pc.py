@@ -1,18 +1,22 @@
 # Loading variables should always be the first thing, before any other load
 from pcapi.load_environment_variables import load_environment_variables
+
+
 load_environment_variables()
 
 import os
 
-import redis
 from flask import Flask
 from flask_script import Manager
 from mailjet_rest import Client
+import redis
 
 from pcapi.models.db import db
 from pcapi.scripts.install import install_scripts
 from pcapi.utils.config import REDIS_URL
-from pcapi.utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
+from pcapi.utils.mailing import MAILJET_API_KEY
+from pcapi.utils.mailing import MAILJET_API_SECRET
+
 
 app = Flask(__name__, template_folder='../templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')

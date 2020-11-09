@@ -1,11 +1,19 @@
-from typing import Callable, Dict, Optional
+from typing import Callable
+from typing import Dict
+from typing import Optional
 
 from pcapi.domain.stock_provider.stock_provider_repository import StockProviderRepository
-from pcapi.local_providers import FnacStocks, LibrairesStocks, PraxielStocks, TiteLiveStocks
-from pcapi.models import ApiErrors, VenueProvider, VenueSQLEntity
+from pcapi.local_providers import FnacStocks
+from pcapi.local_providers import LibrairesStocks
+from pcapi.local_providers import PraxielStocks
+from pcapi.local_providers import TiteLiveStocks
+from pcapi.models import ApiErrors
+from pcapi.models import VenueProvider
+from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.human_ids import dehumanize
 from pcapi.validation.routes.venues import check_existing_venue
+
 
 STANDARD_STOCK_PROVIDERS = {
     FnacStocks: 'FNAC',

@@ -1,9 +1,13 @@
-from pcapi.domain.build_recommendations import move_requested_recommendation_first
-from pcapi.repository import repository
 import pytest
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
-    create_mediation
+
+from pcapi.domain.build_recommendations import move_requested_recommendation_first
+from pcapi.model_creators.generic_creators import create_mediation
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_recommendation
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.repository import repository
 
 
 class MoveRequestedRecommendationFirstTest:

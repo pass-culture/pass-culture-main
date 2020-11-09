@@ -5,10 +5,11 @@ Revises: e2960d28528f
 Create Date: 2018-08-10 08:16:46.210630
 
 """
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 # revision identifiers, used by Alembic.
 from sqlalchemy.sql import expression
+
 
 revision = '72f3629849f0'
 down_revision = 'e2960d28528f'

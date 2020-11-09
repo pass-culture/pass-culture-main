@@ -2,20 +2,17 @@ import secrets
 from unittest.mock import patch
 
 from pcapi.core import testing
-from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import (
-    to_domain,
-)
-from pcapi.model_creators.generic_creators import (
-    create_offerer,
-    create_user,
-    create_user_offerer,
-    create_venue,
-    create_stock,
-)
+from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.repository import repository
-from tests.conftest import TestClient
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
 
 
 class Returns200:

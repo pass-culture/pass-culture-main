@@ -1,11 +1,16 @@
-from typing import List, Dict
+from typing import Dict
+from typing import List
 
 from sqlalchemy.orm import joinedload
 
 from pcapi.domain.favorite.favorite import Favorite
 from pcapi.domain.favorite.favorite_repository import FavoriteRepository
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
-from pcapi.models import FavoriteSQLEntity, Offer, StockSQLEntity, VenueSQLEntity, Booking
+from pcapi.models import Booking
+from pcapi.models import FavoriteSQLEntity
+from pcapi.models import Offer
+from pcapi.models import StockSQLEntity
+from pcapi.models import VenueSQLEntity
 
 
 class FavoriteSQLRepository(FavoriteRepository):

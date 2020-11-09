@@ -1,8 +1,10 @@
-from pcapi.repository import repository
-from tests.conftest import TestClient
 import pytest
-from pcapi.model_creators.generic_creators import create_user, \
-    create_venue_type
+
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue_type
+from pcapi.repository import repository
+
+from tests.conftest import TestClient
 
 
 class Get:

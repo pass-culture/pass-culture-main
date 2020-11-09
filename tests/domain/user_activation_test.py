@@ -1,17 +1,26 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from decimal import Decimal
 
 import pytest
 
-from pcapi.domain.user_activation import generate_activation_users_csv, is_import_status_change_allowed, is_activation_booking
-from pcapi.models import ImportStatus, EventType, UserSQLEntity
-from pcapi.models import ThingType
 from pcapi.core.bookings.models import ActivationUser
+from pcapi.domain.user_activation import generate_activation_users_csv
+from pcapi.domain.user_activation import is_activation_booking
+from pcapi.domain.user_activation import is_import_status_change_allowed
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_event_type
+from pcapi.models import EventType
+from pcapi.models import ImportStatus
+from pcapi.models import ThingType
+from pcapi.models import UserSQLEntity
 from pcapi.scripts.beneficiary.old_remote_import import create_beneficiary_from_application
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue
-from pcapi.model_creators.specific_creators import create_product_with_event_type, create_offer_with_thing_product, \
-    create_offer_with_event_product
 
 
 class GenerateActivationUsersCsvTest:

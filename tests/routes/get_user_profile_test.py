@@ -2,9 +2,12 @@ import datetime
 
 import pytest
 
-from pcapi.models import ThingType
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.models import ThingType
 from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize

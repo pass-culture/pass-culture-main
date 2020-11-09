@@ -3,7 +3,9 @@ from typing import List
 
 from sqlalchemy import and_
 
-from pcapi.models import Booking, StockSQLEntity, Payment
+from pcapi.models import Booking
+from pcapi.models import Payment
+from pcapi.models import StockSQLEntity
 from pcapi.repository import repository
 
 

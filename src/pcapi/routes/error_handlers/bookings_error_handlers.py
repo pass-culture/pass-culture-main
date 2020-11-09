@@ -1,8 +1,16 @@
-from flask import current_app as app, jsonify
+from flask import current_app as app
+from flask import jsonify
 
-from pcapi.core.bookings.exceptions import OfferIsAlreadyBooked, QuantityIsInvalid, StockIsNotBookable, \
-    CannotBookFreeOffers, PhysicalExpenseLimitHasBeenReached, UserHasInsufficientFunds, \
-    DigitalExpenseLimitHasBeenReached, BookingIsAlreadyUsed, CannotCancelConfirmedBooking, BookingDoesntExist
+from pcapi.core.bookings.exceptions import BookingDoesntExist
+from pcapi.core.bookings.exceptions import BookingIsAlreadyUsed
+from pcapi.core.bookings.exceptions import CannotBookFreeOffers
+from pcapi.core.bookings.exceptions import CannotCancelConfirmedBooking
+from pcapi.core.bookings.exceptions import DigitalExpenseLimitHasBeenReached
+from pcapi.core.bookings.exceptions import OfferIsAlreadyBooked
+from pcapi.core.bookings.exceptions import PhysicalExpenseLimitHasBeenReached
+from pcapi.core.bookings.exceptions import QuantityIsInvalid
+from pcapi.core.bookings.exceptions import StockIsNotBookable
+from pcapi.core.bookings.exceptions import UserHasInsufficientFunds
 from pcapi.domain.stock.stock_exceptions import StockDoesntExist
 from pcapi.domain.users import UnauthorizedForAdminUser
 

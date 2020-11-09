@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
 from pcapi.domain.beneficiary_bookings.stock import Stock
 

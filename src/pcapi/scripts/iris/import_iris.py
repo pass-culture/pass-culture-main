@@ -1,10 +1,13 @@
-import geopandas as gpd
 from geoalchemy2.shape import from_shape
-from geopandas import GeoDataFrame, GeoSeries
-from shapely.geometry import Point, Polygon
+import geopandas as gpd
+from geopandas import GeoDataFrame
+from geopandas import GeoSeries
+from shapely.geometry import Point
+from shapely.geometry import Polygon
 
 from pcapi.models import IrisFrance
 from pcapi.repository import repository
+
 
 WGS_SPATIAL_REFERENCE_IDENTIFIER = 4326
 

@@ -1,6 +1,12 @@
 from typing import List
 
-from pcapi.models import StockSQLEntity, Offerer, UserSQLEntity, Offer, ThingType, VenueSQLEntity, Product
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import Product
+from pcapi.models import StockSQLEntity
+from pcapi.models import ThingType
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueSQLEntity
 from pcapi.utils.human_ids import dehumanize
 
 

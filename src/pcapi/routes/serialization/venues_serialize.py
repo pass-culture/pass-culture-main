@@ -1,4 +1,5 @@
-from typing import List, Dict
+from typing import Dict
+from typing import List
 
 from flask import json
 

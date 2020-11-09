@@ -1,4 +1,5 @@
-from pcapi.models import ApiErrors, StockSQLEntity
+from pcapi.models import ApiErrors
+from pcapi.models import StockSQLEntity
 
 
 def validate(stock: StockSQLEntity, api_errors: ApiErrors) -> ApiErrors:

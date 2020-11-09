@@ -2,6 +2,7 @@ import os
 
 from pcapi.utils import requests
 
+
 RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api/siteverify'
 RECAPTCHA_SECRET = os.environ.get("RECAPTCHA_SECRET")
 RECAPTCHA_REQUIRED_SCORE = os.environ.get("RECAPTCHA_REQUIRED_SCORE", 0.5)

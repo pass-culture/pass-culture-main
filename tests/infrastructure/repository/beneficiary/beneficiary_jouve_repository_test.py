@@ -1,15 +1,16 @@
 from datetime import datetime
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock
+from unittest.mock import call
+from unittest.mock import patch
 
-import pytest
 from freezegun import freeze_time
-from tests.infrastructure.repository.beneficiary import \
-    beneficiary_jouve_creators
+import pytest
 
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
-    BeneficiaryPreSubscription
-from pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository import ApiJouveException, \
-    BeneficiaryJouveRepository
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository import ApiJouveException
+from pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository import BeneficiaryJouveRepository
+
+from tests.infrastructure.repository.beneficiary import beneficiary_jouve_creators
 
 
 @freeze_time('2020-10-15 09:00:00')

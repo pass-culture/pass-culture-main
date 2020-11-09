@@ -1,7 +1,10 @@
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
-from pcapi.models import ApiErrors, Offer, StockSQLEntity
 from pcapi.domain.stocks import check_stock_is_not_imported
+from pcapi.models import ApiErrors
+from pcapi.models import Offer
+from pcapi.models import StockSQLEntity
 
 
 def check_stocks_are_editable_for_offer(offer: Offer) -> None:

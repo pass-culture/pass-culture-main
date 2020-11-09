@@ -1,7 +1,10 @@
-from typing import Callable, List
+from typing import Callable
+from typing import List
 
-from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine, get_movie_poster_from_allocine
+from pcapi.connectors.api_allocine import get_movie_poster_from_allocine
+from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine
 from pcapi.utils.logger import logger
+
 
 MOVIE_SPECIAL_EVENT = 'SPECIAL_EVENT'
 

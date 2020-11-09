@@ -2,6 +2,7 @@ from typing import List
 
 from pcapi.models import UserSQLEntity
 
+
 DEPARTEMENT_CODE_VISIBILITY = {
     '08': ['02', '08', '51', '55', '59'],
     '22': ['22', '29', '35', '56'],

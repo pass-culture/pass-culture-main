@@ -5,9 +5,10 @@ Revises: 040875ff5d5b
 Create Date: 2020-04-20 13:57:01.460387
 
 """
+from alembic import op
 import sqlalchemy as sa
 from sqlalchemy import ForeignKey
-from alembic import op
+
 
 revision = 'edb77d0140b7'
 down_revision = '25b599739d30'

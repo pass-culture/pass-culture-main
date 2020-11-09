@@ -5,9 +5,11 @@ Revises: 7906543b4e96
 Create Date: 2019-07-19 08:23:50.213592
 
 """
-import sqlalchemy as sa
 from alembic import op
-from sqlalchemy import func, ForeignKey
+import sqlalchemy as sa
+from sqlalchemy import ForeignKey
+from sqlalchemy import func
+
 
 # revision identifiers, used by Alembic.
 revision = '2920fd4ec916'

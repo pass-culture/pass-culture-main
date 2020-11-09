@@ -2,6 +2,7 @@ from pcapi.models.mediation_sql_entity import MediationSQLEntity
 from pcapi.models.product import Product
 from pcapi.utils.object_storage import build_thumb_path
 
+
 class BuildThumbPathTest:
     def test_returns_path_without_sql_entity_when_given_model_is_mediation(self):
         # given

@@ -1,8 +1,10 @@
-from datetime import datetime, time
+from datetime import datetime
+from datetime import time
 
 from babel.dates import format_date
 from babel.dates import format_datetime as babel_format_datetime
 from dateutil import tz
+
 
 TODAY = datetime.combine(datetime.utcnow(), time(hour=20))
 DATE_ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"

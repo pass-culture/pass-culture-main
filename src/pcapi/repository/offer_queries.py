@@ -1,29 +1,46 @@
-from datetime import datetime, timedelta
-from typing import List, Optional
+from datetime import datetime
+from datetime import timedelta
+from typing import List
+from typing import Optional
 
 from flask_sqlalchemy import BaseQuery
-from sqlalchemy import func, nullsfirst, or_
-from sqlalchemy.orm import aliased, joinedload
+from sqlalchemy import func
+from sqlalchemy import nullsfirst
+from sqlalchemy import or_
+from sqlalchemy.orm import aliased
+from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import selectable
 from sqlalchemy.sql.elements import BinaryExpression
 
+from pcapi.core.bookings.repository import get_only_offer_ids_from_bookings
+from pcapi.core.offers.repository import get_offers_by_filters
 from pcapi.domain.departments import ILE_DE_FRANCE_DEPT_CODES
-from pcapi.models import Booking, DiscoveryView, DiscoveryViewV3, \
-    EventType, FavoriteSQLEntity, MediationSQLEntity, Offer, Offerer, SeenOffer, StockSQLEntity, ThingType, \
-    UserSQLEntity, VenueSQLEntity
 from pcapi.domain.identifier.identifier import Identifier
-from pcapi.models.db import Model, db
+from pcapi.models import Booking
+from pcapi.models import DiscoveryView
+from pcapi.models import DiscoveryViewV3
+from pcapi.models import EventType
+from pcapi.models import FavoriteSQLEntity
+from pcapi.models import MediationSQLEntity
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import SeenOffer
+from pcapi.models import StockSQLEntity
+from pcapi.models import ThingType
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueSQLEntity
+from pcapi.models.db import Model
+from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
-from pcapi.core.bookings.repository import get_only_offer_ids_from_bookings
 from pcapi.repository.favorite_queries import get_only_offer_ids_from_favorites
 from pcapi.repository.iris_venues_queries import find_venues_located_near_iris
 from pcapi.repository.venue_queries import get_only_venue_ids_for_department_codes
 from pcapi.use_cases.diversify_recommended_offers import order_offers_by_diversified_types
-from pcapi.utils.logger import logger
 from pcapi.utils.converter import from_tuple_to_int
-from pcapi.core.offers.repository import get_offers_by_filters
+from pcapi.utils.logger import logger
+
 
 ALL_DEPARTMENTS_CODE = '00'
 

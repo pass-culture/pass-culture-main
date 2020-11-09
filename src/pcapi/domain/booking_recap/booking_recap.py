@@ -2,8 +2,11 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory, BookingRecapHistory, BookingRecapValidatedHistory, \
-    BookingRecapCancelledHistory, BookingRecapReimbursedHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapCancelledHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapReimbursedHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapValidatedHistory
 
 
 class BookingRecapStatus(Enum):

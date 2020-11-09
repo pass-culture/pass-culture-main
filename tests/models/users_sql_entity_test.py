@@ -3,13 +3,19 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.models import ApiErrors, RightsType, ThingType, user_sql_entity
-from pcapi.repository import repository
-import pytest
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue, \
-    create_deposit, create_user_offerer
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.models import ApiErrors
+from pcapi.models import RightsType
+from pcapi.models import ThingType
+from pcapi.models import user_sql_entity
+from pcapi.repository import repository
 
 
 @pytest.mark.usefixtures("db_session")

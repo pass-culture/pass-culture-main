@@ -1,14 +1,25 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 import pytest
 
-from pcapi.model_creators.generic_creators import create_booking, create_offerer, create_user, create_venue
-from pcapi.model_creators.specific_creators import create_event_occurrence, create_offer_with_event_product, create_offer_with_thing_product, create_product_with_thing_type, \
-    create_stock_from_event_occurrence, create_stock_from_offer
-
-from pcapi.emails.beneficiary_offer_cancellation import _is_offer_active_for_recap, retrieve_offerer_booking_recap_email_data_after_user_cancellation
+from pcapi.emails.beneficiary_offer_cancellation import (
+    retrieve_offerer_booking_recap_email_data_after_user_cancellation,
+)
+from pcapi.emails.beneficiary_offer_cancellation import _is_offer_active_for_recap
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.repository import repository
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 

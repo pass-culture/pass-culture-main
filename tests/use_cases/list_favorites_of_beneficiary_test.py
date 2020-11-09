@@ -1,11 +1,12 @@
 from unittest.mock import MagicMock
 
-from tests.domain_creators.generic_creators import create_domain_favorite
-from pcapi.model_creators.generic_creators import create_offerer, create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-
 from pcapi.infrastructure.repository.favorite.favorite_sql_repository import FavoriteSQLRepository
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.use_cases.list_favorites_of_beneficiary import ListFavoritesOfBeneficiary
+
+from tests.domain_creators.generic_creators import create_domain_favorite
 
 
 class ListFavoritesOfBeneficiaryTest:

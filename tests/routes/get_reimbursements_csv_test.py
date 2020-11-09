@@ -1,15 +1,17 @@
+import pytest
+
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.repository import repository
 from pcapi.scripts.payment.batch_steps import generate_new_payments
-import pytest
+
 from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_booking, \
-    create_user, \
-    create_offerer, \
-    create_venue, \
-    create_deposit, \
-    create_user_offerer, \
-    create_bank_information
-from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 
 
 class Get:

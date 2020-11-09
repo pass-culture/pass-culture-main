@@ -1,18 +1,22 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
+from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import check_if_siren_already_exists
 from pcapi.sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
-from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_DOMAINS, \
-    MOCK_FIRST_NAMES, \
-    MOCK_LAST_NAMES
+from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_DOMAINS
+from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES
+from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_LAST_NAMES
 from pcapi.sandboxes.scripts.utils.helpers import get_email
-from pcapi.sandboxes.scripts.utils.locations import create_locations_from_places, \
-    OFFERER_PLACES
+from pcapi.sandboxes.scripts.utils.locations import OFFERER_PLACES
+from pcapi.sandboxes.scripts.utils.locations import create_locations_from_places
 from pcapi.sandboxes.scripts.utils.select import pick_every
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, \
-    create_bank_information
 from pcapi.utils.logger import logger
+
 
 ATTACHED_PRO_USERS_COUNT = 2
 VALIDATED_OFFERERS_REMOVE_MODULO = 5

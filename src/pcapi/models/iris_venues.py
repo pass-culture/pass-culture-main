@@ -1,8 +1,10 @@
-from sqlalchemy import Column, BigInteger, ForeignKey
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
-from pcapi.models.pc_object import PcObject
 from pcapi.models.db import Model
+from pcapi.models.pc_object import PcObject
 
 
 class IrisVenues(PcObject, Model):

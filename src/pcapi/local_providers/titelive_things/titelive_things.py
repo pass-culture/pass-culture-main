@@ -1,17 +1,25 @@
+from io import BytesIO
+from io import TextIOWrapper
 import re
-from io import TextIOWrapper, BytesIO
-from typing import Dict, List, Optional
+from typing import Dict
+from typing import List
+from typing import Optional
 
-from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, connect_to_titelive_ftp
-from pcapi.domain.titelive import get_date_from_filename, read_things_date
+from pcapi.connectors.ftp_titelive import connect_to_titelive_ftp
+from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
+from pcapi.domain.titelive import get_date_from_filename
+from pcapi.domain.titelive import read_things_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import Product, ThingType, BookFormat
+from pcapi.models import BookFormat
+from pcapi.models import Product
+from pcapi.models import ThingType
 from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import local_provider_event_queries
 from pcapi.repository import product_queries
 from pcapi.repository.product_queries import ProductWithBookingsException
 from pcapi.utils.string_processing import trim_with_elipsis
+
 
 DATE_REGEXP = re.compile(r'([a-zA-Z]+)(\d+).tit')
 THINGS_FOLDER_NAME_TITELIVE = 'livre3_11'

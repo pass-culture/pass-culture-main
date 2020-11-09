@@ -1,11 +1,15 @@
 import pytest
 
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information import VenueWithBasicInformation
-from pcapi.infrastructure.repository.venue.venue_with_basic_information import venue_with_basic_information_domain_converter
-from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import \
-    VenueWithBasicInformationSQLRepository
+from pcapi.infrastructure.repository.venue.venue_with_basic_information import (
+    venue_with_basic_information_domain_converter,
+)
+from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import (
+    VenueWithBasicInformationSQLRepository,
+)
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.repository import repository
-from pcapi.model_creators.generic_creators import create_offerer, create_venue
 
 
 class VenueWithBasicInformationSQLRepositoryTest:

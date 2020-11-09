@@ -1,10 +1,12 @@
 from typing import Callable
 
-from pcapi.domain.mediations import DO_NOT_CROP, standardize_image
+from pcapi.domain.mediations import DO_NOT_CROP
+from pcapi.domain.mediations import standardize_image
 from pcapi.models import ApiErrors
 from pcapi.utils import requests
 from pcapi.utils.logger import logger
 from pcapi.utils.object_storage import store_public_object
+
 
 ALLOWED_EXTENSIONS = {'jpg', 'png', 'jpeg', 'gif'}
 READABLE_EXTENSIONS = '(%s)' % ', '.join(map(lambda e: f'.{e}', reversed(sorted(ALLOWED_EXTENSIONS))))

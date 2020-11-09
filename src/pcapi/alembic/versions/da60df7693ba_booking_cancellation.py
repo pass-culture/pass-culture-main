@@ -7,6 +7,7 @@ Create Date: 2018-08-23 12:20:01.149618
 """
 from alembic import op
 
+
 # revision identifiers, used by Alembic.
 revision = 'da60df7693ba'
 down_revision = '6d1eec337686'

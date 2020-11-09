@@ -1,28 +1,42 @@
 from datetime import datetime
-from typing import List, Tuple
+from typing import List
+from typing import Tuple
 
 from lxml.etree import DocumentInvalid
 
 import pcapi.core.bookings.repository as booking_repository
-from pcapi.domain.admin_emails import send_payment_message_email, send_payment_details_email, send_wallet_balances_email, \
-    send_payments_report_emails
-from pcapi.domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_message_file, \
-    validate_message_file_structure, create_all_payments_details, generate_payment_details_csv, \
-    generate_wallet_balances_csv, \
-    generate_payment_message, generate_file_checksum, group_payments_by_status, filter_out_bookings_without_cost, \
-    keep_only_pending_payments, keep_only_not_processable_payments
-from pcapi.domain.reimbursement import find_all_booking_reimbursements, NEW_RULES, CURRENT_RULES
+from pcapi.domain.admin_emails import send_payment_details_email
+from pcapi.domain.admin_emails import send_payment_message_email
+from pcapi.domain.admin_emails import send_payments_report_emails
+from pcapi.domain.admin_emails import send_wallet_balances_email
+from pcapi.domain.payments import create_all_payments_details
+from pcapi.domain.payments import create_payment_for_booking
+from pcapi.domain.payments import filter_out_already_paid_for_bookings
+from pcapi.domain.payments import filter_out_bookings_without_cost
+from pcapi.domain.payments import generate_file_checksum
+from pcapi.domain.payments import generate_message_file
+from pcapi.domain.payments import generate_payment_details_csv
+from pcapi.domain.payments import generate_payment_message
+from pcapi.domain.payments import generate_wallet_balances_csv
+from pcapi.domain.payments import group_payments_by_status
+from pcapi.domain.payments import keep_only_not_processable_payments
+from pcapi.domain.payments import keep_only_pending_payments
+from pcapi.domain.payments import validate_message_file_structure
+from pcapi.domain.reimbursement import CURRENT_RULES
+from pcapi.domain.reimbursement import NEW_RULES
+from pcapi.domain.reimbursement import find_all_booking_reimbursements
 from pcapi.models import Offerer
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.repository import repository
 from pcapi.repository import payment_queries
+from pcapi.repository import repository
 from pcapi.repository.feature_queries import is_active
 from pcapi.repository.user_queries import get_all_users_wallet_balances
 from pcapi.utils.logger import logger
-from pcapi.utils.mailing import MailServiceException, send_raw_email
+from pcapi.utils.mailing import MailServiceException
+from pcapi.utils.mailing import send_raw_email
 
 
 def concatenate_payments_with_errors_and_retries(payments: List[Payment]) -> List[Payment]:

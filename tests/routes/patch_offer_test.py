@@ -1,28 +1,28 @@
 from datetime import datetime
 from unittest.mock import patch
+
 from freezegun import freeze_time
 
-from pcapi.models import Offer, Product, Provider
+from pcapi.model_creators.generic_creators import API_URL
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_provider
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.provider_creators import activate_provider
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_event_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.models import Offer
+from pcapi.models import Product
+from pcapi.models import Provider
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.routes.serialization import serialize
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import (
-    create_user,
-    create_offerer,
-    create_venue,
-    create_user_offerer,
-    API_URL,
-    create_provider,
-)
-from pcapi.model_creators.provider_creators import activate_provider
-from pcapi.model_creators.specific_creators import (
-    create_product_with_thing_type,
-    create_product_with_event_type,
-    create_offer_with_thing_product,
-    create_offer_with_event_product,
-)
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
 
 
 class Returns200:

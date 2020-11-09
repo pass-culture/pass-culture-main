@@ -2,8 +2,10 @@ import datetime
 
 import pytest
 
-from pcapi.utils.date import english_to_french_month, get_date_formatted_for_email, get_time_formatted_for_email, \
-    get_department_timezone
+from pcapi.utils.date import english_to_french_month
+from pcapi.utils.date import get_date_formatted_for_email
+from pcapi.utils.date import get_department_timezone
+from pcapi.utils.date import get_time_formatted_for_email
 
 
 def test_english_to_french_month(app):

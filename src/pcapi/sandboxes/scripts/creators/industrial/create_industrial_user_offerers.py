@@ -1,6 +1,6 @@
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.repository import repository
 from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.repository import repository
 from pcapi.utils.logger import logger
 
 

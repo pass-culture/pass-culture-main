@@ -1,6 +1,8 @@
 from collections import OrderedDict
 from functools import singledispatch
-from typing import Iterable, Set, List
+from typing import Iterable
+from typing import List
+from typing import Set
 
 from sqlalchemy.orm.collections import InstrumentedList
 

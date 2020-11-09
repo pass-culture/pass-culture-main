@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
 from pcapi.models.db import db
 from pcapi.models.seen_offers import SeenOffer

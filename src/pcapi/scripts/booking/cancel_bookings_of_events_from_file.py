@@ -1,9 +1,14 @@
 import csv
-from typing import List, Iterable
+from typing import Iterable
+from typing import List
 
-from pcapi.models import Booking, StockSQLEntity, Offer, ApiErrors
+from pcapi.models import ApiErrors
+from pcapi.models import Booking
+from pcapi.models import Offer
+from pcapi.models import StockSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.logger import logger
+
 
 FIRST_TITLE = "id offre"
 OFFER_ID_COLUMN_INDEX = 0

@@ -1,14 +1,26 @@
-from datetime import MINYEAR, datetime
+from datetime import MINYEAR
+from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, func
+from sqlalchemy import Column
+from sqlalchemy import func
 from sqlalchemy.orm import Query
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
-from pcapi.models import BeneficiaryImport, BeneficiaryImportStatus, Booking, \
-    EventType, ImportStatus, Offer, Offerer, RightsType, StockSQLEntity, \
-    ThingType, UserSQLEntity, UserOfferer, BeneficiaryImportSources
+from pcapi.models import BeneficiaryImport
+from pcapi.models import BeneficiaryImportSources
+from pcapi.models import BeneficiaryImportStatus
+from pcapi.models import Booking
+from pcapi.models import EventType
+from pcapi.models import ImportStatus
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import RightsType
+from pcapi.models import StockSQLEntity
+from pcapi.models import ThingType
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
 from pcapi.models.db import db
 from pcapi.models.user_sql_entity import WalletBalance
 

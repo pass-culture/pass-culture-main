@@ -1,8 +1,8 @@
 from typing import List
 
+from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
-from pcapi.model_creators.generic_creators import create_deposit
 
 
 def grant_wallet_to_existing_users(user_ids: List[int]):

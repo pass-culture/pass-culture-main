@@ -1,6 +1,9 @@
-from typing import Dict, Any
+from typing import Any
+from typing import Dict
 
-from pcapi.models import Offer, Product, UserSQLEntity
+from pcapi.models import Offer
+from pcapi.models import Product
+from pcapi.models import UserSQLEntity
 from pcapi.repository import product_queries
 from pcapi.validation.routes.events import check_user_can_create_activation_event
 from pcapi.validation.routes.url import is_url_safe

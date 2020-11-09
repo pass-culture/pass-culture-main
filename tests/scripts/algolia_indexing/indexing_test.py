@@ -1,10 +1,14 @@
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import MagicMock
+from unittest.mock import call
+from unittest.mock import patch
 
-from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, \
-    batch_indexing_offers_in_algolia_by_venue, \
-    batch_indexing_offers_in_algolia_from_database, \
-    batch_deleting_expired_offers_in_algolia, _process_venue_provider, \
-    batch_indexing_offers_in_algolia_by_venue_provider, batch_processing_offer_ids_in_error
+from pcapi.scripts.algolia_indexing.indexing import _process_venue_provider
+from pcapi.scripts.algolia_indexing.indexing import batch_deleting_expired_offers_in_algolia
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue_provider
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
+from pcapi.scripts.algolia_indexing.indexing import batch_processing_offer_ids_in_error
 
 
 class BatchIndexingOffersInAlgoliaByOfferTest:

@@ -1,6 +1,7 @@
-from pcapi.repository import repository
 from sqlalchemy.sql.expression import func
+
 from pcapi.models import UserSQLEntity
+from pcapi.repository import repository
 
 
 def update_hasSeenTutorials_for_existing_users():

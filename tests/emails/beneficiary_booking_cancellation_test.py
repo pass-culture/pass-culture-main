@@ -3,12 +3,15 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 
-from pcapi.emails.beneficiary_booking_cancellation import \
-    make_beneficiary_booking_cancellation_email_data
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_recommendation
-from pcapi.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
-    create_offer_with_event_product
+from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_recommendation
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_offer
 
 
 class MakeBeneficiaryBookingCancellationEmailDataTest:

@@ -1,8 +1,10 @@
 import os
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
 from algoliasearch.search_client import SearchClient
 from algoliasearch.search_index import SearchIndex
+
 
 ALGOLIA_API_KEY = os.environ.get('ALGOLIA_API_KEY')
 ALGOLIA_APPLICATION_ID = os.environ.get('ALGOLIA_APPLICATION_ID')

@@ -1,26 +1,50 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 import pandas
-
-from pcapi.models import EventType, ThingType
-from pcapi.repository import repository, discovery_view_queries
-from pcapi.scripts.dashboard.diversification_statistics import get_offerers_with_offer_available_on_discovery_count, \
-    get_offerers_with_non_cancelled_bookings_count, get_offers_with_user_offerer_and_stock_count, \
-    get_offers_available_on_discovery_count, get_offers_with_non_cancelled_bookings_count, \
-    query_get_offer_counts_grouped_by_type_and_medium, _get_offers_grouped_by_type_and_medium, \
-    get_offer_counts_grouped_by_type_and_medium, query_get_booking_counts_grouped_by_type_and_medium, \
-    get_offerer_count, get_offerer_with_stock_count, get_all_bookings_count, count_all_cancelled_bookings, \
-    query_get_offer_counts_grouped_by_type_and_medium_for_departement, \
-    query_get_booking_counts_grouped_by_type_and_medium_for_departement, get_all_used_or_finished_bookings, \
-    get_offers_available_on_search_count, get_offerers_with_offers_available_on_search_count, \
-    get_offers_available_on_discovery_count_v2, get_offerers_with_offer_available_on_discovery_count_v2
 import pytest
+
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_mediation
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.models import EventType
+from pcapi.models import ThingType
+from pcapi.repository import discovery_view_queries
+from pcapi.repository import repository
+from pcapi.scripts.dashboard.diversification_statistics import (
+    query_get_booking_counts_grouped_by_type_and_medium_for_departement,
+)
+from pcapi.scripts.dashboard.diversification_statistics import (
+    query_get_offer_counts_grouped_by_type_and_medium_for_departement,
+)
+from pcapi.scripts.dashboard.diversification_statistics import _get_offers_grouped_by_type_and_medium
+from pcapi.scripts.dashboard.diversification_statistics import count_all_cancelled_bookings
+from pcapi.scripts.dashboard.diversification_statistics import get_all_bookings_count
+from pcapi.scripts.dashboard.diversification_statistics import get_all_used_or_finished_bookings
+from pcapi.scripts.dashboard.diversification_statistics import get_offer_counts_grouped_by_type_and_medium
+from pcapi.scripts.dashboard.diversification_statistics import get_offerer_count
+from pcapi.scripts.dashboard.diversification_statistics import get_offerer_with_stock_count
+from pcapi.scripts.dashboard.diversification_statistics import get_offerers_with_non_cancelled_bookings_count
+from pcapi.scripts.dashboard.diversification_statistics import get_offerers_with_offer_available_on_discovery_count
+from pcapi.scripts.dashboard.diversification_statistics import get_offerers_with_offer_available_on_discovery_count_v2
+from pcapi.scripts.dashboard.diversification_statistics import get_offerers_with_offers_available_on_search_count
+from pcapi.scripts.dashboard.diversification_statistics import get_offers_available_on_discovery_count
+from pcapi.scripts.dashboard.diversification_statistics import get_offers_available_on_discovery_count_v2
+from pcapi.scripts.dashboard.diversification_statistics import get_offers_available_on_search_count
+from pcapi.scripts.dashboard.diversification_statistics import get_offers_with_non_cancelled_bookings_count
+from pcapi.scripts.dashboard.diversification_statistics import get_offers_with_user_offerer_and_stock_count
+from pcapi.scripts.dashboard.diversification_statistics import query_get_booking_counts_grouped_by_type_and_medium
+from pcapi.scripts.dashboard.diversification_statistics import query_get_offer_counts_grouped_by_type_and_medium
+
 from tests.conftest import clean_database
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue, \
-    create_user_offerer, create_mediation
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+
 
 two_days_ago = datetime.utcnow() - timedelta(days=2)
 

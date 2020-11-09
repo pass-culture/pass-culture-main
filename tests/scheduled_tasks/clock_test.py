@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
-from pcapi.scheduled_tasks.clock import pc_update_recommendations_view, pc_clean_discovery_views
+from pcapi.scheduled_tasks.clock import pc_clean_discovery_views
+from pcapi.scheduled_tasks.clock import pc_update_recommendations_view
 
 
 class PcUpdateRecommendationsViewTest:

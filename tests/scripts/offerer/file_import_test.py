@@ -1,19 +1,25 @@
-from datetime import datetime, timedelta
-from unittest.mock import Mock, patch
+from datetime import datetime
+from datetime import timedelta
+from unittest.mock import Mock
+from unittest.mock import patch
 
-import pytest
 from freezegun import freeze_time
+import pytest
 
-from pcapi.models import UserSQLEntity, UserOfferer, Offerer
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue_type
+from pcapi.models import Offerer
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
-from pcapi.scripts.offerer.file_import import fill_user_from, \
-    fill_user_offerer_from, \
-    create_activated_user_offerer, \
-    fill_offerer_from, \
-    iterate_rows_for_user_offerers, \
-    UserNotCreatedException, \
-    OffererNotCreatedException
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue_type
+from pcapi.scripts.offerer.file_import import OffererNotCreatedException
+from pcapi.scripts.offerer.file_import import UserNotCreatedException
+from pcapi.scripts.offerer.file_import import create_activated_user_offerer
+from pcapi.scripts.offerer.file_import import fill_offerer_from
+from pcapi.scripts.offerer.file_import import fill_user_from
+from pcapi.scripts.offerer.file_import import fill_user_offerer_from
+from pcapi.scripts.offerer.file_import import iterate_rows_for_user_offerers
 from pcapi.utils.token import random_token
 
 

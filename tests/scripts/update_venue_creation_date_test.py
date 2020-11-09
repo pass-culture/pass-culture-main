@@ -1,13 +1,17 @@
-import os
 from datetime import datetime
+import os
 from pathlib import Path
-import pytest
-from unittest.mock import patch, call
+from unittest.mock import call
+from unittest.mock import patch
 
+import pytest
+
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
-from pcapi.scripts.update_venue_creation_date import _read_venue_creation_date_from_file, update_venue_creation_date
-from pcapi.model_creators.generic_creators import create_offerer, create_venue
+from pcapi.scripts.update_venue_creation_date import _read_venue_creation_date_from_file
+from pcapi.scripts.update_venue_creation_date import update_venue_creation_date
 
 
 class UpdateVenueCreationDateTest:

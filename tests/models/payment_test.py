@@ -1,11 +1,18 @@
-from datetime import timedelta, datetime
+from datetime import datetime
+from datetime import timedelta
 
-from pcapi.models.payment import Payment
-from pcapi.models.payment_status import TransactionStatus, PaymentStatus
-from pcapi.repository import repository
 import pytest
-from pcapi.model_creators.generic_creators import create_payment, create_user, create_booking, \
-    create_deposit, create_payment_message, create_payment_status
+
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_payment
+from pcapi.model_creators.generic_creators import create_payment_message
+from pcapi.model_creators.generic_creators import create_payment_status
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.models.payment import Payment
+from pcapi.models.payment_status import PaymentStatus
+from pcapi.models.payment_status import TransactionStatus
+from pcapi.repository import repository
 
 
 class SetStatusTest:

@@ -1,8 +1,13 @@
 """ user offerer """
 import enum
 
-from sqlalchemy import BigInteger, Column, Enum, ForeignKey, UniqueConstraint
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import Enum
+from sqlalchemy import ForeignKey
+from sqlalchemy import UniqueConstraint
+from sqlalchemy.orm import backref
+from sqlalchemy.orm import relationship
 
 from pcapi.models.db import Model
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin

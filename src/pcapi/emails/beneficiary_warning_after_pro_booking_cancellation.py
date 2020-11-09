@@ -4,7 +4,10 @@ from babel.dates import format_date
 
 from pcapi.models import Booking
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
-from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS, DEV_EMAIL_ADDRESS, format_booking_hours_for_email, get_event_datetime
+from pcapi.utils.mailing import DEV_EMAIL_ADDRESS
+from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS
+from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.utils.mailing import get_event_datetime
 
 
 def retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking: Booking) -> Dict:

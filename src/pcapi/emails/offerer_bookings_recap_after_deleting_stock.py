@@ -1,10 +1,14 @@
-from typing import Dict, List
+from typing import Dict
+from typing import List
 
 from pcapi.models import Booking
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
-from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS, DEV_EMAIL_ADDRESS, format_booking_hours_for_email, \
-    build_pc_pro_offer_link, format_environment_for_email, \
-    format_booking_date_for_email
+from pcapi.utils.mailing import DEV_EMAIL_ADDRESS
+from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS
+from pcapi.utils.mailing import build_pc_pro_offer_link
+from pcapi.utils.mailing import format_booking_date_for_email
+from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.utils.mailing import format_environment_for_email
 
 
 def retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings: List[Booking],

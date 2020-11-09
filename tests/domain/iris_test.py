@@ -1,12 +1,16 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
+import pytest
 from shapely.geometry import Polygon
 
-from pcapi.domain.iris import _link_venue_to_irises, link_valid_venue_to_irises
+from pcapi.domain.iris import _link_venue_to_irises
+from pcapi.domain.iris import link_valid_venue_to_irises
+from pcapi.model_creators.generic_creators import create_iris
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models import IrisVenues
 from pcapi.repository import repository
-import pytest
-from pcapi.model_creators.generic_creators import create_offerer, create_venue, create_iris
 
 
 class LinkVenueToIrisesTest:

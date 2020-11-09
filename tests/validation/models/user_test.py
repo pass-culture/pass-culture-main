@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 from sqlalchemy.exc import IntegrityError
 
-from pcapi.models import ApiErrors
 from pcapi.model_creators.generic_creators import create_user
+from pcapi.models import ApiErrors
 from pcapi.validation.models.user import validate
 
 

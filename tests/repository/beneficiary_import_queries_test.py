@@ -1,15 +1,18 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
 from freezegun import freeze_time
 import pytest
 
-from pcapi.models import BeneficiaryImport, ImportStatus, BeneficiaryImportSources
+from pcapi.model_creators.generic_creators import create_beneficiary_import
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.models import BeneficiaryImport
+from pcapi.models import BeneficiaryImportSources
+from pcapi.models import ImportStatus
 from pcapi.repository import repository
-from pcapi.repository.beneficiary_import_queries import \
-    find_applications_ids_to_retry, is_already_imported, \
-    save_beneficiary_import_with_status
-from pcapi.model_creators.generic_creators import create_beneficiary_import, \
-    create_user
+from pcapi.repository.beneficiary_import_queries import find_applications_ids_to_retry
+from pcapi.repository.beneficiary_import_queries import is_already_imported
+from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
 
 
 class IsAlreadyImportedTest:

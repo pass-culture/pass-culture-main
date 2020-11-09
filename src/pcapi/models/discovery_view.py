@@ -1,4 +1,9 @@
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import BigInteger
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
 from sqlalchemy.orm import relationship
 
 from pcapi.models.db import Model

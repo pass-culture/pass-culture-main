@@ -1,7 +1,8 @@
 import pytest
 
 from pcapi.models import ApiErrors
-from pcapi.validation.routes.venues import validate_coordinates, check_existing_venue
+from pcapi.validation.routes.venues import check_existing_venue
+from pcapi.validation.routes.venues import validate_coordinates
 
 
 def test_validate_coordinates_raises_an_api_errors_if_latitude_is_not_a_decimal():

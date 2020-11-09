@@ -2,7 +2,9 @@ import re
 
 import pytest
 
-from pcapi.domain.identifier.identifier import Identifier, NonProperlyFormattedScrambledId, NonStricltyPositiveIdentifierException
+from pcapi.domain.identifier.identifier import Identifier
+from pcapi.domain.identifier.identifier import NonProperlyFormattedScrambledId
+from pcapi.domain.identifier.identifier import NonStricltyPositiveIdentifierException
 
 
 class IdentifierTest:

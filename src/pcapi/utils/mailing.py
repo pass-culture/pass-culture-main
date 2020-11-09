@@ -3,23 +3,37 @@ from datetime import datetime
 import io
 import os
 from pprint import pformat
-from typing import Dict, List, Union
+from typing import Dict
+from typing import List
+from typing import Union
 import zipfile
 
-from flask import current_app as app, render_template
+from flask import current_app as app
+from flask import render_template
 from requests import Response
 
 from pcapi.connectors import api_entreprises
-from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.models import Booking, Offer, Offerer, StockSQLEntity, UserSQLEntity, UserOfferer, VenueSQLEntity
-from pcapi.models.email import EmailStatus
 from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
+from pcapi.domain.postal_code.postal_code import PostalCode
+from pcapi.models import Booking
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import StockSQLEntity
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueSQLEntity
+from pcapi.models.email import EmailStatus
 from pcapi.repository.email_queries import save
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.utils import logger
-from pcapi.utils.config import API_URL, PRO_URL, ENV, IS_PROD
-from pcapi.utils.date import format_datetime, utc_datetime_to_department_timezone
+from pcapi.utils.config import API_URL
+from pcapi.utils.config import ENV
+from pcapi.utils.config import IS_PROD
+from pcapi.utils.config import PRO_URL
+from pcapi.utils.date import format_datetime
+from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
+
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
 MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')

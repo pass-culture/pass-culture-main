@@ -2,8 +2,10 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.domain.expenses import get_expenses
-from pcapi.models import ThingType, EventType
-from pcapi.model_creators.specific_creators import create_booking_for_thing, create_booking_for_event
+from pcapi.model_creators.specific_creators import create_booking_for_event
+from pcapi.model_creators.specific_creators import create_booking_for_thing
+from pcapi.models import EventType
+from pcapi.models import ThingType
 
 
 @pytest.mark.usefixtures("db_session")

@@ -1,11 +1,20 @@
-from typing import Dict, List, Callable
+from typing import Callable
+from typing import Dict
+from typing import List
 
-from pcapi.models import Offer, UserSQLEntity, Offerer, UserOfferer
-from pcapi.utils.mailing import make_validation_email_object, make_payment_message_email, \
-    compute_email_html_part_and_recipients, make_payment_details_email, \
-    make_payments_report_email, make_wallet_balances_email, make_offer_creation_notification_email, \
-    make_activation_users_email, \
-    ADMINISTRATION_EMAIL_ADDRESS
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
+from pcapi.utils.mailing import ADMINISTRATION_EMAIL_ADDRESS
+from pcapi.utils.mailing import compute_email_html_part_and_recipients
+from pcapi.utils.mailing import make_activation_users_email
+from pcapi.utils.mailing import make_offer_creation_notification_email
+from pcapi.utils.mailing import make_payment_details_email
+from pcapi.utils.mailing import make_payment_message_email
+from pcapi.utils.mailing import make_payments_report_email
+from pcapi.utils.mailing import make_validation_email_object
+from pcapi.utils.mailing import make_wallet_balances_email
 
 
 def maybe_send_offerer_validation_email(offerer: Offerer, user_offerer: UserOfferer,

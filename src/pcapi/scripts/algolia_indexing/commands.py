@@ -2,10 +2,12 @@ from flask import current_app as app
 
 from pcapi.algolia.infrastructure.api import clear_index
 from pcapi.connectors.redis import delete_all_indexed_offers
-from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database, \
-    batch_deleting_expired_offers_in_algolia, batch_indexing_offers_in_algolia_by_venue, \
-    batch_indexing_offers_in_algolia_by_venue_provider, batch_indexing_offers_in_algolia_by_offer, \
-    _process_venue_provider
+from pcapi.scripts.algolia_indexing.indexing import _process_venue_provider
+from pcapi.scripts.algolia_indexing.indexing import batch_deleting_expired_offers_in_algolia
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue_provider
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
 
 
 @app.manager.command

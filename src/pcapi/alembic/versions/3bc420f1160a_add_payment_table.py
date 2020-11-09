@@ -6,12 +6,14 @@ Create Date: 2018-10-09 14:27:52.050628
 
 '''
 
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 # revision identifiers, used by Alembic.
-from sqlalchemy import ForeignKey, func
+from sqlalchemy import ForeignKey
+from sqlalchemy import func
 
 from pcapi.models.payment_status import TransactionStatus
+
 
 revision = '3bc420f1160a'
 down_revision = '700126ecaf1d'

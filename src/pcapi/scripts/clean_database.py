@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import traceback
 from pprint import pprint
+import traceback
 
 from flask import current_app as app
 

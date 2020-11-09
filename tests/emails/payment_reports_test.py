@@ -1,12 +1,15 @@
 import base64
 import io
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
+from unittest.mock import patch
 import zipfile
 
 from bs4 import BeautifulSoup
 from freezegun import freeze_time
 
-from pcapi.utils.mailing import make_payments_report_email, make_payment_message_email, make_payment_details_email
+from pcapi.utils.mailing import make_payment_details_email
+from pcapi.utils.mailing import make_payment_message_email
+from pcapi.utils.mailing import make_payments_report_email
 
 
 @freeze_time('2018-10-15 09:21:34')

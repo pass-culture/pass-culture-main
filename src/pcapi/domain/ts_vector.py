@@ -1,10 +1,13 @@
 from typing import List
 
 from nltk.corpus import stopwords
-from sqlalchemy import and_, func, Index
+from sqlalchemy import Index
+from sqlalchemy import and_
+from sqlalchemy import func
 from sqlalchemy.sql.expression import or_
 
-from pcapi.utils.string_processing import remove_single_letters_for_search, tokenize_for_search
+from pcapi.utils.string_processing import remove_single_letters_for_search
+from pcapi.utils.string_processing import tokenize_for_search
 
 
 LANGUAGE = 'french'

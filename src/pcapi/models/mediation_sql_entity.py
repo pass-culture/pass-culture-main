@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from sqlalchemy import Column, \
-    BigInteger, \
-    DateTime, \
-    ForeignKey, \
-    String
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import String
 from sqlalchemy.orm import relationship
 
 from pcapi.models.db import Model

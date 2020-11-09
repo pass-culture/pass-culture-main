@@ -1,25 +1,32 @@
-import re
-import uuid
 from datetime import datetime
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
+from decimal import InvalidOperation
 from pprint import pprint
-from typing import List, Any, Iterable, Set
+import re
+from typing import Any
+from typing import Iterable
+from typing import List
+from typing import Set
+import uuid
 
-from sqlalchemy import BigInteger, \
-    Float, \
-    Integer, \
-    Numeric, \
-    String, DateTime
+from sqlalchemy import BigInteger
+from sqlalchemy import DateTime
+from sqlalchemy import Float
+from sqlalchemy import Integer
+from sqlalchemy import Numeric
+from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql.schema import Column
 
-from pcapi.models.api_errors import DecimalCastError, \
-    DateTimeCastError, \
-    UuidCastError
+from pcapi.models.api_errors import DateTimeCastError
+from pcapi.models.api_errors import DecimalCastError
+from pcapi.models.api_errors import UuidCastError
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.utils.date import match_format
-from pcapi.utils.human_ids import dehumanize, humanize
+from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.human_ids import humanize
 from pcapi.utils.logger import logger
+
 
 DUPLICATE_KEY_ERROR_CODE = '23505'
 NOT_FOUND_KEY_ERROR_CODE = '23503'

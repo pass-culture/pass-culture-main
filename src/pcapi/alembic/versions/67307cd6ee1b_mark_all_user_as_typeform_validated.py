@@ -6,6 +6,7 @@ Revision ID: 67307cd6ee1b
 """
 from alembic import op
 
+
 # revision identifiers, used by Alembic.
 revision = '67307cd6ee1b'
 down_revision = 'a89e0481fad6'

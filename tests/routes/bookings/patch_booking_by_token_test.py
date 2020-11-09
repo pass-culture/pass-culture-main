@@ -2,18 +2,28 @@ import urllib.parse
 
 import pytest
 
-from pcapi.models import EventType, ThingType, Deposit, Booking, UserSQLEntity
-from pcapi.repository import repository
-from tests.conftest import TestClient
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_deposit, \
-    create_user_offerer
-from pcapi.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
-    create_offer_with_event_product, create_event_occurrence
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_deposit
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer
+from pcapi.models import Booking
+from pcapi.models import Deposit
+from pcapi.models import EventType
+from pcapi.models import ThingType
+from pcapi.models import UserSQLEntity
+from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")

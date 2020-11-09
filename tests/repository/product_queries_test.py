@@ -1,14 +1,25 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import create_booking, \
-    create_favorite, create_mediation, create_offerer, create_recommendation, \
-    create_stock, create_user, create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type
-
-from pcapi.models import FavoriteSQLEntity, MediationSQLEntity, Offer, Product, Recommendation, StockSQLEntity
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_favorite
+from pcapi.model_creators.generic_creators import create_mediation
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_recommendation
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.models import FavoriteSQLEntity
+from pcapi.models import MediationSQLEntity
+from pcapi.models import Offer
+from pcapi.models import Product
+from pcapi.models import Recommendation
+from pcapi.models import StockSQLEntity
 from pcapi.models.offer_type import ThingType
 from pcapi.repository import repository
-from pcapi.repository.product_queries import delete_unwanted_existing_product, find_active_book_product_by_isbn
+from pcapi.repository.product_queries import delete_unwanted_existing_product
+from pcapi.repository.product_queries import find_active_book_product_by_isbn
 
 
 class DeleteUnwantedExistingProductTest:

@@ -1,9 +1,13 @@
-from unittest.mock import patch, call
+from unittest.mock import call
+from unittest.mock import patch
 
-from pcapi.models.feature import FeatureToggle
-from pcapi.model_creators.generic_creators import create_offerer, create_venue
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.use_cases.update_offers_active_status import update_offers_active_status, update_all_offers_active_status
+from pcapi.models.feature import FeatureToggle
+from pcapi.use_cases.update_offers_active_status import update_all_offers_active_status
+from pcapi.use_cases.update_offers_active_status import update_offers_active_status
+
 
 class UpdateOffersIsActiveStatusTest:
     class ActivateOffersTest:

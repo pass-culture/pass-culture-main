@@ -1,17 +1,28 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
 import pytest
 
-from pcapi.models import Offer, ApiErrors, ThingType, EventType, Product, Provider
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_mediation
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_product_with_event_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.models import ApiErrors
+from pcapi.models import EventType
+from pcapi.models import Offer
+from pcapi.models import Product
+from pcapi.models import Provider
+from pcapi.models import ThingType
 from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
-import pytest
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_stock, \
-    create_offerer, \
-    create_venue, create_mediation
-from pcapi.model_creators.specific_creators import create_product_with_thing_type, \
-    create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product
 from pcapi.utils.date import DateTimes
+
 
 now = datetime.utcnow()
 two_days_ago = now - timedelta(days=2)

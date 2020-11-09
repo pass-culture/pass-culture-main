@@ -1,26 +1,26 @@
-from flask import current_app as app, \
-    jsonify, \
-    request
-from flask_login import current_user, \
-    login_required
+from flask import current_app as app
+from flask import jsonify
+from flask import request
+from flask_login import current_user
+from flask_login import login_required
 
-from pcapi.flask_app import private_api
 from pcapi.connectors import redis
-from pcapi.connectors.thumb_storage import read_thumb, \
-    create_thumb
+from pcapi.connectors.thumb_storage import create_thumb
+from pcapi.connectors.thumb_storage import read_thumb
+from pcapi.flask_app import private_api
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.mediation_sql_entity import MediationSQLEntity
 from pcapi.models.user_offerer import RightsType
-from pcapi.repository import repository, \
-    feature_queries
+from pcapi.repository import feature_queries
+from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import MEDIATION_INCLUDES
-from pcapi.utils.rest import ensure_current_user_has_rights, \
-    load_or_404, \
-    expect_json_data
-from pcapi.validation.routes.mediations import check_thumb_in_request, \
-    check_thumb_quality
+from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import expect_json_data
+from pcapi.utils.rest import load_or_404
+from pcapi.validation.routes.mediations import check_thumb_in_request
+from pcapi.validation.routes.mediations import check_thumb_quality
 
 
 @private_api.route('/mediations', methods=['POST'])

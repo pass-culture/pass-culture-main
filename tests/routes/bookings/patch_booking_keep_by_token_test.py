@@ -1,17 +1,28 @@
 from decimal import Decimal
 
+import pytest
+
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import EventType, Booking
+from pcapi.model_creators.generic_creators import create_api_key
+from pcapi.model_creators.generic_creators import create_booking
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_payment
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
+from pcapi.model_creators.specific_creators import create_stock_with_event_offer
+from pcapi.models import Booking
+from pcapi.models import EventType
 from pcapi.repository import repository
-import pytest
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_user_offerer, create_payment, create_api_key
-from pcapi.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_event_occurrence, \
-    create_offer_with_event_product, create_event_occurrence
 from pcapi.utils.token import random_token
+
+from tests.conftest import TestClient
+
 
 API_KEY_VALUE = random_token(64)
 

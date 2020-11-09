@@ -1,9 +1,10 @@
+from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.utils.select import remove_every
-from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.utils.logger import logger
 
-from .utils import get_price_by_short_name, get_occurrence_short_name
+from .utils import get_occurrence_short_name
+from .utils import get_price_by_short_name
 
 
 THING_OFFERS_WITH_STOCK_REMOVE_MODULO = 3

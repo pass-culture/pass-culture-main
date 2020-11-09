@@ -1,10 +1,12 @@
 import pytest
 
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_provider
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
-import pytest
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
-    create_provider
 from pcapi.utils.human_ids import humanize
 from pcapi.validation.routes.venue_providers import check_new_venue_provider_information
 

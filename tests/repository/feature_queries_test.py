@@ -1,10 +1,10 @@
 import pytest
 
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.models.feature import FeatureToggle, Feature
+from pcapi.models.feature import Feature
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.feature_queries import is_active
-import pytest
 
 
 class FeatureToggleTest:

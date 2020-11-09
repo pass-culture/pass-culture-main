@@ -5,10 +5,11 @@ Revises: 093ebaede979
 Create Date: 2020-05-14 14:54:32.463395
 
 """
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 # revision identifiers, used by Alembic.
 from sqlalchemy import ForeignKey
+
 
 revision = '1126d1b72a1b'
 down_revision = '093ebaede979'

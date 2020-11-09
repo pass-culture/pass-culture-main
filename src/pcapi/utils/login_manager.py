@@ -1,14 +1,18 @@
 """ login_manager """
 import uuid
 
-from flask import current_app as app, jsonify, session
+from flask import current_app as app
+from flask import jsonify
+from flask import session
 from flask_login import login_user
 
 from pcapi.core.users import api as user_api
 from pcapi.core.users import exceptions as user_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.user_sql_entity import UserSQLEntity
-from pcapi.repository.user_session_queries import existing_user_session, register_user_session, delete_user_session
+from pcapi.repository.user_session_queries import delete_user_session
+from pcapi.repository.user_session_queries import existing_user_session
+from pcapi.repository.user_session_queries import register_user_session
 
 
 @app.login_manager.user_loader

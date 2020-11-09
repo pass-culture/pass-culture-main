@@ -5,12 +5,13 @@ Revises: 21ef2b9af5e6
 Create Date: 2019-12-11 16:41:30.561830
 
 """
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 # revision identifiers, used by Alembic.
 from sqlalchemy import ForeignKey
 
 from pcapi.domain.price_rule import PriceRule
+
 
 revision = '75f2ccf2be82'
 down_revision = '21ef2b9af5e6'

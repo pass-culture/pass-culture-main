@@ -5,11 +5,11 @@ Revises: e0e5b8f53afd
 Create Date: 2018-10-18 14:23:53.562424
 
 """
-import sqlalchemy as sa
 from alembic import op
-
+import sqlalchemy as sa
 # revision identifiers, used by Alembic.
 from sqlalchemy.dialects.postgresql import UUID
+
 
 revision = 'd176385d379e'
 down_revision = 'e0e5b8f53afd'

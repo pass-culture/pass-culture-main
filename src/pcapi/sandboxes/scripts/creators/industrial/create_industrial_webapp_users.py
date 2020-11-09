@@ -1,9 +1,11 @@
+from datetime import datetime
+from datetime import timedelta
 import uuid
-from datetime import datetime, timedelta
 
-from pcapi.repository import repository
 from pcapi.model_creators.generic_creators import create_user
+from pcapi.repository import repository
 from pcapi.utils.logger import logger
+
 
 departement_codeS = ["93", "97"]
 WEBAPP_TAGS = [

@@ -1,10 +1,11 @@
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_repository import \
-    BeneficiaryPreSubscriptionRepository
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
 from pcapi.domain.beneficiary.beneficiary_repository import BeneficiaryRepository
-from pcapi.domain.user_emails import send_activation_email, \
-    send_rejection_email_to_beneficiary_pre_subscription
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_repository import (
+    BeneficiaryPreSubscriptionRepository,
+)
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
+from pcapi.domain.user_emails import send_activation_email
+from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
 from pcapi.utils.mailing import send_raw_email
 
 

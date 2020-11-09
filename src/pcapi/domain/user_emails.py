@@ -1,48 +1,49 @@
-from typing import Callable, List, Union
+from typing import Callable
+from typing import List
+from typing import Union
 
-from pcapi.domain.beneficiary.beneficiary import Beneficiary
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
-    BeneficiaryPreSubscription
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
-    CantRegisterBeneficiary
 from pcapi.core.bookings.models import Booking
+from pcapi.domain.beneficiary.beneficiary import Beneficiary
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
 from pcapi.emails.beneficiary_activation import get_activation_email_data
-from pcapi.emails.beneficiary_booking_cancellation import \
-    make_beneficiary_booking_cancellation_email_data
-from pcapi.emails.beneficiary_booking_confirmation import \
-    retrieve_data_for_beneficiary_booking_confirmation_email
-from pcapi.emails.beneficiary_offer_cancellation import \
-    retrieve_offerer_booking_recap_email_data_after_user_cancellation
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
-    BeneficiaryIsNotEligible
-from pcapi.emails.beneficiary_pre_subscription_rejected import \
-    make_duplicate_beneficiary_pre_subscription_rejected_data, make_not_eligible_beneficiary_pre_subscription_rejected_data
-from pcapi.emails.beneficiary_warning_after_pro_booking_cancellation import \
-    retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation
-from pcapi.emails.new_offerer_validation import \
-    retrieve_data_for_new_offerer_validation_email
-from pcapi.emails.offerer_attachment_validation import \
-    retrieve_data_for_offerer_attachment_validation_email
-from pcapi.emails.offerer_booking_recap import \
-    retrieve_data_for_offerer_booking_recap_email
-from pcapi.emails.offerer_bookings_recap_after_deleting_stock import \
-    retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
-from pcapi.emails.offerer_ongoing_attachment import \
-    retrieve_data_for_offerer_ongoing_attachment_email
-from pcapi.emails.pro_reset_password import \
-    retrieve_data_for_reset_password_pro_email
-from pcapi.emails.pro_waiting_validation import \
-    retrieve_data_for_pro_user_waiting_offerer_validation_email
-from pcapi.emails.user_notification_after_stock_update import \
-    retrieve_data_to_warn_user_after_stock_update_affecting_booking
-from pcapi.emails.user_reset_password import \
-    retrieve_data_for_reset_password_user_email, retrieve_data_for_reset_password_user_native_app_email
-from pcapi.models import Offerer, UserOfferer, UserSQLEntity, VenueSQLEntity
+from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
+from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
+from pcapi.emails.beneficiary_offer_cancellation import (
+    retrieve_offerer_booking_recap_email_data_after_user_cancellation,
+)
+from pcapi.emails.beneficiary_pre_subscription_rejected import (
+    make_not_eligible_beneficiary_pre_subscription_rejected_data,
+)
+from pcapi.emails.beneficiary_pre_subscription_rejected import make_duplicate_beneficiary_pre_subscription_rejected_data
+from pcapi.emails.beneficiary_warning_after_pro_booking_cancellation import (
+    retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation,
+)
+from pcapi.emails.new_offerer_validation import retrieve_data_for_new_offerer_validation_email
+from pcapi.emails.offerer_attachment_validation import retrieve_data_for_offerer_attachment_validation_email
+from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
+from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
+    retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation,
+)
+from pcapi.emails.offerer_ongoing_attachment import retrieve_data_for_offerer_ongoing_attachment_email
+from pcapi.emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
+from pcapi.emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
+from pcapi.emails.user_notification_after_stock_update import (
+    retrieve_data_to_warn_user_after_stock_update_affecting_booking,
+)
+from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_email
+from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_native_app_email
+from pcapi.models import Offerer
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueSQLEntity
 from pcapi.repository.user_queries import find_all_emails_of_user_offerers_admins
-from pcapi.utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
-    compute_email_html_part_and_recipients, \
-    make_offerer_driven_cancellation_email_for_offerer, \
-    make_user_validation_email, make_venue_validated_email
+from pcapi.utils.mailing import ADMINISTRATION_EMAIL_ADDRESS
+from pcapi.utils.mailing import compute_email_html_part_and_recipients
+from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
+from pcapi.utils.mailing import make_user_validation_email
+from pcapi.utils.mailing import make_venue_validated_email
 
 
 def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool]) -> None:

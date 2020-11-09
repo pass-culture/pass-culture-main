@@ -1,6 +1,7 @@
 from typing import List
 
-from pcapi.domain.payments import apply_banishment, UnmatchedPayments
+from pcapi.domain.payments import UnmatchedPayments
+from pcapi.domain.payments import apply_banishment
 from pcapi.repository import repository
 from pcapi.repository.payment_queries import find_payments_by_message
 from pcapi.utils.logger import logger

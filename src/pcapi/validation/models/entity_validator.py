@@ -1,6 +1,21 @@
-from pcapi.models import ApiErrors, BankInformation, HasAddressMixin, Offer, Offerer, Product, StockSQLEntity, UserSQLEntity, VenueSQLEntity
+from pcapi.models import ApiErrors
+from pcapi.models import BankInformation
+from pcapi.models import HasAddressMixin
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import Product
+from pcapi.models import StockSQLEntity
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueSQLEntity
 from pcapi.models.db import Model
-from pcapi.validation.models import offer, bank_information, offerer, product, stock, user, venue, has_address_mixin
+from pcapi.validation.models import bank_information
+from pcapi.validation.models import has_address_mixin
+from pcapi.validation.models import offer
+from pcapi.validation.models import offerer
+from pcapi.validation.models import product
+from pcapi.validation.models import stock
+from pcapi.validation.models import user
+from pcapi.validation.models import venue
 from pcapi.validation.models.generic import validate_generic
 
 

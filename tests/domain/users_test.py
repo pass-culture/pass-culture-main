@@ -1,6 +1,7 @@
 import pytest
 
-from pcapi.domain.users import check_is_authorized_to_access_bookings_recap, UnauthorizedForAdminUser
+from pcapi.domain.users import UnauthorizedForAdminUser
+from pcapi.domain.users import check_is_authorized_to_access_bookings_recap
 from pcapi.model_creators.generic_creators import create_user
 
 

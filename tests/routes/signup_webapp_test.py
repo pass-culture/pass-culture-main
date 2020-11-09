@@ -2,13 +2,16 @@ from datetime import datetime
 from unittest.mock import patch
 
 from freezegun import freeze_time
+import pytest
 
-from pcapi.models.feature import FeatureToggle, Feature
+from pcapi.models.feature import Feature
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.routes.serialization import serialize
-import pytest
+
 from tests.conftest import TestClient
+
 
 BASE_DATA = {
     'email': 'toto@btmx.fr',

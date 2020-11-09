@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from pcapi.domain.departments import get_departement_codes_from_user
 from pcapi.model_creators.generic_creators import create_user

@@ -1,9 +1,12 @@
-from typing import Optional
 from datetime import datetime
+from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel
+from pydantic import EmailStr
+from pydantic import Field
 
-from pcapi.serialization.utils import to_camel, humanize_field
+from pcapi.serialization.utils import humanize_field
+from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
 

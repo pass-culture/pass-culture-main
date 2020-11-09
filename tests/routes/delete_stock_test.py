@@ -1,17 +1,22 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 from freezegun import freeze_time
 
-from pcapi.models import Booking, Provider, EventType
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
+from pcapi.models import Booking
+from pcapi.models import EventType
+from pcapi.models import Provider
 from pcapi.models.feature import override_features
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
-from tests.conftest import TestClient
-import pcapi.core.offers.factories as offers_factories
-import pcapi.core.users.factories as users_factories
-import pcapi.core.bookings.factories as bookings_factories
 from pcapi.utils.human_ids import humanize
+
+from tests.conftest import TestClient
+
 
 NOW = datetime(2020, 10, 15)
 

@@ -1,11 +1,13 @@
-from typing import Callable, Optional
+from typing import Callable
+from typing import Optional
 
 import pcapi.local_providers
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.models.venue_provider import VenueProvider
 from pcapi.repository import repository
 from pcapi.repository.venue_provider_queries import get_active_venue_providers_for_specific_provider
-from pcapi.scheduled_tasks.logger import build_cron_log_message, CronStatus
+from pcapi.scheduled_tasks.logger import CronStatus
+from pcapi.scheduled_tasks.logger import build_cron_log_message
 from pcapi.utils.logger import logger
 
 

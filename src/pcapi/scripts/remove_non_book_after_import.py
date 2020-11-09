@@ -1,4 +1,5 @@
-from pcapi.repository.product_queries import delete_unwanted_existing_product, ProductWithBookingsException
+from pcapi.repository.product_queries import ProductWithBookingsException
+from pcapi.repository.product_queries import delete_unwanted_existing_product
 
 
 def delete_product_from_isbn_file(file_path: str):

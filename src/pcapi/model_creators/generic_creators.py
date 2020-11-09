@@ -1,31 +1,59 @@
-import os
-from datetime import datetime, timedelta, timezone
-from hashlib import sha256
-from typing import Optional, Union
-
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 from decimal import Decimal
+from hashlib import sha256
+import os
+from typing import Optional
+from typing import Union
+
 from geoalchemy2.shape import from_shape
 from shapely.geometry import Polygon
 
 from pcapi.core.bookings import api as bookings_api
 from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
-from pcapi.models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
-    BankInformation, BeneficiaryImport, BeneficiaryImportSources, BeneficiaryImportStatus, Booking, \
-    Criterion, Deposit, FavoriteSQLEntity, ImportStatus, IrisFrance, IrisVenues, \
-    MediationSQLEntity, Offer, Offerer, Payment, PaymentMessage, PaymentStatus, \
-    Provider, Recommendation, RightsType, StockSQLEntity, ThingType, UserSQLEntity, UserOfferer, \
-    VenueSQLEntity, VenueProvider, SeenOffer
+from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
+from pcapi.models import AllocinePivot
+from pcapi.models import AllocineVenueProviderPriceRule
+from pcapi.models import ApiKey
+from pcapi.models import BankInformation
+from pcapi.models import BeneficiaryImport
+from pcapi.models import BeneficiaryImportSources
+from pcapi.models import BeneficiaryImportStatus
+from pcapi.models import Booking
+from pcapi.models import Criterion
+from pcapi.models import Deposit
+from pcapi.models import FavoriteSQLEntity
+from pcapi.models import ImportStatus
+from pcapi.models import IrisFrance
+from pcapi.models import IrisVenues
+from pcapi.models import MediationSQLEntity
+from pcapi.models import Offer
+from pcapi.models import Offerer
+from pcapi.models import Payment
+from pcapi.models import PaymentMessage
+from pcapi.models import PaymentStatus
+from pcapi.models import Provider
+from pcapi.models import Recommendation
+from pcapi.models import RightsType
+from pcapi.models import SeenOffer
+from pcapi.models import StockSQLEntity
+from pcapi.models import ThingType
+from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
+from pcapi.models import VenueProvider
+from pcapi.models import VenueSQLEntity
 from pcapi.models.allocine_venue_provider import AllocineVenueProvider
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity
 from pcapi.models.venue_type import VenueType
-from pcapi.scripts.iris.import_iris import WGS_SPATIAL_REFERENCE_IDENTIFIER, \
-    create_centroid_from_polygon
-from pcapi.model_creators.specific_creators import \
-    create_offer_with_thing_product, create_stock_with_thing_offer
+from pcapi.scripts.iris.import_iris import WGS_SPATIAL_REFERENCE_IDENTIFIER
+from pcapi.scripts.iris.import_iris import create_centroid_from_polygon
 from pcapi.utils.token import random_token
+
 
 API_URL = 'http://localhost:5000'
 DEFAULT_USER = UserSQLEntity()

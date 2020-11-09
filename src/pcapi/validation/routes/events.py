@@ -1,4 +1,5 @@
-from pcapi.models import EventType, Product
+from pcapi.models import EventType
+from pcapi.models import Product
 from pcapi.models.api_errors import ForbiddenError
 
 
