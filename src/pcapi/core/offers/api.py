@@ -31,7 +31,7 @@ def list_offers_for_pro_user(
     page: Optional[int],
     venue_id: Optional[int] = None,
     name_keywords: Optional[str] = None,
-    requested_status: Optional[str] = None,
+    status: Optional[str] = None,
     creation_mode: Optional[str] = None,
 ) -> PaginatedOffersRecap:
     if not user_is_admin:
@@ -55,7 +55,7 @@ def list_offers_for_pro_user(
         type_id=type_id,
         page=page or DEFAULT_PAGE,
         name_keywords=name_keywords,
-        requested_status=requested_status,
+        status=status,
         creation_mode=creation_mode,
     )
 

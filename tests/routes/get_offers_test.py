@@ -186,7 +186,7 @@ class Returns200:
             offers_per_page=None,
             name_keywords=None,
             page=None,
-            requested_status=None,
+            status=None,
             creation_mode=None,
         )
 
@@ -218,7 +218,7 @@ class Returns200:
             offers_per_page=None,
             name_keywords=None,
             page=None,
-            requested_status='active',
+            status='active',
             creation_mode=None,
         )
 
@@ -251,7 +251,7 @@ class Returns200:
             offers_per_page=None,
             name_keywords=None,
             page=None,
-            requested_status=None,
+            status=None,
             creation_mode=None,
         )
 
@@ -283,7 +283,7 @@ class Returns200:
             offers_per_page=None,
             name_keywords=None,
             page=None,
-            requested_status=None,
+            status=None,
             creation_mode='imported',
         )
 

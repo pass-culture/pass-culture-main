@@ -359,7 +359,7 @@ class PaginatedOfferSQLRepositoryTest:
                 user_is_admin=self.pro.isAdmin,
                 offers_per_page=20,
                 page=1,
-                requested_status='active'
+                status='active'
             )
 
             # then
@@ -391,7 +391,7 @@ class PaginatedOfferSQLRepositoryTest:
                 user_is_admin=self.pro.isAdmin,
                 offers_per_page=20,
                 page=1,
-                requested_status='inactive'
+                status='inactive'
             )
 
             # then
@@ -423,7 +423,7 @@ class PaginatedOfferSQLRepositoryTest:
                 user_is_admin=self.pro.isAdmin,
                 offers_per_page=20,
                 page=1,
-                requested_status='soldOut'
+                status='soldOut'
             )
 
             # then
@@ -455,7 +455,7 @@ class PaginatedOfferSQLRepositoryTest:
                 user_is_admin=self.pro.isAdmin,
                 offers_per_page=20,
                 page=1,
-                requested_status='soldOut'
+                status='soldOut'
             )
 
             # then
@@ -474,7 +474,7 @@ class PaginatedOfferSQLRepositoryTest:
                 user_is_admin=self.pro.isAdmin,
                 offers_per_page=20,
                 page=1,
-                requested_status='soldOut'
+                status='soldOut'
             )
 
             # then
@@ -492,7 +492,7 @@ class PaginatedOfferSQLRepositoryTest:
                 user_is_admin=self.pro.isAdmin,
                 offers_per_page=20,
                 page=1,
-                requested_status='soldOut'
+                status='soldOut'
             )
 
             # then
@@ -510,7 +510,7 @@ class PaginatedOfferSQLRepositoryTest:
                 user_is_admin=self.pro.isAdmin,
                 offers_per_page=20,
                 page=1,
-                requested_status='soldOut'
+                status='soldOut'
             )
 
             # then
@@ -528,7 +528,7 @@ class PaginatedOfferSQLRepositoryTest:
                 user_is_admin=self.pro.isAdmin,
                 offers_per_page=20,
                 page=1,
-                requested_status='expired'
+                status='expired'
             )
 
             # then
@@ -563,7 +563,7 @@ class PaginatedOfferSQLRepositoryTest:
                 user_is_admin=self.pro.isAdmin,
                 offers_per_page=20,
                 page=1,
-                requested_status='soldOut',
+                status='soldOut',
                 venue_id=other_venue.id
             )
 

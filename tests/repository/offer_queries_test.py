@@ -941,7 +941,7 @@ class GetAllOffersIdByFiltersTest:
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offerer_id=offerer.id,
-            requested_status='inactive',
+            status='inactive',
             venue_id=wanted_venue.id,
             name_keywords='Wanted',
             creation_mode='imported',

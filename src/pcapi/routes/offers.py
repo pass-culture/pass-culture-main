@@ -49,7 +49,7 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
         offers_per_page=query.paginate,
         name_keywords=query.name,
         page=query.page,
-        requested_status=query.status,
+        status=query.status,
         creation_mode=query.creation_mode,
     )
 
@@ -97,7 +97,7 @@ def patch_all_offers_active_status() -> None:
         user_is_admin=current_user.isAdmin,
         is_active=offers_new_active_status,
         offerer_id=offerer_identifier,
-        requested_status=payload.get("status"),
+        status=payload.get("status"),
         venue_id=venue_identifier,
         type_id=type_id,
         name_keywords=name_keywords,

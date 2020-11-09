@@ -29,7 +29,7 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
         page: Optional[int],
         offers_per_page: int,
         offerer_id: Optional[int] = None,
-        requested_status: Optional[str] = None,
+        status: Optional[str] = None,
         venue_id: Optional[int] = None,
         type_id: Optional[str] = None,
         name_keywords: Optional[str] = None,
@@ -39,7 +39,7 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
         user_id=user_id,
         user_is_admin=user_is_admin,
         offerer_id=offerer_id,
-        requested_status=requested_status,
+        status=status,
         venue_id=venue_id,
         type_id=type_id,
         name_keywords=name_keywords,
@@ -80,7 +80,7 @@ def get_offers_by_filters(
         user_id: int,
         user_is_admin: bool,
         offerer_id: Optional[int] = None,
-        requested_status: Optional[str] = None,
+        status: Optional[str] = None,
         venue_id: Optional[int] = None,
         type_id: Optional[str] = None,
         name_keywords: Optional[str] = None,
@@ -89,8 +89,8 @@ def get_offers_by_filters(
     datetime_now = datetime.utcnow()
     query = Offer.query
 
-    if requested_status is not None:
-        query = _filter_by_status(query, user_id, datetime_now, requested_status)
+    if status is not None:
+        query = _filter_by_status(query, user_id, datetime_now, status)
     if venue_id is not None:
         query = query.filter(Offer.venueId == venue_id)
     if type_id is not None:
@@ -128,19 +128,19 @@ def _filter_by_creation_mode(query: Query, creation_mode: str):
     return query
 
 
-def _filter_by_status(query: Query, user_id: int, datetime_now: datetime, requested_status: str) -> Query:
-    if requested_status == ACTIVE_STATUS:
+def _filter_by_status(query: Query, user_id: int, datetime_now: datetime, status: str) -> Query:
+    if status == ACTIVE_STATUS:
         query = _filter_by_active_status(query, user_id, datetime_now)
-    elif requested_status == SOLD_OUT_STATUS:
+    elif status == SOLD_OUT_STATUS:
         query = _filter_by_sold_out_status(query, user_id, datetime_now)
-    elif requested_status == EXPIRED_STATUS:
+    elif status == EXPIRED_STATUS:
         query = query \
             .filter(Offer.isActive.is_(True)) \
             .join(StockSQLEntity) \
             .filter(StockSQLEntity.isSoftDeleted.is_(False)) \
             .group_by(Offer.id) \
             .having(func.max(StockSQLEntity.bookingLimitDatetime) < datetime_now)
-    elif requested_status == INACTIVE_STATUS:
+    elif status == INACTIVE_STATUS:
         query = query.filter(Offer.isActive.is_(False))
     return query
 
