@@ -1,4 +1,5 @@
 import datetime
+import pytz
 
 from pcapi.core.bookings import conf
 from pcapi.core.bookings import exceptions
@@ -163,8 +164,8 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
 
 # TODO(fseguin, 2020-11-03): cleanup after next MEP
 def _is_confirmed(event_beginning, booking_creation):
-    now = datetime.datetime.now(tz=datetime.timezone.utc)
+    now = datetime.datetime.utcnow()
     before_event_limit = event_beginning - conf.CONFIRM_BOOKING_BEFORE_EVENT_DELAY
     after_booking_limit = booking_creation + conf.CONFIRM_BOOKING_AFTER_CREATION_DELAY
     confirmation_date = max(min(before_event_limit, after_booking_limit), now)
-    return datetime.datetime.utcnow() <= confirmation_date
+    return datetime.datetime.utcnow() >= confirmation_date
