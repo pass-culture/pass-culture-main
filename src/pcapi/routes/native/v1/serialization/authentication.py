@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 
 class SigninRequest(BaseModel):
@@ -17,3 +17,8 @@ class RefreshResponse(BaseModel):
 
 class PasswordResetRequestRequest(BaseModel):
     email: str
+
+
+class ResetPasswordRequest(BaseModel):
+    reset_password_token: str
+    new_password: str
