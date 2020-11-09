@@ -10,8 +10,6 @@ from pcapi.repository import repository
 
 
 class MakeUserResetPasswordEmailDataTest:
-    @patch('pcapi.emails.user_reset_password.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('pcapi.emails.user_reset_password.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.user_reset_password.format_environment_for_email', return_value='-testing')
     @patch('pcapi.emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=False)
     @pytest.mark.usefixtures("db_session")
@@ -44,7 +42,6 @@ class MakeUserResetPasswordEmailDataTest:
                 }
         }
 
-    @patch('pcapi.emails.user_reset_password.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.emails.user_reset_password.format_environment_for_email', return_value='')
     @patch('pcapi.emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=True)
     @pytest.mark.usefixtures("db_session")

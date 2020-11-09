@@ -65,10 +65,6 @@ def get_expected_base_email_data(booking, mediation, **overrides):
 
 
 
-# FIXME: we should not need to patch SUPPORT_EMAIL_ADDRESS and DEV_EMAIL_ADDRESS: they should have
-# proper default values when testing.
-@patch('pcapi.emails.beneficiary_booking_confirmation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('pcapi.emails.beneficiary_booking_confirmation.DEV_EMAIL_ADDRESS', 'dev@example.com')
 @patch('pcapi.emails.beneficiary_booking_confirmation.format_environment_for_email', return_value='')
 @pytest.mark.usefixtures("db_session")
 def test_should_return_event_specific_data_for_email_when_offer_is_an_event(mock_format_environment_for_email):
@@ -81,8 +77,6 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event(mock
     assert email_data == expected
 
 
-@patch('pcapi.emails.beneficiary_booking_confirmation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('pcapi.emails.beneficiary_booking_confirmation.DEV_EMAIL_ADDRESS', 'dev@example.com')
 @patch('pcapi.emails.beneficiary_booking_confirmation.format_environment_for_email', return_value='')
 @pytest.mark.usefixtures("db_session")
 def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event(mock_format_environment_for_email):
@@ -101,8 +95,6 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event(m
     assert email_data == expected
 
 
-@patch('pcapi.emails.beneficiary_booking_confirmation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('pcapi.emails.beneficiary_booking_confirmation.DEV_EMAIL_ADDRESS', 'dev@example.com')
 @patch('pcapi.emails.beneficiary_booking_confirmation.format_environment_for_email', return_value='')
 @pytest.mark.usefixtures("db_session")
 def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing(mock_format_environment_for_email):
@@ -127,8 +119,6 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing(mock_
     assert email_data == expected
 
 
-@patch('pcapi.emails.beneficiary_booking_confirmation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('pcapi.emails.beneficiary_booking_confirmation.DEV_EMAIL_ADDRESS', 'dev@example.com')
 @patch('pcapi.emails.beneficiary_booking_confirmation.format_environment_for_email', return_value='')
 @pytest.mark.usefixtures("db_session")
 def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing(mock_format_environment_for_email):

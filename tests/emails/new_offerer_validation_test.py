@@ -5,12 +5,10 @@ from pcapi.model_creators.generic_creators import create_offerer
 
 
 class MakeNewOffererValidationEmailTest:
-    @patch('pcapi.emails.new_offerer_validation.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.new_offerer_validation.feature_send_mail_to_users_enabled', return_value=False)
     @patch('pcapi.emails.new_offerer_validation.format_environment_for_email', return_value='-testing')
     @patch('pcapi.emails.new_offerer_validation.find_new_offerer_user_email',
            return_value='admin@example.com')
-    @patch('pcapi.emails.new_offerer_validation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_email_is_sent_to_dev_at_passculture_when_not_production_environment(self,
                                                                                  feature_send_mail_to_users_enabled,
                                                                                  format_environment_for_email,
@@ -38,7 +36,6 @@ class MakeNewOffererValidationEmailTest:
     @patch('pcapi.emails.new_offerer_validation.format_environment_for_email', return_value='')
     @patch('pcapi.emails.new_offerer_validation.find_new_offerer_user_email',
            return_value='admin@example.com')
-    @patch('pcapi.emails.new_offerer_validation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_email_is_sent_to_user_offerer_when_environment_is_production(self,
                                                                                   feature_send_mail_to_users_enabled,
                                                                                   format_environment_for_email,

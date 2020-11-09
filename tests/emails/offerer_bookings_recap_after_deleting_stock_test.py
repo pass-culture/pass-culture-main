@@ -17,7 +17,6 @@ from pcapi.model_creators.specific_creators import create_stock_from_offer
 
 
 class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
-    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.feature_send_mail_to_users_enabled', return_value=False)
     def test_should_send_mail_to_pass_culture_dev_when_feature_send_mail_to_users_is_disabled(self,
                                                                                               feature_send_mail_to_users_enabled):
@@ -59,7 +58,6 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
         # Then
         assert mailjet_data['To'] == 'administration@example.com, offerer@example.com'
 
-    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.format_environment_for_email', return_value='')
     @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.build_pc_pro_offer_link',
            return_value='http://pc_pro.com/offer_link')
@@ -105,8 +103,6 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
             }
         }
 
-    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.format_environment_for_email', return_value='-testing')
     @patch('pcapi.emails.offerer_bookings_recap_after_deleting_stock.build_pc_pro_offer_link',
            return_value='http://pc_pro.com/offer_link')

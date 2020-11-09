@@ -15,7 +15,6 @@ from pcapi.model_creators.specific_creators import create_stock_from_offer
 
 
 class MakeBeneficiaryBookingCancellationEmailDataTest:
-    @patch('pcapi.emails.beneficiary_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.emails.beneficiary_booking_cancellation.format_environment_for_email', return_value='')
     def test_should_return_thing_data_when_booking_is_a_thing(self, mock_format_environment_for_email):
         # Given
@@ -50,7 +49,6 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
         }
 
     @freeze_time('2019-11-26 18:29:20.891028')
-    @patch('pcapi.emails.beneficiary_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.emails.beneficiary_booking_cancellation.format_environment_for_email', return_value='-testing')
     def test_should_return_event_data_when_booking_is_an_event(self, mock_format_environment_for_email):
         # Given

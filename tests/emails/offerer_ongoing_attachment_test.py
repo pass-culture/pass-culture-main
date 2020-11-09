@@ -11,11 +11,9 @@ from pcapi.repository import repository
 
 class ProOffererAttachmentValidationEmailTest:
     @pytest.mark.usefixtures("db_session")
-    @patch('pcapi.emails.offerer_ongoing_attachment.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.offerer_ongoing_attachment.feature_send_mail_to_users_enabled', return_value=False)
     @patch('pcapi.emails.offerer_ongoing_attachment.format_environment_for_email', return_value='-testing')
     @patch('pcapi.emails.offerer_ongoing_attachment.find_user_offerer_email', return_value='pro@example.com')
-    @patch('pcapi.emails.offerer_ongoing_attachment.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_should_return_data_email_with_dev_email_address_when_not_in_production(self,
                                                                                     feature_send_mail_to_users_enabled,
                                                                                     format_environment_for_email,
@@ -49,7 +47,6 @@ class ProOffererAttachmentValidationEmailTest:
     @patch('pcapi.emails.offerer_ongoing_attachment.format_environment_for_email', return_value='')
     @patch('pcapi.emails.offerer_ongoing_attachment.find_user_offerer_email',
            return_value='pro@example.com')
-    @patch('pcapi.emails.offerer_ongoing_attachment.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_should_return_data_email_with_pro_email_address_when_environment_is_production(self,
                                                                                             feature_send_mail_to_users_enabled,
                                                                                             format_environment_for_email,

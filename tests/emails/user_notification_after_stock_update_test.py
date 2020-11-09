@@ -32,7 +32,6 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         # Then
         assert booking_info_for_mailjet['To'] == user.email
 
-    @patch('pcapi.emails.user_notification_after_stock_update.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.user_notification_after_stock_update.feature_send_mail_to_users_enabled')
     def test_should_send_email_to_specific_email_address_when_feature_send_mail_to_users_is_disabled(self,
                                                                                                      feature_send_mail_to_users_enabled):
@@ -51,8 +50,6 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         # Then
         assert booking_info_for_mailjet['To'] == 'dev@example.com'
 
-    @patch('pcapi.emails.user_notification_after_stock_update.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('pcapi.emails.user_notification_after_stock_update.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_should_send_email_when_stock_date_have_been_changed(self, app):
         # Given
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)

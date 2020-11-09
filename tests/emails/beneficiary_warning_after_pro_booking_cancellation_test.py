@@ -34,7 +34,6 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         # Then
         assert mailjet_data['To'] == user.email
 
-    @patch('pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled', return_value=False)
     def test_should_send_mail_to_dev_when_feature_send_mail_to_users_is_disabled(self, feature_send_mail_to_users_enabled):
         # Given
@@ -52,8 +51,6 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
         # Then
         assert mailjet_data['To'] == 'dev@example.com'
 
-    @patch('pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def test_should_return_event_data_when_booking_is_on_an_event(self):
         # Given
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
@@ -90,8 +87,6 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
             }
         }
 
-    @patch('pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def test_should_return_thing_data_when_booking_is_on_a_thing(self):
         # Given
         user = create_user()
@@ -125,8 +120,6 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
             }
         }
 
-    @patch('pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def test_should_return_thing_data_when_booking_is_on_an_online_offer(self):
         # Given
         user = create_user()

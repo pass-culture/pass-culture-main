@@ -137,8 +137,6 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
 
 
 class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
-    @patch('pcapi.emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('pcapi.emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
     @patch('pcapi.emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=True)
     def test_should_return_mailjet_data_with_no_ongoing_booking(self, mock_is_offer_active,
@@ -180,8 +178,6 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
             },
         }
 
-    @patch('pcapi.emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('pcapi.emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
     @patch('pcapi.emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=True)
     def test_should_return_mailjet_data_with_ongoing_bookings(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
@@ -231,8 +227,6 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
             }
         }
 
-    @patch('pcapi.emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('pcapi.emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
     @patch('pcapi.emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=False)
     def test_should_return_mailjet_data_on_thing_offer(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
@@ -282,8 +276,6 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
             }
         }
 
-    @patch('pcapi.emails.beneficiary_offer_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('pcapi.emails.beneficiary_offer_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.beneficiary_offer_cancellation.build_pc_pro_offer_link', return_value='http://pc_pro.com/offer_link')
     @patch('pcapi.emails.beneficiary_offer_cancellation._is_offer_active_for_recap', return_value=False)
     def test_should_return_numerique_when_venue_is_virtual(self, mock_is_offer_active, mock_build_pc_pro_offer_link):

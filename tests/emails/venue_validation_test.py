@@ -9,7 +9,6 @@ from pcapi.utils.mailing import make_venue_validated_email
 from tests.utils.mailing_test import _remove_whitespaces
 
 
-@patch('pcapi.utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
 def test_make_venue_validated_email(app):
     # Given
     offerer = create_offerer(name='La Structure', siren='123456789')

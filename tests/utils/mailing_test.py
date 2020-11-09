@@ -212,7 +212,6 @@ class BuildPcProOfferLinkTest:
 
 
 class BuildRecipientsListTest:
-    @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     def test_should_return_admin_email_and_booking_email_when_booking_email_on_offer_exists(self):
         # Given
         user = create_user()
@@ -228,7 +227,6 @@ class BuildRecipientsListTest:
         # Then
         assert recipients == 'booking.email@example.com, administration@example.com'
 
-    @patch('pcapi.domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     def test_should_return_only_admin_email_when_offer_has_no_booking_email(self):
         # Given
         user = create_user()

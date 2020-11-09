@@ -5,7 +5,6 @@ from pcapi.model_creators.generic_creators import create_user
 
 
 class GetActivationEmailTest:
-    @patch('pcapi.emails.beneficiary_activation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.emails.beneficiary_activation.format_environment_for_email', return_value='')
     def test_should_return_dict_when_environment_is_production(self, mock_format_environment_for_email):
         # Given
@@ -28,7 +27,6 @@ class GetActivationEmailTest:
             },
         }
 
-    @patch('pcapi.emails.beneficiary_activation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('pcapi.emails.beneficiary_activation.format_environment_for_email', return_value='-development')
     def test_should_return_dict_when_environment_is_development(self, mock_format_environment_for_email):
         # Given

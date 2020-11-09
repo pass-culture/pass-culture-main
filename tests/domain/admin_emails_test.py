@@ -16,7 +16,6 @@ from pcapi.model_creators.specific_creators import create_offer_with_thing_produ
 from pcapi.utils.mailing import MailServiceException
 
 
-@patch('pcapi.domain.admin_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
 @patch('pcapi.connectors.api_entreprises.requests.get')
 def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_objects_to_validate_and_send_email_enabled(
         mock_api_entreprise,
@@ -49,7 +48,6 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
 
 
 @patch('pcapi.connectors.api_entreprises.requests.get')
-@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_when_objects_to_validate_and_send_email_disabled(
         mock_api_entreprise,
         app):
@@ -128,7 +126,6 @@ def test_send_payment_details_email_when_mailjet_status_code_200_sends_email_to_
     assert email['To'] == 'comptable1@culture.fr, comptable2@culture.fr'
 
 
-@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 def test_send_payment_details_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -171,7 +168,6 @@ def test_send_wallet_balances_email_when_mailjet_status_code_200_sends_email_to_
     assert email['To'] == 'comptable1@culture.fr, comptable2@culture.fr'
 
 
-@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 def test_send_wallet_balances_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -220,7 +216,6 @@ def test_send_payments_report_emails_when_mailjet_status_code_200_sends_email_to
     assert email['To'] == 'dev.team@test.com'
 
 
-@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -249,7 +244,6 @@ def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_whe
 
 
 class SendOfferCreationNotificationToAdministrationTest:
-    @patch('pcapi.utils.mailing.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     def test_when_mailjet_status_code_200_sends_email_to_administration_email(self, app):
         mocked_send_email = Mock()
         return_value = Mock()
@@ -269,7 +263,6 @@ class SendOfferCreationNotificationToAdministrationTest:
         email = args[1]['data']
         assert email['To'] == 'administration@example.com'
 
-    @patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def test_when_send_email_disabled_has_pass_culture_dev_as_recipient(self, app):
         # Given
         mocked_send_email = Mock()

@@ -11,12 +11,10 @@ from pcapi.repository import repository
 
 class ProOffererAttachmentValidationEmailTest:
     @pytest.mark.usefixtures("db_session")
-    @patch('pcapi.emails.offerer_attachment_validation.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('pcapi.emails.offerer_attachment_validation.feature_send_mail_to_users_enabled', return_value=False)
     @patch('pcapi.emails.offerer_attachment_validation.format_environment_for_email', return_value='-testing')
     @patch('pcapi.emails.offerer_attachment_validation.find_user_offerer_email',
            return_value='pro@example.com')
-    @patch('pcapi.emails.offerer_attachment_validation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_email_is_sent_to_dev_at_passculture_when_not_production_environment(self,
                                                                                  feature_send_mail_to_users_enabled,
                                                                                  format_environment_for_email,
@@ -50,7 +48,6 @@ class ProOffererAttachmentValidationEmailTest:
     @patch('pcapi.emails.offerer_attachment_validation.format_environment_for_email', return_value='')
     @patch('pcapi.emails.offerer_attachment_validation.find_user_offerer_email',
            return_value='pro@example.com')
-    @patch('pcapi.emails.offerer_attachment_validation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_email_is_sent_to_pro_user_when_environment_is_production(self,
                                                                        feature_send_mail_to_users_enabled,
                                                                        format_environment_for_email,

@@ -89,8 +89,6 @@ def get_expected_base_email_data(booking, **overrides):
     return email_data
 
 
-@patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 @pytest.mark.usefixtures("db_session")
 def test_with_event():
     booking = make_booking()
@@ -101,8 +99,6 @@ def test_with_event():
     assert email_data == expected
 
 
-@patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 @pytest.mark.usefixtures("db_session")
 def test_with_book():
     booking = make_booking(
@@ -131,8 +127,6 @@ def test_with_book():
     assert email_data == expected
 
 
-@patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 @pytest.mark.usefixtures("db_session")
 def test_with_book_with_missing_isbn():
     booking = make_booking(
@@ -162,8 +156,6 @@ def test_with_book_with_missing_isbn():
     assert email_data == expected
 
 
-@patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 @pytest.mark.usefixtures("db_session")
 def test_should_not_truncate_price():
     booking = make_booking(stock__price=5.86)
@@ -174,7 +166,6 @@ def test_should_not_truncate_price():
     assert email_data == expected
 
 
-@patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
 @patch('pcapi.repository.feature_queries.IS_PROD', True)
 @pytest.mark.usefixtures("db_session")
 def test_recipients_on_production():
@@ -186,8 +177,6 @@ def test_recipients_on_production():
     assert email_data['To'] == ', '.join(recipients)
 
 
-@patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 @pytest.mark.usefixtures("db_session")
 def test_recipients_when_feature_send_mail_to_users_is_disabled():
     booking = make_booking()
@@ -198,8 +187,6 @@ def test_recipients_when_feature_send_mail_to_users_is_disabled():
     assert email_data['To'] == 'dev@example.com'
 
 
-@patch('pcapi.emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-@patch('pcapi.utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 @pytest.mark.usefixtures("db_session")
 def test_with_two_users_who_booked_the_same_offer():
     booking1 = make_booking()
