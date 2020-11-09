@@ -10,6 +10,7 @@ from flask import Flask
 from mailjet_rest import Client
 
 from pcapi.models.db import db
+from pcapi.utils import config
 from pcapi.utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
 
 app = Flask(__name__)
@@ -42,7 +43,7 @@ from pcapi.scripts.booking import *
 
 
 def set_python_prompt():
-    env = os.environ.get('ENV')
+    env = config.ENV
     if env == 'production':
         color = '\x1b[1;49;31m'  # red
     elif env == 'staging':
