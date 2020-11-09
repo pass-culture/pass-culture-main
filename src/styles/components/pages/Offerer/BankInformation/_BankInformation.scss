@@ -15,32 +15,6 @@
     }
   }
 
-  .bi-banner {
-    background: $attention;
-    border-radius: 6px;
-    margin: rem(16px) 0;
-    padding: rem(7px) rem(15px);
-
-    > p {
-      margin: rem(5px) 0;
-    }
-  }
-
-  .bi-external-link {
-    font-weight: $weight-bold;
-
-    > img {
-      vertical-align: sub;
-      margin-right: rem(5px);
-    }
-
-    &.bi-external-link--mod-topright {
-      position: absolute;
-      top: rem(-6px);
-      right: 0;
-    }
-  }
-
   .tertiary-link {
     position: absolute;
     top: rem(-6px);
