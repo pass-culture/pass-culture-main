@@ -1,10 +1,16 @@
-from pcapi.repository import repository
 import pytest
-from tests.conftest import TestClient
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
-    create_mediation
+
+from pcapi.model_creators.generic_creators import create_user, \
+    create_offerer, \
+    create_venue, \
+    create_user_offerer, \
+    create_mediation, \
+    create_provider
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.repository import repository
+from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
+from tests.conftest import TestClient
 
 
 class Get:
@@ -17,8 +23,10 @@ class Get:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
-            mediation = create_mediation(offer)
-            repository.save(mediation)
+            provider = create_provider(local_class='TestLocalProvider', idx=134)
+            mediation = create_mediation(offer, last_provider_id=provider.id, id_at_providers='VHBZJQ',
+                                         credit='Mickael Bay')
+            repository.save(provider, mediation)
             repository.save(offer)
             repository.save(user, venue, offerer, user_offerer)
 
@@ -29,8 +37,19 @@ class Get:
 
             # then
             assert response.status_code == 200
-            assert response.json['id'] == humanize(mediation.id)
-            assert response.json['isActive'] == mediation.isActive
+            assert response.json == {
+                'authorId': None,
+                'credit': 'Mickael Bay',
+                'dateCreated': format_into_utc_date(mediation.dateCreated),
+                'dateModifiedAtLastProvider': format_into_utc_date(mediation.dateModifiedAtLastProvider),
+                'fieldsUpdated': [],
+                'id': humanize(mediation.id),
+                'idAtProviders': 'VHBZJQ',
+                'isActive': True,
+                'lastProviderId': humanize(134),
+                'offerId': humanize(offer.id),
+                'thumbCount': 0
+            }
 
     class Returns404:
         @pytest.mark.usefixtures("db_session")
@@ -45,3 +64,4 @@ class Get:
 
             # then
             assert response.status_code == 404
+            assert response.json == {}
