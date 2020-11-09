@@ -1,18 +1,23 @@
 import os
 from io import BytesIO
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, \
+    MagicMock
 
 import pytest
 
-from pcapi.repository import repository
-from pcapi.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.utils.human_ids import humanize
-
 import tests
-from tests.conftest import clean_database, TestClient
-
+from pcapi.model_creators.generic_creators import create_user, \
+    create_offerer, \
+    create_venue, \
+    create_user_offerer
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.models import MediationSQLEntity
+from pcapi.repository import repository
+from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.human_ids import humanize
+from tests.conftest import clean_database, \
+    TestClient
 
 MODULE_PATH = Path(os.path.dirname(os.path.realpath(__file__)))
 TEST_IMAGE_PATH = Path(tests.__path__[0]) / 'files' / 'pixel.png'
@@ -51,6 +56,20 @@ class Post:
 
             # then
             assert response.status_code == 201
+            mediation = MediationSQLEntity.query.one()
+            assert response.json == {
+                'authorId': humanize(user.id),
+                'credit': None,
+                'dateCreated': format_into_utc_date(mediation.dateCreated),
+                'dateModifiedAtLastProvider': format_into_utc_date(mediation.dateModifiedAtLastProvider),
+                'fieldsUpdated': [],
+                'id': humanize(mediation.id),
+                'idAtProviders': None,
+                'isActive': True,
+                'lastProviderId': None,
+                'offerId': humanize(offer.id),
+                'thumbCount': 1
+            }
 
         @pytest.mark.usefixtures("db_session")
         @patch('pcapi.routes.mediations.feature_queries.is_active', return_value=True)
@@ -148,7 +167,9 @@ class Post:
 
             # then
             assert response.status_code == 400
-            assert response.json['thumbUrl'] == ["L'adresse saisie n'est pas valide"]
+            assert response.json == {
+                'thumbUrl': ["L'adresse saisie n'est pas valide"]
+            }
 
         @pytest.mark.usefixtures("db_session")
         def when_mediation_is_created_with_file_upload_but_without_filename(self, app):
@@ -173,7 +194,9 @@ class Post:
 
             # then
             assert response.status_code == 400
-            assert response.json['thumb'] == ["Vous devez fournir une image d'accroche"]
+            assert response.json == {
+                'thumb': ["Vous devez fournir une image d'accroche"]
+            }
 
         @clean_database
         def when_mediation_is_created_with_file_upload_but_image_is_too_small(self, app):
@@ -199,7 +222,9 @@ class Post:
 
             # then
             assert response.status_code == 400
-            assert response.json['thumb'] == ["L'image doit faire 400 * 400 px minimum"]
+            assert response.json == {
+                'thumb': ["L'image doit faire 400 * 400 px minimum"]
+            }
 
         @clean_database
         @patch('pcapi.routes.mediations.repository')
