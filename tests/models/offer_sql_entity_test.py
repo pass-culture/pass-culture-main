@@ -502,13 +502,6 @@ class DateRangeTest:
 
 
 class IsEditableTest:
-    def test_returns_false_when_offer_is_coming_from_provider(self, app):
-        # given
-        offer = Offer()
-        offer.lastProviderId = 21
-
-        # then
-        assert offer.isEditable is False
 
     def test_returns_false_when_offer_is_coming_from_TiteLive_provider(self, app):
         # given

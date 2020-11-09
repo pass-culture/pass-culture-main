@@ -144,8 +144,11 @@ class Offer(PcObject,
 
     @property
     def isEditable(self) -> bool:
-        local_class = self.lastProvider.localClass if self.lastProvider else ''
-        return self.isFromProvider is False or 'Allocine' in local_class
+        if not self.isFromProvider:
+            return True
+        if not self.lastProvider.localClass:
+            return False
+        return 'Allocine' in self.lastProvider.localClass
 
     @property
     def isFromProvider(self) -> bool:
