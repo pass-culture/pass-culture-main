@@ -3,6 +3,7 @@ from typing import Any
 from typing import Callable
 from typing import List
 from typing import Optional
+from typing import Type
 
 from flask import Response
 from flask import make_response
@@ -36,9 +37,9 @@ def _make_json_response(
 
 
 def spectree_serialize(  # pylint: disable=dangerous-default-value
-    headers: BaseModel = None,
-    cookies: BaseModel = None,
-    response_model: BaseModel = None,
+    headers: Type[BaseModel] = None,
+    cookies: Type[BaseModel] = None,
+    response_model: Type[BaseModel] = None,
     tags: tuple = (),
     before: Callable = None,
     after: Callable = None,
@@ -51,16 +52,19 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
     """A decorator that serialize/deserialize and validate input/output
 
     Args:
-        query (pydantic.BaseModel, optional): Describes the query params. Defaults to None.
-        headers (pydantic.BaseModel, optional): Describes the headers. Defaults to None.
-        cookies (pydantic.BaseModel, optional): Describes the cookies. Defaults to None.
-        response_model (pydantic.BaseModel, optional): Describes the http response Model. Defaults to None.
+        cookies (Type[BaseModel], optional): Describes the cookies. Defaults to None.
+        response_model (Type[BaseModel], optional): Describes the http response Model. Defaults to None.
         tags (tuple, optional): list of tags’ string. Defaults to ().
         before (Callable, optional): hook executed before the spectree validation. Defaults to None.
         after (Callable, optional): hook executed after the spectree validation. Defaults to None.
         response_by_alias (bool, optional): whether or not the alias generator will be used. Defaults to True.
         exclude_none (bool, optional): whether or not to remove the none values. Defaults to False.
         on_success_status (int, optional): status returned when the validation is a success. Defaults to 200.
+        on_error_statuses (List[int], optional): list of possible error statuses. Defaults to [].
+        api (SpecTree, optional): [description]. Defaults to default_api.
+
+    Returns:
+        Callable[[Any], Any]: [description]
     """
 
     def decorate_validation(route: Callable[..., Any]) -> Callable[[Any], Any]:
@@ -102,7 +106,9 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
                 kwargs["form"] = form_in_kwargs(**form)
 
             result = route(*args, **kwargs)
-            return _make_json_response(result, on_success_status, response_by_alias)
+            return _make_json_response(
+                content=result, status_code=on_success_status, by_alias=response_by_alias, exclude_none=exclude_none
+            )
 
         return sync_validate
 
