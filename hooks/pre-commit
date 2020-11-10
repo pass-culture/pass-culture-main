@@ -13,7 +13,10 @@ for FILE in $STAGED_FILES; do
   LINTED_FILES+=" ${FILE}"
 done
 
-echo -e "\033[0;96mRunning mypy for type checking\033[0m\n"
+echo -e "\033[0;96mRunning isort to organize imports\033[0m"
+isort $LINTED_FILES
+
+echo -e "\n\033[0;96mRunning mypy for type checking\033[0m\n"
 mypy $LINTED_FILES --pretty
 if [[ "$?" != 0 ]]; then
   counter=$((counter + 1))
