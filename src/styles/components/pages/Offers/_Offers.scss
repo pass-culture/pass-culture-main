@@ -207,8 +207,20 @@
     p {
       margin-bottom: rem(20px);
     }
-    a {
-      color: $primary;
+  }
+
+  .subtitle-container {
+    .subtitle {
+      margin-right: rem(20px);
     }
+  }
+  .subtitle {
+    font-size: rem(20px);
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .primary-color {
+    color: $primary;
   }
 }

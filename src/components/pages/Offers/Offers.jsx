@@ -409,7 +409,7 @@ class Offers extends PureComponent {
           {'Vous pouvez modifer votre recherche ou'}
           <br />
           <Link
-            className="tertiary-link"
+            className="tertiary-link primary-color"
             onClick={this.resetFilters}
             to="/offres"
           >
@@ -473,6 +473,18 @@ class Offers extends PureComponent {
           action={actionLink}
           title="Offres"
         />
+        <span className="subtitle-container">
+          <h3 className="subtitle">
+            {'Rechercher une offre'}
+          </h3>
+          <Link
+            className="tertiary-link primary-color"
+            onClick={this.resetFilters}
+            to="/offres"
+          >
+            {'Réinitialiser tous les filtres'}
+          </Link>
+        </span>
         {offerer && (
           <span className="offerer-filter">
             {offerer.name}
