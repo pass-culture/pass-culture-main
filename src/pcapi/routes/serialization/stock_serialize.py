@@ -16,6 +16,12 @@ class StockCreationBodyModel(BaseModel):
     price: float
     quantity: Optional[int]
 
+    # FIXME (cgaunet, 2020-11-05): these two fields are actually
+    # unused for the stock creation. But the webapp does send them so
+    # we must list them here (because of the `extra = "forbid"` below.
+    beginning_time: Optional[str]
+    offerer_id: Optional[str]
+
     _dehumanize_offer_id = dehumanize_field("offer_id")
 
     class Config:
@@ -31,7 +37,8 @@ class StockEditionBodyModel(BaseModel):
     quantity: Optional[int]
 
     # FIXME (cgaunet, 2020-11-05): these three fields are actually
-    # unused for the stock edition
+    # unused for the stock edition. But the webapp does send them so
+    # we must list them here (because of the `extra = "forbid"` below.
     beginning_time: Optional[str]
     offerer_id: Optional[str]
     id: Optional[Any]
