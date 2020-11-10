@@ -500,11 +500,23 @@ describe('src | components | pages | Offers | Offers', () => {
           await renderOffers(props, store)
 
           // Then
-          await waitFor(() => {
-            expect(
-              screen.getByText('Aucune offre trouvée pour votre recherche')
-            ).toBeInTheDocument()
-          })
+
+          const noOffersForSearchFiltersText = await screen.findByText(
+            'Aucune offre trouvée pour votre recherche'
+          )
+          expect(noOffersForSearchFiltersText).toBeInTheDocument()
+        })
+
+        it('should display no results for filter', async () => {
+          // Given
+          props.offers = []
+
+          // When
+          await renderOffers(props, store)
+
+          // Then
+          const noOffersText = await screen.findByText("Vous n'avez pas encore créé d'offre.")
+          expect(noOffersText).toBeInTheDocument()
         })
       })
     })

@@ -148,7 +148,7 @@ class Offers extends PureComponent {
     const { searchFilters, page } = this.state
     saveSearchFilters({
       ...searchFilters,
-      page,
+      page: parseInt(page),
     })
     shouldTriggerSpinner && this.setState({ isLoading: true })
     this.loadAndUpdateOffers()
@@ -271,6 +271,99 @@ class Offers extends PureComponent {
 
   setIsStatusFiltersVisible = isStatusFiltersVisible => {
     this.setState({ isStatusFiltersVisible })
+  }
+
+  renderSearchFilters = () => {
+    const { searchFilters, typeOptions, venueOptions, offerer } = this.state
+    return (
+      <Fragment>
+        {offerer && (
+          <span className="offerer-filter">
+            {offerer.name}
+            <button
+              onClick={this.handleOffererFilterRemoval}
+              type="button"
+            >
+              <Icon
+                alt="Supprimer le filtre"
+                svg="ico-close-b"
+              />
+            </button>
+          </span>
+        )}
+        <form onSubmit={this.handleOnSubmit}>
+          <TextInput
+            label="Nom de l’offre"
+            name="offre"
+            onChange={this.storeNameSearchValue}
+            placeholder="Rechercher par nom d’offre"
+            value={searchFilters.name}
+          />
+          <div className="form-row">
+            <Select
+              defaultOption={ALL_VENUES_OPTION}
+              handleSelection={this.storeSelectedVenue}
+              label="Lieu"
+              name="lieu"
+              options={venueOptions}
+              selectedValue={searchFilters.venueId}
+            />
+            <Select
+              defaultOption={ALL_TYPES_OPTION}
+              handleSelection={this.storeSelectedType}
+              label="Catégories"
+              name="type"
+              options={typeOptions}
+              selectedValue={searchFilters.typeId}
+            />
+            <Select
+              defaultOption={DEFAULT_CREATION_MODE}
+              handleSelection={this.storeCreationMode}
+              label="Mode de création"
+              name="creationMode"
+              options={CREATION_MODES_FILTERS}
+              selectedValue={searchFilters.creationMode}
+            />
+          </div>
+          <div className="search-separator">
+            <div className="separator" />
+            <button
+              className="primary-button"
+              type="submit"
+            >
+              {'Lancer la recherche'}
+            </button>
+            <div className="separator" />
+          </div>
+        </form>
+      </Fragment>
+    )
+  }
+
+  renderNoOffers = () => {
+    return (
+      <div className="no-search-results">
+        <Icon
+          className="image"
+          svg="ico-ticket-gray"
+        />
+
+        <p className="highlight">
+          {'Aucune offre'}
+        </p>
+        <p>
+          {"Vous n'avez pas encore créé d'offre."}
+        </p>
+
+        <Link
+          className="primary-button with-icon"
+          to="/offres/creation"
+        >
+          <Icon svg="ico-plus" />
+          {'Créer ma première offre'}
+        </Link>
+      </div>
+    )
   }
 
   renderTableHead = () => {
@@ -453,23 +546,27 @@ class Offers extends PureComponent {
   }
 
   render() {
-    const { currentUser } = this.props
+    const { currentUser, offers } = this.props
+    const { isLoading } = this.state
     const { isAdmin } = currentUser || {}
-    const { searchFilters, offerer, typeOptions, venueOptions } = this.state
 
-    const actionLink = isAdmin ? null : (
-      <Link
-        className="cta button is-primary"
-        to="/offres/creation"
-      >
-        <span className="icon">
-          <Icon svg="ico-offres-w" />
-        </span>
-        <span>
-          {'Créer une offre'}
-        </span>
-      </Link>
-    )
+    const hasOffers = !!offers.length || this.hasSearchFilters()
+    const displayOffers = isLoading || hasOffers
+
+    const actionLink =
+      !displayOffers || isAdmin ? null : (
+        <Link
+          className="cta button is-primary"
+          to="/offres/creation"
+        >
+          <span className="icon">
+            <Icon svg="ico-offres-w" />
+          </span>
+          <span>
+            {'Créer une offre'}
+          </span>
+        </Link>
+      )
 
     return (
       <Main
@@ -482,81 +579,30 @@ class Offers extends PureComponent {
           action={actionLink}
           title="Offres"
         />
-        <span className="subtitle-container">
-          <h3 className="subtitle">
-            {'Rechercher une offre'}
-          </h3>
-          <Link
-            className={`tertiary-link ${this.hasSearchFilters() ? 'primary-color' : ''}`}
-            onClick={this.resetFilters}
-            to="/offres"
-          >
-            {'Réinitialiser les filtres'}
-          </Link>
-        </span>
-        {offerer && (
-          <span className="offerer-filter">
-            {offerer.name}
-            <button
-              onClick={this.handleOffererFilterRemoval}
-              type="button"
-            >
-              <Icon
-                alt="Supprimer le filtre"
-                svg="ico-close-b"
-              />
-            </button>
-          </span>
-        )}
-        <form onSubmit={this.handleOnSubmit}>
-          <TextInput
-            label="Nom de l’offre"
-            name="offre"
-            onChange={this.storeNameSearchValue}
-            placeholder="Rechercher par nom d’offre"
-            value={searchFilters.name}
-          />
-          <div className="form-row">
-            <Select
-              defaultOption={ALL_VENUES_OPTION}
-              handleSelection={this.storeSelectedVenue}
-              label="Lieu"
-              name="lieu"
-              options={venueOptions}
-              selectedValue={searchFilters.venueId}
-            />
-            <Select
-              defaultOption={ALL_TYPES_OPTION}
-              handleSelection={this.storeSelectedType}
-              label="Catégories"
-              name="type"
-              options={typeOptions}
-              selectedValue={searchFilters.typeId}
-            />
-            <Select
-              defaultOption={DEFAULT_CREATION_MODE}
-              handleSelection={this.storeCreationMode}
-              label="Mode de création"
-              name="creationMode"
-              options={CREATION_MODES_FILTERS}
-              selectedValue={searchFilters.creationMode}
-            />
-          </div>
-          <div className="search-separator">
-            <div className="separator" />
-            <button
-              className="primary-button"
-              type="submit"
-            >
-              {'Lancer la recherche'}
-            </button>
-            <div className="separator" />
-          </div>
-        </form>
+        {displayOffers ? (
+          <Fragment>
+            <span className="subtitle-container">
+              <h3 className="subtitle">
+                {'Rechercher une offre'}
+              </h3>
+              <Link
+                className={`tertiary-link ${this.hasSearchFilters() ? 'primary-color' : ''}`}
+                onClick={this.resetFilters}
+                to="/offres"
+              >
+                {'Réinitialiser les filtres'}
+              </Link>
+            </span>
 
-        <div className="section">
-          {this.renderSearchResults()}
-        </div>
+            {this.renderSearchFilters()}
+
+            <div className="section">
+              {this.renderSearchResults()}
+            </div>
+          </Fragment>
+        ) : (
+          this.renderNoOffers()
+        )}
       </Main>
     )
   }

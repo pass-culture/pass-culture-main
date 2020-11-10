@@ -223,4 +223,26 @@
   .primary-color {
     color: $primary;
   }
+
+  .no-search-results {
+    align-items: center;
+    color: $grey-dark;
+    flex-direction: column;
+    font-size: rem(16px);
+    display: flex;
+
+    .image {
+      margin-top: rem(40px);
+    }
+
+    .highlight {
+      @include title4;
+      margin-bottom: rem(8px);
+      margin-top: rem(24px);
+    }
+    a {
+      margin-bottom: rem(48px);
+      margin-top: rem(48px);
+    }
+  }
 }
