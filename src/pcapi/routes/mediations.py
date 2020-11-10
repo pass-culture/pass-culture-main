@@ -1,3 +1,6 @@
+from typing import List
+from typing import Optional
+
 from flask import current_app as app
 from flask import jsonify
 from flask import request
@@ -14,6 +17,9 @@ from pcapi.models.user_offerer import RightsType
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization.mediations_serialize import CreateMediationBodyModel
+from pcapi.routes.serialization.mediations_serialize import MediationResponseIdModel
+from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import MEDIATION_INCLUDES
 from pcapi.utils.rest import ensure_current_user_has_rights
@@ -25,25 +31,23 @@ from pcapi.validation.routes.mediations import check_thumb_quality
 
 @private_api.route("/mediations", methods=["POST"])
 @login_required
-def create_mediation():
-    check_thumb_in_request(files=request.files, form=request.form)
-    offerer_id = dehumanize(request.form["offererId"])
-    offer_id = dehumanize(request.form["offerId"])
-    credit = request.form.get("credit")
-    ensure_current_user_has_rights(RightsType.editor, offerer_id)
+@spectree_serialize(on_success_status=201, response_model=MediationResponseIdModel)
+def create_mediation(form: CreateMediationBodyModel) -> MediationResponseIdModel:
+    check_thumb_in_request(files=request.files, form=form)
+    ensure_current_user_has_rights(RightsType.editor, form.offerer_id)
     mediation = MediationSQLEntity()
     mediation.author = current_user
-    mediation.offerId = offer_id
-    mediation.credit = credit
-    mediation.offererId = offerer_id
-    thumb = read_thumb(files=request.files, form=request.form)
+    mediation.offerId = form.offer_id
+    mediation.credit = form.credit
+    mediation.offererId = form.offerer_id
+    thumb = read_thumb(files=request.files, form=form)
     check_thumb_quality(thumb)
     repository.save(mediation)
-    mediation = create_thumb(mediation, thumb, 0, crop=_get_crop(request.form))
+    mediation = create_thumb(mediation, thumb, 0, crop=_get_crop(form))
     repository.save(mediation)
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
-    return jsonify(as_dict(mediation)), 201
+        redis.add_offer_id(client=app.redis_client, offer_id=form.offer_id)
+    return MediationResponseIdModel.from_orm(mediation)
 
 
 @private_api.route("/mediations/<mediation_id>", methods=["GET"])
@@ -68,6 +72,8 @@ def update_mediation(mediation_id):
     return jsonify(as_dict(mediation, includes=MEDIATION_INCLUDES)), 200
 
 
-def _get_crop(form):
-    if "croppingRect[x]" in form and "croppingRect[y]" in form and "croppingRect[height]" in form:
-        return [float(form["croppingRect[x]"]), float(form["croppingRect[y]"]), float(form["croppingRect[height]"])]
+def _get_crop(form: CreateMediationBodyModel) -> Optional[List[float]]:
+    if form.cropping_rect_x is not None and form.cropping_rect_y is not None and form.cropping_rect_height is not None:
+        return [form.cropping_rect_x, form.cropping_rect_y, form.cropping_rect_height]
+
+    return None

@@ -26,12 +26,12 @@ def read_thumb(files=None, form=None):
             )
         return thumb.read()
 
-    if "thumbUrl" in form:
+    if form.thumb_url is not None:
         try:
-            return _fetch_image(form["thumbUrl"])
+            return _fetch_image(form.thumb_url)
         except ValueError as value_error:
             logger.exception(value_error)
-            raise ApiErrors({"thumbUrl": ["L'adresse saisie n'est pas valide"]})
+            raise ApiErrors({'thumb_url': ["L'adresse saisie n'est pas valide"]})
 
 
 def create_thumb(
