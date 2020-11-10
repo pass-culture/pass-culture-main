@@ -19,11 +19,11 @@ from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.mediations_serialize import CreateMediationBodyModel
 from pcapi.routes.serialization.mediations_serialize import MediationResponseIdModel
+from pcapi.routes.serialization.mediations_serialize import UpdateMediationBodyModel
+from pcapi.routes.serialization.mediations_serialize import UpdateMediationResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.includes import MEDIATION_INCLUDES
 from pcapi.utils.rest import ensure_current_user_has_rights
-from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import load_or_404
 from pcapi.validation.routes.mediations import check_thumb_in_request
 from pcapi.validation.routes.mediations import check_thumb_quality
@@ -59,17 +59,16 @@ def get_mediation(mediation_id):
 
 @private_api.route("/mediations/<mediation_id>", methods=["PATCH"])
 @login_required
-@expect_json_data
-def update_mediation(mediation_id):
+@spectree_serialize(on_success_status=200, response_model=UpdateMediationResponseModel)
+def update_mediation(mediation_id: str, body: UpdateMediationBodyModel) -> UpdateMediationResponseModel:
     mediation = load_or_404(MediationSQLEntity, mediation_id)
     ensure_current_user_has_rights(RightsType.editor, mediation.offer.venue.managingOffererId)
     mediation = MediationSQLEntity.query.filter_by(id=dehumanize(mediation_id)).first()
-    data = request.json
-    mediation.populate_from_dict(data)
+    mediation.populate_from_dict(body.dict())
     repository.save(mediation)
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=mediation.offerId)
-    return jsonify(as_dict(mediation, includes=MEDIATION_INCLUDES)), 200
+    return UpdateMediationResponseModel.from_orm(mediation)
 
 
 def _get_crop(form: CreateMediationBodyModel) -> Optional[List[float]]:

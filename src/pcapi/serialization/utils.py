@@ -43,7 +43,10 @@ def before_handler(
         raise api_errors
 
 
-def humanize_id(id_to_humanize: Union[int, str]) -> str:
+def humanize_id(id_to_humanize: Optional[Union[int, str]]) -> Optional[str]:
+    if id_to_humanize is None:
+        return None
+
     # This is because humanize_id will be called on a int the first time
     # and then on ids already humanized. humanize can't work with string
     if isinstance(id_to_humanize, int):
