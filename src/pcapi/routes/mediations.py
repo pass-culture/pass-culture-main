@@ -50,13 +50,6 @@ def create_mediation(form: CreateMediationBodyModel) -> MediationResponseIdModel
     return MediationResponseIdModel.from_orm(mediation)
 
 
-@private_api.route("/mediations/<mediation_id>", methods=["GET"])
-@login_required
-def get_mediation(mediation_id):
-    mediation = load_or_404(MediationSQLEntity, mediation_id)
-    return jsonify(as_dict(mediation))
-
-
 @private_api.route("/mediations/<mediation_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(on_success_status=200, response_model=UpdateMediationResponseModel)
