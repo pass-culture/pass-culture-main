@@ -9,6 +9,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.utils.logger import logger
 
 
+# FIXME(fseguin, 2020-11-10): Delete this file once the script has been successfully executed in prod
 def fill_missing_confirmation_dates_of_event_bookings_without_confirmation_date_not_cancelled_not_used(
         batch_size: int = 100
 ) -> None:
@@ -73,22 +74,18 @@ def _update_target_bookings(target_bookings_query: BaseQuery, batch_size: int) -
         start_updating_batch = datetime.datetime.now()
         update_mappings = []
 
-        try:
-            for booking_id, event_date, creation_date in bookings:
-                confirmation_date = compute_confirmation_date(event_date, creation_date)
-                update_mappings.append(
-                    {"id": booking_id, "confirmationDate": confirmation_date}
-                )
+        for booking_id, event_date, creation_date in bookings:
+            confirmation_date = compute_confirmation_date(event_date, creation_date)
+            update_mappings.append(
+                {"id": booking_id, "confirmationDate": confirmation_date}
+            )
 
-            db.session.bulk_update_mappings(Booking, update_mappings)
-            db.session.commit()
-            end_updating_batch = datetime.datetime.now()
-            updated_count += len(update_mappings)
-            duration = f"{(end_updating_batch - start_updating_batch).total_seconds():.2f}"
-            print(f"[{datetime.datetime.utcnow()}]  Updated batch {batch_number}/{batches_count} in {duration} seconds")
-
-        except Exception as exc:
-            raise exc
+        db.session.bulk_update_mappings(Booking, update_mappings)
+        db.session.commit()
+        end_updating_batch = datetime.datetime.now()
+        updated_count += len(update_mappings)
+        duration = f"{(end_updating_batch - start_updating_batch).total_seconds():.2f}"
+        print(f"[{datetime.datetime.utcnow()}]  Updated batch {batch_number}/{batches_count} in {duration} seconds")
 
         batch_number += 1
 
