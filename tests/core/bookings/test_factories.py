@@ -16,8 +16,8 @@ class BookingFactoryTest:
 
         assert booking_from_db.confirmationDate == generated_confirmation_date
 
-    def test_confirmation_date_is_none_for_non_event(self):
-        non_event_booking = BookingFactory()
+    def test_confirmation_date_is_none_for_a_thing(self):
+        non_event_booking = BookingFactory(stock__beginningDatetime=None)
         assert not non_event_booking.confirmationDate
 
     def test_confirmation_date_is_generated_for_event(self):
