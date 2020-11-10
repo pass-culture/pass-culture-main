@@ -27,7 +27,7 @@ describe('src | components | layout | Banner', () => {
       expect(linkToHref.text()).toContain('linkTitle')
     })
 
-    it('should change the background color - attention', () => {
+    it('should change the banner type - attention', () => {
       // when
       const wrapper = shallow(<Banner {...props} />)
 
@@ -36,7 +36,7 @@ describe('src | components | layout | Banner', () => {
       expect(container.prop('className')).toBe('bi-banner attention')
     })
 
-    it('should change the background color - notification-info', () => {
+    it('should change the banner type - notification-info', () => {
       props.type = 'notification-info'
 
       // when

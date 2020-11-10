@@ -9,7 +9,7 @@ jest.mock('utils/config', () => ({
     'link/to/offerer/demarchesSimplifiees/procedure',
 }))
 
-const reimbursementBannerPresent = wrapper => {
+const expectReimbursementBannerToBePresent = wrapper => {
   expect(wrapper.find('Banner').last().props()).toStrictEqual({
     type: 'notification-info',
     linkTitle: 'En savoir plus sur les remboursements',
@@ -42,7 +42,7 @@ describe('src | Offerer | BankInformation', () => {
       href: 'link/to/offerer/demarchesSimplifiees/procedure',
       icon: 'ico-external-site',
     })
-    reimbursementBannerPresent(wrapper)
+    expectReimbursementBannerToBePresent(wrapper)
   })
 
   it('should render instruction block when BIC and IBAN are provided', () => {
@@ -73,7 +73,7 @@ describe('src | Offerer | BankInformation', () => {
     expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
       'link/to/offerer/demarchesSimplifiees/procedure'
     )
-    reimbursementBannerPresent(wrapper)
+    expectReimbursementBannerToBePresent(wrapper)
   })
 
   it('should render current application detail when demarchesSimplifieesApplicationId is provided', () => {
@@ -98,6 +98,6 @@ describe('src | Offerer | BankInformation', () => {
       href: 'https://www.demarches-simplifiees.fr/dossiers/12',
       icon: 'ico-external-site',
     })
-    reimbursementBannerPresent(wrapper)
+    expectReimbursementBannerToBePresent(wrapper)
   })
 })
