@@ -65,6 +65,11 @@ if feature_request_profiling_enabled():
         restrictions=profiling_restrictions,
     )
 
+jwt_secret_key = os.environ.get("JWT_SECRET_KEY")
+if not jwt_secret_key:
+    json_logger.error("JWT_SECRET_KEY not found in env")
+    raise Exception("JWT_SECRET_KEY not found in env")
+
 app.secret_key = os.environ.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")
 app.json_encoder = EnumJSONEncoder
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
@@ -78,10 +83,7 @@ app.config["REMEMBER_COOKIE_DURATION"] = 90 * 24 * 3600
 app.config["PERMANENT_SESSION_LIFETIME"] = 90 * 24 * 3600
 app.config["FLASK_ADMIN_SWATCH"] = "flatly"
 app.config["FLASK_ADMIN_FLUID_LAYOUT"] = True
-app.config["JWT_SECRET_KEY"] = os.environ.get(
-    "JWT_SECRET_KEY",
-    "baheon0UIX2li3katood7RotTiedez3bUF8xohtheex1eeBithee9AopePhom5vi",
-)
+app.config["JWT_SECRET_KEY"] = jwt_secret_key
 
 jwt = JWTManager(app)
 
