@@ -1,11 +1,12 @@
 import datetime
-
 import typing
+
 from flask_sqlalchemy import BaseQuery
 
-from pcapi.models import db, StockSQLEntity
 from pcapi.core.bookings.api import compute_confirmation_date
 from pcapi.core.bookings.models import Booking
+from pcapi.models import StockSQLEntity
+from pcapi.models import db
 from pcapi.utils.logger import logger
 
 

@@ -1,5 +1,5 @@
-import datetime
 from collections import namedtuple
+import datetime
 
 import pytest
 
@@ -7,10 +7,22 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import BookingWithoutConfirmationDateFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.users.factories import UserFactory
-from pcapi.scripts.booking.update_confirmation_date_from_existing_bookings import _select_all_event_bookings_without_confirmation_date, _update_target_bookings, \
-    fill_missing_confirmation_dates_of_all_event_bookings_without_confirmation_date, \
-    fill_missing_confirmation_dates_of_event_bookings_without_confirmation_date_not_cancelled_not_used, get_all_event_bookings_without_confirmation_date_count, \
-    get_event_bookings_without_confirmation_date_not_cancelled_not_used_count
+from pcapi.scripts.booking.update_confirmation_date_from_existing_bookings import (
+    _select_all_event_bookings_without_confirmation_date,
+)
+from pcapi.scripts.booking.update_confirmation_date_from_existing_bookings import (
+    fill_missing_confirmation_dates_of_all_event_bookings_without_confirmation_date,
+)
+from pcapi.scripts.booking.update_confirmation_date_from_existing_bookings import (
+    fill_missing_confirmation_dates_of_event_bookings_without_confirmation_date_not_cancelled_not_used,
+)
+from pcapi.scripts.booking.update_confirmation_date_from_existing_bookings import (
+    get_all_event_bookings_without_confirmation_date_count,
+)
+from pcapi.scripts.booking.update_confirmation_date_from_existing_bookings import (
+    get_event_bookings_without_confirmation_date_not_cancelled_not_used_count,
+)
+from pcapi.scripts.booking.update_confirmation_date_from_existing_bookings import _update_target_bookings
 
 
 @pytest.mark.usefixtures("db_session")
