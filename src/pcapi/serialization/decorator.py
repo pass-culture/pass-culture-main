@@ -35,8 +35,7 @@ def _make_json_response(
     return response
 
 
-def spectree_serialize(
-    query: BaseModel = None,
+def spectree_serialize(  # pylint: disable=dangerous-default-value
     headers: BaseModel = None,
     cookies: BaseModel = None,
     response_model: BaseModel = None,
@@ -52,10 +51,10 @@ def spectree_serialize(
     """A decorator that serialize/deserialize and validate input/output
 
     Args:
-        query (pydantic.BaseModel, optional): Pydantic Model that describes the query params. Defaults to None.
-        headers (pydantic.BaseModel, optional): Pydantic Model that describes the headers. Defaults to None.
-        cookies (pydantic.BaseModel, optional): Pydantic Model that describes the cookies. Defaults to None.
-        response_model (pydantic.BaseModel, optional): Pydantic Model that describes the http response Model. Defaults to None.
+        query (pydantic.BaseModel, optional): Describes the query params. Defaults to None.
+        headers (pydantic.BaseModel, optional): Describes the headers. Defaults to None.
+        cookies (pydantic.BaseModel, optional): Describes the cookies. Defaults to None.
+        response_model (pydantic.BaseModel, optional): Describes the http response Model. Defaults to None.
         tags (tuple, optional): list of tags’ string. Defaults to ().
         before (Callable, optional): hook executed before the spectree validation. Defaults to None.
         after (Callable, optional): hook executed after the spectree validation. Defaults to None.
@@ -67,6 +66,7 @@ def spectree_serialize(
     def decorate_validation(route: Callable[..., Any]) -> Callable[[Any], Any]:
         body_in_kwargs = route.__annotations__.get("body")
         query_in_kwargs = route.__annotations__.get("query")
+        form_in_kwargs = route.__annotations__.get("form")
 
         if 403 not in on_error_statuses:
             on_error_statuses.append(403)
@@ -93,10 +93,13 @@ def spectree_serialize(
         def sync_validate(*args: dict, **kwargs: dict) -> Response:
             body_params = request.get_json()
             query_params = request.args
+            form = request.form
             if body_in_kwargs:
                 kwargs["body"] = body_in_kwargs(**body_params)
             if query_in_kwargs:
                 kwargs["query"] = query_in_kwargs(**query_params)
+            if form_in_kwargs:
+                kwargs["form"] = form_in_kwargs(**form)
 
             result = route(*args, **kwargs)
             return _make_json_response(result, on_success_status, response_by_alias)
