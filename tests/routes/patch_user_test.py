@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 
 from pcapi.model_creators.generic_creators import create_user
@@ -14,7 +16,8 @@ class Patch:
         @pytest.mark.usefixtures("db_session")
         def when_changes_are_allowed(self, app):
             # given
-            user = create_user()
+            now = datetime.now()
+            user = create_user(last_connection_date=now)
             repository.save(user)
             user_id = user.id
             data = {
@@ -53,7 +56,7 @@ class Patch:
                 "hasPhysicalVenues": False,
                 "id": humanize(user.id),
                 "isAdmin": False,
-                "lastConnectionDate": None,
+                "lastConnectionDate": format_into_utc_date(now),
                 "lastName": None,
                 "needsToFillCulturalSurvey": False,
                 "phoneNumber": "0612345678",

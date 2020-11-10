@@ -10,7 +10,7 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
 
-class PatchUserBodyModel(BaseModel):  # pylint: disable=too-few-public-methods
+class PatchUserBodyModel(BaseModel):
     cultural_survey_id: Optional[str]
     cultural_survey_filled_date: Optional[str]
     department_code: Optional[str] = Field(None, alias="departementCode")
@@ -21,12 +21,12 @@ class PatchUserBodyModel(BaseModel):  # pylint: disable=too-few-public-methods
     public_name: Optional[str]
     has_seen_tutorials: Optional[bool]
 
-    class Config:  # pylint: disable=too-few-public-methods
+    class Config:
         alias_generator = to_camel
         extra = "forbid"
 
 
-class PatchUserResponseModel(BaseModel):  # pylint: disable=too-few-public-methods
+class PatchUserResponseModel(BaseModel):
     id: str
     email: EmailStr
     publicName: str
@@ -44,13 +44,13 @@ class PatchUserResponseModel(BaseModel):  # pylint: disable=too-few-public-metho
     hasOffers: bool
     hasPhysicalVenues: bool
     isAdmin: bool
-    lastConnectionDate: Optional[str]
+    lastConnectionDate: Optional[datetime]
     lastName: Optional[str]
     needsToFillCulturalSurvey: bool
 
     _normalize_id = humanize_field("id")
 
-    class Config:  # pylint: disable=too-few-public-methods
+    class Config:
         json_encoders = {datetime: format_into_utc_date}
         orm_mode = True
         alias_generator = to_camel

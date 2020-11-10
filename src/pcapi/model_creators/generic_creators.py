@@ -467,30 +467,29 @@ def create_stock(
     return stock
 
 
-def create_user(
-    activity: str = None,
-    can_book_free_offers: bool = True,
-    civility: str = None,
-    cultural_survey_id: str = None,
-    cultural_survey_filled_date: datetime = None,
-    date_created: datetime = datetime.utcnow(),
-    date_of_birth: datetime = None,
-    departement_code: str = "93",
-    email: str = "john.doe@example.com",
-    first_name: str = None,
-    has_seen_tutorials: bool = None,
-    idx: int = None,
-    is_admin: bool = False,
-    last_name: str = None,
-    needs_to_fill_cultural_survey: bool = False,
-    password: str = None,
-    phone_number: str = None,
-    postal_code: str = None,
-    public_name: str = "John Doe",
-    reset_password_token: str = None,
-    reset_password_token_validity_limit: datetime = None,
-    validation_token: str = None,
-) -> UserSQLEntity:
+def create_user(activity: str = None,
+                can_book_free_offers: bool = True,
+                civility: str = None,
+                cultural_survey_id: str = None,
+                cultural_survey_filled_date: datetime = None,
+                date_created: datetime = datetime.utcnow(),
+                date_of_birth: datetime = None,
+                departement_code: str = '93',
+                email: str = 'john.doe@example.com',
+                first_name: str = None,
+                has_seen_tutorials: bool = None,
+                idx: int = None,
+                is_admin: bool = False,
+                last_connection_date: datetime = None,
+                last_name: str = None,
+                needs_to_fill_cultural_survey: bool = False,
+                password: str = None,
+                phone_number: str = None,
+                postal_code: str = None,
+                public_name: str = 'John Doe',
+                reset_password_token: str = None,
+                reset_password_token_validity_limit: datetime = None,
+                validation_token: str = None) -> UserSQLEntity:
     user = UserSQLEntity()
     user.activity = activity
     user.canBookFreeOffers = can_book_free_offers
@@ -505,6 +504,7 @@ def create_user(
     user.hasSeenTutorials = has_seen_tutorials
     user.id = idx
     user.isAdmin = is_admin
+    user.lastConnectionDate = last_connection_date
     user.lastName = last_name
     user.needsToFillCulturalSurvey = needs_to_fill_cultural_survey
     user.phoneNumber = phone_number
