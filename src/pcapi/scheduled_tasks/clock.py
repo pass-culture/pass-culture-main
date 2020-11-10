@@ -16,7 +16,6 @@ from pcapi.repository import discovery_view_queries
 from pcapi.repository import discovery_view_v3_queries
 from pcapi.repository import feature_queries
 from pcapi.repository.feature_queries import feature_clean_seen_offers_enabled
-from pcapi.repository.feature_queries import feature_write_dashboard_enabled
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.repository.seen_offer_queries import remove_old_seen_offers
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
@@ -26,7 +25,6 @@ from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron
 from pcapi.scripts.beneficiary import old_remote_import
 from pcapi.scripts.beneficiary import remote_import
-from pcapi.scripts.dashboard.write_dashboard import write_dashboard
 from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
 
 
@@ -101,12 +99,6 @@ def pc_remote_import_beneficiaries(app) -> None:
 @cron_require_feature(FeatureToggle.SAVE_SEEN_OFFERS)
 def pc_remove_old_seen_offers(app) -> None:
     remove_old_seen_offers()
-
-
-@log_cron
-@cron_context
-def pc_write_dashboard(app) -> None:
-    write_dashboard()
 
 
 @log_cron

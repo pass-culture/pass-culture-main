@@ -43,45 +43,6 @@ from pcapi.utils.date import get_department_timezone
 DUO_QUANTITY = 2
 
 
-def count() -> int:
-    return _query_keep_on_non_activation_offers().count()
-
-
-def count_by_departement(departement_code: str) -> int:
-    return (
-        _query_keep_on_non_activation_offers()
-        .join(UserSQLEntity, UserSQLEntity.id == Booking.userId)
-        .filter(UserSQLEntity.departementCode == departement_code)
-        .count()
-    )
-
-
-def count_non_cancelled() -> int:
-    return _query_non_cancelled_non_activation_bookings().count()
-
-
-def count_non_cancelled_by_departement(departement_code: str) -> int:
-    return (
-        _query_non_cancelled_non_activation_bookings()
-        .join(UserSQLEntity, Booking.userId == UserSQLEntity.id)
-        .filter(UserSQLEntity.departementCode == departement_code)
-        .count()
-    )
-
-
-def count_cancelled() -> int:
-    return _query_cancelled_bookings_on_non_activation_offers().count()
-
-
-def count_cancelled_by_departement(departement_code: str) -> int:
-    return (
-        _query_cancelled_bookings_on_non_activation_offers()
-        .join(UserSQLEntity)
-        .filter(UserSQLEntity.departementCode == departement_code)
-        .count()
-    )
-
-
 def find_from_recommendation(recommendation: Recommendation, user_id: int) -> List[Booking]:
     return _build_find_ordered_user_bookings(user_id=user_id).filter(Offer.id == recommendation.offerId).all()
 

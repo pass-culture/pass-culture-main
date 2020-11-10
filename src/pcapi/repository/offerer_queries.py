@@ -18,27 +18,6 @@ from pcapi.models.db import db
 get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(Offerer, VenueSQLEntity)
 
 
-def count_offerer() -> int:
-    return _query_offerers_with_user_offerer().count()
-
-
-def count_offerer_by_departement(departement_code: str) -> int:
-    return (
-        _query_offerers_with_user_offerer()
-        .join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id)
-        .filter(VenueSQLEntity.departementCode == departement_code)
-        .count()
-    )
-
-
-def count_offerer_with_stock() -> int:
-    return _query_offerers_with_stock().count()
-
-
-def count_offerer_with_stock_by_departement(departement_code: str) -> int:
-    return _query_offerers_with_stock().filter(VenueSQLEntity.departementCode == departement_code).count()
-
-
 def find_by_id(id):
     return Offerer.query.filter_by(id=id).first()
 

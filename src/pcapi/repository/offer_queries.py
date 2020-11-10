@@ -152,24 +152,6 @@ def keep_only_offers_in_venues_or_national(query: BaseQuery, venue_ids: selectab
     return query.filter(or_(DiscoveryView.venueId.in_(venue_ids), DiscoveryView.isNational == True))
 
 
-def get_active_offers_ids_query(user, departement_codes=[ALL_DEPARTMENTS_CODE], offer_id=None):
-    active_offers_query = Offer.query.distinct(Offer.id)
-
-    if offer_id is not None:
-        active_offers_query = active_offers_query.filter(Offer.id == offer_id)
-    active_offers_query = active_offers_query.filter_by(isActive=True)
-    active_offers_query = _with_validated_venue(active_offers_query)
-    active_offers_query = _with_image(active_offers_query)
-    active_offers_query = department_or_national_offers(active_offers_query, departement_codes)
-    active_offers_query = _bookable_offers(active_offers_query)
-    active_offers_query = _with_active_and_validated_offerer(active_offers_query)
-    active_offers_query = _not_activation_offers(active_offers_query)
-    if user:
-        active_offers_query = _exclude_booked_and_favorite(active_offers_query, user)
-    active_offer_ids = active_offers_query.with_entities(Offer.id).subquery()
-    return active_offer_ids
-
-
 def _exclude_booked_and_favorite(active_offers_query, user):
     booked_offer_ids = (
         Booking.query.filter_by(userId=user.id).join(StockSQLEntity).with_entities('stock."offerId"').subquery()
@@ -239,17 +221,6 @@ def _build_bookings_quantity_subquery():
         .subquery()
     )
     return bookings_quantity
-
-
-def _filter_recommendable_offers_for_search(offer_query):
-    offer_query = (
-        offer_query.reset_joinpoint()
-        .filter(Offer.isActive == True)
-        .filter(_has_active_and_validated_offerer())
-        .filter(VenueSQLEntity.validationToken == None)
-        .filter(_offer_has_bookable_stocks())
-    )
-    return offer_query
 
 
 def find_activation_offers(departement_code: str) -> List[Offer]:

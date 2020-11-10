@@ -11,49 +11,17 @@ from sqlalchemy.sql.functions import Function
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import BeneficiaryImportStatus
-from pcapi.models import Booking
-from pcapi.models import EventType
 from pcapi.models import ImportStatus
-from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import RightsType
-from pcapi.models import StockSQLEntity
-from pcapi.models import ThingType
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
 from pcapi.models.db import db
 from pcapi.models.user_sql_entity import WalletBalance
 
 
-def count_all_activated_users() -> int:
-    return UserSQLEntity.query.filter_by(canBookFreeOffers=True).count()
-
-
-def count_all_activated_users_by_departement(department_code: str) -> int:
-    return UserSQLEntity.query.filter_by(canBookFreeOffers=True).filter_by(departementCode=department_code).count()
-
-
 def count_users_by_email(email: str) -> int:
     return UserSQLEntity.query.filter_by(email=email).count()
-
-
-def _query_user_having_booked() -> Query:
-    return (
-        UserSQLEntity.query.join(Booking)
-        .join(StockSQLEntity)
-        .join(Offer)
-        .filter(Offer.type != str(ThingType.ACTIVATION))
-        .filter(Offer.type != str(EventType.ACTIVATION))
-        .distinct(UserSQLEntity.id)
-    )
-
-
-def count_users_having_booked() -> int:
-    return _query_user_having_booked().count()
-
-
-def count_users_having_booked_by_departement_code(departement_code: str) -> int:
-    return _query_user_having_booked().filter(UserSQLEntity.departementCode == departement_code).count()
 
 
 def find_user_by_email(email: str) -> UserSQLEntity:
