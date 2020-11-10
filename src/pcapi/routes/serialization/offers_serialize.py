@@ -37,13 +37,13 @@ class PostOfferBodyModel(BaseModel):
     _dehumanize_product_id = dehumanize_field("product_id")
 
     @validator("name", pre=True)
-    def validate_name(cls, name, values):
+    def validate_name(cls, name, values):  # pylint: disable=no-self-argument
         if not values["product_id"]:
             check_offer_name_length_is_valid(name)
         return name
 
     @validator("type", pre=True)
-    def validate_type(cls, type_field, values):
+    def validate_type(cls, type_field, values):  # pylint: disable=no-self-argument
         if not values["product_id"]:
             check_offer_type_is_valid(type_field)
         return type_field
@@ -72,7 +72,7 @@ class PatchOfferBodyModel(BaseModel):
     productId: Optional[str]
 
     @validator("name", pre=True)
-    def validate_name(cls, name):
+    def validate_name(cls, name):  # pylint: disable=no-self-argument
         if name:
             check_offer_name_length_is_valid(name)
         return name
@@ -87,7 +87,7 @@ class OfferResponseIdModel(BaseModel):
 
     _humanize_id = humanize_field("id")
 
-    class Config:  # pylint: disable=too-few-public-methods
+    class Config:
         orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
@@ -118,12 +118,8 @@ class ListOffersStockResponseModel(BaseModel):
     remainingQuantity: Union[int, str]
 
     @validator("remainingQuantity", pre=True)
-    def validate_remaining_quantity(cls, remainingQuantity):
-        if (
-            remainingQuantity
-            and remainingQuantity != "0"
-            and not isinstance(remainingQuantity, int)
-        ):
+    def validate_remaining_quantity(cls, remainingQuantity):  # pylint: disable=no-self-argument
+        if remainingQuantity and remainingQuantity != "0" and not isinstance(remainingQuantity, int):
             return remainingQuantity.lstrip("0")
         return remainingQuantity
 
@@ -251,7 +247,7 @@ class GetOfferVenueResponseModel(BaseModel):
     bookingEmail: Optional[str]
     city: Optional[str]
     comment: Optional[str]
-    dateCreated: str
+    dateCreated: Optional[str]
     dateModifiedAtLastProvider: Optional[str]
     departementCode: Optional[str]
     fieldsUpdated: List[str]
@@ -339,5 +335,5 @@ class GetOfferResponseModel(BaseModel):
     venueId: str
     withdrawalDetails: Optional[str]
 
-    class Config:  # pylint: disable=too-few-public-methods
+    class Config:
         json_encoders = {datetime: format_into_utc_date}
