@@ -1,6 +1,9 @@
+from datetime import datetime
 from unittest.mock import MagicMock
 from unittest.mock import call
 from unittest.mock import patch
+
+from freezegun import freeze_time
 
 from pcapi.scripts.algolia_indexing.indexing import _process_venue_provider
 from pcapi.scripts.algolia_indexing.indexing import batch_deleting_expired_offers_in_algolia
@@ -247,17 +250,56 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         ]
 
 
+@freeze_time('2020-01-01 10:00:00')
 class BatchDeletingExpiredOffersInAlgoliaTest:
     @patch('pcapi.scripts.algolia_indexing.indexing.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE', 1)
-    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_expired_offer_ids')
+    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_given_booking_limit_datetime_interval')
     @patch('pcapi.scripts.algolia_indexing.indexing.delete_expired_offers')
-    def test_should_delete_expired_offers_in_a_paginated_way(self,
+    def test_should_retrieve_expired_offers_in_two_days_interval_by_default(self,
                                                              mock_delete_expired_offers,
-                                                             mock_get_paginated_expired_offer_ids,
+                                                             mock_get_paginated_offer_ids_given_booking_limit_datetime_interval,
                                                              app):
         # Given
         client = MagicMock()
-        mock_get_paginated_expired_offer_ids.side_effect = [
+
+        # When
+        batch_deleting_expired_offers_in_algolia(client=client)
+
+        # Then
+        assert mock_get_paginated_offer_ids_given_booking_limit_datetime_interval.call_count == 1
+        assert mock_get_paginated_offer_ids_given_booking_limit_datetime_interval.call_args_list == [
+            call(from_date=datetime(2019, 12, 30, 10, 0, 0), limit=1, page=0, to_date=datetime(2019, 12, 31, 10, 0, 0)),
+        ]
+
+    @patch('pcapi.scripts.algolia_indexing.indexing.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE', 1)
+    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_given_booking_limit_datetime_interval')
+    @patch('pcapi.scripts.algolia_indexing.indexing.delete_expired_offers')
+    def test_should_retrieve_all_expired_offers_if_requested(self,
+                                                             mock_delete_expired_offers,
+                                                             mock_get_paginated_offer_ids_given_booking_limit_datetime_interval,
+                                                             app):
+        # Given
+        client = MagicMock()
+
+        # When
+        batch_deleting_expired_offers_in_algolia(client=client, process_all_expired=True)
+
+        # Then
+        assert mock_get_paginated_offer_ids_given_booking_limit_datetime_interval.call_count == 1
+        assert mock_get_paginated_offer_ids_given_booking_limit_datetime_interval.call_args_list == [
+            call(from_date=datetime(2000, 1, 1, 0, 0, 0), limit=1, page=0, to_date=datetime(2019, 12, 31, 10, 0, 0)),
+        ]
+
+    @patch('pcapi.scripts.algolia_indexing.indexing.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE', 1)
+    @patch('pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_given_booking_limit_datetime_interval')
+    @patch('pcapi.scripts.algolia_indexing.indexing.delete_expired_offers')
+    def test_should_delete_expired_offers_in_a_paginated_way(self,
+                                                             mock_delete_expired_offers,
+                                                             mock_get_paginated_offer_ids_given_booking_limit_datetime_interval,
+                                                             app):
+        # Given
+        client = MagicMock()
+        mock_get_paginated_offer_ids_given_booking_limit_datetime_interval.side_effect = [
             [(1,)],
             [(2,)],
             [],

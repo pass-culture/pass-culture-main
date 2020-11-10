@@ -1,7 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
 
-from freezegun import freeze_time
 import pytest
 from sqlalchemy import func
 
@@ -32,9 +31,9 @@ from pcapi.repository.offer_queries import get_all_offers_id_by_filters
 from pcapi.repository.offer_queries import get_offers_by_ids
 from pcapi.repository.offer_queries import get_offers_by_venue_id
 from pcapi.repository.offer_queries import get_paginated_active_offer_ids
-from pcapi.repository.offer_queries import get_paginated_expired_offer_ids
 from pcapi.repository.offer_queries import get_paginated_offer_ids_by_venue_id
 from pcapi.repository.offer_queries import get_paginated_offer_ids_by_venue_id_and_last_provider_id
+from pcapi.repository.offer_queries import get_paginated_offer_ids_given_booking_limit_datetime_interval
 from pcapi.repository.offer_queries import update_offers_is_active_status
 from pcapi.utils.converter import from_tuple_to_int
 
@@ -655,8 +654,7 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         assert len(offer_ids) == 0
 
 
-@freeze_time('2020-01-01 10:00:00')
-class GetPaginatedExpiredOfferIdsTest:
+class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_from_first_page_when_active_and_booking_limit_datetime_is_expired(self, app):
         # Given
@@ -673,7 +671,12 @@ class GetPaginatedExpiredOfferIdsTest:
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
-        results = get_paginated_expired_offer_ids(limit=1, page=0)
+        results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
+            limit=1,
+            page=0,
+            from_date=datetime(2019, 12, 30, 10, 0, 0),
+            to_date=datetime(2019, 12, 31, 10, 0, 0)
+        )
 
         # Then
         assert len(results) == 1
@@ -698,7 +701,12 @@ class GetPaginatedExpiredOfferIdsTest:
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
-        results = get_paginated_expired_offer_ids(limit=2, page=1)
+        results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
+            limit=2,
+            page=1,
+            from_date=datetime(2019, 12, 30, 10, 0, 0),
+            to_date=datetime(2019, 12, 31, 10, 0, 0)
+        )
 
         # Then
         assert len(results) == 2
@@ -723,7 +731,12 @@ class GetPaginatedExpiredOfferIdsTest:
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
-        results = get_paginated_expired_offer_ids(limit=4, page=0)
+        results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
+            limit=4,
+            page=0,
+            from_date=datetime(2019, 12, 30, 10, 0, 0),
+            to_date=datetime(2019, 12, 31, 10, 0, 0)
+        )
 
         # Then
         assert len(results) == 0
@@ -744,7 +757,12 @@ class GetPaginatedExpiredOfferIdsTest:
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
-        results = get_paginated_expired_offer_ids(limit=4, page=0)
+        results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
+            limit=4,
+            page=0,
+            from_date=datetime(2019, 12, 30, 10, 0, 0),
+            to_date=datetime(2019, 12, 31, 10, 0, 0)
+        )
 
         # Then
         assert len(results) == 0
@@ -767,7 +785,12 @@ class GetPaginatedExpiredOfferIdsTest:
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
-        results = get_paginated_expired_offer_ids(limit=1, page=0)
+        results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
+            limit=1,
+            page=0,
+            from_date=datetime(2019, 12, 30, 10, 0, 0),
+            to_date=datetime(2019, 12, 31, 10, 0, 0)
+        )
 
         # Then
         assert len(results) == 1
@@ -789,7 +812,12 @@ class GetPaginatedExpiredOfferIdsTest:
         repository.save(in_range_stock, out_of_range_stock)
 
         # When
-        results = get_paginated_expired_offer_ids(limit=2, page=0)
+        results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
+            limit=2,
+            page=0,
+            from_date=datetime(2019, 12, 30, 10, 0, 0),
+            to_date=datetime(2019, 12, 31, 10, 0, 0)
+        )
 
         # Then
         assert len(results) == 1
@@ -810,7 +838,12 @@ class GetPaginatedExpiredOfferIdsTest:
         repository.save(out_of_range_stock1, out_of_range_stock2)
 
         # When
-        results = get_paginated_expired_offer_ids(limit=2, page=0)
+        results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
+            limit=2,
+            page=0,
+            from_date=datetime(2019, 12, 30, 10, 0, 0),
+            to_date=datetime(2019, 12, 31, 10, 0, 0)
+        )
 
         # Then
         assert len(results) == 0
@@ -828,7 +861,12 @@ class GetPaginatedExpiredOfferIdsTest:
         repository.save(in_range_stock, out_of_range_stock)
 
         # When
-        results = get_paginated_expired_offer_ids(limit=2, page=0)
+        results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
+            limit=2,
+            page=0,
+            from_date=datetime(2019, 12, 30, 10, 0, 0),
+            to_date=datetime(2019, 12, 31, 10, 0, 0)
+        )
 
         # Then
         assert len(results) == 1
@@ -848,7 +886,12 @@ class GetPaginatedExpiredOfferIdsTest:
         repository.save(in_range_stock, out_of_range_stock)
 
         # When
-        results = get_paginated_expired_offer_ids(limit=2, page=0)
+        results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
+            limit=2,
+            page=0,
+            from_date=datetime(2019, 12, 30, 10, 0, 0),
+            to_date=datetime(2019, 12, 31, 10, 0, 0)
+        )
 
         # Then
         assert len(results) == 1
@@ -868,7 +911,12 @@ class GetPaginatedExpiredOfferIdsTest:
         repository.save(in_range_stock, out_of_range_stock)
 
         # When
-        results = get_paginated_expired_offer_ids(limit=2, page=0)
+        results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
+            limit=2,
+            page=0,
+            from_date=datetime(2019, 12, 30, 10, 0, 0),
+            to_date=datetime(2019, 12, 31, 10, 0, 0)
+        )
 
         # Then
         assert len(results) == 1
@@ -888,7 +936,12 @@ class GetPaginatedExpiredOfferIdsTest:
         repository.save(expired_stock, valid_stock)
 
         # When
-        results = get_paginated_expired_offer_ids(limit=2, page=0)
+        results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
+            limit=2,
+            page=0,
+            from_date=datetime(2019, 12, 30, 10, 0, 0),
+            to_date=datetime(2019, 12, 31, 10, 0, 0)
+        )
 
         # Then
         assert results == []
@@ -906,9 +959,15 @@ class GetPaginatedExpiredOfferIdsTest:
             isSoftDeleted=True,
         )
 
-        expired_offer_ids = get_paginated_expired_offer_ids(limit=1, page=0)
-        expired_offer_ids = from_tuple_to_int(expired_offer_ids)
+        expired_offer_ids = get_paginated_offer_ids_given_booking_limit_datetime_interval(
+            limit=1,
+            page=0,
+            from_date=datetime(2019, 12, 30, 10, 0, 0),
+            to_date=datetime(2019, 12, 31, 10, 0, 0)
+        )
 
+        # Then
+        expired_offer_ids = from_tuple_to_int(expired_offer_ids)
         assert expired_offer_ids == [offer.id]
 
 

@@ -1,5 +1,4 @@
 from datetime import datetime
-from datetime import timedelta
 from typing import List
 from typing import Optional
 
@@ -16,7 +15,6 @@ from sqlalchemy.sql.elements import BinaryExpression
 from pcapi.core.bookings.repository import get_only_offer_ids_from_bookings
 from pcapi.core.offers.repository import get_offers_by_filters
 from pcapi.domain.departments import ILE_DE_FRANCE_DEPT_CODES
-from pcapi.domain.identifier.identifier import Identifier
 from pcapi.models import Booking
 from pcapi.models import DiscoveryView
 from pcapi.models import DiscoveryViewV3
@@ -39,7 +37,6 @@ from pcapi.repository.iris_venues_queries import find_venues_located_near_iris
 from pcapi.repository.venue_queries import get_only_venue_ids_for_department_codes
 from pcapi.use_cases.diversify_recommended_offers import order_offers_by_diversified_types
 from pcapi.utils.converter import from_tuple_to_int
-from pcapi.utils.logger import logger
 
 
 ALL_DEPARTMENTS_CODE = '00'
@@ -332,11 +329,9 @@ def get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id: s
         .all()
 
 
-def get_paginated_expired_offer_ids(limit: int, page: int) -> List[tuple]:
-    one_day_before_now = datetime.utcnow() - timedelta(days=1)
-    two_days_before_now = datetime.utcnow() - timedelta(days=2)
-    start_limit = two_days_before_now <= func.max(StockSQLEntity.bookingLimitDatetime)
-    end_limit = func.max(StockSQLEntity.bookingLimitDatetime) <= one_day_before_now
+def get_paginated_offer_ids_given_booking_limit_datetime_interval(limit: int, page: int, from_date: datetime, to_date: datetime) -> List[tuple]:
+    start_limit = from_date <= func.max(StockSQLEntity.bookingLimitDatetime)
+    end_limit = func.max(StockSQLEntity.bookingLimitDatetime) <= to_date
 
     return Offer.query \
         .join(StockSQLEntity) \

@@ -64,10 +64,15 @@ def process_offers_from_database(clear_algolia: bool = False,
                                                        starting_page=starting_page)
 
 
-@app.manager.command
-def process_expired_offers():
+
+@app.manager.option('-a',
+                    '--all',
+                    action="store_true",
+                    dest='all_offers',
+                    help='Bypass the two days limit to delete all expired offers')
+def process_expired_offers(all_offers: bool = False):
     with app.app_context():
-        batch_deleting_expired_offers_in_algolia(client=app.redis_client)
+        batch_deleting_expired_offers_in_algolia(client=app.redis_client, process_all_expired=all_offers)
 
 
 @app.manager.option('-p',

@@ -1,3 +1,5 @@
+from datetime import datetime
+from datetime import timedelta
 import os
 
 from redis import Redis
@@ -100,14 +102,20 @@ def batch_indexing_offers_in_algolia_from_database(client: Redis,
         page_number += 1
 
 
-def batch_deleting_expired_offers_in_algolia(client: Redis) -> None:
+def batch_deleting_expired_offers_in_algolia(client: Redis, process_all_expired: bool = False) -> None:
     page = 0
     has_still_offers = True
+    one_day_before_now = datetime.utcnow() - timedelta(days=1)
+    two_days_before_now = datetime.utcnow() - timedelta(days=2)
+    arbitrary_oldest_date = datetime(2000, 1, 1)
+    from_date = two_days_before_now if not process_all_expired else arbitrary_oldest_date
 
     while has_still_offers:
-        expired_offer_ids_as_tuple = offer_queries.get_paginated_expired_offer_ids(
+        expired_offer_ids_as_tuple = offer_queries.get_paginated_offer_ids_given_booking_limit_datetime_interval(
             limit=ALGOLIA_DELETING_OFFERS_CHUNK_SIZE,
-            page=page
+            page=page,
+            from_date=from_date,
+            to_date=one_day_before_now
         )
         expired_offer_ids_as_int = from_tuple_to_int(offer_ids=expired_offer_ids_as_tuple)
 
