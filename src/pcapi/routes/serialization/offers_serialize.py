@@ -1,9 +1,12 @@
-from typing import Dict, Optional, List, Union, Any
 from datetime import datetime
+from typing import Optional, \
+    List, \
+    Union, \
+    Any
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, \
+    validator
 
-from pcapi.core.bookings.repository import find_first_matching_from_offer_by_user
 from pcapi.serialization.utils import (
     to_camel,
     dehumanize_field,
@@ -11,11 +14,11 @@ from pcapi.serialization.utils import (
     dehumanize_list_field,
     cast_optional_field_str_to_int,
 )
+from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import (
     check_offer_name_length_is_valid,
     check_offer_type_is_valid,
 )
-from pcapi.utils.date import format_into_utc_date
 
 
 class PostOfferBodyModel(BaseModel):
