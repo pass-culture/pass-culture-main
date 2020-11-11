@@ -4,6 +4,7 @@ APScheduler==3.6.3
 Babel==2.8.0
 bcrypt==3.2.0
 beautifulsoup4==4.9.3
+black
 blinker==1.4
 coveralls==2.1.2
 factory-boy
