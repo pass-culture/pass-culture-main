@@ -1,3 +1,18 @@
+[tool.black]
+exclude = '''
+
+(
+  /(
+    | \.mypy_cache
+    | \.pytest_cache
+    | \.venv
+  )/
+)
+'''
+include = '\.pyi?$'
+line-length = 120
+target-version = ['py37']
+
 [tool.isort]
 combine_as_imports = true
 force_grid_wrap = 0
