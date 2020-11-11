@@ -22,13 +22,13 @@ class GetByProIdentifierTest:
         # given
         pro_user = create_user()
         offerer = create_offerer()
-        other_offerer = create_offerer(siren='987654321')
+        other_offerer = create_offerer(siren="987654321")
         create_user_offerer(user=pro_user, offerer=offerer)
-        venue_1 = create_venue(offerer=offerer, siret='12345678912345')
-        venue_2 = create_venue(offerer=offerer, siret='12345678998765')
-        venue_not_affiliated_to_pro_user = create_venue(offerer=other_offerer, siret='98765432198765')
+        venue_1 = create_venue(offerer=offerer, siret="12345678912345")
+        venue_2 = create_venue(offerer=offerer, siret="12345678998765")
+        venue_not_affiliated_to_pro_user = create_venue(offerer=other_offerer, siret="98765432198765")
 
-        repository.save(venue_1, venue_2,venue_not_affiliated_to_pro_user)
+        repository.save(venue_1, venue_2, venue_not_affiliated_to_pro_user)
 
         expected_venue_1 = venue_with_offerer_name_domain_converter.to_domain(venue_1)
         expected_venue_2 = venue_with_offerer_name_domain_converter.to_domain(venue_2)
@@ -47,9 +47,9 @@ class GetByProIdentifierTest:
         # given
         admin_user = create_user(is_admin=True)
         offerer = create_offerer()
-        other_offerer = create_offerer(siren='987654321')
-        venue_1 = create_venue(offerer=offerer, siret='12345678912345')
-        venue_2 = create_venue(offerer=other_offerer, siret='98765432198765')
+        other_offerer = create_offerer(siren="987654321")
+        venue_1 = create_venue(offerer=offerer, siret="12345678912345")
+        venue_2 = create_venue(offerer=other_offerer, siret="98765432198765")
 
         repository.save(venue_1, venue_2)
 
@@ -85,8 +85,8 @@ class GetByProIdentifierTest:
         pro_user = create_user()
         offerer = create_offerer()
         create_user_offerer(user=pro_user, offerer=offerer)
-        venue_1 = create_venue(offerer=offerer, siret='12345678912345', name='B')
-        venue_2 = create_venue(offerer=offerer, siret='98765432198765', name='A')
+        venue_1 = create_venue(offerer=offerer, siret="12345678912345", name="B")
+        venue_2 = create_venue(offerer=offerer, siret="98765432198765", name="A")
 
         repository.save(venue_1, venue_2)
 
@@ -105,12 +105,12 @@ class GetByProIdentifierTest:
     def test_does_not_return_venues_of_non_validated_offerer(self, app: object):
         # given
         pro_user = create_user()
-        offerer_validated = create_offerer(siren='123456789')
-        offerer_not_validated = create_offerer(siren='987654321', validation_token='TOKEN')
+        offerer_validated = create_offerer(siren="123456789")
+        offerer_not_validated = create_offerer(siren="987654321", validation_token="TOKEN")
         create_user_offerer(user=pro_user, offerer=offerer_validated)
-        create_user_offerer(user=pro_user, offerer=offerer_not_validated, validation_token='NEKOT')
-        venue_of_validated_offerer = create_venue(offerer=offerer_validated, siret='12345678912345', name='B')
-        venue_of_unvalidated_offerer = create_venue(offerer=offerer_not_validated, siret='98765432198765', name='A')
+        create_user_offerer(user=pro_user, offerer=offerer_not_validated, validation_token="NEKOT")
+        venue_of_validated_offerer = create_venue(offerer=offerer_validated, siret="12345678912345", name="B")
+        venue_of_unvalidated_offerer = create_venue(offerer=offerer_not_validated, siret="98765432198765", name="A")
 
         repository.save(venue_of_validated_offerer, venue_of_unvalidated_offerer)
 
@@ -126,10 +126,10 @@ class GetByProIdentifierTest:
     @pytest.mark.usefixtures("db_session")
     def test_does_not_return_venues_of_non_validated_user_offerer(self, app: object):
         # given
-        pro_user = create_user(email='john.doe@example.com')
-        offerer = create_offerer(siren='123456789')
-        create_user_offerer(user=pro_user, offerer=offerer, validation_token='NEKOT')
-        venue = create_venue(offerer=offerer, siret='98765432198765', name='A')
+        pro_user = create_user(email="john.doe@example.com")
+        offerer = create_offerer(siren="123456789")
+        create_user_offerer(user=pro_user, offerer=offerer, validation_token="NEKOT")
+        venue = create_venue(offerer=offerer, siret="98765432198765", name="A")
 
         repository.save(venue)
 
@@ -142,10 +142,10 @@ class GetByProIdentifierTest:
     @pytest.mark.usefixtures("db_session")
     def test_does_not_return_venues_of_non_validated_offerer(self, app: object):
         # given
-        pro_user = create_user(email='john.doe@example.com')
-        offerer = create_offerer(siren='123456789', validation_token='NEKOT')
+        pro_user = create_user(email="john.doe@example.com")
+        offerer = create_offerer(siren="123456789", validation_token="NEKOT")
         create_user_offerer(user=pro_user, offerer=offerer)
-        venue = create_venue(offerer=offerer, siret='98765432198765', name='A')
+        venue = create_venue(offerer=offerer, siret="98765432198765", name="A")
 
         repository.save(venue)
 
@@ -160,11 +160,13 @@ class GetByProIdentifierTest:
         # given
         pro_user = create_user()
         wanted_offerer = create_offerer(idx=1)
-        unwanted_offerer = create_offerer(idx=2, siren='5654367')
+        unwanted_offerer = create_offerer(idx=2, siren="5654367")
         create_user_offerer(user=pro_user, offerer=wanted_offerer)
         create_user_offerer(user=pro_user, offerer=unwanted_offerer)
-        venue_from_wanted_offerer = create_venue(name="Kléber", offerer=wanted_offerer, siret='12345678912345', public_name="Librairie Kléber")
-        venue_from_unwanted_offerer = create_venue(name="QG FNAC", offerer=unwanted_offerer, siret='98765432198765')
+        venue_from_wanted_offerer = create_venue(
+            name="Kléber", offerer=wanted_offerer, siret="12345678912345", public_name="Librairie Kléber"
+        )
+        venue_from_unwanted_offerer = create_venue(name="QG FNAC", offerer=unwanted_offerer, siret="98765432198765")
 
         repository.save(venue_from_wanted_offerer, venue_from_unwanted_offerer)
 

@@ -3,7 +3,8 @@ from pcapi.models import VenueSQLEntity
 
 
 def to_domain(venue_sql_entity: VenueSQLEntity) -> VenueWithBasicInformation:
-    return VenueWithBasicInformation(identifier=venue_sql_entity.id,
-                                     name=venue_sql_entity.name,
-                                     siret=venue_sql_entity.siret,
-                                     )
+    return VenueWithBasicInformation(
+        identifier=venue_sql_entity.id,
+        name=venue_sql_entity.name,
+        siret=venue_sql_entity.siret,
+    )

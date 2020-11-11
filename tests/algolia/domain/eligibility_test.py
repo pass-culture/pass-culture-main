@@ -16,8 +16,8 @@ class NameHasChangedTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
-        offer_details = {'name': 'ancienne super offre'}
+        offer = create_offer_with_event_product(event_name="super offre", venue=venue)
+        offer_details = {"name": "ancienne super offre"}
 
         # When
         name_has_changed = EligibilityRules.NAME_HAS_CHANGED.value.apply(offer=offer, offer_details=offer_details)
@@ -29,8 +29,8 @@ class NameHasChangedTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
-        offer_details = {'name': 'super offre'}
+        offer = create_offer_with_event_product(event_name="super offre", venue=venue)
+        offer_details = {"name": "super offre"}
 
         # When
         name_has_changed = EligibilityRules.NAME_HAS_CHANGED.value.apply(offer=offer, offer_details=offer_details)
@@ -45,14 +45,13 @@ class DatesHaveChangedTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(thing_name='super offre', venue=venue)
+        offer = create_offer_with_thing_product(thing_name="super offre", venue=venue)
         stock = create_stock(offer=offer, price=10)
         repository.save(stock)
-        offer_details = {'dates': []}
+        offer_details = {"dates": []}
 
         # When
-        dates_have_changed = EligibilityRules.DATES_HAVE_CHANGED.value.apply(offer=offer,
-                                                                             offer_details=offer_details)
+        dates_have_changed = EligibilityRules.DATES_HAVE_CHANGED.value.apply(offer=offer, offer_details=offer_details)
 
         # Then
         assert not dates_have_changed
@@ -62,14 +61,13 @@ class DatesHaveChangedTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        offer = create_offer_with_event_product(event_name="super offre", venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1), offer=offer, price=10)
         repository.save(stock)
-        offer_details = {'dates': [1486290387]}
+        offer_details = {"dates": [1486290387]}
 
         # When
-        dates_have_changed = EligibilityRules.DATES_HAVE_CHANGED.value.apply(offer=offer,
-                                                                             offer_details=offer_details)
+        dates_have_changed = EligibilityRules.DATES_HAVE_CHANGED.value.apply(offer=offer, offer_details=offer_details)
 
         # Then
         assert dates_have_changed
@@ -79,14 +77,13 @@ class DatesHaveChangedTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        offer = create_offer_with_event_product(event_name="super offre", venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1), offer=offer, price=10)
         repository.save(stock)
-        offer_details = {'dates': [1577836800]}
+        offer_details = {"dates": [1577836800]}
 
         # When
-        dates_have_changed = EligibilityRules.DATES_HAVE_CHANGED.value.apply(offer=offer,
-                                                                             offer_details=offer_details)
+        dates_have_changed = EligibilityRules.DATES_HAVE_CHANGED.value.apply(offer=offer, offer_details=offer_details)
 
         # Then
         assert not dates_have_changed
@@ -98,14 +95,13 @@ class PricesHaveChangedTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(thing_name='super offre', venue=venue)
+        offer = create_offer_with_thing_product(thing_name="super offre", venue=venue)
         stock = create_stock(offer=offer, price=10)
         repository.save(stock)
-        offer_details = {'prices': [10]}
+        offer_details = {"prices": [10]}
 
         # When
-        prices_have_changed = EligibilityRules.PRICES_HAVE_CHANGED.value.apply(offer=offer,
-                                                                               offer_details=offer_details)
+        prices_have_changed = EligibilityRules.PRICES_HAVE_CHANGED.value.apply(offer=offer, offer_details=offer_details)
 
         # Then
         assert not prices_have_changed
@@ -115,14 +111,13 @@ class PricesHaveChangedTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        offer = create_offer_with_event_product(event_name="super offre", venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1), offer=offer, price=12)
         repository.save(stock)
-        offer_details = {'prices': [10]}
+        offer_details = {"prices": [10]}
 
         # When
-        prices_have_changed = EligibilityRules.PRICES_HAVE_CHANGED.value.apply(offer=offer,
-                                                                               offer_details=offer_details)
+        prices_have_changed = EligibilityRules.PRICES_HAVE_CHANGED.value.apply(offer=offer, offer_details=offer_details)
 
         # Then
         assert prices_have_changed

@@ -12,25 +12,30 @@ from postgresql_audit.base import VersioningManager
 from pcapi.models import UserSQLEntity
 
 
-revision = '565f79cfa5b2'
-down_revision = 'c41e9543e851'
+revision = "565f79cfa5b2"
+down_revision = "c41e9543e851"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    versioning_manager = VersioningManager(schema_name='public')
+    versioning_manager = VersioningManager(schema_name="public")
     versioning_manager.create_audit_table(UserSQLEntity.__table__, op.get_bind())
-    op.execute('''
+    op.execute(
+        """
     SELECT public.audit_table(oid, ARRAY['password', 'resetPasswordToken', 'validationToken']) 
     FROM pg_class 
     WHERE oid = 'user'::regclass;
-    ''')
+    """
+    )
+
 
 def downgrade():
-    op.execute('''
+    op.execute(
+        """
     DROP TRIGGER IF EXISTS audit_trigger_row ON "user";
     DROP TRIGGER IF EXISTS audit_trigger_delete ON "user";
     DROP TRIGGER IF EXISTS audit_trigger_insert ON "user";
     DROP TRIGGER IF EXISTS audit_trigger_update ON "user";
-    ''')
+    """
+    )

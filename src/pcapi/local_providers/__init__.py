@@ -9,12 +9,12 @@ from pcapi.local_providers.titelive_things.titelive_things import TiteLiveThings
 
 
 __all__ = (
-    'TiteLiveStocks',
-    'TiteLiveThings',
-    'TiteLiveThingDescriptions',
-    'TiteLiveThingThumbs',
-    'AllocineStocks',
-    'LibrairesStocks',
-    'FnacStocks',
-    'PraxielStocks'
+    "TiteLiveStocks",
+    "TiteLiveThings",
+    "TiteLiveThingDescriptions",
+    "TiteLiveThingThumbs",
+    "AllocineStocks",
+    "LibrairesStocks",
+    "FnacStocks",
+    "PraxielStocks",
 )

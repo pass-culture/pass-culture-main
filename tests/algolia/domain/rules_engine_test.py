@@ -18,16 +18,14 @@ class IsEligibleForReindexingTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(thing_name='super offre', venue=venue)
+        offer = create_offer_with_thing_product(thing_name="super offre", venue=venue)
         stock = create_stock(offer=offer)
         repository.save(stock)
 
         # When
-        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': [],
-                                                                      'dates': [],
-                                                                      'prices': [10.0]})
+        is_offer_eligible = is_eligible_for_reindexing(
+            offer=offer, offer_details={"name": "super offre", "dateRange": [], "dates": [], "prices": [10.0]}
+        )
 
         # Then
         assert not is_offer_eligible
@@ -37,16 +35,14 @@ class IsEligibleForReindexingTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(thing_name='super offre de dingue', venue=venue)
+        offer = create_offer_with_thing_product(thing_name="super offre de dingue", venue=venue)
         stock = create_stock(offer=offer)
         repository.save(stock)
 
         # When
-        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': [],
-                                                                      'dates': [],
-                                                                      'prices': [10.0]})
+        is_offer_eligible = is_eligible_for_reindexing(
+            offer=offer, offer_details={"name": "super offre", "dateRange": [], "dates": [], "prices": [10.0]}
+        )
 
         # Then
         assert is_offer_eligible
@@ -56,17 +52,20 @@ class IsEligibleForReindexingTest:
         # Given
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
-        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        offer = create_offer_with_event_product(event_name="super offre", venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1), offer=offer)
         repository.save(stock)
 
         # When
-        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': ['2020-01-01 00:00:00',
-                                                                                    '2020-01-02 00:00:00'],
-                                                                      'dates': [1578614400.0],
-                                                                      'prices': [10.0]})
+        is_offer_eligible = is_eligible_for_reindexing(
+            offer=offer,
+            offer_details={
+                "name": "super offre",
+                "dateRange": ["2020-01-01 00:00:00", "2020-01-02 00:00:00"],
+                "dates": [1578614400.0],
+                "prices": [10.0],
+            },
+        )
 
         # Then
         assert is_offer_eligible
@@ -76,17 +75,20 @@ class IsEligibleForReindexingTest:
         # Given
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
-        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        offer = create_offer_with_event_product(event_name="super offre", venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1), offer=offer)
         repository.save(stock)
 
         # When
-        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': ['2020-01-01 00:00:00',
-                                                                                    '2020-01-02 00:00:00'],
-                                                                      'dates': [1577836800.0],
-                                                                      'prices': [10.0]})
+        is_offer_eligible = is_eligible_for_reindexing(
+            offer=offer,
+            offer_details={
+                "name": "super offre",
+                "dateRange": ["2020-01-01 00:00:00", "2020-01-02 00:00:00"],
+                "dates": [1577836800.0],
+                "prices": [10.0],
+            },
+        )
 
         # Then
         assert not is_offer_eligible
@@ -96,17 +98,20 @@ class IsEligibleForReindexingTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        offer = create_offer_with_event_product(event_name="super offre", venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1), offer=offer, price=10)
         repository.save(stock)
 
         # When
-        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': ['2020-01-01 00:00:00',
-                                                                                    '2020-01-02 00:00:00'],
-                                                                      'dates': [1577836800],
-                                                                      'prices': [11.0]})
+        is_offer_eligible = is_eligible_for_reindexing(
+            offer=offer,
+            offer_details={
+                "name": "super offre",
+                "dateRange": ["2020-01-01 00:00:00", "2020-01-02 00:00:00"],
+                "dates": [1577836800],
+                "prices": [11.0],
+            },
+        )
 
         # Then
         assert is_offer_eligible
@@ -116,17 +121,20 @@ class IsEligibleForReindexingTest:
         # Given
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
-        offer = create_offer_with_event_product(event_name='super offre', venue=venue)
+        offer = create_offer_with_event_product(event_name="super offre", venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1), offer=offer, price=10)
         repository.save(stock)
 
         # When
-        is_offer_eligible = is_eligible_for_reindexing(offer=offer,
-                                                       offer_details={'name': 'super offre',
-                                                                      'dateRange': ['2020-01-01 00:00:00',
-                                                                                    '2020-01-02 00:00:00'],
-                                                                      'dates': [1577836800],
-                                                                      'prices': [10.0]})
+        is_offer_eligible = is_eligible_for_reindexing(
+            offer=offer,
+            offer_details={
+                "name": "super offre",
+                "dateRange": ["2020-01-01 00:00:00", "2020-01-02 00:00:00"],
+                "dates": [1577836800],
+                "prices": [10.0],
+            },
+        )
 
         # Then
         assert not is_offer_eligible

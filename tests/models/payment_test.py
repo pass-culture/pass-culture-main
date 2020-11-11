@@ -105,16 +105,14 @@ class PaymentDateTest:
             today = datetime.utcnow()
             create_deposit(user)
             offerer = booking.stock.offer.venue.managingOfferer
-            payment_message = create_payment_message(name='mon message')
-            payment = create_payment(booking, offerer, 5,  payment_message=payment_message)
+            payment_message = create_payment_message(name="mon message")
+            payment = create_payment(booking, offerer, 5, payment_message=payment_message)
             payment_status = create_payment_status(payment, status=TransactionStatus.SENT, date=today)
 
             repository.save(payment_status)
 
             # When
-            payment_from_query = Payment.query.with_entities(
-                Payment.lastProcessedDate.label("payment_date")
-            ).first()
+            payment_from_query = Payment.query.with_entities(Payment.lastProcessedDate.label("payment_date")).first()
 
             # Then
             assert payment_from_query.payment_date == today
@@ -128,17 +126,15 @@ class PaymentDateTest:
             yesterday = datetime.utcnow() - timedelta(days=1)
             create_deposit(user)
             offerer = booking.stock.offer.venue.managingOfferer
-            payment_message = create_payment_message(name='mon message')
-            payment = create_payment(booking, offerer, 5,  payment_message=payment_message)
+            payment_message = create_payment_message(name="mon message")
+            payment = create_payment(booking, offerer, 5, payment_message=payment_message)
             payment_status = create_payment_status(payment, status=TransactionStatus.SENT, date=today)
             create_payment_status(payment, status=TransactionStatus.SENT, date=yesterday)
 
             repository.save(payment_status)
 
             # When
-            payment_from_query = Payment.query.with_entities(
-                Payment.lastProcessedDate.label("payment_date")
-            ).first()
+            payment_from_query = Payment.query.with_entities(Payment.lastProcessedDate.label("payment_date")).first()
 
             # Then
             assert payment_from_query.payment_date == yesterday
@@ -151,16 +147,14 @@ class PaymentDateTest:
             today = datetime.utcnow()
             create_deposit(user)
             offerer = booking.stock.offer.venue.managingOfferer
-            payment_message = create_payment_message(name='mon message')
-            payment = create_payment(booking, offerer, 5,  payment_message=payment_message)
+            payment_message = create_payment_message(name="mon message")
+            payment = create_payment(booking, offerer, 5, payment_message=payment_message)
             payment_status = create_payment_status(payment, status=TransactionStatus.PENDING, date=today)
 
             repository.save(payment_status)
 
             # When
-            payment_from_query = Payment.query.with_entities(
-                Payment.lastProcessedDate.label("payment_date")
-            ).first()
+            payment_from_query = Payment.query.with_entities(Payment.lastProcessedDate.label("payment_date")).first()
 
             # Then
             assert payment_from_query.payment_date is None

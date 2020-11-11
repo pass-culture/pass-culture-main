@@ -5,7 +5,7 @@ import binascii
 
 class NonStricltyPositiveIdentifierException(Exception):
     def __init__(self):
-        super().__init__('Identifier should be a strictly positive number')
+        super().__init__("Identifier should be a strictly positive number")
 
 
 class NonProperlyFormattedScrambledId(Exception):
@@ -25,10 +25,10 @@ class Identifier:
             return None
         missing_padding = len(scrambled_identifier) % 8
         if missing_padding != 0:
-            scrambled_identifier += '=' * (8 - missing_padding)
+            scrambled_identifier += "=" * (8 - missing_padding)
         try:
-            xbytes = b32decode(scrambled_identifier.replace('8', 'O').replace('9', 'I'))
-            return Identifier(int.from_bytes(xbytes, 'big'))
+            xbytes = b32decode(scrambled_identifier.replace("8", "O").replace("9", "I"))
+            return Identifier(int.from_bytes(xbytes, "big"))
         except binascii.Error:
             raise NonProperlyFormattedScrambledId(scrambled_identifier)
 
@@ -44,10 +44,7 @@ class Identifier:
 
     @property
     def scrambled(self) -> str:
-        identifier_in_bytes = self._identifier.to_bytes((self._identifier.bit_length() + 7) // 8, 'big')
+        identifier_in_bytes = self._identifier.to_bytes((self._identifier.bit_length() + 7) // 8, "big")
         identifier_in_base32 = b32encode(identifier_in_bytes)
 
-        return identifier_in_base32.decode('ascii') \
-            .replace('O', '8') \
-            .replace('I', '9') \
-            .rstrip('=')
+        return identifier_in_base32.decode("ascii").replace("O", "8").replace("I", "9").rstrip("=")

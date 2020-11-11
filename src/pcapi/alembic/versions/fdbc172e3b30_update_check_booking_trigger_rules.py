@@ -11,15 +11,16 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'fdbc172e3b30'
-down_revision = 'a5a9a6e32ae7'
+revision = "fdbc172e3b30"
+down_revision = "a5a9a6e32ae7"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.add_column('booking', sa.Column('dateUsed', sa.DateTime(), nullable=True))
-    op.execute("""
+    op.add_column("booking", sa.Column("dateUsed", sa.DateTime(), nullable=True))
+    op.execute(
+        """
         CREATE OR REPLACE FUNCTION check_booking()
         RETURNS TRIGGER AS $$
         DECLARE
@@ -55,12 +56,15 @@ def upgrade():
         CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
         ON booking
         FOR EACH ROW EXECUTE PROCEDURE check_booking()
-        """ + ';')
+        """
+        + ";"
+    )
 
 
 def downgrade():
-    op.drop_column('booking', 'dateUsed')
-    op.execute("""
+    op.drop_column("booking", "dateUsed")
+    op.execute(
+        """
         CREATE OR REPLACE FUNCTION check_booking()
         RETURNS TRIGGER AS $$
         BEGIN
@@ -91,5 +95,6 @@ def downgrade():
         CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
         ON booking
         FOR EACH ROW EXECUTE PROCEDURE check_booking()
-        """ + ';')
-
+        """
+        + ";"
+    )

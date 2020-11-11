@@ -15,14 +15,9 @@ def get_activation_email_data(user: Union[UserSQLEntity, Beneficiary]) -> Dict:
     env = format_environment_for_email()
 
     return {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'Mj-TemplateID': 994771,
-        'Mj-TemplateLanguage': True,
-        'To': email,
-        'Vars': {
-            'prenom_user': first_name,
-            'token': token,
-            'email': quote(email),
-            'env': env
-        },
+        "FromEmail": SUPPORT_EMAIL_ADDRESS,
+        "Mj-TemplateID": 994771,
+        "Mj-TemplateLanguage": True,
+        "To": email,
+        "Vars": {"prenom_user": first_name, "token": token, "email": quote(email), "env": env},
     }

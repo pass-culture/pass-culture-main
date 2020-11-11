@@ -23,38 +23,20 @@ class BankInformationStatus(enum.Enum):
 
 
 class BankInformation(PcObject, Model, VersionedMixin):
-    offererId = Column(BigInteger,
-                       ForeignKey("offerer.id"),
-                       index=True,
-                       nullable=True,
-                       unique=True)
+    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=True, unique=True)
 
-    offerer = relationship('Offerer',
-                           foreign_keys=[offererId],
-                           backref=backref('bankInformation', uselist=False))
+    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("bankInformation", uselist=False))
 
-    venueId = Column(BigInteger,
-                     ForeignKey("venue.id"),
-                     index=True,
-                     nullable=True,
-                     unique=True)
+    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=True, unique=True)
 
-    venue = relationship('VenueSQLEntity',
-                         foreign_keys=[venueId],
-                         backref=backref('bankInformation', uselist=False))
+    venue = relationship("VenueSQLEntity", foreign_keys=[venueId], backref=backref("bankInformation", uselist=False))
 
-    iban = Column(String(27),
-                  nullable=True)
+    iban = Column(String(27), nullable=True)
 
-    bic = Column(String(11),
-                 nullable=True)
+    bic = Column(String(11), nullable=True)
 
-    applicationId = Column(Integer,
-                           nullable=False,
-                           unique=True)
+    applicationId = Column(Integer, nullable=False, unique=True)
 
     status = Column(Enum(BankInformationStatus), nullable=False)
 
-    dateModified = Column(DateTime,
-                          nullable=True,
-                          default=datetime.utcnow)
+    dateModified = Column(DateTime, nullable=True, default=datetime.utcnow)

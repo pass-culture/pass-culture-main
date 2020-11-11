@@ -10,24 +10,25 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8df159da2826'
-down_revision = '93925a2b551f'
+revision = "8df159da2826"
+down_revision = "93925a2b551f"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.add_column('beneficiary_import', sa.Column('applicationId', sa.BigInteger, nullable=True))
-    op.add_column('beneficiary_import', sa.Column('sourceId', sa.Integer, nullable=True))
-    op.add_column('beneficiary_import', sa.Column('source', sa.String(255), nullable=True))
+    op.add_column("beneficiary_import", sa.Column("applicationId", sa.BigInteger, nullable=True))
+    op.add_column("beneficiary_import", sa.Column("sourceId", sa.Integer, nullable=True))
+    op.add_column("beneficiary_import", sa.Column("source", sa.String(255), nullable=True))
 
-    op.create_index(op.f('idx_beneficiary_import_application'),
-                    'beneficiary_import', ['applicationId', 'sourceId', 'source'])
+    op.create_index(
+        op.f("idx_beneficiary_import_application"), "beneficiary_import", ["applicationId", "sourceId", "source"]
+    )
 
 
 def downgrade():
-    op.drop_index('idx_beneficiary_import_application', table_name='beneficiary_import')
+    op.drop_index("idx_beneficiary_import_application", table_name="beneficiary_import")
 
-    op.drop_column('beneficiary_import', 'applicationId')
-    op.drop_column('beneficiary_import', 'sourceId')
-    op.drop_column('beneficiary_import', 'source')
+    op.drop_column("beneficiary_import", "applicationId")
+    op.drop_column("beneficiary_import", "sourceId")
+    op.drop_column("beneficiary_import", "source")

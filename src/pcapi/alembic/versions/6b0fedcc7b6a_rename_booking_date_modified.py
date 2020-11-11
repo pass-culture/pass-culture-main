@@ -9,15 +9,15 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = '6b0fedcc7b6a'
-down_revision = '4e18b6798915'
+revision = "6b0fedcc7b6a"
+down_revision = "4e18b6798915"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.alter_column('booking', 'dateModified', new_column_name='dateCreated')
+    op.alter_column("booking", "dateModified", new_column_name="dateCreated")
 
 
 def downgrade():
-    op.alter_column('booking', 'dateCreated', new_column_name='dateModified')
+    op.alter_column("booking", "dateCreated", new_column_name="dateModified")

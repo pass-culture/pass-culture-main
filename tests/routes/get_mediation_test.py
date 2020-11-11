@@ -24,9 +24,10 @@ class Get:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             user_offerer = create_user_offerer(user, offerer)
-            provider = create_provider(local_class='TestLocalProvider', idx=134)
-            mediation = create_mediation(offer, last_provider_id=provider.id, id_at_providers='VHBZJQ',
-                                         credit='Mickael Bay')
+            provider = create_provider(local_class="TestLocalProvider", idx=134)
+            mediation = create_mediation(
+                offer, last_provider_id=provider.id, id_at_providers="VHBZJQ", credit="Mickael Bay"
+            )
             repository.save(provider, mediation)
             repository.save(offer)
             repository.save(user, venue, offerer, user_offerer)
@@ -34,22 +35,22 @@ class Get:
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.get('/mediations/%s' % humanize(mediation.id))
+            response = auth_request.get("/mediations/%s" % humanize(mediation.id))
 
             # then
             assert response.status_code == 200
             assert response.json == {
-                'authorId': None,
-                'credit': 'Mickael Bay',
-                'dateCreated': format_into_utc_date(mediation.dateCreated),
-                'dateModifiedAtLastProvider': format_into_utc_date(mediation.dateModifiedAtLastProvider),
-                'fieldsUpdated': [],
-                'id': humanize(mediation.id),
-                'idAtProviders': 'VHBZJQ',
-                'isActive': True,
-                'lastProviderId': humanize(134),
-                'offerId': humanize(offer.id),
-                'thumbCount': 0
+                "authorId": None,
+                "credit": "Mickael Bay",
+                "dateCreated": format_into_utc_date(mediation.dateCreated),
+                "dateModifiedAtLastProvider": format_into_utc_date(mediation.dateModifiedAtLastProvider),
+                "fieldsUpdated": [],
+                "id": humanize(mediation.id),
+                "idAtProviders": "VHBZJQ",
+                "isActive": True,
+                "lastProviderId": humanize(134),
+                "offerId": humanize(offer.id),
+                "thumbCount": 0,
             }
 
     class Returns404:
@@ -61,7 +62,7 @@ class Get:
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.get('/mediations/AE')
+            response = auth_request.get("/mediations/AE")
 
             # then
             assert response.status_code == 404

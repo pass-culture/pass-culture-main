@@ -12,7 +12,7 @@ from pcapi.utils.logger import logger
 
 # FIXME(fseguin, 2020-11-10): Delete this file once the script has been successfully executed in prod
 def fill_missing_confirmation_dates_of_event_bookings_without_confirmation_date_not_cancelled_not_used(
-        batch_size: int = 100
+    batch_size: int = 100,
 ) -> None:
     """Run this first: This will update about 8k records"""
     target_bookings_query = _select_event_bookings_without_confirmation_date_not_cancelled_not_used()
@@ -47,22 +47,26 @@ def _select_all_event_bookings_without_confirmation_date() -> BaseQuery:
     récupérer les Bookings d'events passés sans date de confirmation aka
     Bookings qui ont une stock.beginningDatetime non null avec confirmationDate null
     """
-    return Booking.query.join(StockSQLEntity). \
-        with_entities(Booking.id, StockSQLEntity.beginningDatetime, Booking.dateCreated). \
-        filter(Booking.confirmationDate.is_(None)). \
-        filter(StockSQLEntity.beginningDatetime.isnot(None))
+    return (
+        Booking.query.join(StockSQLEntity)
+        .with_entities(Booking.id, StockSQLEntity.beginningDatetime, Booking.dateCreated)
+        .filter(Booking.confirmationDate.is_(None))
+        .filter(StockSQLEntity.beginningDatetime.isnot(None))
+    )
 
 
 def _select_event_bookings_without_confirmation_date_not_cancelled_not_used() -> BaseQuery:
-    return _select_all_event_bookings_without_confirmation_date(). \
-        filter(Booking.isCancelled.is_(False)). \
-        filter(Booking.isUsed.is_(False))
+    return (
+        _select_all_event_bookings_without_confirmation_date()
+        .filter(Booking.isCancelled.is_(False))
+        .filter(Booking.isUsed.is_(False))
+    )
 
 
 def _get_batches(target_bookings_query: list, batch_size: int) -> typing.Generator:
     total_length = len(target_bookings_query)
     for i in range(0, total_length, batch_size):
-        yield target_bookings_query[i: i + batch_size]
+        yield target_bookings_query[i : i + batch_size]
 
 
 def _update_target_bookings(target_bookings_query: BaseQuery, batch_size: int) -> int:
@@ -77,9 +81,7 @@ def _update_target_bookings(target_bookings_query: BaseQuery, batch_size: int) -
 
         for booking_id, event_date, creation_date in bookings:
             confirmation_date = compute_confirmation_date(event_date, creation_date)
-            update_mappings.append(
-                {"id": booking_id, "confirmationDate": confirmation_date}
-            )
+            update_mappings.append({"id": booking_id, "confirmationDate": confirmation_date})
 
         db.session.bulk_update_mappings(Booking, update_mappings)
         db.session.commit()

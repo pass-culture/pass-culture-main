@@ -6,11 +6,8 @@ from pcapi.models import Offerer
 from pcapi.models.bank_information import BankInformationStatus
 
 
-status_weight = {
-    BankInformationStatus.ACCEPTED: 2,
-    BankInformationStatus.DRAFT: 1,
-    BankInformationStatus.REJECTED: 0
-}
+status_weight = {BankInformationStatus.ACCEPTED: 2, BankInformationStatus.DRAFT: 1, BankInformationStatus.REJECTED: 0}
+
 
 class CannotRegisterBankInformation(Exception):
     pass
@@ -34,15 +31,19 @@ def check_venue_queried_by_name(venues: List[VenueWithBasicInformation]):
 
 
 def check_new_bank_information_older_than_saved_one(bank_information: BankInformations, application_details):
-    is_new_bank_information_older_than_saved_one = bank_information.date_modified is not None and application_details.modification_date < bank_information.date_modified
+    is_new_bank_information_older_than_saved_one = (
+        bank_information.date_modified is not None
+        and application_details.modification_date < bank_information.date_modified
+    )
     if is_new_bank_information_older_than_saved_one:
-        raise CannotRegisterBankInformation(
-            'Received application details are older than saved one')
+        raise CannotRegisterBankInformation("Received application details are older than saved one")
 
 
 def check_new_bank_information_has_a_more_advanced_status(bank_information: BankInformations, application_details):
-    is_new_bank_information_status_more_important_than_saved_one = bank_information.status and status_weight[
-        application_details.status] < status_weight[bank_information.status]
+    is_new_bank_information_status_more_important_than_saved_one = (
+        bank_information.status and status_weight[application_details.status] < status_weight[bank_information.status]
+    )
     if is_new_bank_information_status_more_important_than_saved_one:
         raise CannotRegisterBankInformation(
-            'Received application details state does not allow to change bank information')
+            "Received application details state does not allow to change bank information"
+        )

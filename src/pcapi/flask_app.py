@@ -46,42 +46,41 @@ if IS_DEV is False:
         integrations=[FlaskIntegration(), RqIntegration()],
         release=read_version_from_file(),
         environment=ENV,
-        traces_sample_rate=float(os.environ.get('SENTRY_SAMPLE_RATE', 0))
+        traces_sample_rate=float(os.environ.get("SENTRY_SAMPLE_RATE", 0)),
     )
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__, static_url_path="/static")
 
 api = SpecTree("flask", MODE="strict", before=before_handler)
 api.register(app)
 
 login_manager = LoginManager()
-admin = Admin(name='pc Back Office', url='/pc/back-office',
-              template_mode='bootstrap3')
+admin = Admin(name="pc Back Office", url="/pc/back-office", template_mode="bootstrap3")
 
 if feature_request_profiling_enabled():
-    profiling_restrictions = [
-        int(os.environ.get('PROFILE_REQUESTS_LINES_LIMIT', 100))]
-    app.config['PROFILE'] = True
+    profiling_restrictions = [int(os.environ.get("PROFILE_REQUESTS_LINES_LIMIT", 100))]
+    app.config["PROFILE"] = True
     app.wsgi_app = ProfilerMiddleware(  # type: ignore
         app.wsgi_app,
         restrictions=profiling_restrictions,
     )
 
-app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
+app.secret_key = os.environ.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")
 app.json_encoder = EnumJSONEncoder
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = False
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SECURE'] = not IS_DEV
-app.config['REMEMBER_COOKIE_HTTPONLY'] = True
-app.config['REMEMBER_COOKIE_SECURE'] = not IS_DEV
-app.config['REMEMBER_COOKIE_DURATION'] = 90 * 24 * 3600
-app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
-app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
-app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
-app.config['JWT_SECRET_KEY'] = os.environ.get(
-    'JWT_SECRET_KEY', 'baheon0UIX2li3katood7RotTiedez3bUF8xohtheex1eeBithee9AopePhom5vi',
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_ECHO"] = False
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SECURE"] = not IS_DEV
+app.config["REMEMBER_COOKIE_HTTPONLY"] = True
+app.config["REMEMBER_COOKIE_SECURE"] = not IS_DEV
+app.config["REMEMBER_COOKIE_DURATION"] = 90 * 24 * 3600
+app.config["PERMANENT_SESSION_LIFETIME"] = 90 * 24 * 3600
+app.config["FLASK_ADMIN_SWATCH"] = "flatly"
+app.config["FLASK_ADMIN_FLUID_LAYOUT"] = True
+app.config["JWT_SECRET_KEY"] = os.environ.get(
+    "JWT_SECRET_KEY",
+    "baheon0UIX2li3katood7RotTiedez3bUF8xohtheex1eeBithee9AopePhom5vi",
 )
 
 jwt = JWTManager(app)
@@ -101,10 +100,10 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         "method": request.method,
         "route": request.url_rule,
         "path": request.path,
-        "queryParams": request.query_string.decode('UTF-8'),
+        "queryParams": request.query_string.decode("UTF-8"),
         "duration": request_duration_in_milliseconds,
-        "size": response.headers.get('Content-Length', type=int),
-        "from": "flask"
+        "size": response.headers.get("Content-Length", type=int),
+        "from": "flask",
     }
 
     json_logger.info("request details", extra=request_data)
@@ -118,7 +117,7 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
 
 @app.teardown_request
 def remove_db_session(
-        exc: typing.Optional[Exception] = None,  # pylint: disable=unused-argument
+    exc: typing.Optional[Exception] = None,  # pylint: disable=unused-argument
 ) -> None:
     try:
         db.session.remove()
@@ -131,27 +130,18 @@ db.init_app(app)
 orm.configure_mappers()
 login_manager.init_app(app)
 
-public_api = Blueprint('Public API', __name__)
-CORS(
-    public_api,
-    resources={
-        r"/*": {"origins": "*"}
-    },
-    supports_credentials=True
-)
+public_api = Blueprint("Public API", __name__)
+CORS(public_api, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-private_api = Blueprint('Private API', __name__)
+private_api = Blueprint("Private API", __name__)
 CORS(
     private_api,
-    resources={
-        r"/*": {"origins": re.compile(os.environ.get('CORS_ALLOWED_ORIGIN'))}
-    },
-    supports_credentials=True
+    resources={r"/*": {"origins": re.compile(os.environ.get("CORS_ALLOWED_ORIGIN"))}},
+    supports_credentials=True,
 )
 
 app.url_map.strict_slashes = False
 
 with app.app_context():
-    app.mailjet_client = Client(
-        auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
+    app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version="v3")
     app.redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)

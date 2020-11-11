@@ -28,9 +28,9 @@ from pcapi.utils.human_ids import humanize
 from pcapi.utils.logger import logger
 
 
-DUPLICATE_KEY_ERROR_CODE = '23505'
-NOT_FOUND_KEY_ERROR_CODE = '23503'
-OBLIGATORY_FIELD_ERROR_CODE = '23502'
+DUPLICATE_KEY_ERROR_CODE = "23505"
+NOT_FOUND_KEY_ERROR_CODE = "23503"
+OBLIGATORY_FIELD_ERROR_CODE = "23502"
 
 
 class DeletedRecordException(Exception):
@@ -38,21 +38,16 @@ class DeletedRecordException(Exception):
 
 
 class PcObject:
-    id = Column(BigInteger,
-                primary_key=True,
-                autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     def __init__(self, **options):
-        from_dict = options.get('from_dict')
+        from_dict = options.get("from_dict")
         if from_dict:
             self.populate_from_dict(from_dict)
 
     def __repr__(self):
-        id = "unsaved" \
-            if self.id is None \
-            else str(self.id) + "/" + humanize(self.id)
-        return '<%s #%s>' % (self.__class__.__name__,
-                             id)
+        id = "unsaved" if self.id is None else str(self.id) + "/" + humanize(self.id)
+        return "<%s #%s>" % (self.__class__.__name__, id)
 
     def __eq__(self, other):
         return other and self.id == other.id
@@ -76,9 +71,9 @@ class PcObject:
             value = _dehumanize_if_needed(column, data.get(key))
             if isinstance(value, str):
                 if isinstance(column.type, Integer):
-                    self._try_to_set_attribute_with_decimal_value(column, key, value, 'integer')
+                    self._try_to_set_attribute_with_decimal_value(column, key, value, "integer")
                 elif isinstance(column.type, Float) or isinstance(column.type, Numeric):
-                    self._try_to_set_attribute_with_decimal_value(column, key, value, 'float')
+                    self._try_to_set_attribute_with_decimal_value(column, key, value, "float")
                 elif isinstance(column.type, String):
                     setattr(self, key, value.strip() if value else value)
                 elif isinstance(column.type, DateTime):
@@ -96,36 +91,52 @@ class PcObject:
     @staticmethod
     def restize_global_error(global_error):
         logger.exception("UNHANDLED ERROR : %s", global_error)
-        return ["global",
-                "Une erreur technique s'est produite. Elle a été notée, et nous allons investiguer au plus vite."]
+        return [
+            "global",
+            "Une erreur technique s'est produite. Elle a été notée, et nous allons investiguer au plus vite.",
+        ]
 
     @staticmethod
     def restize_data_error(data_error):
-        if data_error.args and len(data_error.args) > 0 and data_error.args[0].startswith(
-                '(psycopg2.DataError) value too long for type'):
-            max_length = re.search('\(psycopg2.DataError\) value too long for type (.*?) varying\((.*?)\)',
-                                   data_error.args[0],
-                                   re.IGNORECASE).group(2)
-            return ['global', "La valeur d'une entrée est trop longue (max " + max_length + ")"]
+        if (
+            data_error.args
+            and len(data_error.args) > 0
+            and data_error.args[0].startswith("(psycopg2.DataError) value too long for type")
+        ):
+            max_length = re.search(
+                "\(psycopg2.DataError\) value too long for type (.*?) varying\((.*?)\)",
+                data_error.args[0],
+                re.IGNORECASE,
+            ).group(2)
+            return ["global", "La valeur d'une entrée est trop longue (max " + max_length + ")"]
         else:
             return PcObject.restize_global_error(data_error)
 
     @staticmethod
     def restize_integrity_error(integrity_error):
-        if hasattr(integrity_error, 'orig') and hasattr(integrity_error.orig,
-                                                        'pgcode') and integrity_error.orig.pgcode == DUPLICATE_KEY_ERROR_CODE:
-            field = re.search('Key \((.*?)\)=', str(integrity_error._message), re.IGNORECASE).group(1)
+        if (
+            hasattr(integrity_error, "orig")
+            and hasattr(integrity_error.orig, "pgcode")
+            and integrity_error.orig.pgcode == DUPLICATE_KEY_ERROR_CODE
+        ):
+            field = re.search("Key \((.*?)\)=", str(integrity_error._message), re.IGNORECASE).group(1)
             if "," in field:
                 field = "global"
-            return [field, 'Une entrée avec cet identifiant existe déjà dans notre base de données']
-        elif hasattr(integrity_error, 'orig') and hasattr(integrity_error.orig,
-                                                          'pgcode') and integrity_error.orig.pgcode == NOT_FOUND_KEY_ERROR_CODE:
-            field = re.search('Key \((.*?)\)=', str(integrity_error._message), re.IGNORECASE).group(1)
-            return [field, 'Aucun objet ne correspond à cet identifiant dans notre base de données']
-        elif hasattr(integrity_error, 'orig') and hasattr(integrity_error.orig,
-                                                          'pgcode') and integrity_error.orig.pgcode == OBLIGATORY_FIELD_ERROR_CODE:
+            return [field, "Une entrée avec cet identifiant existe déjà dans notre base de données"]
+        elif (
+            hasattr(integrity_error, "orig")
+            and hasattr(integrity_error.orig, "pgcode")
+            and integrity_error.orig.pgcode == NOT_FOUND_KEY_ERROR_CODE
+        ):
+            field = re.search("Key \((.*?)\)=", str(integrity_error._message), re.IGNORECASE).group(1)
+            return [field, "Aucun objet ne correspond à cet identifiant dans notre base de données"]
+        elif (
+            hasattr(integrity_error, "orig")
+            and hasattr(integrity_error.orig, "pgcode")
+            and integrity_error.orig.pgcode == OBLIGATORY_FIELD_ERROR_CODE
+        ):
             field = re.search('column "(.*?)"', integrity_error.orig.pgerror, re.IGNORECASE).group(1)
-            return [field, 'Ce champ est obligatoire']
+            return [field, "Ce champ est obligatoire"]
         else:
             return PcObject.restize_global_error(integrity_error)
 
@@ -135,27 +146,29 @@ class PcObject:
 
     @staticmethod
     def restize_type_error(type_error):
-        if type_error.args and len(type_error.args) > 1 and type_error.args[1] == 'geography':
-            return [type_error.args[2], 'doit etre une liste de nombre décimaux comme par exemple : [2.22, 3.22]']
-        elif type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == 'decimal':
-            return [type_error.args[2], 'doit être un nombre décimal']
-        elif type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == 'integer':
-            return [type_error.args[2], 'doit être un entier']
+        if type_error.args and len(type_error.args) > 1 and type_error.args[1] == "geography":
+            return [type_error.args[2], "doit etre une liste de nombre décimaux comme par exemple : [2.22, 3.22]"]
+        elif type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == "decimal":
+            return [type_error.args[2], "doit être un nombre décimal"]
+        elif type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == "integer":
+            return [type_error.args[2], "doit être un entier"]
         else:
             return PcObject.restize_global_error(type_error)
 
     @staticmethod
     def restize_value_error(value_error):
-        if len(value_error.args) > 1 and value_error.args[1] == 'enum':
-            return [value_error.args[2],
-                    ' doit etre dans cette liste : ' + ",".join(map(lambda x: '"' + x + '"', value_error.args[3]))]
+        if len(value_error.args) > 1 and value_error.args[1] == "enum":
+            return [
+                value_error.args[2],
+                " doit etre dans cette liste : " + ",".join(map(lambda x: '"' + x + '"', value_error.args[3])),
+            ]
         else:
             return PcObject.restize_global_error(value_error)
 
     @staticmethod
     def _get_keys_to_populate(columns: Iterable[str], data: dict, skipped_keys: Iterable[str]) -> Set[str]:
         requested_columns_to_update = set(data.keys())
-        forbidden_columns = set(['id', 'deleted'] + skipped_keys)
+        forbidden_columns = set(["id", "deleted"] + skipped_keys)
         allowed_columns_to_update = requested_columns_to_update - forbidden_columns
         keys_to_populate = set(columns).intersection(allowed_columns_to_update)
         return keys_to_populate
@@ -201,7 +214,7 @@ def _deserialize_datetime(key, value):
     if value is None:
         return None
 
-    valid_patterns = ['%Y-%m-%dT%H:%M:%S.%fZ', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%dT%H:%M:%SZ']
+    valid_patterns = ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M:%SZ"]
     datetime_value = None
 
     for pattern in valid_patterns:
@@ -209,7 +222,7 @@ def _deserialize_datetime(key, value):
             datetime_value = datetime.strptime(value, pattern)
 
     if not datetime_value:
-        raise TypeError('Invalid value for %s: %r' % (key, value), 'datetime', key)
+        raise TypeError("Invalid value for %s: %r" % (key, value), "datetime", key)
 
     return datetime_value
 
@@ -217,6 +230,6 @@ def _deserialize_datetime(key, value):
 def _is_human_id_column(column: Column) -> bool:
     if column is not None:
         column_name = column.key
-        is_column_primary_key_or_foreign_key = (column_name == 'id' or column_name.endswith('Id'))
-        is_column_a_number = (isinstance(column.type, BigInteger) or isinstance(column.type, Integer))
+        is_column_primary_key_or_foreign_key = column_name == "id" or column_name.endswith("Id")
+        is_column_a_number = isinstance(column.type, BigInteger) or isinstance(column.type, Integer)
         return is_column_primary_key_or_foreign_key and is_column_a_number

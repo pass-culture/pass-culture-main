@@ -23,40 +23,36 @@ class ReimbursementDetails:
         "Contremarque",
         "Date de validation de la réservation",
         "Montant remboursé",
-        "Statut du remboursement"
+        "Statut du remboursement",
     ]
 
     TRANSACTION_STATUSES_DETAILS = {
-        TransactionStatus.PENDING: 'Remboursement initié',
-        TransactionStatus.NOT_PROCESSABLE: 'Remboursement impossible',
-        TransactionStatus.SENT: 'Remboursement envoyé',
-        TransactionStatus.ERROR: 'Erreur d\'envoi du remboursement',
-        TransactionStatus.RETRY: 'Remboursement à renvoyer',
-        TransactionStatus.BANNED: 'Remboursement rejeté'
+        TransactionStatus.PENDING: "Remboursement initié",
+        TransactionStatus.NOT_PROCESSABLE: "Remboursement impossible",
+        TransactionStatus.SENT: "Remboursement envoyé",
+        TransactionStatus.ERROR: "Erreur d'envoi du remboursement",
+        TransactionStatus.RETRY: "Remboursement à renvoyer",
+        TransactionStatus.BANNED: "Remboursement rejeté",
     }
 
     def __init__(self, payment_info: namedtuple = None):
         if payment_info is not None:
-            transfer_infos = payment_info.transactionLabel \
-                .replace('pass Culture Pro - ', '') \
-                .split(' ')
+            transfer_infos = payment_info.transactionLabel.replace("pass Culture Pro - ", "").split(" ")
             transfer_label = " ".join(transfer_infos[:-1])
 
             date = transfer_infos[-1]
-            [month_number, year] = date.split('-')
+            [month_number, year] = date.split("-")
             french_month = english_to_french_month(int(year), int(month_number))
 
             payment_current_status = payment_info.status
             payment_current_status_details = payment_info.detail
 
-            human_friendly_status = _get_reimbursement_current_status_in_details(payment_current_status,
-                                                                                 payment_current_status_details)
+            human_friendly_status = _get_reimbursement_current_status_in_details(
+                payment_current_status, payment_current_status_details
+            )
 
             self.year = year
-            self.transfer_name = "{} : {}".format(
-                french_month,
-                transfer_label
-            )
+            self.transfer_name = "{} : {}".format(french_month, transfer_label)
             self.venue_name = payment_info.venue_name
             self.venue_siret = payment_info.venue_siret
             self.venue_address = payment_info.venue_address or payment_info.offerer_address
@@ -85,17 +81,14 @@ class ReimbursementDetails:
             self.booking_token,
             self.booking_used_date,
             self.reimbursed_amount,
-            self.status
+            self.status,
         ]
 
 
 def generate_reimbursement_details_csv(reimbursement_details: List[ReimbursementDetails]):
     output = StringIO()
-    csv_lines = [
-        reimbursement_detail.as_csv_row()
-        for reimbursement_detail in reimbursement_details
-    ]
-    writer = csv.writer(output, dialect=csv.excel, delimiter=';')
+    csv_lines = [reimbursement_detail.as_csv_row() for reimbursement_detail in reimbursement_details]
+    writer = csv.writer(output, dialect=csv.excel, delimiter=";")
     writer.writerow(ReimbursementDetails.CSV_HEADER)
     writer.writerows(csv_lines)
     return output.getvalue()

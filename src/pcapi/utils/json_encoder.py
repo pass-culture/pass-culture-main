@@ -5,7 +5,6 @@ from flask.json import JSONEncoder
 
 
 class EnumJSONEncoder(JSONEncoder):
-
     def default(self, obj):
         try:
             if isinstance(obj, Enum):

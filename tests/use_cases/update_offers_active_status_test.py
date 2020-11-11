@@ -11,7 +11,7 @@ from pcapi.use_cases.update_offers_active_status import update_offers_active_sta
 
 class UpdateOffersIsActiveStatusTest:
     class ActivateOffersTest:
-        @patch('pcapi.use_cases.update_offers_active_status.update_offers_is_active_status')
+        @patch("pcapi.use_cases.update_offers_active_status.update_offers_is_active_status")
         def test_should_update_is_active_property_for_given_offers(self, mocked_update, app):
             # Given
             offers_id = [1, 2]
@@ -23,10 +23,12 @@ class UpdateOffersIsActiveStatusTest:
             assert mocked_update.call_args[0][0] == offers_id
             assert mocked_update.call_args[0][1] == True
 
-        @patch('pcapi.use_cases.update_offers_active_status.update_offers_is_active_status')
-        @patch('pcapi.use_cases.update_offers_active_status.feature_queries.is_active', return_value=True)
-        @patch('pcapi.use_cases.update_offers_active_status.redis.add_offer_id')
-        def test_should_synchronize_updated_offers_with_algolia(self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, app):
+        @patch("pcapi.use_cases.update_offers_active_status.update_offers_is_active_status")
+        @patch("pcapi.use_cases.update_offers_active_status.feature_queries.is_active", return_value=True)
+        @patch("pcapi.use_cases.update_offers_active_status.redis.add_offer_id")
+        def test_should_synchronize_updated_offers_with_algolia(
+            self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, app
+        ):
             # Given
             offers_id = [1, 2]
 
@@ -37,14 +39,15 @@ class UpdateOffersIsActiveStatusTest:
             mocked_feature_is_active.assert_called_once_with(FeatureToggle.SYNCHRONIZE_ALGOLIA)
             assert mocked_add_offer_to_redis.call_args_list == [
                 call(client=app.redis_client, offer_id=offers_id[0]),
-                call(client=app.redis_client, offer_id=offers_id[1])
+                call(client=app.redis_client, offer_id=offers_id[1]),
             ]
 
-
-        @patch('pcapi.use_cases.update_offers_active_status.update_offers_is_active_status')
-        @patch('pcapi.use_cases.update_offers_active_status.feature_queries.is_active', return_value=False)
-        @patch('pcapi.use_cases.update_offers_active_status.redis.add_offer_id')
-        def test_should_not_synchronize_updated_offer_with_algolia_when_feature_is_disabled(self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, app):
+        @patch("pcapi.use_cases.update_offers_active_status.update_offers_is_active_status")
+        @patch("pcapi.use_cases.update_offers_active_status.feature_queries.is_active", return_value=False)
+        @patch("pcapi.use_cases.update_offers_active_status.redis.add_offer_id")
+        def test_should_not_synchronize_updated_offer_with_algolia_when_feature_is_disabled(
+            self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, app
+        ):
             # Given
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -57,7 +60,7 @@ class UpdateOffersIsActiveStatusTest:
             mocked_add_offer_to_redis.assert_not_called()
 
     class DeactivateOffersTest:
-        @patch('pcapi.use_cases.update_offers_active_status.update_offers_is_active_status')
+        @patch("pcapi.use_cases.update_offers_active_status.update_offers_is_active_status")
         def test_should_update_is_active_property_for_offer(self, mocked_update, app):
             # Given
             offers_id = [1, 2]
@@ -69,12 +72,15 @@ class UpdateOffersIsActiveStatusTest:
             assert mocked_update.call_args[0][0] == offers_id
             assert mocked_update.call_args[0][1] == False
 
+
 class UpdateAllOffersIsActiveStatusTest:
-    @patch('pcapi.use_cases.update_offers_active_status.get_all_offers_id_by_filters')
-    @patch('pcapi.use_cases.update_offers_active_status.update_offers_is_active_status')
-    @patch('pcapi.use_cases.update_offers_active_status.feature_queries.is_active', return_value=True)
-    @patch('pcapi.use_cases.update_offers_active_status.redis.add_offer_id')
-    def test_should_get_all_offers_filtered_by_default_params_and_call_update(self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, mocked_get, app):
+    @patch("pcapi.use_cases.update_offers_active_status.get_all_offers_id_by_filters")
+    @patch("pcapi.use_cases.update_offers_active_status.update_offers_is_active_status")
+    @patch("pcapi.use_cases.update_offers_active_status.feature_queries.is_active", return_value=True)
+    @patch("pcapi.use_cases.update_offers_active_status.redis.add_offer_id")
+    def test_should_get_all_offers_filtered_by_default_params_and_call_update(
+        self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, mocked_get, app
+    ):
         # Given
         mocked_get.return_value = [1, 2]
 
@@ -96,14 +102,16 @@ class UpdateAllOffersIsActiveStatusTest:
         mocked_feature_is_active.assert_called_once_with(FeatureToggle.SYNCHRONIZE_ALGOLIA)
         assert mocked_add_offer_to_redis.call_args_list == [
             call(client=app.redis_client, offer_id=1),
-            call(client=app.redis_client, offer_id=2)
+            call(client=app.redis_client, offer_id=2),
         ]
 
-    @patch('pcapi.use_cases.update_offers_active_status.get_all_offers_id_by_filters')
-    @patch('pcapi.use_cases.update_offers_active_status.update_offers_is_active_status')
-    @patch('pcapi.use_cases.update_offers_active_status.feature_queries.is_active', return_value=True)
-    @patch('pcapi.use_cases.update_offers_active_status.redis.add_offer_id')
-    def test_should_get_all_offers_filtered_by_params(self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, mocked_get, app):
+    @patch("pcapi.use_cases.update_offers_active_status.get_all_offers_id_by_filters")
+    @patch("pcapi.use_cases.update_offers_active_status.update_offers_is_active_status")
+    @patch("pcapi.use_cases.update_offers_active_status.feature_queries.is_active", return_value=True)
+    @patch("pcapi.use_cases.update_offers_active_status.redis.add_offer_id")
+    def test_should_get_all_offers_filtered_by_params(
+        self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, mocked_get, app
+    ):
         # Given
         mocked_get.return_value = [1, 2]
 
@@ -113,11 +121,11 @@ class UpdateAllOffersIsActiveStatusTest:
             user_is_admin=True,
             is_active=True,
             offerer_id=123,
-            status='active',
+            status="active",
             venue_id=456,
-            type_id='ThingType',
-            name_keywords='search',
-            creation_mode='imported'
+            type_id="ThingType",
+            name_keywords="search",
+            creation_mode="imported",
         )
 
         # Then
@@ -125,9 +133,9 @@ class UpdateAllOffersIsActiveStatusTest:
             user_id=12,
             user_is_admin=True,
             offerer_id=123,
-            status='active',
+            status="active",
             venue_id=456,
-            type_id='ThingType',
-            name_keywords='search',
-            creation_mode='imported'
+            type_id="ThingType",
+            name_keywords="search",
+            creation_mode="imported",
         )

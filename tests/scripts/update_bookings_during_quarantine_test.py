@@ -28,13 +28,7 @@ class UpdateBookingDuringQuarantineTest:
         offer = create_offer_with_event_product(venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 3, 18, 0, 0, 0), offer=offer, price=0)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(
-            user=user,
-            stock=stock,
-            token='AZERTY',
-            is_used=True,
-            date_used=yesterday
-        )
+        booking = create_booking(user=user, stock=stock, token="AZERTY", is_used=True, date_used=yesterday)
         repository.save(booking)
 
         # When
@@ -54,13 +48,7 @@ class UpdateBookingDuringQuarantineTest:
         offer = create_offer_with_event_product(venue=venue)
         stock = create_stock(beginning_datetime=datetime(2019, 3, 12, 00, 00, 00), offer=offer, price=0)
         date_used = datetime(2019, 3, 12, 00, 00, 00)
-        booking = create_booking(
-            user=user,
-            stock=stock,
-            token='AZERTY',
-            is_used=True,
-            date_used=date_used
-        )
+        booking = create_booking(user=user, stock=stock, token="AZERTY", is_used=True, date_used=date_used)
         repository.save(booking)
 
         # When
@@ -80,17 +68,8 @@ class UpdateBookingDuringQuarantineTest:
         offer = create_offer_with_event_product(venue=venue)
         stock = create_stock(beginning_datetime=datetime(2019, 3, 12, 00, 00, 00), offer=offer, price=0)
         date_used = datetime(2019, 3, 12, 00, 00, 00)
-        booking = create_booking(
-            user=user,
-            stock=stock,
-            token='QSDFG',
-            is_used=True,
-            date_used=date_used
-        )
-        booking_reimbursement = BookingReimbursement(
-            booking,
-            ReimbursementRules.PHYSICAL_OFFERS,
-            Decimal(10))
+        booking = create_booking(user=user, stock=stock, token="QSDFG", is_used=True, date_used=date_used)
+        booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
         payment = create_payment_for_booking(booking_reimbursement)
         repository.save(booking, payment)
 

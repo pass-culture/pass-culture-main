@@ -12,6 +12,6 @@ def clean():
     try:
         clean_all_database()
     except Exception as e:
-        print('ERROR: ' + str(e))
+        print("ERROR: " + str(e))
         traceback.print_tb(e.__traceback__)
         pprint(vars(e))

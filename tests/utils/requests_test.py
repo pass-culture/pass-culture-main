@@ -13,10 +13,10 @@ class RequestWrapperTest:
         mocked_request_function = Mock()
 
         # when
-        _wrapper(mocked_request_function, 'GET', 'https://example.net')
+        _wrapper(mocked_request_function, "GET", "https://example.net")
 
         # then
-        mocked_request_function.assert_called_once_with(method='GET', url='https://example.net',timeout=10)
+        mocked_request_function.assert_called_once_with(method="GET", url="https://example.net", timeout=10)
 
     def test_should_propagate_any_exception(self):
         # given
@@ -24,4 +24,4 @@ class RequestWrapperTest:
 
         # when
         with pytest.raises(RequestException):
-            _wrapper(mocked_request_function, 'GET', 'https://example.net')
+            _wrapper(mocked_request_function, "GET", "https://example.net")

@@ -8,22 +8,20 @@ from pcapi.repository.providable_queries import insert_chunk
 from pcapi.repository.providable_queries import update_chunk
 
 
-def get_existing_pc_obj(providable_info: ProvidableInfo,
-                        chunk_to_insert: Dict,
-                        chunk_to_update: Dict) -> Optional[Model]:
-    object_in_current_chunk = get_object_from_current_chunks(providable_info,
-                                                             chunk_to_insert,
-                                                             chunk_to_update)
+def get_existing_pc_obj(
+    providable_info: ProvidableInfo, chunk_to_insert: Dict, chunk_to_update: Dict
+) -> Optional[Model]:
+    object_in_current_chunk = get_object_from_current_chunks(providable_info, chunk_to_insert, chunk_to_update)
     if object_in_current_chunk is None:
         return get_existing_object(providable_info.type, providable_info.id_at_providers)
 
     return object_in_current_chunk
 
 
-def get_object_from_current_chunks(providable_info: ProvidableInfo,
-                                   chunk_to_insert: Dict,
-                                   chunk_to_update: Dict) -> Optional[Model]:
-    chunk_key = f'{providable_info.id_at_providers}|{providable_info.type.__name__}'
+def get_object_from_current_chunks(
+    providable_info: ProvidableInfo, chunk_to_insert: Dict, chunk_to_update: Dict
+) -> Optional[Model]:
+    chunk_key = f"{providable_info.id_at_providers}|{providable_info.type.__name__}"
     pc_object = chunk_to_insert.get(chunk_key)
     if type(pc_object) == providable_info.type:
         return pc_object
@@ -33,8 +31,7 @@ def get_object_from_current_chunks(providable_info: ProvidableInfo,
     return None
 
 
-def save_chunks(chunk_to_insert: Dict[str, Model],
-                chunk_to_update: Dict[str, Model]):
+def save_chunks(chunk_to_insert: Dict[str, Model], chunk_to_update: Dict[str, Model]):
     if len(chunk_to_insert) > 0:
         insert_chunk(chunk_to_insert)
 

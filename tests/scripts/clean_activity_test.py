@@ -24,11 +24,11 @@ class DeleteTablesFromActivityTest:
     @clean_database
     def test_should_delete_from_activity_when_table_name_is_in_provided_list(self, app):
         # Given
-        product_activity = create_activity('product', 'insert')
+        product_activity = create_activity("product", "insert")
         save_all_activities(product_activity)
 
         # When
-        delete_tables_from_activity(['product', 'mediation'])
+        delete_tables_from_activity(["product", "mediation"])
 
         # Then
         assert Activity.query.count() == 0
@@ -36,11 +36,11 @@ class DeleteTablesFromActivityTest:
     @clean_database
     def test_should_not_delete_from_activity_when_table_name_is_not_in_provided_list(self, app):
         # Given
-        product_activity = create_activity('product', 'insert')
+        product_activity = create_activity("product", "insert")
         save_all_activities(product_activity)
 
         # When
-        delete_tables_from_activity(['bank_information'])
+        delete_tables_from_activity(["bank_information"])
 
         # Then
         assert Activity.query.count() == 1
@@ -48,12 +48,12 @@ class DeleteTablesFromActivityTest:
     @clean_database
     def test_should_delete_only_specified_tables_from_activity(self, app):
         # Given
-        bank_information_activity = create_activity('bank_information', 'insert')
-        product_activity = create_activity('product', 'insert')
+        bank_information_activity = create_activity("bank_information", "insert")
+        product_activity = create_activity("product", "insert")
         save_all_activities(bank_information_activity, product_activity)
 
         # When
-        delete_tables_from_activity(['bank_information'])
+        delete_tables_from_activity(["bank_information"])
 
         # Then
         assert Activity.query.all() == [product_activity]
@@ -77,10 +77,9 @@ class PopulateStockDateCreatedFromActivityTest:
         stock = create_stock(date_created=None, offer=offer)
         repository.save(stock)
         now = datetime.utcnow()
-        stock_activity = create_activity(changed_data={'id': stock.id},
-                                         issued_at=now,
-                                         table_name='stock',
-                                         verb='insert')
+        stock_activity = create_activity(
+            changed_data={"id": stock.id}, issued_at=now, table_name="stock", verb="insert"
+        )
         save_all_activities(stock_activity)
 
         # When
@@ -114,11 +113,11 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
         repository.save(user)
         modification_date = datetime(2019, 12, 1, 0, 0, 0)
         user_activity = create_activity(
-            'user',
-            'update',
+            "user",
+            "update",
             issued_at=modification_date,
-            changed_data={'needsToFillCulturalSurvey': False},
-            old_data={'id': 1}
+            changed_data={"needsToFillCulturalSurvey": False},
+            old_data={"id": 1},
         )
         save_all_activities(user_activity)
 
@@ -135,10 +134,7 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
         repository.save(user)
         modification_date = datetime(2019, 12, 1, 0, 0, 0)
         user_activity = create_activity(
-            'user',
-            'update',
-            issued_at=modification_date,
-            changed_data={'id': 2, 'needsToFillCulturalSurvey': False}
+            "user", "update", issued_at=modification_date, changed_data={"id": 2, "needsToFillCulturalSurvey": False}
         )
         save_all_activities(user_activity)
 
@@ -155,26 +151,25 @@ class PopulateCulturalSurveyFilledDateFromActivityTest:
         repository.save(user)
         last_modification_date = datetime(2019, 12, 1, 0, 0, 0)
         user_activity_1 = create_activity(
-            'user',
-            'update',
+            "user",
+            "update",
             issued_at=datetime(2019, 10, 1, 0, 0, 0),
-            changed_data={'needsToFillCulturalSurvey': False},
-            old_data={'id': 1}
+            changed_data={"needsToFillCulturalSurvey": False},
+            old_data={"id": 1},
         )
         user_activity_2 = create_activity(
-            'user',
-            'update',
+            "user",
+            "update",
             issued_at=datetime(2019, 11, 1, 0, 0, 0),
-            changed_data={'needsToFillCulturalSurvey': True},
-            old_data={'id': 1}
-
+            changed_data={"needsToFillCulturalSurvey": True},
+            old_data={"id": 1},
         )
         user_activity_3 = create_activity(
-            'user',
-            'update',
+            "user",
+            "update",
             issued_at=last_modification_date,
-            changed_data={'needsToFillCulturalSurvey': False},
-            old_data={'id': 1}
+            changed_data={"needsToFillCulturalSurvey": False},
+            old_data={"id": 1},
         )
         save_all_activities(user_activity_1, user_activity_2, user_activity_3)
 

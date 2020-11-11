@@ -12,7 +12,7 @@ def test_should_return_error_message_when_postal_code_is_invalid():
     api_error = validate(offerer, api_errors)
 
     # Then
-    assert api_error.errors['postalCode'] == ['Ce code postal est invalide']
+    assert api_error.errors["postalCode"] == ["Ce code postal est invalide"]
 
 
 def test_should_not_return_error_message_when_postal_code_is_valid():

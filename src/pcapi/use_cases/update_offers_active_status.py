@@ -28,7 +28,7 @@ def update_all_offers_active_status(
         venue_id=venue_id,
         type_id=type_id,
         name_keywords=name_keywords,
-        creation_mode=creation_mode
+        creation_mode=creation_mode,
     )
 
     update_offers_active_status(offers_id, is_active)

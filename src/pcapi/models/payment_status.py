@@ -14,27 +14,20 @@ from pcapi.models.pc_object import PcObject
 
 
 class TransactionStatus(enum.Enum):
-    PENDING = 'PENDING'
-    NOT_PROCESSABLE = 'NOT PROCESSABLE'
-    SENT = 'SENT'
-    ERROR = 'ERROR'
-    RETRY = 'RETRY'
-    BANNED = 'BANNED'
+    PENDING = "PENDING"
+    NOT_PROCESSABLE = "NOT PROCESSABLE"
+    SENT = "SENT"
+    ERROR = "ERROR"
+    RETRY = "RETRY"
+    BANNED = "BANNED"
 
 
 class PaymentStatus(PcObject, Model):
-    id = Column(BigInteger,
-                primary_key=True,
-                autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    paymentId = Column(BigInteger,
-                       ForeignKey("payment.id"),
-                       index=True,
-                       nullable=False)
+    paymentId = Column(BigInteger, ForeignKey("payment.id"), index=True, nullable=False)
 
-    payment = relationship('Payment',
-                           foreign_keys=[paymentId],
-                           backref='statuses')
+    payment = relationship("Payment", foreign_keys=[paymentId], backref="statuses")
 
     date = Column(DateTime, nullable=False, default=datetime.utcnow)
 

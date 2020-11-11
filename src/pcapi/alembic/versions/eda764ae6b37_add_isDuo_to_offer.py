@@ -11,15 +11,15 @@ from sqlalchemy.sql import expression
 
 
 # revision identifiers, used by Alembic.
-revision = 'eda764ae6b37'
-down_revision = '914fef4f49ab'
+revision = "eda764ae6b37"
+down_revision = "914fef4f49ab"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.add_column('offer', sa.Column('isDuo', sa.Boolean, nullable=False, server_default=expression.false()))
+    op.add_column("offer", sa.Column("isDuo", sa.Boolean, nullable=False, server_default=expression.false()))
 
 
 def downgrade():
-    op.drop_column('offer', 'isDuo')
+    op.drop_column("offer", "isDuo")

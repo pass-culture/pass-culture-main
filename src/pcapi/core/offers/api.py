@@ -48,10 +48,8 @@ def list_offers_for_pro_user(
             venue = VenueSQLEntity.query.filter_by(id=venue_id).first_or_404()
             offerer_id = offerer_id or venue.managingOffererId
         if offerer_id is not None:
-            user_offerer = (
-                user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
-                    user_id=user_id, offerer_id=offerer_id
-                )
+            user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
+                user_id=user_id, offerer_id=offerer_id
             )
             validation.check_user_has_rights_on_offerer(user_offerer)
 
@@ -72,9 +70,7 @@ def list_offers_for_pro_user(
 def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> models.Offer:
     venue = load_or_raise_error(VenueSQLEntity, offer_data.venue_id)
 
-    ensure_current_user_has_rights(
-        rights=RightsType.editor, offerer_id=venue.managingOffererId, user=user
-    )
+    ensure_current_user_has_rights(rights=RightsType.editor, offerer_id=venue.managingOffererId, user=user)
 
     if offer_data.product_id:
         offer = initialize_offer_from_product_id(offer_data.product_id)
@@ -85,9 +81,7 @@ def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> models.
     offer.venue = venue
     offer.bookingEmail = offer_data.booking_email
     repository.save(offer)
-    send_offer_creation_notification_to_administration(
-        offer, user, PRO_URL, send_raw_email
-    )
+    send_offer_creation_notification_to_administration(offer, user, PRO_URL, send_raw_email)
 
     return offer
 

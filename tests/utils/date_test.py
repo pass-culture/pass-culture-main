@@ -14,10 +14,7 @@ def test_english_to_french_month(app):
     month_numbers = range(1, 13)
 
     # When
-    french_months = [
-        english_to_french_month(whatever_it_is_year, month_number)
-        for month_number in month_numbers
-    ]
+    french_months = [english_to_french_month(whatever_it_is_year, month_number) for month_number in month_numbers]
 
     # Then
     assert french_months == [
@@ -32,7 +29,7 @@ def test_english_to_french_month(app):
         "Septembre",
         "Octobre",
         "Novembre",
-        "Décembre"
+        "Décembre",
     ]
 
 
@@ -45,7 +42,7 @@ class GetDateFormattedForEmail:
         date_formatted_for_email = get_date_formatted_for_email(december_23)
 
         # Then
-        assert date_formatted_for_email == '23 décembre'
+        assert date_formatted_for_email == "23 décembre"
 
     def test_should_return_1_digit_day_when_day_is_less_than_10(self):
         # Given
@@ -55,7 +52,7 @@ class GetDateFormattedForEmail:
         date_formatted_for_email = get_date_formatted_for_email(december_09)
 
         # Then
-        assert date_formatted_for_email == '9 décembre'
+        assert date_formatted_for_email == "9 décembre"
 
 
 class GetTimeFormattedForEmail:
@@ -67,7 +64,7 @@ class GetTimeFormattedForEmail:
         time_formatted_for_email = get_time_formatted_for_email(twelve_o_clock)
 
         # Then
-        assert time_formatted_for_email == '12h00'
+        assert time_formatted_for_email == "12h00"
 
 
 class GetDepartmentTimezone:
@@ -78,30 +75,30 @@ class GetDepartmentTimezone:
 
     def test_should_return_paris_as_default_timezone(self):
         # Given
-        departement_code = '1'
+        departement_code = "1"
 
         # When
         timezone = get_department_timezone(departement_code)
 
         # Then
-        assert timezone == 'Europe/Paris'
+        assert timezone == "Europe/Paris"
 
     def test_should_return_cayenne_when_departement_code_is_973(self):
         # Given
-        departement_code = '973'
+        departement_code = "973"
 
         # When
         timezone = get_department_timezone(departement_code)
 
         # Then
-        assert timezone == 'America/Cayenne'
+        assert timezone == "America/Cayenne"
 
     def test_should_return_reunion_when_departement_code_is_974(self):
         # Given
-        departement_code = '974'
+        departement_code = "974"
 
         # When
         timezone = get_department_timezone(departement_code)
 
         # Then
-        assert timezone == 'Indian/Reunion'
+        assert timezone == "Indian/Reunion"

@@ -9,8 +9,8 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = 'a6bdec6dde59'
-down_revision = 'ebb2366cbf96'
+revision = "a6bdec6dde59"
+down_revision = "ebb2366cbf96"
 branch_labels = None
 depends_on = None
 
@@ -19,11 +19,13 @@ def upgrade():
     op.execute(
         """
           CREATE INDEX "ix_user_lower_email" ON "user" USING btree (lower("email"));
-        """)
+        """
+    )
 
 
 def downgrade():
     op.execute(
         """
           DROP INDEX "ix_user_lower_email";
-        """)
+        """
+    )

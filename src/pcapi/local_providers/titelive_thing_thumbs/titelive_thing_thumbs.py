@@ -13,9 +13,9 @@ from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import local_provider_event_queries
 
 
-DATE_REGEXP = re.compile(r'livres_tl(\d+).zip')
-THUMB_FOLDER_NAME_TITELIVE = 'Atoo'
-SYNCHONISABLE_FILE_EXTENSION = '_75.jpg'
+DATE_REGEXP = re.compile(r"livres_tl(\d+).zip")
+THUMB_FOLDER_NAME_TITELIVE = "Atoo"
+SYNCHONISABLE_FILE_EXTENSION = "_75.jpg"
 
 
 class TiteLiveThingThumbs(LocalProvider):
@@ -43,11 +43,9 @@ class TiteLiveThingThumbs(LocalProvider):
 
         path = PurePath(self.thumb_zipinfo.filename)
 
-        file_identifier = path.name.split('_', 1)[0]
+        file_identifier = path.name.split("_", 1)[0]
         file_date = datetime(*self.thumb_zipinfo.date_time)
-        product_providable_info = self.create_providable_info(Product,
-                                                              file_identifier,
-                                                              file_date)
+        product_providable_info = self.create_providable_info(Product, file_identifier, file_date)
 
         return [product_providable_info]
 
@@ -62,9 +60,12 @@ class TiteLiveThingThumbs(LocalProvider):
         self.zip = get_zip_file_from_ftp(next_zip_file_name, THUMB_FOLDER_NAME_TITELIVE)
         self.log_provider_event(LocalProviderEventType.SyncPartStart, file_date)
 
-        self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith(SYNCHONISABLE_FILE_EXTENSION),
-                                          sorted(self.zip.infolist(),
-                                                 key=lambda f: f.filename)))
+        self.thumb_zipinfos = iter(
+            filter(
+                lambda f: f.filename.lower().endswith(SYNCHONISABLE_FILE_EXTENSION),
+                sorted(self.zip.infolist(), key=lambda f: f.filename),
+            )
+        )
 
     def get_object_thumb_index(self) -> int:
         return extract_thumb_index(self.thumb_zipinfo.filename)
@@ -80,15 +81,14 @@ class TiteLiveThingThumbs(LocalProvider):
             return iter(all_zips)
         else:
             payload = int(latest_sync_part_end_event.payload)
-            return iter(filter(lambda z: get_date_from_filename(z, DATE_REGEXP) > payload,
-                               all_zips))
+            return iter(filter(lambda z: get_date_from_filename(z, DATE_REGEXP) > payload, all_zips))
 
     def fill_object_attributes(self, obj):
         pass
 
 
 def extract_thumb_index(filename: str) -> int:
-    split_filename = filename.split('_')
+    split_filename = filename.split("_")
     if len(split_filename) > 2:
         return int(split_filename[-2])
     return -1

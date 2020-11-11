@@ -6,12 +6,9 @@ from pcapi.utils.logger import logger
 DEACTIVATED_OFFERS_PICK_MODULO = 3
 THINGS_PER_OFFERER = 5
 
-def create_industrial_thing_offers(
-        things_by_name,
-        offerers_by_name,
-        venues_by_name
-):
-    logger.info('create_industrial_thing_offers')
+
+def create_industrial_thing_offers(things_by_name, offerers_by_name, venues_by_name):
+    logger.info("create_industrial_thing_offers")
 
     thing_offers_by_name = {}
 
@@ -22,10 +19,7 @@ def create_industrial_thing_offers(
 
     for offerer in offerers_by_name.values():
 
-        virtual_venue = [
-            venue for venue in offerer.managedVenues
-            if venue.isVirtual
-        ][0]
+        virtual_venue = [venue for venue in offerer.managedVenues if venue.isVirtual][0]
 
         physical_venue_name = virtual_venue.name.replace(" (Offre numérique)", "")
         physical_venue = venues_by_name.get(physical_venue_name)
@@ -34,13 +28,13 @@ def create_industrial_thing_offers(
 
             thing_venue = None
             while thing_venue is None:
-                rest_thing_index = (venue_thing_index + thing_index)%len(thing_items)
+                rest_thing_index = (venue_thing_index + thing_index) % len(thing_items)
 
                 (thing_name, thing) = thing_items[rest_thing_index]
 
-                if thing.offerType['offlineOnly']:
+                if thing.offerType["offlineOnly"]:
                     thing_venue = physical_venue
-                elif thing.offerType['onlineOnly']:
+                elif thing.offerType["onlineOnly"]:
                     thing_venue = virtual_venue
                 else:
                     thing_venue = physical_venue
@@ -48,7 +42,7 @@ def create_industrial_thing_offers(
                 thing_index += 1
 
             name = "{} / {}".format(thing_name, thing_venue.name)
-            if offer_index%DEACTIVATED_OFFERS_PICK_MODULO == 0:
+            if offer_index % DEACTIVATED_OFFERS_PICK_MODULO == 0:
                 is_active = False
             else:
                 is_active = True
@@ -57,7 +51,7 @@ def create_industrial_thing_offers(
                 product=thing,
                 thing_type=thing.type,
                 is_active=is_active,
-                id_at_providers=str(id_at_providers)
+                id_at_providers=str(id_at_providers),
             )
             offer_index += 1
             id_at_providers += 1
@@ -66,6 +60,6 @@ def create_industrial_thing_offers(
 
     repository.save(*thing_offers_by_name.values())
 
-    logger.info('created {} thing_offers'.format(len(thing_offers_by_name)))
+    logger.info("created {} thing_offers".format(len(thing_offers_by_name)))
 
     return thing_offers_by_name

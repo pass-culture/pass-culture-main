@@ -91,7 +91,7 @@ class GetBookingsCancelledDuringQuarantineWithPaymentTest:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock1 = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer)
-        booking1 = create_booking(stock=stock1, user=beneficiary, is_cancelled=True, token='2QLYYA')
+        booking1 = create_booking(stock=stock1, user=beneficiary, is_cancelled=True, token="2QLYYA")
         payment = create_payment(offerer=offerer, booking=booking1)
 
         repository.save(payment)
@@ -105,10 +105,10 @@ class GetBookingsCancelledDuringQuarantineWithPaymentTest:
 
 class CorrectBookingStatusTest:
     @pytest.mark.usefixtures("db_session")
-    @patch('pcapi.scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
-    def test_should_revert_booking_cancellation_for_bookings_to_update(self,
-                                                                       get_bookings_cancelled_during_quarantine_with_payment,
-                                                                       app):
+    @patch("pcapi.scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment")
+    def test_should_revert_booking_cancellation_for_bookings_to_update(
+        self, get_bookings_cancelled_during_quarantine_with_payment, app
+    ):
         # Given
         beneficiary = create_user()
         create_deposit(user=beneficiary)
@@ -133,11 +133,10 @@ class CorrectBookingStatusTest:
         assert corrected_booking.dateUsed == booking.dateCreated
 
     @pytest.mark.usefixtures("db_session")
-    @patch('pcapi.scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
+    @patch("pcapi.scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment")
     def test_should_not_revert_booking_dateused_if_booking_already_has_one(
-            self,
-            stub_get_bookings_cancelled_during_quarantine_with_payment,
-            app):
+        self, stub_get_bookings_cancelled_during_quarantine_with_payment, app
+    ):
         # Given
         dateused = datetime(2020, 7, 3, 20, 4, 4)
         beneficiary = create_user()
@@ -146,10 +145,13 @@ class CorrectBookingStatusTest:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer)
-        booking = create_booking(stock=stock,
-                                 user=beneficiary, is_cancelled=True,
-                                 date_created=datetime(2019, 7, 3, 20, 4, 4),
-                                 date_used=dateused)
+        booking = create_booking(
+            stock=stock,
+            user=beneficiary,
+            is_cancelled=True,
+            date_created=datetime(2019, 7, 3, 20, 4, 4),
+            date_used=dateused,
+        )
         payment = create_payment(offerer=offerer, booking=booking)
         repository.save(payment)
 
@@ -166,11 +168,10 @@ class CorrectBookingStatusTest:
         assert corrected_booking.dateUsed == dateused
 
     @pytest.mark.usefixtures("db_session")
-    @patch('pcapi.scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
+    @patch("pcapi.scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment")
     def test_should_not_revert_booking_if_user_has_insufficient_funds(
-            self,
-            stub_get_bookings_cancelled_during_quarantine_with_payment,
-            app):
+        self, stub_get_bookings_cancelled_during_quarantine_with_payment, app
+    ):
         # Given
         dateused = datetime(2020, 7, 3, 20, 4, 4)
         beneficiary = create_user()
@@ -179,11 +180,14 @@ class CorrectBookingStatusTest:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(beginning_datetime=datetime(2020, 4, 16), offer=offer, price=10)
-        booking = create_booking(stock=stock,
-                                 user=beneficiary, is_cancelled=True,
-                                 date_created=datetime(2019, 7, 3, 20, 4, 4),
-                                 date_used=dateused,
-                                 amount=10)
+        booking = create_booking(
+            stock=stock,
+            user=beneficiary,
+            is_cancelled=True,
+            date_created=datetime(2019, 7, 3, 20, 4, 4),
+            date_used=dateused,
+            amount=10,
+        )
         payment = create_payment(offerer=offerer, booking=booking)
         repository.save(payment)
 

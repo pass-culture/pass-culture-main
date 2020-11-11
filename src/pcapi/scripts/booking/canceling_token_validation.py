@@ -14,8 +14,8 @@ def canceling_token_validation(token: str) -> None:
             booking.dateUsed = None
             repository.save(booking)
 
-            print(f'The token ({token}) is cancelled')
+            print(f"The token ({token}) is cancelled")
         else:
             print(f"We did not cancelled the booking whose token is {token} because it has been already paid")
     else:
-        print(f'The token ({token}) is invalid')
+        print(f"The token ({token}) is invalid")

@@ -6,7 +6,7 @@ from pcapi.models import Payment
 from pcapi.repository import repository
 
 
-EXCLUDED_TOKENS = ['2QLYYA', 'BMTUME', 'LUJ9AM', 'DA8YLU', 'Q46YHM']
+EXCLUDED_TOKENS = ["2QLYYA", "BMTUME", "LUJ9AM", "DA8YLU", "Q46YHM"]
 
 
 def correct_booking_status() -> None:
@@ -35,9 +35,10 @@ def correct_booking_status() -> None:
 
 
 def get_bookings_cancelled_during_quarantine_with_payment() -> List[Booking]:
-    return Booking.query \
-        .join(Payment, Payment.bookingId == Booking.id) \
-        .filter(Payment.id != None) \
-        .filter(Booking.isCancelled == True) \
-        .filter(Booking.token.notin_(EXCLUDED_TOKENS)) \
+    return (
+        Booking.query.join(Payment, Payment.bookingId == Booking.id)
+        .filter(Payment.id != None)
+        .filter(Booking.isCancelled == True)
+        .filter(Booking.token.notin_(EXCLUDED_TOKENS))
         .all()
+    )

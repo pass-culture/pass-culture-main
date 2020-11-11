@@ -38,10 +38,10 @@ class MoveRequestedRecommendationFirstTest:
         assert ordered_recommendations[0] == requested_recommendation
         assert len(ordered_recommendations) == len(recommendations)
 
-
     @pytest.mark.usefixtures("db_session")
-    def test_move_requested_matching_offer_first_when_other_recommendation_is_requested_with_different_mediation(self,
-                                                                                                                 app):
+    def test_move_requested_matching_offer_first_when_other_recommendation_is_requested_with_different_mediation(
+        self, app
+    ):
         # Given
         user = create_user()
 

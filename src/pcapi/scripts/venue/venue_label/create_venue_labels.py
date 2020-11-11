@@ -33,7 +33,7 @@ def create_venue_labels():
         "SMAC - Scène de musiques actuelles",
         "Théâtres nationaux",
         "UNESCO - Patrimoine mondial",
-        "Ville et Pays d'art et d'histoire"
+        "Ville et Pays d'art et d'histoire",
     ]
 
     save_new_venue_labels(venue_labels)

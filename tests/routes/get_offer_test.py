@@ -29,11 +29,7 @@ class Returns200:
         repository.save(beneficiary, stock)
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(email=beneficiary.email)
-            .get(f"/offers/{humanize(offer.id)}")
-        )
+        response = TestClient(app.test_client()).with_auth(email=beneficiary.email).get(f"/offers/{humanize(offer.id)}")
 
         # Then
         response_json = response.json
@@ -55,11 +51,7 @@ class Returns200:
         repository.save(beneficiary, mediation)
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(email=beneficiary.email)
-            .get(f"/offers/{humanize(offer.id)}")
-        )
+        response = TestClient(app.test_client()).with_auth(email=beneficiary.email).get(f"/offers/{humanize(offer.id)}")
 
         # Then
         assert response.status_code == 200
@@ -70,12 +62,8 @@ class Returns200:
         date_now = datetime(2020, 10, 15)
 
         beneficiary = create_user()
-        offerer = create_offerer(
-            date_created=date_now, date_modified_at_last_provider=date_now
-        )
-        venue = create_venue(
-            offerer, date_created=date_now, date_modified_at_last_provider=date_now
-        )
+        offerer = create_offerer(date_created=date_now, date_modified_at_last_provider=date_now)
+        venue = create_venue(offerer, date_created=date_now, date_modified_at_last_provider=date_now)
         stock = create_stock_with_event_offer(
             offerer=offerer,
             venue=venue,
@@ -92,9 +80,7 @@ class Returns200:
 
         # When
         response = (
-            TestClient(app.test_client())
-            .with_auth(email=beneficiary.email)
-            .get(f"/offers/{humanize(stock.offer.id)}")
+            TestClient(app.test_client()).with_auth(email=beneficiary.email).get(f"/offers/{humanize(stock.offer.id)}")
         )
 
         # Then

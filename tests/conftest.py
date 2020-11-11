@@ -44,28 +44,28 @@ from pcapi.utils.json_encoder import EnumJSONEncoder
 
 def run_migrations():
     alembic_cfg = Config("alembic.ini")
-    alembic_cfg.attributes['sqlalchemy.url'] = os.environ.get('DATABASE_URL_TEST')
+    alembic_cfg.attributes["sqlalchemy.url"] = os.environ.get("DATABASE_URL_TEST")
     command.upgrade(alembic_cfg, "head")
 
 
 def pytest_configure(config):
-    if config.getoption('capture') == 'no':
+    if config.getoption("capture") == "no":
         TestClient.WITH_DOC = True
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def app():
     app = Flask(
         __name__,
-        template_folder=Path(pcapi.__path__[0]) / 'templates',
+        template_folder=Path(pcapi.__path__[0]) / "templates",
     )
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL_TEST')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = '@##&6cweafhv3426445'
-    app.config['REMEMBER_COOKIE_HTTPONLY'] = False
-    app.config['SESSION_COOKIE_HTTPONLY'] = False
-    app.config['TESTING'] = True
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL_TEST")
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SECRET_KEY"] = "@##&6cweafhv3426445"
+    app.config["REMEMBER_COOKIE_HTTPONLY"] = False
+    app.config["SESSION_COOKIE_HTTPONLY"] = False
+    app.config["TESTING"] = True
     app.url_map.strict_slashes = False
     app.json_encoder = EnumJSONEncoder
 
@@ -84,14 +84,14 @@ def app():
     install_local_providers()
     app.mailjet_client = Mock()
     app.redis_client = Mock()
-    app.register_blueprint(native_v1, url_prefix='/native/v1')
+    app.register_blueprint(native_v1, url_prefix="/native/v1")
 
     jwt = JWTManager(app)
 
-
-    @app.route('/test/signin', methods=['POST'])
+    @app.route("/test/signin", methods=["POST"])
     def test_signin():
         from flask import request
+
         identifier = request.get_json().get("identifier")
         user = find_user_by_email(identifier)
         login_user(user, remember=True)
@@ -122,6 +122,7 @@ def clean_database(f: object) -> object:
         return return_value
 
     return decorated_function
+
 
 @pytest.fixture(scope="session")
 def _db(app):
@@ -154,7 +155,7 @@ def assert_num_queries():
 class TestClient:
     WITH_DOC = False
     USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@btmx.fr"
-    LOCAL_ORIGIN_HEADER = {'origin': 'http://localhost:3000'}
+    LOCAL_ORIGIN_HEADER = {"origin": "http://localhost:3000"}
 
     def __init__(self, client: FlaskClient):
         self.client = client
@@ -164,23 +165,23 @@ class TestClient:
         self.email = email
         if email is None:
             self.auth_header = {
-                'Authorization': _basic_auth_str(TestClient.USER_TEST_ADMIN_EMAIL, PLAIN_DEFAULT_TESTING_PASSWORD),
+                "Authorization": _basic_auth_str(TestClient.USER_TEST_ADMIN_EMAIL, PLAIN_DEFAULT_TESTING_PASSWORD),
             }
         else:
             self.auth_header = {
-                'Authorization': _basic_auth_str(email, PLAIN_DEFAULT_TESTING_PASSWORD),
+                "Authorization": _basic_auth_str(email, PLAIN_DEFAULT_TESTING_PASSWORD),
             }
 
         return self
 
     def delete(self, route: str, headers=LOCAL_ORIGIN_HEADER):
         result = self.client.delete(route, headers={**self.auth_header, **headers})
-        self._print_spec('DELETE', route, None, result)
+        self._print_spec("DELETE", route, None, result)
         return result
 
     def get(self, route: str, headers=LOCAL_ORIGIN_HEADER):
         result = self.client.get(route, headers={**self.auth_header, **headers})
-        self._print_spec('GET', route, None, result)
+        self._print_spec("GET", route, None, result)
         return result
 
     def post(self, route: str, json: dict = None, form: dict = None, files: dict = None, headers=LOCAL_ORIGIN_HEADER):
@@ -189,33 +190,33 @@ class TestClient:
         else:
             result = self.client.post(route, json=json, headers={**self.auth_header, **headers})
 
-        self._print_spec('POST', route, json, result)
+        self._print_spec("POST", route, json, result)
         return result
 
     def patch(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
         result = self.client.patch(route, json=json, headers={**self.auth_header, **headers})
-        self._print_spec('PATCH', route, json, result)
+        self._print_spec("PATCH", route, json, result)
         return result
 
     def put(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
         result = self.client.put(route, json=json, headers={**self.auth_header, **headers})
-        self._print_spec('PUT', route, json, result)
+        self._print_spec("PUT", route, json, result)
         return result
 
     def _print_spec(self, verb: str, route: str, request_body: dict, result: Response):
         if not TestClient.WITH_DOC:
             return
 
-        print('\n===========================================')
-        print('%s :: %s' % (verb, route))
-        print('STATUS CODE :: %s' % result.status_code)
+        print("\n===========================================")
+        print("%s :: %s" % (verb, route))
+        print("STATUS CODE :: %s" % result.status_code)
 
         if request_body:
-            print('REQUEST BODY')
+            print("REQUEST BODY")
             pprint(request_body)
 
         if result.data:
-            print('RESPONSE BODY')
+            print("RESPONSE BODY")
             pprint(result.json)
 
-        print('===========================================\n')
+        print("===========================================\n")

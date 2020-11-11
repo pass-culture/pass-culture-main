@@ -35,16 +35,13 @@ class DateRangeTest:
     def test_offer_as_dict_returns_dateRange_in_ISO_8601(self):
         # Given
         offer = Offer()
-        offer.stocks = [
-            create_stock(beginning_datetime=datetime(2018, 10, 22, 10, 10, 10), offer=offer)
-        ]
+        offer.stocks = [create_stock(beginning_datetime=datetime(2018, 10, 22, 10, 10, 10), offer=offer)]
 
         # When
         offer_dict = as_dict(offer, includes=["dateRange"])
 
         # Then
-        assert offer_dict['dateRange'] == [
-            '2018-10-22T10:10:10Z', '2018-10-22T13:10:10Z']
+        assert offer_dict["dateRange"] == ["2018-10-22T10:10:10Z", "2018-10-22T13:10:10Z"]
 
     def test_is_empty_when_offer_is_on_a_thing(self):
         # given
@@ -58,9 +55,7 @@ class DateRangeTest:
     def test_matches_the_occurrence_when_only_one_occurrence(self):
         # given
         offer = create_offer_with_event_product()
-        offer.stocks = [
-            create_stock(beginning_datetime=two_days_ago, offer=offer)
-        ]
+        offer.stocks = [create_stock(beginning_datetime=two_days_ago, offer=offer)]
 
         # then
         assert offer.dateRange == DateTimes(two_days_ago, five_days_from_now)
@@ -72,7 +67,7 @@ class DateRangeTest:
             create_stock(beginning_datetime=four_days_ago, offer=offer),
             create_stock(beginning_datetime=four_days_ago, offer=offer),
             create_stock(beginning_datetime=two_days_ago, offer=offer),
-            create_stock(beginning_datetime=two_days_ago, offer=offer)
+            create_stock(beginning_datetime=two_days_ago, offer=offer),
         ]
 
         # then
@@ -85,7 +80,7 @@ class DateRangeTest:
         offer.stocks = [
             create_stock(beginning_datetime=four_days_ago, is_soft_deleted=True, offer=offer),
             create_stock(beginning_datetime=two_days_ago, offer=offer),
-            create_stock(beginning_datetime=two_days_ago, offer=offer)
+            create_stock(beginning_datetime=two_days_ago, offer=offer),
         ]
 
         # then
@@ -115,7 +110,7 @@ class CreateOfferTest:
     @pytest.mark.usefixtures("db_session")
     def test_success_when_is_digital_and_virtual_venue(self, app):
         # Given
-        url = 'http://mygame.fr/offre'
+        url = "http://mygame.fr/offre"
         digital_thing = create_product_with_thing_type(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
@@ -131,11 +126,9 @@ class CreateOfferTest:
     @pytest.mark.usefixtures("db_session")
     def test_success_when_is_physical_and_physical_venue(self, app):
         # Given
-        physical_thing = create_product_with_thing_type(
-            thing_type=ThingType.LIVRE_EDITION, url=None)
+        physical_thing = create_product_with_thing_type(thing_type=ThingType.LIVRE_EDITION, url=None)
         offerer = create_offerer()
-        physical_venue = create_venue(
-            offerer, is_virtual=False, siret=offerer.siren + '12345')
+        physical_venue = create_venue(offerer, is_virtual=False, siret=offerer.siren + "12345")
         repository.save(physical_venue)
 
         offer = create_offer_with_thing_product(venue=physical_venue, product=physical_thing)
@@ -149,8 +142,7 @@ class CreateOfferTest:
     @pytest.mark.usefixtures("db_session")
     def test_fails_when_is_digital_but_physical_venue(self, app):
         # Given
-        digital_thing = create_product_with_thing_type(
-            thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
+        digital_thing = create_product_with_thing_type(thing_type=ThingType.JEUX_VIDEO, url="http://mygame.fr/offre")
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
         repository.save(physical_venue)
@@ -161,14 +153,14 @@ class CreateOfferTest:
             repository.save(offer)
 
         # Then
-        assert errors.value.errors['venue'] == [
-            'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"']
+        assert errors.value.errors["venue"] == [
+            'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"'
+        ]
 
     @pytest.mark.usefixtures("db_session")
     def test_fails_when_is_physical_but_venue_is_virtual(self, app):
         # Given
-        physical_thing = create_product_with_thing_type(
-            thing_type=ThingType.JEUX_VIDEO, url=None)
+        physical_thing = create_product_with_thing_type(thing_type=ThingType.JEUX_VIDEO, url=None)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=True, siret=None)
         repository.save(digital_venue)
@@ -179,8 +171,7 @@ class CreateOfferTest:
             repository.save(offer)
 
         # Then
-        assert errors.value.errors['venue'] == [
-            'Une offre physique ne peut être associée au lieu "Offre numérique"']
+        assert errors.value.errors["venue"] == ['Une offre physique ne peut être associée au lieu "Offre numérique"']
 
     @pytest.mark.usefixtures("db_session")
     def test_success_when_is_event_but_durationMinute_is_empty(self, app):
@@ -201,8 +192,7 @@ class CreateOfferTest:
     @pytest.mark.usefixtures("db_session")
     def test_offer_is_marked_as_isevent_property(self):
         # Given
-        physical_thing = create_product_with_thing_type(
-            thing_type=ThingType.JEUX_VIDEO, url=None)
+        physical_thing = create_product_with_thing_type(thing_type=ThingType.JEUX_VIDEO, url=None)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=True, siret=None)
 
@@ -215,8 +205,7 @@ class CreateOfferTest:
 
     def test_offer_is_marked_as_isthing_property(self):
         # Given
-        event_product = create_product_with_event_type(
-            event_type=EventType.CINEMA)
+        event_product = create_product_with_event_type(event_type=EventType.CINEMA)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=False, siret=None)
 
@@ -243,9 +232,8 @@ class CreateOfferTest:
     @pytest.mark.usefixtures("db_session")
     def test_create_digital_offer_success(self, app):
         # Given
-        url = 'http://mygame.fr/offre'
-        digital_thing = create_product_with_thing_type(
-            thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
+        url = "http://mygame.fr/offre"
+        digital_thing = create_product_with_thing_type(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         repository.save(virtual_venue)
@@ -261,8 +249,7 @@ class CreateOfferTest:
     @pytest.mark.usefixtures("db_session")
     def test_offer_error_when_thing_is_digital_but_venue_not_virtual(self, app):
         # Given
-        digital_thing = create_product_with_thing_type(
-            thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
+        digital_thing = create_product_with_thing_type(thing_type=ThingType.JEUX_VIDEO, url="http://mygame.fr/offre")
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
         repository.save(physical_venue)
@@ -273,14 +260,15 @@ class CreateOfferTest:
             repository.save(offer)
 
         # Then
-        assert errors.value.errors['venue'] == [
-            'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"']
+        assert errors.value.errors["venue"] == [
+            'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"'
+        ]
 
 
 def test_offer_is_digital_when_it_has_an_url():
     # given
     offer = Offer()
-    offer.url = 'http://url.com'
+    offer.url = "http://url.com"
 
     # when / then
     assert offer.isDigital
@@ -290,23 +278,22 @@ def test_thing_offer_offerType_returns_dict_matching_ThingType_enum():
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_offer_with_thing_product(
-        venue=venue, thing_type=ThingType.LIVRE_EDITION)
+    offer = create_offer_with_thing_product(venue=venue, thing_type=ThingType.LIVRE_EDITION)
     expected_value = {
-        'conditionalFields': ["author", "isbn"],
-        'proLabel': 'Livres papier ou numérique, abonnements lecture',
-        'appLabel': 'Livre ou carte lecture',
-        'offlineOnly': False,
-        'onlineOnly': False,
-        'sublabel': 'Lire',
-        'description': 'S’abonner à un quotidien d’actualité ?'
-                       ' À un hebdomadaire humoristique ? '
-                       'À un mensuel dédié à la nature ? '
-                       'Acheter une BD ou un manga ? '
-                       'Ou tout simplement ce livre dont tout le monde parle ?',
-        'value': 'ThingType.LIVRE_EDITION',
-        'type': 'Thing',
-        'isActive': True
+        "conditionalFields": ["author", "isbn"],
+        "proLabel": "Livres papier ou numérique, abonnements lecture",
+        "appLabel": "Livre ou carte lecture",
+        "offlineOnly": False,
+        "onlineOnly": False,
+        "sublabel": "Lire",
+        "description": "S’abonner à un quotidien d’actualité ?"
+        " À un hebdomadaire humoristique ? "
+        "À un mensuel dédié à la nature ? "
+        "Acheter une BD ou un manga ? "
+        "Ou tout simplement ce livre dont tout le monde parle ?",
+        "value": "ThingType.LIVRE_EDITION",
+        "type": "Thing",
+        "isActive": True,
     }
 
     # when
@@ -320,22 +307,21 @@ def test_event_offer_offerType_returns_dict_matching_EventType_enum():
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_offer_with_event_product(
-        venue, event_type=EventType.SPECTACLE_VIVANT)
+    offer = create_offer_with_event_product(venue, event_type=EventType.SPECTACLE_VIVANT)
     expected_value = {
-        'conditionalFields': ["author", "showType", "stageDirector", "performer"],
-        'proLabel': "Spectacle vivant",
-        'appLabel': 'Spectacle',
-        'offlineOnly': True,
-        'onlineOnly': False,
-        'sublabel': "Applaudir",
-        'description': "Suivre un géant de 12 mètres dans la ville ? "
-                       "Rire aux éclats devant un stand up ?"
-                       " Rêver le temps d’un opéra ou d’un spectacle de danse ? "
-                       "Assister à une pièce de théâtre, ou se laisser conter une histoire ?",
-        'value': 'EventType.SPECTACLE_VIVANT',
-        'type': 'Event',
-        'isActive': True
+        "conditionalFields": ["author", "showType", "stageDirector", "performer"],
+        "proLabel": "Spectacle vivant",
+        "appLabel": "Spectacle",
+        "offlineOnly": True,
+        "onlineOnly": False,
+        "sublabel": "Applaudir",
+        "description": "Suivre un géant de 12 mètres dans la ville ? "
+        "Rire aux éclats devant un stand up ?"
+        " Rêver le temps d’un opéra ou d’un spectacle de danse ? "
+        "Assister à une pièce de théâtre, ou se laisser conter une histoire ?",
+        "value": "EventType.SPECTACLE_VIVANT",
+        "type": "Event",
+        "isActive": True,
     }
 
     # when
@@ -349,7 +335,7 @@ def test_thing_offer_offerType_returns_None_when_type_does_not_match_ThingType_e
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_offer_with_thing_product(venue=venue, thing_type='')
+    offer = create_offer_with_thing_product(venue=venue, thing_type="")
 
     # when
     offer_type = offer.offerType
@@ -362,7 +348,7 @@ def test_event_offer_offerType_returns_None_when_type_does_not_match_EventType_e
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_offer_with_event_product(venue, event_type='Workshop')
+    offer = create_offer_with_event_product(venue, event_type="Workshop")
 
     # when
     offer_type = offer.offerType
@@ -435,10 +421,7 @@ class ActiveMediationTest:
     def test_returns_none_when_all_mediations_are_deactivated(self):
         # given
         offer = Offer()
-        offer.mediations = [
-            create_mediation(offer, is_active=False),
-            create_mediation(offer, is_active=False)
-        ]
+        offer.mediations = [create_mediation(offer, is_active=False), create_mediation(offer, is_active=False)]
 
         # then
         assert offer.activeMediation is None
@@ -449,7 +432,7 @@ class ActiveMediationTest:
         offer.mediations = [
             create_mediation(offer, date_created=four_days_ago, is_active=True),
             create_mediation(offer, date_created=now, is_active=False),
-            create_mediation(offer, date_created=two_days_ago, is_active=True)
+            create_mediation(offer, date_created=two_days_ago, is_active=True),
         ]
 
         # then
@@ -470,9 +453,7 @@ class DateRangeTest:
         # Given
         offer = Offer()
         offer.type = str(EventType.CINEMA)
-        offer.stocks = [
-            create_stock(beginning_datetime=two_days_ago, offer=offer)
-        ]
+        offer.stocks = [create_stock(beginning_datetime=two_days_ago, offer=offer)]
 
         # When / Then
         assert offer.dateRange == DateTimes(two_days_ago, two_days_ago)
@@ -485,7 +466,7 @@ class DateRangeTest:
             create_stock(beginning_datetime=two_days_ago, offer=offer),
             create_stock(beginning_datetime=four_days_ago, offer=offer),
             create_stock(beginning_datetime=four_days_ago, offer=offer),
-            create_stock(beginning_datetime=two_days_ago, offer=offer)
+            create_stock(beginning_datetime=two_days_ago, offer=offer),
         ]
 
         # When / Then
@@ -502,12 +483,11 @@ class DateRangeTest:
 
 
 class IsEditableTest:
-
     def test_returns_false_when_offer_is_coming_from_TiteLive_provider(self, app):
         # given
         provider = Provider()
-        provider.name = 'myProvider'
-        provider.localClass = 'TiteLive is my class'
+        provider.name = "myProvider"
+        provider.localClass = "TiteLive is my class"
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue=venue)
@@ -520,8 +500,8 @@ class IsEditableTest:
     def test_returns_true_when_offer_is_coming_from_Allocine_provider(self, app):
         # given
         provider = Provider()
-        provider.name = 'my allocine provider'
-        provider.localClass = 'AllocineStocks'
+        provider.name = "my allocine provider"
+        provider.localClass = "AllocineStocks"
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -566,8 +546,8 @@ class IsFromProviderTest:
     def test_returns_True_when_offer_is_coming_from_TiteLive_provider(self, app):
         # given
         provider = Provider()
-        provider.name = 'myProvider'
-        provider.localClass = 'TiteLive is my class'
+        provider.name = "myProvider"
+        provider.localClass = "TiteLive is my class"
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue=venue)
@@ -592,7 +572,7 @@ class ThumbUrlTest:
         offer.mediations = [create_mediation(idx=1, date_created=datetime(2019, 11, 1, 10, 0, 0), thumb_count=1)]
 
         # then
-        assert offer.thumbUrl == 'http://localhost/storage/thumbs/mediations/AE'
+        assert offer.thumbUrl == "http://localhost/storage/thumbs/mediations/AE"
 
     def test_should_return_thumb_url_with_product_when_mediation_does_not_exist(self):
         # given
@@ -601,14 +581,14 @@ class ThumbUrlTest:
         offer.product.id = 1
 
         # then
-        assert offer.thumbUrl == 'http://localhost/storage/thumbs/products/AE'
+        assert offer.thumbUrl == "http://localhost/storage/thumbs/products/AE"
 
     def test_should_return_empty_thumb_url_when_no_product_nor_mediation(self):
         # given
         offer = Offer()
 
         # then
-        assert offer.thumbUrl == ''
+        assert offer.thumbUrl == ""
 
 
 class OfferTypeTest:
@@ -624,4 +604,4 @@ class OfferTypeTest:
         category = offer.offer_category
 
         # Then
-        assert category == 'JEUX_VIDEO'
+        assert category == "JEUX_VIDEO"

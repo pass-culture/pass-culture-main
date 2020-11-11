@@ -11,14 +11,14 @@ from pcapi.scripts.venue.move_all_offers_for_venue import move_all_offers_from_v
 
 
 class MoveAllOffersFromVenueToOtherVenueTest:
-    @patch('pcapi.scripts.venue.move_all_offers_for_venue.redis')
+    @patch("pcapi.scripts.venue.move_all_offers_for_venue.redis")
     @pytest.mark.usefixtures("db_session")
     def should_change_venue_id_to_destination_id_for_offers_linked_to_origin_venue(self, mocked_redis, app):
         # Given
         offerer = create_offerer()
         origin_venue = create_venue(offerer)
         offers = [create_offer_with_thing_product(origin_venue), create_offer_with_thing_product(origin_venue)]
-        destination_venue = create_venue(offerer, siret=offerer.siren + '56789')
+        destination_venue = create_venue(offerer, siret=offerer.siren + "56789")
         repository.save(*offers, destination_venue)
 
         # When

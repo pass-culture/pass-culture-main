@@ -21,13 +21,11 @@ class Get:
             invalid_id = 12
 
             # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .get('/offerers/%s' % invalid_id)
+            response = TestClient(app.test_client()).with_auth(user.email).get("/offerers/%s" % invalid_id)
 
             # then
             assert response.status_code == 404
-            assert response.json['global'] == ['La page que vous recherchez n\'existe pas']
+            assert response.json["global"] == ["La page que vous recherchez n'existe pas"]
 
     class Returns200:
         @pytest.mark.usefixtures("db_session")
@@ -40,13 +38,11 @@ class Get:
             user_offerer = create_user_offerer(user, offerer)
             repository.save(user_offerer, venue)
             # when
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .get(f'/offerers/{humanize(offerer.id)}')
+            response = TestClient(app.test_client()).with_auth(user.email).get(f"/offerers/{humanize(offerer.id)}")
 
             # then
             assert response.status_code == 200
             response_json = response.json
-            assert 'bic' in response_json['managedVenues'][0]
-            assert 'iban' in response_json['managedVenues'][0]
-            assert response_json['userHasAccess'] is True
+            assert "bic" in response_json["managedVenues"][0]
+            assert "iban" in response_json["managedVenues"][0]
+            assert response_json["userHasAccess"] is True

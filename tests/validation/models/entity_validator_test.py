@@ -18,7 +18,7 @@ def test_should_return_errors_when_invalid_address():
     api_errors = validate(offerer)
 
     # Then
-    assert api_errors.errors == {'postalCode': ['Ce code postal est invalide']}
+    assert api_errors.errors == {"postalCode": ["Ce code postal est invalide"]}
 
 
 def test_should_not_return_errors_when_valid_address():
@@ -41,8 +41,8 @@ def test_should_return_errors_when_invalid_bank_information():
 
     # Then
     assert api_errors.errors == {
-        'bic': ['Le BIC renseigné ("1234") est invalide'],
-        'iban': ['L’IBAN renseigné ("1234") est invalide']
+        "bic": ['Le BIC renseigné ("1234") est invalide'],
+        "iban": ['L’IBAN renseigné ("1234") est invalide'],
     }
 
 
@@ -68,7 +68,7 @@ def test_should_return_errors_when_invalid_offer():
 
     # Then
     assert api_errors.errors == {
-        'venue': ['Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"']
+        "venue": ['Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"']
     }
 
 
@@ -93,7 +93,7 @@ def test_should_return_errors_when_invalid_offerer():
     api_errors = validate(offerer)
 
     # Then
-    assert api_errors.errors == {'siren': ['Ce code SIREN est invalide']}
+    assert api_errors.errors == {"siren": ["Ce code SIREN est invalide"]}
 
 
 def test_should_not_return_errors_when_valid_offerer():
@@ -116,7 +116,7 @@ def test_should_return_errors_when_invalid_product():
 
     # Then
     assert api_errors.errors == {
-        'url': ["Une offre de type Cinéma - cartes d'abonnement ne peut pas être "'numérique']
+        "url": ["Une offre de type Cinéma - cartes d'abonnement ne peut pas être " "numérique"]
     }
 
 
@@ -139,7 +139,7 @@ def test_should_return_errors_when_invalid_stock():
     api_errors = validate(stock)
 
     # Then
-    assert api_errors.errors == {'quantity': ['Le stock doit être positif']}
+    assert api_errors.errors == {"quantity": ["Le stock doit être positif"]}
 
 
 def test_should_not_return_errors_when_valid_stock():
@@ -153,23 +153,23 @@ def test_should_not_return_errors_when_valid_stock():
     assert api_errors.errors == {}
 
 
-@patch('pcapi.validation.models.user.user_queries.count_users_by_email')
+@patch("pcapi.validation.models.user.user_queries.count_users_by_email")
 def test_should_return_errors_when_invalid_user(mock_count_users_by_email, app):
     # Given
-    user = create_user(public_name='Jo')
+    user = create_user(public_name="Jo")
     mock_count_users_by_email.return_value = 0
 
     # When
     api_errors = validate(user)
 
     # Then
-    assert api_errors.errors == {'publicName': ['Tu dois saisir au moins 3 caractères.']}
+    assert api_errors.errors == {"publicName": ["Tu dois saisir au moins 3 caractères."]}
 
 
-@patch('pcapi.validation.models.user.user_queries.count_users_by_email')
+@patch("pcapi.validation.models.user.user_queries.count_users_by_email")
 def test_should_not_return_errors_when_valid_user(mock_count_users_by_email, app):
     # Given
-    user = create_user(public_name='Joe la bricole')
+    user = create_user(public_name="Joe la bricole")
     mock_count_users_by_email.return_value = 0
 
     # When
@@ -188,7 +188,7 @@ def test_should_return_errors_when_invalid_venue():
     api_errors = validate(venue)
 
     # Then
-    assert api_errors.errors == {'siret': ['Ce code SIRET est invalide : 123']}
+    assert api_errors.errors == {"siret": ["Ce code SIRET est invalide : 123"]}
 
 
 def test_should_not_return_errors_when_valid_venue():
@@ -211,7 +211,4 @@ def test_should_return_multiple_errors_when_invalid_offerer_and_address():
     api_errors = validate(offerer)
 
     # Then
-    assert api_errors.errors == {
-        'postalCode': ['Ce code postal est invalide'],
-        'siren': ['Ce code SIREN est invalide']
-    }
+    assert api_errors.errors == {"postalCode": ["Ce code postal est invalide"], "siren": ["Ce code SIREN est invalide"]}

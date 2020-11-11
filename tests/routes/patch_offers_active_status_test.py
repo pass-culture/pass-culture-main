@@ -27,9 +27,7 @@ class Returns204:
 
         # When
         response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .patch(f"{API_URL}/offers/active-status", json=json)
+            TestClient(app.test_client()).with_auth(user.email).patch(f"{API_URL}/offers/active-status", json=json)
         )
 
         # Then
@@ -53,9 +51,7 @@ class Returns204:
 
         # When
         response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .patch(f"{API_URL}/offers/active-status", json=json)
+            TestClient(app.test_client()).with_auth(user.email).patch(f"{API_URL}/offers/active-status", json=json)
         )
 
         # Then

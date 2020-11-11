@@ -12,7 +12,7 @@ def test_should_return_error_message_when_siren_has_not_exactly_9_characters():
     api_error = validate(offerer, api_errors)
 
     # Then
-    assert api_error.errors['siren'] == ['Ce code SIREN est invalide']
+    assert api_error.errors["siren"] == ["Ce code SIREN est invalide"]
 
 
 def test_should_not_return_error_message_when_siren_has_exactly_9_characters():
@@ -36,4 +36,4 @@ def test_should_return_error_message_when_siren_has_no_characters():
     api_error = validate(offerer, api_errors)
 
     # Then
-    assert api_error.errors['siren'] == ['Ce code SIREN est invalide']
+    assert api_error.errors["siren"] == ["Ce code SIREN est invalide"]

@@ -23,10 +23,7 @@ def get_existing_pro_validated_user_with_at_least_one_visible_offer():
             for venue in uo.offerer.managedVenues:
                 if venue.offers:
                     offer = venue.offers[0]
-                    return {
-                        "offer": get_offer_helper(offer),
-                        "user": get_pro_helper(user)
-                    }
+                    return {"offer": get_offer_helper(offer), "user": get_pro_helper(user)}
 
 
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue():
@@ -42,7 +39,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
                     return {
                         "offerer": get_offerer_helper(uo.offerer),
                         "user": get_pro_helper(user),
-                        "venue": get_venue_helper(venue)
+                        "venue": get_venue_helper(venue),
                     }
 
 
@@ -58,7 +55,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
                     return {
                         "offerer": get_offerer_helper(uo.offerer),
                         "user": get_pro_helper(user),
-                        "venue": get_venue_helper(venue)
+                        "venue": get_venue_helper(venue),
                     }
 
 
@@ -77,8 +74,9 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
                             "user": get_pro_helper(user),
-                            "venue": get_venue_helper(venue)
+                            "venue": get_venue_helper(venue),
                         }
+
 
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_event_offer():
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
@@ -95,5 +93,5 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
                             "user": get_pro_helper(user),
-                            "venue": get_venue_helper(venue)
+                            "venue": get_venue_helper(venue),
                         }

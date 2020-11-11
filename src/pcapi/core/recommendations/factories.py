@@ -21,7 +21,7 @@ class RecommendationFactory(BaseFactory):
     user = factory.SubFactory(users_factories.UserFactory)
     mediation = factory.SubFactory(MediationFactory)
     offer = factory.Maybe(
-        'mediation',
-        factory.SelfAttribute('mediation.offer'),
+        "mediation",
+        factory.SelfAttribute("mediation.offer"),
         factory.SubFactory(offers_factories.OfferFactory),
     )

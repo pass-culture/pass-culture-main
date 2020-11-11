@@ -21,14 +21,18 @@ def test_nOffers_with_one_venue_provider(app):
     offerer = create_offerer()
     venue = create_venue(offerer)
     venue_provider = create_venue_provider(venue, provider)
-    offer_1 = create_offer_with_thing_product(venue, last_provider_id=provider.id, id_at_providers='offer1',
-                                              last_provider=provider)
-    offer_2 = create_offer_with_event_product(venue, last_provider_id=provider.id, id_at_providers='offer2',
-                                              last_provider=provider)
-    offer_3 = create_offer_with_event_product(venue, last_provider_id=provider.id, id_at_providers='offer3',
-                                              last_provider=provider)
-    offer_4 = create_offer_with_thing_product(venue, last_provider_id=provider.id, id_at_providers='offer4',
-                                              last_provider=provider)
+    offer_1 = create_offer_with_thing_product(
+        venue, last_provider_id=provider.id, id_at_providers="offer1", last_provider=provider
+    )
+    offer_2 = create_offer_with_event_product(
+        venue, last_provider_id=provider.id, id_at_providers="offer2", last_provider=provider
+    )
+    offer_3 = create_offer_with_event_product(
+        venue, last_provider_id=provider.id, id_at_providers="offer3", last_provider=provider
+    )
+    offer_4 = create_offer_with_thing_product(
+        venue, last_provider_id=provider.id, id_at_providers="offer4", last_provider=provider
+    )
     repository.save(offer_1, offer_2, offer_3, offer_4, venue_provider)
 
     # when
@@ -41,22 +45,26 @@ def test_nOffers_with_one_venue_provider(app):
 @pytest.mark.usefixtures("db_session")
 def test_nOffers_with_two_venue_providers_from_different_providers(app):
     # given
-    provider1 = create_provider(local_class='OpenAgenda')
-    provider2 = create_provider(local_class='TiteLive')
+    provider1 = create_provider(local_class="OpenAgenda")
+    provider2 = create_provider(local_class="TiteLive")
     repository.save(provider1, provider2)
 
     offerer = create_offerer()
     venue = create_venue(offerer)
     venue_provider1 = create_venue_provider(venue, provider1)
     venue_provider2 = create_venue_provider(venue, provider2)
-    offer_1 = create_offer_with_thing_product(venue, last_provider_id=provider1.id, id_at_providers='offer1',
-                                              last_provider=provider1)
-    offer_2 = create_offer_with_event_product(venue, last_provider_id=provider2.id, id_at_providers='offer2',
-                                              last_provider=provider2)
-    offer_3 = create_offer_with_event_product(venue, last_provider_id=provider1.id, id_at_providers='offer3',
-                                              last_provider=provider1)
-    offer_4 = create_offer_with_thing_product(venue, last_provider_id=provider1.id, id_at_providers='offer4',
-                                              last_provider=provider1)
+    offer_1 = create_offer_with_thing_product(
+        venue, last_provider_id=provider1.id, id_at_providers="offer1", last_provider=provider1
+    )
+    offer_2 = create_offer_with_event_product(
+        venue, last_provider_id=provider2.id, id_at_providers="offer2", last_provider=provider2
+    )
+    offer_3 = create_offer_with_event_product(
+        venue, last_provider_id=provider1.id, id_at_providers="offer3", last_provider=provider1
+    )
+    offer_4 = create_offer_with_thing_product(
+        venue, last_provider_id=provider1.id, id_at_providers="offer4", last_provider=provider1
+    )
     repository.save(offer_1, offer_2, offer_3, offer_4, venue_provider1, venue_provider2)
 
     # when
@@ -71,9 +79,9 @@ def test_nOffers_with_two_venue_providers_from_different_providers(app):
 @pytest.mark.usefixtures("db_session")
 def test_raise_errors_if_venue_provider_already_exists_with_same_information(app):
     # given
-    provider = activate_provider('TiteLiveStocks')
+    provider = activate_provider("TiteLiveStocks")
     offerer = create_offerer()
-    venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
+    venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
     venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider="775671464")
     repository.save(venue_provider)
 
@@ -83,13 +91,13 @@ def test_raise_errors_if_venue_provider_already_exists_with_same_information(app
         repository.save(venue_provider2)
 
     # then
-    assert errors.value.errors['global'] == ["Votre lieu est déjà lié à cette source"]
+    assert errors.value.errors["global"] == ["Votre lieu est déjà lié à cette source"]
 
 
 @pytest.mark.usefixtures("db_session")
 def test_should_have_attribute_matching_allocine_when_having_allocine_provider(app):
     # given
-    provider = activate_provider('AllocineStocks')
+    provider = activate_provider("AllocineStocks")
     offerer = create_offerer()
     venue = create_venue(offerer)
     venue_provider = create_venue_provider(venue, provider)
@@ -105,7 +113,7 @@ def test_should_have_attribute_matching_allocine_when_having_allocine_provider(a
 @pytest.mark.usefixtures("db_session")
 def test_should_not_be_matched_has_allocine_provider_with_other_provider(app):
     # given
-    provider = activate_provider('TiteLiveStocks')
+    provider = activate_provider("TiteLiveStocks")
     offerer = create_offerer()
     venue = create_venue(offerer)
     venue_provider = create_venue_provider(venue, provider)

@@ -7,7 +7,7 @@ class ProductTypeTest:
     class IsThingTest:
         def test_if_name_is_empty_return_False(self):
             # When
-            is_thing = ProductType.is_thing('')
+            is_thing = ProductType.is_thing("")
 
             # Then
             assert is_thing is False
@@ -29,7 +29,7 @@ class ProductTypeTest:
     class IsEventTest:
         def test_if_name_is_empty_return_False(self):
             # When
-            is_event = ProductType.is_event('')
+            is_event = ProductType.is_event("")
 
             # Then
             assert is_event is False
@@ -51,7 +51,7 @@ class ProductTypeTest:
     class IsBookTest:
         def test_if_type_is_empty_return_False(self):
             # When
-            is_event = ProductType.is_book('')
+            is_event = ProductType.is_book("")
 
             # Then
             assert is_event is False

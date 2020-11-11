@@ -14,36 +14,19 @@ from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 
 
-class MediationSQLEntity(PcObject,
-                         Model,
-                         HasThumbMixin,
-                         ProvidableMixin,
-                         DeactivableMixin):
-    __tablename__ = 'mediation'
+class MediationSQLEntity(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
+    __tablename__ = "mediation"
 
-    id = Column(BigInteger,
-                primary_key=True,
-                autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     credit = Column(String(255), nullable=True)
 
-    dateCreated = Column(DateTime,
-                         nullable=False,
-                         default=datetime.utcnow)
+    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    authorId = Column(BigInteger,
-                      ForeignKey("user.id"),
-                      nullable=True)
+    authorId = Column(BigInteger, ForeignKey("user.id"), nullable=True)
 
-    author = relationship('UserSQLEntity',
-                          foreign_keys=[authorId],
-                          backref='mediations')
+    author = relationship("UserSQLEntity", foreign_keys=[authorId], backref="mediations")
 
-    offerId = Column(BigInteger,
-                     ForeignKey('offer.id'),
-                     index=True,
-                     nullable=False)
+    offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer = relationship('Offer',
-                         foreign_keys=[offerId],
-                         backref='mediations')
+    offer = relationship("Offer", foreign_keys=[offerId], backref="mediations")

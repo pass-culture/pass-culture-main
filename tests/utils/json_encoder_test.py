@@ -8,10 +8,7 @@ def test_json_encoder(app):
         admin = "admin"
         editor = "editor"
 
-    obj = {
-        'text': "foo",
-        'rights': RightsType.editor
-    }
+    obj = {"text": "foo", "rights": RightsType.editor}
 
     json_string = EnumJSONEncoder().encode(obj)
 

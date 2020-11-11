@@ -12,16 +12,16 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = '5f81d0abe040'
+revision = "5f81d0abe040"
 down_revision = None
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    sql_file = Path(os.path.dirname(os.path.realpath(__file__))) / 'sql' / 'schema_init.sql'
+    sql_file = Path(os.path.dirname(os.path.realpath(__file__))) / "sql" / "schema_init.sql"
 
-    with open(sql_file, 'r') as file:
+    with open(sql_file, "r") as file:
         data = file.read()
     op.execute(data)
 

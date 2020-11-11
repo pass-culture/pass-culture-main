@@ -22,13 +22,15 @@ venue_identifier_repository = VenueWithBasicInformationSQLRepository()
 # Usecases
 create_beneficiary_from_application = CreateBeneficiaryFromApplication(
     beneficiary_pre_subscription_repository=beneficiary_pre_subscription_repository,
-    beneficiary_repository=beneficiary_repository
+    beneficiary_repository=beneficiary_repository,
 )
 
-save_offerer_bank_informations = SaveOffererBankInformations(offerer_repository=offerer_repository,
-                                                             bank_informations_repository=bank_informations_repository
-                                                             )
+save_offerer_bank_informations = SaveOffererBankInformations(
+    offerer_repository=offerer_repository, bank_informations_repository=bank_informations_repository
+)
 
-save_venue_bank_informations = SaveVenueBankInformations(offerer_repository=offerer_repository,
-                                                         venue_repository=venue_identifier_repository,
-                                                         bank_informations_repository=bank_informations_repository)
+save_venue_bank_informations = SaveVenueBankInformations(
+    offerer_repository=offerer_repository,
+    venue_repository=venue_identifier_repository,
+    bank_informations_repository=bank_informations_repository,
+)

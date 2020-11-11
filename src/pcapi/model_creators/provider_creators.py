@@ -21,9 +21,7 @@ SAVED_COUNTS = {}
 def save_counts():
     for model_name in pcapi.models.__all__:
         model = getattr(pcapi.models, model_name)
-        if isclass(model) \
-                and issubclass(model, PcObject) \
-                and model_name != 'PcObject':
+        if isclass(model) and issubclass(model, PcObject) and model_name != "PcObject":
             SAVED_COUNTS[model_name] = model.query.count()
 
 
@@ -33,12 +31,15 @@ def assert_created_counts(**counts):
         all_records_count = model.query.count()
         previous_records_count = SAVED_COUNTS[model_name]
         last_created_count = all_records_count - previous_records_count
-        assert last_created_count == counts[model_name], \
-            'Model [%s], Actual [%s], Expected [%s]' % (model_name, last_created_count, counts[model_name])
+        assert last_created_count == counts[model_name], "Model [%s], Actual [%s], Expected [%s]" % (
+            model_name,
+            last_created_count,
+            counts[model_name],
+        )
 
 
 def assert_created_thumbs():
-    assert len(glob(str(STORAGE_DIR / 'thumbs' / '*'))) == 1
+    assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
 
 
 def provider_test(app, provider, venue_provider, **counts):
@@ -51,14 +52,16 @@ def provider_test(app, provider, venue_provider, **counts):
     save_counts()
     provider_object.updateObjects()
 
-    for count_name in ['updatedObjects',
-                       'createdObjects',
-                       'checkedObjects',
-                       'erroredObjects',
-                       'createdThumbs',
-                       'updatedThumbs',
-                       'checkedThumbs',
-                       'erroredThumbs']:
+    for count_name in [
+        "updatedObjects",
+        "createdObjects",
+        "checkedObjects",
+        "erroredObjects",
+        "createdThumbs",
+        "updatedThumbs",
+        "checkedThumbs",
+        "erroredThumbs",
+    ]:
         assert getattr(provider_object, count_name) == counts[count_name]
         del counts[count_name]
     assert_created_counts(**counts)
@@ -72,9 +75,9 @@ def activate_provider(provider_classname: str) -> Provider:
     return provider
 
 
-def create_providable_info(model_name: Model = Product,
-                           id_at_providers: str = '1',
-                           date_modified: datetime = None) -> ProvidableInfo:
+def create_providable_info(
+    model_name: Model = Product, id_at_providers: str = "1", date_modified: datetime = None
+) -> ProvidableInfo:
     providable_info = ProvidableInfo()
     providable_info.type = model_name
     providable_info.id_at_providers = id_at_providers

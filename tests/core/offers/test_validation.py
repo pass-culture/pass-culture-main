@@ -16,9 +16,7 @@ class CheckUserHasRightsOnOffererTest:
         # Given
         user = create_user(is_admin=False)
         offerer = create_offerer()
-        user_offerer = create_user_offerer(
-            user=user, offerer=offerer, validation_token="ABCD"
-        )
+        user_offerer = create_user_offerer(user=user, offerer=offerer, validation_token="ABCD")
 
         # When
         with pytest.raises(ApiErrors) as errors:
@@ -26,10 +24,7 @@ class CheckUserHasRightsOnOffererTest:
 
         # Then
         assert errors.value.errors == {
-            "global": [
-                "Vous n'avez pas les droits d'accès"
-                " suffisant pour accéder à cette information."
-            ]
+            "global": ["Vous n'avez pas les droits d'accès" " suffisant pour accéder à cette information."]
         }
 
     def test_should_raise_errors_when_no_user_offerer(self):
@@ -42,10 +37,7 @@ class CheckUserHasRightsOnOffererTest:
 
         # Then
         assert errors.value.errors == {
-            "global": [
-                "Vous n'avez pas les droits d'accès"
-                " suffisant pour accéder à cette information."
-            ]
+            "global": ["Vous n'avez pas les droits d'accès" " suffisant pour accéder à cette information."]
         }
 
 
@@ -53,12 +45,12 @@ class CheckUserHasRightsOnOffererTest:
 class CheckOfferIsEditableTest:
     def test_raises_error_when_offer_is_not_editable(self):
         offerer = offerers_factories.ProviderFactory()
-        offer = factories.OfferFactory(lastProvider=offerer, idAtProviders='1')
+        offer = factories.OfferFactory(lastProvider=offerer, idAtProviders="1")
 
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_is_editable(offer)
 
-        assert error.value.errors['global'] == ["Les offres importées ne sont pas modifiables"]
+        assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
     def test_does_not_raise_error_when_offer_type_is_editable(self):
         offer = factories.OfferFactory(lastProviderId=None)
@@ -78,10 +70,9 @@ class CheckRequiredDatesForStock:
                 booking_limit_datetime=None,
             )
 
-        assert error.value.errors['global'] == [
+        assert error.value.errors["global"] == [
             "Impossible de mettre une date de début si l'offre ne porte pas sur un événement"
         ]
-
 
     def test_thing_offer_ok_with_booking_limit_datetime(self):
         offer = factories.ThingOfferFactory()
@@ -110,7 +101,7 @@ class CheckRequiredDatesForStock:
                 beginning=None,
                 booking_limit_datetime=datetime.datetime.now(),
             )
-        assert error.value.errors['beginningDatetime'] == ['Ce paramètre est obligatoire']
+        assert error.value.errors["beginningDatetime"] == ["Ce paramètre est obligatoire"]
 
     def test_event_offer_must_have_booking_limit_datetime(self):
         offer = factories.EventOfferFactory()
@@ -121,7 +112,7 @@ class CheckRequiredDatesForStock:
                 beginning=datetime.datetime.now(),
                 booking_limit_datetime=None,
             )
-        assert error.value.errors['bookingLimitDatetime'] == ['Ce paramètre est obligatoire']
+        assert error.value.errors["bookingLimitDatetime"] == ["Ce paramètre est obligatoire"]
 
     def test_event_offer_ok_with_beginning_and_booking_limit_datetime(self):
         offer = factories.EventOfferFactory()
@@ -137,12 +128,12 @@ class CheckRequiredDatesForStock:
 class CheckStocksAreEditableForOfferTest:
     def should_fail_when_offer_is_from_provider(self, app):
         provider = offerers_factories.ProviderFactory()
-        offer = factories.OfferFactory(lastProvider=provider, idAtProviders='1')
+        offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stocks_are_editable_for_offer(offer)
 
-        assert error.value.errors['global'] == ['Les offres importées ne sont pas modifiables']
+        assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
     def should_not_raise_an_error_when_offer_is_not_from_provider(self):
         offer = factories.OfferFactory(lastProvider=None)

@@ -10,5 +10,5 @@ MOCK_NAMES = [
     "Lieu non dit",
     "Théâtre Balboa",
     "Cinéma du coin",
-    "Bar des amis"
+    "Bar des amis",
 ]

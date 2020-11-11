@@ -31,31 +31,31 @@ class Patch:
             repository.save(user, venue, offerer, user_offerer)
             mediation_id = mediation.id
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-            data = {'isActive': False}
+            data = {"isActive": False}
 
             # when
-            response = auth_request.patch('/mediations/%s' % humanize(mediation.id), json=data)
+            response = auth_request.patch("/mediations/%s" % humanize(mediation.id), json=data)
 
             # then
             mediation = MediationSQLEntity.query.get(mediation_id)
             assert response.status_code == 200
-            assert response.json['id'] == humanize(mediation.id)
-            assert response.json['thumbUrl'] == mediation.thumbUrl
-            assert mediation.isActive == data['isActive']
+            assert response.json["id"] == humanize(mediation.id)
+            assert response.json["thumbUrl"] == mediation.thumbUrl
+            assert mediation.isActive == data["isActive"]
 
             assert response.json == {
-                'authorId': None,
-                'credit': None,
-                'dateCreated': format_into_utc_date(mediation.dateCreated),
-                'dateModifiedAtLastProvider': format_into_utc_date(mediation.dateModifiedAtLastProvider),
-                'fieldsUpdated': [],
-                'id': humanize(mediation.id),
-                'idAtProviders': None,
-                'isActive': data['isActive'],
-                'lastProviderId': None,
-                'offerId': humanize(offer.id),
-                'thumbCount': 0,
-                'thumbUrl': None
+                "authorId": None,
+                "credit": None,
+                "dateCreated": format_into_utc_date(mediation.dateCreated),
+                "dateModifiedAtLastProvider": format_into_utc_date(mediation.dateModifiedAtLastProvider),
+                "fieldsUpdated": [],
+                "id": humanize(mediation.id),
+                "idAtProviders": None,
+                "isActive": data["isActive"],
+                "lastProviderId": None,
+                "offerId": humanize(offer.id),
+                "thumbCount": 0,
+                "thumbUrl": None,
             }
 
         @pytest.mark.usefixtures("db_session")
@@ -70,20 +70,31 @@ class Patch:
             repository.save(mediation)
             repository.save(user, venue, offerer, user_offerer)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-            data = {'isActive': False}
+            data = {"isActive": False}
 
             # when
-            response = auth_request.patch('/mediations/%s' % humanize(mediation.id), json=data)
+            response = auth_request.patch("/mediations/%s" % humanize(mediation.id), json=data)
 
             # then
             assert response.status_code == 200
-            assert set(response.json) == {'authorId', 'credit', 'dateCreated', 'dateModifiedAtLastProvider',
-                                          'fieldsUpdated', 'id', 'idAtProviders', 'isActive', 'lastProviderId',
-                                          'offerId', 'thumbCount', 'thumbUrl'}
+            assert set(response.json) == {
+                "authorId",
+                "credit",
+                "dateCreated",
+                "dateModifiedAtLastProvider",
+                "fieldsUpdated",
+                "id",
+                "idAtProviders",
+                "isActive",
+                "lastProviderId",
+                "offerId",
+                "thumbCount",
+                "thumbUrl",
+            }
 
         @pytest.mark.usefixtures("db_session")
-        @patch('pcapi.routes.mediations.feature_queries.is_active', return_value=True)
-        @patch('pcapi.routes.mediations.redis.add_offer_id')
+        @patch("pcapi.routes.mediations.feature_queries.is_active", return_value=True)
+        @patch("pcapi.routes.mediations.redis.add_offer_id")
         def should_add_offer_id_to_redis_when_mediation_is_edited(self, mock_redis, mock_feature, app):
             # given
             user = create_user()
@@ -95,23 +106,23 @@ class Patch:
             repository.save(mediation)
             repository.save(user, venue, offerer, user_offerer)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-            data = {'isActive': False}
+            data = {"isActive": False}
 
             # when
-            response = auth_request.patch('/mediations/%s' % humanize(mediation.id), json=data)
+            response = auth_request.patch("/mediations/%s" % humanize(mediation.id), json=data)
 
             # then
             assert response.status_code == 200
             mock_redis.assert_called_once()
             mock_args, mock_kwargs = mock_redis.call_args
-            assert mock_kwargs['offer_id'] == offer.id
+            assert mock_kwargs["offer_id"] == offer.id
 
     class Returns403:
         @pytest.mark.usefixtures("db_session")
         def when_current_user_is_not_attached_to_offerer_of_mediation(self, app):
             # given
-            current_user = create_user(email='bobby@test.com')
-            other_user = create_user(email='jimmy@test.com')
+            current_user = create_user(email="bobby@test.com")
+            other_user = create_user(email="jimmy@test.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
@@ -123,12 +134,12 @@ class Patch:
             auth_request = TestClient(app.test_client()).with_auth(email=current_user.email)
 
             # when
-            response = auth_request.patch('/mediations/%s' % humanize(mediation.id), json={})
+            response = auth_request.patch("/mediations/%s" % humanize(mediation.id), json={})
 
             # then
             assert response.status_code == 403
             assert response.json == {
-                'global': ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+                "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
             }
 
     class Returns404:
@@ -140,7 +151,7 @@ class Patch:
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.patch('/mediations/ADFGA', json={})
+            response = auth_request.patch("/mediations/ADFGA", json={})
 
             # then
             assert response.status_code == 404

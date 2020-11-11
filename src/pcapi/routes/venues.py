@@ -32,7 +32,7 @@ from pcapi.validation.routes.venues import check_valid_edition
 from pcapi.validation.routes.venues import validate_coordinates
 
 
-@private_api.route('/venues/<venue_id>', methods=['GET'])
+@private_api.route("/venues/<venue_id>", methods=["GET"])
 @login_required
 def get_venue(venue_id):
     venue = load_or_404(VenueSQLEntity, venue_id)
@@ -40,34 +40,36 @@ def get_venue(venue_id):
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 
 
-@private_api.route('/venues', methods=['GET'])
+@private_api.route("/venues", methods=["GET"])
 @login_required
 def get_venues():
-    offerer_identifier = Identifier.from_scrambled_id(request.args.get('offererId'))
+    offerer_identifier = Identifier.from_scrambled_id(request.args.get("offererId"))
 
-    venues = get_all_venues_by_pro_user.execute(pro_identifier=current_user.id, user_is_admin=current_user.isAdmin, offerer_id=offerer_identifier)
+    venues = get_all_venues_by_pro_user.execute(
+        pro_identifier=current_user.id, user_is_admin=current_user.isAdmin, offerer_id=offerer_identifier
+    )
     return jsonify(serialize_venues_with_offerer_name(venues)), 200
 
 
-@private_api.route('/venues', methods=['POST'])
+@private_api.route("/venues", methods=["POST"])
 @login_required
 @expect_json_data
 def post_create_venue():
-    validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
+    validate_coordinates(request.json.get("latitude", None), request.json.get("longitude", None))
 
     venue = create_venue(venue_properties=request.json, save=repository.save)
 
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 201
 
 
-@private_api.route('/venues/<venue_id>', methods=['PATCH'])
+@private_api.route("/venues/<venue_id>", methods=["PATCH"])
 @login_required
 @expect_json_data
 def edit_venue(venue_id):
     venue = load_or_404(VenueSQLEntity, venue_id)
     previous_venue = copy.deepcopy(venue)
     check_valid_edition(request, venue)
-    validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
+    validate_coordinates(request.json.get("latitude", None), request.json.get("longitude", None))
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     venue.populate_from_dict(request.json)
 
@@ -84,7 +86,7 @@ def edit_venue(venue_id):
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 
 
-@private_api.route('/venues/<venue_id>/offers/activate', methods=['PUT'])
+@private_api.route("/venues/<venue_id>/offers/activate", methods=["PUT"])
 @login_required
 def activate_venue_offers(venue_id):
     venue = load_or_404(VenueSQLEntity, venue_id)
@@ -97,7 +99,7 @@ def activate_venue_offers(venue_id):
     return jsonify([as_dict(offer, includes=OFFER_INCLUDES) for offer in activated_offers]), 200
 
 
-@private_api.route('/venues/<venue_id>/offers/deactivate', methods=['PUT'])
+@private_api.route("/venues/<venue_id>/offers/deactivate", methods=["PUT"])
 @login_required
 def deactivate_venue_offers(venue_id):
     venue = load_or_404(VenueSQLEntity, venue_id)

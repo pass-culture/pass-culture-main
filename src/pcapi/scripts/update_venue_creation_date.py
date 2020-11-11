@@ -26,13 +26,13 @@ def update_venue_creation_date(file_path: str):
             venue_ids_in_error.append(str(venue_id))
 
     if venue_ids_in_error:
-        errored_venues = ', '.join(venue_ids_in_error)
-        logger.info(f'Venues in error : {errored_venues}')
+        errored_venues = ", ".join(venue_ids_in_error)
+        logger.info(f"Venues in error : {errored_venues}")
 
-    logger.info(f'{updated_venue_count} venues have been updated')
+    logger.info(f"{updated_venue_count} venues have been updated")
 
 
 def _read_venue_creation_date_from_file(file_path: str) -> List[tuple]:
-    with open(file_path, mode='r', newline='\n') as file:
-        data = [tuple(line) for line in csv.reader(file, delimiter=',')]
+    with open(file_path, mode="r", newline="\n") as file:
+        data = [tuple(line) for line in csv.reader(file, delimiter=",")]
         return data

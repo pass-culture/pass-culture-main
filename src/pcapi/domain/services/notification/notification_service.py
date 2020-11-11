@@ -16,11 +16,13 @@ class NotificationService(ABC):
         pass
 
     @abstractmethod
-    def send_booking_cancellation_emails_to_user_and_offerer(self,
-                                                             booking: Booking,
-                                                             is_offerer_cancellation: bool,
-                                                             is_user_cancellation: bool,
-                                                             send_email: Callable[..., bool]):
+    def send_booking_cancellation_emails_to_user_and_offerer(
+        self,
+        booking: Booking,
+        is_offerer_cancellation: bool,
+        is_user_cancellation: bool,
+        send_email: Callable[..., bool],
+    ):
         pass
 
     @abstractmethod

@@ -3,8 +3,7 @@ from typing import Optional
 
 
 class BookingRecapHistory:
-    def __init__(self,
-                 booking_date: datetime):
+    def __init__(self, booking_date: datetime):
         self.booking_date = booking_date
 
 

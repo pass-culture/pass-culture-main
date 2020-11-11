@@ -9,8 +9,10 @@ from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name import V
 
 class VenueWithOffererNameRepository(ABC):
     @abstractmethod
-    def get_by_pro_identifier(self,
-                              pro_identifier: int,
-                              user_is_admin: bool,
-                              offerer_id: Optional[Identifier] = None,) -> List[VenueWithOffererName]:
+    def get_by_pro_identifier(
+        self,
+        pro_identifier: int,
+        user_is_admin: bool,
+        offerer_id: Optional[Identifier] = None,
+    ) -> List[VenueWithOffererName]:
         pass

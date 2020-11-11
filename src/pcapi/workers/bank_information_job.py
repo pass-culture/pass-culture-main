@@ -11,7 +11,7 @@ from pcapi.workers.decorators import log_job
 @job_context
 @log_job
 def bank_information_job(application_id: str, refferer_type: str):
-    if refferer_type == 'offerer':
+    if refferer_type == "offerer":
         save_offerer_bank_informations.execute(application_id)
-    elif refferer_type == 'venue':
+    elif refferer_type == "venue":
         save_venue_bank_informations.execute(application_id)

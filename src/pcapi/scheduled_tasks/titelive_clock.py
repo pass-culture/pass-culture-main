@@ -46,24 +46,16 @@ def synchronize_titelive_stocks(app):
     update_venues_for_specific_provider(titelive_stocks_provider_id)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
 
-    scheduler.add_job(synchronize_titelive_things, 'cron',
-                      [app],
-                      day='*', hour='1')
+    scheduler.add_job(synchronize_titelive_things, "cron", [app], day="*", hour="1")
 
-    scheduler.add_job(synchronize_titelive_thing_descriptions, 'cron',
-                      [app],
-                      day='*', hour='2')
+    scheduler.add_job(synchronize_titelive_thing_descriptions, "cron", [app], day="*", hour="2")
 
-    scheduler.add_job(synchronize_titelive_thing_thumbs, 'cron',
-                      [app],
-                      day='*', hour='3')
+    scheduler.add_job(synchronize_titelive_thing_thumbs, "cron", [app], day="*", hour="3")
 
-    scheduler.add_job(synchronize_titelive_stocks, 'cron',
-                      [app],
-                      day='*', hour='2', minute='30')
+    scheduler.add_job(synchronize_titelive_stocks, "cron", [app], day="*", hour="2", minute="30")
 
     scheduler.start()

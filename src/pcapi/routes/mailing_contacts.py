@@ -7,7 +7,7 @@ from pcapi.validation.routes.mailing_contacts import validate_save_mailing_conta
 from pcapi.workers.mailing_contacts_job import mailing_contacts_job
 
 
-@public_api.route('/mailing-contacts', methods=['POST'])
+@public_api.route("/mailing-contacts", methods=["POST"])
 @expect_json_data
 def save_mailing_contact():
     json = request.get_json()
@@ -16,4 +16,4 @@ def save_mailing_contact():
     contact_date_of_birth = json["dateOfBirth"]
     contact_department_code = json["departmentCode"]
     mailing_contacts_job.delay(contact_email, contact_date_of_birth, contact_department_code)
-    return '', 201
+    return "", 201

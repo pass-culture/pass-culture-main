@@ -14,7 +14,7 @@ def test_should_return_error_message_when_stock_is_negative():
     api_error = validate(stock, api_errors)
 
     # Then
-    assert api_error.errors['quantity'] == ['Le stock doit être positif']
+    assert api_error.errors["quantity"] == ["Le stock doit être positif"]
 
 
 def test_should_not_return_error_message_when_stock_is_positive():

@@ -18,7 +18,7 @@ from pcapi.models import ThingType
 class DigitalThingsReimbursementTest:
     def test_apply_for_booking_returns_a_reimbursed_amount(self):
         # given
-        booking = create_booking_for_thing(url='http://', amount=40, quantity=3)
+        booking = create_booking_for_thing(url="http://", amount=40, quantity=3)
 
         # when
         reimbursed_amount = ReimbursementRules.DIGITAL_THINGS.value.apply(booking)
@@ -28,7 +28,7 @@ class DigitalThingsReimbursementTest:
 
     def test_relevant_for_booking_on_digital_things(self):
         # given
-        booking = create_booking_for_thing(url='http://', amount=40, quantity=3)
+        booking = create_booking_for_thing(url="http://", amount=40, quantity=3)
 
         # when
         is_relevant = ReimbursementRules.DIGITAL_THINGS.value.is_relevant(booking)
@@ -58,7 +58,9 @@ class DigitalThingsReimbursementTest:
 
     def test_is_not_relevant_for_digital_books(self):
         # given
-        booking = create_booking_for_thing(url='http://my.book', amount=40, quantity=3, product_type=ThingType.LIVRE_EDITION)
+        booking = create_booking_for_thing(
+            url="http://my.book", amount=40, quantity=3, product_type=ThingType.LIVRE_EDITION
+        )
 
         # when
         is_relevant = ReimbursementRules.DIGITAL_THINGS.value.is_relevant(booking)
@@ -68,7 +70,9 @@ class DigitalThingsReimbursementTest:
 
     def test_is_not_relevant_for_cinema_cards(self):
         # given
-        booking = create_booking_for_thing(url='http://cinema.card', amount=40, quantity=3, product_type=ThingType.CINEMA_CARD)
+        booking = create_booking_for_thing(
+            url="http://cinema.card", amount=40, quantity=3, product_type=ThingType.CINEMA_CARD
+        )
 
         # when
         is_relevant = ReimbursementRules.DIGITAL_THINGS.value.is_relevant(booking)
@@ -80,7 +84,7 @@ class DigitalThingsReimbursementTest:
 class PhysicalOffersReimbursementTest:
     def test_apply_for_booking_returns_a_reimbursed_amount(self):
         # given
-        booking = create_booking_for_thing(url='http://', amount=40, quantity=3)
+        booking = create_booking_for_thing(url="http://", amount=40, quantity=3)
 
         # when
         reimbursed_amount = ReimbursementRules.PHYSICAL_OFFERS.value.apply(booking)
@@ -110,7 +114,7 @@ class PhysicalOffersReimbursementTest:
 
     def test_is_not_relevant_for_booking_on_digital_things(self):
         # given
-        booking = create_booking_for_thing(url='http://', amount=40, quantity=3)
+        booking = create_booking_for_thing(url="http://", amount=40, quantity=3)
 
         # when
         is_relevant = ReimbursementRules.PHYSICAL_OFFERS.value.is_relevant(booking)
@@ -120,7 +124,9 @@ class PhysicalOffersReimbursementTest:
 
     def test_is_relevant_for_booking_on_digital_books(self):
         # given
-        booking = create_booking_for_thing(url='http://my.book', amount=40, quantity=3, product_type=ThingType.LIVRE_EDITION)
+        booking = create_booking_for_thing(
+            url="http://my.book", amount=40, quantity=3, product_type=ThingType.LIVRE_EDITION
+        )
 
         # when
         is_relevant = ReimbursementRules.PHYSICAL_OFFERS.value.is_relevant(booking)
@@ -130,7 +136,9 @@ class PhysicalOffersReimbursementTest:
 
     def test_is_relevant_for_booking_on_cinema_cards(self):
         # given
-        booking = create_booking_for_thing(url='http://cinema.card', amount=40, quantity=2, product_type=ThingType.CINEMA_CARD)
+        booking = create_booking_for_thing(
+            url="http://cinema.card", amount=40, quantity=2, product_type=ThingType.CINEMA_CARD
+        )
 
         # when
         is_relevant = ReimbursementRules.PHYSICAL_OFFERS.value.is_relevant(booking)
@@ -142,7 +150,7 @@ class PhysicalOffersReimbursementTest:
 class ReimbursementRateByVenueBetween20000And40000Test:
     def test_apply_for_booking_returns_a_reimbursed_amount(self):
         # given
-        booking = create_booking_for_thing(url='http://', amount=40, quantity=3)
+        booking = create_booking_for_thing(url="http://", amount=40, quantity=3)
 
         # when
         reimbursed_amount = ReimbursementRules.BETWEEN_20000_AND_40000_EUROS.value.apply(booking)
@@ -201,7 +209,7 @@ class ReimbursementRateByVenueBetween20000And40000Test:
     def test_is_not_relevant_for_booking_on_digital_things_with_cumulative_value_above_20000(self):
         # given
         rule = ReimbursementRules.BETWEEN_20000_AND_40000_EUROS.value
-        booking = create_booking_for_thing(url='http://truc', amount=40, quantity=3)
+        booking = create_booking_for_thing(url="http://truc", amount=40, quantity=3)
         cumulative_booking_value = 20100
 
         # when
@@ -238,7 +246,7 @@ class ReimbursementRateByVenueBetween20000And40000Test:
 class ReimbursementRateByVenueBetween40000And150000Test:
     def test_apply_for_booking_returns_a_reimbursed_amount(self):
         # given
-        booking = create_booking_for_thing(url='http://', amount=40, quantity=3)
+        booking = create_booking_for_thing(url="http://", amount=40, quantity=3)
 
         # when
         reimbursed_amount = ReimbursementRules.BETWEEN_40000_AND_150000_EUROS.value.apply(booking)
@@ -286,7 +294,7 @@ class ReimbursementRateByVenueBetween40000And150000Test:
 class ReimbursementRateByVenueAbove150000Test:
     def test_apply_for_booking_returns_a_reimbursed_amount(self):
         # given
-        booking = create_booking_for_thing(url='http://', amount=40, quantity=3)
+        booking = create_booking_for_thing(url="http://", amount=40, quantity=3)
 
         # when
         reimbursed_amount = ReimbursementRules.ABOVE_150000_EUROS.value.apply(booking)
@@ -382,7 +390,7 @@ class ReimbursementRateForBookAbove20000Test:
 class MaxReimbursementByOffererTest:
     def test_apply_for_booking_returns_a_reimbursed_amount(self):
         # given
-        booking = create_booking_for_thing(url='http://', amount=40, quantity=3)
+        booking = create_booking_for_thing(url="http://", amount=40, quantity=3)
 
         # when
         reimbursed_amount = ReimbursementRules.MAX_REIMBURSEMENT.value.apply(booking)
@@ -441,7 +449,7 @@ class MaxReimbursementByOffererTest:
     def test_is_not_relevant_for_booking_on_digital_things_with_cumulative_value_above_20000(self):
         # given
         rule = ReimbursementRules.MAX_REIMBURSEMENT.value
-        booking = create_booking_for_thing(url='http://truc', amount=40, quantity=3)
+        booking = create_booking_for_thing(url="http://truc", amount=40, quantity=3)
         cumulative_booking_value = 20100
 
         # when
@@ -478,7 +486,7 @@ class MaxReimbursementByOffererTest:
 class ReimbursementRuleIsActiveTest:
     class DummyRule(ReimbursementRule):
         rate = Decimal(10)
-        description = 'Dummy rule'
+        description = "Dummy rule"
         valid_from = None
         valid_until = None
 
@@ -580,7 +588,7 @@ class FindAllBookingsReimbursementsTest:
         def test_returns_a_different_reimbursement_for_digital_booking(self):
             # given
             booking1 = create_booking_for_event(amount=50, quantity=1)
-            booking2 = create_booking_for_thing(url='http://truc', amount=40, quantity=3)
+            booking2 = create_booking_for_thing(url="http://truc", amount=40, quantity=3)
             booking3 = create_booking_for_event(amount=100, quantity=2)
             bookings = [booking1, booking2, booking3]
 
@@ -596,7 +604,7 @@ class FindAllBookingsReimbursementsTest:
             # given
             now = datetime.utcnow()
             booking1 = create_booking_for_event(amount=50, quantity=1, date_created=now)
-            booking2 = create_booking_for_thing(url='http://truc', amount=50, quantity=3, date_created=now)
+            booking2 = create_booking_for_thing(url="http://truc", amount=50, quantity=3, date_created=now)
             booking3 = create_booking_for_thing(amount=1995, quantity=10, date_created=now)
             bookings = [booking1, booking2, booking3]
             ReimbursementRules.MAX_REIMBURSEMENT.value.valid_from = now - timedelta(weeks=5)
@@ -617,7 +625,7 @@ class FindAllBookingsReimbursementsTest:
         def test_returns_no_reimbursement_above_20000_euros_for_last_booking(self):
             # given
             booking1 = create_booking_for_event(amount=60, quantity=1)
-            booking2 = create_booking_for_thing(url='http://truc', amount=50, quantity=3)
+            booking2 = create_booking_for_thing(url="http://truc", amount=50, quantity=3)
             booking3 = create_booking_for_thing(amount=1995, quantity=10)
             bookings = [booking1, booking2, booking3]
 
@@ -648,7 +656,7 @@ class FindAllBookingsReimbursementsTest:
         def test_returns_a_different_reimbursement_for_digital_booking(self):
             # given
             booking1 = create_booking_for_event(amount=50, quantity=1)
-            booking2 = create_booking_for_thing(url='http://truc', amount=40, quantity=3)
+            booking2 = create_booking_for_thing(url="http://truc", amount=40, quantity=3)
             booking3 = create_booking_for_event(amount=100, quantity=2)
             bookings = [booking1, booking2, booking3]
 
@@ -663,11 +671,12 @@ class FindAllBookingsReimbursementsTest:
         def test_returns_full_reimbursement_when_cumulative_value_is_20000(self):
             # given
             booking1 = create_booking_for_event(amount=19990, quantity=1)
-            booking2 = create_booking_for_thing(url='http://truc', amount=50, quantity=3)
+            booking2 = create_booking_for_thing(url="http://truc", amount=50, quantity=3)
             booking3 = create_booking_for_thing(amount=10, quantity=1)
             bookings = [booking1, booking2, booking3]
-            cumulative_value_for_bookings_1_and_3 = booking1.amount * booking1.quantity + \
-                                                    booking3.amount * booking3.quantity
+            cumulative_value_for_bookings_1_and_3 = (
+                booking1.amount * booking1.quantity + booking3.amount * booking3.quantity
+            )
 
             # when
             booking_reimbursements = find_all_booking_reimbursements(bookings, NEW_RULES)
@@ -680,11 +689,12 @@ class FindAllBookingsReimbursementsTest:
         def test_returns_95_reimbursement_rate_between_20000_and_40000_euros_for_most_recent_booking(self):
             # given
             booking1 = create_booking_for_event(amount=19990, quantity=1)
-            booking2 = create_booking_for_thing(url='http://truc', amount=50, quantity=3)
+            booking2 = create_booking_for_thing(url="http://truc", amount=50, quantity=3)
             booking3 = create_booking_for_thing(amount=20, quantity=1)
             bookings = [booking1, booking2, booking3]
-            cumulative_value_for_bookings_1_and_3 = booking1.amount * booking1.quantity + \
-                                                    booking3.amount * booking3.quantity
+            cumulative_value_for_bookings_1_and_3 = (
+                booking1.amount * booking1.quantity + booking3.amount * booking3.quantity
+            )
 
             # when
             booking_reimbursements = find_all_booking_reimbursements(bookings, NEW_RULES)
@@ -697,33 +707,38 @@ class FindAllBookingsReimbursementsTest:
         def test_returns_95_reimbursement_rate_between_20000_and_40000_when_cumulative_value_is_40000(self):
             # given
             booking1 = create_booking_for_event(amount=19000, quantity=1)
-            booking2 = create_booking_for_thing(url='http://truc', amount=50, quantity=3)
+            booking2 = create_booking_for_thing(url="http://truc", amount=50, quantity=3)
             booking3 = create_booking_for_thing(amount=19000, quantity=1)
             booking4 = create_booking_for_thing(amount=2000, quantity=1)
             bookings = [booking1, booking2, booking3, booking4]
-            cumulative_value_for_bookings_1_and_3_and_4 = booking1.amount * booking1.quantity + \
-                                                          booking3.amount * booking3.quantity + \
-                                                          booking4.amount * booking4.quantity
+            cumulative_value_for_bookings_1_and_3_and_4 = (
+                booking1.amount * booking1.quantity
+                + booking3.amount * booking3.quantity
+                + booking4.amount * booking4.quantity
+            )
 
             # when
             booking_reimbursements = find_all_booking_reimbursements(bookings, NEW_RULES)
 
             # then
             assert_total_reimbursement(booking_reimbursements[0], booking1)
-            assert_degressive_reimbursement(booking_reimbursements[2], booking3,
-                                            cumulative_value_for_bookings_1_and_3_and_4)
-            assert_degressive_reimbursement(booking_reimbursements[3], booking4,
-                                            cumulative_value_for_bookings_1_and_3_and_4)
+            assert_degressive_reimbursement(
+                booking_reimbursements[2], booking3, cumulative_value_for_bookings_1_and_3_and_4
+            )
+            assert_degressive_reimbursement(
+                booking_reimbursements[3], booking4, cumulative_value_for_bookings_1_and_3_and_4
+            )
             assert_no_reimbursement_for_digital(booking_reimbursements[1], booking2)
 
         def test_returns_85_reimbursement_rate_between_40000_and_150000_euros_for_most_recent_booking(self):
             # given
             booking1 = create_booking_for_event(amount=19000, quantity=1)
-            booking2 = create_booking_for_thing(url='http://truc', amount=50, quantity=3)
+            booking2 = create_booking_for_thing(url="http://truc", amount=50, quantity=3)
             booking3 = create_booking_for_thing(amount=2000, quantity=12)
             bookings = [booking1, booking2, booking3]
-            cumulative_value_for_bookings_1_and_3 = booking1.amount * booking1.quantity + \
-                                                    booking3.amount * booking3.quantity
+            cumulative_value_for_bookings_1_and_3 = (
+                booking1.amount * booking1.quantity + booking3.amount * booking3.quantity
+            )
 
             # when
             booking_reimbursements = find_all_booking_reimbursements(bookings, NEW_RULES)
@@ -736,13 +751,15 @@ class FindAllBookingsReimbursementsTest:
         def test_returns_85_reimbursement_rate_between_40000_and_150000_when_cumulative_value_is_150000(self):
             # given
             booking1 = create_booking_for_event(amount=19000, quantity=1)
-            booking2 = create_booking_for_thing(url='http://truc', amount=50, quantity=3)
+            booking2 = create_booking_for_thing(url="http://truc", amount=50, quantity=3)
             booking3 = create_booking_for_thing(amount=19000, quantity=4)
             booking4 = create_booking_for_thing(amount=5000, quantity=1)
             bookings = [booking1, booking2, booking3, booking4]
-            cumulative_value_for_bookings_1_and_3_and_4 = booking1.amount * booking1.quantity + \
-                                                          booking3.amount * booking3.quantity + \
-                                                          booking4.amount * booking4.quantity
+            cumulative_value_for_bookings_1_and_3_and_4 = (
+                booking1.amount * booking1.quantity
+                + booking3.amount * booking3.quantity
+                + booking4.amount * booking4.quantity
+            )
 
             # when
             booking_reimbursements = find_all_booking_reimbursements(bookings, NEW_RULES)
@@ -750,15 +767,17 @@ class FindAllBookingsReimbursementsTest:
             # then
             assert_total_reimbursement(booking_reimbursements[0], booking1)
             assert_no_reimbursement_for_digital(booking_reimbursements[1], booking2)
-            assert_degressive_reimbursement(booking_reimbursements[2], booking3,
-                                            cumulative_value_for_bookings_1_and_3_and_4)
-            assert_degressive_reimbursement(booking_reimbursements[3], booking4,
-                                            cumulative_value_for_bookings_1_and_3_and_4)
+            assert_degressive_reimbursement(
+                booking_reimbursements[2], booking3, cumulative_value_for_bookings_1_and_3_and_4
+            )
+            assert_degressive_reimbursement(
+                booking_reimbursements[3], booking4, cumulative_value_for_bookings_1_and_3_and_4
+            )
 
         def test_returns_65_reimbursement_rate_above_150000_euros_for_last_booking(self):
             # given
             booking1 = create_booking_for_event(amount=19000, quantity=1)
-            booking2 = create_booking_for_thing(url='http://truc', amount=50, quantity=3)
+            booking2 = create_booking_for_thing(url="http://truc", amount=50, quantity=3)
             booking3 = create_booking_for_thing(amount=2000, quantity=120)
             bookings = [booking1, booking2, booking3]
 
@@ -770,7 +789,7 @@ class FindAllBookingsReimbursementsTest:
             assert_degressive_reimbursement(booking_reimbursements[2], booking3, 430000)
             assert_no_reimbursement_for_digital(booking_reimbursements[1], booking2)
 
-        @freeze_time('2019-02-14')
+        @freeze_time("2019-02-14")
         def test_returns_full_reimbursement_for_all_bookings_for_new_civil_year(self):
             # given
             booking1 = create_booking_for_event(amount=10000, quantity=1, date_created=datetime(2018, 1, 1))
@@ -786,7 +805,7 @@ class FindAllBookingsReimbursementsTest:
             assert_total_reimbursement(booking_reimbursements[1], booking2)
             assert_total_reimbursement(booking_reimbursements[2], booking3)
 
-        @freeze_time('2019-02-14')
+        @freeze_time("2019-02-14")
         def test_returns_85_reimbursement_rate_between_20000_and_40000_euros_for_this_civil_year(self):
             # given
             booking1 = create_booking_for_event(amount=20000, quantity=1, date_created=datetime(2018, 1, 1))
@@ -825,14 +844,21 @@ def assert_degressive_reimbursement(booking_reimbursement, booking, total_amount
     assert booking_reimbursement.booking == booking
     if 20000 < total_amount <= 40000:
         assert booking_reimbursement.reimbursement == ReimbursementRules.BETWEEN_20000_AND_40000_EUROS
-        assert booking_reimbursement.reimbursed_amount == ReimbursementRules.BETWEEN_20000_AND_40000_EUROS.value.rate \
-               * booking.total_amount
+        assert (
+            booking_reimbursement.reimbursed_amount
+            == ReimbursementRules.BETWEEN_20000_AND_40000_EUROS.value.rate * booking.total_amount
+        )
     elif 40000 < total_amount <= 150000:
         assert booking_reimbursement.reimbursement == ReimbursementRules.BETWEEN_40000_AND_150000_EUROS
-        assert booking_reimbursement.reimbursed_amount == ReimbursementRules.BETWEEN_40000_AND_150000_EUROS.value.rate \
-               * booking.total_amount
+        assert (
+            booking_reimbursement.reimbursed_amount
+            == ReimbursementRules.BETWEEN_40000_AND_150000_EUROS.value.rate * booking.total_amount
+        )
     elif total_amount > 150000:
         assert booking_reimbursement.reimbursement == ReimbursementRules.ABOVE_150000_EUROS
-        assert booking_reimbursement.reimbursed_amount == ReimbursementRules.ABOVE_150000_EUROS.value.rate * booking.total_amount
+        assert (
+            booking_reimbursement.reimbursed_amount
+            == ReimbursementRules.ABOVE_150000_EUROS.value.rate * booking.total_amount
+        )
     else:
         assert False

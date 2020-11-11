@@ -10,33 +10,37 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c62097ada14f'
-down_revision = 'edb77d0140b7'
+revision = "c62097ada14f"
+down_revision = "edb77d0140b7"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.create_table(
-        'seen_offer',
-        sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column('dateSeen', sa.DateTime, nullable=False),
-        sa.Column('offerId', sa.BigInteger, nullable=False, index=True),
-        sa.Column('userId', sa.BigInteger, nullable=False, index=True),
+        "seen_offer",
+        sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
+        sa.Column("dateSeen", sa.DateTime, nullable=False),
+        sa.Column("offerId", sa.BigInteger, nullable=False, index=True),
+        sa.Column("userId", sa.BigInteger, nullable=False, index=True),
     )
     op.create_foreign_key(
-        'seen_offer_offerId_fkey',
-        'seen_offer', 'offer',
-        ['offerId'], ['id'],
+        "seen_offer_offerId_fkey",
+        "seen_offer",
+        "offer",
+        ["offerId"],
+        ["id"],
     )
     op.create_foreign_key(
-        'seen_offer_userId_fkey',
-        'seen_offer', 'user',
-        ['userId'], ['id'],
+        "seen_offer_userId_fkey",
+        "seen_offer",
+        "user",
+        ["userId"],
+        ["id"],
     )
 
 
 def downgrade():
-    op.drop_constraint('seen_offer_offerId_fkey', 'seen_offer', type_='foreignkey')
-    op.drop_constraint('seen_offer_userId_fkey', 'seen_offer', type_='foreignkey')
-    op.drop_table('seen_offer')
+    op.drop_constraint("seen_offer_offerId_fkey", "seen_offer", type_="foreignkey")
+    op.drop_constraint("seen_offer_userId_fkey", "seen_offer", type_="foreignkey")
+    op.drop_table("seen_offer")

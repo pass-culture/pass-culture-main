@@ -18,9 +18,8 @@ EIGHT_DAYS_AGO = datetime.utcnow() - timedelta(days=8)
 def update_read_recommendations(read_recommendations: List) -> None:
     if read_recommendations:
         for read_recommendation in read_recommendations:
-            recommendation_id = dehumanize(read_recommendation['id'])
-            Recommendation.query.filter_by(id=recommendation_id) \
-                .update({"dateRead": read_recommendation['dateRead']})
+            recommendation_id = dehumanize(read_recommendation["id"])
+            Recommendation.query.filter_by(id=recommendation_id).update({"dateRead": read_recommendation["dateRead"]})
         db.session.commit()
 
 
@@ -29,8 +28,7 @@ def _has_no_mediation_or_mediation_does_not_match_offer(mediation: MediationSQLE
 
 
 def find_recommendation_already_created_on_discovery(offer_id: str, mediation_id: str, user_id: int) -> Recommendation:
-    query = Recommendation.query.filter((Recommendation.userId == user_id)
-                                        & (Recommendation.search == None))
+    query = Recommendation.query.filter((Recommendation.userId == user_id) & (Recommendation.search == None))
     if offer_id:
         query = query.join(Offer)
     offer = find_searchable_offer(offer_id)
@@ -52,6 +50,4 @@ def find_recommendation_already_created_on_discovery(offer_id: str, mediation_id
 
 
 def get_recommendations_for_offers(offer_ids: List[int]) -> List[Recommendation]:
-    return Recommendation.query \
-        .filter(Recommendation.offerId.in_(offer_ids)) \
-        .all()
+    return Recommendation.query.filter(Recommendation.offerId.in_(offer_ids)).all()

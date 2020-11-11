@@ -9,20 +9,20 @@ from pcapi.repository.offerer_queries import filter_offerers_with_keywords_strin
 
 
 class PaginatedOfferersSQLRepository(PaginatedOfferersRepository):
-    def with_status_and_keywords(self,
-                                 user_id: int,
-                                 user_is_admin: bool,
-                                 pagination_limit: int,
-                                 only_validated_offerers: Optional[bool],
-                                 is_filtered_by_offerer_status: bool,
-                                 page: int = 0,
-                                 keywords: Optional[str] = None) -> PaginatedOfferers:
+    def with_status_and_keywords(
+        self,
+        user_id: int,
+        user_is_admin: bool,
+        pagination_limit: int,
+        only_validated_offerers: Optional[bool],
+        is_filtered_by_offerer_status: bool,
+        page: int = 0,
+        keywords: Optional[str] = None,
+    ) -> PaginatedOfferers:
         query = Offerer.query
 
         if not user_is_admin:
-            query = query \
-                .join(UserOfferer, UserOfferer.offererId == Offerer.id) \
-                .filter(UserOfferer.userId == user_id)
+            query = query.join(UserOfferer, UserOfferer.offererId == Offerer.id).filter(UserOfferer.userId == user_id)
 
         if is_filtered_by_offerer_status:
             if only_validated_offerers:
@@ -39,7 +39,7 @@ class PaginatedOfferersSQLRepository(PaginatedOfferersRepository):
         offerers = query.items
 
         for offerer in offerers:
-                offerer.append_user_has_access_attribute(user_id=user_id, is_admin=user_is_admin)
+            offerer.append_user_has_access_attribute(user_id=user_id, is_admin=user_is_admin)
 
         total = query.total
 

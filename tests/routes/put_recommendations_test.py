@@ -29,7 +29,7 @@ from tests.conftest import TestClient
 from tests.test_utils import POLYGON_TEST
 
 
-RECOMMENDATION_URL = '/recommendations'
+RECOMMENDATION_URL = "/recommendations"
 
 
 class Put:
@@ -38,15 +38,14 @@ class Put:
         def when_not_logged_in(self, app):
             # when
             response = TestClient(app.test_client()).put(
-                RECOMMENDATION_URL,
-                headers={'origin': 'http://localhost:3000'}
+                RECOMMENDATION_URL, headers={"origin": "http://localhost:3000"}
             )
 
             # then
             assert response.status_code == 401
 
     class Returns404:
-        @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+        @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
         @pytest.mark.usefixtures("db_session")
         def when_given_mediation_does_not_match_given_offer(self, mock_geolocation_feature, app):
             # given
@@ -63,15 +62,19 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?offerId=" + humanize(offer_thing_1.id) +
-                                        "?mediationId=" + humanize(mediation_2.id),
-                                        json={'offersSentInLastCall': []})
+            response = auth_request.put(
+                RECOMMENDATION_URL
+                + "?offerId="
+                + humanize(offer_thing_1.id)
+                + "?mediationId="
+                + humanize(mediation_2.id),
+                json={"offersSentInLastCall": []},
+            )
 
             # then
             assert response.status_code == 404
 
-        @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+        @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
         @pytest.mark.usefixtures("db_session")
         def when_offer_is_unknown_and_mediation_is_known(self, mock_geolocation_feature, app):
             # given
@@ -85,15 +88,15 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?offerId=ABCDE" +
-                                        "&mediationId=" + humanize(mediation.id),
-                                        json={'offersSentInLastCall': []})
+            response = auth_request.put(
+                RECOMMENDATION_URL + "?offerId=ABCDE" + "&mediationId=" + humanize(mediation.id),
+                json={"offersSentInLastCall": []},
+            )
 
             # then
             assert response.status_code == 404
 
-        @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+        @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
         @pytest.mark.usefixtures("db_session")
         def when_mediation_is_unknown(self, mock_geolocation_feature, app):
             # given
@@ -102,14 +105,12 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?mediationId=ABCDE",
-                                        json={'offersSentInLastCall': []})
+            response = auth_request.put(RECOMMENDATION_URL + "?mediationId=ABCDE", json={"offersSentInLastCall": []})
 
             # then
             assert response.status_code == 404
 
-        @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+        @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
         @pytest.mark.usefixtures("db_session")
         def when_offer_is_known_and_mediation_is_unknown(self, mock_geolocation_feature, app):
             # given
@@ -123,15 +124,15 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?offerId=" + humanize(offer_thing.id) +
-                                        "&mediationId=ABCDE",
-                                        json={'offersSentInLastCall': []})
+            response = auth_request.put(
+                RECOMMENDATION_URL + "?offerId=" + humanize(offer_thing.id) + "&mediationId=ABCDE",
+                json={"offersSentInLastCall": []},
+            )
 
             # then
             assert response.status_code == 404
 
-        @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+        @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
         @pytest.mark.usefixtures("db_session")
         def when_offer_is_unknown_and_mediation_is_unknown(self, mock_geolocation_feature, app):
             # given
@@ -140,15 +141,14 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?offerId=ABCDE" +
-                                        "&mediationId=ABCDE",
-                                        json={'offersSentInLastCall': []})
+            response = auth_request.put(
+                RECOMMENDATION_URL + "?offerId=ABCDE" + "&mediationId=ABCDE", json={"offersSentInLastCall": []}
+            )
 
             # then
             assert response.status_code == 404
 
-        @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+        @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
         @pytest.mark.usefixtures("db_session")
         def when_venue_of_given_offer_is_not_validated(self, mock_geolocation_feature, app):
             # given
@@ -161,24 +161,26 @@ class Put:
             repository.save(user, stock1)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
-            data = {'offersSentInLastCall': []}
+            data = {"offersSentInLastCall": []}
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        '?offerId=%s' % humanize(offer1.id),
-                                        json=data)
+            response = auth_request.put(RECOMMENDATION_URL + "?offerId=%s" % humanize(offer1.id), json=data)
 
             # then
             assert response.status_code == 404
 
     class Returns200:
         class WhenGeolocationFeatureIsDeactivated:
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
-            @patch('pcapi.routes.recommendations.create_recommendations_for_discovery')
-            @patch('pcapi.routes.recommendations.create_recommendations_for_discovery_v3')
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
+            @patch("pcapi.routes.recommendations.create_recommendations_for_discovery")
+            @patch("pcapi.routes.recommendations.create_recommendations_for_discovery_v3")
             @pytest.mark.usefixtures("db_session")
-            def when_updating_read_recommendations(self, mock_create_recommendations_for_discovery_v3,
-                                                   mock_create_recommendations_for_discovery, mock_geolocation_feature,
-                                                   app):
+            def when_updating_read_recommendations(
+                self,
+                mock_create_recommendations_for_discovery_v3,
+                mock_create_recommendations_for_discovery,
+                mock_geolocation_feature,
+                app,
+            ):
                 # given
                 offerer = create_offerer()
                 venue = create_venue(offerer)
@@ -205,10 +207,9 @@ class Put:
                     {"id": humanize(recommendation2.id), "dateRead": "2018-12-17T15:59:15.689000Z"},
                     {"id": humanize(recommendation3.id), "dateRead": "2018-12-17T15:59:21.689000Z"},
                 ]
-                data = {'readRecommendations': reads}
+                data = {"readRecommendations": reads}
                 # when
-                response = auth_request.put(RECOMMENDATION_URL,
-                                            json=data)
+                response = auth_request.put(RECOMMENDATION_URL, json=data)
 
                 # then
                 assert response.status_code == 200
@@ -216,28 +217,36 @@ class Put:
                 mock_create_recommendations_for_discovery_v3.assert_not_called()
                 assert any(reco.dateRead is not None for reco in Recommendation.query.all())
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_user_has_no_offer_in_his_department(self, mock_geolocation_feature, app):
                 # given
-                user = create_user(can_book_free_offers=True, departement_code='973', is_admin=False)
+                user = create_user(can_book_free_offers=True, departement_code="973", is_admin=False)
                 offerer = create_offerer()
-                venue29 = create_venue(offerer, siret=offerer.siren + '98765', postal_code='29000',
-                                       departement_code='29')
-                venue34 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000',
-                                       departement_code='34')
-                venue93 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000',
-                                       departement_code='93')
-                venue67 = create_venue(offerer, siret=offerer.siren + '56789', postal_code='67000',
-                                       departement_code='67')
-                thing_offer1 = create_offer_with_thing_product(venue93, thing_name='thing 93', url=None,
-                                                               is_national=False)
-                thing_offer2 = create_offer_with_thing_product(venue67, thing_name='thing 67', url=None,
-                                                               is_national=False)
-                thing_offer3 = create_offer_with_thing_product(venue29, thing_name='thing 29', url=None,
-                                                               is_national=False)
-                thing_offer4 = create_offer_with_thing_product(venue34, thing_name='thing 34', url=None,
-                                                               is_national=False)
+                venue29 = create_venue(
+                    offerer, siret=offerer.siren + "98765", postal_code="29000", departement_code="29"
+                )
+                venue34 = create_venue(
+                    offerer, siret=offerer.siren + "12345", postal_code="34000", departement_code="34"
+                )
+                venue93 = create_venue(
+                    offerer, siret=offerer.siren + "54321", postal_code="93000", departement_code="93"
+                )
+                venue67 = create_venue(
+                    offerer, siret=offerer.siren + "56789", postal_code="67000", departement_code="67"
+                )
+                thing_offer1 = create_offer_with_thing_product(
+                    venue93, thing_name="thing 93", url=None, is_national=False
+                )
+                thing_offer2 = create_offer_with_thing_product(
+                    venue67, thing_name="thing 67", url=None, is_national=False
+                )
+                thing_offer3 = create_offer_with_thing_product(
+                    venue29, thing_name="thing 29", url=None, is_national=False
+                )
+                thing_offer4 = create_offer_with_thing_product(
+                    venue34, thing_name="thing 34", url=None, is_national=False
+                )
                 stock1 = create_stock_from_offer(thing_offer1)
                 stock2 = create_stock_from_offer(thing_offer2)
                 stock3 = create_stock_from_offer(thing_offer3)
@@ -245,27 +254,34 @@ class Put:
                 repository.save(user, stock1, stock2, stock3, stock4)
 
                 # when
-                response = TestClient(app.test_client()).with_auth(user.email) \
-                    .put(RECOMMENDATION_URL, json={'readRecommendations': []})
+                response = (
+                    TestClient(app.test_client())
+                    .with_auth(user.email)
+                    .put(RECOMMENDATION_URL, json={"readRecommendations": []})
+                )
 
                 # then
                 assert response.status_code == 200
                 assert len(response.json) == 0
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_user_has_one_offer_in_his_department(self, mock_geolocation_feature, app):
                 # given
-                user = create_user(can_book_free_offers=True, departement_code='93', is_admin=False)
+                user = create_user(can_book_free_offers=True, departement_code="93", is_admin=False)
                 offerer = create_offerer()
-                venue93 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000',
-                                       departement_code='93')
-                venue67 = create_venue(offerer, siret=offerer.siren + '56789', postal_code='67000',
-                                       departement_code='67')
-                thing_offer1 = create_offer_with_thing_product(venue93, thing_name='thing 93', url=None,
-                                                               is_national=False)
-                thing_offer2 = create_offer_with_thing_product(venue67, thing_name='thing 67', url=None,
-                                                               is_national=False)
+                venue93 = create_venue(
+                    offerer, siret=offerer.siren + "54321", postal_code="93000", departement_code="93"
+                )
+                venue67 = create_venue(
+                    offerer, siret=offerer.siren + "56789", postal_code="67000", departement_code="67"
+                )
+                thing_offer1 = create_offer_with_thing_product(
+                    venue93, thing_name="thing 93", url=None, is_national=False
+                )
+                thing_offer2 = create_offer_with_thing_product(
+                    venue67, thing_name="thing 67", url=None, is_national=False
+                )
                 stock1 = create_stock_from_offer(thing_offer1)
                 stock2 = create_stock_from_offer(thing_offer2)
                 create_mediation(thing_offer1)
@@ -274,20 +290,23 @@ class Put:
                 discovery_view_queries.refresh(concurrently=False)
 
                 # when
-                response = TestClient(app.test_client()).with_auth(user.email) \
-                    .put(RECOMMENDATION_URL, json={'readRecommendations': []})
+                response = (
+                    TestClient(app.test_client())
+                    .with_auth(user.email)
+                    .put(RECOMMENDATION_URL, json={"readRecommendations": []})
+                )
 
                 # then
                 assert response.status_code == 200
                 assert len(response.json) == 1
                 recommendation_response = response.json[0]
-                assert 'offer' in recommendation_response
-                assert 'venue' in recommendation_response['offer']
-                assert 'validationToken' not in recommendation_response['offer']['venue']
-                assert 'managingOfferer' in recommendation_response['offer']['venue']
-                assert 'validationToken' not in recommendation_response['offer']['venue']['managingOfferer']
+                assert "offer" in recommendation_response
+                assert "venue" in recommendation_response["offer"]
+                assert "validationToken" not in recommendation_response["offer"]["venue"]
+                assert "managingOfferer" in recommendation_response["offer"]["venue"]
+                assert "validationToken" not in recommendation_response["offer"]["venue"]["managingOfferer"]
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_offers_have_soft_deleted_stocks(self, mock_geolocation_feature, app):
                 # Given
@@ -297,10 +316,8 @@ class Put:
                 event_offer = create_offer_with_event_product(venue)
                 now = datetime.utcnow()
                 four_days_from_now = now + timedelta(days=4)
-                event_occurrence1 = create_event_occurrence(event_offer,
-                                                            beginning_datetime=four_days_from_now)
-                event_occurrence2 = create_event_occurrence(event_offer,
-                                                            beginning_datetime=four_days_from_now)
+                event_occurrence1 = create_event_occurrence(event_offer, beginning_datetime=four_days_from_now)
+                event_occurrence2 = create_event_occurrence(event_offer, beginning_datetime=four_days_from_now)
                 soft_deleted_event_stock = create_stock_from_event_occurrence(event_occurrence1, soft_deleted=True)
                 event_stock = create_stock_from_event_occurrence(event_occurrence2, soft_deleted=False)
                 thing_offer1 = create_offer_with_thing_product(venue)
@@ -317,17 +334,16 @@ class Put:
                 thing_offer2_id = thing_offer2.id
 
                 # When
-                response = TestClient(app.test_client()).with_auth(user.email) \
-                    .put(RECOMMENDATION_URL, json={})
+                response = TestClient(app.test_client()).with_auth(user.email).put(RECOMMENDATION_URL, json={})
 
                 # Then
                 recommendations = response.json
                 assert len(recommendations) == 2
-                offer_ids = [r['offerId'] for r in recommendations]
+                offer_ids = [r["offerId"] for r in recommendations]
                 assert humanize(event_offer_id) in offer_ids
                 assert humanize(thing_offer2_id) in offer_ids
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_offers_have_no_stocks(self, mock_geolocation_feature, app):
                 # given
@@ -340,13 +356,13 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
+                response = auth_request.put(RECOMMENDATION_URL, json={"offersSentInLastCall": []})
 
                 # then
                 assert response.status_code == 200
                 assert len(response.json) == 0
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_offers_have_a_thumb_count_for_thing_and_no_mediation(self, mock_geolocation_feature, app):
                 # given
@@ -360,13 +376,13 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
+                response = auth_request.put(RECOMMENDATION_URL, json={"offersSentInLastCall": []})
 
                 # then
                 assert response.status_code == 200
                 assert len(response.json) == 0
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_offers_have_no_thumb_count_for_thing_and_no_mediation(self, mock_geolocation_feature, app):
                 # given
@@ -380,16 +396,15 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
+                response = auth_request.put(RECOMMENDATION_URL, json={"offersSentInLastCall": []})
 
                 # then
                 assert response.status_code == 200
                 assert len(response.json) == 0
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
-            def when_offers_have_no_thumb_count_for_thing_and_a_mediation(
-                    self, mock_geolocation_feature, app):
+            def when_offers_have_no_thumb_count_for_thing_and_a_mediation(self, mock_geolocation_feature, app):
                 # given
                 user = create_user()
                 offerer = create_offerer()
@@ -403,13 +418,13 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
+                response = auth_request.put(RECOMMENDATION_URL, json={"offersSentInLastCall": []})
 
                 # then
                 assert response.status_code == 200
                 assert len(response.json) == 1
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_offers_have_no_thumb_count_for_event_and_no_mediation(self, mock_geolocation_feature, app):
                 # given
@@ -420,10 +435,7 @@ class Put:
                 offerer = create_offerer()
                 venue = create_venue(offerer)
                 offer = create_offer_with_event_product(venue)
-                event_occurrence = create_event_occurrence(
-                    offer,
-                    beginning_datetime=four_days_from_now
-                )
+                event_occurrence = create_event_occurrence(offer, beginning_datetime=four_days_from_now)
                 stock = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=20)
                 repository.save(user, stock)
                 discovery_view_queries.refresh(concurrently=False)
@@ -431,16 +443,15 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
+                response = auth_request.put(RECOMMENDATION_URL, json={"offersSentInLastCall": []})
 
                 # then
                 assert response.status_code == 200
                 assert len(response.json) == 0
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
-            def when_offers_have_no_thumb_count_for_event_and_have_mediation(
-                    self, mock_geolocation_feature, app):
+            def when_offers_have_no_thumb_count_for_event_and_have_mediation(self, mock_geolocation_feature, app):
                 # given
                 now = datetime.utcnow()
                 four_days_from_now = now + timedelta(days=4)
@@ -449,10 +460,7 @@ class Put:
                 offerer = create_offerer()
                 venue = create_venue(offerer)
                 offer = create_offer_with_event_product(venue)
-                event_occurrence = create_event_occurrence(
-                    offer,
-                    beginning_datetime=four_days_from_now
-                )
+                event_occurrence = create_event_occurrence(offer, beginning_datetime=four_days_from_now)
                 mediation = create_mediation(offer)
                 stock = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=20)
                 repository.save(user, stock, mediation)
@@ -461,16 +469,15 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
+                response = auth_request.put(RECOMMENDATION_URL, json={"offersSentInLastCall": []})
 
                 # then
                 assert response.status_code == 200
                 assert len(response.json) == 1
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
-            def when_offers_have_a_thumb_count_for_event_and_no_mediation(
-                    self, mock_geolocation_feature, app):
+            def when_offers_have_a_thumb_count_for_event_and_no_mediation(self, mock_geolocation_feature, app):
                 # given
                 now = datetime.utcnow()
                 four_days_from_now = now + timedelta(days=4)
@@ -479,30 +486,27 @@ class Put:
                 offerer = create_offerer()
                 venue = create_venue(offerer)
                 offer = create_offer_with_event_product(venue, thumb_count=1)
-                event_occurrence = create_event_occurrence(
-                    offer,
-                    beginning_datetime=four_days_from_now
-                )
+                event_occurrence = create_event_occurrence(offer, beginning_datetime=four_days_from_now)
                 stock = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=20)
                 repository.save(user, stock)
 
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
+                response = auth_request.put(RECOMMENDATION_URL, json={"offersSentInLastCall": []})
 
                 # then
                 assert response.status_code == 200
                 assert len(response.json) == 0
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_offers_have_non_validated_venues(self, mock_geolocation_feature, app):
                 # Given
                 offerer = create_offerer()
-                venue_not_validated = create_venue(offerer, siret=None, comment='random reason')
+                venue_not_validated = create_venue(offerer, siret=None, comment="random reason")
                 venue_not_validated.generate_validation_token()
-                venue_validated = create_venue(offerer, siret=None, comment='random reason')
+                venue_validated = create_venue(offerer, siret=None, comment="random reason")
                 offer_venue_not_validated = create_offer_with_thing_product(venue_not_validated, thumb_count=1)
                 offer_venue_validated = create_offer_with_thing_product(venue_validated, thumb_count=1)
                 stock_venue_not_validated = create_stock_from_offer(offer_venue_not_validated)
@@ -518,16 +522,16 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
+                response = auth_request.put(RECOMMENDATION_URL, json={"offersSentInLastCall": []})
 
                 # Then
                 assert response.status_code == 200
                 recommendations = response.json
-                venue_ids = set(map(lambda x: x['offer']['venue']['id'], recommendations))
+                venue_ids = set(map(lambda x: x["offer"]["venue"]["id"], recommendations))
                 assert humanize(venue_validated_id) in venue_ids
                 assert humanize(venue_not_validated_id) not in venue_ids
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_offers_have_active_mediations(self, mock_geolocation_feature, app):
                 # given
@@ -550,17 +554,17 @@ class Put:
                 mediation1_id = mediation1.id
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
+                response = auth_request.put(RECOMMENDATION_URL, json={"offersSentInLastCall": []})
 
                 # then
                 assert response.status_code == 200
                 json = response.json
-                mediation_ids = list(map(lambda x: x['mediationId'], json))
+                mediation_ids = list(map(lambda x: x["mediationId"], json))
                 assert humanize(mediation3_id) in mediation_ids
                 assert humanize(mediation2_id) not in mediation_ids
                 assert humanize(mediation1_id) not in mediation_ids
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_a_recommendation_is_requested(self, mock_geolocation_feature, app):
                 # given
@@ -578,8 +582,13 @@ class Put:
                 create_mediation(offer3)
                 create_mediation(offer4)
                 stock1 = create_stock_from_offer(offer1, price=0)
-                stock2 = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=10, soft_deleted=False,
-                                                            booking_limit_date=now + timedelta(days=3))
+                stock2 = create_stock_from_event_occurrence(
+                    event_occurrence,
+                    price=0,
+                    quantity=10,
+                    soft_deleted=False,
+                    booking_limit_date=now + timedelta(days=3),
+                )
                 stock3 = create_stock_from_offer(offer3, price=0)
                 stock4 = create_stock_from_offer(offer4, price=0)
                 repository.save(user, stock1, stock2, stock3, stock4)
@@ -593,22 +602,22 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL +
-                                            "?offerId=" + humanize(offer1.id),
-                                            json={'offersSentInLastCall': []})
+                response = auth_request.put(
+                    RECOMMENDATION_URL + "?offerId=" + humanize(offer1.id), json={"offersSentInLastCall": []}
+                )
 
                 # then
                 assert response.status_code == 200
                 response_json = response.json
                 assert len(response_json) == 4
-                offer_ids = set(map(lambda x: x['offer']['id'], response_json))
-                assert response_json[0]['offer']['id'] == humanize(offer1_id)
+                offer_ids = set(map(lambda x: x["offer"]["id"], response_json))
+                assert response_json[0]["offer"]["id"] == humanize(offer1_id)
                 assert humanize(offer1_id) in offer_ids
                 assert humanize(offer2_id) in offer_ids
                 assert humanize(offer3_id) in offer_ids
                 assert humanize(offer4_id) in offer_ids
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def test_returns_two_recommendations_with_one_event_and_one_thing(self, mock_geolocation_feature, app):
                 # given
@@ -618,10 +627,7 @@ class Put:
                 offerer = create_offerer()
                 venue = create_venue(offerer)
                 offer_event = create_offer_with_event_product(venue)
-                event_occurrence = create_event_occurrence(
-                    offer_event,
-                    beginning_datetime=four_days_from_now
-                )
+                event_occurrence = create_event_occurrence(offer_event, beginning_datetime=four_days_from_now)
                 event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=20)
                 offer_thing = create_offer_with_thing_product(venue)
                 stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
@@ -633,21 +639,22 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
+                response = auth_request.put(RECOMMENDATION_URL, json={"offersSentInLastCall": []})
 
                 # then
                 assert response.status_code == 200
                 assert len(response.json) == 2
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
-            def test_discovery_recommendations_should_not_include_search_recommendations(self, mock_geolocation_feature,
-                                                                                         app):
+            def test_discovery_recommendations_should_not_include_search_recommendations(
+                self, mock_geolocation_feature, app
+            ):
                 # Given
                 user = create_user()
                 offerer = create_offerer()
                 venue = create_venue(offerer)
-                venue_outside_dept = create_venue(offerer, postal_code='29100', siret='12345678912341')
+                venue_outside_dept = create_venue(offerer, postal_code="29100", siret="12345678912341")
                 offer1 = create_offer_with_thing_product(venue, thumb_count=0)
                 stock1 = create_stock_from_offer(offer1, price=0)
                 mediation1 = create_mediation(offer1, is_active=True)
@@ -661,16 +668,15 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # When
-                recommendations_req = auth_request.put(RECOMMENDATION_URL +
-                                                       "?page=1", json={})
+                recommendations_req = auth_request.put(RECOMMENDATION_URL + "?page=1", json={})
 
                 # Then
                 assert recommendations_req.status_code == 200
                 recommendations = recommendations_req.json
                 assert len(recommendations) == 1
-                assert recommendations[0]['search'] is None
+                assert recommendations[0]["search"] is None
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_a_recommendation_with_an_offer_and_a_mediation_is_requested(self, mock_geolocation_feature, app):
                 # given
@@ -685,15 +691,20 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL +
-                                            "?offerId=" + humanize(offer_thing.id) +
-                                            "&mediationId=" + humanize(mediation.id), json={'offersSentInLastCall': []})
+                response = auth_request.put(
+                    RECOMMENDATION_URL
+                    + "?offerId="
+                    + humanize(offer_thing.id)
+                    + "&mediationId="
+                    + humanize(mediation.id),
+                    json={"offersSentInLastCall": []},
+                )
                 # then
                 assert response.status_code == 200
                 recos = response.json
-                assert recos[0]['mediationId'] == humanize(mediation.id)
+                assert recos[0]["mediationId"] == humanize(mediation.id)
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_a_recommendation_with_an_offer_and_no_mediation_is_requested(self, mock_geolocation_feature, app):
                 # given
@@ -709,15 +720,16 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL +
-                                            "?offerId=" + humanize(offer_thing.id), json={'offersSentInLastCall': []})
+                response = auth_request.put(
+                    RECOMMENDATION_URL + "?offerId=" + humanize(offer_thing.id), json={"offersSentInLastCall": []}
+                )
 
                 # then
                 assert response.status_code == 200
                 recos = response.json
-                assert recos[0]['mediationId'] == humanize(mediation_id)
+                assert recos[0]["mediationId"] == humanize(mediation_id)
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_a_recommendation_with_no_offer_and_a_mediation_is_requested(self, mock_geolocation_feature, app):
                 # given
@@ -733,19 +745,20 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL +
-                                            "?mediationId=" + humanize(mediation.id),
-                                            json={'offersSentInLastCall': []})
+                response = auth_request.put(
+                    RECOMMENDATION_URL + "?mediationId=" + humanize(mediation.id), json={"offersSentInLastCall": []}
+                )
 
                 # then
                 assert response.status_code == 200
                 recos = response.json
-                assert recos[0]['offerId'] == humanize(offer_thing_id)
+                assert recos[0]["offerId"] == humanize(offer_thing_id)
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def test_returns_new_recommendation_with_active_mediation_for_already_existing_but_invalid_recommendations(
-                    self, mock_geolocation_feature, app):
+                self, mock_geolocation_feature, app
+            ):
                 # given
                 user = create_user()
                 offerer = create_offerer()
@@ -762,7 +775,7 @@ class Put:
                 inactive_mediation_id = inactive_mediation.id
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
-                data = {'offersSentInLastCall': []}
+                data = {"offersSentInLastCall": []}
 
                 # when
                 response = auth_request.put(RECOMMENDATION_URL, json=data)
@@ -770,11 +783,11 @@ class Put:
                 # then
                 assert response.status_code == 200
                 json = response.json
-                mediation_ids = list(map(lambda x: x['mediationId'], json))
+                mediation_ids = list(map(lambda x: x["mediationId"], json))
                 assert humanize(active_mediation_id) in mediation_ids
                 assert humanize(inactive_mediation_id) not in mediation_ids
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_stock_has_past_booking_limit_date(self, mock_geolocation_feature, app):
                 # Given
@@ -790,20 +803,19 @@ class Put:
                 repository.save(stock, recommendation)
 
                 # When
-                recommendations = TestClient(app.test_client()).with_auth(user.email) \
-                    .put(RECOMMENDATION_URL, json={})
+                recommendations = TestClient(app.test_client()).with_auth(user.email).put(RECOMMENDATION_URL, json={})
 
                 # Then
                 assert recommendations.status_code == 200
                 assert not recommendations.json
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_user_has_already_seen_offer_sent_in_last_call(self, mock_geolocation_feature, app):
                 # given
                 user = create_user()
                 offerer = create_offerer()
-                venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
+                venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
                 offer = create_offer_with_thing_product(venue)
                 mediation = create_mediation(offer, is_active=True)
                 stock = create_stock_from_offer(offer)
@@ -812,14 +824,17 @@ class Put:
                 repository.save(stock, recommendation)
 
                 # when
-                response = TestClient(app.test_client()).with_auth(user.email) \
-                    .put(RECOMMENDATION_URL, json={'offersSentInLastCall': [humanize(recommendation.id)]})
+                response = (
+                    TestClient(app.test_client())
+                    .with_auth(user.email)
+                    .put(RECOMMENDATION_URL, json={"offersSentInLastCall": [humanize(recommendation.id)]})
+                )
 
                 # then
                 assert response.status_code == 200
                 assert response.json == []
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def test_returns_same_quantity_of_recommendations_in_different_orders(self, mock_geolocation_feature, app):
                 # given
@@ -832,10 +847,7 @@ class Put:
 
                 for i in range(0, 10):
                     offer_event = create_offer_with_event_product(venue, thumb_count=1)
-                    event_occurrence = create_event_occurrence(
-                        offer_event,
-                        beginning_datetime=four_days_from_now
-                    )
+                    event_occurrence = create_event_occurrence(offer_event, beginning_datetime=four_days_from_now)
                     event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=20)
                     offer_thing = create_offer_with_thing_product(venue)
                     stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
@@ -847,8 +859,8 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                recommendations1 = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
-                recommendations2 = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
+                recommendations1 = auth_request.put(RECOMMENDATION_URL, json={"offersSentInLastCall": []})
+                recommendations2 = auth_request.put(RECOMMENDATION_URL, json={"offersSentInLastCall": []})
 
                 # then
                 assert recommendations1.status_code == 200
@@ -856,10 +868,13 @@ class Put:
                 assert len(recommendations1.json) == 20
                 assert len(recommendations1.json) == len(recommendations2.json)
                 assert any(
-                    [recommendations1.json[i]['id'] != recommendations2.json[i]['id'] for i in
-                     range(0, len(recommendations1.json))])
+                    [
+                        recommendations1.json[i]["id"] != recommendations2.json[i]["id"]
+                        for i in range(0, len(recommendations1.json))
+                    ]
+                )
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def test_returns_stocks_with_isBookable_property(self, mock_geolocation_feature, app):
                 # Given
@@ -868,7 +883,7 @@ class Put:
                 user = create_user()
                 offerer = create_offerer()
                 venue = create_venue(offerer)
-                offer = create_offer_with_thing_product(venue, thing_name='Guitar for dummies')
+                offer = create_offer_with_thing_product(venue, thing_name="Guitar for dummies")
                 mediation = create_mediation(offer, is_active=True)
 
                 create_stock_from_offer(offer, price=14)
@@ -888,19 +903,19 @@ class Put:
                 recommendations = recommendations_req.json
                 assert len(recommendations) == 1
                 recommendation = recommendations[0]
-                assert recommendation['offer']['name'] == 'Guitar for dummies'
-                stocks_response = recommendation['offer']['stocks']
+                assert recommendation["offer"]["name"] == "Guitar for dummies"
+                stocks_response = recommendation["offer"]["stocks"]
                 assert len(stocks_response) == 2
-                assert all('isBookable' in stocks_response[i] for i in range(0, len(stocks_response)))
+                assert all("isBookable" in stocks_response[i] for i in range(0, len(stocks_response)))
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=False)
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=False)
             @pytest.mark.usefixtures("db_session")
             def when_user_has_bookings_on_recommended_offers(self, mock_geolocation_feature, app):
                 # given
-                user = create_user(can_book_free_offers=True, departement_code='93', is_admin=False)
+                user = create_user(can_book_free_offers=True, departement_code="93", is_admin=False)
                 offerer = create_offerer()
-                venue = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
-                offer = create_offer_with_thing_product(venue, thing_name='thing 93', url=None, is_national=False)
+                venue = create_venue(offerer, siret=offerer.siren + "54321", postal_code="93000", departement_code="93")
+                offer = create_offer_with_thing_product(venue, thing_name="thing 93", url=None, is_national=False)
                 stock = create_stock_from_offer(offer, price=0)
                 booking = create_booking(user=user, stock=stock, venue=venue)
                 create_mediation(offer)
@@ -908,33 +923,35 @@ class Put:
                 discovery_view_queries.refresh(concurrently=False)
 
                 # when
-                response = TestClient(app.test_client()).with_auth(user.email) \
-                    .put(RECOMMENDATION_URL, json={})
+                response = TestClient(app.test_client()).with_auth(user.email).put(RECOMMENDATION_URL, json={})
 
                 # then
                 assert response.status_code == 200
                 assert response.json == []
 
         class WhenGeolocationFeatureIsActivated:
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=True)
-            @patch('pcapi.routes.recommendations.create_recommendations_for_discovery_v3')
-            @patch('pcapi.routes.recommendations.create_recommendations_for_discovery')
-            @patch('pcapi.routes.recommendations.current_user')
-            @patch('pcapi.routes.recommendations.serialize_recommendations')
-            @patch('pcapi.routes.recommendations.update_read_recommendations')
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=True)
+            @patch("pcapi.routes.recommendations.create_recommendations_for_discovery_v3")
+            @patch("pcapi.routes.recommendations.create_recommendations_for_discovery")
+            @patch("pcapi.routes.recommendations.current_user")
+            @patch("pcapi.routes.recommendations.serialize_recommendations")
+            @patch("pcapi.routes.recommendations.update_read_recommendations")
             @pytest.mark.usefixtures("db_session")
-            def when_user_is_geolocated(self, mock_update_read_recommendations,
-                                                              mock_serialize_recommendations,
-                                                              mock_current_user,
-                                                              mock_create_recommendations_for_discovery,
-                                                              mock_create_recommendations_for_discovery_v3,
-                                                              mock_geolocation_feature,
-                                                              app):
+            def when_user_is_geolocated(
+                self,
+                mock_update_read_recommendations,
+                mock_serialize_recommendations,
+                mock_current_user,
+                mock_create_recommendations_for_discovery,
+                mock_create_recommendations_for_discovery_v3,
+                mock_geolocation_feature,
+                app,
+            ):
                 # Given
                 user = create_user()
                 offerer = create_offerer()
                 venue = create_venue(offerer)
-                offer = create_offer_with_thing_product(venue, thing_name='Guitar for dummies')
+                offer = create_offer_with_thing_product(venue, thing_name="Guitar for dummies")
                 mediation = create_mediation(offer, is_active=True)
 
                 stock = create_stock_from_offer(offer, price=14)
@@ -952,33 +969,37 @@ class Put:
                     {"id": humanize(2), "dateRead": "2018-12-17T15:59:15.689000Z"},
                     {"id": humanize(3), "dateRead": "2018-12-17T15:59:21.689000Z"},
                 ]
-                data = {'readRecommendations': reads}
+                data = {"readRecommendations": reads}
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # When
-                response = auth_request.put(f'{RECOMMENDATION_URL}?longitude={user_longitude}&latitude={user_latitude}',
-                                            json=data, headers={'origin': 'http://localhost:3000'})
+                response = auth_request.put(
+                    f"{RECOMMENDATION_URL}?longitude={user_longitude}&latitude={user_latitude}",
+                    json=data,
+                    headers={"origin": "http://localhost:3000"},
+                )
 
                 # Then
                 assert response.status_code == 200
                 mock_update_read_recommendations.assert_called_once()
                 mock_create_recommendations_for_discovery.assert_not_called()
-                mock_create_recommendations_for_discovery_v3.assert_called_once_with(user=mock_current_user,
-                                                                                     user_iris_id=iris.id,
-                                                                                     user_is_geolocated=True,
-                                                                                     sent_offers_ids=[],
-                                                                                     limit=30)
+                mock_create_recommendations_for_discovery_v3.assert_called_once_with(
+                    user=mock_current_user, user_iris_id=iris.id, user_is_geolocated=True, sent_offers_ids=[], limit=30
+                )
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=True)
-            @patch('pcapi.routes.recommendations.create_recommendations_for_discovery_v3')
-            @patch('pcapi.routes.recommendations.current_user')
-            @patch('pcapi.routes.recommendations.serialize_recommendations')
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=True)
+            @patch("pcapi.routes.recommendations.create_recommendations_for_discovery_v3")
+            @patch("pcapi.routes.recommendations.current_user")
+            @patch("pcapi.routes.recommendations.serialize_recommendations")
             @pytest.mark.usefixtures("db_session")
-            def when_user_is_not_located(self, mock_serialize_recommendations,
-                                                               mock_current_user,
-                                                               mock_create_recommendations_for_discovery_v3,
-                                                               mock_geolocation_feature,
-                                                               app):
+            def when_user_is_not_located(
+                self,
+                mock_serialize_recommendations,
+                mock_current_user,
+                mock_create_recommendations_for_discovery_v3,
+                mock_geolocation_feature,
+                app,
+            ):
                 # given
                 user = create_user()
                 offerer = create_offerer()
@@ -994,35 +1015,36 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(RECOMMENDATION_URL,
-                                            json={'offersSentInLastCall': []})
+                response = auth_request.put(RECOMMENDATION_URL, json={"offersSentInLastCall": []})
 
                 # then
                 assert response.status_code == 200
-                mock_create_recommendations_for_discovery_v3.assert_called_once_with(user=mock_current_user,
-                                                                                     user_iris_id=None,
-                                                                                     user_is_geolocated=False,
-                                                                                     sent_offers_ids=[],
-                                                                                     limit=30)
+                mock_create_recommendations_for_discovery_v3.assert_called_once_with(
+                    user=mock_current_user, user_iris_id=None, user_is_geolocated=False, sent_offers_ids=[], limit=30
+                )
 
-            @patch('pcapi.routes.recommendations.feature_queries.is_active', return_value=True)
-            @patch('pcapi.routes.recommendations.create_recommendations_for_discovery_v3')
-            @patch('pcapi.routes.recommendations.current_user')
-            @patch('pcapi.routes.recommendations.serialize_recommendations')
+            @patch("pcapi.routes.recommendations.feature_queries.is_active", return_value=True)
+            @patch("pcapi.routes.recommendations.create_recommendations_for_discovery_v3")
+            @patch("pcapi.routes.recommendations.current_user")
+            @patch("pcapi.routes.recommendations.serialize_recommendations")
             @pytest.mark.usefixtures("db_session")
-            def when_user_is_located_outside_known_iris(self, mock_serialize_recommendations,
-                                                                              mock_current_user,
-                                                                              mock_create_recommendations_for_discovery_v3,
-                                                                              mock_geolocation_feature,
-                                                                              app):
+            def when_user_is_located_outside_known_iris(
+                self,
+                mock_serialize_recommendations,
+                mock_current_user,
+                mock_create_recommendations_for_discovery_v3,
+                mock_geolocation_feature,
+                app,
+            ):
                 # given
                 user = create_user()
                 offerer = create_offerer()
                 venue = create_venue(offerer)
                 digital_venue = create_venue(offerer, is_virtual=True, siret=None)
-                offer = create_offer_with_thing_product(venue, thing_name='Guitar for dummies')
-                digital_offer = create_offer_with_thing_product(digital_venue, thing_type=ThingType.JEUX_VIDEO,
-                                                                url='https://url.com', is_national=True)
+                offer = create_offer_with_thing_product(venue, thing_name="Guitar for dummies")
+                digital_offer = create_offer_with_thing_product(
+                    digital_venue, thing_type=ThingType.JEUX_VIDEO, url="https://url.com", is_national=True
+                )
                 mediation = create_mediation(offer, is_active=True)
                 mediation_of_digital_offer = create_mediation(digital_offer, is_active=True)
 
@@ -1038,13 +1060,13 @@ class Put:
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
 
                 # when
-                response = auth_request.put(f'{RECOMMENDATION_URL}?longitude={user_longitude}&latitude={user_latitude}',
-                                            json={'offersSentInLastCall': []})
+                response = auth_request.put(
+                    f"{RECOMMENDATION_URL}?longitude={user_longitude}&latitude={user_latitude}",
+                    json={"offersSentInLastCall": []},
+                )
 
                 # then
                 assert response.status_code == 200
-                mock_create_recommendations_for_discovery_v3.assert_called_once_with(user=mock_current_user,
-                                                                                     user_iris_id=None,
-                                                                                     user_is_geolocated=True,
-                                                                                     sent_offers_ids=[],
-                                                                                     limit=30)
+                mock_create_recommendations_for_discovery_v3.assert_called_once_with(
+                    user=mock_current_user, user_iris_id=None, user_is_geolocated=True, sent_offers_ids=[], limit=30
+                )

@@ -18,7 +18,8 @@ from pcapi.validation.routes.users_authorizations import check_user_can_validate
 class CheckUserCanValidateBookingTest:
     @pytest.mark.usefixtures("db_session")
     def test_check_user_can_validate_bookings_returns_true_when_user_is_authenticated_and_has_editor_rights_on_booking(
-            self, app):
+        self, app
+    ):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -27,7 +28,6 @@ class CheckUserCanValidateBookingTest:
 
         # When
         result = check_user_can_validate_bookings(user, offerer.id)
-
 
         # Then
         assert result is True
@@ -43,7 +43,8 @@ class CheckUserCanValidateBookingTest:
         assert result is False
 
     def test_check_user_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
-            self, app):
+        self, app
+    ):
         # Given
         user = UserSQLEntity()
         user.is_authenticated = True
@@ -53,20 +54,18 @@ class CheckUserCanValidateBookingTest:
             check_user_can_validate_bookings(user, None)
 
         # Then
-        assert errors.value.errors['global'] == ["Cette contremarque n'a pas été trouvée"]
+        assert errors.value.errors["global"] == ["Cette contremarque n'a pas été trouvée"]
 
 
 class CheckUserCanValidateBookingTestv2:
     @pytest.mark.usefixtures("db_session")
-    def test_does_not_raise_error_when_user_has_editor_rights_on_booking(
-            self, app):
+    def test_does_not_raise_error_when_user_has_editor_rights_on_booking(self, app):
         # Given
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer, None)
 
         repository.save(user, offerer, user_offerer)
-
 
         # When
         try:
@@ -77,7 +76,8 @@ class CheckUserCanValidateBookingTestv2:
             assert False
 
     def test_check_user_can_validate_v2_bookings_raise_api_error_when_user_is_authenticated_but_does_not_have_editor_rights_on_booking(
-            self, app):
+        self, app
+    ):
         # Given
         user = UserSQLEntity()
         user.is_authenticated = True
@@ -87,13 +87,12 @@ class CheckUserCanValidateBookingTestv2:
             check_user_can_validate_bookings_v2(user, None)
 
         # Then
-        assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
+        assert errors.value.errors["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
 
 class CheckApiKeyAllowsToValidateBookingTest:
     @pytest.mark.usefixtures("db_session")
-    def test_does_not_raise_error_when_api_key_is_provided_and_is_related_to_offerer_id(
-            self, app):
+    def test_does_not_raise_error_when_api_key_is_provided_and_is_related_to_offerer_id(self, app):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -115,8 +114,7 @@ class CheckApiKeyAllowsToValidateBookingTest:
         except:
             assert False
 
-    def test_raises_exception_when_api_key_is_provided_but_related_offerer_does_not_have_rights_on_booking(
-            self, app):
+    def test_raises_exception_when_api_key_is_provided_but_related_offerer_does_not_have_rights_on_booking(self, app):
         # Given
         validApiKey = ApiKey()
         validApiKey.value = random_token(64)
@@ -127,12 +125,12 @@ class CheckApiKeyAllowsToValidateBookingTest:
             check_api_key_allows_to_validate_booking(validApiKey, None)
 
         # Then
-        assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
+        assert errors.value.errors["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
+
 
 class CheckUserCanValidateActivationOfferTest:
     @pytest.mark.usefixtures("db_session")
-    def test_does_not_raise_error_when_user_is_admin(
-            self, app):
+    def test_does_not_raise_error_when_user_is_admin(self, app):
         # Given
         admin_user = create_user(is_admin=True)
 
@@ -144,8 +142,7 @@ class CheckUserCanValidateActivationOfferTest:
         except:
             assert False
 
-    def test_raises_exception_when_user_is_not_admin(
-            self, app):
+    def test_raises_exception_when_user_is_not_admin(self, app):
         # Given
         user = create_user()
 
@@ -154,4 +151,4 @@ class CheckUserCanValidateActivationOfferTest:
             check_user_can_validate_activation_offer(user)
 
         # Then
-        assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
+        assert errors.value.errors["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]

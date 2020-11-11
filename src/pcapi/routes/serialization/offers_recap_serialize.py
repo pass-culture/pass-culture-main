@@ -11,10 +11,10 @@ from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 
 def serialize_offers_recap_paginated(paginated_offers: PaginatedOffersRecap) -> Dict[str, Any]:
     return {
-        'offers': [_serialize_offer_paginated(offer) for offer in paginated_offers.offers],
-        'page': paginated_offers.current_page,
-        'page_count': paginated_offers.total_pages,
-        'total_count': paginated_offers.total_offers
+        "offers": [_serialize_offer_paginated(offer) for offer in paginated_offers.offers],
+        "page": paginated_offers.current_page,
+        "page_count": paginated_offers.total_pages,
+        "total_count": paginated_offers.total_offers,
     }
 
 
@@ -41,7 +41,7 @@ def _serialize_stock(offer_identifier: Identifier, stock: OfferRecapStock) -> Di
     return {
         "id": stock.identifier.scrambled,
         "offerId": offer_identifier.scrambled,
-        "remainingQuantity": stock.remaining_quantity
+        "remainingQuantity": stock.remaining_quantity,
     }
 
 

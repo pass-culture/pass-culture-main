@@ -3,9 +3,9 @@ from typing import Optional
 
 
 class JobStatus(Enum):
-    STARTED = 'started'
-    ENDED = 'ended'
-    FAILED = 'failed'
+    STARTED = "started"
+    ENDED = "ended"
+    FAILED = "failed"
 
     def __str__(self):
         return self.value

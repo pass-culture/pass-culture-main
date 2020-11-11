@@ -105,7 +105,7 @@ def test_stock_cannot_have_a_negative_price(app):
         repository.save(stock)
 
     # then
-    assert e.value.errors['global'] is not None
+    assert e.value.errors["global"] is not None
 
 
 @pytest.mark.usefixtures("db_session")
@@ -121,7 +121,7 @@ def test_stock_cannot_have_a_negative_quantity_stock(app):
         repository.save(stock)
 
     # then
-    assert e.value.errors['quantity'] == ["Le stock doit être positif"]
+    assert e.value.errors["quantity"] == ["Le stock doit être positif"]
 
 
 @pytest.mark.usefixtures("db_session")
@@ -148,24 +148,12 @@ def test_quantity_stocks_can_be_changed_even_when_bookings_with_cancellations_ex
     stock = create_stock_from_offer(offer, quantity=2, price=0)
     repository.save(stock)
     user1 = create_user()
-    user2 = create_user(email='test@mail.com')
+    user2 = create_user(email="test@mail.com")
 
-    cancelled_booking1 = create_booking(user=user1,
-                                        stock=stock,
-                                        is_cancelled=True,
-                                        quantity=1)
-    cancelled_booking2 = create_booking(user=user1,
-                                        stock=stock,
-                                        is_cancelled=True,
-                                        quantity=1)
-    booking1 = create_booking(user=user1,
-                              stock=stock,
-                              is_cancelled=False,
-                              quantity=1)
-    booking2 = create_booking(user=user2,
-                              stock=stock,
-                              is_cancelled=False,
-                              quantity=1)
+    cancelled_booking1 = create_booking(user=user1, stock=stock, is_cancelled=True, quantity=1)
+    cancelled_booking2 = create_booking(user=user1, stock=stock, is_cancelled=True, quantity=1)
+    booking1 = create_booking(user=user1, stock=stock, is_cancelled=False, quantity=1)
+    booking2 = create_booking(user=user2, stock=stock, is_cancelled=False, quantity=1)
 
     repository.save(cancelled_booking1, cancelled_booking2, booking1, booking2)
     stock.quantity = 3
@@ -187,10 +175,7 @@ def test_should_update_stock_quantity_when_value_is_more_than_sum_of_bookings_qu
     stock = create_stock_from_offer(offer, quantity=2, price=0)
     repository.save(stock)
     user = create_user()
-    booking = create_booking(user=user,
-                             stock=stock,
-                             is_cancelled=False,
-                             quantity=2)
+    booking = create_booking(user=user, stock=stock, is_cancelled=False, quantity=2)
     repository.save(booking)
     stock.quantity = 3
 
@@ -218,7 +203,7 @@ def test_should_not_update_quantity_stock_when_value_is_less_than_booking_count(
         repository.save(stock)
 
     # then
-    assert e.value.errors['quantity'] == ['Le stock total ne peut être inférieur au nombre de réservations']
+    assert e.value.errors["quantity"] == ["Le stock total ne peut être inférieur au nombre de réservations"]
 
 
 class IsBookableTest:
@@ -237,7 +222,7 @@ class IsBookableTest:
 
     def test_should_return_false_when_offerer_is_not_validated(self):
         # Given
-        offerer = create_offerer(validation_token='validation_token')
+        offerer = create_offerer(validation_token="validation_token")
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
 
@@ -262,7 +247,7 @@ class IsBookableTest:
     def test_should_return_false_when_venue_is_not_validated(self):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, validation_token='ZERTYUIO')
+        venue = create_venue(offerer, validation_token="ZERTYUIO")
         offer = create_offer_with_thing_product(venue)
 
         # When
@@ -367,8 +352,7 @@ class IsEventExpiredTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         three_days_from_now = datetime.utcnow() + timedelta(hours=72)
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
-                                              beginning_datetime=three_days_from_now)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, beginning_datetime=three_days_from_now)
 
         # When
         is_event_expired = stock.isEventExpired
@@ -381,8 +365,7 @@ class IsEventExpiredTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         one_day_in_the_past = datetime.utcnow() - timedelta(hours=24)
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
-                                              beginning_datetime=one_day_in_the_past)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, beginning_datetime=one_day_in_the_past)
 
         # When
         is_event_expired = stock.isEventExpired
@@ -392,7 +375,7 @@ class IsEventExpiredTest:
 
 
 class IsEventDeletableTest:
-    @patch('pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch("pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY", EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_not_an_event(self):
         # Given
         offerer = create_offerer()
@@ -405,14 +388,13 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    @patch('pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch("pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY", EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_an_event_in_the_future(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
         three_days_from_now = datetime.utcnow() + timedelta(hours=72)
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
-                                              beginning_datetime=three_days_from_now)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, beginning_datetime=three_days_from_now)
 
         # When
         is_event_deletable = stock.isEventDeletable
@@ -420,15 +402,17 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    @patch('pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch("pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY", EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_expired_since_less_than_event_automatic_refund_delay(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        expired_date_but_not_automaticaly_refunded = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST + timedelta(
-            1)
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
-                                              beginning_datetime=expired_date_but_not_automaticaly_refunded)
+        expired_date_but_not_automaticaly_refunded = (
+            datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST + timedelta(1)
+        )
+        stock = create_stock_with_event_offer(
+            offerer=offerer, venue=venue, beginning_datetime=expired_date_but_not_automaticaly_refunded
+        )
 
         # When
         is_event_deletable = stock.isEventDeletable
@@ -436,14 +420,15 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    @patch('pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch("pcapi.models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY", EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_not_deletable_when_stock_is_expired_since_more_than_event_automatic_refund_delay(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
         expired_date_and_automaticaly_refunded = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
-                                              beginning_datetime=expired_date_and_automaticaly_refunded)
+        stock = create_stock_with_event_offer(
+            offerer=offerer, venue=venue, beginning_datetime=expired_date_and_automaticaly_refunded
+        )
 
         # When
         is_event_deletable = stock.isEventDeletable

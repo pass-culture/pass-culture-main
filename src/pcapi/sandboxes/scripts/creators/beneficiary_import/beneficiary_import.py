@@ -12,22 +12,18 @@ from pcapi.utils.logger import logger
 
 def create_beneficiary_user() -> UserSQLEntity:
     import_status = ImportStatus.CREATED
-    beneficiary_user = create_user(email=f'{str(import_status)}@email.com')
+    beneficiary_user = create_user(email=f"{str(import_status)}@email.com")
 
     repository.save(beneficiary_user)
-    logger.info(f'created 1 beneficiary user')
+    logger.info(f"created 1 beneficiary user")
 
     return beneficiary_user
 
 
 def create_admin_user():
-    admin_user = create_user(
-        can_book_free_offers=False,
-        is_admin=True,
-        email='pctest.admin93.0@btmx.fr'
-    )
+    admin_user = create_user(can_book_free_offers=False, is_admin=True, email="pctest.admin93.0@btmx.fr")
     repository.save(admin_user)
-    logger.info('created 1 admin user')
+    logger.info("created 1 admin user")
 
 
 def create_beneficiary_imports(beneficiary_user: UserSQLEntity) -> List[BeneficiaryImport]:
@@ -45,7 +41,7 @@ def create_beneficiary_imports(beneficiary_user: UserSQLEntity) -> List[Benefici
         index_of_beneficiary_imports += 1
 
     repository.save(*beneficiary_imports)
-    logger.info(f'created {len(beneficiary_imports)} beneficiary imports and status')
+    logger.info(f"created {len(beneficiary_imports)} beneficiary imports and status")
 
     return beneficiary_imports
 

@@ -12,15 +12,11 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
     user = query.first()
 
     offerer = [
-        uo.offerer for uo in user.UserOfferers
-        if uo.validationToken == None \
-        and uo.offerer.validationToken == None
+        uo.offerer for uo in user.UserOfferers if uo.validationToken == None and uo.offerer.validationToken == None
     ][0]
 
-    return {
-        "offerer": get_offerer_helper(offerer),
-        "user": get_pro_helper(user)
-    }
+    return {"offerer": get_offerer_helper(offerer), "user": get_pro_helper(user)}
+
 
 def get_existing_pro_validated_user_with_not_validated_offerer_validated_user_offerer():
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
@@ -28,15 +24,11 @@ def get_existing_pro_validated_user_with_not_validated_offerer_validated_user_of
     user = query.first()
 
     offerer = [
-        uo.offerer for uo in user.UserOfferers
-        if uo.validationToken == None \
-        and uo.offerer.validationToken != None
+        uo.offerer for uo in user.UserOfferers if uo.validationToken == None and uo.offerer.validationToken != None
     ][0]
 
-    return {
-        "offerer": get_offerer_helper(offerer),
-        "user": get_pro_helper(user)
-    }
+    return {"offerer": get_offerer_helper(offerer), "user": get_pro_helper(user)}
+
 
 def get_existing_pro_validated_user_with_validated_offerer_not_validated_user_offerer():
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
@@ -44,15 +36,11 @@ def get_existing_pro_validated_user_with_validated_offerer_not_validated_user_of
     user = query.first()
 
     offerer = [
-        uo.offerer for uo in user.UserOfferers
-        if uo.validationToken != None \
-        and uo.offerer.validationToken == None
+        uo.offerer for uo in user.UserOfferers if uo.validationToken != None and uo.offerer.validationToken == None
     ][0]
 
-    return {
-        "offerer": get_offerer_helper(offerer),
-        "user": get_pro_helper(user)
-    }
+    return {"offerer": get_offerer_helper(offerer), "user": get_pro_helper(user)}
+
 
 def get_existing_pro_validated_user_with_not_validated_offerer_validated_user_offerer_and_validated_offerer_not_validated_user_offerer_and_validated_offerer_validated_user_offerer():
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
@@ -63,27 +51,23 @@ def get_existing_pro_validated_user_with_not_validated_offerer_validated_user_of
     user = query.first()
 
     not_validated_offerer = [
-        uo.offerer for uo in user.UserOfferers
-        if uo.offerer.validationToken != None \
-        and uo.validationToken == None
+        uo.offerer for uo in user.UserOfferers if uo.offerer.validationToken != None and uo.validationToken == None
     ][0]
 
     validated_offerer_with_not_validated_user_offerer = [
-        uo.offerer for uo in user.UserOfferers
-        if uo.offerer.validationToken == None \
-        and uo.validationToken != None
+        uo.offerer for uo in user.UserOfferers if uo.offerer.validationToken == None and uo.validationToken != None
     ][0]
 
     validated_offerer_with_validated_user_offerer = [
-        uo.offerer for uo in user.UserOfferers
-        if uo.offerer.validationToken == None \
-        and uo.validationToken == None
+        uo.offerer for uo in user.UserOfferers if uo.offerer.validationToken == None and uo.validationToken == None
     ][0]
 
     return {
         "notValidatedOfferer": get_offerer_helper(not_validated_offerer),
         "offerersCount": len(user.UserOfferers),
         "user": get_pro_helper(user),
-        "validatedOffererWithNotValidatedUserOfferer": get_offerer_helper(validated_offerer_with_not_validated_user_offerer),
-        "validatedOffererWithValidatedUserOfferer": get_offerer_helper(validated_offerer_with_validated_user_offerer)
+        "validatedOffererWithNotValidatedUserOfferer": get_offerer_helper(
+            validated_offerer_with_not_validated_user_offerer
+        ),
+        "validatedOffererWithValidatedUserOfferer": get_offerer_helper(validated_offerer_with_validated_user_offerer),
     }

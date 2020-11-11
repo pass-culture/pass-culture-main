@@ -29,12 +29,13 @@ TODAY = datetime(2020, 4, 10)
 
 
 class GetOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
-    @patch('pcapi.scripts.deactivate_offers_during_quarantine.'
-           'deactivate_offers.build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine')
+    @patch(
+        "pcapi.scripts.deactivate_offers_during_quarantine."
+        "deactivate_offers.build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine"
+    )
     def test_should_call_build_offers_query(self, stub_build_query):
         # When
-        get_offers_with_max_stock_date_between_today_and_end_of_quarantine(FIRST_DAY_AFTER_QUARANTINE,
-                                                                           TODAY)
+        get_offers_with_max_stock_date_between_today_and_end_of_quarantine(FIRST_DAY_AFTER_QUARANTINE, TODAY)
 
         # Then
         stub_build_query.assert_called_once_with(FIRST_DAY_AFTER_QUARANTINE, TODAY)
@@ -54,8 +55,9 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         repository.save(stock)
 
         # When
-        offers = build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(FIRST_DAY_AFTER_QUARANTINE,
-                                                                                            TODAY).all()
+        offers = build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(
+            FIRST_DAY_AFTER_QUARANTINE, TODAY
+        ).all()
 
         # Then
         assert offers == []
@@ -71,8 +73,9 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         repository.save(stock)
 
         # When
-        offers = build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(FIRST_DAY_AFTER_QUARANTINE,
-                                                                                            TODAY).all()
+        offers = build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(
+            FIRST_DAY_AFTER_QUARANTINE, TODAY
+        ).all()
 
         # Then
         assert offers == [offer]
@@ -88,8 +91,9 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         repository.save(stock)
 
         # When
-        offers = build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(FIRST_DAY_AFTER_QUARANTINE,
-                                                                                            TODAY).all()
+        offers = build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(
+            FIRST_DAY_AFTER_QUARANTINE, TODAY
+        ).all()
 
         # Then
         assert offers == []
@@ -106,8 +110,9 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         repository.save(stock1, stock2)
 
         # When
-        offers = build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(FIRST_DAY_AFTER_QUARANTINE,
-                                                                                            TODAY).all()
+        offers = build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(
+            FIRST_DAY_AFTER_QUARANTINE, TODAY
+        ).all()
 
         # Then
         assert offers == []
@@ -123,8 +128,9 @@ class BuildQueryOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         repository.save(stock)
 
         # When
-        offers = build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(FIRST_DAY_AFTER_QUARANTINE,
-                                                                                            TODAY).all()
+        offers = build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(
+            FIRST_DAY_AFTER_QUARANTINE, TODAY
+        ).all()
 
         # Then
         assert offers == []
@@ -164,15 +170,16 @@ class DeactivateOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         repository.save(offer_to_deactivate, offer_not_to_deactivate)
 
         # When
-        deactivate_offers_with_max_stock_date_between_today_and_end_of_quarantine(FIRST_DAY_AFTER_QUARANTINE, TODAY,
-                                                                                  get_offers)
+        deactivate_offers_with_max_stock_date_between_today_and_end_of_quarantine(
+            FIRST_DAY_AFTER_QUARANTINE, TODAY, get_offers
+        )
 
         # Then
         assert offer_to_deactivate.isActive is False
         assert offer_not_to_deactivate.isActive is True
 
     @pytest.mark.usefixtures("db_session")
-    @patch('pcapi.scripts.deactivate_offers_during_quarantine.deactivate_offers.delete_expired_offers')
+    @patch("pcapi.scripts.deactivate_offers_during_quarantine.deactivate_offers.delete_expired_offers")
     def test_should_unindex_offers(self, mocked_delete_expired_offers):
         # Given
         offerer = create_offerer()

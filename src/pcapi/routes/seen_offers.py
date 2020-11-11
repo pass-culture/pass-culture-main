@@ -11,13 +11,13 @@ from pcapi.utils.rest import expect_json_data
 from pcapi.validation.routes.seen_offers import check_payload_is_valid
 
 
-@private_api.route('/seen_offers', methods=['PUT'])
+@private_api.route("/seen_offers", methods=["PUT"])
 @feature_required(FeatureToggle.SAVE_SEEN_OFFERS)
 @login_required
 @expect_json_data
 def put_seen_offers():
     payload = request.json
     check_payload_is_valid(payload)
-    offer_id = dehumanize(payload['offerId'])
+    offer_id = dehumanize(payload["offerId"])
     save_seen_offer(current_user.id, offer_id)
-    return '', 200
+    return "", 200

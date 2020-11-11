@@ -10,22 +10,25 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '3a5629a53c17'
-down_revision = '1126d1b72a1b'
+revision = "3a5629a53c17"
+down_revision = "1126d1b72a1b"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.drop_constraint('unique_venue_provider_price_rule', 'allocine_venue_provider_price_rule')
+    op.drop_constraint("unique_venue_provider_price_rule", "allocine_venue_provider_price_rule")
     op.create_unique_constraint(
-        'unique_allocine_venue_provider_price_rule',
-        'allocine_venue_provider_price_rule', ['allocineVenueProviderId', 'priceRule']
+        "unique_allocine_venue_provider_price_rule",
+        "allocine_venue_provider_price_rule",
+        ["allocineVenueProviderId", "priceRule"],
     )
 
 
 def downgrade():
-    op.drop_constraint('unique_allocine_venue_provider_price_rule', 'allocine_venue_provider_price_rule')
+    op.drop_constraint("unique_allocine_venue_provider_price_rule", "allocine_venue_provider_price_rule")
     op.create_unique_constraint(
-        'unique_venue_provider_price_rule', 'allocine_venue_provider_price_rule', ['allocineVenueProviderId', 'priceRule']
+        "unique_venue_provider_price_rule",
+        "allocine_venue_provider_price_rule",
+        ["allocineVenueProviderId", "priceRule"],
     )

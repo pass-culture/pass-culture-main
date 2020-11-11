@@ -16,16 +16,16 @@ class DepositFactory(BaseFactory):
 
     user = factory.SubFactory(users_factories.UserFactory)
     amount = 500
-    source = 'public'
+    source = "public"
 
 
 class PaymentFactory(BaseFactory):
     class Meta:
         model = models.Payment
 
-    author = 'batch'
+    author = "batch"
     booking = factory.SubFactory(bookings_factories.BookingFactory)
-    amount = factory.SelfAttribute('booking.total_amount')
-    recipientSiren = factory.SelfAttribute('booking.stock.offer.venue.managingOfferer.siren')
+    amount = factory.SelfAttribute("booking.total_amount")
+    recipientSiren = factory.SelfAttribute("booking.stock.offer.venue.managingOfferer.siren")
     reimbursementRule = factory.Iterator(ALL_REIMBURSEMENT_RULES)
     reimbursementRate = 30

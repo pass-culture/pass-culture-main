@@ -11,8 +11,7 @@ from pcapi.repository import repository
 
 class BeneficiarySQLRepository(BeneficiaryRepository):
     def find_beneficiary_by_user_id(self, user_id: int) -> Beneficiary:
-        user_sql_entity = db.session.query(UserSQLEntity) \
-            .get(user_id)
+        user_sql_entity = db.session.query(UserSQLEntity).get(user_id)
 
         if user_sql_entity is None:
             raise BeneficiaryDoesntExist()
@@ -29,7 +28,8 @@ class BeneficiarySQLRepository(BeneficiaryRepository):
 
     @classmethod
     def reject(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str) -> None:
-        beneficiary_import = beneficiary_pre_subscription_sql_converter \
-            .to_rejected_model(beneficiary_pre_subscription, detail=detail)
+        beneficiary_import = beneficiary_pre_subscription_sql_converter.to_rejected_model(
+            beneficiary_pre_subscription, detail=detail
+        )
 
         repository.save(beneficiary_import)

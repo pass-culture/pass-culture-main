@@ -44,7 +44,9 @@ def _attach_deposit(beneficiary: UserSQLEntity, beneficiary_pre_subscription: Be
     beneficiary.deposits = [deposit]
 
 
-def _attach_beneficiary_import(beneficiary: UserSQLEntity, beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
+def _attach_beneficiary_import(
+    beneficiary: UserSQLEntity, beneficiary_pre_subscription: BeneficiaryPreSubscription
+) -> None:
     beneficiary_import = BeneficiaryImport()
 
     beneficiary_import.applicationId = beneficiary_pre_subscription.application_id

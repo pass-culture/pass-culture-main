@@ -48,7 +48,7 @@ MOCK_NAMES = [
     "x=2 au carré de ton cousin",
     "McBatard, l’aïeul écossais",
     "Toto",
-    "Le Vert et le Jaune"
+    "Le Vert et le Jaune",
 ]
 
 MOCK_AUTHOR_NAMES = [
@@ -101,7 +101,7 @@ MOCK_AUTHOR_NAMES = [
     "Albert le berbère",
     "Michel Batard (le cousin de Batard)",
     "Personne",
-    "Babar et Rataxès"
+    "Babar et Rataxès",
 ]
 
 MOCK_DESCRIPTIONS = [
@@ -156,5 +156,5 @@ MOCK_DESCRIPTIONS = [
     "Ce ne fut qu’après deux grandes heures de bavardage insipide et de grandes jérémiades sur la méchanceté des hommes, sur le peu de probité des gens chargés de l’administration des deniers publics, sur les dangers de cette pauvre France, etc., etc., que Julien vit poindre enfin le sujet de la visite.",
     "On était déjà sur le palier de l’escalier, et le pauvre précepteur à demi disgracié reconduisait avec le respect convenable le futur préfet de quelque heureux département, quand il plut à celui-ci de s’occuper de la fortune de Julien, de louer sa modération en affaires d’intérêt, etc...",
     "Leur précepteur jouirait de huit cents francs d’appointements payables non pas de mois en mois, ce qui n’est pas noble, dit M. de Maugiron, mais par quartier, et toujours d’avance.",
-    " 42 "
+    " 42 ",
 ]

@@ -23,4 +23,3 @@ class BookingFactoryTest:
     def test_confirmation_date_is_generated_for_event(self):
         event_booking = BookingFactory(stock__beginningDatetime=datetime.datetime.utcnow())
         assert event_booking.confirmationDate
-

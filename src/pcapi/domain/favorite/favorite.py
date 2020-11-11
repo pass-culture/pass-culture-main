@@ -9,8 +9,8 @@ class Favorite(object):
         self.identifier = identifier
         self.mediation = mediation
         self.offer = offer
-        self.booking_identifier = booking['id'] if booking else None
-        self.booked_stock_identifier = booking['stock_id'] if booking else None
+        self.booking_identifier = booking["id"] if booking else None
+        self.booked_stock_identifier = booking["stock_id"] if booking else None
 
     @property
     def is_booked(self) -> bool:

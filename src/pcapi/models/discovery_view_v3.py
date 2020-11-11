@@ -10,13 +10,13 @@ from pcapi.models.db import Model
 
 
 class DiscoveryViewV3(Model):
-    __tablename__ = 'discovery_view_v3'
+    __tablename__ = "discovery_view_v3"
 
-    venueId = Column(BigInteger, ForeignKey('venue.id'))
+    venueId = Column(BigInteger, ForeignKey("venue.id"))
 
-    mediationId = Column(BigInteger, ForeignKey('mediation.id'))
+    mediationId = Column(BigInteger, ForeignKey("mediation.id"))
 
-    id = Column(BigInteger, ForeignKey('offer.id'), primary_key=True, index=True)
+    id = Column(BigInteger, ForeignKey("offer.id"), primary_key=True, index=True)
 
     type = Column(String(50))
 
@@ -28,5 +28,4 @@ class DiscoveryViewV3(Model):
 
     isNational = Column(Boolean)
 
-    offer = relationship('Offer',
-                         foreign_keys=[id])
+    offer = relationship("Offer", foreign_keys=[id])

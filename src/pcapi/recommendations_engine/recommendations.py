@@ -24,8 +24,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     recommendation = None
 
     if mediation_id or offer_id:
-        recommendation = find_recommendation_already_created_on_discovery(
-            offer_id, mediation_id, user.id)
+        recommendation = find_recommendation_already_created_on_discovery(offer_id, mediation_id, user.id)
         if recommendation is None:
             with db.session.no_autoflush:
                 recommendation = _create_recommendation_from_ids(user, offer_id, mediation_id=mediation_id)
@@ -34,16 +33,12 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     return recommendation
 
 
-def create_recommendations_for_discovery(user: UserSQLEntity,
-                                         sent_offers_ids: List[int] = [],
-                                         limit: int = 3) -> List[Recommendation]:
+def create_recommendations_for_discovery(
+    user: UserSQLEntity, sent_offers_ids: List[int] = [], limit: int = 3
+) -> List[Recommendation]:
     recommendations = []
 
-    offers = get_offers_for_recommendations_discovery(
-        limit=limit,
-        user=user,
-        sent_offers_ids=sent_offers_ids
-    )
+    offers = get_offers_for_recommendations_discovery(limit=limit, user=user, sent_offers_ids=sent_offers_ids)
 
     for (index, offer) in enumerate(offers):
         recommendations.append(_create_recommendation_from_offers(user, offer))
@@ -51,14 +46,22 @@ def create_recommendations_for_discovery(user: UserSQLEntity,
     return recommendations
 
 
-def create_recommendations_for_discovery_v3(user: UserSQLEntity, user_iris_id: Optional[int] = None,
-                                            user_is_geolocated: bool = False, sent_offers_ids: List[int] = [],
-                                            limit: int = 3) -> List[Recommendation]:
+def create_recommendations_for_discovery_v3(
+    user: UserSQLEntity,
+    user_iris_id: Optional[int] = None,
+    user_is_geolocated: bool = False,
+    sent_offers_ids: List[int] = [],
+    limit: int = 3,
+) -> List[Recommendation]:
     recommendations = []
 
-    offers = get_offers_for_recommendation_v3(user=user, user_iris_id=user_iris_id,
-                                              user_is_geolocated=user_is_geolocated, limit=limit,
-                                              sent_offers_ids=sent_offers_ids)
+    offers = get_offers_for_recommendation_v3(
+        user=user,
+        user_iris_id=user_iris_id,
+        user_is_geolocated=user_is_geolocated,
+        limit=limit,
+        sent_offers_ids=sent_offers_ids,
+    )
 
     for (index, offer) in enumerate(offers):
         recommendations.append(_create_recommendation_from_offers(user, offer))
@@ -70,20 +73,13 @@ def create_recommendations_for_discovery_v3(user: UserSQLEntity, user_iris_id: O
 
 
 def _get_recommendation_with_information(recommendation_ids: List[int]) -> List[Recommendation]:
-    return Recommendation.query \
-        .filter(
-            Recommendation.id.in_(recommendation_ids)) \
-        .options(
-            joinedload(Recommendation.offer)
-            .joinedload(Offer.venue)
-            .joinedload(VenueSQLEntity.managingOfferer)) \
-        .options(
-            joinedload(Recommendation.offer)
-            .joinedload(Offer.stocks)) \
-        .options(
-            joinedload(Recommendation.offer)
-            .joinedload(Offer.mediations)) \
+    return (
+        Recommendation.query.filter(Recommendation.id.in_(recommendation_ids))
+        .options(joinedload(Recommendation.offer).joinedload(Offer.venue).joinedload(VenueSQLEntity.managingOfferer))
+        .options(joinedload(Recommendation.offer).joinedload(Offer.stocks))
+        .options(joinedload(Recommendation.offer).joinedload(Offer.mediations))
         .all()
+    )
 
 
 def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
@@ -97,8 +93,7 @@ def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
     return _create_recommendation(user, offer, mediation=mediation)
 
 
-def _create_recommendation(user: UserSQLEntity, offer: Offer,
-                           mediation: MediationSQLEntity = None) -> Recommendation:
+def _create_recommendation(user: UserSQLEntity, offer: Offer, mediation: MediationSQLEntity = None) -> Recommendation:
     recommendation = Recommendation()
     recommendation.user = user
 
@@ -116,8 +111,9 @@ def _create_recommendation(user: UserSQLEntity, offer: Offer,
 
 # TODO: when using discovery view use this function instead of _create_recommendation
 # in create_recommendations_for_discovery
-def _create_recommendation_from_offers(user: UserSQLEntity, reco_view: DiscoveryView,
-                                       mediation: MediationSQLEntity = None) -> Recommendation:
+def _create_recommendation_from_offers(
+    user: UserSQLEntity, reco_view: DiscoveryView, mediation: MediationSQLEntity = None
+) -> Recommendation:
     recommendation = Recommendation()
     recommendation.user = user
 

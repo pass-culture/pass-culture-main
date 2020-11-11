@@ -10,7 +10,7 @@ def delete_venue_and_offers_for_venue_id(humanized_venue_id: str):
     venue = find_by_id(dehumanized_venue_id)
 
     if any([offer.stocks for offer in offers]):
-        raise AttributeError('Offres non supprimables car au moins une contient des stocks')
+        raise AttributeError("Offres non supprimables car au moins une contient des stocks")
 
     for offer in offers:
         repository.delete(offer)

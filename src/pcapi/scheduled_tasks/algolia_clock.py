@@ -56,37 +56,42 @@ def index_offers_in_error_in_algolia_by_offer(app):
     batch_processing_offer_ids_in_error(client=app.redis_client)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     algolia_cron_indexing_offers_by_offer_frequency = os.environ.get(
-        'ALGOLIA_CRON_INDEXING_OFFERS_BY_OFFER_FREQUENCY', '*')
+        "ALGOLIA_CRON_INDEXING_OFFERS_BY_OFFER_FREQUENCY", "*"
+    )
     algolia_cron_indexing_offers_by_venue_frequency = os.environ.get(
-        'ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_FREQUENCY', '10')
+        "ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_FREQUENCY", "10"
+    )
     algolia_cron_indexing_offers_by_venue_provider_frequency = os.environ.get(
-        'ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_PROVIDER_FREQUENCY', '10')
+        "ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_PROVIDER_FREQUENCY", "10"
+    )
     algolia_cron_indexing_offers_in_error_by_offer_frequency = os.environ.get(
-        'ALGOLIA_CRON_INDEXING_OFFERS_IN_ERROR_BY_OFFER_FREQUENCY', '10')
+        "ALGOLIA_CRON_INDEXING_OFFERS_IN_ERROR_BY_OFFER_FREQUENCY", "10"
+    )
 
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
 
-    scheduler.add_job(index_offers_in_algolia_by_offer, 'cron',
-                      [app],
-                      minute=algolia_cron_indexing_offers_by_offer_frequency)
+    scheduler.add_job(
+        index_offers_in_algolia_by_offer, "cron", [app], minute=algolia_cron_indexing_offers_by_offer_frequency
+    )
 
-    scheduler.add_job(index_offers_in_algolia_by_venue_provider, 'cron',
-                      [app],
-                      minute=algolia_cron_indexing_offers_by_venue_frequency)
+    scheduler.add_job(
+        index_offers_in_algolia_by_venue_provider, "cron", [app], minute=algolia_cron_indexing_offers_by_venue_frequency
+    )
 
-    scheduler.add_job(index_offers_in_algolia_by_venue, 'cron',
-                      [app],
-                      minute=algolia_cron_indexing_offers_by_venue_provider_frequency)
+    scheduler.add_job(
+        index_offers_in_algolia_by_venue, "cron", [app], minute=algolia_cron_indexing_offers_by_venue_provider_frequency
+    )
 
-    scheduler.add_job(delete_expired_offers_in_algolia, 'cron',
-                      [app],
-                      day='*', hour='1')
+    scheduler.add_job(delete_expired_offers_in_algolia, "cron", [app], day="*", hour="1")
 
-    scheduler.add_job(index_offers_in_error_in_algolia_by_offer, 'cron',
-                      [app],
-                      minute=algolia_cron_indexing_offers_in_error_by_offer_frequency)
+    scheduler.add_job(
+        index_offers_in_error_in_algolia_by_offer,
+        "cron",
+        [app],
+        minute=algolia_cron_indexing_offers_in_error_by_offer_frequency,
+    )
 
     scheduler.start()

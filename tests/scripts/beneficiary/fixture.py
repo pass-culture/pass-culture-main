@@ -16,20 +16,16 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
         "processed_at": None,
         "motivation": None,
         "instructeurs": [],
-        "individual": {
-            "civilite": "M.",
-            "nom": "Doe",
-            "prenom": "John"
-        },
+        "individual": {"civilite": "M.", "nom": "Doe", "prenom": "John"},
         "entreprise": None,
         "etablissement": None,
         "cerfa": [],
         "commentaires": [
             {
                 "email": "contact@demarches-simplifiees.fr",
-                "body": "[Votre préinscription pour le pass Culture a bien été reçue]\u003cbr\u003e\u003cbr\u003e\u003cp\u003e\r\nBonjour Adrien,\u003c/p\u003e\r\n\u003cp\u003e\r\nL'équipe du pass Culture vous confirme la bonne réception de votre dossier nº 1613447. \u003c/p\u003e\u003cp\u003eVotre dossier sera examiné \u003cb\u003edans les semaines à venir\u003c/b\u003e. Un mail de confirmation vous sera envoyé à l’ouverture de votre pass Culture. À tout moment, vous pouvez consulter l'avancée de votre dossier : \u003ca target=\"_blank\" rel=\"noopener\" href=\"https://www.demarches-simplifiees.fr/dossiers/1613447\"\u003ehttps://www.demarches-simplifiees.fr/dossiers/1613447\u003c/a\u003e\u003c/p\u003e\u003cp\u003eNous vous invitons à consulter notre FAQ, vous y trouverez toutes les informations relatives au pass Culture : \u003ca target=\"_blank\" rel=\"nofollow\" href=\"https://docs.passculture.app/experimentateurs/pre-inscription-au-pass-culture\"\u003ehttps://aide.passculture.app/fr/article/18-ans-ma-pre-inscription-au-pass-culture-fj3mqc/\u003c/a\u003e\u003c/p\u003e\u003cp\u003eVous avez des questions ? Vous pouvez échanger directement avec nous à cette adresse : \u003cb\u003esupport@passculture.app\u003c/b\u003e\u003cbr\u003e\u003c/p\u003e\u003cp\u003eBonne journée,\u003cbr\u003e\u003c/p\u003e\u003cp\u003eL'équipe du pass Culture\u003c/p\u003e",
+                "body": '[Votre préinscription pour le pass Culture a bien été reçue]\u003cbr\u003e\u003cbr\u003e\u003cp\u003e\r\nBonjour Adrien,\u003c/p\u003e\r\n\u003cp\u003e\r\nL\'équipe du pass Culture vous confirme la bonne réception de votre dossier nº 1613447. \u003c/p\u003e\u003cp\u003eVotre dossier sera examiné \u003cb\u003edans les semaines à venir\u003c/b\u003e. Un mail de confirmation vous sera envoyé à l’ouverture de votre pass Culture. À tout moment, vous pouvez consulter l\'avancée de votre dossier : \u003ca target="_blank" rel="noopener" href="https://www.demarches-simplifiees.fr/dossiers/1613447"\u003ehttps://www.demarches-simplifiees.fr/dossiers/1613447\u003c/a\u003e\u003c/p\u003e\u003cp\u003eNous vous invitons à consulter notre FAQ, vous y trouverez toutes les informations relatives au pass Culture : \u003ca target="_blank" rel="nofollow" href="https://docs.passculture.app/experimentateurs/pre-inscription-au-pass-culture"\u003ehttps://aide.passculture.app/fr/article/18-ans-ma-pre-inscription-au-pass-culture-fj3mqc/\u003c/a\u003e\u003c/p\u003e\u003cp\u003eVous avez des questions ? Vous pouvez échanger directement avec nous à cette adresse : \u003cb\u003esupport@passculture.app\u003c/b\u003e\u003cbr\u003e\u003c/p\u003e\u003cp\u003eBonne journée,\u003cbr\u003e\u003c/p\u003e\u003cp\u003eL\'équipe du pass Culture\u003c/p\u003e',
                 "created_at": "2020-04-17T07:20:33.049Z",
-                "offerer_attachment_validationhment": None
+                "offerer_attachment_validationhment": None,
             }
         ],
         "champs_private": [],
@@ -44,8 +40,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Comment remplir ce formulaire de pré-inscription au pass Culture",
                     "type_champ": "explication",
                     "order_place": 0,
-                    "description": "Une aide pour remplir votre dossier est disponible ici : https://aide.passculture.app/fr/article/18-ans-ma-pre-inscription-au-pass-culture-fj3mqc/​"
-                }
+                    "description": "Une aide pour remplir votre dossier est disponible ici : https://aide.passculture.app/fr/article/18-ans-ma-pre-inscription-au-pass-culture-fj3mqc/​",
+                },
             },
             {
                 "value": "93 - Seine-Saint-Denis",
@@ -54,8 +50,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Veuillez indiquer votre département de résidence",
                     "type_champ": "drop_down_list",
                     "order_place": 1,
-                    "description": "Attention, si votre département ne se trouve pas dans cette liste, c'est que vous n'êtes malheureusement pas encore éligible au pass Culture."
-                }
+                    "description": "Attention, si votre département ne se trouve pas dans cette liste, c'est que vous n'êtes malheureusement pas encore éligible au pass Culture.",
+                },
             },
             {
                 "value": "2000-05-01",
@@ -64,8 +60,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Quelle est votre date de naissance",
                     "type_champ": "date",
                     "order_place": 2,
-                    "description": "Le pass Culture n'est éligible qu'aux personnes ayant 18 ans."
-                }
+                    "description": "Le pass Culture n'est éligible qu'aux personnes ayant 18 ans.",
+                },
             },
             {
                 "value": None,
@@ -74,8 +70,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Pièces justificatives acceptées",
                     "type_champ": "explication",
                     "order_place": 3,
-                    "description": "Pour valider votre inscription, vous devez obligatoirement fournir l'un des documents suivants :\n - carte nationale d'identité ou passeport français ;\n - carte nationale d'identité ou passeport de l'un des Etats membres de l'Union européenne ou de l'un des Etats parties à l'accord sur l'Espace économique européen ou de la Confédération suisse ;\n - titre de séjour français."
-                }
+                    "description": "Pour valider votre inscription, vous devez obligatoirement fournir l'un des documents suivants :\n - carte nationale d'identité ou passeport français ;\n - carte nationale d'identité ou passeport de l'un des Etats membres de l'Union européenne ou de l'un des Etats parties à l'accord sur l'Espace économique européen ou de la Confédération suisse ;\n - titre de séjour français.",
+                },
             },
             {
                 "value": "http://fake.url",
@@ -84,8 +80,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Pièce d'identité (photocopie de la page avec votre photo)",
                     "type_champ": "piece_justificative",
                     "order_place": 4,
-                    "description": "Vos nom, prénom et date de naissance doivent être clairement identifiables. \nN'envoyez PAS le verso de votre carte d'identité ni la couverture de votre passeport."
-                }
+                    "description": "Vos nom, prénom et date de naissance doivent être clairement identifiables. \nN'envoyez PAS le verso de votre carte d'identité ni la couverture de votre passeport.",
+                },
             },
             {
                 "value": "0123456789",
@@ -94,8 +90,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Quel est votre numéro de téléphone",
                     "type_champ": "phone",
                     "order_place": 5,
-                    "description": ""
-                }
+                    "description": "",
+                },
             },
             {
                 "value": 93130,
@@ -104,8 +100,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Quel est le code postal de votre commune de résidence ?",
                     "type_champ": "integer_number",
                     "order_place": 6,
-                    "description": None
-                }
+                    "description": None,
+                },
             },
             {
                 "value": "35 Rue Saint Denis 93130 Noisy-le-Sec",
@@ -114,8 +110,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Quelle est votre adresse de résidence",
                     "type_champ": "address",
                     "order_place": 7,
-                    "description": None
-                }
+                    "description": None,
+                },
             },
             {
                 "value": "Employé",
@@ -124,8 +120,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Veuillez indiquer votre statut",
                     "type_champ": "drop_down_list",
                     "order_place": 8,
-                    "description": ""
-                }
+                    "description": "",
+                },
             },
             {
                 "value": None,
@@ -134,8 +130,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Déclaration de résidence",
                     "type_champ": "header_section",
                     "order_place": 9,
-                    "description": ""
-                }
+                    "description": "",
+                },
             },
             {
                 "value": None,
@@ -144,8 +140,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Certification sur l'honneur",
                     "type_champ": "explication",
                     "order_place": 10,
-                    "description": "Le pass Culture est actuellement en phase d'expérimentation, et n'est disponible que dans certains départements pilotes. Il s'étendra progressivement à l'ensemble du territoire français.\n\nLa liste des départements ouverts à l'expérimentation du pass Culture est disponible ici : https://aide.passculture.app/fr/article/18-ans-puis-je-beneficier-du-pass-culture-16uinm8/"
-                }
+                    "description": "Le pass Culture est actuellement en phase d'expérimentation, et n'est disponible que dans certains départements pilotes. Il s'étendra progressivement à l'ensemble du territoire français.\n\nLa liste des départements ouverts à l'expérimentation du pass Culture est disponible ici : https://aide.passculture.app/fr/article/18-ans-puis-je-beneficier-du-pass-culture-16uinm8/",
+                },
             },
             {
                 "value": "on",
@@ -154,8 +150,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Je certifie sur l’honneur résider dans l'un des départements ouverts à l'expérimentation du pass Culture.",
                     "type_champ": "engagement",
                     "order_place": 11,
-                    "description": "Des contrôles aléatoires seront effectués et vous devrez alors fournir un justificatif de domicile. En cas de fraude, vous vous exposez à des poursuites judiciaires."
-                }
+                    "description": "Des contrôles aléatoires seront effectués et vous devrez alors fournir un justificatif de domicile. En cas de fraude, vous vous exposez à des poursuites judiciaires.",
+                },
             },
             {
                 "value": "on",
@@ -164,8 +160,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Je certifie sur l’honneur résider légalement et habituellement sur le territoire français depuis plus de un an.",
                     "type_champ": "engagement",
                     "order_place": 12,
-                    "description": "Cette condition est obligatoire si vous n'êtes pas un ressortissant de l'un des Etats membres de l'Union européenne ou de l'un des Etats parties à l'accord sur l'Espace économique européen ou de la Confédération suisse."
-                }
+                    "description": "Cette condition est obligatoire si vous n'êtes pas un ressortissant de l'un des Etats membres de l'Union européenne ou de l'un des Etats parties à l'accord sur l'Espace économique européen ou de la Confédération suisse.",
+                },
             },
             {
                 "value": None,
@@ -174,8 +170,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Consentement à l'utilisation de mes données",
                     "type_champ": "header_section",
                     "order_place": 13,
-                    "description": ""
-                }
+                    "description": "",
+                },
             },
             {
                 "value": None,
@@ -184,8 +180,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Que faisons-nous de ces données ?",
                     "type_champ": "explication",
                     "order_place": 14,
-                    "description": "Ces données sont utilisées à la seule fin de nous assurer de votre éligibilité à l'expérimentation du pass Culture. Vos données seront contrôlées par l'équipe du pass Culture, puis conservées pendant un an à des fins de contrôle a posteriori."
-                }
+                    "description": "Ces données sont utilisées à la seule fin de nous assurer de votre éligibilité à l'expérimentation du pass Culture. Vos données seront contrôlées par l'équipe du pass Culture, puis conservées pendant un an à des fins de contrôle a posteriori.",
+                },
             },
             {
                 "value": "on",
@@ -194,8 +190,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Je donne mon accord au traitement de mes données à caractère personnel dans les conditions explicitées ci-dessus",
                     "type_champ": "engagement",
                     "order_place": 15,
-                    "description": ""
-                }
+                    "description": "",
+                },
             },
             {
                 "value": "on",
@@ -204,8 +200,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Je déclare sur l’honneur que ces documents sont authentiques. ",
                     "type_champ": "engagement",
                     "order_place": 16,
-                    "description": ""
-                }
+                    "description": "",
+                },
             },
             {
                 "value": None,
@@ -214,29 +210,31 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                     "libelle": "Un grand merci et à très vite sur le pass Culture !",
                     "type_champ": "header_section",
                     "order_place": 17,
-                    "description": ""
-                }
-            }
-        ]
+                    "description": "",
+                },
+            },
+        ],
     }
 }
 
 
-def make_new_beneficiary_application_details(id: int,
-                                             state: str,
-                                             postal_code: int = 67200,
-                                             department_code: str = '67 - Bas-Rhin',
-                                             civility: str = 'Mme',
-                                             activity: str = 'Étudiant') -> Dict:
+def make_new_beneficiary_application_details(
+    id: int,
+    state: str,
+    postal_code: int = 67200,
+    department_code: str = "67 - Bas-Rhin",
+    civility: str = "Mme",
+    activity: str = "Étudiant",
+) -> Dict:
     application = copy.deepcopy(APPLICATION_DETAIL_STANDARD_RESPONSE)
-    application['dossier']['id'] = id
-    application['dossier']['state'] = state
-    application['dossier']['individual']['civilite'] = civility
-    for field in application['dossier']['champs']:
-        if field['type_de_champ']['libelle'] == 'Veuillez indiquer votre département de résidence':
-            field['value'] = department_code
-        if field['type_de_champ']['libelle'] == 'Quel est le code postal de votre commune de résidence ?':
-            field['value'] = postal_code
-        if field['type_de_champ']['libelle'] == 'Veuillez indiquer votre statut':
-            field['value'] = activity
+    application["dossier"]["id"] = id
+    application["dossier"]["state"] = state
+    application["dossier"]["individual"]["civilite"] = civility
+    for field in application["dossier"]["champs"]:
+        if field["type_de_champ"]["libelle"] == "Veuillez indiquer votre département de résidence":
+            field["value"] = department_code
+        if field["type_de_champ"]["libelle"] == "Quel est le code postal de votre commune de résidence ?":
+            field["value"] = postal_code
+        if field["type_de_champ"]["libelle"] == "Veuillez indiquer votre statut":
+            field["value"] = activity
     return application

@@ -24,9 +24,9 @@ class BaseAdminView(ModelView):
         return authorized
 
     def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('admin.index'))
+        return redirect(url_for("admin.index"))
 
     def after_model_change(self, form, model, is_created):
-        action = 'Création' if is_created else 'Modification'
+        action = "Création" if is_created else "Modification"
         model_name = str(model)
-        logger.info('[ADMIN] %s du modèle %s par l\'utilisateur %s' % (action, model_name, current_user))
+        logger.info("[ADMIN] %s du modèle %s par l'utilisateur %s" % (action, model_name, current_user))

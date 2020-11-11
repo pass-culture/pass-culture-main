@@ -29,7 +29,4 @@ class BookingsRecapTest:
         assert self._find_bookings_by_user_firstname("Loulou") == 6
 
     def _find_bookings_by_user_firstname(self, name: str) -> List[Booking]:
-        return Booking.query \
-            .join(UserSQLEntity) \
-            .filter(UserSQLEntity.firstName == name) \
-            .count()
+        return Booking.query.join(UserSQLEntity).filter(UserSQLEntity.firstName == name).count()

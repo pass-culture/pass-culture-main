@@ -48,7 +48,7 @@ MOCK_NAMES = [
     "On en a gros",
     "On en a très gros",
     "J'aimerais être considéré en tant que tel",
-    "Comment comment ?"
+    "Comment comment ?",
 ]
 
 MOCK_DESCRIPTIONS = [
@@ -103,7 +103,7 @@ MOCK_DESCRIPTIONS = [
     "Mademoiselle Albertine est partie ! Comme la souffrance va plus loin en psychologie que la psychologie ! Il y a un instant, en train de m’analyser, j’avais cru que cette séparation sans s’être revus était justement ce que je désirais, et comparant la médiocrité des plaisirs que me donnait Albertine à la richesse des désirs qu’elle me privait de réaliser, je m’étais trouvé subtil, j’avais conclu que je ne voulais plus la voir, que je ne l’aimais plus. Mais ces mots : « Mademoiselle Albertine est partie » venaient de produire dans mon cœur une souffrance telle que je ne pourrais pas y résister plus longtemps. Ainsi ce que j’avais cru n’être rien pour moi, c’était tout simplement toute ma vie.",
     "Vaugoubert n’a pas eu à faire seulement aux intrigues de couloirs mais aux injures de folliculaires à gages qui plus tard, lâches comme l’est tout journaliste stipendié, ont été des premiers à demander l'aman, mais qui en attendant n’ont pas reculé à faire état, contre notre représentant, des ineptes accusations de gens sans aveu.",
     "J'avais douze ans ; elle en avait bien seize.",
-    "Se souvient-on qu'il fut jadis des roses ?"
+    "Se souvient-on qu'il fut jadis des roses ?",
 ]
 
 MOCK_ACTIVATION_NAME = "Activation de votre Pass Culture"

@@ -13,8 +13,8 @@ class BuildThumbPathTest:
         # when
         thumb_path = build_thumb_path(mediation_object, 0)
 
-        #then
-        assert thumb_path == 'mediations/PM'
+        # then
+        assert thumb_path == "mediations/PM"
 
     def test_returns_classic_path_when_given_model_is_product(self):
         # given
@@ -24,8 +24,8 @@ class BuildThumbPathTest:
         # when
         thumb_path = build_thumb_path(product_object, 0)
 
-        #then
-        assert thumb_path == 'products/PM'
+        # then
+        assert thumb_path == "products/PM"
 
     def test_returns_path_with_index_if_above_0(self):
         # given
@@ -35,6 +35,5 @@ class BuildThumbPathTest:
         # when
         thumb_path = build_thumb_path(product_object, 3)
 
-        #then
-        assert thumb_path == 'products/PM_3'
-
+        # then
+        assert thumb_path == "products/PM_3"

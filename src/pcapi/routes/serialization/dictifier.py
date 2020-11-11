@@ -21,9 +21,9 @@ def as_dict(value, column=None, includes: Iterable = ()):
 @as_dict.register(BookingReimbursement)
 def _(booking_reimbursement, column=None, includes: Iterable = ()):
     dict_booking = as_dict(booking_reimbursement.booking, includes=includes)
-    dict_booking['token'] = dict_booking['token'] if dict_booking['isUsed'] else None
-    dict_booking['reimbursed_amount'] = booking_reimbursement.reimbursed_amount
-    dict_booking['reimbursement_rule'] = booking_reimbursement.reimbursement.description
+    dict_booking["token"] = dict_booking["token"] if dict_booking["isUsed"] else None
+    dict_booking["reimbursed_amount"] = booking_reimbursement.reimbursed_amount
+    dict_booking["reimbursement_rule"] = booking_reimbursement.reimbursement.description
     return dict_booking
 
 
@@ -39,8 +39,7 @@ def _(model, column=None, includes: Iterable = ()):
 
     venue_provider_columns = VenueProvider.__table__.columns._data
     allocine_specific_columns = AllocineVenueProvider.__table__.columns._data
-    allocine_venue_provider_columns = OrderedDict(venue_provider_columns.items()
-                                                  + allocine_specific_columns.items())
+    allocine_venue_provider_columns = OrderedDict(venue_provider_columns.items() + allocine_specific_columns.items())
 
     for key in _keys_to_serialize(model, includes):
         value = getattr(model, key)
@@ -48,8 +47,8 @@ def _(model, column=None, includes: Iterable = ()):
         result[key] = as_dict(value, column=column)
 
     for join in _joins_to_serialize(includes):
-        key = join['key']
-        sub_includes = join.get('includes', set())
+        key = join["key"]
+        sub_includes = join.get("includes", set())
         value = getattr(model, key)
         result[key] = as_dict(value, includes=sub_includes)
 
@@ -67,8 +66,8 @@ def _(model, column=None, includes: Iterable = ()):
         result[key] = as_dict(value, column=column)
 
     for join in _joins_to_serialize(includes):
-        key = join['key']
-        sub_includes = join.get('includes', set())
+        key = join["key"]
+        sub_includes = join.get("includes", set())
         value = getattr(model, key)
         result[key] = as_dict(value, includes=sub_includes)
 
@@ -87,12 +86,12 @@ def _keys_to_serialize(model, includes: Iterable) -> Set[str]:
 
 def _included_properties(includes: Iterable) -> Set[str]:
     string_keys = filter(lambda a: isinstance(a, str), includes)
-    included_keys = filter(lambda a: not a.startswith('-'), string_keys)
+    included_keys = filter(lambda a: not a.startswith("-"), string_keys)
     return set(included_keys)
 
 
 def _excluded_keys(includes):
     string_keys = filter(lambda a: isinstance(a, str), includes)
-    excluded_keys = filter(lambda a: a.startswith('-'), string_keys)
+    excluded_keys = filter(lambda a: a.startswith("-"), string_keys)
     cleaned_keys = map(lambda a: a[1:], excluded_keys)
     return set(cleaned_keys)

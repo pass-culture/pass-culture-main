@@ -9,14 +9,15 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = '802c89135fd7'
-down_revision = 'ec8d3f04eba3'
+revision = "802c89135fd7"
+down_revision = "ec8d3f04eba3"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.execute("""
+    op.execute(
+        """
     CREATE OR REPLACE FUNCTION check_stock()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -51,7 +52,8 @@ def upgrade():
     CREATE CONSTRAINT TRIGGER stock_update AFTER INSERT OR UPDATE
     ON stock
     FOR EACH ROW EXECUTE PROCEDURE check_stock()
-    """)
+    """
+    )
 
 
 def downgrade():

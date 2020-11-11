@@ -5,20 +5,22 @@ from pcapi.domain.postal_code.postal_code import PostalCode
 
 
 class BeneficiaryPreSubscription(object):
-    def __init__(self,
-                 activity: str,
-                 address: str,
-                 application_id: int,
-                 city: str,
-                 civility: str,
-                 date_of_birth: datetime,
-                 email: str,
-                 first_name: str,
-                 last_name: str,
-                 phone_number: str,
-                 postal_code: str,
-                 source: str,
-                 source_id: Optional[int]):
+    def __init__(
+        self,
+        activity: str,
+        address: str,
+        application_id: int,
+        city: str,
+        civility: str,
+        date_of_birth: datetime,
+        email: str,
+        first_name: str,
+        last_name: str,
+        phone_number: str,
+        postal_code: str,
+        source: str,
+        source_id: Optional[int],
+    ):
         self.activity = activity
         self.address = address
         self.application_id = application_id
@@ -39,8 +41,8 @@ class BeneficiaryPreSubscription(object):
 
     @property
     def deposit_source(self) -> str:
-        return f'dossier {self.source} [{self.application_id}]'
+        return f"dossier {self.source} [{self.application_id}]"
 
     @property
     def public_name(self) -> str:
-        return f'{self.first_name} {self.last_name}'
+        return f"{self.first_name} {self.last_name}"

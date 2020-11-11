@@ -10,16 +10,14 @@ from pcapi.repository import repository
 
 
 class MakeUserResetPasswordEmailDataTest:
-    @patch('pcapi.emails.user_reset_password.format_environment_for_email', return_value='-testing')
-    @patch('pcapi.emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=False)
+    @patch("pcapi.emails.user_reset_password.format_environment_for_email", return_value="-testing")
+    @patch("pcapi.emails.user_reset_password.feature_send_mail_to_users_enabled", return_value=False)
     @pytest.mark.usefixtures("db_session")
-    def test_email_is_sent_to_dev_at_passculture_when_not_production_environment(self,
-                                                                                 mock_send_mail_enabled,
-                                                                                 mock_format_env,
-                                                                                 app
-                                                                                 ):
+    def test_email_is_sent_to_dev_at_passculture_when_not_production_environment(
+        self, mock_send_mail_enabled, mock_format_env, app
+    ):
         # Given
-        user = create_user(email="ewing@example.com", first_name='Bobby', reset_password_token='ABCDEFG')
+        user = create_user(email="ewing@example.com", first_name="Bobby", reset_password_token="ABCDEFG")
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
 
@@ -30,27 +28,21 @@ class MakeUserResetPasswordEmailDataTest:
 
         # Then
         assert reset_password_email_data == {
-            'FromEmail': 'support@example.com',
-            'MJ-TemplateID': 912168,
-            'MJ-TemplateLanguage': True,
-            'To': 'dev@example.com',
-            'Vars':
-                {
-                    'prenom_user': 'Bobby',
-                    'token': user.resetPasswordToken,
-                    'env': '-testing'
-                }
+            "FromEmail": "support@example.com",
+            "MJ-TemplateID": 912168,
+            "MJ-TemplateLanguage": True,
+            "To": "dev@example.com",
+            "Vars": {"prenom_user": "Bobby", "token": user.resetPasswordToken, "env": "-testing"},
         }
 
-    @patch('pcapi.emails.user_reset_password.format_environment_for_email', return_value='')
-    @patch('pcapi.emails.user_reset_password.feature_send_mail_to_users_enabled', return_value=True)
+    @patch("pcapi.emails.user_reset_password.format_environment_for_email", return_value="")
+    @patch("pcapi.emails.user_reset_password.feature_send_mail_to_users_enabled", return_value=True)
     @pytest.mark.usefixtures("db_session")
-    def test_email_is_sent_to_pro_offerer_when_production_environment(self,
-                                                                      mock_send_mail_enabled,
-                                                                      mock_format_env,
-                                                                      app):
+    def test_email_is_sent_to_pro_offerer_when_production_environment(
+        self, mock_send_mail_enabled, mock_format_env, app
+    ):
         # Given
-        user = create_user(email="ewing@example.com", first_name='Bobby', reset_password_token='ABCDEFG')
+        user = create_user(email="ewing@example.com", first_name="Bobby", reset_password_token="ABCDEFG")
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
 
@@ -61,14 +53,9 @@ class MakeUserResetPasswordEmailDataTest:
 
         # Then
         assert reset_password_email_data == {
-            'FromEmail': 'support@example.com',
-            'MJ-TemplateID': 912168,
-            'MJ-TemplateLanguage': True,
-            'To': 'ewing@example.com',
-            'Vars':
-                {
-                    'prenom_user': 'Bobby',
-                    'token': user.resetPasswordToken,
-                    'env': ''
-                }
+            "FromEmail": "support@example.com",
+            "MJ-TemplateID": 912168,
+            "MJ-TemplateLanguage": True,
+            "To": "ewing@example.com",
+            "Vars": {"prenom_user": "Bobby", "token": user.resetPasswordToken, "env": ""},
         }

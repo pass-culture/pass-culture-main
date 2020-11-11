@@ -31,17 +31,17 @@ from pcapi.utils.config import IS_DEV
 
 
 def _hash_password_with_bcrypt(clear_text: str) -> bytes:
-    return bcrypt.hashpw(clear_text.encode('utf-8'), bcrypt.gensalt())
+    return bcrypt.hashpw(clear_text.encode("utf-8"), bcrypt.gensalt())
 
 
 def _check_password_with_bcrypt(clear_text: str, hashed: str) -> bool:
-    return bcrypt.checkpw(clear_text.encode('utf-8'), hashed)
+    return bcrypt.checkpw(clear_text.encode("utf-8"), hashed)
 
 
 def _hash_password_with_md5(clear_text: str) -> bytes:
     if not IS_DEV:
         raise RuntimeError("This password hasher should not be used outside tests.")
-    return md5(clear_text.encode('utf-8')).hexdigest().encode('utf-8')
+    return md5(clear_text.encode("utf-8")).hexdigest().encode("utf-8")
 
 
 def _check_password_with_md5(clear_text: str, hashed: str) -> bool:
@@ -61,21 +61,14 @@ def check_password(clear_text: str, hashed: str) -> bool:
     return checker(clear_text, hashed)
 
 
-class UserSQLEntity(PcObject,
-                    Model,
-                    NeedsValidationMixin,
-                    VersionedMixin
-                    ):
-    __tablename__ = 'user'
+class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
+    __tablename__ = "user"
 
     email = Column(String(120), nullable=False, unique=True)
 
     address = Column(Text, nullable=True)
 
-    canBookFreeOffers = Column(Boolean,
-                               nullable=False,
-                               server_default=expression.true(),
-                               default=True)
+    canBookFreeOffers = Column(Boolean, nullable=False, server_default=expression.true(), default=True)
 
     city = Column(String(100), nullable=True)
 
@@ -85,35 +78,32 @@ class UserSQLEntity(PcObject,
 
     culturalSurveyFilledDate = Column(DateTime, nullable=True)
 
-    dateCreated = Column(DateTime,
-                         nullable=False,
-                         default=datetime.utcnow)
+    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    dateOfBirth = Column(DateTime,
-                         nullable=True)
+    dateOfBirth = Column(DateTime, nullable=True)
 
     departementCode = Column(String(3), nullable=False)
 
     firstName = Column(String(128), nullable=True)
 
-    isAdmin = Column(Boolean,
-                     CheckConstraint('("canBookFreeOffers" IS FALSE AND "isAdmin" IS TRUE)'
-                                     + 'OR ("isAdmin" IS FALSE)',
-                                     name='check_admin_cannot_book_free_offers'),
-                     nullable=False,
-                     server_default=expression.false(),
-                     default=False)
+    isAdmin = Column(
+        Boolean,
+        CheckConstraint(
+            '("canBookFreeOffers" IS FALSE AND "isAdmin" IS TRUE)' + 'OR ("isAdmin" IS FALSE)',
+            name="check_admin_cannot_book_free_offers",
+        ),
+        nullable=False,
+        server_default=expression.false(),
+        default=False,
+    )
 
     lastName = Column(String(128), nullable=True)
 
     lastConnectionDate = Column(DateTime, nullable=True)
 
-    needsToFillCulturalSurvey = Column(Boolean,
-                                       server_default=expression.true(),
-                                       default=True)
+    needsToFillCulturalSurvey = Column(Boolean, server_default=expression.true(), default=True)
 
-    offerers = relationship('Offerer',
-                            secondary='user_offerer')
+    offerers = relationship("Offerer", secondary="user_offerer")
 
     password = Column(LargeBinary(60), nullable=False)
 
@@ -167,8 +157,8 @@ class UserSQLEntity(PcObject,
 
     def populate_from_dict(self, data):
         super(UserSQLEntity, self).populate_from_dict(data)
-        if data.__contains__('password') and data['password']:
-            self.setPassword(data['password'])
+        if data.__contains__("password") and data["password"]:
+            self.setPassword(data["password"])
 
     def setPassword(self, newpass):
         self.clearTextPassword = newpass
@@ -181,9 +171,7 @@ class UserSQLEntity(PcObject,
 
     @property
     def expenses(self):
-        bookings = self.bookings_query().options(
-            joinedload(Booking.stock).
-            joinedload(StockSQLEntity.offer)).all()
+        bookings = self.bookings_query().options(joinedload(Booking.stock).joinedload(StockSQLEntity.offer)).all()
         return get_expenses(bookings)
 
     @property
@@ -223,11 +211,7 @@ class UserSQLEntity(PcObject,
 
 
 class WalletBalance:
-    CSV_HEADER = [
-        'ID de l\'utilisateur',
-        'Solde théorique',
-        'Solde réel'
-    ]
+    CSV_HEADER = ["ID de l'utilisateur", "Solde théorique", "Solde réel"]
 
     def __init__(self, user_id: int, current_wallet_balance: Decimal, real_wallet_balance: Decimal):
         self.user_id = user_id
@@ -235,8 +219,4 @@ class WalletBalance:
         self.real_balance = real_wallet_balance
 
     def as_csv_row(self):
-        return [
-            self.user_id,
-            self.current_balance,
-            self.real_balance
-        ]
+        return [self.user_id, self.current_balance, self.real_balance]

@@ -38,7 +38,7 @@ class UpdateBookingUsedTest:
         assert not updated_booking.isUsed
         assert not updated_booking.dateUsed
 
-    @freeze_time('2019-10-13')
+    @freeze_time("2019-10-13")
     @pytest.mark.usefixtures("db_session")
     def test_update_booking_used_when_event_date_is_3_days_before(self, app):
         # Given
@@ -60,7 +60,7 @@ class UpdateBookingUsedTest:
         assert updated_booking.isUsed
         assert updated_booking.dateUsed == datetime(2019, 10, 13)
 
-    @freeze_time('2019-10-10')
+    @freeze_time("2019-10-10")
     @pytest.mark.usefixtures("db_session")
     def test_update_booking_used_when_event_date_is_only_1_day_before(self, app):
         # Given

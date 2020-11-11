@@ -32,53 +32,32 @@ class BookFormat(enum.Enum):
     MOYEN_FORMAT = "MOYEN FORMAT"
 
 
-class Product(PcObject,
-              Model,
-              ExtraDataMixin,
-              HasThumbMixin,
-              ProvidableMixin):
+class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
 
-    type = Column(String(50),
-                  CheckConstraint("type != 'None'"),
-                  nullable=False)
+    type = Column(String(50), CheckConstraint("type != 'None'"), nullable=False)
 
     name = Column(String(140), nullable=False)
 
     description = Column(Text, nullable=True)
 
-    conditions = Column(String(120),
-                        nullable=True)
+    conditions = Column(String(120), nullable=True)
 
-    ageMin = Column(Integer,
-                    nullable=True)
-    ageMax = Column(Integer,
-                    nullable=True)
+    ageMin = Column(Integer, nullable=True)
+    ageMax = Column(Integer, nullable=True)
 
-    mediaUrls = Column(ARRAY(String(220)),
-                       nullable=False,
-                       default=[])
+    mediaUrls = Column(ARRAY(String(220)), nullable=False, default=[])
 
     url = Column(String(255), nullable=True)
 
     durationMinutes = Column(Integer, nullable=True)
 
-    isGcuCompatible = Column(Boolean,
-                             default=True,
-                             server_default=true(),
-                             nullable=False)
+    isGcuCompatible = Column(Boolean, default=True, server_default=true(), nullable=False)
 
-    isNational = Column(Boolean,
-                        server_default=false(),
-                        default=False,
-                        nullable=False)
+    isNational = Column(Boolean, server_default=false(), default=False, nullable=False)
 
-    owningOffererId = Column(BigInteger,
-                             ForeignKey("offerer.id"),
-                             nullable=True)
+    owningOffererId = Column(BigInteger, ForeignKey("offerer.id"), nullable=True)
 
-    owningOfferer = relationship('Offerer',
-                                 foreign_keys=[owningOffererId],
-                                 backref='events')
+    owningOfferer = relationship("Offerer", foreign_keys=[owningOffererId], backref="events")
 
     @property
     def offerType(self):
@@ -89,16 +68,13 @@ class Product(PcObject,
 
     @property
     def isDigital(self):
-        return self.url is not None and self.url != ''
+        return self.url is not None and self.url != ""
 
     def is_offline_only(self):
-        offline_only_products = filter(
-            lambda product_type: product_type.value['offlineOnly'], ThingType)
-        offline_only_types_for_products = map(
-            lambda x: x.__str__(), offline_only_products)
+        offline_only_products = filter(lambda product_type: product_type.value["offlineOnly"], ThingType)
+        offline_only_types_for_products = map(lambda x: x.__str__(), offline_only_products)
         return self.type in offline_only_types_for_products
 
     def get_label_from_type_string(self):
-        matching_type_product = next(
-            filter(lambda product_type: product_type.__str__() == self.type, ThingType))
-        return matching_type_product.value['proLabel']
+        matching_type_product = next(filter(lambda product_type: product_type.__str__() == self.type, ThingType))
+        return matching_type_product.value["proLabel"]

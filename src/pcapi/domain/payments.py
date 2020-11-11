@@ -26,7 +26,7 @@ from pcapi.models.user_sql_entity import WalletBalance
 from pcapi.utils.human_ids import humanize
 
 
-XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
+XML_NAMESPACE = {"ns": "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"}
 
 
 class UnmatchedPayments(Exception):
@@ -35,8 +35,16 @@ class UnmatchedPayments(Exception):
 
 
 class Transaction:
-    def __init__(self, creditor_iban: str, creditor_bic: str, creditor_name: str, creditor_siren: str,
-                 end_to_end_id: UUID, amount: Decimal, custom_message: str):
+    def __init__(
+        self,
+        creditor_iban: str,
+        creditor_bic: str,
+        creditor_name: str,
+        creditor_siren: str,
+        end_to_end_id: UUID,
+        amount: Decimal,
+        custom_message: str,
+    ):
         self.creditor_iban = creditor_iban
         self.creditor_bic = creditor_bic
         self.creditor_name = creditor_name
@@ -78,7 +86,7 @@ class PaymentDetails:
             self.venue_siret = payment.booking.stock.offer.venue.siret
             self.venue_humanized_id = humanize(payment.booking.stock.offer.venue.id)
             self.offer_name = payment.booking.stock.offer.product.name
-            self.offer_type = payment.booking.stock.offer.product.offerType['proLabel']
+            self.offer_type = payment.booking.stock.offer.product.offerType["proLabel"]
             self.booking_date = payment.booking.dateCreated
             self.booking_amount = payment.booking.total_amount
             self.booking_used_date = booking_used_date
@@ -108,7 +116,7 @@ class PaymentDetails:
             str(self.transaction_end_to_end_id),
             str(self.payment_id),
             str(self.reimbursement_rate),
-            str(self.reimbursed_amount)
+            str(self.reimbursed_amount),
         ]
 
 
@@ -120,7 +128,7 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     payment.amount = booking_reimbursement.reimbursed_amount
     payment.reimbursementRule = booking_reimbursement.reimbursement.value.description
     payment.reimbursementRate = booking_reimbursement.reimbursement.value.rate
-    payment.author = 'batch'
+    payment.author = "batch"
     payment.transactionLabel = make_transaction_label(datetime.utcnow())
 
     if venue.iban:
@@ -137,20 +145,18 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     if payment.iban:
         payment.setStatus(TransactionStatus.PENDING)
     else:
-        payment.setStatus(TransactionStatus.NOT_PROCESSABLE,
-                          detail='IBAN et BIC manquants sur l\'offreur')
+        payment.setStatus(TransactionStatus.NOT_PROCESSABLE, detail="IBAN et BIC manquants sur l'offreur")
 
     return payment
 
 
-def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingReimbursement]) -> \
-        List[BookingReimbursement]:
+def filter_out_already_paid_for_bookings(
+    booking_reimbursements: List[BookingReimbursement],
+) -> List[BookingReimbursement]:
     return list(filter(lambda x: not x.booking.payments, booking_reimbursements))
 
 
-def filter_out_bookings_without_cost(
-        booking_reimbursements: List[BookingReimbursement]
-) -> List[BookingReimbursement]:
+def filter_out_bookings_without_cost(booking_reimbursements: List[BookingReimbursement]) -> List[BookingReimbursement]:
     return list(filter(lambda x: x.reimbursed_amount > Decimal(0), booking_reimbursements))
 
 
@@ -162,18 +168,18 @@ def keep_only_not_processable_payments(payments: List[Payment]) -> List[Payment]
     return list(filter(lambda x: x.currentStatus.status == TransactionStatus.NOT_PROCESSABLE, payments))
 
 
-def generate_message_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str, message_name: str,
-                          remittance_code: str) -> str:
+def generate_message_file(
+    payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str, message_name: str, remittance_code: str
+) -> str:
     transactions = _group_payments_into_transactions(payments)
     total_amount = sum([transaction.amount for transaction in transactions])
     now = datetime.utcnow()
 
     return render_template(
-        'transactions/transaction_banque_de_france.xml',
+        "transactions/transaction_banque_de_france.xml",
         message_name=message_name,
         creation_datetime=now.isoformat(),
-        requested_execution_datetime=datetime.strftime(
-            now + timedelta(days=7), "%Y-%m-%d"),
+        requested_execution_datetime=datetime.strftime(now + timedelta(days=7), "%Y-%m-%d"),
         transactions=transactions,
         number_of_transactions=len(transactions),
         total_amount=total_amount,
@@ -184,11 +190,11 @@ def generate_message_file(payments: List[Payment], pass_culture_iban: str, pass_
 
 
 def validate_message_file_structure(transaction_file: str):
-    xsd = render_template('transactions/transaction_banque_de_france.xsd')
+    xsd = render_template("transactions/transaction_banque_de_france.xsd")
     xsd_doc = etree.parse(BytesIO(xsd.encode()))
     xsd_schema = etree.XMLSchema(xsd_doc)
 
-    encoded_file = transaction_file.encode('utf-8')
+    encoded_file = transaction_file.encode("utf-8")
     xml = BytesIO(encoded_file)
     xml_doc = etree.parse(xml)
 
@@ -196,16 +202,19 @@ def validate_message_file_structure(transaction_file: str):
 
 
 def generate_file_checksum(file: str):
-    encoded_file = file.encode('utf-8')
+    encoded_file = file.encode("utf-8")
     return sha256(encoded_file).digest()
 
 
-def create_all_payments_details(payments: List[Payment], find_booking_date_used=booking_repository.find_date_used) -> \
-        List[PaymentDetails]:
+def create_all_payments_details(
+    payments: List[Payment], find_booking_date_used=booking_repository.find_date_used
+) -> List[PaymentDetails]:
     return list(map(lambda p: create_payment_details(p, find_booking_date_used), payments))
 
 
-def create_payment_details(payment: Payment, find_booking_date_used=booking_repository.find_date_used) -> PaymentDetails:
+def create_payment_details(
+    payment: Payment, find_booking_date_used=booking_repository.find_date_used
+) -> PaymentDetails:
     return PaymentDetails(payment, find_booking_date_used(payment.booking))
 
 
@@ -228,9 +237,9 @@ def generate_wallet_balances_csv(wallet_balances: List[WalletBalance]) -> str:
 
 
 def make_transaction_label(date: datetime.date) -> str:
-    month_and_year = date.strftime('%m-%Y')
-    period = '1ère' if date.day < 15 else '2nde'
-    return 'pass Culture Pro - remboursement %s quinzaine %s' % (period, month_and_year)
+    month_and_year = date.strftime("%m-%Y")
+    period = "1ère" if date.day < 15 else "2nde"
+    return "pass Culture Pro - remboursement %s quinzaine %s" % (period, month_and_year)
 
 
 def generate_payment_message(name: str, checksum: str, payments: List[Payment]) -> PaymentMessage:
@@ -244,7 +253,7 @@ def generate_payment_message(name: str, checksum: str, payments: List[Payment]) 
 def read_message_name_in_message_file(xml_file: str) -> str:
     xml = BytesIO(xml_file.encode())
     tree = etree.parse(xml, etree.XMLParser())
-    node = tree.find('//ns:GrpHdr/ns:MsgId', namespaces=XML_NAMESPACE)
+    node = tree.find("//ns:GrpHdr/ns:MsgId", namespaces=XML_NAMESPACE)
     return node.text
 
 
@@ -280,10 +289,8 @@ def apply_banishment(payments: List[Payment], ids_to_ban: List[int]) -> Tuple[Li
 
 
 def _group_payments_into_transactions(payments: List[Payment]) -> List[Transaction]:
-    payments_with_iban = sorted(
-        filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
-    payments_by_iban = itertools.groupby(
-        payments_with_iban, lambda x: (x.iban, x.bic))
+    payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
+    payments_by_iban = itertools.groupby(payments_with_iban, lambda x: (x.iban, x.bic))
 
     transactions = []
     for (iban, bic), grouped_payments in payments_by_iban:
@@ -295,6 +302,14 @@ def _group_payments_into_transactions(payments: List[Payment]) -> List[Transacti
             payment.transactionEndToEndId = end_to_end_id
 
         transactions.append(
-            Transaction(iban, bic, payments_of_iban[0].recipientName, payments_of_iban[0].recipientSiren, end_to_end_id,
-                        amount, payments_of_iban[0].transactionLabel))
+            Transaction(
+                iban,
+                bic,
+                payments_of_iban[0].recipientName,
+                payments_of_iban[0].recipientSiren,
+                end_to_end_id,
+                amount,
+                payments_of_iban[0].transactionLabel,
+            )
+        )
     return transactions

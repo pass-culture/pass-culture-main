@@ -25,11 +25,7 @@ class Returns201:
 
         # When
         stock_data = {"price": 1222, "offerId": humanize(offer.id)}
-        response = (
-            TestClient(app.test_client())
-            .with_auth("user@example.com")
-            .post("/stocks", json=stock_data)
-        )
+        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks", json=stock_data)
 
         # Then
         assert response.status_code == 201
@@ -50,11 +46,7 @@ class Returns400:
         user = users_factories.UserFactory()
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post("/stocks", json={"price": 1222})
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).post("/stocks", json={"price": 1222})
 
         # Then
         assert response.status_code == 400
@@ -75,11 +67,7 @@ class Returns400:
         }
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post("/stocks", json=data)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).post("/stocks", json=data)
 
         # Then
         assert response.status_code == 400
@@ -102,11 +90,7 @@ class Returns400:
         }
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post("/stocks", json=data)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).post("/stocks", json=data)
 
         # Then
         assert response.status_code == 400
@@ -126,17 +110,11 @@ class Returns400:
         }
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post("/stocks", json=data)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).post("/stocks", json=data)
 
         # Then
         assert response.status_code == 400
-        assert response.json == {
-            "bookingLimitDatetime": ["Ce paramètre est obligatoire"]
-        }
+        assert response.json == {"bookingLimitDatetime": ["Ce paramètre est obligatoire"]}
 
     def when_setting_beginning_datetime_on_offer_with_thing(self, app, db_session):
         # Given
@@ -153,18 +131,12 @@ class Returns400:
         }
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post("/stocks", json=data)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).post("/stocks", json=data)
 
         # Then
         assert response.status_code == 400
         assert response.json == {
-            "global": [
-                "Impossible de mettre une date de début si l'offre ne porte pas sur un événement"
-            ]
+            "global": ["Impossible de mettre une date de début si l'offre ne porte pas sur un événement"]
         }
 
     def when_stock_is_on_offer_coming_from_provider(self, app, db_session):
@@ -174,24 +146,18 @@ class Returns400:
         offers_factories.UserOffererFactory(user=user, offerer=offerer)
         offer = offers_factories.ThingOfferFactory(
             lastProvider=offerers_factories.ProviderFactory(),
-            idAtProviders='1',
+            idAtProviders="1",
             venue__managingOfferer=offerer,
         )
 
         stock_data = {"price": 1222, "offerId": humanize(offer.id)}
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post("/stocks", json=stock_data)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).post("/stocks", json=stock_data)
 
         # Then
         assert response.status_code == 400
-        assert response.json == {
-            "global": ["Les offres importées ne sont pas modifiables"]
-        }
+        assert response.json == {"global": ["Les offres importées ne sont pas modifiables"]}
 
 
 class Returns403:
@@ -206,16 +172,10 @@ class Returns403:
         data = {"price": 1222, "offerId": humanize(offer.id)}
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post("/stocks", json=data)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).post("/stocks", json=data)
 
         # Then
         assert response.status_code == 403
         assert response.json == {
-            "global": [
-                "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
-            ]
+            "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
         }

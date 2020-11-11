@@ -18,9 +18,7 @@ def run(csv_file_path: str) -> None:
     logger.info("[DELETE USER_OFFERERS FROM FILE] STEP 1 - Lecture du fichier CSV")
     csv_file = open(csv_file_path)
     csv_reader = csv.reader(csv_file)
-    logger.info(
-        "[DELETE USER_OFFERERS FROM FILE] STEP 2 - Suppression des user_offerers"
-    )
+    logger.info("[DELETE USER_OFFERERS FROM FILE] STEP 2 - Suppression des user_offerers")
     _delete_user_offerers_from_rows(csv_reader)
     logger.info("[DELETE USER_OFFERERS FROM FILE] END")
 
@@ -39,9 +37,7 @@ def _delete_user_offerers_from_rows(csv_rows: Iterable) -> None:
         user_id = row[USER_ID_COLUMN_HEADER]
         offerer_id = row[OFFERER_ID_COLUMN_HEADER]
 
-        user_offerer = find_one_or_none_by_user_id_and_offerer_id(
-            int(user_id), int(offerer_id)
-        )
+        user_offerer = find_one_or_none_by_user_id_and_offerer_id(int(user_id), int(offerer_id))
         if user_offerer is None:
             continue
 
@@ -63,16 +59,12 @@ def _delete_user_offerers_from_rows(csv_rows: Iterable) -> None:
             )
             user_offerers_in_error.append(user_offerer_id)
 
-    logger.info(
-        f"[DELETE USER_OFFERERS FROM FILE] {len(user_offerers_successful)} RATTACHEMENT SUPPRIMES"
-    )
+    logger.info(f"[DELETE USER_OFFERERS FROM FILE] {len(user_offerers_successful)} RATTACHEMENT SUPPRIMES")
     logger.info("[DELETE USER_OFFERERS FROM FILE] LISTE DES RATTACHEMENT SUPPRIMES")
     logger.info(user_offerers_successful)
 
     if len(user_offerers_in_error) > 0:
-        logger.error(
-            "[DELETE USER_OFFERERS FROM FILE] LISTE DES RATTACHEMENTS EN ERREUR"
-        )
+        logger.error("[DELETE USER_OFFERERS FROM FILE] LISTE DES RATTACHEMENTS EN ERREUR")
         logger.error(user_offerers_in_error)
 
 

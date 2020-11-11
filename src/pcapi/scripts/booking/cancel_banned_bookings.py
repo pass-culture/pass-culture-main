@@ -47,23 +47,26 @@ def cancel_banned_bookings() -> None:
 
 
 def get_bookings_banned_and_sent() -> List[Booking]:
-    reimbursed_bookings_on_wanted_date = Booking.query \
-        .join(Payment, Payment.bookingId == Booking.id) \
-        .join(PaymentStatus, PaymentStatus.paymentId == Payment.id) \
-        .filter(PaymentStatus.status == TransactionStatus.SENT) \
+    reimbursed_bookings_on_wanted_date = (
+        Booking.query.join(Payment, Payment.bookingId == Booking.id)
+        .join(PaymentStatus, PaymentStatus.paymentId == Payment.id)
+        .filter(PaymentStatus.status == TransactionStatus.SENT)
         .filter(cast(PaymentStatus.date, Date) == WANTED_SENT_DATE)
+    )
 
-    banned_bookings_on_wanted_date = Booking.query \
-        .join(Payment, Payment.bookingId == Booking.id) \
-        .join(PaymentStatus, PaymentStatus.paymentId == Payment.id) \
-        .filter(PaymentStatus.status == TransactionStatus.BANNED) \
+    banned_bookings_on_wanted_date = (
+        Booking.query.join(Payment, Payment.bookingId == Booking.id)
+        .join(PaymentStatus, PaymentStatus.paymentId == Payment.id)
+        .filter(PaymentStatus.status == TransactionStatus.BANNED)
         .filter(cast(PaymentStatus.date, Date) == WANTED_BANNED_DATE)
+    )
 
-    currently_banned_bookings = Booking.query \
-        .join(Payment, Payment.bookingId == Booking.id) \
-        .filter(Payment.currentStatus == TransactionStatus.BANNED)
+    currently_banned_bookings = Booking.query.join(Payment, Payment.bookingId == Booking.id).filter(
+        Payment.currentStatus == TransactionStatus.BANNED
+    )
 
-    return reimbursed_bookings_on_wanted_date \
-        .intersect(banned_bookings_on_wanted_date) \
-        .intersect(currently_banned_bookings) \
+    return (
+        reimbursed_bookings_on_wanted_date.intersect(banned_bookings_on_wanted_date)
+        .intersect(currently_banned_bookings)
         .all()
+    )

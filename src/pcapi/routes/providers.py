@@ -11,20 +11,20 @@ from pcapi.routes.serialization import as_dict
 from pcapi.utils.rest import load_or_404
 
 
-@private_api.route('/providers', methods=['GET'])
+@private_api.route("/providers", methods=["GET"])
 @login_required
 def list_providers():
     providers = get_enabled_providers_for_pro()
     result = []
     for provider in providers:
         p_dict = as_dict(provider)
-        del p_dict['apiKey']
-        del p_dict['apiKeyGenerationDate']
+        del p_dict["apiKey"]
+        del p_dict["apiKeyGenerationDate"]
         result.append(p_dict)
     return jsonify(result)
 
 
-@private_api.route('/providers/<venue_id>', methods=['GET'])
+@private_api.route("/providers/<venue_id>", methods=["GET"])
 @login_required
 def get_providers_by_venue(venue_id: str):
     venue = load_or_404(VenueSQLEntity, venue_id)
@@ -37,7 +37,7 @@ def get_providers_by_venue(venue_id: str):
     result = []
     for provider in providers:
         provider_dict = as_dict(provider)
-        del provider_dict['apiKey']
-        del provider_dict['apiKeyGenerationDate']
+        del provider_dict["apiKey"]
+        del provider_dict["apiKeyGenerationDate"]
         result.append(provider_dict)
     return jsonify(result)

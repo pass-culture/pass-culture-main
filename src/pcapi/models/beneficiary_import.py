@@ -19,26 +19,20 @@ from pcapi.models.user_sql_entity import UserSQLEntity
 
 
 class BeneficiaryImportSources(Enum):
-    demarches_simplifiees = 'demarches_simplifiees'
-    jouve = 'jouve'
+    demarches_simplifiees = "demarches_simplifiees"
+    jouve = "jouve"
 
 
 class BeneficiaryImport(PcObject, Model):
-    applicationId = Column(BigInteger,
-                           nullable=False)
+    applicationId = Column(BigInteger, nullable=False)
 
-    beneficiaryId = Column(BigInteger,
-                           ForeignKey('user.id'),
-                           index=True,
-                           nullable=True)
+    beneficiaryId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=True)
 
     sourceId = Column(Integer, nullable=True)
 
     source = Column(String(255), nullable=False)
 
-    beneficiary = relationship('UserSQLEntity',
-                               foreign_keys=[beneficiaryId],
-                               backref='beneficiaryImports')
+    beneficiary = relationship("UserSQLEntity", foreign_keys=[beneficiaryId], backref="beneficiaryImports")
 
     def setStatus(self, status: ImportStatus, detail: str = None, author: UserSQLEntity = None):
         new_status = BeneficiaryImportStatus()
@@ -87,16 +81,17 @@ class BeneficiaryImport(PcObject, Model):
 
     @property
     def history(self):
-        return '\n'.join([repr(s) for s in self.statuses])
+        return "\n".join([repr(s) for s in self.statuses])
 
     @classmethod
     def _query_last_status(cls, column: Column):
-        return db.session \
-            .query(column) \
-            .filter(BeneficiaryImportStatus.beneficiaryImportId == cls.id) \
-            .order_by(desc(BeneficiaryImportStatus.date)) \
-            .limit(1) \
+        return (
+            db.session.query(column)
+            .filter(BeneficiaryImportStatus.beneficiaryImportId == cls.id)
+            .order_by(desc(BeneficiaryImportStatus.date))
+            .limit(1)
             .as_scalar()
+        )
 
     def _last_status(self):
         return sorted(self.statuses, key=lambda x: x.date, reverse=True)[0]

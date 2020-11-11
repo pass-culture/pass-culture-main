@@ -9,8 +9,8 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = 'a96683bbf3be'
-down_revision = '979af719f2f7'
+revision = "a96683bbf3be"
+down_revision = "979af719f2f7"
 branch_labels = None
 depends_on = None
 
@@ -25,7 +25,13 @@ def upgrade():
 
 def downgrade():
     op.execute("COMMIT")  # Close the automatically opened transaction so we can create/drop indexes "concurrently"
-    op.execute("""CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_offer_fts_author" ON offer USING gin (to_tsvector('french_unaccent'::regconfig, ("extraData" -> 'author'::text)::text));""")
-    op.execute("""CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_offer_fts_byArtist" ON offer USING gin (to_tsvector('french_unaccent'::regconfig, ("extraData" -> 'byArtist'::text)::text));""")
-    op.execute("""CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_offer_fts_description" ON offer USING gin (to_tsvector('french_unaccent'::regconfig, description));""")
+    op.execute(
+        """CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_offer_fts_author" ON offer USING gin (to_tsvector('french_unaccent'::regconfig, ("extraData" -> 'author'::text)::text));"""
+    )
+    op.execute(
+        """CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_offer_fts_byArtist" ON offer USING gin (to_tsvector('french_unaccent'::regconfig, ("extraData" -> 'byArtist'::text)::text));"""
+    )
+    op.execute(
+        """CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_offer_fts_description" ON offer USING gin (to_tsvector('french_unaccent'::regconfig, description));"""
+    )
     pass

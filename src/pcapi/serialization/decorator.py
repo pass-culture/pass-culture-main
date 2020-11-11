@@ -26,11 +26,7 @@ def _make_json_response(
         return make_response("", 204)
 
     if not content:
-        raise ApiErrors(
-            {
-                "configuration": "You need to provide a response body model if the status code is not 204"
-            }
-        )
+        raise ApiErrors({"configuration": "You need to provide a response body model if the status code is not 204"})
 
     json_content = content.json(exclude_none=exclude_none, by_alias=by_alias)
 

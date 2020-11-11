@@ -11,7 +11,7 @@ class UseCaseTest:
         @pytest.mark.usefixtures("db_session")
         def test_return_the_list(self, app):
             # Given
-            list_of_types = [create_venue_type('Theatre')]
+            list_of_types = [create_venue_type("Theatre")]
             get_all_venue_types = Mock(return_value=list_of_types)
 
             # When

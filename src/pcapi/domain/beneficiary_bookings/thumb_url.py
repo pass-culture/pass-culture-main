@@ -11,13 +11,13 @@ class ThumbUrl:
 
     @staticmethod
     def for_product(identifier: int):
-        return ThumbUrl(identifier, 'products')
+        return ThumbUrl(identifier, "products")
 
     @staticmethod
     def for_mediation(identifier: int):
-        return ThumbUrl(identifier, 'mediations')
+        return ThumbUrl(identifier, "mediations")
 
     def url(self) -> Optional[str]:
         base_url = get_storage_base_url()
         thumb_url = base_url + "/thumbs"
-        return '{}/{}/{}'.format(thumb_url, self.model_name, humanize(self.identifier))
+        return "{}/{}/{}".format(thumb_url, self.model_name, humanize(self.identifier))

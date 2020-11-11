@@ -60,10 +60,8 @@ def password_reset_request(body: PasswordResetRequestRequest) -> None:
     is_email_sent = send_reset_password_email_to_user(user, send_raw_email, is_native_app=True)
 
     if not is_email_sent:
-        app.logger.error(
-            'Email service failure when user request password reset with %s', user.email
-        )
-        errors = ApiErrors({'error': "L'email n'a pas pu être envoyé"})
+        app.logger.error("Email service failure when user request password reset with %s", user.email)
+        errors = ApiErrors({"error": "L'email n'a pas pu être envoyé"})
         errors.status_code = 400
         raise errors
 

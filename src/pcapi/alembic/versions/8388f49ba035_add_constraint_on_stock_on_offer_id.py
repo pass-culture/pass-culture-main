@@ -9,15 +9,15 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = '8388f49ba035'
-down_revision = '37ba62c7fdb3'
+revision = "8388f49ba035"
+down_revision = "37ba62c7fdb3"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.alter_column('stock', 'offerId', nullable=False)
+    op.alter_column("stock", "offerId", nullable=False)
 
 
 def downgrade():
-    op.alter_column('stock', 'offerId', nullable=True)
+    op.alter_column("stock", "offerId", nullable=True)

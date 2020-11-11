@@ -32,7 +32,7 @@ def get_beneficiary_profile():
     return jsonify(as_dict(user, includes=BENEFICIARY_INCLUDES)), 200
 
 
-@private_api.route('/beneficiaries/current', methods=['PATCH'])
+@private_api.route("/beneficiaries/current", methods=["PATCH"])
 @login_or_api_key_required
 @expect_json_data
 def patch_beneficiary():
@@ -41,16 +41,16 @@ def patch_beneficiary():
 
     user_informations = AlterableUserInformations(
         id=current_user.id,
-        cultural_survey_id=request.json.get('culturalSurveyId'),
-        cultural_survey_filled_date=request.json.get('culturalSurveyFilledDate'),
-        department_code=request.json.get('departementCode'),
-        email=request.json.get('email'),
-        last_connection_date=request.json.get('lastConnectionDate'),
-        needs_to_fill_cultural_survey=request.json.get('needsToFillCulturalSurvey'),
-        phone_number=request.json.get('phoneNumber'),
-        postal_code=request.json.get('postalCode'),
-        public_name=request.json.get('publicName'),
-        has_seen_tutorials=request.json.get('hasSeenTutorials')
+        cultural_survey_id=request.json.get("culturalSurveyId"),
+        cultural_survey_filled_date=request.json.get("culturalSurveyFilledDate"),
+        department_code=request.json.get("departementCode"),
+        email=request.json.get("email"),
+        last_connection_date=request.json.get("lastConnectionDate"),
+        needs_to_fill_cultural_survey=request.json.get("needsToFillCulturalSurvey"),
+        phone_number=request.json.get("phoneNumber"),
+        postal_code=request.json.get("postalCode"),
+        public_name=request.json.get("publicName"),
+        has_seen_tutorials=request.json.get("hasSeenTutorials"),
     )
     user = update_user_informations(user_informations)
 
@@ -69,39 +69,39 @@ def signin_beneficiary():
     try:
         user = user_api.get_user_with_credentials(identifier, password)
     except user_exceptions.InvalidIdentifier as exc:
-        errors.add_error('identifier', 'Identifiant incorrect')
+        errors.add_error("identifier", "Identifiant incorrect")
         raise errors from exc
     except user_exceptions.UnvalidatedAccount as exc:
-        errors.add_error('identifier', "Ce compte n'est pas validé.")
+        errors.add_error("identifier", "Ce compte n'est pas validé.")
         raise errors from exc
     except user_exceptions.InvalidPassword as exc:
-        errors.add_error('password', 'Mot de passe incorrect')
+        errors.add_error("password", "Mot de passe incorrect")
         raise errors from exc
     login_user(user, remember=True)
     stamp_session(user)
     return jsonify(), 200
 
 
-@public_api.route('/beneficiaries/licence_verify', methods=['POST'])
+@public_api.route("/beneficiaries/licence_verify", methods=["POST"])
 def verify_id_check_licence_token():
     check_verify_licence_token_payload(request)
 
-    licence_token = request.json.get('token')
+    licence_token = request.json.get("token")
     licence_token_is_valid = is_licence_token_valid(licence_token)
 
     if not licence_token_is_valid:
-        return '', 422
+        return "", 422
 
-    return '', 200
+    return "", 200
 
 
-@public_api.route('/beneficiaries/application_update', methods=['POST'])
+@public_api.route("/beneficiaries/application_update", methods=["POST"])
 def id_check_application_update():
     check_application_update_payload(request)
 
-    raw_application_id = request.json.get('id')
+    raw_application_id = request.json.get("id")
     application_id = parse_application_id(raw_application_id)
 
     beneficiary_job.delay(application_id)
 
-    return '', 200
+    return "", 200

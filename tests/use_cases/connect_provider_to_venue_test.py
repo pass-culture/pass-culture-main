@@ -28,7 +28,7 @@ class WhenProviderIsLibraires:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        provider = activate_provider('LibrairesStocks')
+        provider = activate_provider("LibrairesStocks")
 
         repository.save(venue)
 
@@ -38,8 +38,8 @@ class WhenProviderIsLibraires:
         provider_type = LibrairesStocks
 
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # When
@@ -53,8 +53,8 @@ class WhenProviderIsLibraires:
     def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, siret='12345678912345')
-        provider = activate_provider('LibrairesStocks')
+        venue = create_venue(offerer, siret="12345678912345")
+        provider = activate_provider("LibrairesStocks")
 
         repository.save(venue)
 
@@ -64,8 +64,8 @@ class WhenProviderIsLibraires:
         provider_class = LibrairesStocks
 
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # when
@@ -73,15 +73,16 @@ class WhenProviderIsLibraires:
             print(connect_venue_to_provider(provider_class, stock_repository, venue_provider_payload, self.find_by_id))
 
         # then
-        assert error.value.errors['provider'] == [
-            'L’importation d’offres avec LesLibraires n’est pas disponible pour le SIRET 12345678912345']
+        assert error.value.errors["provider"] == [
+            "L’importation d’offres avec LesLibraires n’est pas disponible pour le SIRET 12345678912345"
+        ]
 
     @pytest.mark.usefixtures("db_session")
     def should_not_connect_venue_when_venue_has_no_siret(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, siret=None, is_virtual=True)
-        provider = activate_provider('LibrairesStocks')
+        provider = activate_provider("LibrairesStocks")
 
         repository.save(venue)
 
@@ -90,8 +91,8 @@ class WhenProviderIsLibraires:
         provider_type = LibrairesStocks
 
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # when
@@ -99,8 +100,9 @@ class WhenProviderIsLibraires:
             connect_venue_to_provider(provider_type, stock_repository, venue_provider_payload, self.find_by_id)
 
         # then
-        assert error.value.errors['provider'] == [
-            'L’importation d’offres avec LesLibraires n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.']
+        assert error.value.errors["provider"] == [
+            "L’importation d’offres avec LesLibraires n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres."
+        ]
 
 
 class WhenProviderIsTiteLive:
@@ -112,7 +114,7 @@ class WhenProviderIsTiteLive:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        provider = activate_provider('TiteLiveStocks')
+        provider = activate_provider("TiteLiveStocks")
 
         repository.save(venue)
 
@@ -123,8 +125,8 @@ class WhenProviderIsTiteLive:
         stock_repository.can_be_synchronized.return_value = True
 
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # When
@@ -138,8 +140,8 @@ class WhenProviderIsTiteLive:
     def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, siret='12345678912345')
-        provider = activate_provider('TiteLiveStocks')
+        venue = create_venue(offerer, siret="12345678912345")
+        provider = activate_provider("TiteLiveStocks")
 
         repository.save(venue)
 
@@ -149,8 +151,8 @@ class WhenProviderIsTiteLive:
         stock_repository = MagicMock()
         stock_repository.can_be_synchronized.return_value = False
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # when
@@ -158,16 +160,16 @@ class WhenProviderIsTiteLive:
             connect_venue_to_provider(provider_type, stock_repository, venue_provider_payload, self.find_by_id)
 
         # then
-        assert error.value.errors['provider'] == [
-            'L’importation d’offres avec TiteLive'
-            ' n’est pas disponible pour le SIRET 12345678912345']
+        assert error.value.errors["provider"] == [
+            "L’importation d’offres avec TiteLive" " n’est pas disponible pour le SIRET 12345678912345"
+        ]
 
     @pytest.mark.usefixtures("db_session")
     def should_not_connect_venue_when_venue_has_no_siret(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, siret=None, is_virtual=True)
-        provider = activate_provider('TiteLiveStocks')
+        provider = activate_provider("TiteLiveStocks")
 
         repository.save(venue)
 
@@ -177,8 +179,8 @@ class WhenProviderIsTiteLive:
         provider_type = TiteLiveStocks
 
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # when
@@ -186,8 +188,9 @@ class WhenProviderIsTiteLive:
             connect_venue_to_provider(provider_type, stock_repository, venue_provider_payload, self.find_by_id)
 
         # then
-        assert error.value.errors['provider'] == [
-            'L’importation d’offres avec TiteLive n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.']
+        assert error.value.errors["provider"] == [
+            "L’importation d’offres avec TiteLive n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres."
+        ]
 
 
 class WhenProviderIsFnac:
@@ -199,7 +202,7 @@ class WhenProviderIsFnac:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        provider = activate_provider('FnacStocks')
+        provider = activate_provider("FnacStocks")
 
         repository.save(venue)
 
@@ -209,8 +212,8 @@ class WhenProviderIsFnac:
         provider_type = FnacStocks
 
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # When
@@ -224,8 +227,8 @@ class WhenProviderIsFnac:
     def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, siret='12345678912345')
-        provider = activate_provider('FnacStocks')
+        venue = create_venue(offerer, siret="12345678912345")
+        provider = activate_provider("FnacStocks")
 
         repository.save(venue)
 
@@ -235,8 +238,8 @@ class WhenProviderIsFnac:
         provider_type = FnacStocks
 
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # when
@@ -244,15 +247,16 @@ class WhenProviderIsFnac:
             connect_venue_to_provider(provider_type, stock_repository, venue_provider_payload, self.find_by_id)
 
         # then
-        assert error.value.errors['provider'] == [
-            'L’importation d’offres avec FNAC n’est pas disponible pour le SIRET 12345678912345']
+        assert error.value.errors["provider"] == [
+            "L’importation d’offres avec FNAC n’est pas disponible pour le SIRET 12345678912345"
+        ]
 
     @pytest.mark.usefixtures("db_session")
     def should_not_connect_venue_when_venue_has_no_siret(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, siret=None, is_virtual=True)
-        provider = activate_provider('FnacStocks')
+        provider = activate_provider("FnacStocks")
 
         repository.save(venue)
 
@@ -261,8 +265,8 @@ class WhenProviderIsFnac:
         provider_type = FnacStocks
 
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # when
@@ -270,8 +274,9 @@ class WhenProviderIsFnac:
             connect_venue_to_provider(provider_type, stock_repository, venue_provider_payload, self.find_by_id)
 
         # then
-        assert error.value.errors['provider'] == [
-            'L’importation d’offres avec FNAC n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.']
+        assert error.value.errors["provider"] == [
+            "L’importation d’offres avec FNAC n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres."
+        ]
 
 
 class WhenProviderIsPraxiel:
@@ -283,7 +288,7 @@ class WhenProviderIsPraxiel:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        provider = activate_provider('PraxielStocks')
+        provider = activate_provider("PraxielStocks")
 
         repository.save(venue)
 
@@ -293,8 +298,8 @@ class WhenProviderIsPraxiel:
         provider_type = PraxielStocks
 
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # When
@@ -308,8 +313,8 @@ class WhenProviderIsPraxiel:
     def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, siret='12345678912345')
-        provider = activate_provider('PraxielStocks')
+        venue = create_venue(offerer, siret="12345678912345")
+        provider = activate_provider("PraxielStocks")
 
         repository.save(venue)
 
@@ -319,8 +324,8 @@ class WhenProviderIsPraxiel:
         provider_type = PraxielStocks
 
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # when
@@ -328,15 +333,16 @@ class WhenProviderIsPraxiel:
             connect_venue_to_provider(provider_type, stock_repository, venue_provider_payload, self.find_by_id)
 
         # then
-        assert error.value.errors['provider'] == [
-            'L’importation d’offres avec Praxiel/Inférence n’est pas disponible pour le SIRET 12345678912345']
+        assert error.value.errors["provider"] == [
+            "L’importation d’offres avec Praxiel/Inférence n’est pas disponible pour le SIRET 12345678912345"
+        ]
 
     @pytest.mark.usefixtures("db_session")
     def should_not_connect_venue_when_venue_has_no_siret(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, siret=None, is_virtual=True)
-        provider = activate_provider('PraxielStocks')
+        provider = activate_provider("PraxielStocks")
 
         repository.save(venue)
 
@@ -345,8 +351,8 @@ class WhenProviderIsPraxiel:
         provider_type = PraxielStocks
 
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # when
@@ -354,8 +360,9 @@ class WhenProviderIsPraxiel:
             connect_venue_to_provider(provider_type, stock_repository, venue_provider_payload, self.find_by_id)
 
         # then
-        assert error.value.errors['provider'] == [
-            'L’importation d’offres avec Praxiel/Inférence n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres.']
+        assert error.value.errors["provider"] == [
+            "L’importation d’offres avec Praxiel/Inférence n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres."
+        ]
 
 
 class WhenProviderIsSomethingElse:
@@ -367,7 +374,7 @@ class WhenProviderIsSomethingElse:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        provider = create_provider(local_class='TestLocalProvider')
+        provider = create_provider(local_class="TestLocalProvider")
         repository.save(venue, provider)
 
         self.find_by_id.return_value = venue
@@ -375,8 +382,8 @@ class WhenProviderIsSomethingElse:
         provider_type = TestLocalProvider
 
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # When
@@ -384,4 +391,4 @@ class WhenProviderIsSomethingElse:
             connect_venue_to_provider(provider_type, stock_repository, venue_provider_payload, self.find_by_id)
 
         # Then
-        assert error.value.errors['provider'] == ['Provider non pris en charge']
+        assert error.value.errors["provider"] == ["Provider non pris en charge"]

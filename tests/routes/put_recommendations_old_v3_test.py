@@ -5,7 +5,7 @@ from pcapi.model_creators.generic_creators import create_user
 from tests.conftest import TestClient
 
 
-RECOMMENDATION_V3_URL = '/recommendations/v3'
+RECOMMENDATION_V3_URL = "/recommendations/v3"
 
 
 class Put:
@@ -17,9 +17,8 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_V3_URL,
-                                        json={})
+            response = auth_request.put(RECOMMENDATION_V3_URL, json={})
 
             # then
             assert response.status_code == 308
-            assert response.location == 'http://localhost/recommendations'
+            assert response.location == "http://localhost/recommendations"

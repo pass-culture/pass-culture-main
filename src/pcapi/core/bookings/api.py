@@ -26,7 +26,7 @@ from . import repository as booking_repository
 from . import validation
 
 
-QR_CODE_PASS_CULTURE_VERSION = 'v2'
+QR_CODE_PASS_CULTURE_VERSION = "v2"
 QR_CODE_VERSION = 2
 QR_CODE_BOX_SIZE = 5
 QR_CODE_BOX_BORDER = 1
@@ -86,9 +86,7 @@ def book_offer(
 
 def cancel_booking_by_beneficiary(user: UserSQLEntity, booking: Booking) -> None:
     if not user.canBookFreeOffers:
-        raise RuntimeError(
-            "Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user
-        )
+        raise RuntimeError("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user)
     validation.check_beneficiary_can_cancel_booking(user, booking)
 
     booking.isCancelled = True
@@ -140,19 +138,19 @@ def generate_qr_code(booking_token: str, offer_extra_data: typing.Dict) -> str:
         border=QR_CODE_BOX_BORDER,
     )
 
-    product_isbn = ''
-    if offer_extra_data and 'isbn' in offer_extra_data:
-        product_isbn = offer_extra_data['isbn']
+    product_isbn = ""
+    if offer_extra_data and "isbn" in offer_extra_data:
+        product_isbn = offer_extra_data["isbn"]
 
-    data = f'PASSCULTURE:{QR_CODE_PASS_CULTURE_VERSION};'
+    data = f"PASSCULTURE:{QR_CODE_PASS_CULTURE_VERSION};"
 
-    if product_isbn != '':
-        data += f'EAN13:{product_isbn};'
+    if product_isbn != "":
+        data += f"EAN13:{product_isbn};"
 
-    data += f'TOKEN:{booking_token}'
+    data += f"TOKEN:{booking_token}"
 
     qr.add_data(data)
-    image = qr.make_image(fill_color='black', back_color='white')
+    image = qr.make_image(fill_color="black", back_color="white")
     return _convert_image_to_base64(image)
 
 
@@ -163,7 +161,9 @@ def _convert_image_to_base64(image: Image) -> str:
     return f'data:image/png;base64,{str(image_as_base64, encoding="utf-8")}'
 
 
-def compute_confirmation_date(event_beginning: typing.Optional[datetime.datetime], booking_creation: datetime.datetime) -> typing.Optional[datetime.datetime]:
+def compute_confirmation_date(
+    event_beginning: typing.Optional[datetime.datetime], booking_creation: datetime.datetime
+) -> typing.Optional[datetime.datetime]:
     if event_beginning:
         if event_beginning.tzinfo:
             tz_naive_event_beginning = event_beginning.astimezone(pytz.utc)
@@ -173,6 +173,8 @@ def compute_confirmation_date(event_beginning: typing.Optional[datetime.datetime
         before_event_limit = tz_naive_event_beginning - conf.CONFIRM_BOOKING_BEFORE_EVENT_DELAY
         after_booking_limit = booking_creation + conf.CONFIRM_BOOKING_AFTER_CREATION_DELAY
         earliest_date_in_cancellation_period = min(before_event_limit, after_booking_limit)
-        latest_date_between_earliest_date_in_cancellation_period_and_booking_creation = max(earliest_date_in_cancellation_period, booking_creation)
+        latest_date_between_earliest_date_in_cancellation_period_and_booking_creation = max(
+            earliest_date_in_cancellation_period, booking_creation
+        )
         return latest_date_between_earliest_date_in_cancellation_period_and_booking_creation
     return None

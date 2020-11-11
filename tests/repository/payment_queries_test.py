@@ -23,7 +23,7 @@ class FindMessageChecksumTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_a_checksum_if_message_id_is_known(self, app):
         # given
-        message_id = 'ABCD1234'
+        message_id = "ABCD1234"
         message = create_payment_message(name=message_id)
         repository.save(message)
 
@@ -36,12 +36,12 @@ class FindMessageChecksumTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_none_is_message_id_is_unknown(self, app):
         # given
-        message_id = 'ABCD1234'
+        message_id = "ABCD1234"
         message = create_payment_message(name=message_id)
         repository.save(message)
 
         # when
-        checksum = payment_queries.find_message_checksum('EFGH5678')
+        checksum = payment_queries.find_message_checksum("EFGH5678")
 
         # then
         assert checksum is None
@@ -55,11 +55,12 @@ class FindErrorPaymentsTest:
         booking = create_booking(user=user)
         create_deposit(user)
         error_payment1 = create_payment(
-            booking, booking.stock.offer.venue.managingOfferer, 10, status=TransactionStatus.ERROR)
+            booking, booking.stock.offer.venue.managingOfferer, 10, status=TransactionStatus.ERROR
+        )
         error_payment2 = create_payment(
-            booking, booking.stock.offer.venue.managingOfferer, 10, status=TransactionStatus.ERROR)
-        pending_payment = create_payment(
-            booking, booking.stock.offer.venue.managingOfferer, 10)
+            booking, booking.stock.offer.venue.managingOfferer, 10, status=TransactionStatus.ERROR
+        )
+        pending_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
         repository.save(error_payment1, error_payment2, pending_payment)
 
         # When
@@ -76,10 +77,8 @@ class FindErrorPaymentsTest:
         user = create_user()
         booking = create_booking(user=user)
         create_deposit(user)
-        error_payment = create_payment(
-            booking, booking.stock.offer.venue.managingOfferer, 10)
-        pending_payment = create_payment(
-            booking, booking.stock.offer.venue.managingOfferer, 10)
+        error_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
+        pending_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
         error_status = PaymentStatus()
         error_status.status = TransactionStatus.ERROR
         sent_status = PaymentStatus()
@@ -102,12 +101,9 @@ class FindRetryPaymentsTest:
         booking = create_booking(user=user)
         create_deposit(user)
         offerer = booking.stock.offer.venue.managingOfferer
-        retry_payment1 = create_payment(
-            booking, offerer, 10, status=TransactionStatus.RETRY)
-        retry_payment2 = create_payment(
-            booking, offerer, 10, status=TransactionStatus.RETRY)
-        pending_payment = create_payment(
-            booking, offerer, 10, status=TransactionStatus.PENDING)
+        retry_payment1 = create_payment(booking, offerer, 10, status=TransactionStatus.RETRY)
+        retry_payment2 = create_payment(booking, offerer, 10, status=TransactionStatus.RETRY)
+        pending_payment = create_payment(booking, offerer, 10, status=TransactionStatus.PENDING)
         repository.save(retry_payment1, retry_payment2, pending_payment)
 
         # When
@@ -124,12 +120,9 @@ class FindRetryPaymentsTest:
         user = create_user()
         booking = create_booking(user=user)
         create_deposit(user)
-        payment = create_payment(
-            booking, booking.stock.offer.venue.managingOfferer, 10)
-        payment = create_payment(
-            booking, booking.stock.offer.venue.managingOfferer, 10)
-        pending_payment = create_payment(
-            booking, booking.stock.offer.venue.managingOfferer, 10)
+        payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
+        payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
+        pending_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
         retry_status = PaymentStatus()
         retry_status.status = TransactionStatus.RETRY
         sent_status = PaymentStatus()
@@ -152,31 +145,26 @@ class FindPaymentsByMessageTest:
         booking = create_booking(user=user)
         create_deposit(user)
         offerer = booking.stock.offer.venue.managingOfferer
-        transaction1 = create_payment_message(name='XML1')
-        transaction2 = create_payment_message(name='XML2')
-        transaction3 = create_payment_message(name='XML3')
+        transaction1 = create_payment_message(name="XML1")
+        transaction2 = create_payment_message(name="XML2")
+        transaction3 = create_payment_message(name="XML3")
         uuid1, uuid2, uuid3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
         payments = [
-            create_payment(
-                booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction1),
-            create_payment(
-                booking, offerer, 5, transaction_end_to_end_id=uuid2, payment_message=transaction2),
-            create_payment(
-                booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction3),
-            create_payment(
-                booking, offerer, 5, transaction_end_to_end_id=uuid3, payment_message=transaction1),
-            create_payment(
-                booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction1)
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction1),
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid2, payment_message=transaction2),
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction3),
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid3, payment_message=transaction1),
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction1),
         ]
         repository.save(*payments)
 
         # when
-        matching_payments = payment_queries.find_payments_by_message('XML1')
+        matching_payments = payment_queries.find_payments_by_message("XML1")
 
         # then
         assert len(matching_payments) == 3
         for payment in matching_payments:
-            assert payment.paymentMessageName == 'XML1'
+            assert payment.paymentMessageName == "XML1"
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_message_is_not_matched(self, app):
@@ -185,23 +173,19 @@ class FindPaymentsByMessageTest:
         booking = create_booking(user=user)
         create_deposit(user)
         offerer = booking.stock.offer.venue.managingOfferer
-        message1 = create_payment_message(name='XML1')
-        message2 = create_payment_message(name='XML2')
-        message3 = create_payment_message(name='XML3')
+        message1 = create_payment_message(name="XML1")
+        message2 = create_payment_message(name="XML2")
+        message3 = create_payment_message(name="XML3")
         uuid1, uuid2, uuid3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
         payments = [
-            create_payment(
-                booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=message1),
-            create_payment(
-                booking, offerer, 5, transaction_end_to_end_id=uuid2, payment_message=message2),
-            create_payment(
-                booking, offerer, 5, transaction_end_to_end_id=uuid3, payment_message=message3)
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=message1),
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid2, payment_message=message2),
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid3, payment_message=message3),
         ]
         repository.save(*payments)
 
         # when
-        matching_payments = payment_queries.find_payments_by_message(
-            'unknown message')
+        matching_payments = payment_queries.find_payments_by_message("unknown message")
 
         # then
         assert matching_payments == []
@@ -218,26 +202,20 @@ class GeneratePayementsByMessageIdTest:
         free_stock = create_stock_from_offer(offer, price=0)
         user = create_user()
         create_deposit(user)
-        booking1 = create_booking(
-            user=user, stock=paying_stock, venue=venue, is_used=True)
-        booking2 = create_booking(
-            user=user, stock=paying_stock, venue=venue, is_used=True)
-        booking3 = create_booking(
-            user=user, stock=paying_stock, venue=venue, is_used=True)
-        booking4 = create_booking(
-            user=user, stock=free_stock, venue=venue, is_used=True)
-        payment1 = create_payment(
-            booking1, offerer, 10, payment_message_name="ABCD123")
-        payment2 = create_payment(
-            booking2, offerer, 10, payment_message_name="EFGH456")
+        booking1 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
+        booking2 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
+        booking3 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
+        booking4 = create_booking(user=user, stock=free_stock, venue=venue, is_used=True)
+        payment1 = create_payment(booking1, offerer, 10, payment_message_name="ABCD123")
+        payment2 = create_payment(booking2, offerer, 10, payment_message_name="EFGH456")
         repository.save(payment1, payment2, booking3, booking4)
 
         # When
-        payements_by_id = payment_queries.get_payments_by_message_id('ABCD123')
+        payements_by_id = payment_queries.get_payments_by_message_id("ABCD123")
 
         # Then
         assert len(payements_by_id) == 1
-        assert payements_by_id[0].paymentMessage.name == 'ABCD123'
+        assert payements_by_id[0].paymentMessage.name == "ABCD123"
 
 
 class FindNotProcessableWithBankInformationTest:
@@ -247,12 +225,11 @@ class FindNotProcessableWithBankInformationTest:
         offerer = create_offerer()
         user = create_user()
         venue = create_venue(offerer)
-        stock = create_stock_from_offer(
-            create_offer_with_thing_product(venue), price=0)
+        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
         booking = create_booking(user=user, stock=stock)
-        not_processable_payment = create_payment(booking, offerer, 10,
-                                                 status=TransactionStatus.NOT_PROCESSABLE,
-                                                 iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        not_processable_payment = create_payment(
+            booking, offerer, 10, status=TransactionStatus.NOT_PROCESSABLE, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+        )
         repository.save(not_processable_payment)
 
         # When
@@ -262,17 +239,18 @@ class FindNotProcessableWithBankInformationTest:
         assert payments_to_retry == []
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_payment_to_retry_if_bank_information_linked_to_offerer_and_current_status_is_not_processable(self, app):
+    def test_should_return_payment_to_retry_if_bank_information_linked_to_offerer_and_current_status_is_not_processable(
+        self, app
+    ):
         # Given
         offerer = create_offerer()
         user = create_user()
         venue = create_venue(offerer)
-        stock = create_stock_from_offer(
-            create_offer_with_thing_product(venue), price=0)
+        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
         booking = create_booking(user=user, stock=stock)
-        not_processable_payment = create_payment(booking, offerer, 10,
-                                                 status=TransactionStatus.NOT_PROCESSABLE,
-                                                 iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        not_processable_payment = create_payment(
+            booking, offerer, 10, status=TransactionStatus.NOT_PROCESSABLE, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+        )
         bank_information = create_bank_information(offerer=offerer)
         repository.save(not_processable_payment, bank_information)
 
@@ -283,17 +261,18 @@ class FindNotProcessableWithBankInformationTest:
         assert not_processable_payment in payments_to_retry
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_not_return_payments_to_retry_if_bank_information_linked_to_offerer_and_current_status_is_not_not_processable(self, app):
+    def test_should_not_return_payments_to_retry_if_bank_information_linked_to_offerer_and_current_status_is_not_not_processable(
+        self, app
+    ):
         # Given
         offerer = create_offerer()
         user = create_user()
         venue = create_venue(offerer)
-        stock = create_stock_from_offer(
-            create_offer_with_thing_product(venue), price=0)
+        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
         booking = create_booking(user=user, stock=stock)
-        not_processable_payment = create_payment(booking, offerer, 10,
-                                                 status=TransactionStatus.NOT_PROCESSABLE,
-                                                 iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        not_processable_payment = create_payment(
+            booking, offerer, 10, status=TransactionStatus.NOT_PROCESSABLE, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+        )
         bank_information = create_bank_information(offerer=offerer)
         repository.save(not_processable_payment, bank_information)
         not_processable_payment.setStatus(TransactionStatus.SENT)
@@ -311,12 +290,11 @@ class FindNotProcessableWithBankInformationTest:
         offerer = create_offerer()
         user = create_user()
         venue = create_venue(offerer)
-        stock = create_stock_from_offer(
-            create_offer_with_thing_product(venue), price=0)
+        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
         booking = create_booking(user=user, stock=stock)
-        not_processable_payment = create_payment(booking, offerer, 10,
-                                                 status=TransactionStatus.NOT_PROCESSABLE,
-                                                 iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        not_processable_payment = create_payment(
+            booking, offerer, 10, status=TransactionStatus.NOT_PROCESSABLE, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+        )
         bank_information = create_bank_information(venue=venue, iban=None, bic=None, status=BankInformationStatus.DRAFT)
         repository.save(not_processable_payment, bank_information)
 
@@ -327,17 +305,18 @@ class FindNotProcessableWithBankInformationTest:
         assert payments_to_retry == []
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_payment_to_retry_if_bank_information_linked_to_venue_and_current_status_is_not_processable(self, app):
+    def test_should_return_payment_to_retry_if_bank_information_linked_to_venue_and_current_status_is_not_processable(
+        self, app
+    ):
         # Given
         offerer = create_offerer()
         user = create_user()
         venue = create_venue(offerer)
-        stock = create_stock_from_offer(
-            create_offer_with_thing_product(venue), price=0)
+        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
         booking = create_booking(user=user, stock=stock)
-        not_processable_payment = create_payment(booking, offerer, 10,
-                                                 status=TransactionStatus.NOT_PROCESSABLE,
-                                                 iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        not_processable_payment = create_payment(
+            booking, offerer, 10, status=TransactionStatus.NOT_PROCESSABLE, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+        )
         bank_information = create_bank_information(venue=venue)
         repository.save(not_processable_payment, bank_information)
 
@@ -368,7 +347,7 @@ class FindByBookingIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_nothing_when_no_payment_linked_to_booking(self, app):
         # Given
-        invalid_booking_id = '99999'
+        invalid_booking_id = "99999"
         beneficiary = create_user()
         create_deposit(beneficiary)
         offerer = create_offerer()
@@ -377,8 +356,7 @@ class FindByBookingIdTest:
         repository.save(valid_payment)
 
         # When
-        payment = payment_queries.find_by_booking_id(
-            booking_id=invalid_booking_id)
+        payment = payment_queries.find_by_booking_id(booking_id=invalid_booking_id)
 
         # Then
         assert payment is None

@@ -9,39 +9,24 @@ from pcapi.models.pc_object import PcObject
 
 
 class FavoriteSQLEntity(PcObject, Model):
-    __tablename__ = 'favorite'
+    __tablename__ = "favorite"
 
-    userId = Column(BigInteger,
-                    ForeignKey("user.id"),
-                    index=True,
-                    nullable=False)
+    userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
 
-    user = relationship('UserSQLEntity',
-                        foreign_keys=[userId],
-                        backref='favorites')
+    user = relationship("UserSQLEntity", foreign_keys=[userId], backref="favorites")
 
-    offerId = Column(BigInteger,
-                     ForeignKey("offer.id"),
-                     index=True,
-                     nullable=False)
+    offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer = relationship('Offer',
-                         foreign_keys=[offerId],
-                         backref='favorites')
+    offer = relationship("Offer", foreign_keys=[offerId], backref="favorites")
 
-    mediationId = Column(BigInteger,
-                         ForeignKey("mediation.id"),
-                         index=True,
-                         nullable=True)
+    mediationId = Column(BigInteger, ForeignKey("mediation.id"), index=True, nullable=True)
 
-    mediation = relationship('MediationSQLEntity',
-                             foreign_keys=[mediationId],
-                             backref='favorites')
+    mediation = relationship("MediationSQLEntity", foreign_keys=[mediationId], backref="favorites")
 
     __table_args__ = (
         UniqueConstraint(
-            'userId',
-            'offerId',
-            name='unique_favorite',
+            "userId",
+            "offerId",
+            name="unique_favorite",
         ),
     )

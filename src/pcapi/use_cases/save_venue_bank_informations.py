@@ -18,18 +18,18 @@ from pcapi.models.bank_information import BankInformationStatus
 
 
 class SaveVenueBankInformations:
-    def __init__(self,
-                 offerer_repository: OffererRepository,
-                 venue_repository: VenueWithBasicInformationRepository,
-                 bank_informations_repository: BankInformationsRepository
-                 ):
+    def __init__(
+        self,
+        offerer_repository: OffererRepository,
+        venue_repository: VenueWithBasicInformationRepository,
+        bank_informations_repository: BankInformationsRepository,
+    ):
         self.offerer_repository = offerer_repository
         self.venue_repository = venue_repository
         self.bank_informations_repository = bank_informations_repository
 
     def execute(self, application_id: str):
-        application_details = get_venue_bank_information_application_details_by_application_id(
-            application_id)
+        application_details = get_venue_bank_information_application_details_by_application_id(application_id)
 
         try:
             siren = application_details.siren
@@ -42,7 +42,8 @@ class SaveVenueBankInformations:
             return
 
         bank_information_by_application_id = self.bank_informations_repository.get_by_application(
-            application_details.application_id)
+            application_details.application_id
+        )
 
         if bank_information_by_application_id:
             check_new_bank_information_older_than_saved_one(bank_information_by_application_id, application_details)

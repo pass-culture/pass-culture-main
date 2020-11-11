@@ -10,14 +10,15 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '2b6541bb0076'
-down_revision = '747f6c0639b0'
+revision = "2b6541bb0076"
+down_revision = "747f6c0639b0"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.execute(f"""
+    op.execute(
+        f"""
         CREATE OR REPLACE FUNCTION get_active_offers_ids(with_mediation bool)
         RETURNS SETOF BIGINT AS
         $body$
@@ -41,9 +42,11 @@ def upgrade():
         END;
         $body$
         LANGUAGE plpgsql;
-        """)
+        """
+    )
 
-    op.execute("""
+    op.execute(
+        """
             CREATE OR REPLACE FUNCTION get_recommendable_offers_ordered_by_digital_offers()
             RETURNS TABLE (
                 criterion_score BIGINT,
@@ -94,10 +97,13 @@ def upgrade():
             END
             $body$
             LANGUAGE plpgsql;
-        """)
+        """
+    )
+
 
 def downgrade():
-    op.execute("""
+    op.execute(
+        """
             CREATE OR REPLACE FUNCTION get_recommendable_offers_ordered_by_digital_offers()
             RETURNS TABLE (
                 criterion_score BIGINT,
@@ -161,7 +167,8 @@ def downgrade():
             END
             $body$
             LANGUAGE plpgsql;
-        """)
+        """
+    )
 
     op.execute(
         """

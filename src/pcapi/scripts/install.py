@@ -1,4 +1,3 @@
-
 def install_scripts():
     from pcapi.core.bookings import models
     from pcapi.core.offers import models

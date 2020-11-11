@@ -15,21 +15,22 @@ from pcapi.scripts.iris.import_iris import read_iris_shape_file
 
 def test_read_iris_shape_file_should_read_shape_file_and_return_correct_data_in_wgs84_format():
     # given
-    file_path = Path(os.path.dirname(os.path.realpath('tests/files/geolocation_data/test_guyane/test_guyane.shp')))
+    file_path = Path(os.path.dirname(os.path.realpath("tests/files/geolocation_data/test_guyane/test_guyane.shp")))
 
     # when
     iris_df = read_iris_shape_file(file_path)
 
     # then
-    assert list(iris_df.columns) == ['CODE_IRIS', 'geometry']
+    assert list(iris_df.columns) == ["CODE_IRIS", "geometry"]
     assert iris_df.shape[0] == 1
-    assert iris_df.crs.name == 'WGS 84'
+    assert iris_df.crs.name == "WGS 84"
 
 
 def test_fill_iris_from_should_return_iris(app):
     # Given
-    iris_row = pandas.Series(data={'CODE_IRIS': '973020116',
-                                   'geometry': Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])})
+    iris_row = pandas.Series(
+        data={"CODE_IRIS": "973020116", "geometry": Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])}
+    )
 
     # When
     iris_france = fill_iris_from(iris_row)
@@ -41,7 +42,7 @@ def test_fill_iris_from_should_return_iris(app):
 @pytest.mark.usefixtures("db_session")
 def test_import_iris_shape_file_to_table_should_import_shape_from_file_and_write_on_iris_table(app):
     # Given
-    filepath = Path(os.path.dirname(os.path.realpath('tests/files/geolocation_data/test_guyane/test_guyane.shp')))
+    filepath = Path(os.path.dirname(os.path.realpath("tests/files/geolocation_data/test_guyane/test_guyane.shp")))
 
     # When
     import_iris_shape_file_to_table(filepath)

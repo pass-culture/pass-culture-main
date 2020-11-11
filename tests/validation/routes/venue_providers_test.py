@@ -19,12 +19,12 @@ class ValidateNewVenueProviderInformationTest:
         offerer = create_offerer()
         user = create_user()
         user_offerer = create_user_offerer(user, offerer, is_admin=True)
-        venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
+        venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         repository.save(provider, user_offerer, venue)
 
         payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
         }
 
         # when
@@ -37,7 +37,7 @@ class ValidateNewVenueProviderInformationTest:
     def test_raise_errors_if_venue_id_is_missing(self, app):
         # given
         payload = {
-            'providerId': 'A1',
+            "providerId": "A1",
         }
 
         # when
@@ -45,12 +45,12 @@ class ValidateNewVenueProviderInformationTest:
             check_new_venue_provider_information(payload)
 
         # then
-        assert errors.value.errors['venueId'] == ['Ce champ est obligatoire']
+        assert errors.value.errors["venueId"] == ["Ce champ est obligatoire"]
 
     def test_raise_errors_if_provider_id_is_missing(self):
         # given
         payload = {
-            'venueId': 'B2',
+            "venueId": "B2",
         }
 
         # when
@@ -58,7 +58,7 @@ class ValidateNewVenueProviderInformationTest:
             check_new_venue_provider_information(payload)
 
         # then
-        assert errors.value.errors['providerId'] == ['Ce champ est obligatoire']
+        assert errors.value.errors["providerId"] == ["Ce champ est obligatoire"]
 
     def test_raise_errors_if_json_payload_is_empty(self, app):
         # given
@@ -70,5 +70,5 @@ class ValidateNewVenueProviderInformationTest:
 
         # then
         assert len(errors.value.errors) == 2
-        assert errors.value.errors['providerId'] == ['Ce champ est obligatoire']
-        assert errors.value.errors['venueId'] == ['Ce champ est obligatoire']
+        assert errors.value.errors["providerId"] == ["Ce champ est obligatoire"]
+        assert errors.value.errors["venueId"] == ["Ce champ est obligatoire"]

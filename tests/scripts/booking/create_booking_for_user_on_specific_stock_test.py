@@ -19,7 +19,7 @@ from pcapi.scripts.booking.create_booking_for_user_on_specific_stock import (
 
 class CreateBookingForUserOnSpecificStockBypassingCappingLimitsTest:
     @pytest.mark.usefixtures("db_session")
-    @patch('pcapi.scripts.booking.create_booking_for_user_on_specific_stock.redis')
+    @patch("pcapi.scripts.booking.create_booking_for_user_on_specific_stock.redis")
     def should_book_an_offer_even_if_physical_offer_capping_is_exeeded(self, mocked_redis, app):
         # Given
         user = create_user()

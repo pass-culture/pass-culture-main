@@ -53,14 +53,14 @@ class GetOffererCountTest:
     @pytest.mark.usefixtures("db_session")
     def test_counts_every_offerer_when_not_filtered(self, app):
         # Given
-        first_user = create_user(email='first@example.net')
-        first_offerer = create_offerer(siren='111111111')
-        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_user = create_user(email="first@example.net")
+        first_offerer = create_offerer(siren="111111111")
+        first_venue = create_venue(first_offerer, postal_code="76130", siret="11111111100001")
         create_user_offerer(first_user, first_offerer)
 
-        second_user = create_user(email='second@example.net')
-        second_offerer = create_offerer(siren='222222222')
-        second_venue = create_venue(first_offerer, postal_code='37150', siret='22222222200002')
+        second_user = create_user(email="second@example.net")
+        second_offerer = create_offerer(siren="222222222")
+        second_venue = create_venue(first_offerer, postal_code="37150", siret="22222222200002")
         create_user_offerer(second_user, second_offerer)
         repository.save(first_offerer, first_venue, second_offerer, second_venue)
 
@@ -73,19 +73,19 @@ class GetOffererCountTest:
     @pytest.mark.usefixtures("db_session")
     def test_counts_offerer_in_departement_when_filtered(self, app):
         # Given
-        first_user = create_user(email='first@example.net')
-        first_offerer = create_offerer(siren='111111111')
-        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_user = create_user(email="first@example.net")
+        first_offerer = create_offerer(siren="111111111")
+        first_venue = create_venue(first_offerer, postal_code="76130", siret="11111111100001")
         create_user_offerer(first_user, first_offerer)
 
-        second_user = create_user(email='second@example.net')
-        second_offerer = create_offerer(siren='222222222')
-        second_venue = create_venue(first_offerer, postal_code='37150', siret='22222222200002')
+        second_user = create_user(email="second@example.net")
+        second_offerer = create_offerer(siren="222222222")
+        second_venue = create_venue(first_offerer, postal_code="37150", siret="22222222200002")
         create_user_offerer(second_user, second_offerer)
         repository.save(first_offerer, first_venue, second_offerer, second_venue)
 
         # When
-        number_of_offerers = get_offerer_count('37')
+        number_of_offerers = get_offerer_count("37")
 
         # Then
         assert number_of_offerers == 1
@@ -95,16 +95,16 @@ class GetOffererCountWithStockTest:
     @pytest.mark.usefixtures("db_session")
     def test_counts_every_offerer_when_not_filtered(self, app):
         # Given
-        first_user = create_user(email='first@example.net')
-        first_offerer = create_offerer(siren='111111111')
-        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_user = create_user(email="first@example.net")
+        first_offerer = create_offerer(siren="111111111")
+        first_venue = create_venue(first_offerer, postal_code="76130", siret="11111111100001")
         first_offer = create_offer_with_thing_product(first_venue)
         first_stock = create_stock(offer=first_offer)
         first_user_offerer = create_user_offerer(first_user, first_offerer)
 
-        second_user = create_user(email='second@example.net')
-        second_offerer = create_offerer(siren='222222222')
-        second_venue = create_venue(second_offerer, postal_code='37150', siret='22222222200002')
+        second_user = create_user(email="second@example.net")
+        second_offerer = create_offerer(siren="222222222")
+        second_venue = create_venue(second_offerer, postal_code="37150", siret="22222222200002")
         second_offer = create_offer_with_thing_product(second_venue)
         second_stock = create_stock(offer=second_offer)
         create_user_offerer(second_user, second_offerer)
@@ -120,16 +120,16 @@ class GetOffererCountWithStockTest:
     @pytest.mark.usefixtures("db_session")
     def test_counts_offerer_in_departement_when_filtered(self, app):
         # Given
-        first_user = create_user(email='first@example.net')
-        first_offerer = create_offerer(siren='111111111')
-        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_user = create_user(email="first@example.net")
+        first_offerer = create_offerer(siren="111111111")
+        first_venue = create_venue(first_offerer, postal_code="76130", siret="11111111100001")
         first_offer = create_offer_with_thing_product(first_venue)
         first_stock = create_stock(offer=first_offer)
         first_user_offerer = create_user_offerer(first_user, first_offerer)
 
-        second_user = create_user(email='second@example.net')
-        second_offerer = create_offerer(siren='222222222')
-        second_venue = create_venue(second_offerer, postal_code='37150', siret='22222222200002')
+        second_user = create_user(email="second@example.net")
+        second_offerer = create_offerer(siren="222222222")
+        second_venue = create_venue(second_offerer, postal_code="37150", siret="22222222200002")
         second_offer = create_offer_with_thing_product(second_venue)
         second_stock = create_stock(offer=second_offer)
         create_user_offerer(second_user, second_offerer)
@@ -137,7 +137,7 @@ class GetOffererCountWithStockTest:
         repository.save(first_offerer, first_venue, second_offerer, second_venue)
 
         # When
-        number_of_offerers = get_offerer_with_stock_count('37')
+        number_of_offerers = get_offerer_with_stock_count("37")
 
         # Then
         assert number_of_offerers == 1
@@ -145,7 +145,7 @@ class GetOffererCountWithStockTest:
 
 class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     @pytest.mark.usefixtures("db_session")
-    @patch('pcapi.repository.offer_queries._exclude_booked_and_favorite')
+    @patch("pcapi.repository.offer_queries._exclude_booked_and_favorite")
     def test_should_not_filter_for_favorites_and_bookings_when_no_user(self, exclude_booked_and_favorite, app):
         # When
         get_offerers_with_offer_available_on_discovery_count()
@@ -191,7 +191,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Given
         offerer = create_offerer()
         user = create_user()
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
@@ -208,7 +208,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Given
         offerer = create_offerer()
         user = create_user()
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
         repository.save(stock)
@@ -225,7 +225,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         yesterday = datetime.utcnow() - timedelta(days=1)
         offerer = create_offerer()
         user = create_user()
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
         offer = create_offer_with_event_product(venue)
         stock = create_stock(beginning_datetime=yesterday, offer=offer)
         repository.save(stock)
@@ -241,7 +241,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         # Given
         offerer = create_offerer(is_active=False)
         user = create_user()
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
         repository.save(stock)
@@ -255,9 +255,9 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_offerer_is_not_validated(self, app):
         # Given
-        offerer = create_offerer(validation_token='XDFCGHVJBKNL')
+        offerer = create_offerer(validation_token="XDFCGHVJBKNL")
         user = create_user()
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
         repository.save(stock)
@@ -271,10 +271,10 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_offerer_has_only_an_activation_offer(self, app):
         # Given
-        offerer = create_offerer(validation_token='XDFCGHVJBKNL')
+        offerer = create_offerer(validation_token="XDFCGHVJBKNL")
         user = create_user()
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
-        offer = create_offer_with_thing_product(venue, thing_type='ThingType.ACTIVATION')
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
+        offer = create_offer_with_thing_product(venue, thing_type="ThingType.ACTIVATION")
         stock = create_stock(offer=offer)
         repository.save(stock)
 
@@ -324,17 +324,17 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     @pytest.mark.usefixtures("db_session")
     def test_counts_only_offerers_with_venues_in_the_departement_when_filtered_by_departement_code(self, app):
         # Given
-        first_user = create_user(email='first@example.net')
-        first_offerer = create_offerer(siren='111111111')
-        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_user = create_user(email="first@example.net")
+        first_offerer = create_offerer(siren="111111111")
+        first_venue = create_venue(first_offerer, postal_code="76130", siret="11111111100001")
         first_offer = create_offer_with_thing_product(first_venue)
         first_stock = create_stock(offer=first_offer)
         first_user_offerer = create_user_offerer(first_user, first_offerer)
         mediation1 = create_mediation(first_offer)
 
-        second_user = create_user(email='second@example.net')
-        second_offerer = create_offerer(siren='222222222')
-        second_venue = create_venue(second_offerer, postal_code='37150', siret='22222222200002')
+        second_user = create_user(email="second@example.net")
+        second_offerer = create_offerer(siren="222222222")
+        second_venue = create_venue(second_offerer, postal_code="37150", siret="22222222200002")
         second_offer = create_offer_with_thing_product(second_venue)
         second_stock = create_stock(offer=second_offer)
         create_user_offerer(second_user, second_offerer)
@@ -343,7 +343,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         repository.save(first_offerer, first_venue, second_offerer, second_venue)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(departement_code='76')
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count(departement_code="76")
 
         # Then
         assert number_of_offerers == 1
@@ -352,11 +352,18 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     def test_should_count_offerer_with_virtual_offer_when_is_not_national(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None,
-                             postal_code=None,
-                             city=None, siret=None)
-        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
-                                                is_national=False)
+        venue = create_venue(
+            offerer=offerer,
+            is_virtual=True,
+            departement_code=None,
+            address=None,
+            postal_code=None,
+            city=None,
+            siret=None,
+        )
+        offer = create_offer_with_thing_product(
+            venue=venue, url="http://test.com", thing_type=ThingType.JEUX_VIDEO, is_national=False
+        )
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
@@ -371,11 +378,18 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
     def test_should_count_offerer_with_virtual_offer_when_is_national(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None,
-                             postal_code=None,
-                             city=None, siret=None)
-        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
-                                                is_national=True)
+        venue = create_venue(
+            offerer=offerer,
+            is_virtual=True,
+            departement_code=None,
+            address=None,
+            postal_code=None,
+            city=None,
+            siret=None,
+        )
+        offer = create_offer_with_thing_product(
+            venue=venue, url="http://test.com", thing_type=ThingType.JEUX_VIDEO, is_national=True
+        )
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
@@ -384,24 +398,26 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         number_of_offerers = get_offerers_with_offer_available_on_discovery_count(None)
 
         # Then
-        assert number_of_offerers == 1\
+        assert number_of_offerers == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_should_count_offerer_with_national_offer_from_another_departement(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, departement_code='34')
-        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
-                                                is_national=True)
+        venue = create_venue(offerer=offerer, departement_code="34")
+        offer = create_offer_with_thing_product(
+            venue=venue, url="http://test.com", thing_type=ThingType.JEUX_VIDEO, is_national=True
+        )
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count('93')
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count("93")
 
         # Then
         assert number_of_offerers == 1
+
 
 class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
     @pytest.mark.usefixtures("db_session")
@@ -441,7 +457,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
     def test_returns_0_if_only_offerer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
@@ -458,7 +474,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
     def test_returns_0_if_only_offerer_without_mediation(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
         repository.save(stock)
@@ -475,7 +491,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
         offerer = create_offerer()
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
         offer = create_offer_with_event_product(venue)
         stock = create_stock(beginning_datetime=yesterday, offer=offer)
         repository.save(stock)
@@ -491,7 +507,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
     def test_returns_0_if_offerer_not_active(self, app):
         # Given
         offerer = create_offerer(is_active=False)
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
         repository.save(stock)
@@ -506,8 +522,8 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_offerer_not_validated(self, app):
         # Given
-        offerer = create_offerer(validation_token='XDFCGHVJBKNL')
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        offerer = create_offerer(validation_token="XDFCGHVJBKNL")
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
         repository.save(stock)
@@ -522,8 +538,8 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_only_offerer_with_activation_offer(self, app):
         # Given
-        offerer = create_offerer(validation_token='XDFCGHVJBKNL')
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        offerer = create_offerer(validation_token="XDFCGHVJBKNL")
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
         offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         stock = create_stock(offer=offer)
         repository.save(stock)
@@ -575,26 +591,35 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
     @pytest.mark.usefixtures("db_session")
     def test_counts_only_offerers_with_venues_in_the_departement_when_filtered_by_departement_code(self, app):
         # Given
-        first_user = create_user(email='first@example.com')
-        first_offerer = create_offerer(siren='111111111')
-        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_user = create_user(email="first@example.com")
+        first_offerer = create_offerer(siren="111111111")
+        first_venue = create_venue(first_offerer, postal_code="76130", siret="11111111100001")
         first_offer = create_offer_with_thing_product(first_venue)
         first_stock = create_stock(offer=first_offer)
         mediation1 = create_mediation(first_offer)
 
-        second_user = create_user(email='second@example.com')
-        second_offerer = create_offerer(siren='222222222')
-        second_venue = create_venue(second_offerer, postal_code='37150', siret='22222222200002')
+        second_user = create_user(email="second@example.com")
+        second_offerer = create_offerer(siren="222222222")
+        second_venue = create_venue(second_offerer, postal_code="37150", siret="22222222200002")
         second_offer = create_offer_with_thing_product(second_venue)
         second_stock = create_stock(offer=second_offer)
         create_user_offerer(second_user, second_offerer)
         mediation2 = create_mediation(second_offer)
-        repository.save(first_offerer, first_venue, second_offerer, second_venue, first_stock, mediation1, second_stock, mediation1, mediation2)
+        repository.save(
+            first_offerer,
+            first_venue,
+            second_offerer,
+            second_venue,
+            first_stock,
+            mediation1,
+            second_stock,
+            mediation1,
+            mediation2,
+        )
         discovery_view_queries.refresh(concurrently=False)
 
-
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2(departement_code='76')
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2(departement_code="76")
 
         # Then
         assert number_of_offerers == 1
@@ -603,11 +628,18 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
     def test_should_not_return_offerer_with_only_virtual_offer_if_is_not_national(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None,
-                             postal_code=None,
-                             city=None, siret=None)
-        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
-                                                is_national=False)
+        venue = create_venue(
+            offerer=offerer,
+            is_virtual=True,
+            departement_code=None,
+            address=None,
+            postal_code=None,
+            city=None,
+            siret=None,
+        )
+        offer = create_offer_with_thing_product(
+            venue=venue, url="http://test.com", thing_type=ThingType.JEUX_VIDEO, is_national=False
+        )
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
@@ -623,11 +655,18 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
     def test_should_return_offerer_with_virtual_offer_if_is_national(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None,
-                             postal_code=None,
-                             city=None, siret=None)
-        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
-                                                is_national=True)
+        venue = create_venue(
+            offerer=offerer,
+            is_virtual=True,
+            departement_code=None,
+            address=None,
+            postal_code=None,
+            city=None,
+            siret=None,
+        )
+        offer = create_offer_with_thing_product(
+            venue=venue, url="http://test.com", thing_type=ThingType.JEUX_VIDEO, is_national=True
+        )
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
@@ -643,16 +682,17 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
     def test_should_count_offerer_with_national_offer_from_another_departement(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, departement_code='34')
-        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
-                                                is_national=True)
+        venue = create_venue(offerer=offerer, departement_code="34")
+        offer = create_offer_with_thing_product(
+            venue=venue, url="http://test.com", thing_type=ThingType.JEUX_VIDEO, is_national=True
+        )
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
         discovery_view_queries.refresh(concurrently=False)
 
         # When
-        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2('93')
+        number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2("93")
 
         # Then
         assert number_of_offerers == 1
@@ -677,7 +717,7 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_offer_with_unvalidated_offerer(self, app):
         # Given
-        offerer = create_offerer(validation_token='AZERTY')
+        offerer = create_offerer(validation_token="AZERTY")
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
@@ -708,7 +748,7 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
     def test_returns_0_when_only_offer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, validation_token='AZERTY')
+        venue = create_venue(offerer, validation_token="AZERTY")
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
         repository.save(stock)
@@ -770,8 +810,8 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
     def test_returns_1_when_two_offers_recommendable_for_search_but_only_one_in_department(self, app):
         # Given
         offerer = create_offerer()
-        venue1 = create_venue(offerer, postal_code='93000')
-        venue2 = create_venue(offerer, postal_code='34000', siret=offerer.siren + '98765')
+        venue1 = create_venue(offerer, postal_code="93000")
+        venue2 = create_venue(offerer, postal_code="34000", siret=offerer.siren + "98765")
         offer1 = create_offer_with_thing_product(venue1)
         offer2 = create_offer_with_thing_product(venue2)
         stock1 = create_stock(offer=offer1)
@@ -779,7 +819,7 @@ class GetOfferersWithOffersAvailableOnSearchCountTest:
         repository.save(stock1, stock2)
 
         # When
-        number_of_offers = get_offerers_with_offers_available_on_search_count('93')
+        number_of_offers = get_offerers_with_offers_available_on_search_count("93")
 
         # Then
         assert number_of_offers == 1
@@ -839,14 +879,14 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         # Given
         user = create_user()
 
-        first_offerer = create_offerer(siren='111111111')
-        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_offerer = create_offerer(siren="111111111")
+        first_venue = create_venue(first_offerer, postal_code="76130", siret="11111111100001")
         first_offer = create_offer_with_thing_product(first_venue)
         first_stock = create_stock(offer=first_offer, price=0)
         first_booking = create_booking(user=user, stock=first_stock)
 
-        second_offerer = create_offerer(siren='222222222')
-        second_venue = create_venue(second_offerer, postal_code='41571', siret='22222222200001')
+        second_offerer = create_offerer(siren="222222222")
+        second_venue = create_venue(second_offerer, postal_code="41571", siret="22222222200001")
         second_offer = create_offer_with_thing_product(second_venue)
         second_stock = create_stock(offer=second_offer, price=0)
         second_booking = create_booking(user=user, stock=second_stock)
@@ -854,7 +894,7 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         repository.save(first_booking, second_booking)
 
         # When
-        number_of_offerers = get_offerers_with_non_cancelled_bookings_count('41')
+        number_of_offerers = get_offerers_with_non_cancelled_bookings_count("41")
 
         # Then
         assert number_of_offerers == 1
@@ -881,8 +921,8 @@ class GetOfferersWithNonCancelledBookingsCountTest:
         # Given
         offerer1 = create_offerer()
         venue1 = create_venue(offerer1)
-        offerer2 = create_offerer(siren='987654321')
-        venue2 = create_venue(offerer2, siret='98765432112345')
+        offerer2 = create_offerer(siren="987654321")
+        venue2 = create_venue(offerer2, siret="98765432112345")
         offer1 = create_offer_with_thing_product(venue1, thing_type=ThingType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
@@ -953,7 +993,7 @@ class GetOffersWithUserOffererAndStockCountTest:
         # Given
         offerer = create_offerer()
         user1 = create_user()
-        user2 = create_user(email='other@email.com')
+        user2 = create_user(email="other@email.com")
         user_offerer1 = create_user_offerer(user1, offerer)
         user_offerer2 = create_user_offerer(user2, offerer)
         venue = create_venue(offerer)
@@ -988,24 +1028,24 @@ class GetOffersWithUserOffererAndStockCountTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_two_offerers_but_filtered_by_departement(self, app):
         # Given
-        first_user = create_user(email='user76@example.net')
-        first_offerer = create_offerer(siren='111111111')
+        first_user = create_user(email="user76@example.net")
+        first_offerer = create_offerer(siren="111111111")
         create_user_offerer(first_user, first_offerer)
-        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_venue = create_venue(first_offerer, postal_code="76130", siret="11111111100001")
         first_offer = create_offer_with_thing_product(first_venue)
         first_stock = create_stock(offer=first_offer, price=0)
 
         second_user = create_user()
-        second_offerer = create_offerer(siren='222222222')
+        second_offerer = create_offerer(siren="222222222")
         create_user_offerer(second_user, second_offerer)
-        second_venue = create_venue(second_offerer, postal_code='41571', siret='22222222200001')
+        second_venue = create_venue(second_offerer, postal_code="41571", siret="22222222200001")
         second_offer = create_offer_with_thing_product(second_venue)
         second_stock = create_stock(offer=second_offer, price=0)
 
         repository.save(first_stock, second_stock)
 
         # When
-        number_of_offers = get_offers_with_user_offerer_and_stock_count('76')
+        number_of_offers = get_offers_with_user_offerer_and_stock_count("76")
 
         # Then
         assert number_of_offers == 1
@@ -1021,8 +1061,9 @@ class GetOffersWithUserOffererAndStockCountTest:
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1)
-        stock2 = create_stock(beginning_datetime=tomorrow + timedelta(hours=1), booking_limit_datetime=tomorrow,
-                              offer=offer2)
+        stock2 = create_stock(
+            beginning_datetime=tomorrow + timedelta(hours=1), booking_limit_datetime=tomorrow, offer=offer2
+        )
         repository.save(stock1, stock2, user_offerer)
 
         # When
@@ -1071,7 +1112,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         # Given
         offerer = create_offerer()
         user = create_user()
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
@@ -1151,7 +1192,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_offerer_not_validated(self, app):
         # Given
-        offerer = create_offerer(validation_token='XDFCGHVJBKNL')
+        offerer = create_offerer(validation_token="XDFCGHVJBKNL")
         user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
@@ -1220,18 +1261,18 @@ class GetOffersAvailableOnDiscoveryCountTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_2_offers_returned_by_get_active_offers_but_only_one_in_departement(self, app):
         # Given
-        first_user = create_user(email='user76@example.net')
-        first_offerer = create_offerer(siren='111111111')
+        first_user = create_user(email="user76@example.net")
+        first_offerer = create_offerer(siren="111111111")
         create_user_offerer(first_user, first_offerer)
-        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_venue = create_venue(first_offerer, postal_code="76130", siret="11111111100001")
         first_offer = create_offer_with_thing_product(first_venue)
         first_mediation = create_mediation(first_offer)
         first_stock = create_stock(offer=first_offer, price=0)
 
-        second_user = create_user(email='user41@example.net')
-        second_offerer = create_offerer(siren='222222222')
+        second_user = create_user(email="user41@example.net")
+        second_offerer = create_offerer(siren="222222222")
         create_user_offerer(second_user, second_offerer)
-        second_venue = create_venue(second_offerer, postal_code='41571', siret='22222222200001')
+        second_venue = create_venue(second_offerer, postal_code="41571", siret="22222222200001")
         second_offer = create_offer_with_thing_product(second_venue)
         second_mediation = create_mediation(second_offer)
         second_stock = create_stock(offer=second_offer, price=0)
@@ -1239,13 +1280,13 @@ class GetOffersAvailableOnDiscoveryCountTest:
         repository.save(first_stock, second_stock)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count(departement_code='41')
+        number_of_offers = get_offers_available_on_discovery_count(departement_code="41")
 
         # Then
         assert number_of_offers == 1
 
     @pytest.mark.usefixtures("db_session")
-    @patch('pcapi.repository.offer_queries._exclude_booked_and_favorite')
+    @patch("pcapi.repository.offer_queries._exclude_booked_and_favorite")
     def test_should_not_filter_favorites_and_bookings_if_no_user(self, exclude_booked_and_favorite, app):
         # When
         get_offers_available_on_discovery_count()
@@ -1257,10 +1298,18 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_should_not_return_virtual_offer_if_is_not_national(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None, postal_code=None,
-                             city=None, siret=None)
-        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
-                                                is_national=False)
+        venue = create_venue(
+            offerer=offerer,
+            is_virtual=True,
+            departement_code=None,
+            address=None,
+            postal_code=None,
+            city=None,
+            siret=None,
+        )
+        offer = create_offer_with_thing_product(
+            venue=venue, url="http://test.com", thing_type=ThingType.JEUX_VIDEO, is_national=False
+        )
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
@@ -1274,10 +1323,18 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_should_return_virtual_offer_if_is_national(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None, postal_code=None,
-                             city=None, siret=None)
-        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
-                                                is_national=True)
+        venue = create_venue(
+            offerer=offerer,
+            is_virtual=True,
+            departement_code=None,
+            address=None,
+            postal_code=None,
+            city=None,
+            siret=None,
+        )
+        offer = create_offer_with_thing_product(
+            venue=venue, url="http://test.com", thing_type=ThingType.JEUX_VIDEO, is_national=True
+        )
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
@@ -1291,20 +1348,20 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_should_count_national_offer_from_another_departement(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, departement_code='34')
-        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
-                                                is_national=True)
+        venue = create_venue(offerer=offerer, departement_code="34")
+        offer = create_offer_with_thing_product(
+            venue=venue, url="http://test.com", thing_type=ThingType.JEUX_VIDEO, is_national=True
+        )
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
         discovery_view_queries.refresh(concurrently=False)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count('93')
+        number_of_offers = get_offers_available_on_discovery_count("93")
 
         # Then
         assert number_of_offers == 1
-
 
 
 class GetOffersAvailableOnDiscoveryCountV2Test:
@@ -1345,7 +1402,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
     def test_returns_0_if_only_offer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer, validation_token="XDFCGHVJBK")
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
@@ -1412,7 +1469,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_offer_s_offerer_is_not_validated(self, app):
         # Given
-        offerer = create_offerer(validation_token='XDFCGHVJBKNL')
+        offerer = create_offerer(validation_token="XDFCGHVJBKNL")
         user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
@@ -1485,18 +1542,18 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
     @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_2_offers_with_stock_and_mediation_but_only_one_in_departement(self, app):
         # Given
-        first_user = create_user(email='user76@example.net')
-        first_offerer = create_offerer(siren='111111111')
+        first_user = create_user(email="user76@example.net")
+        first_offerer = create_offerer(siren="111111111")
         create_user_offerer(first_user, first_offerer)
-        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_venue = create_venue(first_offerer, postal_code="76130", siret="11111111100001")
         first_offer = create_offer_with_thing_product(first_venue)
         first_mediation = create_mediation(first_offer)
         first_stock = create_stock(offer=first_offer, price=0)
 
-        second_user = create_user(email='user41@example.net')
-        second_offerer = create_offerer(siren='222222222')
+        second_user = create_user(email="user41@example.net")
+        second_offerer = create_offerer(siren="222222222")
         create_user_offerer(second_user, second_offerer)
-        second_venue = create_venue(second_offerer, postal_code='41571', siret='22222222200001')
+        second_venue = create_venue(second_offerer, postal_code="41571", siret="22222222200001")
         second_offer = create_offer_with_thing_product(second_venue)
         second_mediation = create_mediation(second_offer)
         second_stock = create_stock(offer=second_offer, price=0)
@@ -1505,7 +1562,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         discovery_view_queries.refresh(concurrently=False)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count_v2(departement_code='41')
+        number_of_offers = get_offers_available_on_discovery_count_v2(departement_code="41")
 
         # Then
         assert number_of_offers == 1
@@ -1514,10 +1571,18 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
     def test_should_not_return_virtual_offer_if_is_not_national(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None, postal_code=None,
-                             city=None, siret=None)
-        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
-                                                is_national=False)
+        venue = create_venue(
+            offerer=offerer,
+            is_virtual=True,
+            departement_code=None,
+            address=None,
+            postal_code=None,
+            city=None,
+            siret=None,
+        )
+        offer = create_offer_with_thing_product(
+            venue=venue, url="http://test.com", thing_type=ThingType.JEUX_VIDEO, is_national=False
+        )
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
@@ -1532,10 +1597,18 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
     def test_should_return_virtual_offer_if_is_national(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, is_virtual=True, departement_code=None, address=None, postal_code=None,
-                             city=None, siret=None)
-        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
-                                                is_national=True)
+        venue = create_venue(
+            offerer=offerer,
+            is_virtual=True,
+            departement_code=None,
+            address=None,
+            postal_code=None,
+            city=None,
+            siret=None,
+        )
+        offer = create_offer_with_thing_product(
+            venue=venue, url="http://test.com", thing_type=ThingType.JEUX_VIDEO, is_national=True
+        )
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
@@ -1546,21 +1619,21 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         # Then
         assert get_offers_available_on_discovery_count_v2(None) == 1
 
-
     @pytest.mark.usefixtures("db_session")
     def test_should_count_national_offer_from_another_departement(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, departement_code='34')
-        offer = create_offer_with_thing_product(venue=venue, url='http://test.com', thing_type=ThingType.JEUX_VIDEO,
-                                                is_national=True)
+        venue = create_venue(offerer=offerer, departement_code="34")
+        offer = create_offer_with_thing_product(
+            venue=venue, url="http://test.com", thing_type=ThingType.JEUX_VIDEO, is_national=True
+        )
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
         discovery_view_queries.refresh(concurrently=False)
 
         # When
-        number_of_offers = get_offers_available_on_discovery_count_v2('93')
+        number_of_offers = get_offers_available_on_discovery_count_v2("93")
 
         # Then
         assert number_of_offers == 1
@@ -1586,7 +1659,7 @@ class GetOffersAvailableOnSearchCountTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_only_offer_with_unvalidated_offerer(self, app):
         # Given
-        offerer = create_offerer(validation_token='AZERTY')
+        offerer = create_offerer(validation_token="AZERTY")
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
@@ -1617,7 +1690,7 @@ class GetOffersAvailableOnSearchCountTest:
     def test_returns_0_when_only_offer_with_unvalidated_venue(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, validation_token='AZERTY')
+        venue = create_venue(offerer, validation_token="AZERTY")
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer)
         repository.save(stock)
@@ -1663,8 +1736,8 @@ class GetOffersAvailableOnSearchCountTest:
     def test_returns_1_when_two_offers_recommendable_for_search_but_only_one_in_department(self, app):
         # Given
         offerer = create_offerer()
-        venue1 = create_venue(offerer, postal_code='93000')
-        venue2 = create_venue(offerer, postal_code='34000', siret=offerer.siren + '98765')
+        venue1 = create_venue(offerer, postal_code="93000")
+        venue2 = create_venue(offerer, postal_code="34000", siret=offerer.siren + "98765")
         offer1 = create_offer_with_thing_product(venue1)
         offer2 = create_offer_with_thing_product(venue2)
         stock1 = create_stock(offer=offer1)
@@ -1672,7 +1745,7 @@ class GetOffersAvailableOnSearchCountTest:
         repository.save(stock1, stock2)
 
         # When
-        number_of_offers = get_offers_available_on_search_count('93')
+        number_of_offers = get_offers_available_on_search_count("93")
 
         # Then
         assert number_of_offers == 1
@@ -1748,17 +1821,17 @@ class GetOffersWithNonCancelledBookingsCountTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_two_offerers_with_effective_bookings_but_only_one_in_departement(self, app):
         # Given
-        first_user = create_user(email='user76@example.net')
-        first_offerer = create_offerer(siren='111111111')
+        first_user = create_user(email="user76@example.net")
+        first_offerer = create_offerer(siren="111111111")
         create_user_offerer(first_user, first_offerer)
-        first_venue = create_venue(first_offerer, postal_code='76130', siret='11111111100001')
+        first_venue = create_venue(first_offerer, postal_code="76130", siret="11111111100001")
         first_offer = create_offer_with_thing_product(first_venue)
         first_stock = create_stock(offer=first_offer, price=0)
 
-        second_user = create_user(email='user41@example.net')
-        second_offerer = create_offerer(siren='222222222')
+        second_user = create_user(email="user41@example.net")
+        second_offerer = create_offerer(siren="222222222")
         create_user_offerer(second_user, second_offerer)
-        second_venue = create_venue(second_offerer, postal_code='41571', siret='22222222200001')
+        second_venue = create_venue(second_offerer, postal_code="41571", siret="22222222200001")
         second_offer = create_offer_with_thing_product(second_venue)
         second_stock = create_stock(offer=second_offer, price=0)
 
@@ -1769,7 +1842,7 @@ class GetOffersWithNonCancelledBookingsCountTest:
         repository.save(first_stock, second_stock, booking1, booking2)
 
         # When
-        number_of_offers = get_offers_with_non_cancelled_bookings_count('41')
+        number_of_offers = get_offers_with_non_cancelled_bookings_count("41")
 
         # Then
         assert number_of_offers == 1
@@ -1816,8 +1889,8 @@ class GetAllBookingsCount:
     @pytest.mark.usefixtures("db_session")
     def test_counts_all_bookings(self, app):
         # Given
-        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
-        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+        user_in_76 = create_user(departement_code="76", email="user-76@example.net")
+        user_in_41 = create_user(departement_code="41", email="user-41@example.net")
 
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -1837,8 +1910,8 @@ class GetAllBookingsCount:
     @pytest.mark.usefixtures("db_session")
     def test_counts_all_bookings(self, app):
         # Given
-        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
-        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+        user_in_76 = create_user(departement_code="76", email="user-76@example.net")
+        user_in_41 = create_user(departement_code="41", email="user-41@example.net")
 
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -1850,7 +1923,7 @@ class GetAllBookingsCount:
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = get_all_bookings_count('41')
+        number_of_bookings = get_all_bookings_count("41")
 
         # Then
         assert number_of_bookings == 1
@@ -1859,35 +1932,38 @@ class GetAllBookingsCount:
 class QueryGetOfferCountsByTypeAndMediumTest:
     @clean_database
     def test_returns_2_cinema_physical_1_musique_physical_and_1_musique_digital_when_offers_with_stock_and_two_user_offerers(
-            self, app):
+        self, app
+    ):
         # Given
         offerer = create_offerer()
         user1 = create_user()
-        user2 = create_user(email='e@mail.com')
+        user2 = create_user(email="e@mail.com")
         user_offerer1 = create_user_offerer(user1, offerer)
         user_offerer2 = create_user_offerer(user2, offerer)
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         physical_venue = create_venue(offerer, is_virtual=False)
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
-        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
-                                                                thing_type=ThingType.MUSIQUE)
+        offer_musique_digital = create_offer_with_thing_product(
+            virtual_venue, url="http://url.test", thing_type=ThingType.MUSIQUE
+        )
         offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
         stock_cinema1 = create_stock(offer=offer_cinema1)
         stock_cinema2 = create_stock(offer=offer_cinema2)
         stock_musique_digital = create_stock(offer=offer_musique_digital)
         stock_musique_physical = create_stock(offer=offer_musique_physical)
-        repository.save(stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical, user_offerer1,
-                        user_offerer2)
+        repository.save(
+            stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical, user_offerer1, user_offerer2
+        )
 
         # When
         offer_counts = query_get_offer_counts_grouped_by_type_and_medium().fetchall()
 
         # Then
         assert len(offer_counts) == 3
-        assert ('EventType.CINEMA', False, 2) in offer_counts
-        assert ('ThingType.MUSIQUE', False, 1) in offer_counts
-        assert ('ThingType.MUSIQUE', True, 1) in offer_counts
+        assert ("EventType.CINEMA", False, 2) in offer_counts
+        assert ("ThingType.MUSIQUE", False, 1) in offer_counts
+        assert ("ThingType.MUSIQUE", True, 1) in offer_counts
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_when_no_stock(self, app):
@@ -1899,8 +1975,9 @@ class QueryGetOfferCountsByTypeAndMediumTest:
         physical_venue = create_venue(offerer, is_virtual=False)
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
-        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
-                                                                thing_type=ThingType.MUSIQUE)
+        offer_musique_digital = create_offer_with_thing_product(
+            virtual_venue, url="http://url.test", thing_type=ThingType.MUSIQUE
+        )
         offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
         repository.save(offer_cinema1, offer_cinema2, offer_musique_digital, offer_musique_physical, user_offerer)
 
@@ -1918,8 +1995,9 @@ class QueryGetOfferCountsByTypeAndMediumTest:
         physical_venue = create_venue(offerer, is_virtual=False)
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
-        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
-                                                                thing_type=ThingType.MUSIQUE)
+        offer_musique_digital = create_offer_with_thing_product(
+            virtual_venue, url="http://url.test", thing_type=ThingType.MUSIQUE
+        )
         offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
         stock_cinema1 = create_stock(offer=offer_cinema1)
         stock_cinema2 = create_stock(offer=offer_cinema2)
@@ -1937,35 +2015,38 @@ class QueryGetOfferCountsByTypeAndMediumTest:
 class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
     @clean_database
     def test_returns_2_cinema_physical_1_musique_physical_and_1_musique_digital_when_offers_with_stock_and_user_offerer(
-            self, app):
+        self, app
+    ):
         # Given
         offerer = create_offerer()
         user1 = create_user()
-        user2 = create_user(email='em1@ail.com')
+        user2 = create_user(email="em1@ail.com")
         user_offerer1 = create_user_offerer(user1, offerer)
         user_offerer2 = create_user_offerer(user2, offerer)
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        physical_venue = create_venue(offerer, postal_code='33000')
+        physical_venue = create_venue(offerer, postal_code="33000")
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
-        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
-                                                                thing_type=ThingType.MUSIQUE)
+        offer_musique_digital = create_offer_with_thing_product(
+            virtual_venue, url="http://url.test", thing_type=ThingType.MUSIQUE
+        )
         offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
         stock_cinema1 = create_stock(offer=offer_cinema1)
         stock_cinema2 = create_stock(offer=offer_cinema2)
         stock_musique_digital = create_stock(offer=offer_musique_digital)
         stock_musique_physical = create_stock(offer=offer_musique_physical)
-        repository.save(stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical, user_offerer1,
-                        user_offerer2)
+        repository.save(
+            stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical, user_offerer1, user_offerer2
+        )
 
         # When
-        offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+        offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement("33").fetchall()
 
         # Then
         assert len(offer_counts) == 3
-        assert ('EventType.CINEMA', False, 2) in offer_counts
-        assert ('ThingType.MUSIQUE', False, 1) in offer_counts
-        assert ('ThingType.MUSIQUE', True, 1) in offer_counts
+        assert ("EventType.CINEMA", False, 2) in offer_counts
+        assert ("ThingType.MUSIQUE", False, 1) in offer_counts
+        assert ("ThingType.MUSIQUE", True, 1) in offer_counts
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_when_no_stock(self, app):
@@ -1974,12 +2055,13 @@ class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
         user = create_user()
         user_offerer = create_user_offerer(user, offerer)
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
-                                                                thing_type=ThingType.MUSIQUE)
+        offer_musique_digital = create_offer_with_thing_product(
+            virtual_venue, url="http://url.test", thing_type=ThingType.MUSIQUE
+        )
         repository.save(offer_musique_digital, user_offerer)
 
         # When
-        offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+        offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement("33").fetchall()
 
         # Then
         assert offer_counts == []
@@ -1989,13 +2071,14 @@ class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
         # Given
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
-                                                                thing_type=ThingType.MUSIQUE)
+        offer_musique_digital = create_offer_with_thing_product(
+            virtual_venue, url="http://url.test", thing_type=ThingType.MUSIQUE
+        )
         stock_musique_digital = create_stock(offer=offer_musique_digital)
         repository.save(stock_musique_digital)
 
         # When
-        offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+        offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement("33").fetchall()
 
         # Then
         assert offer_counts == []
@@ -2006,7 +2089,7 @@ class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
         offerer = create_offerer()
         user = create_user()
         user_offerer = create_user_offerer(user, offerer)
-        physical_venue = create_venue(offerer, postal_code='75001')
+        physical_venue = create_venue(offerer, postal_code="75001")
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
@@ -2016,7 +2099,7 @@ class QueryGetOfferCountsPerTypeAndMediumForDepartementTest:
         repository.save(stock_cinema1, stock_cinema2, stock_musique_physical, user_offerer)
 
         # When
-        offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+        offer_counts = query_get_offer_counts_grouped_by_type_and_medium_for_departement("33").fetchall()
 
         # Then
         assert offer_counts == []
@@ -2026,7 +2109,7 @@ class GetOffersByTypeAndDigitalTableTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_table_with_columns_type_and_digital_ordered_by_type_then_digital(self, app):
         # Given
-        expected_dataframe = pandas.read_csv('tests/scripts/dashboard/offers_by_type_and_digital.csv')
+        expected_dataframe = pandas.read_csv("tests/scripts/dashboard/offers_by_type_and_digital.csv")
 
         # When
         type_and_digital_dataframe = _get_offers_grouped_by_type_and_medium()
@@ -2046,8 +2129,9 @@ class GetCountsByTypeAndDigitalCountsTest:
         physical_venue = create_venue(offerer, is_virtual=False)
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
-        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
-                                                                thing_type=ThingType.MUSIQUE)
+        offer_musique_digital = create_offer_with_thing_product(
+            virtual_venue, url="http://url.test", thing_type=ThingType.MUSIQUE
+        )
         offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
         stock_cinema1 = create_stock(offer=offer_cinema1)
         stock_cinema2 = create_stock(offer=offer_cinema2)
@@ -2055,12 +2139,12 @@ class GetCountsByTypeAndDigitalCountsTest:
         stock_musique_physical = create_stock(offer=offer_musique_physical)
         repository.save(stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical, user_offerer)
 
-        expected_dataframe = pandas.read_csv('tests/scripts/dashboard/offers_by_type_and_digital_counts.csv')
+        expected_dataframe = pandas.read_csv("tests/scripts/dashboard/offers_by_type_and_digital_counts.csv")
 
         # When
         offers_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
-            query_get_offer_counts_grouped_by_type_and_medium,
-            'Nombre d\'offres')
+            query_get_offer_counts_grouped_by_type_and_medium, "Nombre d'offres"
+        )
 
         # Then
         assert offers_by_type_and_digital_counts.eq(expected_dataframe).all().all()
@@ -2070,14 +2154,15 @@ class GetCountsByTypeAndDigitalCountsTest:
         # Given
         offerer = create_offerer()
         user = create_user()
-        user_booking = create_user(email='booking@test.com')
+        user_booking = create_user(email="booking@test.com")
         user_offerer = create_user_offerer(user, offerer)
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         physical_venue = create_venue(offerer, is_virtual=False)
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
-        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
-                                                                thing_type=ThingType.MUSIQUE)
+        offer_musique_digital = create_offer_with_thing_product(
+            virtual_venue, url="http://url.test", thing_type=ThingType.MUSIQUE
+        )
         offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
         stock_cinema1 = create_stock(offer=offer_cinema1, price=0)
         stock_cinema2 = create_stock(offer=offer_cinema2, price=0)
@@ -2086,14 +2171,21 @@ class GetCountsByTypeAndDigitalCountsTest:
         booking_musique_physical1 = create_booking(user=user_booking, stock=stock_musique_physical)
         booking_musique_physical2 = create_booking(user=user_booking, stock=stock_musique_physical, quantity=2)
         booking_musique_digital = create_booking(user=user_booking, stock=stock_musique_digital)
-        repository.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
-                        booking_musique_digital, user_offerer)
+        repository.save(
+            stock_cinema1,
+            stock_cinema2,
+            booking_musique_physical1,
+            booking_musique_physical2,
+            booking_musique_digital,
+            user_offerer,
+        )
 
-        expected_dataframe = pandas.read_csv('tests/scripts/dashboard/bookings_by_type_and_medium_counts.csv')
+        expected_dataframe = pandas.read_csv("tests/scripts/dashboard/bookings_by_type_and_medium_counts.csv")
 
         # When
         bookings_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
-            query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
+            query_get_booking_counts_grouped_by_type_and_medium, "Nombre de réservations"
+        )
 
         # Then
         assert bookings_by_type_and_digital_counts.equals(expected_dataframe)
@@ -2103,14 +2195,14 @@ class GetCountsByTypeAndDigitalCountsTest:
         # Given
         offerer = create_offerer()
         user = create_user()
-        user_booking = create_user(email='booking@test.com')
+        user_booking = create_user(email="booking@test.com")
         user_offerer = create_user_offerer(user, offerer)
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         physical_venue = create_venue(offerer, is_virtual=False)
-        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
-                                                                thing_type="pizza")
-        offer_pizza_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
-                                                              thing_type="lili's")
+        offer_musique_digital = create_offer_with_thing_product(
+            virtual_venue, url="http://url.test", thing_type="pizza"
+        )
+        offer_pizza_digital = create_offer_with_thing_product(virtual_venue, url="http://url.test", thing_type="lili's")
         offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type="sport")
         stock_pizza_digital = create_stock(offer=offer_pizza_digital, price=0)
         stock_musique_digital = create_stock(offer=offer_musique_digital, price=0)
@@ -2119,15 +2211,22 @@ class GetCountsByTypeAndDigitalCountsTest:
         booking_musique_physical1 = create_booking(user=user_booking, stock=stock_musique_physical)
         booking_musique_physical2 = create_booking(user=user_booking, stock=stock_musique_physical, quantity=2)
         booking_musique_digital = create_booking(user=user_booking, stock=stock_musique_digital)
-        repository.save(booking_pizza_digital, booking_musique_physical1, booking_musique_physical2,
-                        booking_musique_digital, user_offerer)
+        repository.save(
+            booking_pizza_digital,
+            booking_musique_physical1,
+            booking_musique_physical2,
+            booking_musique_digital,
+            user_offerer,
+        )
 
         expected_dataframe = pandas.read_csv(
-            'tests/scripts/dashboard/bookings_by_type_and_medium_counts_with_non_standard_offer_types.csv')
+            "tests/scripts/dashboard/bookings_by_type_and_medium_counts_with_non_standard_offer_types.csv"
+        )
 
         # When
         bookings_by_type_and_digital_counts = get_offer_counts_grouped_by_type_and_medium(
-            query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
+            query_get_booking_counts_grouped_by_type_and_medium, "Nombre de réservations"
+        )
 
         # Then
         assert bookings_by_type_and_digital_counts.equals(expected_dataframe)
@@ -2135,17 +2234,17 @@ class GetCountsByTypeAndDigitalCountsTest:
 
 class QueryGetBookingCountsPerTypeAndDigitalTest:
     @clean_database
-    def test_returns_3_musique_physical_1_musique_digital(
-            self, app):
+    def test_returns_3_musique_physical_1_musique_digital(self, app):
         # Given
         offerer = create_offerer()
-        user = create_user(email='booking@test.com')
+        user = create_user(email="booking@test.com")
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         physical_venue = create_venue(offerer, is_virtual=False)
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
-        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
-                                                                thing_type=ThingType.MUSIQUE)
+        offer_musique_digital = create_offer_with_thing_product(
+            virtual_venue, url="http://url.test", thing_type=ThingType.MUSIQUE
+        )
         offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
         stock_cinema1 = create_stock(offer=offer_cinema1, price=0)
         stock_cinema2 = create_stock(offer=offer_cinema2, price=0)
@@ -2154,23 +2253,24 @@ class QueryGetBookingCountsPerTypeAndDigitalTest:
         booking_musique_physical1 = create_booking(user=user, stock=stock_musique_physical, quantity=2)
         booking_musique_physical2 = create_booking(user=user, stock=stock_musique_physical, quantity=2)
         booking_musique_digital = create_booking(user=user, stock=stock_musique_digital)
-        repository.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
-                        booking_musique_digital)
+        repository.save(
+            stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2, booking_musique_digital
+        )
 
         # When
         booking_counts = query_get_booking_counts_grouped_by_type_and_medium().fetchall()
 
         # Then
         assert len(booking_counts) == 2
-        assert ('ThingType.MUSIQUE', False, 4) in booking_counts
-        assert ('ThingType.MUSIQUE', True, 1) in booking_counts
+        assert ("ThingType.MUSIQUE", False, 4) in booking_counts
+        assert ("ThingType.MUSIQUE", True, 1) in booking_counts
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_when_cancelled_booking(self, app):
         # Given
         offerer = create_offerer()
         user = create_user()
-        user_booking = create_user(email='booking@test.com')
+        user_booking = create_user(email="booking@test.com")
         physical_venue = create_venue(offerer, is_virtual=False)
         offer = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         stock = create_stock(offer=offer, price=0)
@@ -2186,17 +2286,17 @@ class QueryGetBookingCountsPerTypeAndDigitalTest:
 
 class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
     @clean_database
-    def test_returns_3_musique_physical_1_musique_digital(
-            self, app):
+    def test_returns_3_musique_physical_1_musique_digital(self, app):
         # Given
         offerer = create_offerer()
-        user = create_user(departement_code='33', email='booking@test.com')
+        user = create_user(departement_code="33", email="booking@test.com")
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        physical_venue = create_venue(offerer, postal_code='32000')
+        physical_venue = create_venue(offerer, postal_code="32000")
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
-        offer_musique_digital = create_offer_with_thing_product(virtual_venue, url='http://url.test',
-                                                                thing_type=ThingType.MUSIQUE)
+        offer_musique_digital = create_offer_with_thing_product(
+            virtual_venue, url="http://url.test", thing_type=ThingType.MUSIQUE
+        )
         offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
         stock_cinema1 = create_stock(offer=offer_cinema1, price=0)
         stock_cinema2 = create_stock(offer=offer_cinema2, price=0)
@@ -2205,30 +2305,31 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
         booking_musique_physical1 = create_booking(user=user, stock=stock_musique_physical, quantity=2)
         booking_musique_physical2 = create_booking(user=user, stock=stock_musique_physical, quantity=2)
         booking_musique_digital = create_booking(user=user, stock=stock_musique_digital)
-        repository.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
-                        booking_musique_digital)
+        repository.save(
+            stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2, booking_musique_digital
+        )
 
         # When
-        booking_counts = query_get_booking_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+        booking_counts = query_get_booking_counts_grouped_by_type_and_medium_for_departement("33").fetchall()
 
         # Then
         assert len(booking_counts) == 2
-        assert ('ThingType.MUSIQUE', False, 4) in booking_counts
-        assert ('ThingType.MUSIQUE', True, 1) in booking_counts
+        assert ("ThingType.MUSIQUE", False, 4) in booking_counts
+        assert ("ThingType.MUSIQUE", True, 1) in booking_counts
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_when_cancelled_booking(self, app):
         # Given
         offerer = create_offerer()
-        user = create_user(departement_code='33', email='booking@test.com')
-        physical_venue = create_venue(offerer, postal_code='32000')
+        user = create_user(departement_code="33", email="booking@test.com")
+        physical_venue = create_venue(offerer, postal_code="32000")
         offer = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         stock = create_stock(offer=offer, price=0)
         cancelled_booking = create_booking(user=user, stock=stock, is_cancelled=True)
         repository.save(offer, cancelled_booking)
 
         # When
-        booking_counts = query_get_booking_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+        booking_counts = query_get_booking_counts_grouped_by_type_and_medium_for_departement("33").fetchall()
 
         # Then
         assert booking_counts == []
@@ -2237,8 +2338,8 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
     def test_returns_nothing_when_no_booking_user_in_requested_departement(self, app):
         # Given
         offerer = create_offerer()
-        user = create_user(departement_code='75', email='booking@test.com')
-        physical_venue = create_venue(offerer, postal_code='33000')
+        user = create_user(departement_code="75", email="booking@test.com")
+        physical_venue = create_venue(offerer, postal_code="33000")
         offer_cinema1 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_cinema2 = create_offer_with_event_product(physical_venue, event_type=EventType.CINEMA)
         offer_musique_physical = create_offer_with_thing_product(physical_venue, thing_type=ThingType.MUSIQUE)
@@ -2250,7 +2351,7 @@ class QueryGetBookingCountsPerTypeAndMediumForDepartementTest:
         repository.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2)
 
         # When
-        booking_counts = query_get_booking_counts_grouped_by_type_and_medium_for_departement('33').fetchall()
+        booking_counts = query_get_booking_counts_grouped_by_type_and_medium_for_departement("33").fetchall()
 
         # Then
         assert booking_counts == []
@@ -2260,8 +2361,8 @@ class CountAllCancelledBookingsTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_2_when_not_filtered(self, app):
         # Given
-        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
-        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+        user_in_76 = create_user(departement_code="76", email="user-76@example.net")
+        user_in_41 = create_user(departement_code="41", email="user-41@example.net")
 
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -2282,8 +2383,8 @@ class CountAllCancelledBookingsTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_filtered_on_user_departement(self, app):
         # Given
-        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
-        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+        user_in_76 = create_user(departement_code="76", email="user-76@example.net")
+        user_in_41 = create_user(departement_code="41", email="user-41@example.net")
 
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -2296,7 +2397,7 @@ class CountAllCancelledBookingsTest:
         repository.save(booking1, booking2, booking3)
 
         # When
-        number_of_bookings = count_all_cancelled_bookings('41')
+        number_of_bookings = count_all_cancelled_bookings("41")
 
         # Then
         assert number_of_bookings == 1
@@ -2310,12 +2411,12 @@ class GetAllUsedOrFinishedBookingsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        user = create_user(departement_code='76')
+        user = create_user(departement_code="76")
         booking = create_booking(user=user, stock=stock, is_used=True)
         repository.save(booking)
 
         # When
-        number_of_bookings = get_all_used_or_finished_bookings('76')
+        number_of_bookings = get_all_used_or_finished_bookings("76")
 
         # Then
         assert number_of_bookings == 1
@@ -2327,12 +2428,12 @@ class GetAllUsedOrFinishedBookingsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        user = create_user(departement_code='54')
+        user = create_user(departement_code="54")
         booking = create_booking(user=user, stock=stock, is_used=True)
         repository.save(booking)
 
         # When
-        number_of_bookings = get_all_used_or_finished_bookings('76')
+        number_of_bookings = get_all_used_or_finished_bookings("76")
 
         # Then
         assert number_of_bookings == 0
@@ -2344,12 +2445,12 @@ class GetAllUsedOrFinishedBookingsTest:
         venue = create_venue(offerer)
         thing_offer = create_offer_with_thing_product(venue)
         thing_stock = create_stock(offer=thing_offer, price=0)
-        user = create_user(departement_code='76')
+        user = create_user(departement_code="76")
         thing_booking = create_booking(user=user, stock=thing_stock, is_used=False)
         repository.save(thing_booking)
 
         # When
-        number_of_bookings = get_all_used_or_finished_bookings('76')
+        number_of_bookings = get_all_used_or_finished_bookings("76")
 
         # Then
         assert number_of_bookings == 0
@@ -2362,8 +2463,8 @@ class GetAllUsedOrFinishedBookingsTest:
         event_offer = create_offer_with_event_product(venue)
         event_stock = create_stock(offer=event_offer, price=0)
 
-        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
-        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+        user_in_76 = create_user(departement_code="76", email="user-76@example.net")
+        user_in_41 = create_user(departement_code="41", email="user-41@example.net")
 
         booking1 = create_booking(user=user_in_76, stock=event_stock, is_used=True)
         booking2 = create_booking(user=user_in_41, stock=event_stock, is_used=True)
@@ -2371,7 +2472,7 @@ class GetAllUsedOrFinishedBookingsTest:
         repository.save(booking1, booking2, booking3)
 
         # When
-        number_of_bookings = get_all_used_or_finished_bookings('41')
+        number_of_bookings = get_all_used_or_finished_bookings("41")
 
         # Then
         assert number_of_bookings == 2
@@ -2386,14 +2487,14 @@ class GetAllUsedOrFinishedBookingsTest:
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
 
-        user = create_user(departement_code='41', email='user-41@example.net')
+        user = create_user(departement_code="41", email="user-41@example.net")
 
         booking1 = create_booking(user=user, stock=stock1, is_used=True)
         booking2 = create_booking(user=user, stock=stock2, is_used=True)
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = get_all_used_or_finished_bookings('41')
+        number_of_bookings = get_all_used_or_finished_bookings("41")
 
         # Then
         assert number_of_bookings == 0
@@ -2406,8 +2507,8 @@ class GetAllUsedOrFinishedBookingsTest:
         event_offer = create_offer_with_event_product(venue)
         event_stock = create_stock(offer=event_offer, price=0)
 
-        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
-        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+        user_in_76 = create_user(departement_code="76", email="user-76@example.net")
+        user_in_41 = create_user(departement_code="41", email="user-41@example.net")
 
         booking1 = create_booking(user=user_in_76, stock=event_stock, is_used=True)
         booking2 = create_booking(user=user_in_41, stock=event_stock, is_used=True)

@@ -8,10 +8,10 @@ from pcapi.validation.models.user import validate
 
 
 class UserAlreadyExistsTest:
-    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
-    def test_should_return_error_when_email_already_exist_in_database_but_no_id_is_provided(self,
-                                                                                            mocked_count_users_by_email,
-                                                                                            app):
+    @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
+    def test_should_return_error_when_email_already_exist_in_database_but_no_id_is_provided(
+        self, mocked_count_users_by_email, app
+    ):
         # Given
         user = create_user(idx=None)
         mocked_count_users_by_email.return_value = 1
@@ -21,12 +21,12 @@ class UserAlreadyExistsTest:
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors['email'] == ['Un compte lié à cet e-mail existe déjà']
+        assert api_error.errors["email"] == ["Un compte lié à cet e-mail existe déjà"]
 
-    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
-    def test_should_not_return_error_when_email_already_exist_in_database_but_id_is_provided(self,
-                                                                                             mocked_count_users_by_email,
-                                                                                             app):
+    @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
+    def test_should_not_return_error_when_email_already_exist_in_database_but_id_is_provided(
+        self, mocked_count_users_by_email, app
+    ):
         # Given
         user = create_user(idx=1)
         mocked_count_users_by_email.return_value = 1
@@ -38,26 +38,28 @@ class UserAlreadyExistsTest:
         # Then
         assert api_error.errors == {}
 
-    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
-    def test_should_return_error_when_user_count_raise_error_and_no_id_is_provided(self, mocked_count_users_by_email,
-                                                                                   app):
+    @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
+    def test_should_return_error_when_user_count_raise_error_and_no_id_is_provided(
+        self, mocked_count_users_by_email, app
+    ):
         # Given
         user = create_user(idx=None)
-        mocked_count_users_by_email.side_effect = IntegrityError('Mock', 'mock', 'mock')
+        mocked_count_users_by_email.side_effect = IntegrityError("Mock", "mock", "mock")
         api_errors = ApiErrors()
 
         # When
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors['email'] == ['Un compte lié à cet e-mail existe déjà']
+        assert api_error.errors["email"] == ["Un compte lié à cet e-mail existe déjà"]
 
-    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
-    def test_should_not_return_error_when_user_count_raise_error_and_id_is_provided(self, mocked_count_users_by_email,
-                                                                                    app):
+    @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
+    def test_should_not_return_error_when_user_count_raise_error_and_id_is_provided(
+        self, mocked_count_users_by_email, app
+    ):
         # Given
         user = create_user(idx=1)
-        mocked_count_users_by_email.return_value = IntegrityError('mock', 'mock', 'mock')
+        mocked_count_users_by_email.return_value = IntegrityError("mock", "mock", "mock")
         api_errors = ApiErrors()
 
         # When
@@ -70,30 +72,30 @@ class UserAlreadyExistsTest:
 class PublicNameTest:
     def test_should_return_error_message_when_user_public_name_is_less_than_3_characters(self, app):
         # Given
-        user = create_user(public_name='Jo')
+        user = create_user(public_name="Jo")
         api_errors = ApiErrors()
 
         # When
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors['publicName'] == ['Tu dois saisir au moins 3 caractères.']
+        assert api_error.errors["publicName"] == ["Tu dois saisir au moins 3 caractères."]
 
     def test_should_return_error_message_when_user_public_name_is_empty(self, app):
         # Given
-        user = create_user(public_name='')
+        user = create_user(public_name="")
         api_errors = ApiErrors()
 
         # When
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors['publicName'] == ['Tu dois saisir au moins 3 caractères.']
+        assert api_error.errors["publicName"] == ["Tu dois saisir au moins 3 caractères."]
 
-    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
+    @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
     def test_should_not_return_error_message_when_user_public_name_is_correct(self, mocked_count_users_by_email, app):
         # Given
-        user = create_user(public_name='Joel')
+        user = create_user(public_name="Joel")
         mocked_count_users_by_email.return_value = 0
         api_errors = ApiErrors()
 
@@ -107,19 +109,19 @@ class PublicNameTest:
 class EmailTest:
     def test_should_return_error_message_when_email_does_not_contain_at_sign(self, app):
         # Given
-        user = create_user(email='joel.example.com')
+        user = create_user(email="joel.example.com")
         api_errors = ApiErrors()
 
         # When
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors['email'] == ['L’e-mail doit contenir un @.']
+        assert api_error.errors["email"] == ["L’e-mail doit contenir un @."]
 
-    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
+    @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
     def test_should_not_return_error_message_when_user_email_is_correct(self, mocked_count_users_by_email, app):
         # Given
-        user = create_user(email='joel@example.com')
+        user = create_user(email="joel@example.com")
         mocked_count_users_by_email.return_value = 0
         api_errors = ApiErrors()
 
@@ -140,25 +142,25 @@ class AdminTest:
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors['canBookFreeOffers'] == ['Admin ne peut pas réserver']
+        assert api_error.errors["canBookFreeOffers"] == ["Admin ne peut pas réserver"]
 
 
 class PasswordTest:
     def test_should_return_error_message_when_user_password_is_less_than_8_characters(self, app):
         # Given
-        user = create_user(password='Jo')
+        user = create_user(password="Jo")
         api_errors = ApiErrors()
 
         # When
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors['password'] == ['Tu dois saisir au moins 8 caractères.']
+        assert api_error.errors["password"] == ["Tu dois saisir au moins 8 caractères."]
 
-    @patch('pcapi.validation.models.user.user_queries.count_users_by_email')
+    @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
     def test_should_not_return_error_message_when_user_password_is_correct(self, mocked_count_users_by_email, app):
         # Given
-        user = create_user(password='JoelDupont')
+        user = create_user(password="JoelDupont")
         mocked_count_users_by_email.return_value = 0
         api_errors = ApiErrors()
 

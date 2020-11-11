@@ -19,15 +19,15 @@ from pcapi.utils.object_storage import local_path
 from pcapi.utils.rest import ensure_current_user_has_rights
 
 
-print('LOCAL DEV MODE: Using disk based object storage')
+print("LOCAL DEV MODE: Using disk based object storage")
 
 GENERIC_STORAGE_MODEL_NAMES = [
-    'Mediation',
-    'User',
+    "Mediation",
+    "User",
 ]
 
 
-@public_api.route('/storage/<bucketId>/<path:objectId>')
+@public_api.route("/storage/<bucketId>/<path:objectId>")
 def send_storage_file(bucketId, objectId):
     path = local_path(bucketId, objectId)
     type_path = str(path) + ".type"
@@ -38,21 +38,21 @@ def send_storage_file(bucketId, objectId):
     return send_file(open(path, "rb"), mimetype=mimetype)
 
 
-@private_api.route('/storage/thumb/<collectionName>/<id>/<index>', methods=['POST'])
+@private_api.route("/storage/thumb/<collectionName>/<id>/<index>", methods=["POST"])
 @login_required
 def post_storage_file(collectionName, id, index):
     model_name = inflect_engine.singular_noun(collectionName.title(), 1)
 
     if model_name not in GENERIC_STORAGE_MODEL_NAMES:
-        return jsonify({'text': 'upload is not authorized for this model'}), 400
+        return jsonify({"text": "upload is not authorized for this model"}), 400
 
-    model = getattr(pcapi.models, model_name + 'SQLEntity')
+    model = getattr(pcapi.models, model_name + "SQLEntity")
     entity = model.query.filter_by(id=dehumanize(id)).first_or_404()
 
-    if model_name == 'Mediation':
+    if model_name == "Mediation":
         offerer_id = entity.offer.venue.managingOffererId
         ensure_current_user_has_rights(RightsType.editor, offerer_id)
 
-    entity = create_thumb(entity, request.files['file'].read(), int(index))
+    entity = create_thumb(entity, request.files["file"].read(), int(index))
     repository.save(entity)
     return jsonify(as_dict(entity)), 200

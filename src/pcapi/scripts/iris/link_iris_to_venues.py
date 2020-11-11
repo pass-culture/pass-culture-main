@@ -14,11 +14,12 @@ def link_irises_to_existing_physical_venues(search_radius: int):
 
 
 def _find_all_venue_ids_to_link() -> List[int]:
-    venues = VenueSQLEntity.query \
-        .join(Offerer) \
-        .filter(VenueSQLEntity.isVirtual == False) \
-        .filter(VenueSQLEntity.validationToken == None) \
-        .filter(Offerer.validationToken == None) \
-        .with_entities(VenueSQLEntity.id) \
+    venues = (
+        VenueSQLEntity.query.join(Offerer)
+        .filter(VenueSQLEntity.isVirtual == False)
+        .filter(VenueSQLEntity.validationToken == None)
+        .filter(Offerer.validationToken == None)
+        .with_entities(VenueSQLEntity.id)
         .all()
+    )
     return [venue.id for venue in venues]

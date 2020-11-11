@@ -11,9 +11,9 @@ from pcapi.scripts.override_venue_siret_for_allocine_synchronization import (
 @pytest.mark.usefixtures("db_session")
 def test_should_change_venue_siret_information_for_allocine_synchronization(app):
     # given
-    old_siret = '1234567891234'
-    new_siret = '5432198765432'
-    theater_id = 'XXXXXXXXXXXXXXXXXX=='
+    old_siret = "1234567891234"
+    new_siret = "5432198765432"
+    theater_id = "XXXXXXXXXXXXXXXXXX=="
     allocine_pivot = create_allocine_pivot(old_siret, theater_id)
     repository.save(allocine_pivot)
 

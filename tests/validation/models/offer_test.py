@@ -16,8 +16,9 @@ def test_should_return_error_message_when_offer_is_digital_and_his_venue_is_not_
     api_error = validate(thing_offer, api_errors)
 
     # Then
-    assert api_error.errors['venue'] == [
-        'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"']
+    assert api_error.errors["venue"] == [
+        'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"'
+    ]
 
 
 def test_should_return_error_message_when_offer_is_digital_and_its_type_is_offline_only():
@@ -31,7 +32,7 @@ def test_should_return_error_message_when_offer_is_digital_and_its_type_is_offli
     api_error = validate(thing_offer, api_errors)
 
     # Then
-    assert api_error.errors['url'] == ["Une offre de type Cinéma - cartes d'abonnement ne peut pas être numérique"]
+    assert api_error.errors["url"] == ["Une offre de type Cinéma - cartes d'abonnement ne peut pas être numérique"]
 
 
 def test_should_return_error_message_when_offer_is_not_digital_and_his_venue_is_virtual():
@@ -45,7 +46,7 @@ def test_should_return_error_message_when_offer_is_not_digital_and_his_venue_is_
     api_error = validate(thing_offer, api_errors)
 
     # Then
-    assert api_error.errors['venue'] == ['Une offre physique ne peut être associée au lieu "Offre numérique"']
+    assert api_error.errors["venue"] == ['Une offre physique ne peut être associée au lieu "Offre numérique"']
 
 
 def test_should_return_error_messages_when_offer_is_digital_and_offline_and_venue_is_not_virtual():
@@ -60,8 +61,8 @@ def test_should_return_error_messages_when_offer_is_digital_and_offline_and_venu
 
     # Then
     assert api_error.errors == {
-        'url': ["Une offre de type Cinéma - cartes d'abonnement ne peut pas être numérique"],
-        'venue': ['Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"']
+        "url": ["Une offre de type Cinéma - cartes d'abonnement ne peut pas être numérique"],
+        "venue": ['Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"'],
     }
 
 

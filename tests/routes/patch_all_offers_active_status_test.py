@@ -29,15 +29,17 @@ class Patch:
             repository.save(offer1, offer2, user, user_offerer)
 
             json = {
-                'isActive': True,
-                'active': 'true',
-                'inactive': 'true',
+                "isActive": True,
+                "active": "true",
+                "inactive": "true",
             }
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).patch(
-                f'{API_URL}/offers/all-active-status',
-                json=json)
+            response = (
+                TestClient(app.test_client())
+                .with_auth(user.email)
+                .patch(f"{API_URL}/offers/all-active-status", json=json)
+            )
 
             # Then
             assert response.status_code == 204
@@ -57,15 +59,17 @@ class Patch:
             repository.save(offer1, offer2, user, user_offerer)
 
             json = {
-                'isActive': False,
-                'active': 'true',
-                'inactive': 'true',
+                "isActive": False,
+                "active": "true",
+                "inactive": "true",
             }
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).patch(
-                f'{API_URL}/offers/all-active-status',
-                json=json)
+            response = (
+                TestClient(app.test_client())
+                .with_auth(user.email)
+                .patch(f"{API_URL}/offers/all-active-status", json=json)
+            )
 
             # Then
             assert response.status_code == 204
@@ -77,32 +81,52 @@ class Patch:
             # Given
             user = create_user()
             offerer_1 = create_offerer()
-            offerer_2 = create_offerer(siren='516399122')
+            offerer_2 = create_offerer(siren="516399122")
             user_offerer = create_user_offerer(user, offerer_1)
             venue_1 = create_venue(offerer_1)
-            venue_2 = create_venue(offerer_1, siret='12355678912354')
-            venue_3 = create_venue(offerer_2, siret='12355691912354')
+            venue_2 = create_venue(offerer_1, siret="12355678912354")
+            venue_3 = create_venue(offerer_2, siret="12355691912354")
             provider = create_provider()
-            offer_corresponding_to_filters_1 = create_offer_with_thing_product(venue_1, idx=1, is_active=True, thing_name='OK 1', last_provider_id=provider.id, last_provider=provider)
-            offer_corresponding_to_filters_2 = create_offer_with_thing_product(venue_1, idx=2, is_active=True, thing_name='OK 2', last_provider_id=provider.id, last_provider=provider)
-            offer_not_corresponding_to_filters_1 = create_offer_with_thing_product(venue_2, idx=3, is_active=True, thing_name='OK 3')
-            offer_not_corresponding_to_filters_2 = create_offer_with_thing_product(venue_3, idx=4, is_active=True, thing_name='OK 4')
-            offer_not_corresponding_to_filters_3 = create_offer_with_thing_product(venue_1, idx=5, is_active=True, thing_name='Pas celle ci')
+            offer_corresponding_to_filters_1 = create_offer_with_thing_product(
+                venue_1, idx=1, is_active=True, thing_name="OK 1", last_provider_id=provider.id, last_provider=provider
+            )
+            offer_corresponding_to_filters_2 = create_offer_with_thing_product(
+                venue_1, idx=2, is_active=True, thing_name="OK 2", last_provider_id=provider.id, last_provider=provider
+            )
+            offer_not_corresponding_to_filters_1 = create_offer_with_thing_product(
+                venue_2, idx=3, is_active=True, thing_name="OK 3"
+            )
+            offer_not_corresponding_to_filters_2 = create_offer_with_thing_product(
+                venue_3, idx=4, is_active=True, thing_name="OK 4"
+            )
+            offer_not_corresponding_to_filters_3 = create_offer_with_thing_product(
+                venue_1, idx=5, is_active=True, thing_name="Pas celle ci"
+            )
 
-            repository.save(offer_corresponding_to_filters_1, offer_corresponding_to_filters_2, offer_not_corresponding_to_filters_1, offer_not_corresponding_to_filters_2, offer_not_corresponding_to_filters_3, user, user_offerer)
+            repository.save(
+                offer_corresponding_to_filters_1,
+                offer_corresponding_to_filters_2,
+                offer_not_corresponding_to_filters_1,
+                offer_not_corresponding_to_filters_2,
+                offer_not_corresponding_to_filters_3,
+                user,
+                user_offerer,
+            )
 
             json = {
-                'isActive': False,
-                'offererId': humanize(offerer_1.id),
-                'venueId': humanize(venue_1.id),
-                'name': 'OK',
-                'creationMode': 'imported',
+                "isActive": False,
+                "offererId": humanize(offerer_1.id),
+                "venueId": humanize(venue_1.id),
+                "name": "OK",
+                "creationMode": "imported",
             }
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).patch(
-                f'{API_URL}/offers/all-active-status',
-                json=json)
+            response = (
+                TestClient(app.test_client())
+                .with_auth(user.email)
+                .patch(f"{API_URL}/offers/all-active-status", json=json)
+            )
 
             # Then
             assert response.status_code == 204

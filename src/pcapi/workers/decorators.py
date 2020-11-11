@@ -11,6 +11,7 @@ def job_context(func):
     def wrapper(*args, **kwargs):
         with app.app_context():
             return func(*args, **kwargs)
+
     return wrapper
 
 

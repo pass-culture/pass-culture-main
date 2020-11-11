@@ -25,18 +25,16 @@ def test_create_stock_triggers_insert_activities(app):
     # Then
     activities = load_activity().query.all()
     assert len(activities) == 4
-    assert {"offerer", "venue", "offer", "stock"} == set(
-        [a.table_name for a in activities]
-    )
+    assert {"offerer", "venue", "offer", "stock"} == set([a.table_name for a in activities])
     assert {"insert"} == set([a.verb for a in activities])
 
 
 @pytest.mark.usefixtures("db_session")
 def test_find_online_activation_stock(app):
     # given
-    offerer = create_offerer(siren='123456789', name='pass Culture')
+    offerer = create_offerer(siren="123456789", name="pass Culture")
     venue_online = create_venue(offerer, siret=None, is_virtual=True)
-    venue_physical = create_venue(offerer, siret='12345678912345', is_virtual=False)
+    venue_physical = create_venue(offerer, siret="12345678912345", is_virtual=False)
     activation_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.ACTIVATION)
     other_thing_offer = create_offer_with_thing_product(venue_physical, thing_type=ThingType.ACTIVATION)
     event_offer = create_offer_with_event_product(venue_physical)
@@ -51,6 +49,6 @@ def test_find_online_activation_stock(app):
 
     # then
     assert stock.offer.venue.isVirtual == True
-    assert stock.offer.type == 'ThingType.ACTIVATION'
+    assert stock.offer.type == "ThingType.ACTIVATION"
     assert stock.quantity == 200
     assert stock.price == 0

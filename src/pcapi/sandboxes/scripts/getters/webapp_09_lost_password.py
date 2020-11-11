@@ -8,6 +8,4 @@ def get_webapp_user_with_not_validated_password():
     query = query.filter(UserSQLEntity.resetPasswordToken != None)
     user = query.first()
 
-    return {
-        "user": get_beneficiary_helper(user)
-    }
+    return {"user": get_beneficiary_helper(user)}

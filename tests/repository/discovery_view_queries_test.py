@@ -21,7 +21,9 @@ class CleanTest:
 
         # Then
         time.sleep(1)
-        discovery_new_vacuum_date = db.session.execute("""
+        discovery_new_vacuum_date = db.session.execute(
+            """
           SELECT last_vacuum FROM pg_stat_all_tables WHERE relname = 'discovery_view';
-        """).scalar()
+        """
+        ).scalar()
         assert discovery_new_vacuum_date > discovery_last_vacuum_date

@@ -19,43 +19,39 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         def when_offer_id_is_not_received(self, app):
             # Given
-            user = create_user(email='test@email.com')
+            user = create_user(email="test@email.com")
             repository.save(user)
 
             json = {
-                'mediationId': 'DA',
+                "mediationId": "DA",
             }
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).post(
-                f'{API_URL}/favorites',
-                json=json)
+            response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/favorites", json=json)
 
             # Then
             assert response.status_code == 400
-            assert response.json['global'] == ["Le paramètre offerId est obligatoire"]
+            assert response.json["global"] == ["Le paramètre offerId est obligatoire"]
 
     class Returns404:
         @pytest.mark.usefixtures("db_session")
         def when_offer_is_not_found(self, app):
             # Given
-            user = create_user(email='test@email.com')
+            user = create_user(email="test@email.com")
             offerer = create_offerer()
-            venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
+            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
             repository.save(recommendation, user)
 
             json = {
-                'offerId': 'ABCD',
-                'mediationId': humanize(mediation.id),
+                "offerId": "ABCD",
+                "mediationId": humanize(mediation.id),
             }
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).post(
-                f'{API_URL}/favorites',
-                json=json)
+            response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/favorites", json=json)
 
             # Then
             assert response.status_code == 404
@@ -63,23 +59,21 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         def when_mediation_is_not_found(self, app):
             # Given
-            user = create_user(email='test@email.com')
+            user = create_user(email="test@email.com")
             offerer = create_offerer()
-            venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
+            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
             repository.save(recommendation, user)
 
             json = {
-                'offerId': humanize(offer.id),
-                'mediationId': 'ABCD',
+                "offerId": humanize(offer.id),
+                "mediationId": "ABCD",
             }
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).post(
-                f'{API_URL}/favorites',
-                json=json)
+            response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/favorites", json=json)
 
             # Then
             assert response.status_code == 404
@@ -88,23 +82,21 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         def when_offer_is_added_as_favorite_for_current_user(self, app):
             # Given
-            user = create_user(email='test@email.com')
+            user = create_user(email="test@email.com")
             offerer = create_offerer()
-            venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
+            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
             repository.save(recommendation, user)
 
             json = {
-                'offerId': humanize(offer.id),
-                'mediationId': humanize(mediation.id),
+                "offerId": humanize(offer.id),
+                "mediationId": humanize(mediation.id),
             }
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).post(
-                f'{API_URL}/favorites',
-                json=json)
+            response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/favorites", json=json)
 
             # Then
             assert response.status_code == 201
@@ -117,21 +109,19 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         def when_mediation_id_doest_not_exist(self, app):
             # Given
-            user = create_user(email='test@email.com')
+            user = create_user(email="test@email.com")
             offerer = create_offerer()
-            venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
+            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             recommendation = create_recommendation(offer=offer, user=user, is_clicked=False)
             repository.save(recommendation, user)
 
             json = {
-                'offerId': humanize(offer.id),
+                "offerId": humanize(offer.id),
             }
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).post(
-                f'{API_URL}/favorites',
-                json=json)
+            response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/favorites", json=json)
 
             # Then
             assert response.status_code == 201

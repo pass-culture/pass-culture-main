@@ -15,7 +15,7 @@ class EligibilityRule(ABC):
 class NameHasChanged(EligibilityRule):
     def apply(self, offer: Offer, offer_details: dict):
         offer_name = offer.name
-        indexed_offer_name = offer_details['name']
+        indexed_offer_name = offer_details["name"]
 
         return offer_name != indexed_offer_name
 
@@ -26,7 +26,7 @@ class DatesHaveChanged(EligibilityRule):
             return False
 
         offer_dates = list(map(lambda stock: datetime.timestamp(stock.beginningDatetime), offer.activeStocks))
-        indexed_offer_dates = offer_details['dates']
+        indexed_offer_dates = offer_details["dates"]
 
         return offer_dates != indexed_offer_dates
 
@@ -34,7 +34,7 @@ class DatesHaveChanged(EligibilityRule):
 class PricesHaveChanged(EligibilityRule):
     def apply(self, offer: Offer, offer_details: dict):
         offer_prices = list(map(lambda stock: float(stock.price), offer.activeStocks))
-        indexed_offer_prices = offer_details['prices']
+        indexed_offer_prices = offer_details["prices"]
 
         return offer_prices != indexed_offer_prices
 

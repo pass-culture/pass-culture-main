@@ -16,8 +16,7 @@ class Get:
             repository.save(user)
 
             # when
-            response = TestClient(app.test_client()).with_auth(user.email) \
-                .get('/musicTypes')
+            response = TestClient(app.test_client()).with_auth(user.email).get("/musicTypes")
 
             # then
             response_json = response.json

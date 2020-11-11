@@ -10,8 +10,10 @@ class SigninResponse(BaseModel):
     refresh_token: str
     access_token: str
 
+
 class RefreshResponse(BaseModel):
     access_token: str
+
 
 class PasswordResetRequestRequest(BaseModel):
     email: str

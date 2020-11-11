@@ -31,4 +31,4 @@ class FeatureToggleTest:
     def test_is_active_returns_false_when_feature_unknown(self, app):
         # When / Then
         with pytest.raises(ResourceNotFoundError):
-            is_active('some_random_value')
+            is_active("some_random_value")

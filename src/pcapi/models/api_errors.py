@@ -14,11 +14,11 @@ class ApiErrors(Exception):
 
     def check_min_length(self, field, value, length) -> None:
         if len(value) < length:
-            self.add_error(field, 'Tu dois saisir au moins ' + str(length) + ' caractères.')
+            self.add_error(field, "Tu dois saisir au moins " + str(length) + " caractères.")
 
     def check_email(self, field, value) -> None:
         if not "@" in value:
-            self.add_error(field, 'L’e-mail doit contenir un @.')
+            self.add_error(field, "L’e-mail doit contenir un @.")
 
     def maybe_raise(self) -> None:
         if len(self.errors) > 0:

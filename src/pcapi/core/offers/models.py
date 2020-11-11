@@ -33,42 +33,22 @@ from pcapi.models.versioned_mixin import VersionedMixin
 from pcapi.utils.date import DateTimes
 
 
-class Offer(PcObject,
-                     Model,
-                     ExtraDataMixin,
-                     DeactivableMixin,
-                     ProvidableMixin,
-                     VersionedMixin):
-    __tablename__ = 'offer'
+class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, VersionedMixin):
+    __tablename__ = "offer"
 
-    id = Column(BigInteger,
-                primary_key=True,
-                autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    productId = Column(BigInteger,
-                       ForeignKey("product.id"),
-                       index=True,
-                       nullable=False)
+    productId = Column(BigInteger, ForeignKey("product.id"), index=True, nullable=False)
 
-    product = relationship('Product',
-                           foreign_keys=[productId],
-                           backref='offers')
+    product = relationship("Product", foreign_keys=[productId], backref="offers")
 
-    venueId = Column(BigInteger,
-                     ForeignKey("venue.id"),
-                     nullable=False,
-                     index=True)
+    venueId = Column(BigInteger, ForeignKey("venue.id"), nullable=False, index=True)
 
-    venue = relationship('VenueSQLEntity',
-                         foreign_keys=[venueId],
-                         backref='offers')
+    venue = relationship("VenueSQLEntity", foreign_keys=[venueId], backref="offers")
 
     bookingEmail = Column(String(120), nullable=True)
 
-    type = Column(String(50),
-                  CheckConstraint("type != 'None'"),
-                  index=True,
-                  nullable=False)
+    type = Column(String(50), CheckConstraint("type != 'None'"), index=True, nullable=False)
 
     name = Column(String(140), nullable=False)
 
@@ -76,39 +56,24 @@ class Offer(PcObject,
 
     withdrawalDetails = Column(Text, nullable=True)
 
-    conditions = Column(String(120),
-                        nullable=True)
+    conditions = Column(String(120), nullable=True)
 
-    ageMin = Column(Integer,
-                    nullable=True)
-    ageMax = Column(Integer,
-                    nullable=True)
+    ageMin = Column(Integer, nullable=True)
+    ageMax = Column(Integer, nullable=True)
 
     url = Column(String(255), nullable=True)
 
-    mediaUrls = Column(ARRAY(String(220)),
-                       nullable=False,
-                       default=[])
+    mediaUrls = Column(ARRAY(String(220)), nullable=False, default=[])
 
     durationMinutes = Column(Integer, nullable=True)
 
-    isNational = Column(Boolean,
-                        server_default=false(),
-                        default=False,
-                        nullable=False)
+    isNational = Column(Boolean, server_default=false(), default=False, nullable=False)
 
-    isDuo = Column(Boolean,
-                   server_default=false(),
-                   default=False,
-                   nullable=False)
+    isDuo = Column(Boolean, server_default=false(), default=False, nullable=False)
 
-    dateCreated = Column(DateTime,
-                         nullable=False,
-                         default=datetime.utcnow)
+    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    criteria = relationship('Criterion',
-                            backref=db.backref('criteria', lazy='dynamic'),
-                            secondary='offer_criterion')
+    criteria = relationship("Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion")
 
     def update_with_product_data(self, product_dict: dict) -> None:
         owning_offerer = self.product.owningOfferer
@@ -140,7 +105,7 @@ class Offer(PcObject,
 
     @property
     def isDigital(self) -> bool:
-        return self.url is not None and self.url != ''
+        return self.url is not None and self.url != ""
 
     @property
     def isEditable(self) -> bool:
@@ -148,7 +113,7 @@ class Offer(PcObject,
             return True
         if not self.lastProvider.localClass:
             return False
-        return 'Allocine' in self.lastProvider.localClass
+        return "Allocine" in self.lastProvider.localClass
 
     @property
     def isFromProvider(self) -> bool:
@@ -181,7 +146,7 @@ class Offer(PcObject,
     @property
     def offer_category(self) -> str:
         for category in Category:
-            if self.offerType['appLabel'] in category.value:
+            if self.offerType["appLabel"] in category.value:
                 return category.name
 
     @property
@@ -191,12 +156,15 @@ class Offer(PcObject,
             return self.activeMediation.thumbUrl
         if self.product:
             return self.product.thumbUrl
-        return ''
+        return ""
 
     @property
     def is_offline_only(self) -> bool:
-        offline_thing = [thing_type for thing_type in ThingType if
-                         self._is_same_type(thing_type) and self._is_offline_type_only(thing_type)]
+        offline_thing = [
+            thing_type
+            for thing_type in ThingType
+            if self._is_same_type(thing_type) and self._is_offline_type_only(thing_type)
+        ]
 
         return len(list(offline_thing)) == 1
 
@@ -204,12 +172,12 @@ class Offer(PcObject,
         return str(thing_type) == self.type
 
     def _is_offline_type_only(self, thing_type):
-        return thing_type.value['offlineOnly']
+        return thing_type.value["offlineOnly"]
 
     def get_label_from_type_string(self):
         matching_type_thing = next(filter(lambda thing_type: str(thing_type) == self.type, ThingType))
-        return matching_type_thing.value['proLabel']
+        return matching_type_thing.value["proLabel"]
 
 
 Offer.__name_ts_vector__ = create_ts_vector(Offer.name)
-Offer.__table_args__ = [create_fts_index('idx_offer_fts_name', Offer.__name_ts_vector__)]
+Offer.__table_args__ = [create_fts_index("idx_offer_fts_name", Offer.__name_ts_vector__)]

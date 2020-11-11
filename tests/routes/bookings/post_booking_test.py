@@ -16,30 +16,27 @@ class Returns201:
         stock = offers_factories.StockFactory()
         recommendation = recommendations_factories.RecommendationFactory(user=user)
 
-        data = {
-            'stockId': humanize(stock.id),
-            'recommendationId': humanize(recommendation.id),
-            'quantity': 1
-        }
+        data = {"stockId": humanize(stock.id), "recommendationId": humanize(recommendation.id), "quantity": 1}
         client = TestClient(app.test_client()).with_auth(user.email)
-        response = client.post('/bookings', json=data)
+        response = client.post("/bookings", json=data)
 
         booking = bookings_models.Booking.query.one()
         assert response.status_code == 201
         assert response.json == {
-            'amount': 10.0,
-            'completedUrl': None,
-            'id': humanize(booking.id),
-            'isCancelled': False,
-            'quantity': 1,
-            'stock': {'price': 10.0},
-            'stockId': humanize(stock.id),
-            'token': booking.token,
-            'user': {
-                'id': humanize(user.id),
-                'wallet_balance': 490.0,
+            "amount": 10.0,
+            "completedUrl": None,
+            "id": humanize(booking.id),
+            "isCancelled": False,
+            "quantity": 1,
+            "stock": {"price": 10.0},
+            "stockId": humanize(stock.id),
+            "token": booking.token,
+            "user": {
+                "id": humanize(user.id),
+                "wallet_balance": 490.0,
             },
         }
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400:
@@ -47,15 +44,11 @@ class Returns400:
         user = users_factories.UserFactory()
         stock = offers_factories.StockFactory(quantity=0)
 
-        data = {
-            'stockId': humanize(stock.id),
-            'recommendationId': None,
-            'quantity': 1
-        }
+        data = {"stockId": humanize(stock.id), "recommendationId": None, "quantity": 1}
         client = TestClient(app.test_client()).with_auth(user.email)
-        response = client.post('/bookings', json=data)
+        response = client.post("/bookings", json=data)
 
         assert response.status_code == 400
-        assert response.json['stock'] == ["Ce stock n'est pas réservable"]
+        assert response.json["stock"] == ["Ce stock n'est pas réservable"]
 
         assert bookings_models.Booking.query.first() is None

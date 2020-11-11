@@ -19,12 +19,12 @@ from pcapi.utils.rest import load_or_404
 from pcapi.validation.routes.offers import check_offer_id_is_present_in_request
 
 
-@private_api.route('/favorites', methods=['POST'])
+@private_api.route("/favorites", methods=["POST"])
 @login_required
 def add_to_favorite():
     mediation = None
-    offer_id = request.json.get('offerId')
-    mediation_id = request.json.get('mediationId')
+    offer_id = request.json.get("offerId")
+    mediation_id = request.json.get("mediationId")
     check_offer_id_is_present_in_request(offer_id)
 
     offer = load_or_404(Offer, offer_id)
@@ -42,20 +42,19 @@ def add_to_favorite():
     return jsonify(serialize_favorite(favorite)), 201
 
 
-@private_api.route('/favorites/<offer_id>', methods=['DELETE'])
+@private_api.route("/favorites/<offer_id>", methods=["DELETE"])
 @login_required
 def delete_favorite(offer_id):
     dehumanized_offer_id = dehumanize(offer_id)
 
-    favorite = find_favorite_for_offer_and_user(dehumanized_offer_id, current_user.id) \
-        .first_or_404()
+    favorite = find_favorite_for_offer_and_user(dehumanized_offer_id, current_user.id).first_or_404()
 
     repository.delete(favorite)
 
     return jsonify(as_dict(favorite)), 200
 
 
-@private_api.route('/favorites', methods=['GET'])
+@private_api.route("/favorites", methods=["GET"])
 @login_required
 def get_favorites():
     favorites = list_favorites_of_beneficiary.execute(current_user.id)

@@ -11,5 +11,5 @@ def to_domain(stock_sql_entity: StockSQLEntity) -> Stock:
         price=stock_sql_entity.price,
         quantity=stock_sql_entity.quantity,
         is_soft_deleted=stock_sql_entity.isSoftDeleted,
-        bookings=stock_sql_entity.bookings
+        bookings=stock_sql_entity.bookings,
     )

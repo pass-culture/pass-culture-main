@@ -26,11 +26,9 @@ configure_json_logger()
 disable_werkzeug_request_logs()
 
 if feature_request_profiling_enabled():
-    profiling_restrictions = [
-        int(os.environ.get('PROFILE_REQUESTS_LINES_LIMIT', 100))]
-    app.config['PROFILE'] = True
-    app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
-                                      restrictions=profiling_restrictions)
+    profiling_restrictions = [int(os.environ.get("PROFILE_REQUESTS_LINES_LIMIT", 100))]
+    app.config["PROFILE"] = True
+    app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=profiling_restrictions)
 
 
 def install_login_manager() -> None:
@@ -51,8 +49,8 @@ with app.app_context():
     install_admin_views(admin, db.session)
     install_routes(app)
 
-    app.register_blueprint(native_v1, url_prefix='/native/v1')
+    app.register_blueprint(native_v1, url_prefix="/native/v1")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=IS_DEV, use_reloader=True)

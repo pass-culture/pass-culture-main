@@ -19,7 +19,8 @@ def test_save_api_key_raise_api_error_when_offerer_does_not_exist(app):
         repository.save(offererApiKey)
 
     # then
-    assert error.value.errors['offererId'] == ['Aucun objet ne correspond à cet identifiant dans notre base de données']
+    assert error.value.errors["offererId"] == ["Aucun objet ne correspond à cet identifiant dans notre base de données"]
+
 
 @pytest.mark.usefixtures("db_session")
 def test_save_api_key_create_relation_offerer_api_key(app):

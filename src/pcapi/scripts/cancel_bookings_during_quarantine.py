@@ -16,11 +16,15 @@ def cancel_booking_status_for_events_happening_during_quarantine():
 
 def find_bookings_to_cancel() -> List[Booking]:
     minimal_date = datetime(2020, 3, 14, 0, 0, 0)
-    return Booking.query \
-        .join(StockSQLEntity) \
-        .filter(and_(StockSQLEntity.beginningDatetime > minimal_date), (StockSQLEntity.beginningDatetime < datetime.utcnow())) \
-        .outerjoin(Payment, Payment.bookingId == Booking.id) \
+    return (
+        Booking.query.join(StockSQLEntity)
+        .filter(
+            and_(StockSQLEntity.beginningDatetime > minimal_date),
+            (StockSQLEntity.beginningDatetime < datetime.utcnow()),
+        )
+        .outerjoin(Payment, Payment.bookingId == Booking.id)
         .all()
+    )
 
 
 def cancel_bookings(bookings: List[Booking]):

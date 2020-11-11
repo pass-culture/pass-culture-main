@@ -7,6 +7,4 @@ def get_existing_webapp_user():
     query = keep_only_webapp_users(UserSQLEntity.query)
     user = query.first()
 
-    return {
-        "user": get_beneficiary_helper(user)
-    }
+    return {"user": get_beneficiary_helper(user)}

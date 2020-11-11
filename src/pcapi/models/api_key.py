@@ -12,16 +12,8 @@ from pcapi.models.pc_object import PcObject
 
 
 class ApiKey(PcObject, Model):
-    value = Column(CHAR(64),
-                   index=True,
-                   nullable=False
-                   )
+    value = Column(CHAR(64), index=True, nullable=False)
 
-    offererId = Column(BigInteger,
-                       ForeignKey('offerer.id'),
-                       index=True,
-                       nullable=False)
+    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer = relationship('Offerer',
-                           foreign_keys=[offererId],
-                           backref=backref('apiKey', uselist=False))
+    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKey", uselist=False))

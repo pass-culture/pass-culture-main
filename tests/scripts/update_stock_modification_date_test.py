@@ -26,10 +26,7 @@ class UpdateStockModificationDateTest:
         repository.save(stock)
 
         activity = create_stock_activity(
-            stock=stock,
-            verb='update',
-            issued_at=datetime(2019, 10, 21),
-            data={"quantity": 32}
+            stock=stock, verb="update", issued_at=datetime(2019, 10, 21), data={"quantity": 32}
         )
         save_all_activities(activity)
 
@@ -52,17 +49,11 @@ class UpdateStockModificationDateTest:
         repository.save(stock)
 
         first_activity = create_stock_activity(
-            stock=stock,
-            verb='update',
-            issued_at=datetime(2019, 10, 21),
-            data={"quantity": 32}
+            stock=stock, verb="update", issued_at=datetime(2019, 10, 21), data={"quantity": 32}
         )
 
         second_activity = create_stock_activity(
-            stock=stock,
-            verb='update',
-            issued_at=datetime(2019, 12, 25),
-            data={"quantity": 32}
+            stock=stock, verb="update", issued_at=datetime(2019, 12, 25), data={"quantity": 32}
         )
         save_all_activities(first_activity, second_activity)
 
@@ -86,17 +77,11 @@ class UpdateStockModificationDateTest:
         repository.save(first_stock, second_stock)
 
         activity_for_first_stock = create_stock_activity(
-            stock=first_stock,
-            verb='update',
-            issued_at=datetime(2019, 10, 21),
-            data={"quantity": 32}
+            stock=first_stock, verb="update", issued_at=datetime(2019, 10, 21), data={"quantity": 32}
         )
 
         activity_for_second_stock = create_stock_activity(
-            stock=second_stock,
-            verb='update',
-            issued_at=datetime(2018, 11, 16),
-            data={"quantity": 32}
+            stock=second_stock, verb="update", issued_at=datetime(2018, 11, 16), data={"quantity": 32}
         )
         save_all_activities(activity_for_first_stock, activity_for_second_stock)
 

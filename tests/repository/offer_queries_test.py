@@ -42,15 +42,15 @@ class DepartmentOrNationalOffersTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_national_thing_with_different_department(self, app):
         # given
-        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        product = create_product_with_thing_type(thing_name="Lire un livre", is_national=True)
         offerer = create_offerer()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        venue = create_venue(offerer, postal_code="34000", departement_code="34")
         offer = create_offer_with_thing_product(venue=venue, product=product)
         repository.save(offer)
-        query = Product.query.filter_by(name='Lire un livre')
+        query = Product.query.filter_by(name="Lire un livre")
 
         # when
-        query = department_or_national_offers(query, ['93'])
+        query = department_or_national_offers(query, ["93"])
 
         # then
         assert product in query.all()
@@ -58,15 +58,15 @@ class DepartmentOrNationalOffersTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_national_event_with_different_department(self, app):
         # given
-        product = create_product_with_event_type('Voir une pièce', is_national=True)
+        product = create_product_with_event_type("Voir une pièce", is_national=True)
         offerer = create_offerer()
-        venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
+        venue = create_venue(offerer, is_virtual=False, postal_code="29000", departement_code="29")
         offer = create_offer_with_event_product(venue=venue, product=product)
         repository.save(offer)
-        query = Product.query.filter_by(name='Voir une pièce')
+        query = Product.query.filter_by(name="Voir une pièce")
 
         # when
-        query = department_or_national_offers(query, ['93'])
+        query = department_or_national_offers(query, ["93"])
 
         # then
         assert product in query.all()
@@ -74,15 +74,15 @@ class DepartmentOrNationalOffersTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_event_is_not_in_given_department_list(self, app):
         # given
-        product = create_product_with_event_type('Voir une pièce', is_national=False)
+        product = create_product_with_event_type("Voir une pièce", is_national=False)
         offerer = create_offerer()
-        venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
+        venue = create_venue(offerer, is_virtual=False, postal_code="29000", departement_code="29")
         offer = create_offer_with_event_product(venue=venue, product=product)
         repository.save(offer)
-        query = Product.query.filter_by(name='Voir une pièce')
+        query = Product.query.filter_by(name="Voir une pièce")
 
         # when
-        query = department_or_national_offers(query, ['34'])
+        query = department_or_national_offers(query, ["34"])
 
         # then
         assert query.count() == 0
@@ -90,15 +90,15 @@ class DepartmentOrNationalOffersTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_an_event_regardless_of_department_if_department_list_contains_00(self, app):
         # given
-        product = create_product_with_event_type('Voir une pièce', is_national=False)
+        product = create_product_with_event_type("Voir une pièce", is_national=False)
         offerer = create_offerer()
-        venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
+        venue = create_venue(offerer, is_virtual=False, postal_code="29000", departement_code="29")
         offer = create_offer_with_event_product(venue=venue, product=product)
         repository.save(offer)
-        query = Product.query.filter_by(name='Voir une pièce')
+        query = Product.query.filter_by(name="Voir une pièce")
 
         # when
-        query = department_or_national_offers(query, ['00'])
+        query = department_or_national_offers(query, ["00"])
 
         # then
         assert query.count() == 1
@@ -106,15 +106,15 @@ class DepartmentOrNationalOffersTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_an_event_if_it_is_given_in_department_list(self, app):
         # given
-        product = create_product_with_event_type('Voir une pièce', is_national=False)
+        product = create_product_with_event_type("Voir une pièce", is_national=False)
         offerer = create_offerer()
-        venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
+        venue = create_venue(offerer, is_virtual=False, postal_code="29000", departement_code="29")
         offer = create_offer_with_event_product(venue=venue, product=product)
         repository.save(offer)
-        query = Product.query.filter_by(name='Voir une pièce')
+        query = Product.query.filter_by(name="Voir une pièce")
 
         # when
-        query = department_or_national_offers(query, ['29'])
+        query = department_or_national_offers(query, ["29"])
 
         # then
         assert query.count() == 1
@@ -124,9 +124,9 @@ class FindActivationOffersTest:
     @pytest.mark.usefixtures("db_session")
     def test_find_activation_offers_returns_activation_offers_in_given_department(self, app):
         # given
-        offerer = create_offerer(siren='123456789')
-        venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
-        venue2 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
+        offerer = create_offerer(siren="123456789")
+        venue1 = create_venue(offerer, siret=offerer.siren + "12345", postal_code="34000", departement_code="34")
+        venue2 = create_venue(offerer, siret=offerer.siren + "54321", postal_code="93000", departement_code="93")
         offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue1, event_type=EventType.SPECTACLE_VIVANT)
         offer3 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
@@ -136,7 +136,7 @@ class FindActivationOffersTest:
         repository.save(stock1, stock2, stock3)
 
         # when
-        offers = find_activation_offers('34').all()
+        offers = find_activation_offers("34").all()
 
         # then
         assert len(offers) == 1
@@ -144,9 +144,9 @@ class FindActivationOffersTest:
     @pytest.mark.usefixtures("db_session")
     def test_find_activation_offers_returns_activation_offers_if_offer_is_national(self, app):
         # given
-        offerer = create_offerer(siren='123456789')
-        venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
-        venue2 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
+        offerer = create_offerer(siren="123456789")
+        venue1 = create_venue(offerer, siret=offerer.siren + "12345", postal_code="34000", departement_code="34")
+        venue2 = create_venue(offerer, siret=offerer.siren + "54321", postal_code="93000", departement_code="93")
         offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
         offer2 = create_offer_with_thing_product(venue=venue1, thing_type=ThingType.AUDIOVISUEL)
         offer3 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION, is_national=True)
@@ -158,7 +158,7 @@ class FindActivationOffersTest:
         repository.save(stock1, stock2, stock3, stock4)
 
         # when
-        offers = find_activation_offers('34').all()
+        offers = find_activation_offers("34").all()
 
         # then
         assert len(offers) == 3
@@ -166,10 +166,10 @@ class FindActivationOffersTest:
     @pytest.mark.usefixtures("db_session")
     def test_find_activation_offers_returns_activation_offers_in_all_ile_de_france_if_department_is_93(self, app):
         # given
-        offerer = create_offerer(siren='123456789')
-        venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
-        venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='75000', departement_code='75')
-        venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='78000', departement_code='78')
+        offerer = create_offerer(siren="123456789")
+        venue1 = create_venue(offerer, siret=offerer.siren + "12345", postal_code="34000", departement_code="34")
+        venue2 = create_venue(offerer, siret=offerer.siren + "67890", postal_code="75000", departement_code="75")
+        venue3 = create_venue(offerer, siret=offerer.siren + "54321", postal_code="78000", departement_code="78")
         offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
         offer3 = create_offer_with_event_product(venue3, event_type=EventType.ACTIVATION)
@@ -179,7 +179,7 @@ class FindActivationOffersTest:
         repository.save(stock1, stock2, stock3)
 
         # when
-        offers = find_activation_offers('93').all()
+        offers = find_activation_offers("93").all()
 
         # then
         assert len(offers) == 2
@@ -188,13 +188,16 @@ class FindActivationOffersTest:
     def test_find_activation_offers_returns_activation_offers_with_available_stocks(self, app):
         # given
         user = create_user()
-        offerer = create_offerer(siren='123456789')
-        venue1 = create_venue(offerer=offerer, siret=offerer.siren + '12345', postal_code='93000',
-                              departement_code='93')
-        venue2 = create_venue(offerer=offerer, siret=offerer.siren + '67890', postal_code='93000',
-                              departement_code='93')
-        venue3 = create_venue(offerer=offerer, siret=offerer.siren + '54321', postal_code='93000',
-                              departement_code='93')
+        offerer = create_offerer(siren="123456789")
+        venue1 = create_venue(
+            offerer=offerer, siret=offerer.siren + "12345", postal_code="93000", departement_code="93"
+        )
+        venue2 = create_venue(
+            offerer=offerer, siret=offerer.siren + "67890", postal_code="93000", departement_code="93"
+        )
+        venue3 = create_venue(
+            offerer=offerer, siret=offerer.siren + "54321", postal_code="93000", departement_code="93"
+        )
         offer1 = create_offer_with_event_product(venue=venue1, event_type=EventType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue=venue2, event_type=EventType.ACTIVATION)
         offer3 = create_offer_with_event_product(venue=venue3, event_type=EventType.ACTIVATION)
@@ -206,7 +209,7 @@ class FindActivationOffersTest:
         repository.save(stock1, stock2, stock3, booking, offer4)
 
         # when
-        offers = find_activation_offers('93').all()
+        offers = find_activation_offers("93").all()
 
         # then
         assert len(offers) == 1
@@ -217,10 +220,10 @@ class FindActivationOffersTest:
         now = datetime.utcnow()
         five_days_ago = now - timedelta(days=5)
         next_week = now + timedelta(days=7)
-        offerer = create_offerer(siren='123456789')
-        venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
-        venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='93000', departement_code='93')
-        venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
+        offerer = create_offerer(siren="123456789")
+        venue1 = create_venue(offerer, siret=offerer.siren + "12345", postal_code="93000", departement_code="93")
+        venue2 = create_venue(offerer, siret=offerer.siren + "67890", postal_code="93000", departement_code="93")
+        venue3 = create_venue(offerer, siret=offerer.siren + "54321", postal_code="93000", departement_code="93")
         offer1 = create_offer_with_event_product(venue=venue1, event_type=EventType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue=venue2, event_type=EventType.ACTIVATION)
         offer3 = create_offer_with_event_product(venue=venue3, event_type=EventType.ACTIVATION)
@@ -230,7 +233,7 @@ class FindActivationOffersTest:
         repository.save(stock1, stock2, stock3)
 
         # when
-        offers = find_activation_offers('93').all()
+        offers = find_activation_offers("93").all()
 
         # then
         assert offer1 not in offers
@@ -242,9 +245,9 @@ class FindOffersTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_offers_by_venue_id_returns_offers_matching_venue_id(self, app):
         # Given
-        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        product = create_product_with_thing_type(thing_name="Lire un livre", is_national=True)
         offerer = create_offerer()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        venue = create_venue(offerer, postal_code="34000", departement_code="34")
         offer = create_offer_with_thing_product(venue=venue, product=product)
         repository.save(offer)
 
@@ -268,9 +271,7 @@ class QueryOfferWithRemainingStocksTest:
         repository.save(offer)
 
         # When
-        offers_count = Offer.query \
-            .join(StockSQLEntity) \
-            .count()
+        offers_count = Offer.query.join(StockSQLEntity).count()
 
         # Then
         assert offers_count == 0
@@ -290,12 +291,15 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = Offer.query \
-            .join(StockSQLEntity) \
-            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
-            .filter((StockSQLEntity.quantity == None) | (
-                (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+        offers_count = (
+            Offer.query.join(StockSQLEntity)
+            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId)
+            .filter(
+                (StockSQLEntity.quantity == None)
+                | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
+            )
             .count()
+        )
 
         # Then
         assert offers_count == 1
@@ -315,12 +319,15 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = Offer.query \
-            .join(StockSQLEntity) \
-            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
-            .filter((StockSQLEntity.quantity == None) | (
-                (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+        offers_count = (
+            Offer.query.join(StockSQLEntity)
+            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId)
+            .filter(
+                (StockSQLEntity.quantity == None)
+                | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
+            )
             .count()
+        )
 
         # Then
         assert offers_count == 0
@@ -329,9 +336,9 @@ class QueryOfferWithRemainingStocksTest:
     def test_should_return_1_offer_when_booking_was_cancelled(self, app):
         # Given
         user = create_user()
-        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        product = create_product_with_thing_type(thing_name="Lire un livre", is_national=True)
         offerer = create_offerer()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        venue = create_venue(offerer, postal_code="34000", departement_code="34")
         offer = create_offer_with_thing_product(venue=venue, product=product)
         stock = create_stock_from_offer(offer, quantity=2)
         booking = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
@@ -339,12 +346,15 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = Offer.query \
-            .join(StockSQLEntity) \
-            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
-            .filter((StockSQLEntity.quantity == None) | (
-                (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+        offers_count = (
+            Offer.query.join(StockSQLEntity)
+            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId)
+            .filter(
+                (StockSQLEntity.quantity == None)
+                | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
+            )
             .count()
+        )
 
         # Then
         assert offers_count == 1
@@ -352,9 +362,9 @@ class QueryOfferWithRemainingStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_0_offer_when_there_is_no_remaining_stock(app):
         # Given
-        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        product = create_product_with_thing_type(thing_name="Lire un livre", is_national=True)
         offerer = create_offerer()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        venue = create_venue(offerer, postal_code="34000", departement_code="34")
         offer = create_offer_with_thing_product(venue=venue, product=product)
         stock = create_stock_from_offer(offer, price=0, quantity=2)
         user = create_user()
@@ -364,12 +374,15 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = Offer.query \
-            .join(StockSQLEntity) \
-            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
-            .filter((StockSQLEntity.quantity == None) | (
-                (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+        offers_count = (
+            Offer.query.join(StockSQLEntity)
+            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId)
+            .filter(
+                (StockSQLEntity.quantity == None)
+                | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
+            )
             .count()
+        )
 
         # Then
         assert offers_count == 0
@@ -377,9 +390,9 @@ class QueryOfferWithRemainingStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_1_offer_when_there_are_one_full_stock_and_one_empty_stock(app):
         # Given
-        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        product = create_product_with_thing_type(thing_name="Lire un livre", is_national=True)
         offerer = create_offerer()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        venue = create_venue(offerer, postal_code="34000", departement_code="34")
         offer = create_offer_with_thing_product(venue=venue, product=product)
         stock1 = create_stock_from_offer(offer, price=0, quantity=2)
         stock2 = create_stock_from_offer(offer, price=0, quantity=2)
@@ -389,12 +402,15 @@ class QueryOfferWithRemainingStocksTest:
         bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
-        offers_count = Offer.query \
-            .join(StockSQLEntity) \
-            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
-            .filter((StockSQLEntity.quantity == None) | (
-                (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+        offers_count = (
+            Offer.query.join(StockSQLEntity)
+            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId)
+            .filter(
+                (StockSQLEntity.quantity == None)
+                | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
+            )
             .count()
+        )
 
         # Then
         assert offers_count == 1
@@ -533,8 +549,8 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_offer_ids_when_exist_and_venue_id_and_last_provider_id_match(self, app):
         # Given
-        provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
-        provider2 = create_provider(idx=2, local_class='TiteLive', is_active=False, is_enable_for_pro=False)
+        provider1 = create_provider(idx=1, local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
+        provider2 = create_provider(idx=2, local_class="TiteLive", is_active=False, is_enable_for_pro=False)
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue, last_provider=provider1)
@@ -542,20 +558,20 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         repository.save(provider1, provider2, offer1, offer2)
 
         # When
-        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id=provider1.id,
-                                                                             limit=2,
-                                                                             page=0,
-                                                                             venue_id=venue.id)
+        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(
+            last_provider_id=provider1.id, limit=2, page=0, venue_id=venue.id
+        )
 
         # Then
         assert len(offer_ids) == 1
         assert offer_ids[0] == (offer1.id,)
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_one_offer_id_when_exist_and_venue_id_and_last_provider_id_match_from_first_page_only(self,
-                                                                                                                app):
+    def test_should_return_one_offer_id_when_exist_and_venue_id_and_last_provider_id_match_from_first_page_only(
+        self, app
+    ):
         # Given
-        provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
+        provider1 = create_provider(idx=1, local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue, last_provider=provider1)
@@ -563,20 +579,20 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         repository.save(provider1, offer1, offer2)
 
         # When
-        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id=provider1.id,
-                                                                             limit=1,
-                                                                             page=0,
-                                                                             venue_id=venue.id)
+        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(
+            last_provider_id=provider1.id, limit=1, page=0, venue_id=venue.id
+        )
 
         # Then
         assert len(offer_ids) == 1
         assert offer_ids[0] == (offer1.id,)
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_one_offer_id_when_exist_and_venue_id_and_last_provider_id_match_from_second_page_only(self,
-                                                                                                                 app):
+    def test_should_return_one_offer_id_when_exist_and_venue_id_and_last_provider_id_match_from_second_page_only(
+        self, app
+    ):
         # Given
-        provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
+        provider1 = create_provider(idx=1, local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue, last_provider=provider1)
@@ -584,10 +600,9 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         repository.save(provider1, offer1, offer2)
 
         # When
-        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id=provider1.id,
-                                                                             limit=1,
-                                                                             page=1,
-                                                                             venue_id=venue.id)
+        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(
+            last_provider_id=provider1.id, limit=1, page=1, venue_id=venue.id
+        )
 
         # Then
         assert len(offer_ids) == 1
@@ -596,8 +611,8 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_offer_ids_when_venue_id_and_last_provider_id_do_not_match(self, app):
         # Given
-        provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
-        provider2 = create_provider(idx=2, local_class='TiteLive', is_active=False, is_enable_for_pro=False)
+        provider1 = create_provider(idx=1, local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
+        provider2 = create_provider(idx=2, local_class="TiteLive", is_active=False, is_enable_for_pro=False)
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
@@ -605,10 +620,9 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         repository.save(provider1, provider2, offer1, offer2)
 
         # When
-        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id='3',
-                                                                             limit=2,
-                                                                             page=0,
-                                                                             venue_id=10)
+        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(
+            last_provider_id="3", limit=2, page=0, venue_id=10
+        )
 
         # Then
         assert len(offer_ids) == 0
@@ -616,8 +630,8 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_offer_ids_when_venue_id_matches_but_last_provider_id_do_not_match(self, app):
         # Given
-        provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
-        provider2 = create_provider(idx=2, local_class='TiteLive', is_active=False, is_enable_for_pro=False)
+        provider1 = create_provider(idx=1, local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
+        provider2 = create_provider(idx=2, local_class="TiteLive", is_active=False, is_enable_for_pro=False)
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
@@ -625,10 +639,9 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         repository.save(provider1, provider2, offer1, offer2)
 
         # When
-        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id='3',
-                                                                             limit=2,
-                                                                             page=0,
-                                                                             venue_id=venue.id)
+        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(
+            last_provider_id="3", limit=2, page=0, venue_id=venue.id
+        )
 
         # Then
         assert len(offer_ids) == 0
@@ -636,8 +649,8 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_offer_ids_when_venue_id_do_not_matches_but_last_provider_id_matches(self, app):
         # Given
-        provider1 = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
-        provider2 = create_provider(idx=2, local_class='TiteLive', is_active=False, is_enable_for_pro=False)
+        provider1 = create_provider(idx=1, local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
+        provider2 = create_provider(idx=2, local_class="TiteLive", is_active=False, is_enable_for_pro=False)
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
@@ -645,10 +658,9 @@ class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
         repository.save(provider1, provider2, offer1, offer2)
 
         # When
-        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id=provider1.id,
-                                                                             limit=2,
-                                                                             page=0,
-                                                                             venue_id=10)
+        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(
+            last_provider_id=provider1.id, limit=2, page=0, venue_id=10
+        )
 
         # Then
         assert len(offer_ids) == 0
@@ -672,10 +684,7 @@ class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
 
         # When
         results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=1,
-            page=0,
-            from_date=datetime(2019, 12, 30, 10, 0, 0),
-            to_date=datetime(2019, 12, 31, 10, 0, 0)
+            limit=1, page=0, from_date=datetime(2019, 12, 30, 10, 0, 0), to_date=datetime(2019, 12, 31, 10, 0, 0)
         )
 
         # Then
@@ -702,10 +711,7 @@ class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
 
         # When
         results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=2,
-            page=1,
-            from_date=datetime(2019, 12, 30, 10, 0, 0),
-            to_date=datetime(2019, 12, 31, 10, 0, 0)
+            limit=2, page=1, from_date=datetime(2019, 12, 30, 10, 0, 0), to_date=datetime(2019, 12, 31, 10, 0, 0)
         )
 
         # Then
@@ -732,10 +738,7 @@ class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
 
         # When
         results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=4,
-            page=0,
-            from_date=datetime(2019, 12, 30, 10, 0, 0),
-            to_date=datetime(2019, 12, 31, 10, 0, 0)
+            limit=4, page=0, from_date=datetime(2019, 12, 30, 10, 0, 0), to_date=datetime(2019, 12, 31, 10, 0, 0)
         )
 
         # Then
@@ -758,10 +761,7 @@ class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
 
         # When
         results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=4,
-            page=0,
-            from_date=datetime(2019, 12, 30, 10, 0, 0),
-            to_date=datetime(2019, 12, 31, 10, 0, 0)
+            limit=4, page=0, from_date=datetime(2019, 12, 30, 10, 0, 0), to_date=datetime(2019, 12, 31, 10, 0, 0)
         )
 
         # Then
@@ -778,18 +778,17 @@ class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
         offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
         stock1 = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0))
         stock2 = create_stock_from_offer(offer=offer2, booking_limit_datetime=datetime(2019, 12, 30, 0, 0, 0))
-        stock3 = create_stock_from_offer(offer=offer3, booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0),
-                                         beginning_datetime=None)
-        stock4 = create_stock_from_offer(offer=offer4, booking_limit_datetime=datetime(2020, 1, 3, 0, 0, 0),
-                                         beginning_datetime=None)
+        stock3 = create_stock_from_offer(
+            offer=offer3, booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), beginning_datetime=None
+        )
+        stock4 = create_stock_from_offer(
+            offer=offer4, booking_limit_datetime=datetime(2020, 1, 3, 0, 0, 0), beginning_datetime=None
+        )
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
         results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=1,
-            page=0,
-            from_date=datetime(2019, 12, 30, 10, 0, 0),
-            to_date=datetime(2019, 12, 31, 10, 0, 0)
+            limit=1, page=0, from_date=datetime(2019, 12, 30, 10, 0, 0), to_date=datetime(2019, 12, 31, 10, 0, 0)
         )
 
         # Then
@@ -807,16 +806,14 @@ class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
         in_range_stock = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0))
-        out_of_range_stock = create_stock_from_offer(offer=offer2,
-                                                     booking_limit_datetime=datetime(2019, 12, 1, 0, 0, 0))
+        out_of_range_stock = create_stock_from_offer(
+            offer=offer2, booking_limit_datetime=datetime(2019, 12, 1, 0, 0, 0)
+        )
         repository.save(in_range_stock, out_of_range_stock)
 
         # When
         results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=2,
-            page=0,
-            from_date=datetime(2019, 12, 30, 10, 0, 0),
-            to_date=datetime(2019, 12, 31, 10, 0, 0)
+            limit=2, page=0, from_date=datetime(2019, 12, 30, 10, 0, 0), to_date=datetime(2019, 12, 31, 10, 0, 0)
         )
 
         # Then
@@ -831,18 +828,17 @@ class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
-        out_of_range_stock1 = create_stock_from_offer(offer=offer1,
-                                                      booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 0))
-        out_of_range_stock2 = create_stock_from_offer(offer=offer2,
-                                                      booking_limit_datetime=datetime(2019, 12, 29, 0, 0, 0))
+        out_of_range_stock1 = create_stock_from_offer(
+            offer=offer1, booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 0)
+        )
+        out_of_range_stock2 = create_stock_from_offer(
+            offer=offer2, booking_limit_datetime=datetime(2019, 12, 29, 0, 0, 0)
+        )
         repository.save(out_of_range_stock1, out_of_range_stock2)
 
         # When
         results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=2,
-            page=0,
-            from_date=datetime(2019, 12, 30, 10, 0, 0),
-            to_date=datetime(2019, 12, 31, 10, 0, 0)
+            limit=2, page=0, from_date=datetime(2019, 12, 30, 10, 0, 0), to_date=datetime(2019, 12, 31, 10, 0, 0)
         )
 
         # Then
@@ -856,16 +852,14 @@ class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
         in_range_stock = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 30, 10, 1, 0))
-        out_of_range_stock = create_stock_from_offer(offer=offer2,
-                                                     booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59))
+        out_of_range_stock = create_stock_from_offer(
+            offer=offer2, booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59)
+        )
         repository.save(in_range_stock, out_of_range_stock)
 
         # When
         results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=2,
-            page=0,
-            from_date=datetime(2019, 12, 30, 10, 0, 0),
-            to_date=datetime(2019, 12, 31, 10, 0, 0)
+            limit=2, page=0, from_date=datetime(2019, 12, 30, 10, 0, 0), to_date=datetime(2019, 12, 31, 10, 0, 0)
         )
 
         # Then
@@ -881,16 +875,14 @@ class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
         in_range_stock = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 30, 10, 0, 0))
-        out_of_range_stock = create_stock_from_offer(offer=offer2,
-                                                     booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59))
+        out_of_range_stock = create_stock_from_offer(
+            offer=offer2, booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59)
+        )
         repository.save(in_range_stock, out_of_range_stock)
 
         # When
         results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=2,
-            page=0,
-            from_date=datetime(2019, 12, 30, 10, 0, 0),
-            to_date=datetime(2019, 12, 31, 10, 0, 0)
+            limit=2, page=0, from_date=datetime(2019, 12, 30, 10, 0, 0), to_date=datetime(2019, 12, 31, 10, 0, 0)
         )
 
         # Then
@@ -906,16 +898,14 @@ class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
         in_range_stock = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 31, 10, 0, 0))
-        out_of_range_stock = create_stock_from_offer(offer=offer2,
-                                                     booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59))
+        out_of_range_stock = create_stock_from_offer(
+            offer=offer2, booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59)
+        )
         repository.save(in_range_stock, out_of_range_stock)
 
         # When
         results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=2,
-            page=0,
-            from_date=datetime(2019, 12, 30, 10, 0, 0),
-            to_date=datetime(2019, 12, 31, 10, 0, 0)
+            limit=2, page=0, from_date=datetime(2019, 12, 30, 10, 0, 0), to_date=datetime(2019, 12, 31, 10, 0, 0)
         )
 
         # Then
@@ -929,18 +919,13 @@ class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(is_active=True, venue=venue)
-        expired_stock = create_stock_from_offer(offer=offer,
-                                                booking_limit_datetime=datetime(2019, 12, 31))
-        valid_stock = create_stock_from_offer(offer=offer,
-                                              booking_limit_datetime=datetime(2020, 1, 30))
+        expired_stock = create_stock_from_offer(offer=offer, booking_limit_datetime=datetime(2019, 12, 31))
+        valid_stock = create_stock_from_offer(offer=offer, booking_limit_datetime=datetime(2020, 1, 30))
         repository.save(expired_stock, valid_stock)
 
         # When
         results = get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=2,
-            page=0,
-            from_date=datetime(2019, 12, 30, 10, 0, 0),
-            to_date=datetime(2019, 12, 31, 10, 0, 0)
+            limit=2, page=0, from_date=datetime(2019, 12, 30, 10, 0, 0), to_date=datetime(2019, 12, 31, 10, 0, 0)
         )
 
         # Then
@@ -960,10 +945,7 @@ class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
         )
 
         expired_offer_ids = get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=1,
-            page=0,
-            from_date=datetime(2019, 12, 30, 10, 0, 0),
-            to_date=datetime(2019, 12, 31, 10, 0, 0)
+            limit=1, page=0, from_date=datetime(2019, 12, 30, 10, 0, 0), to_date=datetime(2019, 12, 31, 10, 0, 0)
         )
 
         # Then
@@ -991,6 +973,7 @@ class UpdateOffersIsActiveStatusTest:
         assert Offer.query.get(offer2.id).isActive == True
         assert Offer.query.get(offer3.id).isActive == False
 
+
 class GetAllOffersIdByFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_all_offers_ids_filtered_by_given_params(self, app):
@@ -1000,8 +983,14 @@ class GetAllOffersIdByFiltersTest:
         create_user_offerer(user, offerer)
         provider = create_provider()
         wanted_venue = create_venue(offerer=offerer)
-        unwanted_venue = create_venue(offerer=offerer, siret='12345678912344')
-        wanted_offer = create_offer_with_thing_product(venue=wanted_venue, thing_name='Wanted name', is_active=False, last_provider=provider, last_provider_id=provider.id)
+        unwanted_venue = create_venue(offerer=offerer, siret="12345678912344")
+        wanted_offer = create_offer_with_thing_product(
+            venue=wanted_venue,
+            thing_name="Wanted name",
+            is_active=False,
+            last_provider=provider,
+            last_provider_id=provider.id,
+        )
         unwanted_offer2 = create_offer_with_thing_product(venue=wanted_venue, is_active=False)
         unwanted_offer3 = create_offer_with_thing_product(venue=wanted_venue)
         unwanted_offer4 = create_offer_with_thing_product(venue=unwanted_venue)
@@ -1012,10 +1001,10 @@ class GetAllOffersIdByFiltersTest:
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offerer_id=offerer.id,
-            status='inactive',
+            status="inactive",
             venue_id=wanted_venue.id,
-            name_keywords='Wanted',
-            creation_mode='imported',
+            name_keywords="Wanted",
+            creation_mode="imported",
         )
 
         # Then

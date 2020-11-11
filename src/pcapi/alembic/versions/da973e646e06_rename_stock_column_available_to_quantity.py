@@ -9,8 +9,8 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = 'da973e646e06'
-down_revision = '5bccb7eb3d68'
+revision = "da973e646e06"
+down_revision = "5bccb7eb3d68"
 branch_labels = None
 depends_on = None
 
@@ -19,14 +19,15 @@ def upgrade():
     op.execute("ALTER TABLE stock DISABLE TRIGGER stock_update_modification_date;")
     op.execute("ALTER TABLE stock DISABLE TRIGGER stock_update;")
 
-    op.alter_column('stock', 'available', new_column_name='quantity')
-    op.alter_column('allocine_venue_provider', 'available',
-                    new_column_name='quantity')
+    op.alter_column("stock", "available", new_column_name="quantity")
+    op.alter_column("allocine_venue_provider", "available", new_column_name="quantity")
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE stock
         SET "fieldsUpdated" = replace("fieldsUpdated"::TEXT, 'available', 'quantity')::VARCHAR[]
-    """)
+    """
+    )
 
     op.execute(
         """
@@ -46,7 +47,9 @@ def upgrade():
         BEFORE UPDATE ON stock
         FOR EACH ROW
         EXECUTE PROCEDURE save_stock_modification_date()
-        """ + ';')
+        """
+        + ";"
+    )
 
     op.execute(
         """
@@ -146,7 +149,9 @@ def upgrade():
         CREATE CONSTRAINT TRIGGER stock_update AFTER INSERT OR UPDATE
         ON stock
         FOR EACH ROW EXECUTE PROCEDURE check_stock()
-      """ + ';')
+      """
+        + ";"
+    )
     op.execute("ALTER TABLE stock ENABLE TRIGGER stock_update_modification_date;")
     op.execute("ALTER TABLE stock ENABLE TRIGGER stock_update;")
 
@@ -155,14 +160,15 @@ def downgrade():
     op.execute("ALTER TABLE stock DISABLE TRIGGER stock_update_modification_date;")
     op.execute("ALTER TABLE stock DISABLE TRIGGER stock_update;")
 
-    op.alter_column('stock', 'quantity', new_column_name='available')
-    op.alter_column('allocine_venue_provider', 'quantity',
-                    new_column_name='available')
+    op.alter_column("stock", "quantity", new_column_name="available")
+    op.alter_column("allocine_venue_provider", "quantity", new_column_name="available")
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE stock
         SET "fieldsUpdated" = replace("fieldsUpdated"::TEXT, 'quantity', 'available')::VARCHAR[]
-    """)
+    """
+    )
 
     op.execute(
         """
@@ -182,7 +188,9 @@ def downgrade():
         BEFORE UPDATE ON stock
         FOR EACH ROW
         EXECUTE PROCEDURE save_stock_modification_date()
-        """ + ';')
+        """
+        + ";"
+    )
 
     op.execute(
         """
@@ -282,6 +290,8 @@ def downgrade():
         CREATE CONSTRAINT TRIGGER stock_update AFTER INSERT OR UPDATE
         ON stock
         FOR EACH ROW EXECUTE PROCEDURE check_stock()
-      """ + ';')
+      """
+        + ";"
+    )
     op.execute("ALTER TABLE stock ENABLE TRIGGER stock_update_modification_date;")
     op.execute("ALTER TABLE stock ENABLE TRIGGER stock_update;")

@@ -13,9 +13,9 @@ from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import local_provider_event_queries
 
 
-DATE_REGEXP = re.compile(r'Resume(\d{6}).zip')
-DESCRIPTION_FOLDER_NAME_TITELIVE = 'ResumesLivres'
-END_FILE_IDENTIFIER = '_p.txt'
+DATE_REGEXP = re.compile(r"Resume(\d{6}).zip")
+DESCRIPTION_FOLDER_NAME_TITELIVE = "ResumesLivres"
+END_FILE_IDENTIFIER = "_p.txt"
 
 
 class TiteLiveThingDescriptions(LocalProvider):
@@ -43,27 +43,23 @@ class TiteLiveThingDescriptions(LocalProvider):
             self.description_zip_info = next(self.description_zip_infos)
 
         path = PurePath(self.description_zip_info.filename)
-        date_from_filename = path.name.split('_', 1)[0]
-        product_providable_info = self.create_providable_info(Product,
-                                                              date_from_filename,
-                                                              self.date_modified)
+        date_from_filename = path.name.split("_", 1)[0]
+        product_providable_info = self.create_providable_info(Product, date_from_filename, self.date_modified)
         return [product_providable_info]
 
     def fill_object_attributes(self, product: Product):
         with self.zip_file.open(self.description_zip_info) as f:
-            product.description = f.read().decode('iso-8859-1')
+            product.description = f.read().decode("iso-8859-1")
 
     def open_next_file(self):
         if self.zip_file:
             current_file_date = get_date_from_filename(self.zip_file, DATE_REGEXP)
-            self.log_provider_event(LocalProviderEventType.SyncPartEnd,
-                                    current_file_date)
+            self.log_provider_event(LocalProviderEventType.SyncPartEnd, current_file_date)
         next_zip_file_name = str(next(self.zips))
         self.zip_file = get_zip_file_from_ftp(next_zip_file_name, DESCRIPTION_FOLDER_NAME_TITELIVE)
         new_file_date = get_date_from_filename(self.zip_file, DATE_REGEXP)
 
-        self.log_provider_event(LocalProviderEventType.SyncPartStart,
-                                new_file_date)
+        self.log_provider_event(LocalProviderEventType.SyncPartStart, new_file_date)
 
         self.description_zip_infos = self.get_description_files_from_zip_info()
 
@@ -76,8 +72,10 @@ class TiteLiveThingDescriptions(LocalProvider):
             return iter(all_zips)
         else:
             return iter(
-                filter(lambda z: get_date_from_filename(z, DATE_REGEXP) > int(latest_sync_part_end_event.payload),
-                       all_zips))
+                filter(
+                    lambda z: get_date_from_filename(z, DATE_REGEXP) > int(latest_sync_part_end_event.payload), all_zips
+                )
+            )
 
     def get_description_files_from_zip_info(self) -> iter:
         sorted_files = sorted(self.zip_file.infolist(), key=lambda f: f.filename)

@@ -6,9 +6,7 @@ from sqlalchemy import String
 
 
 class NeedsValidationMixin(object):
-    validationToken = Column(String(27),
-                             unique=True,
-                             nullable=True)
+    validationToken = Column(String(27), unique=True, nullable=True)
 
     def generate_validation_token(self):
         self.validationToken = secrets.token_urlsafe(20)

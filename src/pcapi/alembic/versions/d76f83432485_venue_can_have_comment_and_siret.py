@@ -9,8 +9,8 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = 'd76f83432485'
-down_revision = 'ddf0dc458d57'
+revision = "d76f83432485"
+down_revision = "ddf0dc458d57"
 branch_labels = None
 depends_on = None
 
@@ -21,11 +21,10 @@ def upgrade():
         OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
         OR (siret IS NOT NULL AND "isVirtual" IS FALSE)
     """
-    op.drop_constraint('check_has_siret_xor_comment_xor_isVirtual', 'venue')
-    op.create_check_constraint(constraint_name='check_has_siret_xor_comment_xor_isVirtual',
-                               table_name='venue',
-                               condition=NEW_CONSTRAINT
-                               )
+    op.drop_constraint("check_has_siret_xor_comment_xor_isVirtual", "venue")
+    op.create_check_constraint(
+        constraint_name="check_has_siret_xor_comment_xor_isVirtual", table_name="venue", condition=NEW_CONSTRAINT
+    )
 
 
 def downgrade():
@@ -34,9 +33,7 @@ def downgrade():
         OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
         OR (siret IS NOT NULL AND comment IS NULL AND "isVirtual" IS FALSE)
     """
-    op.drop_constraint('check_has_siret_xor_comment_xor_isVirtual', 'venue')
-    op.create_check_constraint(constraint_name='check_has_siret_xor_comment_xor_isVirtual',
-                               table_name='venue',
-                               condition=OLD_CONSTRAINT
-                               )
-
+    op.drop_constraint("check_has_siret_xor_comment_xor_isVirtual", "venue")
+    op.create_check_constraint(
+        constraint_name="check_has_siret_xor_comment_xor_isVirtual", table_name="venue", condition=OLD_CONSTRAINT
+    )

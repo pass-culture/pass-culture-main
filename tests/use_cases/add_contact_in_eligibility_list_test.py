@@ -12,18 +12,23 @@ class AddContactInEligibilityListTest:
         self.notification_service = MailjetNotificationService()
         self.notification_service.create_mailing_contact = MagicMock()
         self.notification_service.add_contact_to_eligible_soon_list = MagicMock()
-        self.add_contact_in_eligibility_list = AddContactInEligibilityList(notification_service=self.notification_service)
-
+        self.add_contact_in_eligibility_list = AddContactInEligibilityList(
+            notification_service=self.notification_service
+        )
 
     def test_create_mailing_contact(self, app):
         # Given
-        contact_email = 'beneficiary@example.com'
-        contact_date_of_birth = '2003-03-05'
+        contact_email = "beneficiary@example.com"
+        contact_date_of_birth = "2003-03-05"
         contact_department_code = "98"
         beneficiary_contact = BeneficiaryContact(contact_email, contact_date_of_birth, contact_department_code)
 
         # When
-        self.add_contact_in_eligibility_list.execute(contact_email=contact_email, contact_date_of_birth=contact_date_of_birth, contact_department_code=contact_department_code)
+        self.add_contact_in_eligibility_list.execute(
+            contact_email=contact_email,
+            contact_date_of_birth=contact_date_of_birth,
+            contact_department_code=contact_department_code,
+        )
 
         # Then
         beneficiary_contact_params = self.notification_service.create_mailing_contact.call_args[0][0]
@@ -33,16 +38,19 @@ class AddContactInEligibilityListTest:
         assert beneficiary_contact_params.date_of_birth == contact_date_of_birth
         assert beneficiary_contact_params.department_code == contact_department_code
 
-
     def test_add_contact_to_eligible_soon_list(self, app):
         # Given
-        contact_email = 'beneficiary@example.com'
-        contact_date_of_birth = '2003-03-05'
+        contact_email = "beneficiary@example.com"
+        contact_date_of_birth = "2003-03-05"
         contact_department_code = "98"
         beneficiary_contact = BeneficiaryContact(contact_email, contact_date_of_birth, contact_department_code)
 
         # When
-        self.add_contact_in_eligibility_list.execute(contact_email=contact_email, contact_date_of_birth=contact_date_of_birth, contact_department_code=contact_department_code)
+        self.add_contact_in_eligibility_list.execute(
+            contact_email=contact_email,
+            contact_date_of_birth=contact_date_of_birth,
+            contact_department_code=contact_department_code,
+        )
 
         # Then
         beneficiary_contact_params = self.notification_service.add_contact_to_eligible_soon_list.call_args[0][0]

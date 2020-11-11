@@ -30,13 +30,17 @@ class BeneficiaryBookingsSQLRepositoryTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, url='http://url.com', thumb_count=1)
+        offer = create_offer_with_thing_product(venue, url="http://url.com", thumb_count=1)
         stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user=user, stock=stock, token='ABCDEF',
-                                 date_created=datetime(2020, 4, 22, 0, 0),
-                                 date_used=datetime(2020, 5, 5, 0, 0),
-                                 is_used=True,
-                                 quantity=2)
+        booking = create_booking(
+            user=user,
+            stock=stock,
+            token="ABCDEF",
+            date_created=datetime(2020, 4, 22, 0, 0),
+            date_used=datetime(2020, 5, 5, 0, 0),
+            is_used=True,
+            quantity=2,
+        )
         repository.save(booking)
 
         # When
@@ -66,7 +70,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert expected_booking.beginningDatetime == stock.beginningDatetime
         assert expected_booking.venueId == venue.id
         assert expected_booking.departementCode == venue.departementCode
-        assert expected_booking.thumb_url == f'http://localhost/storage/thumbs/products/{humanize(offer.productId)}'
+        assert expected_booking.thumb_url == f"http://localhost/storage/thumbs/products/{humanize(offer.productId)}"
 
     @pytest.mark.usefixtures("db_session")
     def should_return_bookings_by_beneficiary_id(self, app):
@@ -77,7 +81,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        user2 = create_user(email='fa@example.com')
+        user2 = create_user(email="fa@example.com")
         create_deposit(user2)
         booking1 = create_booking(user=user1, stock=stock)
         booking2 = create_booking(user=user2, stock=stock)
@@ -97,12 +101,9 @@ class BeneficiaryBookingsSQLRepositoryTest:
         create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer1 = create_offer_with_event_product(
-            venue, event_type='ThingType.ACTIVATION')
-        offer2 = create_offer_with_event_product(
-            venue, event_type='EventType.ACTIVATION')
-        offer3 = create_offer_with_event_product(
-            venue, event_type='ThingType.ANY')
+        offer1 = create_offer_with_event_product(venue, event_type="ThingType.ACTIVATION")
+        offer2 = create_offer_with_event_product(venue, event_type="EventType.ACTIVATION")
+        offer3 = create_offer_with_event_product(venue, event_type="ThingType.ANY")
         stock1 = create_stock(offer=offer1)
         stock2 = create_stock(offer=offer2)
         stock3 = create_stock(offer=offer3)
@@ -158,12 +159,15 @@ class BeneficiaryBookingsSQLRepositoryTest:
         stock2 = create_stock(beginning_datetime=two_days, booking_limit_datetime=now, offer=offer2)
         offer3 = create_offer_with_event_product(venue)
         stock3 = create_stock(beginning_datetime=two_days_bis, booking_limit_datetime=now, offer=offer3)
-        booking1 = create_booking(user=user, stock=stock1,
-                                  recommendation=create_recommendation(user=user, offer=offer1))
-        booking2 = create_booking(user=user, stock=stock2,
-                                  recommendation=create_recommendation(user=user, offer=offer2))
-        booking3 = create_booking(user=user, stock=stock3,
-                                  recommendation=create_recommendation(user=user, offer=offer3))
+        booking1 = create_booking(
+            user=user, stock=stock1, recommendation=create_recommendation(user=user, offer=offer1)
+        )
+        booking2 = create_booking(
+            user=user, stock=stock2, recommendation=create_recommendation(user=user, offer=offer2)
+        )
+        booking3 = create_booking(
+            user=user, stock=stock3, recommendation=create_recommendation(user=user, offer=offer3)
+        )
         repository.save(booking1, booking2, booking3)
 
         # When
@@ -182,13 +186,23 @@ class GetStocksInformationTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, url='http://url.com')
-        stock1 = create_stock(beginning_datetime=datetime(2020, 3, 5), booking_limit_datetime=datetime(2020, 1, 6),
-                              date_created=datetime(2020, 1, 4), date_modified=datetime(2020, 1, 7), offer=offer,
-                              price=0)
-        stock2 = create_stock(beginning_datetime=datetime(2020, 4, 5), booking_limit_datetime=datetime(2020, 2, 6),
-                              date_created=datetime(2020, 2, 4), date_modified=datetime(2020, 2, 7), offer=offer,
-                              price=12)
+        offer = create_offer_with_thing_product(venue, url="http://url.com")
+        stock1 = create_stock(
+            beginning_datetime=datetime(2020, 3, 5),
+            booking_limit_datetime=datetime(2020, 1, 6),
+            date_created=datetime(2020, 1, 4),
+            date_modified=datetime(2020, 1, 7),
+            offer=offer,
+            price=0,
+        )
+        stock2 = create_stock(
+            beginning_datetime=datetime(2020, 4, 5),
+            booking_limit_datetime=datetime(2020, 2, 6),
+            date_created=datetime(2020, 2, 4),
+            date_modified=datetime(2020, 2, 7),
+            offer=offer,
+            price=12,
+        )
 
         repository.save(stock1, stock2)
 
@@ -197,24 +211,28 @@ class GetStocksInformationTest:
 
         # Then
         assert set(results) == {
-            (datetime(2020, 1, 4, 0, 0),
-             datetime(2020, 3, 5, 0, 0),
-             datetime(2020, 1, 6, 0, 0),
-             datetime(2020, 1, 7, 0, 0),
-             offer.id,
-             None,
-             0.00,
-             stock1.id,
-             False,
-             True),
-            (datetime(2020, 2, 4, 0, 0),
-             datetime(2020, 4, 5, 0, 0),
-             datetime(2020, 2, 6, 0, 0),
-             datetime(2020, 2, 7, 0, 0),
-             offer.id,
-             None,
-             12.00,
-             stock2.id,
-             False,
-             True)
+            (
+                datetime(2020, 1, 4, 0, 0),
+                datetime(2020, 3, 5, 0, 0),
+                datetime(2020, 1, 6, 0, 0),
+                datetime(2020, 1, 7, 0, 0),
+                offer.id,
+                None,
+                0.00,
+                stock1.id,
+                False,
+                True,
+            ),
+            (
+                datetime(2020, 2, 4, 0, 0),
+                datetime(2020, 4, 5, 0, 0),
+                datetime(2020, 2, 6, 0, 0),
+                datetime(2020, 2, 7, 0, 0),
+                offer.id,
+                None,
+                12.00,
+                stock2.id,
+                False,
+                True,
+            ),
         }

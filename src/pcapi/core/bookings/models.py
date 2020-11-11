@@ -21,66 +21,37 @@ from pcapi.utils.human_ids import humanize
 
 
 class Booking(PcObject, Model, VersionedMixin):
-    __tablename__ = 'booking'
+    __tablename__ = "booking"
 
-    id = Column(BigInteger,
-                primary_key=True,
-                autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    dateCreated = Column(DateTime,
-                         nullable=False,
-                         default=datetime.utcnow)
+    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    dateUsed = Column(DateTime,
-                      nullable=True)
+    dateUsed = Column(DateTime, nullable=True)
 
-    recommendationId = Column(BigInteger,
-                              ForeignKey("recommendation.id"),
-                              index=True)
+    recommendationId = Column(BigInteger, ForeignKey("recommendation.id"), index=True)
 
-    recommendation = relationship('Recommendation',
-                                  foreign_keys=[recommendationId],
-                                  backref='bookings')
+    recommendation = relationship("Recommendation", foreign_keys=[recommendationId], backref="bookings")
 
-    stockId = Column(BigInteger,
-                     ForeignKey("stock.id"),
-                     index=True,
-                     nullable=False)
+    stockId = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
 
-    stock = relationship('StockSQLEntity',
-                         foreign_keys=[stockId],
-                         backref='bookings')
+    stock = relationship("StockSQLEntity", foreign_keys=[stockId], backref="bookings")
 
-    quantity = Column(Integer,
-                      nullable=False,
-                      default=1)
+    quantity = Column(Integer, nullable=False, default=1)
 
-    token = Column(String(6),
-                   unique=True,
-                   nullable=False)
+    token = Column(String(6), unique=True, nullable=False)
 
-    userId = Column(BigInteger,
-                    ForeignKey('user.id'),
-                    index=True,
-                    nullable=False)
+    userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
 
-    user = relationship('UserSQLEntity',
-                        foreign_keys=[userId],
-                        backref='userBookings')
+    user = relationship("UserSQLEntity", foreign_keys=[userId], backref="userBookings")
 
-    amount = Column(Numeric(10, 2),
-                    nullable=False)
+    amount = Column(Numeric(10, 2), nullable=False)
 
-    isCancelled = Column(Boolean,
-                         nullable=False,
-                         server_default=expression.false(),
-                         default=False)
+    isCancelled = Column(Boolean, nullable=False, server_default=expression.false(), default=False)
 
     cancellationDate = Column(DateTime, nullable=True)
 
-    isUsed = Column(Boolean,
-                    nullable=False,
-                    default=False)
+    isUsed = Column(Boolean, nullable=False, default=False)
 
     confirmationDate = Column(DateTime, nullable=True)
 
@@ -97,19 +68,20 @@ class Booking(PcObject, Model, VersionedMixin):
         url = offer.url
         if url is None:
             return None
-        if not url.startswith('http'):
+        if not url.startswith("http"):
             url = "http://" + url
-        return url.replace('{token}', self.token) \
-            .replace('{offerId}', humanize(offer.id)) \
-            .replace('{email}', self.user.email)
+        return (
+            url.replace("{token}", self.token)
+            .replace("{offerId}", humanize(offer.id))
+            .replace("{email}", self.user.email)
+        )
 
     @staticmethod
     def restize_internal_error(ie):
-        if 'tooManyBookings' in str(ie.orig):
-            return ['global', 'La quantité disponible pour cette offre est atteinte.']
-        elif 'insufficientFunds' in str(ie.orig):
-            return ['insufficientFunds',
-                    "Le solde de votre pass est insuffisant pour réserver cette offre."]
+        if "tooManyBookings" in str(ie.orig):
+            return ["global", "La quantité disponible pour cette offre est atteinte."]
+        elif "insufficientFunds" in str(ie.orig):
+            return ["insufficientFunds", "Le solde de votre pass est insuffisant pour réserver cette offre."]
         return PcObject.restize_integrity_error(ie)
 
     @property
@@ -156,9 +128,9 @@ class Booking(PcObject, Model, VersionedMixin):
 # FIXME: move this out of the `models` module
 class ActivationUser:
     CSV_HEADER = [
-        'Prénom',
-        'Nom',
-        'Email',
+        "Prénom",
+        "Nom",
+        "Email",
         "Contremarque d'activation",
     ]
 
@@ -169,12 +141,7 @@ class ActivationUser:
         self.token = booking.token
 
     def as_csv_row(self):
-        return [
-            self.first_name,
-            self.last_name,
-            self.email,
-            self.token
-        ]
+        return [self.first_name, self.last_name, self.email, self.token]
 
 
 Booking.trig_ddl = """
@@ -240,9 +207,7 @@ Booking.trig_ddl = """
     ON booking
     FOR EACH ROW EXECUTE PROCEDURE check_booking()
     """
-event.listen(Booking.__table__,
-             'after_create',
-             DDL(Booking.trig_ddl))
+event.listen(Booking.__table__, "after_create", DDL(Booking.trig_ddl))
 
 Booking.trig_update_cancellationDate_on_isCancelled_ddl = """
     CREATE OR REPLACE FUNCTION save_cancellation_date()
@@ -265,6 +230,4 @@ Booking.trig_update_cancellationDate_on_isCancelled_ddl = """
     EXECUTE PROCEDURE save_cancellation_date()
     """
 
-event.listen(Booking.__table__,
-             'after_create',
-             DDL(Booking.trig_update_cancellationDate_on_isCancelled_ddl))
+event.listen(Booking.__table__, "after_create", DDL(Booking.trig_update_cancellationDate_on_isCancelled_ddl))

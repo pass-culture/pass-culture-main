@@ -11,8 +11,7 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_anonymous(self, app):
             # when
-            response = TestClient(app.test_client()).get(
-                '/types')
+            response = TestClient(app.test_client()).get("/types")
 
             # then
             assert response.status_code == 401
@@ -21,62 +20,53 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged(self, app):
             # given
-            user = create_user(email='test@email.com')
+            user = create_user(email="test@email.com")
             repository.save(user)
 
             # when
-            response = TestClient(app.test_client()) \
-                .with_auth('test@email.com') \
-                .get(
-                '/types')
+            response = TestClient(app.test_client()).with_auth("test@email.com").get("/types")
             types = response.json
 
             # then
             assert response.status_code == 200
-            types_values = [type['value'] for type in types]
-            assert 'ThingType.ACTIVATION' not in types_values
-            assert 'EventType.ACTIVATION' not in types_values
-            assert 'ThingType.OEUVRE_ART' in types_values
-            assert 'ThingType.INSTRUMENT' in types_values
-            assert 'ThingType.LIVRE_AUDIO' in types_values
+            types_values = [type["value"] for type in types]
+            assert "ThingType.ACTIVATION" not in types_values
+            assert "EventType.ACTIVATION" not in types_values
+            assert "ThingType.OEUVRE_ART" in types_values
+            assert "ThingType.INSTRUMENT" in types_values
+            assert "ThingType.LIVRE_AUDIO" in types_values
 
         @pytest.mark.usefixtures("db_session")
         def when_user_is_admin(self, app):
             # given
-            admin_user = create_user(can_book_free_offers=False, email='pctest.admin93.0@btmx.fr', is_admin=True)
+            admin_user = create_user(can_book_free_offers=False, email="pctest.admin93.0@btmx.fr", is_admin=True)
             repository.save(admin_user)
 
             # when
-            response = TestClient(app.test_client()) \
-                .with_auth('pctest.admin93.0@btmx.fr') \
-                .get(
-                '/types')
+            response = TestClient(app.test_client()).with_auth("pctest.admin93.0@btmx.fr").get("/types")
             types = response.json
 
             # then
             assert response.status_code == 200
-            types_values = [type['value'] for type in types]
-            assert 'ThingType.ACTIVATION' not in types_values
-            assert 'EventType.ACTIVATION' not in types_values
+            types_values = [type["value"] for type in types]
+            assert "ThingType.ACTIVATION" not in types_values
+            assert "EventType.ACTIVATION" not in types_values
 
         @pytest.mark.usefixtures("db_session")
         def when_user_returns_types_labels(self, app):
             # given
-            user = create_user(email='test@email.com')
+            user = create_user(email="test@email.com")
 
             repository.save(user)
 
             # when
-            response = TestClient(app.test_client()) \
-                .with_auth('test@email.com') \
-                .get(
-                '/types')
+            response = TestClient(app.test_client()).with_auth("test@email.com").get("/types")
             types = response.json
 
             # then
             assert response.status_code == 200
-            pro_labels = [type['proLabel'] for type in types]
-            app_labels = [type['appLabel'] for type in types]
+            pro_labels = [type["proLabel"] for type in types]
+            app_labels = [type["appLabel"] for type in types]
 
             assert "Livres papier ou numérique, abonnements lecture" in pro_labels
             assert "Conférences, rencontres et découverte des métiers" in pro_labels

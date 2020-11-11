@@ -16,10 +16,14 @@ class DeleteCorruptedAllocineStocksTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        allocine_provider = get_provider_by_local_class('AllocineStocks')
+        allocine_provider = get_provider_by_local_class("AllocineStocks")
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(id_at_providers='TW92aWU6MjczNjU5%38986972800011-1', is_soft_deleted=True,
-                             last_provider_id=allocine_provider.id, offer=offer)
+        stock = create_stock(
+            id_at_providers="TW92aWU6MjczNjU5%38986972800011-1",
+            is_soft_deleted=True,
+            last_provider_id=allocine_provider.id,
+            offer=offer,
+        )
         repository.save(stock)
 
         # When
@@ -33,10 +37,14 @@ class DeleteCorruptedAllocineStocksTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        allocine_provider = get_provider_by_local_class('AllocineStocks')
+        allocine_provider = get_provider_by_local_class("AllocineStocks")
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(id_at_providers='TW92aWU6MjczNTc5%31940406700021#LOCAL/2020-01-18T14:00:00',
-                             is_soft_deleted=True, last_provider_id=allocine_provider.id, offer=offer)
+        stock = create_stock(
+            id_at_providers="TW92aWU6MjczNTc5%31940406700021#LOCAL/2020-01-18T14:00:00",
+            is_soft_deleted=True,
+            last_provider_id=allocine_provider.id,
+            offer=offer,
+        )
         repository.save(stock)
 
         # When
@@ -50,10 +58,14 @@ class DeleteCorruptedAllocineStocksTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        titelive_provider = get_provider_by_local_class('TiteLiveStocks')
+        titelive_provider = get_provider_by_local_class("TiteLiveStocks")
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(id_at_providers='TW92aWU6MjczNjU5%38986972800011-1', is_soft_deleted=True,
-                             last_provider_id=titelive_provider.id, offer=offer)
+        stock = create_stock(
+            id_at_providers="TW92aWU6MjczNjU5%38986972800011-1",
+            is_soft_deleted=True,
+            last_provider_id=titelive_provider.id,
+            offer=offer,
+        )
         repository.save(stock)
 
         # When
@@ -67,10 +79,14 @@ class DeleteCorruptedAllocineStocksTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        allocine_provider = get_provider_by_local_class('AllocineStocks')
+        allocine_provider = get_provider_by_local_class("AllocineStocks")
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(id_at_providers='TW92aWU6MjczNjU5%38986972800011-1', is_soft_deleted=False,
-                             last_provider_id=allocine_provider.id, offer=offer)
+        stock = create_stock(
+            id_at_providers="TW92aWU6MjczNjU5%38986972800011-1",
+            is_soft_deleted=False,
+            last_provider_id=allocine_provider.id,
+            offer=offer,
+        )
         repository.save(stock)
 
         # When

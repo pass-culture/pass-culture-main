@@ -42,7 +42,7 @@ from pcapi.utils.config import ENV
 
 def clean_all_database(*args, **kwargs):
     """ Order of deletions matters because of foreign key constraints """
-    if ENV != 'development':
+    if ENV != "development":
         raise ValueError(f"You cannot do this on this environment: '{ENV}'")
     Activity = load_activity()
     LocalProviderEvent.query.delete()

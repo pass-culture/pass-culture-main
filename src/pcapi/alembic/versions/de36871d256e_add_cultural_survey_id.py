@@ -11,16 +11,15 @@ from sqlalchemy.dialects.postgresql import UUID
 
 
 # revision identifiers, used by Alembic.
-revision = 'de36871d256e'
-down_revision = 'ec50928d7331'
+revision = "de36871d256e"
+down_revision = "ec50928d7331"
 branch_labels = None
 depends_on = None
 
 
-
 def upgrade():
-    op.add_column('user', sa.Column('culturalSurveyId', UUID(), nullable=True))
+    op.add_column("user", sa.Column("culturalSurveyId", UUID(), nullable=True))
 
 
 def downgrade():
-    op.drop_column('user', 'culturalSurveyId')
+    op.drop_column("user", "culturalSurveyId")

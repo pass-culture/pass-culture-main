@@ -50,7 +50,7 @@ def validate_offerer_attachment(token):
     try:
         send_attachment_validation_email_to_pro_offerer(user_offerer, send_raw_email)
     except MailServiceException as mail_service_exception:
-        app.logger.exception('Email service failure', mail_service_exception)
+        app.logger.exception("Email service failure", mail_service_exception)
 
     return "Validation du rattachement de la structure effectuée", 202
 
@@ -76,13 +76,13 @@ def validate_new_offerer(token):
     try:
         send_validation_confirmation_email_to_pro(offerer, send_raw_email)
     except MailServiceException as mail_service_exception:
-        app.logger.exception('Email service failure', mail_service_exception)
+        app.logger.exception("Email service failure", mail_service_exception)
     return "Validation effectuée", 202
 
 
 @public_api.route("/validate/venue/", methods=["GET"])
 def validate_venue():
-    token = request.args.get('token')
+    token = request.args.get("token")
     check_validation_request(token)
     venue = VenueSQLEntity.query.filter_by(validationToken=token).first()
     check_venue_found(venue)
@@ -95,7 +95,7 @@ def validate_venue():
     try:
         send_venue_validation_confirmation_email(venue, send_raw_email)
     except MailServiceException as mail_service_exception:
-        app.logger.exception('Email service failure', mail_service_exception)
+        app.logger.exception("Email service failure", mail_service_exception)
 
     return "Validation effectuée", 202
 
@@ -123,38 +123,48 @@ def validate_user(token):
             try:
                 send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
             except MailServiceException as mail_service_exception:
-                app.logger.exception('[send_ongoing_offerer_attachment_information_email_to_pro] '
-                                 'Email service failure', mail_service_exception)
+                app.logger.exception(
+                    "[send_ongoing_offerer_attachment_information_email_to_pro] " "Email service failure",
+                    mail_service_exception,
+                )
         else:
             try:
                 send_pro_user_waiting_for_validation_by_admin_email(user_to_validate, send_raw_email, offerer)
             except MailServiceException as mail_service_exception:
-                app.logger.exception('[send_pro_user_waiting_for_validation_by_admin_email] '
-                                 'Email service failure', mail_service_exception)
+                app.logger.exception(
+                    "[send_pro_user_waiting_for_validation_by_admin_email] " "Email service failure",
+                    mail_service_exception,
+                )
 
-    return '', 204
+    return "", 204
 
 
-@private_api.route('/validate/payment_message', methods=['POST'])
+@private_api.route("/validate/payment_message", methods=["POST"])
 @login_required
 def certify_message_file_authenticity():
     if not current_user.isAdmin:
         raise ForbiddenError()
 
-    xml_content = request.files['file'].read().decode('utf-8')
+    xml_content = request.files["file"].read().decode("utf-8")
     message_id = read_message_name_in_message_file(xml_content)
     found_checksum = find_message_checksum(message_id)
 
     if not found_checksum:
-        raise ResourceNotFoundError({'xml': ["L'identifiant du document XML 'MsgId' est inconnu"]})
+        raise ResourceNotFoundError({"xml": ["L'identifiant du document XML 'MsgId' est inconnu"]})
 
     given_checksum = generate_file_checksum(xml_content)
 
     if found_checksum != given_checksum:
-        raise ApiErrors({'xml': [
-            "L'intégrité du document n'est pas validée car la somme de contrôle est invalide : %s" % given_checksum.hex()]})
+        raise ApiErrors(
+            {
+                "xml": [
+                    "L'intégrité du document n'est pas validée car la somme de contrôle est invalide : %s"
+                    % given_checksum.hex()
+                ]
+            }
+        )
 
-    return jsonify({'checksum': given_checksum.hex()}), 200
+    return jsonify({"checksum": given_checksum.hex()}), 200
 
 
 def _ask_for_validation(offerer: Offerer, user_offerer: UserOfferer):
@@ -162,7 +172,7 @@ def _ask_for_validation(offerer: Offerer, user_offerer: UserOfferer):
         maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
 
     except MailServiceException as mail_service_exception:
-        app.logger.exception('Email service failure', mail_service_exception)
+        app.logger.exception("Email service failure", mail_service_exception)
 
 
 def _validate_offerer(offerer: Offerer, user_offerer: UserOfferer):

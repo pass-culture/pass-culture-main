@@ -21,8 +21,8 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         abstract = True
         # sqlalchemy_session = pcapi.models.db.session
-        sqlalchemy_session = 'ignored'  # see hack in `_save()`
-        sqlalchemy_session_persistence = 'commit'
+        sqlalchemy_session = "ignored"  # see hack in `_save()`
+        sqlalchemy_session_persistence = "commit"
 
     @classmethod
     def _save(cls, model_class, session, *args, **kwargs):
@@ -36,6 +36,7 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
         # here is a hack.
         # This issue is discussed here: https://github.com/jeancochrane/pytest-flask-sqlalchemy/issues/12
         from pcapi.models import db
+
         session = db.session
 
         known_fields = {
@@ -96,13 +97,9 @@ def assert_num_queries(expected_n_queries):
     yield
     queries = flask._app_ctx_stack._assert_num_queries
     if len(queries) != expected_n_queries:
-        details = '\n'.join(
-            _format_sql_query(query, i, len(queries))
-            for i, query in enumerate(queries, start=1)
-        )
+        details = "\n".join(_format_sql_query(query, i, len(queries)) for i, query in enumerate(queries, start=1))
         pytest.fail(
-            f"{len(queries)} queries executed, {expected_n_queries} expected\n"
-            f"Captured queries were:\n{details}"
+            f"{len(queries)} queries executed, {expected_n_queries} expected\n" f"Captured queries were:\n{details}"
         )
     del flask._app_ctx_stack._assert_num_queries
 
@@ -111,8 +108,8 @@ def _format_sql_query(query, i, total):
     # SQLAlchemy inserts '\n' into the generated SQL. We add
     # to padding so that the whole query is properly aligned.
     prefix_length = 3 + int(math.log(total, 10))
-    sql = (query['statement'] % query['parameters']).replace('\n', '\n' + ' ' * prefix_length)
-    return f'{i}. {sql}'
+    sql = (query["statement"] % query["parameters"]).replace("\n", "\n" + " " * prefix_length)
+    return f"{i}. {sql}"
 
 
 def _record_end_of_query(statement, parameters, **kwargs):
@@ -122,16 +119,16 @@ def _record_end_of_query(statement, parameters, **kwargs):
     # FIXME (dbaty, 2020-10-23): SQLAlchemy issues savepoints. This is
     # probably due to the way we configure it, which should probably
     # be changed.
-    if statement.startswith('SAVEPOINT'):
+    if statement.startswith("SAVEPOINT"):
         return
     # Do not record the query if we're not within the
     # assert_num_queries context manager.
-    if not hasattr(flask._app_ctx_stack, '_assert_num_queries'):
+    if not hasattr(flask._app_ctx_stack, "_assert_num_queries"):
         return
     flask._app_ctx_stack._assert_num_queries.append(
         {
-            'statement': statement,
-            'parameters': parameters,
+            "statement": statement,
+            "parameters": parameters,
         }
     )
 
@@ -139,7 +136,7 @@ def _record_end_of_query(statement, parameters, **kwargs):
 def register_event_for_assert_num_queries():
     sqlalchemy.event.listen(
         sqlalchemy.engine.Engine,
-        'after_cursor_execute',
+        "after_cursor_execute",
         _record_end_of_query,
         named=True,
     )

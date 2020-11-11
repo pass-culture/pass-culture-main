@@ -5,17 +5,12 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.sandboxes.scripts import getters
 
 
-@private_api.route('/sandboxes/<module_name>/<getter_name>', methods=['GET'])
+@private_api.route("/sandboxes/<module_name>/<getter_name>", methods=["GET"])
 def get_sandbox(module_name, getter_name):
 
     if not hasattr(getters, module_name):
         errors = ApiErrors()
-        errors.add_error(
-            'module',
-            'Il n\'existe pas de tel \"{}\" module de getters pour la sandbox'.format(
-                module_name
-            )
-        )
+        errors.add_error("module", 'Il n\'existe pas de tel "{}" module de getters pour la sandbox'.format(module_name))
         raise errors
 
     testcafes_module = getattr(getters, module_name)
@@ -23,11 +18,7 @@ def get_sandbox(module_name, getter_name):
     if not hasattr(testcafes_module, getter_name):
         errors = ApiErrors()
         errors.add_error(
-            'getter',
-            'Il n\'existe pas de tel \"{} {}\" getter pour la sandbox'.format(
-                module_name,
-                getter_name
-            )
+            "getter", 'Il n\'existe pas de tel "{} {}" getter pour la sandbox'.format(module_name, getter_name)
         )
         raise errors
 
@@ -39,10 +30,7 @@ def get_sandbox(module_name, getter_name):
     except:
         errors = ApiErrors()
         errors.add_error(
-            'query',
-            'Une erreur s\'est produite lors du calcul de \"{} {}\" pour la sandbox'.format(
-                module_name,
-                getter_name
-            )
+            "query",
+            'Une erreur s\'est produite lors du calcul de "{} {}" pour la sandbox'.format(module_name, getter_name),
         )
         raise errors

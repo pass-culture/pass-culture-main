@@ -15,7 +15,7 @@ def test_should_return_error_when_information_is_mandatory():
     api_error = validate_generic(offer)
 
     # Then
-    assert api_error.errors == {'name': ['Cette information est obligatoire']}
+    assert api_error.errors == {"name": ["Cette information est obligatoire"]}
 
 
 def test_should_return_error_when_information_requires_a_string_type():
@@ -28,7 +28,7 @@ def test_should_return_error_when_information_requires_a_string_type():
     api_error = validate_generic(offer)
 
     # Then
-    assert api_error.errors == {'name': ['doit être une chaîne de caractères']}
+    assert api_error.errors == {"name": ["doit être une chaîne de caractères"]}
 
 
 def test_should_return_error_when_information_requires_an_integer_type():
@@ -41,20 +41,22 @@ def test_should_return_error_when_information_requires_an_integer_type():
     api_error = validate_generic(offer)
 
     # Then
-    assert api_error.errors == {'durationMinutes': ['doit être un entier']}
+    assert api_error.errors == {"durationMinutes": ["doit être un entier"]}
 
 
 def test_should_return_error_when_information_exceeds_column_size():
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_offer_with_thing_product(venue,
-                                            thing_name="qBWnUS4JTt5qPNkOv02oaBu3H7GfMY2H9vgocxsYNJrfvHuQaaRJn"
-                                                       "2AI9V93Wds1nJS8NqBhJVNYzaNrgS1eldyn4HsIiUU3UqmPwPGHAcQ"
-                                                       "e451TBYUO0xYiyQzTMOKxcYMJsd9FBbygb")
+    offer = create_offer_with_thing_product(
+        venue,
+        thing_name="qBWnUS4JTt5qPNkOv02oaBu3H7GfMY2H9vgocxsYNJrfvHuQaaRJn"
+        "2AI9V93Wds1nJS8NqBhJVNYzaNrgS1eldyn4HsIiUU3UqmPwPGHAcQ"
+        "e451TBYUO0xYiyQzTMOKxcYMJsd9FBbygb",
+    )
 
     # When
     api_error = validate_generic(offer)
 
     # Then
-    assert api_error.errors == {'name': ['Vous devez saisir moins de 140 caractères']}
+    assert api_error.errors == {"name": ["Vous devez saisir moins de 140 caractères"]}

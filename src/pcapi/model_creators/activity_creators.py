@@ -8,14 +8,14 @@ def create_venue_activity(venue, verb, issued_at=datetime.utcnow):
     Activity = versioning_manager.activity_cls
     activity = Activity()
     activity.issued_at = issued_at
-    activity.table_name = 'venue'
+    activity.table_name = "venue"
     activity.verb = verb
     variables = {
-        'id': venue.id,
-        'name': venue.name,
-        'siret': venue.siret,
-        'departementCode': venue.departementCode,
-        'postalCode': venue.postalCode
+        "id": venue.id,
+        "name": venue.name,
+        "siret": venue.siret,
+        "departementCode": venue.departementCode,
+        "postalCode": venue.postalCode,
     }
     activity.changed_data = variables
 
@@ -45,23 +45,23 @@ def create_booking_activity(booking, table_name, verb, issued_at=datetime.utcnow
     activity.verb = verb
 
     base_data = {
-        'id': booking.id,
-        'token': booking.token,
-        'userId': booking.userId,
-        'stockId': booking.stockId,
-        'isCancelled': booking.isCancelled,
-        'quantity': booking.quantity,
-        'recommendationId': booking.recommendationId,
-        'isUsed': booking.isUsed
+        "id": booking.id,
+        "token": booking.token,
+        "userId": booking.userId,
+        "stockId": booking.stockId,
+        "isCancelled": booking.isCancelled,
+        "quantity": booking.quantity,
+        "recommendationId": booking.recommendationId,
+        "isUsed": booking.isUsed,
     }
 
-    if verb.lower() == 'insert':
+    if verb.lower() == "insert":
         activity.old_data = {}
         activity.changed_data = base_data
-    elif verb.lower() == 'update':
+    elif verb.lower() == "update":
         activity.old_data = base_data
         activity.changed_data = data
-    elif verb.lower() == 'delete':
+    elif verb.lower() == "delete":
         activity.old_data = base_data
         activity.changed_data = {}
 
@@ -72,21 +72,18 @@ def create_stock_activity(stock, verb, issued_at=datetime.utcnow, data=None):
     Activity = versioning_manager.activity_cls
     activity = Activity()
     activity.issued_at = issued_at
-    activity.table_name = 'stock'
+    activity.table_name = "stock"
     activity.verb = verb
 
-    base_data = {
-        'id': stock.id,
-        'quantity': stock.quantity
-    }
+    base_data = {"id": stock.id, "quantity": stock.quantity}
 
-    if verb.lower() == 'insert':
+    if verb.lower() == "insert":
         activity.old_data = {}
         activity.changed_data = base_data
-    elif verb.lower() == 'update':
+    elif verb.lower() == "update":
         activity.old_data = base_data
         activity.changed_data = data
-    elif verb.lower() == 'delete':
+    elif verb.lower() == "delete":
         activity.old_data = base_data
         activity.changed_data = data
 

@@ -10,30 +10,33 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '989e483edf93'
-down_revision = '802c89135fd7'
+revision = "989e483edf93"
+down_revision = "802c89135fd7"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.add_column('stock', sa.Column('beginningDatetime', sa.DateTime, nullable=True, index=True))
-    op.add_column('stock', sa.Column('endDatetime', sa.DateTime, nullable=True))
-    op.drop_constraint('check_stock_has_event_occurrence_xor_offer', 'stock')
-    op.execute("""
+    op.add_column("stock", sa.Column("beginningDatetime", sa.DateTime, nullable=True, index=True))
+    op.add_column("stock", sa.Column("endDatetime", sa.DateTime, nullable=True))
+    op.drop_constraint("check_stock_has_event_occurrence_xor_offer", "stock")
+    op.execute(
+        """
     UPDATE stock s SET
         "beginningDatetime" = (SELECT "beginningDatetime" FROM event_occurrence eo WHERE s."eventOccurrenceId" = eo.id),
         "endDatetime" = (SELECT "endDatetime" FROM event_occurrence eo WHERE s."eventOccurrenceId" = eo.id),
         "offerId" = (SELECT "offerId" FROM event_occurrence eo WHERE s."eventOccurrenceId" = eo.id),
         "isSoftDeleted" = (SELECT eo."isSoftDeleted" FROM event_occurrence eo WHERE s."eventOccurrenceId" = eo.id) OR s."isSoftDeleted"
     WHERE s."offerId" IS NULL;
-    """)
-    op.drop_column('stock', 'eventOccurrenceId')
-    op.drop_column('recommendation', 'inviteforEventOccurrenceId')
-    op.alter_column('stock', 'offerId', existing_type=sa.BigInteger, nullable=False)
-    op.drop_table('event_occurrence')
+    """
+    )
+    op.drop_column("stock", "eventOccurrenceId")
+    op.drop_column("recommendation", "inviteforEventOccurrenceId")
+    op.alter_column("stock", "offerId", existing_type=sa.BigInteger, nullable=False)
+    op.drop_table("event_occurrence")
 
-    op.execute("""
+    op.execute(
+        """
        CREATE OR REPLACE FUNCTION check_stock()
        RETURNS TRIGGER AS $$
        BEGIN
@@ -59,11 +62,13 @@ def upgrade():
        CREATE CONSTRAINT TRIGGER stock_update AFTER INSERT OR UPDATE
        ON stock
        FOR EACH ROW EXECUTE PROCEDURE check_stock()
-    """)
+    """
+    )
 
 
 def downgrade():
-    op.execute("""
+    op.execute(
+        """
     CREATE TABLE event_occurrence (
         "isSoftDeleted" boolean NOT NULL,
         "idAtProviders" character varying(70),
@@ -95,13 +100,15 @@ def downgrade():
     CACHE 1;
 
     ALTER TABLE ONLY event_occurrence ALTER COLUMN id SET DEFAULT nextval('event_occurrence_id_seq'::regclass);
-    """)
+    """
+    )
 
-    op.add_column('recommendation', sa.Column('inviteforEventOccurrenceId', sa.BigInteger, nullable=True))
-    op.add_column('stock', sa.Column('eventOccurrenceId', sa.BigInteger, nullable=True))
-    op.alter_column('stock', 'offerId', existing_type=sa.BigInteger, nullable=True)
+    op.add_column("recommendation", sa.Column("inviteforEventOccurrenceId", sa.BigInteger, nullable=True))
+    op.add_column("stock", sa.Column("eventOccurrenceId", sa.BigInteger, nullable=True))
+    op.alter_column("stock", "offerId", existing_type=sa.BigInteger, nullable=True)
 
-    op.execute("""
+    op.execute(
+        """
         UPDATE stock SET "eventOccurrenceId" = id, "offerId" = NULL WHERE "beginningDatetime" IS NOT NULL;
         ALTER TABLE stock
         ADD CONSTRAINT check_stock_has_event_occurrence_xor_offer
@@ -111,11 +118,13 @@ def downgrade():
         );
         
         SELECT pg_catalog.setval('event_occurrence_id_seq', (SELECT MAX(id) FROM event_occurrence), true);
-    """)
+    """
+    )
 
-    op.drop_column('stock', 'beginningDatetime')
-    op.drop_column('stock', 'endDatetime')
-    op.execute("""
+    op.drop_column("stock", "beginningDatetime")
+    op.drop_column("stock", "endDatetime")
+    op.execute(
+        """
         CREATE OR REPLACE FUNCTION check_stock()
         RETURNS TRIGGER AS $$
         BEGIN
@@ -140,5 +149,5 @@ def downgrade():
         CREATE CONSTRAINT TRIGGER stock_update AFTER INSERT OR UPDATE
         ON stock
         FOR EACH ROW EXECUTE PROCEDURE check_stock()
-    """)
-
+    """
+    )

@@ -9,31 +9,36 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = '0fc312879579'
-down_revision = '97c9d39f2fa7'
+revision = "0fc312879579"
+down_revision = "97c9d39f2fa7"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.execute("""
+    op.execute(
+        """
         BEGIN TRANSACTION;
             DROP TRIGGER IF EXISTS audit_trigger_delete ON product;
             DROP TRIGGER IF EXISTS audit_trigger_insert ON product;
             DROP TRIGGER IF EXISTS audit_trigger_update ON product;
         COMMIT;
-    """)
-    op.execute("""
+    """
+    )
+    op.execute(
+        """
         BEGIN TRANSACTION;
             DROP TRIGGER IF EXISTS audit_trigger_delete ON mediation;
             DROP TRIGGER IF EXISTS audit_trigger_insert ON mediation;
             DROP TRIGGER IF EXISTS audit_trigger_update ON mediation;
         COMMIT;
-    """)
+    """
+    )
 
 
 def downgrade():
-    op.execute("""
+    op.execute(
+        """
         CREATE TRIGGER audit_trigger_delete 
         AFTER DELETE ON mediation REFERENCING OLD TABLE AS old_table 
         FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text) 
@@ -63,4 +68,5 @@ def downgrade():
         AFTER UPDATE ON product REFERENCING OLD TABLE AS old_table NEW TABLE AS new_table 
         FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text) 
         EXECUTE PROCEDURE create_activity();
-    """)
+    """
+    )

@@ -9,8 +9,8 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = 'a762ac64ec33'
-down_revision = '47576c4aecc3'
+revision = "a762ac64ec33"
+down_revision = "47576c4aecc3"
 branch_labels = None
 depends_on = None
 
@@ -34,7 +34,9 @@ def upgrade():
         BEFORE UPDATE ON stock
         FOR EACH ROW
         EXECUTE PROCEDURE save_stock_modification_date()
-        """ + ';')
+        """
+        + ";"
+    )
 
 
 def downgrade():
@@ -54,4 +56,6 @@ def downgrade():
         BEFORE UPDATE ON stock
         FOR EACH ROW
         EXECUTE PROCEDURE save_stock_modification_date()
-        """ + ';')
+        """
+        + ";"
+    )

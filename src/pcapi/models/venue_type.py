@@ -9,4 +9,4 @@ from pcapi.models.db import Model
 class VenueType(PcObject, Model):
     label = Column(String(100), nullable=False)
 
-    venue = relationship('VenueSQLEntity')
+    venue = relationship("VenueSQLEntity")

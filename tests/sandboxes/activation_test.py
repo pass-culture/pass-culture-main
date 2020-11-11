@@ -15,7 +15,7 @@ def test_save_activation_sandbox(app):
     logger.info = lambda o: None
 
     # when
-    save_sandbox('activation')
+    save_sandbox("activation")
 
     # then
     assert_created_counts(

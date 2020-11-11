@@ -17,20 +17,14 @@ class Returns200:
         humanized_stock_id = humanize(stock.id)
 
         # when
-        request = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .get("/stocks/" + humanized_stock_id)
-        )
+        request = TestClient(app.test_client()).with_auth(user.email).get("/stocks/" + humanized_stock_id)
         # then
         assert request.json == {
             "beginningDatetime": None,
             "bookingLimitDatetime": None,
             "dateCreated": format_into_utc_date(stock.dateCreated),
             "dateModified": format_into_utc_date(stock.dateModified),
-            "dateModifiedAtLastProvider": format_into_utc_date(
-                stock.dateModifiedAtLastProvider
-            ),
+            "dateModifiedAtLastProvider": format_into_utc_date(stock.dateModifiedAtLastProvider),
             "fieldsUpdated": [],
             "id": humanized_stock_id,
             "idAtProviders": None,
@@ -51,11 +45,7 @@ class Returns404:
         humanized_stock_id = humanize(stock.id)
 
         # when
-        request = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .get("/stocks/" + humanized_stock_id)
-        )
+        request = TestClient(app.test_client()).with_auth(user.email).get("/stocks/" + humanized_stock_id)
 
         # then
         assert request.json == {}
@@ -70,11 +60,7 @@ class Returns401:
         humanized_stock_id = humanize(stock.id)
 
         # when
-        request = (
-            TestClient(app.test_client())
-            .with_auth("wrong@email.fr")
-            .get("/stocks/" + humanized_stock_id)
-        )
+        request = TestClient(app.test_client()).with_auth("wrong@email.fr").get("/stocks/" + humanized_stock_id)
 
         # then
         assert request.json == {"identifier": ["Identifiant incorrect"]}

@@ -13,5 +13,5 @@ MOCK_NAMES = [
     "Terrain vague",
     "Le Sous-sol",
     "La Salle de Bain",
-    "Vivement Lundi"
+    "Vivement Lundi",
 ]

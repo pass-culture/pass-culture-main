@@ -71,9 +71,7 @@ class Returns200:
         assert Offer.query.get(offer.id).bookingEmail == "offer@example.com"
 
     @patch("pcapi.use_cases.update_an_offer.redis.add_offer_id")
-    def when_updating_an_offer_expect_offer_id_to_be_added_to_redis(
-        self, mock_add_offer_id_to_redis, app, db_session
-    ):
+    def when_updating_an_offer_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -96,21 +94,15 @@ class Returns200:
 
         # Then
         assert response.status_code == 200
-        mock_add_offer_id_to_redis.assert_called_once_with(
-            client=app.redis_client, offer_id=offer.id
-        )
+        mock_add_offer_id_to_redis.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
 
-    def when_user_updating_thing_offer_is_linked_to_same_owning_offerer(
-        self, app, db_session
-    ):
+    def when_user_updating_thing_offer_is_linked_to_same_owning_offerer(self, app, db_session):
         # Given
         user = create_user(email="editor@example.com")
         owning_offerer = create_offerer()
         user_offerer = create_user_offerer(user, owning_offerer)
         venue = create_venue(owning_offerer)
-        product = create_product_with_thing_type(
-            thing_name="Old Name", owning_offerer=owning_offerer
-        )
+        product = create_product_with_thing_type(thing_name="Old Name", owning_offerer=owning_offerer)
         offer = create_offer_with_thing_product(venue=venue, product=product)
         repository.save(offer, user_offerer)
         offer_id = offer.id
@@ -130,18 +122,14 @@ class Returns200:
         assert Offer.query.get(offer_id).name == "New Name"
         assert Product.query.get(product_id).name == "New Name"
 
-    def when_user_updating_thing_offer_is_not_linked_to_owning_offerer(
-        self, app, db_session
-    ):
+    def when_user_updating_thing_offer_is_not_linked_to_owning_offerer(self, app, db_session):
         # Given
         user = create_user(email="editor@example.com")
         owning_offerer = create_offerer(siren="123456789")
         editor_offerer = create_offerer(siren="123456780")
         editor_user_offerer = create_user_offerer(user, editor_offerer)
         venue = create_venue(editor_offerer)
-        product = create_product_with_thing_type(
-            thing_name="Old Name", owning_offerer=owning_offerer
-        )
+        product = create_product_with_thing_type(thing_name="Old Name", owning_offerer=owning_offerer)
         offer = create_offer_with_thing_product(venue=venue, product=product)
         repository.save(offer, editor_user_offerer, owning_offerer)
         offer_id = offer.id
@@ -161,17 +149,13 @@ class Returns200:
         assert Offer.query.get(offer_id).name == "New Name"
         assert Product.query.get(product_id).name == "Old Name"
 
-    def when_user_updating_thing_offer_has_rights_on_offer_but_no_owningOfferer_for_thing(
-        self, app, db_session
-    ):
+    def when_user_updating_thing_offer_has_rights_on_offer_but_no_owningOfferer_for_thing(self, app, db_session):
         # Given
         user = create_user(email="editor@example.com")
         offerer = create_offerer(siren="123456780")
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
-        product = create_product_with_thing_type(
-            thing_name="Old Name", owning_offerer=None
-        )
+        product = create_product_with_thing_type(thing_name="Old Name", owning_offerer=None)
         offer = create_offer_with_thing_product(venue=venue, product=product)
         repository.save(offer, user_offerer)
 
@@ -196,9 +180,7 @@ class Returns200:
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
         provider = activate_provider("TiteLiveStocks")
-        offer = create_offer_with_thing_product(
-            venue, id_at_providers="id_provider", last_provider_id=provider.id
-        )
+        offer = create_offer_with_thing_product(venue, id_at_providers="id_provider", last_provider_id=provider.id)
         repository.save(offer, user_offerer)
         offer_id = offer.id
 
@@ -246,9 +228,7 @@ class Returns200:
 
     def when_patch_an_offer_that_is_imported_from_titelive(self, app, db_session):
         # given
-        tite_live_provider = Provider.query.filter(
-            Provider.localClass == "TiteLiveThings"
-        ).first()
+        tite_live_provider = Provider.query.filter(Provider.localClass == "TiteLiveThings").first()
 
         user = create_user()
         offerer = create_offerer()
@@ -277,9 +257,7 @@ class Returns200:
 
     def when_patch_an_offer_that_is_imported_from_allocine(self, app, db_session):
         # given
-        allocine_provider = Provider.query.filter(
-            Provider.localClass == "AllocineStocks"
-        ).first()
+        allocine_provider = Provider.query.filter(Provider.localClass == "AllocineStocks").first()
 
         user = create_user()
         offerer = create_offerer()
@@ -314,9 +292,7 @@ class Returns400:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
-        thing_product = create_product_with_thing_type(
-            thing_name="Old Name", owning_offerer=None
-        )
+        thing_product = create_product_with_thing_type(thing_name="Old Name", owning_offerer=None)
         offer = create_offer_with_thing_product(venue=venue, product=thing_product)
 
         repository.save(offer, user, user_offerer)
@@ -350,9 +326,7 @@ class Returns400:
 
         # Then
         assert response.status_code == 400
-        assert response.json["owningOffererId"] == [
-            "Vous ne pouvez pas changer cette information"
-        ]
+        assert response.json["owningOffererId"] == ["Vous ne pouvez pas changer cette information"]
         for key in forbidden_keys:
             assert key in response.json
 
@@ -362,9 +336,7 @@ class Returns400:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
-        thing_product = create_product_with_thing_type(
-            thing_name="Old Name", owning_offerer=None
-        )
+        thing_product = create_product_with_thing_type(thing_name="Old Name", owning_offerer=None)
         offer = create_offer_with_thing_product(venue, product=thing_product)
 
         repository.save(offer, user, user_offerer)
@@ -382,9 +354,7 @@ class Returns400:
 
         # Then
         assert response.status_code == 400
-        assert response.json["name"] == [
-            "Le titre de l’offre doit faire au maximum 90 caractères."
-        ]
+        assert response.json["name"] == ["Le titre de l’offre doit faire au maximum 90 caractères."]
 
     def when_trying_to_patch_an_imported_offer(self, app, db_session):
         # Given
@@ -392,12 +362,8 @@ class Returns400:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
-        thing_product = create_product_with_thing_type(
-            thing_name="Old Name", owning_offerer=None
-        )
-        provider = create_provider(
-            idx=1, local_class="OpenAgenda", is_active=True, is_enable_for_pro=True
-        )
+        thing_product = create_product_with_thing_type(thing_name="Old Name", owning_offerer=None)
+        provider = create_provider(idx=1, local_class="OpenAgenda", is_active=True, is_enable_for_pro=True)
         offer = create_offer_with_event_product(
             booking_email="wrong-email@example.net",
             venue=venue,
@@ -419,22 +385,16 @@ class Returns400:
 
         # Then
         assert response.status_code == 400
-        assert response.json["global"] == [
-            "Les offres importées ne sont pas modifiables"
-        ]
+        assert response.json["global"] == ["Les offres importées ne sont pas modifiables"]
 
-    def when_trying_to_patch_any_allocine_offer_field_except_is_duo(
-        self, app, db_session
-    ):
+    def when_trying_to_patch_any_allocine_offer_field_except_is_duo(self, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
         provider = get_provider_by_local_class("AllocineStocks")
-        offer = create_offer_with_event_product(
-            venue, id_at_providers="24561461", last_provider=provider
-        )
+        offer = create_offer_with_event_product(venue, id_at_providers="24561461", last_provider=provider)
 
         repository.save(offer, user, user_offerer)
 

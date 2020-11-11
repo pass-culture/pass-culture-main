@@ -18,7 +18,6 @@ from pcapi.models import db
 
 @pytest.mark.usefixtures("db_session")
 class CheckCanBookFreeOfferTest:
-
     def test_dont_raise(self):
         user = users_factories.UserFactory(canBookFreeOffers=True)
         stock = offers_factories.StockFactory()
@@ -31,15 +30,13 @@ class CheckCanBookFreeOfferTest:
 
         with pytest.raises(exceptions.CannotBookFreeOffers) as error:
             validation.check_can_book_free_offer(user, stock)
-        assert (
-            error.value.errors
-            == {'cannotBookFreeOffers': ["Votre compte ne vous permet pas de faire de réservation."]}
-        )
+        assert error.value.errors == {
+            "cannotBookFreeOffers": ["Votre compte ne vous permet pas de faire de réservation."]
+        }
 
 
 @pytest.mark.usefixtures("db_session")
 class CheckOfferAlreadyBookedTest:
-
     def test_dont_raise_if_user_never_booked_this_offer(self):
         offer = offers_factories.OfferFactory()
         user = users_factories.UserFactory()
@@ -55,70 +52,53 @@ class CheckOfferAlreadyBookedTest:
 
         with pytest.raises(exceptions.OfferIsAlreadyBooked) as error:
             validation.check_offer_already_booked(booking.user, booking.stock.offer)
-        assert (
-            error.value.errors
-            == {'offerId': ["Cette offre a déja été reservée par l'utilisateur"]}
-        )
+        assert error.value.errors == {"offerId": ["Cette offre a déja été reservée par l'utilisateur"]}
 
 
 @pytest.mark.usefixtures("db_session")
 class CheckQuantityTest:
-
     def test_ok_on_single(self):
         offer = offers_factories.OfferFactory()
         validation.check_quantity(offer, 1)  # should not raise
 
-    @pytest.mark.parametrize('quantity', [1, 2])
+    @pytest.mark.parametrize("quantity", [1, 2])
     def test_ok_on_duo(self, quantity):
         offer = offers_factories.OfferFactory(isDuo=True)
         validation.check_quantity(offer, quantity)  # should not raise
 
-    @pytest.mark.parametrize('quantity', [0, -1])
+    @pytest.mark.parametrize("quantity", [0, -1])
     def test_raise_if_zero_or_negative_on_single(self, quantity):
         offer = offers_factories.OfferFactory()
 
         with pytest.raises(exceptions.QuantityIsInvalid) as error:
             validation.check_quantity(offer, 0)
-        assert (
-            error.value.errors['quantity']
-            == ["Vous ne pouvez réserver qu'une place pour cette offre."]
-        )
+        assert error.value.errors["quantity"] == ["Vous ne pouvez réserver qu'une place pour cette offre."]
 
-    @pytest.mark.parametrize('quantity', [0, -1])
+    @pytest.mark.parametrize("quantity", [0, -1])
     def test_raise_if_zero_or_negative_on_duo(self, quantity):
         offer = offers_factories.OfferFactory(isDuo=True)
 
         with pytest.raises(exceptions.QuantityIsInvalid) as error:
             validation.check_quantity(offer, 0)
-        assert (
-            error.value.errors['quantity']
-            == ["Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
-        )
+        assert error.value.errors["quantity"] == ["Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
 
     def test_raise_if_more_than_one_on_single(self):
         offer = offers_factories.OfferFactory()
 
         with pytest.raises(exceptions.QuantityIsInvalid) as error:
             validation.check_quantity(offer, 2)
-        assert (
-            error.value.errors['quantity']
-            == ["Vous ne pouvez réserver qu'une place pour cette offre."]
-        )
+        assert error.value.errors["quantity"] == ["Vous ne pouvez réserver qu'une place pour cette offre."]
 
     def test_raise_if_more_than_two_on_duo(self):
         offer = offers_factories.OfferFactory(isDuo=True)
 
         with pytest.raises(exceptions.QuantityIsInvalid) as error:
             validation.check_quantity(offer, 3)
-        assert (
-            error.value.errors['quantity']
-            == ["Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
-        )
+        assert error.value.errors["quantity"] == ["Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
 
 
 @pytest.mark.usefixtures("db_session")
 class CheckStockIsBookableTest:
-
     def test_dont_raise_if_bookable(self):
         stock = offers_factories.StockFactory()
         validation.check_stock_is_bookable(stock)  # should not raise
@@ -129,73 +109,67 @@ class CheckStockIsBookableTest:
 
         with pytest.raises(exceptions.StockIsNotBookable) as error:
             validation.check_stock_is_bookable(stock)
-        assert error.value.errors == {'stock': ["Ce stock n'est pas réservable"]}
+        assert error.value.errors == {"stock": ["Ce stock n'est pas réservable"]}
 
 
 @pytest.mark.usefixtures("db_session")
 class CheckExpenseLimitsTest:
-
     def test_physical_limit(self):
         offer = offers_factories.OfferFactory(product__type=str(ThingType.AUDIOVISUEL))
         expenses = {
-            'all': {'max': 500, 'actual': 200},
-            'physical': {'max': 200, 'actual': 0},
-            'digital': {'max': 300, 'actual': 0}
+            "all": {"max": 500, "actual": 200},
+            "physical": {"max": 200, "actual": 0},
+            "digital": {"max": 300, "actual": 0},
         }
 
         validation.check_expenses_limits(expenses, 11, offer)  # should not raise
 
-        expenses['physical']['actual'] = 190
+        expenses["physical"]["actual"] = 190
 
         with pytest.raises(exceptions.PhysicalExpenseLimitHasBeenReached) as error:
             validation.check_expenses_limits(expenses, 11, offer)
-        assert (
-            error.value.errors['global']
-            == ['Le plafond de 200 € pour les biens culturels ne vous permet pas '
-                'de réserver cette offre.']
-        )
+        assert error.value.errors["global"] == [
+            "Le plafond de 200 € pour les biens culturels ne vous permet pas " "de réserver cette offre."
+        ]
 
     def test_digital_limit(self):
         offer = offers_factories.OfferFactory(
             product__type=str(ThingType.JEUX_VIDEO),
-            product__url='http://www.example.com/my-game',
+            product__url="http://www.example.com/my-game",
         )
         expenses = {
-            'all': {'max': 500, 'actual': 200},
-            'physical': {'max': 300, 'actual': 0},
-            'digital': {'max': 200, 'actual': 0}
+            "all": {"max": 500, "actual": 200},
+            "physical": {"max": 300, "actual": 0},
+            "digital": {"max": 200, "actual": 0},
         }
 
         validation.check_expenses_limits(expenses, 11, offer)  # should not raise
 
-        expenses['digital']['actual'] = 190
+        expenses["digital"]["actual"] = 190
 
         with pytest.raises(exceptions.DigitalExpenseLimitHasBeenReached) as error:
             validation.check_expenses_limits(expenses, 11, offer)
-        assert (
-            error.value.errors['global']
-            == ['Le plafond de 200 € pour les offres numériques ne vous permet pas '
-                'de réserver cette offre.']
-        )
+        assert error.value.errors["global"] == [
+            "Le plafond de 200 € pour les offres numériques ne vous permet pas " "de réserver cette offre."
+        ]
 
     def test_global_limit(self):
         expenses = {
-            'all': {'max': 500, 'actual': 0},
-            'physical': {'max': 300, 'actual': 0},
-            'digital': {'max': 200, 'actual': 0}
+            "all": {"max": 500, "actual": 0},
+            "physical": {"max": 300, "actual": 0},
+            "digital": {"max": 200, "actual": 0},
         }
         offer = offers_factories.OfferFactory()
 
         validation.check_expenses_limits(expenses, 11, offer)  # should not raise
 
-        expenses['all']['actual'] = 490
+        expenses["all"]["actual"] = 490
 
         with pytest.raises(exceptions.UserHasInsufficientFunds) as error:
             validation.check_expenses_limits(expenses, 11, offer)
-        assert (
-            error.value.errors['insufficientFunds']
-            == ['Le solde de votre pass est insuffisant pour réserver cette offre.']
-        )
+        assert error.value.errors["insufficientFunds"] == [
+            "Le solde de votre pass est insuffisant pour réserver cette offre."
+        ]
 
 
 @pytest.mark.usefixtures("db_session")
@@ -204,13 +178,13 @@ class CheckIsUsableTest:
         booking = factories.BookingFactory(isUsed=True)
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_is_usable(booking)
-        assert exc.value.errors['booking'] == ['Cette réservation a déjà été validée']
+        assert exc.value.errors["booking"] == ["Cette réservation a déjà été validée"]
 
     def test_raise_if_cancelled(self):
         booking = factories.BookingFactory(isCancelled=True)
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_is_usable(booking)
-        assert exc.value.errors['booking'] == ['Cette réservation a été annulée']
+        assert exc.value.errors["booking"] == ["Cette réservation a été annulée"]
 
     def test_raise_if_too_soon_to_mark_as_used(self):
         booking = factories.BookingFactory(
@@ -218,13 +192,9 @@ class CheckIsUsableTest:
         )
         with pytest.raises(api_errors.ForbiddenError) as exc:
             validation.check_is_usable(booking)
-        assert (
-            exc.value.errors['beginningDatetime']
-            == [
-                "Vous ne pouvez pas valider cette contremarque plus de 72h "
-                "avant le début de l'évènement"
-            ]
-        )
+        assert exc.value.errors["beginningDatetime"] == [
+            "Vous ne pouvez pas valider cette contremarque plus de 72h " "avant le début de l'évènement"
+        ]
 
     def test_ok_if_no_beginning_datetime(self):
         booking = factories.BookingFactory(stock__beginningDatetime=None)
@@ -265,25 +235,31 @@ class CheckBeneficiaryCanCancelBookingTest:
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
-        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
+        assert exc.value.errors["booking"] == [
+            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+        ]
 
     def test_raise_if_booked_long_ago(self):
         booking = factories.BookingFactory(
             stock__beginningDatetime=datetime.utcnow() + timedelta(days=10),
-            dateCreated=datetime.utcnow() - timedelta(days=2)
+            dateCreated=datetime.utcnow() - timedelta(days=2),
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
-        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
+        assert exc.value.errors["booking"] == [
+            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+        ]
 
     def test_raise_if_event_too_close_and_booked_long_ago(self):
         booking = factories.BookingFactory(
             stock__beginningDatetime=datetime.utcnow() + timedelta(days=1),
-            dateCreated=datetime.utcnow() - timedelta(days=2)
+            dateCreated=datetime.utcnow() - timedelta(days=2),
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
-        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
+        assert exc.value.errors["booking"] == [
+            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+        ]
 
 
 # TODO(fseguin, 2020-11-09): cleanup when all past event bookings have a confirmationDate
@@ -328,31 +304,37 @@ class CheckBeneficiaryCanCancelBookingNoConfirmationDateTest:
         db.session.commit()
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
-        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
+        assert exc.value.errors["booking"] == [
+            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+        ]
 
     def test_raise_if_booked_long_ago(self):
         booking = factories.BookingFactory(
             stock__beginningDatetime=datetime.utcnow() + timedelta(days=10),
-            dateCreated=datetime.utcnow() - timedelta(days=2)
+            dateCreated=datetime.utcnow() - timedelta(days=2),
         )
         booking.confirmationDate = None
         db.session.add(booking)
         db.session.commit()
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
-        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
+        assert exc.value.errors["booking"] == [
+            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+        ]
 
     def test_raise_if_event_too_close_and_booked_long_ago(self):
         booking = factories.BookingFactory(
             stock__beginningDatetime=datetime.utcnow() + timedelta(days=1),
-            dateCreated=datetime.utcnow() - timedelta(days=2)
+            dateCreated=datetime.utcnow() - timedelta(days=2),
         )
         booking.confirmationDate = None
         db.session.add(booking)
         db.session.commit()
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
-        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
+        assert exc.value.errors["booking"] == [
+            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+        ]
 
 
 @pytest.mark.usefixtures("db_session")
@@ -365,14 +347,13 @@ class CheckOffererCanCancelBookingTest:
         booking = factories.BookingFactory(isCancelled=True)
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_offerer_can_cancel_booking(booking)
-        assert exc.value.errors['global'] == ["Cette contremarque a déjà été annulée"]
+        assert exc.value.errors["global"] == ["Cette contremarque a déjà été annulée"]
 
     def test_raise_if_already_used(self):
         booking = factories.BookingFactory(isUsed=True)
         with pytest.raises(api_errors.ForbiddenError) as exc:
             validation.check_offerer_can_cancel_booking(booking)
-        assert exc.value.errors['global'] == ["Impossible d'annuler une réservation consommée"]
-
+        assert exc.value.errors["global"] == ["Impossible d'annuler une réservation consommée"]
 
 
 @pytest.mark.usefixtures("db_session")
@@ -381,13 +362,13 @@ class CheckActivationBookingCanBeKeptTest:
         booking = factories.BookingFactory(stock__offer__type=str(EventType.ACTIVATION))
         with pytest.raises(ApiErrors) as exc:
             validation.check_is_not_activation_booking(booking)
-        assert exc.value.errors['booking'] == ["Impossible d'annuler une offre d'activation"]
+        assert exc.value.errors["booking"] == ["Impossible d'annuler une offre d'activation"]
 
     def test_should_raise_an_error_when_booking_has_a_thing_activation_type(self):
         booking = factories.BookingFactory(stock__offer__type=str(EventType.ACTIVATION))
         with pytest.raises(ApiErrors) as exc:
             validation.check_is_not_activation_booking(booking)
-        assert exc.value.errors['booking'] == ["Impossible d'annuler une offre d'activation"]
+        assert exc.value.errors["booking"] == ["Impossible d'annuler une offre d'activation"]
 
     def test_should_not_raise_when_booking_is_not_an_activation(self):
         booking = factories.BookingFactory(stock__offer__type=str(EventType.JEUX))
@@ -400,20 +381,20 @@ class CheckCanBeMarkAsUnused:
         booking = factories.BookingFactory(isUsed=False)
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
-        assert exc.value.errors['booking'] == ["Cette réservation n'a pas encore été validée"]
+        assert exc.value.errors["booking"] == ["Cette réservation n'a pas encore été validée"]
 
     def test_raises_resource_gone_error_if_validated_and_cancelled(self, app):
         booking = factories.BookingFactory(isUsed=True, isCancelled=True)
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
-        assert exc.value.errors['booking'] == ["Cette réservation a été annulée"]
+        assert exc.value.errors["booking"] == ["Cette réservation a été annulée"]
 
     def test_raises_resource_gone_error_if_payement_exists(self, app):
         booking = factories.BookingFactory(isUsed=True)
         payments_factories.PaymentFactory(booking=booking)
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
-        assert exc.value.errors['payment'] == ['Le remboursement est en cours de traitement']
+        assert exc.value.errors["payment"] == ["Le remboursement est en cours de traitement"]
 
     def test_dont_raise_if_stock_beginning_datetime_in_more_than_72_hours(self):
         booking = factories.BookingFactory(

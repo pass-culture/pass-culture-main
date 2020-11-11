@@ -21,16 +21,18 @@ from pcapi.models import VenueSQLEntity
 from pcapi.utils.token import random_token
 
 
-def create_booking_for_event(amount: int = 50,
-                             date_created: datetime = datetime.utcnow(),
-                             is_cancelled: bool = False,
-                             quantity: int = 1,
-                             type: EventType = EventType.CINEMA,
-                             user: UserSQLEntity = None) -> Booking:
-    product = Product(from_dict={'type': str(type)})
+def create_booking_for_event(
+    amount: int = 50,
+    date_created: datetime = datetime.utcnow(),
+    is_cancelled: bool = False,
+    quantity: int = 1,
+    type: EventType = EventType.CINEMA,
+    user: UserSQLEntity = None,
+) -> Booking:
+    product = Product(from_dict={"type": str(type)})
     offer = Offer()
     stock = StockSQLEntity()
-    booking = Booking(from_dict={'amount': amount})
+    booking = Booking(from_dict={"amount": amount})
     offer.product = product
     stock.offer = offer
     booking.stock = stock
@@ -43,17 +45,19 @@ def create_booking_for_event(amount: int = 50,
     return booking
 
 
-def create_booking_for_thing(amount: int = 50,
-                             date_created: datetime = datetime.utcnow(),
-                             is_cancelled: bool = False,
-                             quantity: int = 1,
-                             product_type: ThingType = ThingType.JEUX,
-                             url: str = None,
-                             user: UserSQLEntity = None) -> Booking:
-    product = Product(from_dict={'url': url, 'type': str(product_type)})
-    offer = Offer(from_dict={'url': url, 'type': str(product_type)})
+def create_booking_for_thing(
+    amount: int = 50,
+    date_created: datetime = datetime.utcnow(),
+    is_cancelled: bool = False,
+    quantity: int = 1,
+    product_type: ThingType = ThingType.JEUX,
+    url: str = None,
+    user: UserSQLEntity = None,
+) -> Booking:
+    product = Product(from_dict={"url": url, "type": str(product_type)})
+    offer = Offer(from_dict={"url": url, "type": str(product_type)})
     stock = StockSQLEntity()
-    booking = Booking(from_dict={'amount': amount})
+    booking = Booking(from_dict={"amount": amount})
     offer.product = product
     stock.offer = offer
     booking.stock = stock
@@ -65,29 +69,35 @@ def create_booking_for_thing(amount: int = 50,
     return booking
 
 
-def create_offer_with_event_product(venue: VenueSQLEntity = None,
-                                    booking_email: str = 'booking@example.net',
-                                    criteria: List[Criterion] = None,
-                                    date_created: datetime = datetime.utcnow(),
-                                    description: Optional[str] = None,
-                                    duration_minutes: Optional[int] = 60,
-                                    event_name: str = 'Test event',
-                                    event_type: EventType = EventType.SPECTACLE_VIVANT,
-                                    id_at_providers: str = None,
-                                    idx: int = None,
-                                    is_active: bool = True,
-                                    is_duo: bool = False,
-                                    is_national: bool = False,
-                                    last_provider_id: int = None,
-                                    product: Product = None,
-                                    last_provider: Provider = None,
-                                    thumb_count: int = 0,
-                                    withdrawal_details: Optional[str] = None) -> Offer:
+def create_offer_with_event_product(
+    venue: VenueSQLEntity = None,
+    booking_email: str = "booking@example.net",
+    criteria: List[Criterion] = None,
+    date_created: datetime = datetime.utcnow(),
+    description: Optional[str] = None,
+    duration_minutes: Optional[int] = 60,
+    event_name: str = "Test event",
+    event_type: EventType = EventType.SPECTACLE_VIVANT,
+    id_at_providers: str = None,
+    idx: int = None,
+    is_active: bool = True,
+    is_duo: bool = False,
+    is_national: bool = False,
+    last_provider_id: int = None,
+    product: Product = None,
+    last_provider: Provider = None,
+    thumb_count: int = 0,
+    withdrawal_details: Optional[str] = None,
+) -> Offer:
     offer = Offer()
     if product is None:
-        product = create_product_with_event_type(event_name=event_name, event_type=event_type,
-                                                 duration_minutes=duration_minutes,
-                                                 thumb_count=thumb_count, is_national=is_national)
+        product = create_product_with_event_type(
+            event_name=event_name,
+            event_type=event_type,
+            duration_minutes=duration_minutes,
+            thumb_count=thumb_count,
+            is_national=is_national,
+        )
     if criteria:
         offer.criteria = criteria
     offer.product = product
@@ -110,41 +120,42 @@ def create_offer_with_event_product(venue: VenueSQLEntity = None,
     return offer
 
 
-def create_event_occurrence(offer: Offer,
-                            beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=2)) -> Dict:
+def create_event_occurrence(
+    offer: Offer, beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=2)
+) -> Dict:
     event_occurrence = {}
-    event_occurrence['offer'] = offer
-    event_occurrence['offerId'] = offer.id
-    event_occurrence['beginningDatetime'] = beginning_datetime
+    event_occurrence["offer"] = offer
+    event_occurrence["offerId"] = offer.id
+    event_occurrence["beginningDatetime"] = beginning_datetime
 
     return event_occurrence
 
 
 def create_offer_with_thing_product(
-        venue: VenueSQLEntity,
-        author_name: str = 'Test Author',
-        booking_email: Optional[str] = 'booking@example.net',
-        date_created: datetime = datetime.utcnow(),
-        description: Optional[str] = None,
-        id_at_providers: str = None,
-        idx: int = None,
-        product_idx: int = None,
-        is_active: bool = True,
-        is_digital: bool = False,
-        is_national: bool = False,
-        is_offline_only: bool = False,
-        media_urls: List[str] = ['test/urls'],
-        product: Product = None,
-        thing_name: Optional[str] = 'Test Book',
-        thing_type: ThingType = ThingType.AUDIOVISUEL,
-        thumb_count: int = 0,
-        url: Optional[str] = None,
-        last_provider_id: int = None,
-        last_provider: Provider = None,
-        extra_data: Dict = None,
-        withdrawal_details: Optional[str] = None,
-        date_modified_at_last_provider: Optional[datetime] = datetime.utcnow()
-    ) -> Offer:
+    venue: VenueSQLEntity,
+    author_name: str = "Test Author",
+    booking_email: Optional[str] = "booking@example.net",
+    date_created: datetime = datetime.utcnow(),
+    description: Optional[str] = None,
+    id_at_providers: str = None,
+    idx: int = None,
+    product_idx: int = None,
+    is_active: bool = True,
+    is_digital: bool = False,
+    is_national: bool = False,
+    is_offline_only: bool = False,
+    media_urls: List[str] = ["test/urls"],
+    product: Product = None,
+    thing_name: Optional[str] = "Test Book",
+    thing_type: ThingType = ThingType.AUDIOVISUEL,
+    thumb_count: int = 0,
+    url: Optional[str] = None,
+    last_provider_id: int = None,
+    last_provider: Provider = None,
+    extra_data: Dict = None,
+    withdrawal_details: Optional[str] = None,
+    date_modified_at_last_provider: Optional[datetime] = datetime.utcnow(),
+) -> Offer:
     offer = Offer()
     if product:
         offer.product = product
@@ -158,19 +169,25 @@ def create_offer_with_thing_product(
         offer.description = product.description
     else:
         if is_digital:
-            url = 'fake/url'
+            url = "fake/url"
         if is_offline_only:
             thing_type = ThingType.CINEMA_ABO
 
-        offer.product = create_product_with_thing_type(thing_name=thing_name, thing_type=thing_type,
-                                                       media_urls=media_urls, idx=product_idx,
-                                                       author_name=author_name, url=url, thumb_count=thumb_count,
-                                                       is_national=is_national,
-                                                       description=description)
+        offer.product = create_product_with_thing_type(
+            thing_name=thing_name,
+            thing_type=thing_type,
+            media_urls=media_urls,
+            idx=product_idx,
+            author_name=author_name,
+            url=url,
+            thumb_count=thumb_count,
+            is_national=is_national,
+            description=description,
+        )
         offer.name = thing_name
         offer.type = str(thing_type)
         offer.mediaUrls = media_urls
-        offer.extraData = {'author': author_name}
+        offer.extraData = {"author": author_name}
         offer.url = url
         offer.isNational = is_national
         offer.description = description
@@ -195,14 +212,16 @@ def create_offer_with_thing_product(
     return offer
 
 
-def create_product_with_event_type(event_name: str = 'Test event',
-                                   event_type: EventType = EventType.SPECTACLE_VIVANT,
-                                   description: str = None,
-                                   duration_minutes: int = 60,
-                                   id_at_providers: str = None,
-                                   is_national: bool = False,
-                                   is_duo: bool = False,
-                                   thumb_count: int = 0) -> Product:
+def create_product_with_event_type(
+    event_name: str = "Test event",
+    event_type: EventType = EventType.SPECTACLE_VIVANT,
+    description: str = None,
+    duration_minutes: int = 60,
+    id_at_providers: str = None,
+    is_national: bool = False,
+    is_duo: bool = False,
+    thumb_count: int = 0,
+) -> Product:
     product = Product()
     product.name = event_name
     product.description = description
@@ -217,23 +236,25 @@ def create_product_with_event_type(event_name: str = 'Test event',
     return product
 
 
-def create_product_with_thing_type(thing_name: str = 'Test Book',
-                                   thing_type: ThingType = ThingType.LIVRE_EDITION,
-                                   author_name: str = 'Test Author',
-                                   is_national: bool = False,
-                                   id_at_providers: str = None,
-                                   idx: int = None,
-                                   is_digital: bool = False,
-                                   is_gcu_compatible: bool = True,
-                                   is_offline_only: bool = False,
-                                   date_modified_at_last_provider: datetime = None,
-                                   last_provider_id: int = None,
-                                   media_urls: List[str] = ['test/urls'],
-                                   description: str = None,
-                                   thumb_count: int = 1,
-                                   url: str = None,
-                                   owning_offerer: Offerer = None,
-                                   extra_data: Dict = None) -> Product:
+def create_product_with_thing_type(
+    thing_name: str = "Test Book",
+    thing_type: ThingType = ThingType.LIVRE_EDITION,
+    author_name: str = "Test Author",
+    is_national: bool = False,
+    id_at_providers: str = None,
+    idx: int = None,
+    is_digital: bool = False,
+    is_gcu_compatible: bool = True,
+    is_offline_only: bool = False,
+    date_modified_at_last_provider: datetime = None,
+    last_provider_id: int = None,
+    media_urls: List[str] = ["test/urls"],
+    description: str = None,
+    thumb_count: int = 1,
+    url: str = None,
+    owning_offerer: Offerer = None,
+    extra_data: Dict = None,
+) -> Product:
     product = Product()
     product.id = idx
     product.type = str(thing_type)
@@ -242,10 +263,10 @@ def create_product_with_thing_type(thing_name: str = 'Test Book',
     if extra_data:
         product.extraData = extra_data
     else:
-        product.extraData = {'author': author_name}
+        product.extraData = {"author": author_name}
     product.isNational = is_national
     if id_at_providers is None:
-        id_at_providers = ''.join(random.choices(string.digits, k=13))
+        id_at_providers = "".join(random.choices(string.digits, k=13))
     product.dateModifiedAtLastProvider = date_modified_at_last_provider
     product.lastProviderId = last_provider_id
     product.idAtProviders = id_at_providers
@@ -256,20 +277,25 @@ def create_product_with_thing_type(thing_name: str = 'Test Book',
     product.owningOfferer = owning_offerer
     product.description = description
     if is_digital:
-        product.url = 'fake/url'
+        product.url = "fake/url"
     if is_offline_only:
         product.type = str(ThingType.CINEMA_ABO)
 
     return product
 
 
-def create_stock_from_event_occurrence(event_occurrence: Dict, price: int = 10, quantity: int = 10,
-                                       soft_deleted: bool = False, recap_sent: bool = False,
-                                       booking_limit_date: datetime = None) -> StockSQLEntity:
+def create_stock_from_event_occurrence(
+    event_occurrence: Dict,
+    price: int = 10,
+    quantity: int = 10,
+    soft_deleted: bool = False,
+    recap_sent: bool = False,
+    booking_limit_date: datetime = None,
+) -> StockSQLEntity:
     stock = StockSQLEntity()
-    stock.beginningDatetime = event_occurrence['beginningDatetime']
-    stock.offerId = event_occurrence['offerId']
-    stock.offer = event_occurrence['offer']
+    stock.beginningDatetime = event_occurrence["beginningDatetime"]
+    stock.offerId = event_occurrence["offerId"]
+    stock.offer = event_occurrence["offer"]
     stock.price = price
     stock.quantity = quantity
     stock.isSoftDeleted = soft_deleted
@@ -278,16 +304,23 @@ def create_stock_from_event_occurrence(event_occurrence: Dict, price: int = 10, 
         stock.bookingRecapSent = datetime.utcnow()
 
     if booking_limit_date is None:
-        stock.bookingLimitDatetime = event_occurrence['beginningDatetime']
+        stock.bookingLimitDatetime = event_occurrence["beginningDatetime"]
     else:
         stock.bookingLimitDatetime = booking_limit_date
 
     return stock
 
 
-def create_stock_from_offer(offer: Offer, price: float = 9.90, quantity: Optional[int] = 10, soft_deleted: bool = False,
-                            booking_limit_datetime: datetime = None, beginning_datetime: datetime = None, idx: int = None,
-                            date_modified: datetime = datetime.utcnow()) -> StockSQLEntity:
+def create_stock_from_offer(
+    offer: Offer,
+    price: float = 9.90,
+    quantity: Optional[int] = 10,
+    soft_deleted: bool = False,
+    booking_limit_datetime: datetime = None,
+    beginning_datetime: datetime = None,
+    idx: int = None,
+    date_modified: datetime = datetime.utcnow(),
+) -> StockSQLEntity:
     stock = StockSQLEntity()
     stock.id = idx
     stock.offer = offer
@@ -301,17 +334,23 @@ def create_stock_from_offer(offer: Offer, price: float = 9.90, quantity: Optiona
     return stock
 
 
-def create_stock_with_event_offer(offerer: Offerer, venue: VenueSQLEntity, price: int = 10,
-                                  booking_email: str = 'offer.booking.email@example.com', quantity: int = 10,
-                                  is_soft_deleted: bool = False, event_type: EventType = EventType.JEUX,
-                                  name: str = 'Mains, sorts et papiers', offer_id: int = None,
-                                  beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=72),
-                                  thumb_count: int = 0,
-                                  booking_limit_datetime: datetime = datetime.utcnow() + timedelta(
-                                          hours=71),
-                                  date_created: datetime = datetime.utcnow(),
-                                  date_modified_at_last_provider: datetime = datetime.utcnow(),
-                                  date_modifed: datetime = datetime.utcnow()) -> StockSQLEntity:
+def create_stock_with_event_offer(
+    offerer: Offerer,
+    venue: VenueSQLEntity,
+    price: int = 10,
+    booking_email: str = "offer.booking.email@example.com",
+    quantity: int = 10,
+    is_soft_deleted: bool = False,
+    event_type: EventType = EventType.JEUX,
+    name: str = "Mains, sorts et papiers",
+    offer_id: int = None,
+    beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=72),
+    thumb_count: int = 0,
+    booking_limit_datetime: datetime = datetime.utcnow() + timedelta(hours=71),
+    date_created: datetime = datetime.utcnow(),
+    date_modified_at_last_provider: datetime = datetime.utcnow(),
+    date_modifed: datetime = datetime.utcnow(),
+) -> StockSQLEntity:
     stock = StockSQLEntity()
     stock.offerer = offerer
     stock.price = price
@@ -321,21 +360,33 @@ def create_stock_with_event_offer(offerer: Offerer, venue: VenueSQLEntity, price
     stock.dateCreated = date_created
     stock.dateModifiedAtLastProvider = date_modified_at_last_provider
     stock.dateModified = date_modifed
-    stock.offer = create_offer_with_event_product(venue, event_name=name, event_type=event_type,
-                                                  booking_email=booking_email, is_national=False,
-                                                  thumb_count=thumb_count)
+    stock.offer = create_offer_with_event_product(
+        venue,
+        event_name=name,
+        event_type=event_type,
+        booking_email=booking_email,
+        is_national=False,
+        thumb_count=thumb_count,
+    )
     stock.offer.id = offer_id
     stock.isSoftDeleted = is_soft_deleted
 
     return stock
 
 
-def create_stock_with_thing_offer(offerer: Offerer, venue: VenueSQLEntity, offer: Offer = None,
-                                  price: Optional[Decimal] = 10,
-                                  quantity: int = 50, name: str = 'Test Book',
-                                  booking_email: str = 'offer.booking.email@example.com', soft_deleted: bool = False,
-                                  url: str = None, booking_limit_datetime: datetime = None,
-                                  thing_type: ThingType = ThingType.AUDIOVISUEL) -> StockSQLEntity:
+def create_stock_with_thing_offer(
+    offerer: Offerer,
+    venue: VenueSQLEntity,
+    offer: Offer = None,
+    price: Optional[Decimal] = 10,
+    quantity: int = 50,
+    name: str = "Test Book",
+    booking_email: str = "offer.booking.email@example.com",
+    soft_deleted: bool = False,
+    url: str = None,
+    booking_limit_datetime: datetime = None,
+    thing_type: ThingType = ThingType.AUDIOVISUEL,
+) -> StockSQLEntity:
     stock = StockSQLEntity()
     stock.offerer = offerer
     stock.price = price

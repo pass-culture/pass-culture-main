@@ -16,12 +16,9 @@ def retrieve_data_for_offerer_ongoing_attachment_email(user_offerer: UserOfferer
     environment = format_environment_for_email()
 
     return {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'MJ-TemplateID': 778749,
-        'MJ-TemplateLanguage': True,
-        'To': pro_user_email,
-        'Vars': {
-            'nom_structure': offerer.name,
-            'env': environment
-        },
+        "FromEmail": SUPPORT_EMAIL_ADDRESS,
+        "MJ-TemplateID": 778749,
+        "MJ-TemplateLanguage": True,
+        "To": pro_user_email,
+        "Vars": {"nom_structure": offerer.name, "env": environment},
     }

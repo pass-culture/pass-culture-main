@@ -43,4 +43,4 @@ class HandleRestGetListTest:
             handle_rest_get_list(StockSQLEntity, order_by='(SELECT * FROM "user")')
 
         # Then
-        assert 'order_by' in e.value.errors
+        assert "order_by" in e.value.errors

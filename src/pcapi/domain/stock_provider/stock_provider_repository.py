@@ -7,9 +7,9 @@ from typing import Iterator
 
 class StockProviderRepository(ABC):
     @abstractmethod
-    def stocks_information(self, siret: str,
-                           last_processed_reference: str = '',
-                           modified_since: datetime = None) -> Iterator[Dict]:
+    def stocks_information(
+        self, siret: str, last_processed_reference: str = "", modified_since: datetime = None
+    ) -> Iterator[Dict]:
         pass
 
     @abstractmethod

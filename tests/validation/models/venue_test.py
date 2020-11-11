@@ -17,7 +17,7 @@ def test_should_return_error_when_siret_is_invalid():
     validate(venue=venue, api_errors=api_errors)
 
     # Then
-    assert api_errors.errors == {'siret': ['Ce code SIRET est invalide : 123']}
+    assert api_errors.errors == {"siret": ["Ce code SIRET est invalide : 123"]}
 
 
 def test_should_return_error_when_address_is_invalid():
@@ -30,7 +30,7 @@ def test_should_return_error_when_address_is_invalid():
     validate(venue=venue, api_errors=api_errors)
 
     # Then
-    assert api_errors.errors == {'postalCode': ['Ce code postal est invalide']}
+    assert api_errors.errors == {"postalCode": ["Ce code postal est invalide"]}
 
 
 @pytest.mark.usefixtures("db_session")
@@ -46,7 +46,7 @@ def test_should_return_error_when_offerer_has_no_siren(app):
 
     # Then
     assert api_errors.errors == {
-        'siren': ['Ce lieu ne peut enregistrer de SIRET car la structure associée n’a pas de SIREN renseigné'],
+        "siren": ["Ce lieu ne peut enregistrer de SIRET car la structure associée n’a pas de SIREN renseigné"],
     }
 
 
@@ -62,6 +62,4 @@ def test_should_return_error_when_venue_does_not_belong_to_offerer(app):
     validate(venue=venue, api_errors=api_errors)
 
     # Then
-    assert api_errors.errors == {
-        'siret': ['Le code SIRET doit correspondre à un établissement de votre structure']
-    }
+    assert api_errors.errors == {"siret": ["Le code SIRET doit correspondre à un établissement de votre structure"]}

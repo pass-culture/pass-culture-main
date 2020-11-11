@@ -19,7 +19,7 @@ class BookingFactory(BaseFactory):
     quantity = 1
     token = factory.LazyFunction(random_token)
     user = factory.SubFactory(users_factories.UserFactory)
-    amount = factory.SelfAttribute('stock.price')
+    amount = factory.SelfAttribute("stock.price")
 
     @factory.post_generation
     def compute_confirmation_date(self, create, extracted, **kwargs):

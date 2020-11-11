@@ -24,23 +24,14 @@ class LocalProviderEventType(enum.Enum):
 
 
 class LocalProviderEvent(PcObject, Model):
-    id = Column(BigInteger,
-                primary_key=True,
-                autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    providerId = Column(BigInteger,
-                        ForeignKey("provider.id"),
-                        nullable=False)
+    providerId = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
 
-    provider = relationship('Provider',
-                            foreign_keys=[providerId])
+    provider = relationship("Provider", foreign_keys=[providerId])
 
-    date = Column(DateTime,
-                  nullable=False,
-                  default=datetime.utcnow)
+    date = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    type = Column(Enum(LocalProviderEventType),
-                  nullable=False)
+    type = Column(Enum(LocalProviderEventType), nullable=False)
 
-    payload = Column(String(50),
-                     nullable=True)
+    payload = Column(String(50), nullable=True)

@@ -24,7 +24,7 @@ class ConnectAllocineToVenueTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        provider = activate_provider('AllocineStocks')
+        provider = activate_provider("AllocineStocks")
         allocine_pivot = create_allocine_pivot(siret=venue.siret)
 
         repository.save(venue, allocine_pivot)
@@ -33,17 +33,15 @@ class ConnectAllocineToVenueTest:
         self.get_theaterid_for_venue.return_value = allocine_pivot.theaterId
 
         venue_provider_payload = {
-            'providerId': humanize(provider.id),
-            'venueId': humanize(venue.id),
-            'price': '9.99',
-            'isDuo': True,
-            'quantity': 50
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
+            "price": "9.99",
+            "isDuo": True,
+            "quantity": 50,
         }
 
         # When
-        connect_venue_to_allocine(venue_provider_payload,
-                                  self.find_by_id,
-                                  self.get_theaterid_for_venue)
+        connect_venue_to_allocine(venue_provider_payload, self.find_by_id, self.get_theaterid_for_venue)
 
         # Then
         allocine_venue_provider = AllocineVenueProvider.query.one()
@@ -52,4 +50,4 @@ class ConnectAllocineToVenueTest:
         assert allocine_venue_provider.venue == venue
         assert allocine_venue_provider.isDuo
         assert allocine_venue_provider.quantity == 50
-        assert venue_provider_price_rule.price == Decimal('9.99')
+        assert venue_provider_price_rule.price == Decimal("9.99")

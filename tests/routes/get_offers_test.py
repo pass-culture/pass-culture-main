@@ -84,9 +84,7 @@ class Returns200:
         other_venue = create_venue(offerer, siret="54321987654321")
         offer_on_requested_venue = create_offer_with_thing_product(requested_venue)
         offer_on_other_venue = create_offer_with_thing_product(other_venue)
-        repository.save(
-            pro, user_offerer, offer_on_requested_venue, offer_on_other_venue
-        )
+        repository.save(pro, user_offerer, offer_on_requested_venue, offer_on_other_venue)
 
         # when
         response = (
@@ -101,9 +99,7 @@ class Returns200:
         assert len(offers) == 1
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_paginated_with_pagination_details_in_body(
-        self, list_offers_mock, app, db_session
-    ):
+    def test_results_are_paginated_with_pagination_details_in_body(self, list_offers_mock, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -112,16 +108,10 @@ class Returns200:
         offer1 = create_offer_with_thing_product(venue)
         offer2 = create_offer_with_thing_product(venue)
         repository.save(user_offerer, offer1, offer2)
-        list_offers_mock.return_value = to_domain(
-            offers=[offer1], current_page=1, total_pages=1, total_offers=2
-        )
+        list_offers_mock.return_value = to_domain(offers=[offer1], current_page=1, total_pages=1, total_offers=2)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_auth(email=user.email)
-            .get("/offers?paginate=1")
-        )
+        response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?paginate=1")
 
         # then
         assert response.status_code == 200
@@ -155,9 +145,7 @@ class Returns200:
         }
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_venue_id(
-        self, list_offers_mock, app, db_session
-    ):
+    def test_results_are_filtered_by_given_venue_id(self, list_offers_mock, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -167,9 +155,7 @@ class Returns200:
 
         # when
         response = (
-            TestClient(app.test_client())
-            .with_auth(email=user.email)
-            .get("/offers?venueId=" + humanize(venue.id))
+            TestClient(app.test_client()).with_auth(email=user.email).get("/offers?venueId=" + humanize(venue.id))
         )
 
         # then
@@ -188,9 +174,7 @@ class Returns200:
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_status(
-        self, list_offers_mock, app, db_session
-    ):
+    def test_results_are_filtered_by_given_status(self, list_offers_mock, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -198,11 +182,7 @@ class Returns200:
         repository.save(user_offerer)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_auth(email=user.email)
-            .get("/offers?status=active")
-        )
+        response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?status=active")
 
         # then
         assert response.status_code == 200
@@ -215,14 +195,12 @@ class Returns200:
             offers_per_page=None,
             name_keywords=None,
             page=None,
-            status='active',
+            status="active",
             creation_mode=None,
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_offerer_id(
-        self, list_offers_mock, app, db_session
-    ):
+    def test_results_are_filtered_by_given_offerer_id(self, list_offers_mock, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -232,9 +210,7 @@ class Returns200:
 
         # when
         response = (
-            TestClient(app.test_client())
-            .with_auth(email=user.email)
-            .get("/offers?offererId=" + humanize(offerer.id))
+            TestClient(app.test_client()).with_auth(email=user.email).get("/offers?offererId=" + humanize(offerer.id))
         )
 
         # then
@@ -253,9 +229,7 @@ class Returns200:
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_creation_mode(
-        self, list_offers_mock, app, db_session
-    ):
+    def test_results_are_filtered_by_given_creation_mode(self, list_offers_mock, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -263,11 +237,7 @@ class Returns200:
         repository.save(user_offerer)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_auth(email=user.email)
-            .get("/offers?creationMode=imported")
-        )
+        response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?creationMode=imported")
 
         # then
         assert response.status_code == 200
@@ -281,7 +251,7 @@ class Returns200:
             name_keywords=None,
             page=None,
             status=None,
-            creation_mode='imported',
+            creation_mode="imported",
         )
 
 
@@ -292,11 +262,7 @@ class Returns404:
         repository.save(user)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_auth(email=user.email)
-            .get("/offers?venueId=ABC")
-        )
+        response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?venueId=ABC")
 
         # then
         assert response.status_code == 404
@@ -313,41 +279,31 @@ class Returns403:
 
         # when
         response = (
-            TestClient(app.test_client())
-            .with_auth(email=user.email)
-            .get(f"/offers?venueId={humanize(venue.id)}")
+            TestClient(app.test_client()).with_auth(email=user.email).get(f"/offers?venueId={humanize(venue.id)}")
         )
 
         # then
         assert response.status_code == 403
         assert response.json == {
-            "global": [
-                "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
-            ]
+            "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
         }
 
     def when_user_offerer_is_not_validated(self, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
-        user_offerer = create_user_offerer(
-            user, offerer, validation_token=secrets.token_urlsafe(20)
-        )
+        user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         repository.save(user_offerer, offer)
 
         # when
         response = (
-            TestClient(app.test_client())
-            .with_auth(email=user.email)
-            .get(f"/offers?venueId={humanize(venue.id)}")
+            TestClient(app.test_client()).with_auth(email=user.email).get(f"/offers?venueId={humanize(venue.id)}")
         )
 
         # then
         assert response.status_code == 403
         assert response.json == {
-            "global": [
-                "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
-            ]
+            "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
         }

@@ -20,12 +20,12 @@ class UpdateUserInformationsTest:
             has_seen_tutorials=True,
             cultural_survey_id=None,
             cultural_survey_filled_date=datetime(2020, 4, 22),
-            email='han@solo.sw',
+            email="han@solo.sw",
             last_connection_date=datetime(2020, 1, 1),
             needs_to_fill_cultural_survey=False,
-            phone_number='05 55 55 55 55',
-            postal_code='27200',
-            public_name='Han Solo',
+            phone_number="05 55 55 55 55",
+            postal_code="27200",
+            public_name="Han Solo",
         )
 
         # When
@@ -35,18 +35,17 @@ class UpdateUserInformationsTest:
         assert user.hasSeenTutorials == True
         assert user.culturalSurveyId == None
         assert user.culturalSurveyFilledDate == datetime(2020, 4, 22)
-        assert user.email == 'han@solo.sw'
+        assert user.email == "han@solo.sw"
         assert user.lastConnectionDate == datetime(2020, 1, 1)
         assert user.needsToFillCulturalSurvey == False
-        assert user.phoneNumber == '05 55 55 55 55'
-        assert user.postalCode == '27200'
-        assert user.publicName == 'Han Solo'
-
+        assert user.phoneNumber == "05 55 55 55 55"
+        assert user.postalCode == "27200"
+        assert user.publicName == "Han Solo"
 
     @pytest.mark.usefixtures("db_session")
     def test_should_not_update_user_info_if_not_given(self, app):
         # Given
-        user = create_user(phone_number='01 02 03 04 05')
+        user = create_user(phone_number="01 02 03 04 05")
         repository.save(user)
 
         user_informations = AlterableUserInformations(
@@ -59,4 +58,4 @@ class UpdateUserInformationsTest:
 
         # Then
         assert updatedUser.hasSeenTutorials == True
-        assert updatedUser.phoneNumber == '01 02 03 04 05'
+        assert updatedUser.phoneNumber == "01 02 03 04 05"

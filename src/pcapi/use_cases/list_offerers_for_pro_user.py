@@ -5,14 +5,16 @@ from pcapi.domain.pro_offerers.paginated_offerers_repository import PaginatedOff
 
 
 class OfferersRequestParameters(object):
-    def __init__(self,
-                 user_id: int,
-                 user_is_admin: bool,
-                 is_filtered_by_offerer_status: bool,
-                 only_validated_offerers: bool,
-                 pagination_limit: str = '10',
-                 keywords: Optional[str] = None,
-                 page: str = '0'):
+    def __init__(
+        self,
+        user_id: int,
+        user_is_admin: bool,
+        is_filtered_by_offerer_status: bool,
+        only_validated_offerers: bool,
+        pagination_limit: str = "10",
+        keywords: Optional[str] = None,
+        page: str = "0",
+    ):
         self.only_validated_offerers = only_validated_offerers
         self.is_filtered_by_offerer_status = is_filtered_by_offerer_status
         self.user_id = user_id

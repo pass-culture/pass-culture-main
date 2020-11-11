@@ -16,7 +16,7 @@ import tests
 from tests.conftest import TestClient
 
 
-TEST_IMAGE_PATH = Path(tests.__path__[0]) / 'files' / 'pixel.png'
+TEST_IMAGE_PATH = Path(tests.__path__[0]) / "files" / "pixel.png"
 
 
 class Post:
@@ -35,10 +35,10 @@ class Post:
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            with open(TEST_IMAGE_PATH, 'rb') as fp:
+            with open(TEST_IMAGE_PATH, "rb") as fp:
                 response = auth_request.post(
-                    '/storage/thumb/%s/%s/%s' % ('mediations', humanize(mediation.id), '0'),
-                    files={'file': (fp, '1.png')}
+                    "/storage/thumb/%s/%s/%s" % ("mediations", humanize(mediation.id), "0"),
+                    files={"file": (fp, "1.png")},
                 )
 
             # then
@@ -57,13 +57,13 @@ class Post:
 
             # when
             response = auth_request.post(
-                '/storage/thumb/%s/%s/%s' % ('venues', humanize(venue.id), '1'),
-                files={'file': (BytesIO(b'123'), '1.png')}
+                "/storage/thumb/%s/%s/%s" % ("venues", humanize(venue.id), "1"),
+                files={"file": (BytesIO(b"123"), "1.png")},
             )
 
             # then
             assert response.status_code == 400
-            assert response.json['text'] == 'upload is not authorized for this model'
+            assert response.json["text"] == "upload is not authorized for this model"
 
     class Returns403:
         @pytest.mark.usefixtures("db_session")
@@ -79,12 +79,14 @@ class Post:
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            with open(TEST_IMAGE_PATH, 'rb') as fp:
+            with open(TEST_IMAGE_PATH, "rb") as fp:
                 response = auth_request.post(
-                    '/storage/thumb/%s/%s/%s' % ('mediations', humanize(mediation.id), '0'),
-                    files={'file': (fp, '1.png')}
+                    "/storage/thumb/%s/%s/%s" % ("mediations", humanize(mediation.id), "0"),
+                    files={"file": (fp, "1.png")},
                 )
 
             # then
             assert response.status_code == 403
-            assert response.json['global'] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+            assert response.json["global"] == [
+                "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
+            ]

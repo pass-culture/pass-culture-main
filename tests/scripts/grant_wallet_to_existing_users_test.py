@@ -14,8 +14,8 @@ from pcapi.scripts.grant_wallet_to_existing_users import grant_wallet_to_existin
 @pytest.mark.usefixtures("db_session")
 def test_should_grant_wallet_to_existing_users(app):
     # given
-    beneficiary = create_user(email='email@example.com')
-    beneficiary_2 = create_user(email='email2@example.com')
+    beneficiary = create_user(email="email@example.com")
+    beneficiary_2 = create_user(email="email2@example.com")
 
     repository.save(beneficiary, beneficiary_2)
 

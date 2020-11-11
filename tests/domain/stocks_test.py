@@ -22,7 +22,7 @@ user3 = create_user()
 user4 = create_user()
 
 
-@freeze_time('2019-05-07 09:21:34')
+@freeze_time("2019-05-07 09:21:34")
 class DeleteStockAndCancelBookingsTest:
     class WhenProductIsAThing:
         def setup_method(self, method):
@@ -41,7 +41,7 @@ class DeleteStockAndCancelBookingsTest:
             # given
             self.stock.bookings = [
                 create_booking(user=user1, is_cancelled=False, is_used=True),
-                create_booking(user=user2, is_cancelled=False, is_used=False)
+                create_booking(user=user2, is_cancelled=False, is_used=False),
             ]
 
             # when
@@ -57,9 +57,7 @@ class DeleteStockAndCancelBookingsTest:
             booking2 = create_booking(user=user2, is_cancelled=False, is_used=False)
             booking3 = create_booking(user=user3, is_cancelled=True, is_used=False)
             booking4 = create_booking(user=user4, is_cancelled=True, is_used=True)
-            self.stock.bookings = [
-                booking1, booking2, booking3, booking4
-            ]
+            self.stock.bookings = [booking1, booking2, booking3, booking4]
 
             # When
             bookings = delete_stock_and_cancel_bookings(self.stock)
@@ -102,9 +100,7 @@ class DeleteStockAndCancelBookingsTest:
                 booking2 = create_booking(user=user2, is_cancelled=False, is_used=False)
                 booking3 = create_booking(user=user3, is_cancelled=True, is_used=False)
                 booking4 = create_booking(user=user4, is_cancelled=True, is_used=True)
-                self.stock.bookings = [
-                    booking1, booking2, booking3, booking4
-                ]
+                self.stock.bookings = [booking1, booking2, booking3, booking4]
 
                 # When
                 bookings = delete_stock_and_cancel_bookings(self.stock)
@@ -147,7 +143,7 @@ class DeleteStockAndCancelBookingsTest:
 
             def test_the_stock_is_not_soft_deleted(self):
                 # given
-                provider = create_provider(local_class='TiteLiveStocks', idx=1)
+                provider = create_provider(local_class="TiteLiveStocks", idx=1)
                 offer = create_offer_with_event_product(venue=None, last_provider_id=1, last_provider=provider)
                 self.stock.offer = offer
 
@@ -160,7 +156,7 @@ class DeleteStockAndCancelBookingsTest:
 
             def test_the_stock_is_soft_deleted(self):
                 # given
-                provider = create_provider(local_class='AllocineStocks', idx=1)
+                provider = create_provider(local_class="AllocineStocks", idx=1)
                 offer = create_offer_with_event_product(venue=None, last_provider_id=1, last_provider=provider)
                 self.stock.offer = offer
 
@@ -177,9 +173,7 @@ class CheckDateHaveBeenModifiedTest:
 
     def test_should_return_true_when_beginning_date_time_have_been_changed_with_ymdthmsfz_pattern(self):
         # Given
-        request_data = {
-            'beginningDatetime': '2020-02-08T14:30:00.000Z'
-        }
+        request_data = {"beginningDatetime": "2020-02-08T14:30:00.000Z"}
 
         # When
         check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
@@ -189,9 +183,7 @@ class CheckDateHaveBeenModifiedTest:
 
     def test_should_return_true_when_beginning_date_time_have_been_changed_with_ymdthmsz_pattern(self):
         # Given
-        request_data = {
-            'beginningDatetime': '2020-02-08T14:30:00Z'
-        }
+        request_data = {"beginningDatetime": "2020-02-08T14:30:00Z"}
 
         # When
         check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
@@ -201,9 +193,7 @@ class CheckDateHaveBeenModifiedTest:
 
     def test_should_return_true_when_beginning_date_time_have_been_changed_with_ymdthmsfs_pattern(self):
         # Given
-        request_data = {
-            'beginningDatetime': '2020-02-08T14:30:00'
-        }
+        request_data = {"beginningDatetime": "2020-02-08T14:30:00"}
 
         # When
         check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
@@ -213,9 +203,7 @@ class CheckDateHaveBeenModifiedTest:
 
     def test_should_return_false_when_beginning_date_time_in_ymdthmsz_format_have_not_been_changed(self):
         # Given
-        request_data = {
-            'beginningDatetime': '2020-04-12T12:00:00Z'
-        }
+        request_data = {"beginningDatetime": "2020-04-12T12:00:00Z"}
 
         # When
         check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
@@ -225,9 +213,7 @@ class CheckDateHaveBeenModifiedTest:
 
     def test_should_return_false_when_beginning_date_time_in_ymdthmsfz_format_have_not_been_changed(self):
         # Given
-        request_data = {
-            'beginningDatetime': '2020-04-12T12:00:00.000Z'
-        }
+        request_data = {"beginningDatetime": "2020-04-12T12:00:00.000Z"}
 
         # When
         check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
@@ -237,9 +223,7 @@ class CheckDateHaveBeenModifiedTest:
 
     def test_should_return_false_when_beginning_date_time_in_ymdthmsfs_format_have_not_been_changed(self):
         # Given
-        request_data = {
-            'beginningDatetime': '2020-04-12T12:00:00'
-        }
+        request_data = {"beginningDatetime": "2020-04-12T12:00:00"}
 
         # When
         check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)

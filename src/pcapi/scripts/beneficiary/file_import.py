@@ -39,14 +39,15 @@ BIRTHDATE_COLUMN_INDEX = 7
 PASSWORD_INDEX = 8
 
 CHUNK_SIZE = 250
-ACTIVATION_USER_RECIPIENTS = parse_email_addresses(
-    os.environ.get('ACTIVATION_USER_RECIPIENTS', None))
+ACTIVATION_USER_RECIPIENTS = parse_email_addresses(os.environ.get("ACTIVATION_USER_RECIPIENTS", None))
 
 
 def create_users_with_activation_bookings(
-        csv_rows: List[List[str]], stock: StockSQLEntity, existing_tokens: Set[str],
-        find_user: Callable = find_user_by_email,
-        find_activation_booking: Callable = booking_repository.find_user_activation_booking
+    csv_rows: List[List[str]],
+    stock: StockSQLEntity,
+    existing_tokens: Set[str],
+    find_user: Callable = find_user_by_email,
+    find_activation_booking: Callable = booking_repository.find_user_activation_booking,
 ) -> List[Booking]:
     bookings = []
     for row in csv_rows:
@@ -85,15 +86,12 @@ def create_booking_for(user: UserSQLEntity, stock: StockSQLEntity, token: str) -
 
 def fill_user_from(csv_row: List[str], user: UserSQLEntity) -> UserSQLEntity:
     user.lastName = csv_row[LAST_NAME_COLUMN_INDEX]
-    user.firstName = csv_row[FIRST_NAME_COLUMN_INDEX].split(' ')[0]
-    user.publicName = '%s %s' % (user.firstName, user.lastName)
-    user.dateOfBirth = datetime.strptime(
-        csv_row[BIRTHDATE_COLUMN_INDEX], "%Y-%m-%d")
+    user.firstName = csv_row[FIRST_NAME_COLUMN_INDEX].split(" ")[0]
+    user.publicName = "%s %s" % (user.firstName, user.lastName)
+    user.dateOfBirth = datetime.strptime(csv_row[BIRTHDATE_COLUMN_INDEX], "%Y-%m-%d")
     user.email = csv_row[EMAIL_COLUMN_INDEX]
-    user.phoneNumber = ''.join(
-        filter(lambda d: d in '+1234567890', csv_row[PHONE_COLUMN_INDEX]))
-    user.departementCode = _extract_departement_code(
-        csv_row[DEPARTMENT_COLUMN_INDEX])
+    user.phoneNumber = "".join(filter(lambda d: d in "+1234567890", csv_row[PHONE_COLUMN_INDEX]))
+    user.departementCode = _extract_departement_code(csv_row[DEPARTMENT_COLUMN_INDEX])
     user.postalCode = csv_row[POSTAL_CODE_COLUMN_INDEX]
     user.canBookFreeOffers = False
     user.password = _get_password(csv_row)
@@ -126,7 +124,7 @@ def split_rows_in_chunks_with_no_duplicated_emails(csv_reader: Iterable, chunk_s
         total += len(chunk)
         chunked_rows.append(chunk)
 
-    logger.info('Lecture des lignes CSV (%s) terminée\n' % total)
+    logger.info("Lecture des lignes CSV (%s) terminée\n" % total)
     return chunked_rows
 
 
@@ -136,75 +134,63 @@ def export_created_data(bookings: List[Booking]):
 
     try:
         with app.app_context():
-            send_users_activation_report(
-                csv, ACTIVATION_USER_RECIPIENTS, send_raw_email)
+            send_users_activation_report(csv, ACTIVATION_USER_RECIPIENTS, send_raw_email)
     except MailServiceException as e:
-        logger.exception(
-            'Error while sending activation users report email to MailJet', e)
+        logger.exception("Error while sending activation users report email to MailJet", e)
 
 
 def run(csv_file_path: str) -> None:
-    logger.info(
-        '-------------------------------------------------------------------------------')
-    logger.info(
-        '[START] Création des utilisateurs avec contremarques d\'activation')
-    logger.info(
-        '-------------------------------------------------------------------------------\n')
+    logger.info("-------------------------------------------------------------------------------")
+    logger.info("[START] Création des utilisateurs avec contremarques d'activation")
+    logger.info("-------------------------------------------------------------------------------\n")
 
     stock = find_online_activation_stock()
     if not stock:
-        logger.error('No activation stock found')
+        logger.error("No activation stock found")
         exit(1)
 
     if not ACTIVATION_USER_RECIPIENTS:
-        logger.error('No recipients [ACTIVATION_USER_RECIPIENTS] found')
+        logger.error("No recipients [ACTIVATION_USER_RECIPIENTS] found")
         exit(1)
 
-    logger.info('[STEP 1] Lecture du fichier CSV')
+    logger.info("[STEP 1] Lecture du fichier CSV")
     csv_file = open(csv_file_path)
     csv_reader = csv.reader(csv_file)
-    chunked_file = split_rows_in_chunks_with_no_duplicated_emails(
-        csv_reader, CHUNK_SIZE)
+    chunked_file = split_rows_in_chunks_with_no_duplicated_emails(csv_reader, CHUNK_SIZE)
 
-    logger.info(
-        '[STEP 2] Enregistrement des comptes et contremarques d\'activation')
+    logger.info("[STEP 2] Enregistrement des comptes et contremarques d'activation")
     existing_tokens = booking_repository.find_existing_tokens()
     all_bookings = []
     total = 0
     for chunk in chunked_file:
-        bookings = create_users_with_activation_bookings(
-            chunk, stock, existing_tokens)
+        bookings = create_users_with_activation_bookings(chunk, stock, existing_tokens)
         if bookings:
             repository.save(*bookings)
         all_bookings.extend(bookings)
         total += len(chunk)
-        logger.info('Enregistrement de %s comptes utilisateur | %s' %
-                    (CHUNK_SIZE, total))
-    logger.info('Enregistrement des comptes utilisateur terminé\n')
+        logger.info("Enregistrement de %s comptes utilisateur | %s" % (CHUNK_SIZE, total))
+    logger.info("Enregistrement des comptes utilisateur terminé\n")
 
-    logger.info('[STEP 3] Décompte des objets')
-    logger.info('Users en BDD -> %s' % UserSQLEntity.query.count())
-    logger.info('Users créés ou mis à jour -> %s' % total)
-    logger.info('Bookings en BDD -> %s\n' % Booking.query.count())
-    logger.info('Bookings créés ou existants -> %s' % len(existing_tokens))
+    logger.info("[STEP 3] Décompte des objets")
+    logger.info("Users en BDD -> %s" % UserSQLEntity.query.count())
+    logger.info("Users créés ou mis à jour -> %s" % total)
+    logger.info("Bookings en BDD -> %s\n" % Booking.query.count())
+    logger.info("Bookings créés ou existants -> %s" % len(existing_tokens))
 
-    logger.info('[STEP 4] Envoi des comptes créés par mail')
+    logger.info("[STEP 4] Envoi des comptes créés par mail")
     export_created_data(all_bookings)
 
-    logger.info(
-        '-------------------------------------------------------------------------------')
-    logger.info(
-        '[END] Création des utilisateurs avec contremarques d\'activation : %s' % total)
-    logger.info(
-        '-------------------------------------------------------------------------------')
+    logger.info("-------------------------------------------------------------------------------")
+    logger.info("[END] Création des utilisateurs avec contremarques d'activation : %s" % total)
+    logger.info("-------------------------------------------------------------------------------")
 
 
 def _is_header_or_blank_line(line: str) -> bool:
-    return not line or not line[0] or line[0] == 'id'
+    return not line or not line[0] or line[0] == "id"
 
 
 def _extract_departement_code(plain_department: str) -> str:
-    return re.search(r'\((.*?)\)$', plain_department).group()[1:-1]
+    return re.search(r"\((.*?)\)$", plain_department).group()[1:-1]
 
 
 def _get_password(csv_row: List[List[str]]) -> str:

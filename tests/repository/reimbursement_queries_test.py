@@ -21,20 +21,22 @@ class FindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_payment_info_with_error_status(self, app):
         # Given
-        user = create_user(last_name='User', first_name='Plus')
+        user = create_user(last_name="User", first_name="Plus")
         deposit = create_deposit(user)
-        offerer = create_offerer(address='7 rue du livre')
+        offerer = create_offerer(address="7 rue du livre")
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=10)
         now = datetime.utcnow()
-        booking = create_booking(user=user, stock=stock, is_used=True, date_used=now,
-                                 token='ABCDEF', venue=venue)
+        booking = create_booking(user=user, stock=stock, is_used=True, date_used=now, token="ABCDEF", venue=venue)
 
-        payment = create_payment(booking, offerer,
-                                 transaction_label='pass Culture Pro - remboursement 1ère quinzaine 07-2019',
-                                 status=TransactionStatus.ERROR,
-                                 amount=50,
-                                 detail='Iban non fourni')
+        payment = create_payment(
+            booking,
+            offerer,
+            transaction_label="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+            status=TransactionStatus.ERROR,
+            amount=50,
+            detail="Iban non fourni",
+        )
         repository.save(deposit, payment)
 
         # When
@@ -43,44 +45,46 @@ class FindAllOffererPaymentsTest:
         # Then
         assert len(payments) == 1
         assert payments[0] == (
-            'User',
-            'Plus',
-            'ABCDEF',
+            "User",
+            "Plus",
+            "ABCDEF",
             now,
-            'Test Book',
-            '7 rue du livre',
-            'La petite librairie',
-            '12345678912345',
-            '123 rue de Paris',
-            Decimal('50.00'),
+            "Test Book",
+            "7 rue du livre",
+            "La petite librairie",
+            "12345678912345",
+            "123 rue de Paris",
+            Decimal("50.00"),
             None,
-            'pass Culture Pro - remboursement 1ère quinzaine 07-2019',
+            "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
             TransactionStatus.ERROR,
-            'Iban non fourni')
+            "Iban non fourni",
+        )
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_payment_info_with_sent_status(self, app):
         # Given
-        user = create_user(last_name='User', first_name='Plus')
+        user = create_user(last_name="User", first_name="Plus")
         deposit = create_deposit(user)
-        offerer = create_offerer(address='7 rue du livre')
+        offerer = create_offerer(address="7 rue du livre")
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=10)
         now = datetime.utcnow()
-        booking = create_booking(user=user, stock=stock, is_used=True, date_used=now,
-                                 token='ABCDEF', venue=venue)
+        booking = create_booking(user=user, stock=stock, is_used=True, date_used=now, token="ABCDEF", venue=venue)
 
-        payment = create_payment(booking, offerer,
-                                 transaction_label='pass Culture Pro - remboursement 1ère quinzaine 07-2019',
-                                 status=TransactionStatus.ERROR,
-                                 amount=50,
-                                 detail='Iban non fourni',
-                                 status_date=now - timedelta(days=2))
-        payment_status1 = create_payment_status(payment, detail='All good',
-                                                status=TransactionStatus.RETRY,
-                                                date=now - timedelta(days=1))
-        payment_status2 = create_payment_status(payment, detail='All good',
-                                                status=TransactionStatus.SENT)
+        payment = create_payment(
+            booking,
+            offerer,
+            transaction_label="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+            status=TransactionStatus.ERROR,
+            amount=50,
+            detail="Iban non fourni",
+            status_date=now - timedelta(days=2),
+        )
+        payment_status1 = create_payment_status(
+            payment, detail="All good", status=TransactionStatus.RETRY, date=now - timedelta(days=1)
+        )
+        payment_status2 = create_payment_status(payment, detail="All good", status=TransactionStatus.SENT)
         repository.save(deposit, payment, payment_status1, payment_status2)
 
         # When
@@ -89,62 +93,65 @@ class FindAllOffererPaymentsTest:
         # Then
         assert len(payments) == 1
         assert payments[0] == (
-            'User',
-            'Plus',
-            'ABCDEF',
+            "User",
+            "Plus",
+            "ABCDEF",
             now,
-            'Test Book',
-            '7 rue du livre',
-            'La petite librairie',
-            '12345678912345',
-            '123 rue de Paris',
-            Decimal('50.00'),
+            "Test Book",
+            "7 rue du livre",
+            "La petite librairie",
+            "12345678912345",
+            "123 rue de Paris",
+            Decimal("50.00"),
             None,
-            'pass Culture Pro - remboursement 1ère quinzaine 07-2019',
+            "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
             TransactionStatus.SENT,
-            'All good')
+            "All good",
+        )
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_last_matching_status_based_on_date_for_each_payment(self, app):
         # Given
-        user = create_user(last_name='User', first_name='Plus')
+        user = create_user(last_name="User", first_name="Plus")
         deposit = create_deposit(user)
-        offerer = create_offerer(address='7 rue du livre')
+        offerer = create_offerer(address="7 rue du livre")
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=10)
         now = datetime.utcnow()
-        booking1 = create_booking(user=user, stock=stock, is_used=True, date_used=now,
-                                  token='ABCDEF', venue=venue)
-        booking2 = create_booking(user=user, stock=stock, is_used=True, date_used=now,
-                                  token='ABCDFE', venue=venue)
+        booking1 = create_booking(user=user, stock=stock, is_used=True, date_used=now, token="ABCDEF", venue=venue)
+        booking2 = create_booking(user=user, stock=stock, is_used=True, date_used=now, token="ABCDFE", venue=venue)
 
-        payment1 = create_payment(booking1, offerer,
-                                  transaction_label='pass Culture Pro - remboursement 1ère quinzaine 07-2019',
-                                  status=TransactionStatus.PENDING,
-                                  amount=50,
-                                  status_date=now - timedelta(days=2))
-        payment2 = create_payment(booking2, offerer,
-                                  transaction_label='pass Culture Pro - remboursement 2ème quinzaine 07-2019',
-                                  status=TransactionStatus.PENDING,
-                                  amount=75,
-                                  status_date=now - timedelta(days=4))
+        payment1 = create_payment(
+            booking1,
+            offerer,
+            transaction_label="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+            status=TransactionStatus.PENDING,
+            amount=50,
+            status_date=now - timedelta(days=2),
+        )
+        payment2 = create_payment(
+            booking2,
+            offerer,
+            transaction_label="pass Culture Pro - remboursement 2ème quinzaine 07-2019",
+            status=TransactionStatus.PENDING,
+            amount=75,
+            status_date=now - timedelta(days=4),
+        )
 
         repository.save(deposit, payment1, payment2)
 
-        last_status_for_payment1 = create_payment_status(payment1, detail='All good',
-                                                         status=TransactionStatus.SENT,
-                                                         date=now)
-        last_status_for_payment2 = create_payment_status(payment2, detail=None,
-                                                         status=TransactionStatus.SENT,
-                                                         date=now)
+        last_status_for_payment1 = create_payment_status(
+            payment1, detail="All good", status=TransactionStatus.SENT, date=now
+        )
+        last_status_for_payment2 = create_payment_status(payment2, detail=None, status=TransactionStatus.SENT, date=now)
         repository.save(last_status_for_payment1, last_status_for_payment2)
 
-        first_status_for_payment1 = create_payment_status(payment1, detail='Retry',
-                                                          status=TransactionStatus.RETRY,
-                                                          date=now - timedelta(days=1))
-        first_status_for_payment2 = create_payment_status(payment2, detail='Iban non fournis',
-                                                          status=TransactionStatus.ERROR,
-                                                          date=now - timedelta(days=3))
+        first_status_for_payment1 = create_payment_status(
+            payment1, detail="Retry", status=TransactionStatus.RETRY, date=now - timedelta(days=1)
+        )
+        first_status_for_payment2 = create_payment_status(
+            payment2, detail="Iban non fournis", status=TransactionStatus.ERROR, date=now - timedelta(days=3)
+        )
         repository.save(first_status_for_payment1, first_status_for_payment2)
 
         # When
@@ -153,31 +160,34 @@ class FindAllOffererPaymentsTest:
         # Then
         assert len(payments) == 2
         assert payments[0] == (
-            'User',
-            'Plus',
-            'ABCDFE',
+            "User",
+            "Plus",
+            "ABCDFE",
             now,
-            'Test Book',
-            '7 rue du livre',
-            'La petite librairie',
-            '12345678912345',
-            '123 rue de Paris',
-            Decimal('75.00'),
+            "Test Book",
+            "7 rue du livre",
+            "La petite librairie",
+            "12345678912345",
+            "123 rue de Paris",
+            Decimal("75.00"),
             None,
-            'pass Culture Pro - remboursement 2ème quinzaine 07-2019',
+            "pass Culture Pro - remboursement 2ème quinzaine 07-2019",
             TransactionStatus.SENT,
-            None)
+            None,
+        )
         assert payments[1] == (
-            'User', 'Plus',
-            'ABCDEF',
+            "User",
+            "Plus",
+            "ABCDEF",
             now,
-            'Test Book',
-            '7 rue du livre',
-            'La petite librairie',
-            '12345678912345',
-            '123 rue de Paris',
-            Decimal('50.00'),
+            "Test Book",
+            "7 rue du livre",
+            "La petite librairie",
+            "12345678912345",
+            "123 rue de Paris",
+            Decimal("50.00"),
             None,
-            'pass Culture Pro - remboursement 1ère quinzaine 07-2019',
+            "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
             TransactionStatus.SENT,
-            'All good')
+            "All good",
+        )

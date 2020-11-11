@@ -7,6 +7,7 @@ from alembic import context
 from sqlalchemy import create_engine
 
 from pcapi.models.db import db
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 from pcapi.utils.config import IS_DEV
@@ -31,7 +32,7 @@ target_metadata = db.metadata
 
 
 def include_object(object, name, type_, reflected, compare_to):
-    if type_ == "table" and name in ('transaction', 'activity'):
+    if type_ == "table" and name in ("transaction", "activity"):
         return False
     else:
         return True
@@ -53,21 +54,21 @@ def run_migrations_online():
             target_metadata=target_metadata,
             include_object=include_object,
             include_schemas=True,
-            transaction_per_migration=False
+            transaction_per_migration=False,
         )
 
         if not IS_DEV:
-            connection.execute('UPDATE feature SET "isActive" = FALSE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
+            connection.execute("UPDATE feature SET \"isActive\" = FALSE WHERE name = 'UPDATE_DISCOVERY_VIEW'")
 
         with context.begin_transaction():
             context.run_migrations()
 
         if not IS_DEV:
-            connection.execute('UPDATE feature SET "isActive" = TRUE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
+            connection.execute("UPDATE feature SET \"isActive\" = TRUE WHERE name = 'UPDATE_DISCOVERY_VIEW'")
+
 
 def run_migrations_for_tests():
-    """Run migrations in a testing context
-    """
+    """Run migrations in a testing context"""
     database_url = os.environ.get("DATABASE_URL_TEST")
     connectable = create_engine(database_url)
 
@@ -77,7 +78,7 @@ def run_migrations_for_tests():
             target_metadata=target_metadata,
             include_object=include_object,
             include_schemas=True,
-            transaction_per_migration=False
+            transaction_per_migration=False,
         )
 
         with context.begin_transaction():

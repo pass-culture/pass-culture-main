@@ -22,11 +22,11 @@ class ModifyAllocinePriceRuleForVenueTest:
         new_price = Decimal(8)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        allocine_provider = create_provider(local_class='TestLocalProvider')
+        allocine_provider = create_provider(local_class="TestLocalProvider")
         allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider)
-        allocine_venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider,
-                                                                                       price_rule=PriceRule.default,
-                                                                                       price=initial_price)
+        allocine_venue_provider_price_rule = create_allocine_venue_provider_price_rule(
+            allocine_venue_provider, price_rule=PriceRule.default, price=initial_price
+        )
 
         repository.save(allocine_venue_provider_price_rule)
 
@@ -43,11 +43,11 @@ class ModifyAllocinePriceRuleForVenueTest:
         new_price = Decimal(8)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        allocine_provider = create_provider(local_class='TestLocalProvider')
+        allocine_provider = create_provider(local_class="TestLocalProvider")
         allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider)
-        allocine_venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider,
-                                                                                       price_rule=PriceRule.default,
-                                                                                       price=initial_price)
+        allocine_venue_provider_price_rule = create_allocine_venue_provider_price_rule(
+            allocine_venue_provider, price_rule=PriceRule.default, price=initial_price
+        )
 
         repository.save(allocine_venue_provider_price_rule)
 
@@ -78,7 +78,7 @@ class ModifyAllocinePriceRuleForVenueTest:
         new_price = Decimal(8)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        allocine_provider = create_provider(local_class='TestLocalProvider')
+        allocine_provider = create_provider(local_class="TestLocalProvider")
         allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider)
 
         repository.save(allocine_venue_provider)

@@ -21,29 +21,20 @@ class RightsType(enum.Enum):
 
 class UserOfferer(PcObject, Model, NeedsValidationMixin):
 
-    userId = Column(BigInteger,
-                    ForeignKey('user.id'),
-                    primary_key=True)
+    userId = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
 
-    user = relationship('UserSQLEntity',
-                        foreign_keys=[userId],
-                        backref=backref("UserOfferers"))
+    user = relationship("UserSQLEntity", foreign_keys=[userId], backref=backref("UserOfferers"))
 
-    offererId = Column(BigInteger,
-                       ForeignKey('offerer.id'),
-                       index=True,
-                       primary_key=True)
+    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, primary_key=True)
 
-    offerer = relationship('Offerer',
-                           foreign_keys=[offererId],
-                           backref=backref("UserOfferers"))
+    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("UserOfferers"))
 
     rights = Column(Enum(RightsType))
 
     __table_args__ = (
         UniqueConstraint(
-            'userId',
-            'offererId',
-            name='unique_user_offerer',
-            ),
-        )
+            "userId",
+            "offererId",
+            name="unique_user_offerer",
+        ),
+    )

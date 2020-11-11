@@ -15,11 +15,11 @@ class VenueLabelSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_the_venue_labels(self, app):
         # Given
-        house = create_venue_label(idx=11, label='Maison des illustres')
-        monuments = create_venue_label(idx=22, label='Monuments historiques')
+        house = create_venue_label(idx=11, label="Maison des illustres")
+        monuments = create_venue_label(idx=22, label="Monuments historiques")
         repository.save(house, monuments)
-        expected_house_label = VenueLabel(identifier=11, label='Maison des illustres')
-        expected_monuments_label = VenueLabel(identifier=22, label='Monuments historiques')
+        expected_house_label = VenueLabel(identifier=11, label="Maison des illustres")
+        expected_monuments_label = VenueLabel(identifier=22, label="Monuments historiques")
 
         # When
         venue_labels = self.venue_label_sql_repository.get_all()
@@ -31,7 +31,9 @@ class VenueLabelSQLRepositoryTest:
 
     def _are_venue_label_present(self, expected_venue_label: VenueLabel, venue_labels: List[VenueLabel]) -> bool:
         for venue_label in venue_labels:
-            if expected_venue_label.identifier == venue_label.identifier \
-                    and expected_venue_label.label == venue_label.label:
+            if (
+                expected_venue_label.identifier == venue_label.identifier
+                and expected_venue_label.label == venue_label.label
+            ):
                 return True
         return False

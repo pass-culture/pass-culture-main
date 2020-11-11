@@ -8,7 +8,7 @@ CONFIRM_BOOKING_BEFORE_EVENT_DELAY = datetime.timedelta(hours=72)
 
 
 def _get_hours_from_timedelta(td: datetime.timedelta) -> float:
-    return td.total_seconds()/3600
+    return td.total_seconds() / 3600
 
 
 BOOKING_CONFIRMATION_ERROR_CLAUSES = {

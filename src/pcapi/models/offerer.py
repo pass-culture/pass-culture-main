@@ -20,27 +20,27 @@ from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.versioned_mixin import VersionedMixin
 
 
-class Offerer(PcObject,
-              Model,
-              HasThumbMixin,
-              HasAddressMixin,
-              ProvidableMixin,
-              NeedsValidationMixin,
-              DeactivableMixin,
-              VersionedMixin):
+class Offerer(
+    PcObject,
+    Model,
+    HasThumbMixin,
+    HasAddressMixin,
+    ProvidableMixin,
+    NeedsValidationMixin,
+    DeactivableMixin,
+    VersionedMixin,
+):
     id = Column(BigInteger, primary_key=True)
 
-    dateCreated = Column(DateTime,
-                         nullable=False,
-                         default=datetime.utcnow)
+    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     name = Column(String(140), nullable=False)
 
-    users = relationship('UserSQLEntity',
-                         secondary='user_offerer')
+    users = relationship("UserSQLEntity", secondary="user_offerer")
 
-    siren = Column(String(9), nullable=True,
-                   unique=True)  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
+    siren = Column(
+        String(9), nullable=True, unique=True
+    )  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
 
     def give_rights(self, user, rights):
         if user:
@@ -63,7 +63,10 @@ class Offerer(PcObject,
         if not self.bankInformation:
             return None
 
-        can_show_application_id = self.bankInformation.status == BankInformationStatus.DRAFT or self.bankInformation.status == BankInformationStatus.ACCEPTED
+        can_show_application_id = (
+            self.bankInformation.status == BankInformationStatus.DRAFT
+            or self.bankInformation.status == BankInformationStatus.ACCEPTED
+        )
         if not can_show_application_id:
             return None
 
@@ -81,8 +84,7 @@ class Offerer(PcObject,
             self.userHasAccess = True
             return
 
-        authorizations = [user_offer.isValidated for user_offer in self.UserOfferers if
-                          user_offer.userId == user_id]
+        authorizations = [user_offer.isValidated for user_offer in self.UserOfferers if user_offer.userId == user_id]
 
         if len(authorizations):
             user_has_access_as_editor = authorizations[0]
@@ -92,8 +94,10 @@ class Offerer(PcObject,
         self.userHasAccess = user_has_access_as_editor
 
 
-ts_indexes = [('idx_offerer_fts_name', Offerer.name),
-              ('idx_offerer_fts_address', Offerer.address),
-              ('idx_offerer_fts_siret', Offerer.siren)]
+ts_indexes = [
+    ("idx_offerer_fts_name", Offerer.name),
+    ("idx_offerer_fts_address", Offerer.address),
+    ("idx_offerer_fts_siret", Offerer.siren),
+]
 
 (Offerer.__ts_vectors__, Offerer.__table_args__) = create_ts_vector_and_table_args(ts_indexes)

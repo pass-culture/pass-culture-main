@@ -7,18 +7,19 @@ Create Date: 2018-08-28 11:47:37.489626
 """
 from alembic import op
 import sqlalchemy as sa
+
 # revision identifiers, used by Alembic.
 from sqlalchemy.sql import expression
 
 
-revision = 'bd2d69503d1a'
-down_revision = '2268bcb671a5'
+revision = "bd2d69503d1a"
+down_revision = "2268bcb671a5"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.add_column('offer', sa.Column('bookingEmail', sa.VARCHAR(120), nullable=True, server_default=expression.null()))
+    op.add_column("offer", sa.Column("bookingEmail", sa.VARCHAR(120), nullable=True, server_default=expression.null()))
 
 
 def downgrade():

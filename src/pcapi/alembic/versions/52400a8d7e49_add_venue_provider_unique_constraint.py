@@ -9,17 +9,17 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = '52400a8d7e49'
-down_revision = 'e387ee2c380d'
+revision = "52400a8d7e49"
+down_revision = "e387ee2c380d"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.create_unique_constraint(
-        'unique_venue_provider', 'venue_provider', ['venueId', 'providerId', 'venueIdAtOfferProvider']
+        "unique_venue_provider", "venue_provider", ["venueId", "providerId", "venueIdAtOfferProvider"]
     )
 
 
 def downgrade():
-    op.drop_constraint('unique_venue_provider', 'venue_provider')
+    op.drop_constraint("unique_venue_provider", "venue_provider")

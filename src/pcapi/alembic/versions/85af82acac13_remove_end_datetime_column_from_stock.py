@@ -10,20 +10,20 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '85af82acac13'
-down_revision = 'a3be5be5ad3d'
+revision = "85af82acac13"
+down_revision = "a3be5be5ad3d"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.drop_column('stock', 'endDatetime')
+    op.drop_column("stock", "endDatetime")
 
 
 def downgrade():
-    op.add_column('stock', sa.Column('endDatetime', sa.DateTime, nullable=True))
+    op.add_column("stock", sa.Column("endDatetime", sa.DateTime, nullable=True))
     op.create_check_constraint(
-        constraint_name='check_end_datetime_is_after_beginning_datetime',
-        table_name='stock',
-        condition='"endDatetime" > "beginningDatetime"'
+        constraint_name="check_end_datetime_is_after_beginning_datetime",
+        table_name="stock",
+        condition='"endDatetime" > "beginningDatetime"',
     )

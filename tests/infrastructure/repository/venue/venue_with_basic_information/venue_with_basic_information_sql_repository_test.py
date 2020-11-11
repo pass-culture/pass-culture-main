@@ -52,9 +52,9 @@ class VenueWithBasicInformationSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_a_venue_when_venue_with_name_is_found(self, app: object):
         # given
-        name = 'VENUE NAME'
+        name = "VENUE NAME"
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, name=name, comment='a comment', siret=None)
+        venue = create_venue(offerer=offerer, name=name, comment="a comment", siret=None)
 
         repository.save(venue)
 
@@ -74,10 +74,10 @@ class VenueWithBasicInformationSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_none_when_venue_with_name_was_found_but_in_another_offerer(self, app: object):
         # given
-        name = 'Venue name'
+        name = "Venue name"
         offerer = create_offerer()
-        other_offerer = create_offerer(siren='123456798')
-        venue = create_venue(offerer=other_offerer, name=name, siret=None, comment='a comment')
+        other_offerer = create_offerer(siren="123456798")
+        venue = create_venue(offerer=other_offerer, name=name, siret=None, comment="a comment")
         repository.save(venue, other_offerer)
 
         # when
@@ -89,13 +89,13 @@ class VenueWithBasicInformationSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_none_when_no_venue_with_name_was_found(self, app: object):
         # given
-        name = 'Venue name'
+        name = "Venue name"
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, name=name, siret=None, comment='a comment')
+        venue = create_venue(offerer=offerer, name=name, siret=None, comment="a comment")
         repository.save(venue)
 
         # when
-        found_venue = self.venue_sql_repository.find_by_name('some other name', offerer.id)
+        found_venue = self.venue_sql_repository.find_by_name("some other name", offerer.id)
 
         # then
         assert found_venue == []

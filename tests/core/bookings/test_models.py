@@ -18,7 +18,7 @@ from pcapi.utils.human_ids import humanize
 @pytest.mark.usefixtures("db_session")
 def test_total_amount():
     booking = factories.BookingFactory(amount=1.2, quantity=2)
-    assert booking.total_amount == Decimal('2.4')
+    assert booking.total_amount == Decimal("2.4")
 
 
 @pytest.mark.usefixtures("db_session")
@@ -46,11 +46,11 @@ def test_save_cancellation_date_postgresql_function():
 @pytest.mark.usefixtures("db_session")
 def test_booking_completed_url_gets_normalized():
     booking = factories.BookingFactory(
-        token='ABCDEF',
-        user__email='1@example.com',
-        stock__offer__url='example.com?token={token}&email={email}',
+        token="ABCDEF",
+        user__email="1@example.com",
+        stock__offer__url="example.com?token={token}&email={email}",
     )
-    assert booking.completedUrl == 'http://example.com?token=ABCDEF&email=1@example.com'
+    assert booking.completedUrl == "http://example.com?token=ABCDEF&email=1@example.com"
 
 
 @pytest.mark.usefixtures("db_session")
@@ -61,10 +61,10 @@ def test_too_many_bookings_postgresql_exception():
     booking2.stock = booking1.stock
     booking2.quantity = 1
     booking2.amount = booking1.stock.price
-    booking2.token = '123456'
+    booking2.token = "123456"
     with pytest.raises(ApiErrors) as exc:
         repository.save(booking2)
-    assert exc.value.errors['global'] == ['La quantité disponible pour cette offre est atteinte.']
+    assert exc.value.errors["global"] == ["La quantité disponible pour cette offre est atteinte."]
 
 
 @pytest.mark.usefixtures("db_session")

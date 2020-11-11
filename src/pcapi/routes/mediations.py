@@ -23,13 +23,13 @@ from pcapi.validation.routes.mediations import check_thumb_in_request
 from pcapi.validation.routes.mediations import check_thumb_quality
 
 
-@private_api.route('/mediations', methods=['POST'])
+@private_api.route("/mediations", methods=["POST"])
 @login_required
 def create_mediation():
     check_thumb_in_request(files=request.files, form=request.form)
-    offerer_id = dehumanize(request.form['offererId'])
-    offer_id = dehumanize(request.form['offerId'])
-    credit = request.form.get('credit')
+    offerer_id = dehumanize(request.form["offererId"])
+    offer_id = dehumanize(request.form["offerId"])
+    credit = request.form.get("credit")
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     mediation = MediationSQLEntity()
     mediation.author = current_user
@@ -46,14 +46,14 @@ def create_mediation():
     return jsonify(as_dict(mediation)), 201
 
 
-@private_api.route('/mediations/<mediation_id>', methods=['GET'])
+@private_api.route("/mediations/<mediation_id>", methods=["GET"])
 @login_required
 def get_mediation(mediation_id):
     mediation = load_or_404(MediationSQLEntity, mediation_id)
     return jsonify(as_dict(mediation))
 
 
-@private_api.route('/mediations/<mediation_id>', methods=['PATCH'])
+@private_api.route("/mediations/<mediation_id>", methods=["PATCH"])
 @login_required
 @expect_json_data
 def update_mediation(mediation_id):
@@ -69,11 +69,5 @@ def update_mediation(mediation_id):
 
 
 def _get_crop(form):
-    if 'croppingRect[x]' in form \
-            and 'croppingRect[y]' in form \
-            and 'croppingRect[height]' in form:
-        return [
-            float(form['croppingRect[x]']),
-            float(form['croppingRect[y]']),
-            float(form['croppingRect[height]'])
-        ]
+    if "croppingRect[x]" in form and "croppingRect[y]" in form and "croppingRect[height]" in form:
+        return [float(form["croppingRect[x]"]), float(form["croppingRect[y]"]), float(form["croppingRect[height]"])]

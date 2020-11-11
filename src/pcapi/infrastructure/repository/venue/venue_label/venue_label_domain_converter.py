@@ -3,7 +3,4 @@ from pcapi.models import VenueLabelSQLEntity
 
 
 def to_domain(venue_label_sql_entity: VenueLabelSQLEntity) -> VenueLabel:
-    return VenueLabel(
-        identifier=venue_label_sql_entity.id,
-        label=venue_label_sql_entity.label
-    )
+    return VenueLabel(identifier=venue_label_sql_entity.id, label=venue_label_sql_entity.label)

@@ -57,10 +57,10 @@ from pcapi.validation.routes.users_authorizations import check_user_can_validate
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
 
 
-@private_api.route('/bookings/pro', methods=['GET'])
+@private_api.route("/bookings/pro", methods=["GET"])
 @login_required
 def get_all_bookings():
-    page = request.args.get('page', 1)
+    page = request.args.get("page", 1)
     check_page_format_is_number(page)
 
     check_is_authorized_to_access_bookings_recap(current_user)
@@ -74,7 +74,7 @@ def get_all_bookings():
     return serialize_bookings_recap_paginated(bookings_recap_paginated), 200
 
 
-@private_api.route('/bookings', methods=['GET'])
+@private_api.route("/bookings", methods=["GET"])
 @login_required
 def get_bookings():
     beneficiary_bookings = get_bookings_for_beneficiary.execute(current_user.id)
@@ -83,7 +83,7 @@ def get_bookings():
     return jsonify(serialized_bookings), 200
 
 
-@private_api.route('/bookings/<booking_id>', methods=['GET'])
+@private_api.route("/bookings/<booking_id>", methods=["GET"])
 @login_required
 def get_booking(booking_id: int):
     booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
@@ -91,18 +91,16 @@ def get_booking(booking_id: int):
     return jsonify(as_dict(booking, includes=WEBAPP_GET_BOOKING_INCLUDES)), 200
 
 
-@private_api.route('/bookings', methods=['POST'])
+@private_api.route("/bookings", methods=["POST"])
 @login_required
 @expect_json_data
 @spectree_serialize(response_model=PostBookingResponseModel, on_success_status=201)
 def create_booking(body: PostBookingBodyModel) -> PostBookingResponseModel:
-    stock = (
-        StockSQLEntity.query.filter_by(id=dehumanize(body.stock_id)).first_or_404()
-        if body.stock_id else None
-    )
+    stock = StockSQLEntity.query.filter_by(id=dehumanize(body.stock_id)).first_or_404() if body.stock_id else None
     recommendation = (
         Recommendation.query.filter_by(id=dehumanize(body.recommendation_id)).first_or_404()
-        if body.recommendation_id else None
+        if body.recommendation_id
+        else None
     )
 
     booking = bookings_api.book_offer(
@@ -115,7 +113,7 @@ def create_booking(body: PostBookingBodyModel) -> PostBookingResponseModel:
     return PostBookingResponseModel(**serialize_booking_minimal(booking))
 
 
-@private_api.route('/bookings/<booking_id>/cancel', methods=['PUT'])
+@private_api.route("/bookings/<booking_id>/cancel", methods=["PUT"])
 @login_required
 def cancel_booking(booking_id: str):
     booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
@@ -125,10 +123,10 @@ def cancel_booking(booking_id: str):
     return jsonify(serialize_booking_minimal(booking)), 200
 
 
-@public_api.route('/bookings/token/<token>', methods=['GET'])
+@public_api.route("/bookings/token/<token>", methods=["GET"])
 def get_booking_by_token(token: str):
-    email = request.args.get('email', None)
-    offer_id = dehumanize(request.args.get('offer_id', None))
+    email = request.args.get("email", None)
+    offer_id = dehumanize(request.args.get("offer_id", None))
 
     check_user_is_logged_in_or_email_is_provided(current_user, email)
 
@@ -140,19 +138,18 @@ def get_booking_by_token(token: str):
         response = _create_response_to_get_booking_by_token(booking)
         return jsonify(response), 200
 
-    return '', 204
+    return "", 204
 
 
-@public_api.route('/bookings/token/<token>', methods=['PATCH'])
+@public_api.route("/bookings/token/<token>", methods=["PATCH"])
 def patch_booking_by_token(token: str):
-    email = request.args.get('email', None)
-    offer_id = dehumanize(request.args.get('offer_id', None))
+    email = request.args.get("email", None)
+    offer_id = dehumanize(request.args.get("offer_id", None))
     booking_token_upper_case = token.upper()
     booking = booking_repository.find_by(booking_token_upper_case, email, offer_id)
 
     if current_user.is_authenticated:
-        ensure_current_user_has_rights(
-            RightsType.editor, booking.stock.offer.venue.managingOffererId)
+        ensure_current_user_has_rights(RightsType.editor, booking.stock.offer.venue.managingOffererId)
     else:
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 
@@ -162,10 +159,10 @@ def patch_booking_by_token(token: str):
         _activate_user(booking.user)
         send_activation_email(booking.user, send_raw_email)
 
-    return '', 204
+    return "", 204
 
 
-@public_api.route('/v2/bookings/token/<token>', methods=['GET'])
+@public_api.route("/v2/bookings/token/<token>", methods=["GET"])
 @login_or_api_key_required_v2
 def get_booking_by_token_v2(token: str):
     valid_api_key = _get_api_key_from_header(request)
@@ -187,7 +184,7 @@ def get_booking_by_token_v2(token: str):
     return jsonify(response), 200
 
 
-@public_api.route('/v2/bookings/use/token/<token>', methods=['PATCH'])
+@public_api.route("/v2/bookings/use/token/<token>", methods=["PATCH"])
 @login_or_api_key_required_v2
 def patch_booking_use_by_token(token: str):
     """Let a pro user mark a booking as used."""
@@ -208,10 +205,10 @@ def patch_booking_use_by_token(token: str):
 
     bookings_api.mark_as_used(booking)
 
-    return '', 204
+    return "", 204
 
 
-@private_api.route('/v2/bookings/cancel/token/<token>', methods=['PATCH'])
+@private_api.route("/v2/bookings/cancel/token/<token>", methods=["PATCH"])
 @login_or_api_key_required_v2
 def patch_cancel_booking_by_token(token: str):
     """Let a pro user cancel a booking."""
@@ -228,10 +225,10 @@ def patch_cancel_booking_by_token(token: str):
 
     bookings_api.cancel_booking_by_offerer(booking)
 
-    return '', 204
+    return "", 204
 
 
-@public_api.route('/v2/bookings/keep/token/<token>', methods=['PATCH'])
+@public_api.route("/v2/bookings/keep/token/<token>", methods=["PATCH"])
 @login_or_api_key_required_v2
 def patch_booking_keep_by_token(token: str):
     """Let a pro user mark a booking as _not_ used."""
@@ -247,7 +244,7 @@ def patch_booking_keep_by_token(token: str):
 
     bookings_api.mark_as_unused(booking)
 
-    return '', 204
+    return "", 204
 
 
 def _activate_user(user_to_activate: UserSQLEntity) -> None:
@@ -258,11 +255,11 @@ def _activate_user(user_to_activate: UserSQLEntity) -> None:
 
 
 def _get_api_key_from_header(received_request: Dict) -> ApiKey:
-    authorization_header = received_request.headers.get('Authorization', None)
-    headers_contains_api_key_authorization = authorization_header and 'Bearer' in authorization_header
+    authorization_header = received_request.headers.get("Authorization", None)
+    headers_contains_api_key_authorization = authorization_header and "Bearer" in authorization_header
 
     if headers_contains_api_key_authorization:
-        app_authorization_api_key = authorization_header.replace('Bearer ', '')
+        app_authorization_api_key = authorization_header.replace("Bearer ", "")
     else:
         app_authorization_api_key = None
 
@@ -278,17 +275,16 @@ def _create_response_to_get_booking_by_token(booking: Booking) -> Dict:
         date = serialize(booking.stock.beginningDatetime)
     venue_departement_code = offer.venue.departementCode
     response = {
-        'bookingId': humanize(booking.id),
-        'date': date,
-        'email': booking.user.email,
-        'isUsed': booking.isUsed,
-        'offerName': offer_name,
-        'userName': booking.user.publicName,
-        'venueDepartementCode': venue_departement_code,
+        "bookingId": humanize(booking.id),
+        "date": date,
+        "email": booking.user.email,
+        "isUsed": booking.isUsed,
+        "offerName": offer_name,
+        "userName": booking.user.publicName,
+        "venueDepartementCode": venue_departement_code,
     }
 
     if offer.type == str(EventType.ACTIVATION):
-        response.update({'phoneNumber': booking.user.phoneNumber,
-                         'dateOfBirth': serialize(booking.user.dateOfBirth)})
+        response.update({"phoneNumber": booking.user.phoneNumber, "dateOfBirth": serialize(booking.user.dateOfBirth)})
 
     return response

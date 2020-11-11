@@ -49,11 +49,10 @@ get_all_venues_by_pro_user = GetVenuesByProUser(venue_repository=venue_with_offe
 
 list_favorites_of_beneficiary = ListFavoritesOfBeneficiary(favorite_repository=favorite_repository)
 
-add_contact_in_eligibility_list = AddContactInEligibilityList(
-    notification_service=notification_service
-)
+add_contact_in_eligibility_list = AddContactInEligibilityList(notification_service=notification_service)
 
 get_bookings_for_beneficiary = GetBookingsForBeneficiary(
-    beneficiary_bookings_repository=beneficiary_bookings_repository)
+    beneficiary_bookings_repository=beneficiary_bookings_repository
+)
 
 list_offerers_for_pro_user = ListOfferersForProUser(paginated_offerers_repository=paginated_offerers_repository)

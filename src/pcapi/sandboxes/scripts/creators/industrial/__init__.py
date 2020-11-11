@@ -35,10 +35,7 @@ from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_lab
 
 
 def save_industrial_sandbox():
-    (
-        offerers_by_name,
-        pro_users_by_name
-    ) = create_industrial_offerers_with_pro_users()
+    (offerers_by_name, pro_users_by_name) = create_industrial_offerers_with_pro_users()
 
     admin_users_by_name = create_industrial_admin_users()
     pro_users_by_name = create_industrial_pro_users()
@@ -56,21 +53,11 @@ def save_industrial_sandbox():
 
     thing_products_by_name = create_industrial_thing_products()
 
-    event_offers_by_name = create_industrial_event_offers(
-        event_products_by_name,
-        offerers_by_name
-    )
+    event_offers_by_name = create_industrial_event_offers(event_products_by_name, offerers_by_name)
 
-    thing_offers_by_name = create_industrial_thing_offers(
-        thing_products_by_name,
-        offerers_by_name,
-        venues_by_name
-    )
+    thing_offers_by_name = create_industrial_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name)
 
-    offers_by_name = dict(
-        event_offers_by_name,
-        **thing_offers_by_name
-    )
+    offers_by_name = dict(event_offers_by_name, **thing_offers_by_name)
 
     event_occurrences_by_name = create_industrial_event_occurrences(event_offers_by_name)
 
@@ -83,10 +70,7 @@ def save_industrial_sandbox():
     discovery_view_queries.refresh()
     discovery_view_v3_queries.refresh()
 
-    recommendations_by_name = create_industrial_recommendations(
-        offers_by_name,
-        users_by_name
-    )
+    recommendations_by_name = create_industrial_recommendations(offers_by_name, users_by_name)
 
     criteria_by_name = create_industrial_criteria()
 

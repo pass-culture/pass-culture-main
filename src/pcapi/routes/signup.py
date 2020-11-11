@@ -43,7 +43,7 @@ def signup_webapp():
     new_user = UserSQLEntity(from_dict=request.json)
 
     if IS_INTEGRATION:
-        new_user.departementCode = '00'
+        new_user.departementCode = "00"
         objects_to_save.append(_create_initial_deposit(new_user))
     else:
         authorized_emails, departement_codes = get_authorized_emails_and_dept_codes()
@@ -56,11 +56,11 @@ def signup_webapp():
 
     repository.save(*objects_to_save)
 
-    if request.json.get('contact_ok'):
+    if request.json.get("contact_ok"):
         try:
             subscribe_newsletter(new_user)
         except MailServiceException as e:
-            app.logger.exception('Mail service failure', e)
+            app.logger.exception("Mail service failure", e)
 
     return jsonify(as_dict(new_user, includes=BENEFICIARY_INCLUDES)), 201
 
@@ -68,12 +68,12 @@ def signup_webapp():
 @private_api.route("/users/signup/pro", methods=["POST"])
 def signup_pro():
     objects_to_save = []
-    app_origin_url = request.headers.get('origin')
+    app_origin_url = request.headers.get("origin")
 
     check_valid_signup_pro(request)
     new_user = UserSQLEntity(from_dict=request.json)
 
-    existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
+    existing_offerer = Offerer.query.filter_by(siren=request.json["siren"]).first()
 
     if existing_offerer:
         user_offerer = _generate_user_offerer_when_existing_offerer(new_user, existing_offerer)
@@ -98,7 +98,7 @@ def signup_pro():
         send_user_validation_email(new_user, send_raw_email, app_origin_url, is_webapp=False)
         subscribe_newsletter(new_user)
     except MailServiceException:
-        logger.exception('Mail service failure')
+        logger.exception("Mail service failure")
 
     return jsonify(as_dict(new_user, includes=USER_INCLUDES)), 201
 
@@ -114,7 +114,7 @@ def _create_initial_deposit(new_user):
     deposit = Deposit()
     deposit.amount = 499.99
     deposit.user = new_user
-    deposit.source = 'test'
+    deposit.source = "test"
     return deposit
 
 
@@ -129,13 +129,12 @@ def _generate_offerer(data):
 
 def _set_offerer_departement_code(new_user, offerer):
     if IS_INTEGRATION:
-        new_user.departementCode = '00'
+        new_user.departementCode = "00"
     elif offerer.postalCode is not None:
         offerer_dept_code = PostalCode(offerer.postalCode).get_departement_code()
-        new_user.departementCode = '93' if offerer_dept_code in ILE_DE_FRANCE_DEPT_CODES \
-            else offerer_dept_code
+        new_user.departementCode = "93" if offerer_dept_code in ILE_DE_FRANCE_DEPT_CODES else offerer_dept_code
     else:
-        new_user.departementCode = 'XX'  # We don't want to trigger an error on this:
+        new_user.departementCode = "XX"  # We don't want to trigger an error on this:
         # we want the error on user
     return new_user
 
@@ -143,25 +142,24 @@ def _set_offerer_departement_code(new_user, offerer):
 def _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes):
     email_index = _get_email_index_in_spreadsheet_or_error(authorized_emails)
     departement_code = departement_codes[email_index]
-    if departement_code.strip() == '':
-        logger.exception("[ERROR] Missing departement code in users spreadsheet for "
-                     + request.json['email'])
+    if departement_code.strip() == "":
+        logger.exception("[ERROR] Missing departement code in users spreadsheet for " + request.json["email"])
 
         e = ApiErrors()
-        e.add_error('email', "Adresse non autorisée pour l'expérimentation")
+        e.add_error("email", "Adresse non autorisée pour l'expérimentation")
         raise e
     return departement_code
 
 
 def _get_email_index_in_spreadsheet_or_error(authorized_emails):
     try:
-        email_index = authorized_emails.index(request.json['email'])
+        email_index = authorized_emails.index(request.json["email"])
     except ValueError:
         e = ApiErrors()
-        e.add_error('email', "Adresse non autorisée pour l'expérimentation")
+        e.add_error("email", "Adresse non autorisée pour l'expérimentation")
         raise e
     return email_index
 
 
 def _is_pro_signup(json_user):
-    return 'siren' in json_user
+    return "siren" in json_user

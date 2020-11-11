@@ -36,7 +36,7 @@ def _add_isbn_in_product_extra_data(connection: Connection) -> int:
 
         for product in products:
             product_to_update = _dict_to_object(product, Product)
-            product_to_update.extraData['isbn'] = product_to_update.idAtProviders
+            product_to_update.extraData["isbn"] = product_to_update.idAtProviders
             products_to_update.append(product_to_update)
 
         bulk_update_pc_objects(products_to_update, Product)
@@ -49,25 +49,33 @@ def _add_isbn_in_product_extra_data(connection: Connection) -> int:
 
 
 def _get_products_count_in_database(connection: Connection) -> int:
-    return connection.execute("""
+    return connection.execute(
+        """
         SELECT MAX(id)
         FROM product;
-    """).scalar()
+    """
+    ).scalar()
 
 
 def _get_next_products_to_process(connection: Connection, product_index: int, next_product_index: int) -> List[Dict]:
-    return connection.execute("""
+    return connection.execute(
+        """
             SELECT *
             FROM product
-            WHERE id > """ + str(product_index) + """
-            AND id <= """ + str(next_product_index) + """
+            WHERE id > """
+        + str(product_index)
+        + """
+            AND id <= """
+        + str(next_product_index)
+        + """
             AND type = 'ThingType.LIVRE_EDITION'
             AND "idAtProviders" IS NOT NULL
             AND "extraData" IS NOT NULL
             AND (LENGTH("extraData"::JSONB ->> 'isbn') <= 10
                 OR "extraData"::JSONB ->> 'isbn' IS NULL)
             ORDER BY id ASC;
-        """).fetchall()
+        """
+    ).fetchall()
 
 
 def _add_isbn_in_offer_extra_data(connection: Connection) -> int:
@@ -84,7 +92,7 @@ def _add_isbn_in_offer_extra_data(connection: Connection) -> int:
 
         for offer in offers:
             offer_to_update = _dict_to_object(offer, Offer)
-            offer_to_update.extraData['isbn'] = _extract_isbn_from_offer_id_at_providers(offer_to_update.idAtProviders)
+            offer_to_update.extraData["isbn"] = _extract_isbn_from_offer_id_at_providers(offer_to_update.idAtProviders)
             offers_to_update.append(offer_to_update)
 
         bulk_update_pc_objects(offers_to_update, Offer)
@@ -96,25 +104,36 @@ def _add_isbn_in_offer_extra_data(connection: Connection) -> int:
 
 
 def _get_offers_count_in_database(connection: Connection) -> int:
-    return connection.execute("""
+    return (
+        connection.execute(
+            """
         SELECT MAX(id)
         FROM offer;
-    """).scalar() or 0
+    """
+        ).scalar()
+        or 0
+    )
 
 
 def _get_next_offers_to_process(connection: Connection, offer_index: int, next_offer_index: int) -> List[Dict]:
-    return connection.execute("""
+    return connection.execute(
+        """
             SELECT *
             FROM offer
-            WHERE id > """ + str(offer_index) + """
-            AND id <= """ + str(next_offer_index) + """
+            WHERE id > """
+        + str(offer_index)
+        + """
+            AND id <= """
+        + str(next_offer_index)
+        + """
             AND type = 'ThingType.LIVRE_EDITION' 
             AND "idAtProviders" IS NOT NULL
             AND "extraData" IS NOT NULL
             AND (LENGTH("extraData"::JSONB ->> 'isbn') <= 10
                 OR "extraData"::JSONB ->> 'isbn' IS NULL)
             ORDER BY id ASC;
-        """).fetchall()
+        """
+    ).fetchall()
 
 
 def _display_progress_in_percent(item_index: int, number_of_items_in_base: int) -> None:
@@ -124,4 +143,4 @@ def _display_progress_in_percent(item_index: int, number_of_items_in_base: int) 
 
 
 def _extract_isbn_from_offer_id_at_providers(id_at_providers: str) -> str:
-    return id_at_providers.split('@')[0]
+    return id_at_providers.split("@")[0]

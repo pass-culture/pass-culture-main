@@ -17,19 +17,21 @@ from pcapi.repository import product_queries
 
 
 class GenericStocks(LocalProvider):
-    name = 'Generic Stock Provider Interface'
+    name = "Generic Stock Provider Interface"
     can_create = True
 
-    def __init__(self,
-                 venue_provider: VenueProvider,
-                 get_provider_stock_information: Callable,
-                 price_divider_to_euro: Optional[int],
-                 **options):
+    def __init__(
+        self,
+        venue_provider: VenueProvider,
+        get_provider_stock_information: Callable,
+        price_divider_to_euro: Optional[int],
+        **options,
+    ):
         super().__init__(venue_provider, **options)
         self.get_provider_stock_information = get_provider_stock_information
         self.venue = venue_provider.venue
         self.siret = self.venue.siret
-        self.last_processed_isbn = ''
+        self.last_processed_isbn = ""
         self.stock_data = iter([])
         self.modified_since = venue_provider.lastSyncDate
         self.product = None
@@ -40,22 +42,22 @@ class GenericStocks(LocalProvider):
         try:
             self.provider_stocks = next(self.stock_data)
         except StopIteration:
-            self.stock_data = self.get_provider_stock_information(self.siret,
-                                                                  self.last_processed_isbn,
-                                                                  self.modified_since)
+            self.stock_data = self.get_provider_stock_information(
+                self.siret, self.last_processed_isbn, self.modified_since
+            )
             self.provider_stocks = next(self.stock_data)
 
-        self.last_processed_isbn = str(self.provider_stocks['ref'])
-        self.product = product_queries.find_active_book_product_by_isbn(self.provider_stocks['ref'])
+        self.last_processed_isbn = str(self.provider_stocks["ref"])
+        self.product = product_queries.find_active_book_product_by_isbn(self.provider_stocks["ref"])
         if not self.product:
             return []
 
-        providable_info_offer = self.create_providable_info(Offer,
-                                                            f"{self.provider_stocks['ref']}@{self.siret}",
-                                                            datetime.utcnow())
-        providable_info_stock = self.create_providable_info(StockSQLEntity,
-                                                            f"{self.provider_stocks['ref']}@{self.siret}",
-                                                            datetime.utcnow())
+        providable_info_offer = self.create_providable_info(
+            Offer, f"{self.provider_stocks['ref']}@{self.siret}", datetime.utcnow()
+        )
+        providable_info_stock = self.create_providable_info(
+            StockSQLEntity, f"{self.provider_stocks['ref']}@{self.siret}", datetime.utcnow()
+        )
 
         return [providable_info_offer, providable_info_stock]
 
@@ -83,17 +85,19 @@ class GenericStocks(LocalProvider):
 
     def fill_stock_attributes(self, stock: StockSQLEntity) -> None:
         bookings_quantity = count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
-        stock.quantity = self.provider_stocks['available'] + bookings_quantity
+        stock.quantity = self.provider_stocks["available"] + bookings_quantity
         stock.bookingLimitDatetime = None
         stock.offerId = self.offer_id
-        stock.price = self.provider_stocks['price'] \
-            if self.price_divider_to_euro is None \
-            else _fill_stock_price(int(self.provider_stocks['price']), self.price_divider_to_euro)
+        stock.price = (
+            self.provider_stocks["price"]
+            if self.price_divider_to_euro is None
+            else _fill_stock_price(int(self.provider_stocks["price"]), self.price_divider_to_euro)
+        )
         stock.dateModified = datetime.now()
 
     @staticmethod
     def get_next_offer_id_from_sequence():
-        sequence = Sequence('offer_id_seq')
+        sequence = Sequence("offer_id_seq")
         return db.session.execute(sequence)
 
 

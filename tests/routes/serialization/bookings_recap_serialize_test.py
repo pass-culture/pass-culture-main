@@ -26,7 +26,7 @@ class SerializeBookingRecapTest:
             booking_date=booking_date,
             booking_token="FOND",
             booking_is_used=False,
-            booking_amount=18
+            booking_amount=18,
         )
         thing_booking_recap_2 = create_domain_thing_booking_recap(
             offer_identifier=2,
@@ -39,15 +39,9 @@ class SerializeBookingRecapTest:
             booking_token="FOND",
             booking_is_duo=True,
         )
-        bookings_recap = [
-            thing_booking_recap,
-            thing_booking_recap_2
-        ]
+        bookings_recap = [thing_booking_recap, thing_booking_recap_2]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=list(bookings_recap),
-            page=0,
-            pages=1,
-            total=2
+            bookings_recap=list(bookings_recap), page=0, pages=1, total=2
         )
 
         # When
@@ -70,21 +64,15 @@ class SerializeBookingRecapTest:
                 "booking_token": None,
                 "booking_status": "booked",
                 "booking_is_duo": False,
-                'booking_status_history': [
+                "booking_status_history": [
                     {
-                        'status': 'booked',
-                        'date': '2020-01-01T10:00:00',
+                        "status": "booked",
+                        "date": "2020-01-01T10:00:00",
                     },
                 ],
-                'booking_amount': 18,
-                'offerer': {
-                    'name': "Fondation de Caen"
-                },
-                "venue": {
-                    "identifier": "AE",
-                    "name": "Librairie Kléber",
-                    "is_virtual": False
-                }
+                "booking_amount": 18,
+                "offerer": {"name": "Fondation de Caen"},
+                "venue": {"identifier": "AE", "name": "Librairie Kléber", "is_virtual": False},
             },
             {
                 "stock": {
@@ -101,46 +89,39 @@ class SerializeBookingRecapTest:
                 "booking_token": None,
                 "booking_status": "booked",
                 "booking_is_duo": True,
-                'booking_status_history': [
+                "booking_status_history": [
                     {
-                        'status': 'booked',
-                        'date': '2020-01-01T10:00:00',
+                        "status": "booked",
+                        "date": "2020-01-01T10:00:00",
                     },
                 ],
-                'booking_amount': 0,
-                'offerer': {
-                    'name': "Fondation de Paris"
-                },
-                "venue": {
-                    "identifier": "AE",
-                    "name": "Librairie Kléber",
-                    "is_virtual": False
-                }
-            }
+                "booking_amount": 0,
+                "offerer": {"name": "Fondation de Paris"},
+                "venue": {"identifier": "AE", "name": "Librairie Kléber", "is_virtual": False},
+            },
         ]
-        assert result['bookings_recap'] == expected_bookings_recap
-        assert result['page'] == 0
-        assert result['pages'] == 1
-        assert result['total'] == 2
+        assert result["bookings_recap"] == expected_bookings_recap
+        assert result["page"] == 0
+        assert result["pages"] == 1
+        assert result["total"] == 2
 
     def test_should_return_json_with_event_date_additional_parameter_for_event_stock(self, app: fixture):
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         day_after_booking_date = booking_date + timedelta(days=1)
-        event_booking_recap = create_domain_event_booking_recap(offer_name="Cirque du soleil",
-                                                                offerer_name="Fondation des cirques de France",
-                                                                beneficiary_firstname="Hari",
-                                                                beneficiary_lastname="Seldon",
-                                                                beneficiary_email="hari.seldon@example.com",
-                                                                booking_date=booking_date, booking_token="SOLEIL",
-                                                                event_beginning_datetime=day_after_booking_date,
-                                                                )
+        event_booking_recap = create_domain_event_booking_recap(
+            offer_name="Cirque du soleil",
+            offerer_name="Fondation des cirques de France",
+            beneficiary_firstname="Hari",
+            beneficiary_lastname="Seldon",
+            beneficiary_email="hari.seldon@example.com",
+            booking_date=booking_date,
+            booking_token="SOLEIL",
+            event_beginning_datetime=day_after_booking_date,
+        )
         bookings_recap = [event_booking_recap]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=list(bookings_recap),
-            page=0,
-            pages=1,
-            total=2
+            bookings_recap=list(bookings_recap), page=0, pages=1, total=2
         )
 
         # When
@@ -164,44 +145,39 @@ class SerializeBookingRecapTest:
                 "booking_token": "SOLEIL",
                 "booking_status": "booked",
                 "booking_is_duo": False,
-                'booking_status_history': [
+                "booking_status_history": [
                     {
-                        'status': 'booked',
-                        'date': '2020-01-01T10:00:00',
+                        "status": "booked",
+                        "date": "2020-01-01T10:00:00",
                     },
                 ],
-                'booking_amount': 0,
-                'offerer': {
-                    'name': 'Fondation des cirques de France'
-                },
-                "venue": {
-                    "identifier": "AE",
-                    "name": "Librairie Kléber",
-                    "is_virtual": False
-                }
+                "booking_amount": 0,
+                "offerer": {"name": "Fondation des cirques de France"},
+                "venue": {"identifier": "AE", "name": "Librairie Kléber", "is_virtual": False},
             },
         ]
-        assert results['bookings_recap'] == expected_response
-        assert results['page'] == 0
-        assert results['pages'] == 1
-        assert results['total'] == 2
+        assert results["bookings_recap"] == expected_response
+        assert results["page"] == 0
+        assert results["pages"] == 1
+        assert results["total"] == 2
 
     def test_should_return_json_with_offer_isbn_additional_parameter_for_thing_stock(self, app: fixture):
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
-        thing_booking_recap = create_domain_thing_booking_recap(offer_identifier=1, offer_name="Martine a la playa",
-                                                                offer_isbn='987654345678',
-                                                                offerer_name='La maman de Martine',
-                                                                beneficiary_firstname="Hari",
-                                                                beneficiary_lastname="Seldon",
-                                                                beneficiary_email="hari.seldon@example.com",
-                                                                booking_date=booking_date, booking_token="LUNE")
+        thing_booking_recap = create_domain_thing_booking_recap(
+            offer_identifier=1,
+            offer_name="Martine a la playa",
+            offer_isbn="987654345678",
+            offerer_name="La maman de Martine",
+            beneficiary_firstname="Hari",
+            beneficiary_lastname="Seldon",
+            beneficiary_email="hari.seldon@example.com",
+            booking_date=booking_date,
+            booking_token="LUNE",
+        )
         bookings_recap = [thing_booking_recap]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=list(bookings_recap),
-            page=0,
-            pages=1,
-            total=2
+            bookings_recap=list(bookings_recap), page=0, pages=1, total=2
         )
 
         # When
@@ -214,7 +190,7 @@ class SerializeBookingRecapTest:
                     "type": "book",
                     "offer_name": "Martine a la playa",
                     "offer_identifier": humanize(thing_booking_recap.offer_identifier),
-                    "offer_isbn": '987654345678',
+                    "offer_isbn": "987654345678",
                 },
                 "beneficiary": {
                     "lastname": "Seldon",
@@ -225,27 +201,21 @@ class SerializeBookingRecapTest:
                 "booking_token": None,
                 "booking_status": "booked",
                 "booking_is_duo": False,
-                'booking_amount': 0,
-                'booking_status_history': [
+                "booking_amount": 0,
+                "booking_status_history": [
                     {
-                        'status': 'booked',
-                        'date': '2020-01-01T10:00:00',
+                        "status": "booked",
+                        "date": "2020-01-01T10:00:00",
                     },
                 ],
-                'offerer': {
-                  'name': 'La maman de Martine'
-                },
-                "venue": {
-                    "identifier": "AE",
-                    "name": "Librairie Kléber",
-                    "is_virtual": False
-                }
+                "offerer": {"name": "La maman de Martine"},
+                "venue": {"identifier": "AE", "name": "Librairie Kléber", "is_virtual": False},
             },
         ]
-        assert results['bookings_recap'] == expected_response
-        assert results['page'] == 0
-        assert results['pages'] == 1
-        assert results['total'] == 2
+        assert results["bookings_recap"] == expected_response
+        assert results["page"] == 0
+        assert results["pages"] == 1
+        assert results["total"] == 2
 
 
 class SerializeBookingRecapHistoryTest:
@@ -255,21 +225,18 @@ class SerializeBookingRecapHistoryTest:
         bookings_recap = [
             create_domain_thing_booking_recap(
                 offer_name="Martine a la playa",
-                offer_isbn='987654345678',
+                offer_isbn="987654345678",
                 beneficiary_firstname="Hari",
                 beneficiary_lastname="Seldon",
                 beneficiary_email="hari.seldon@example.com",
                 booking_date=booking_date,
                 booking_token="LUNE",
                 booking_is_cancelled=True,
-                cancellation_date=datetime(2020, 4, 3, 10, 0, 0)
+                cancellation_date=datetime(2020, 4, 3, 10, 0, 0),
             )
         ]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=list(bookings_recap),
-            page=0,
-            pages=1,
-            total=2
+            bookings_recap=list(bookings_recap), page=0, pages=1, total=2
         )
 
         # When
@@ -278,24 +245,23 @@ class SerializeBookingRecapHistoryTest:
         # Then
         expected_booking_recap_history = [
             {
-                'status': 'booked',
-                'date': '2020-01-01T10:00:00',
+                "status": "booked",
+                "date": "2020-01-01T10:00:00",
             },
             {
-                'status': 'cancelled',
-                'date': '2020-04-03T10:00:00',
-            }
+                "status": "cancelled",
+                "date": "2020-04-03T10:00:00",
+            },
         ]
-        assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history
+        assert results["bookings_recap"][0]["booking_status_history"] == expected_booking_recap_history
 
-    def test_should_return_booking_recap_history_with_reimbursed_and_used_dated_when_reimbursed(self,
-                                                                                                app: fixture):
+    def test_should_return_booking_recap_history_with_reimbursed_and_used_dated_when_reimbursed(self, app: fixture):
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
             create_domain_thing_booking_recap(
                 offer_name="Martine a la playa",
-                offer_isbn='987654345678',
+                offer_isbn="987654345678",
                 beneficiary_firstname="Hari",
                 beneficiary_lastname="Seldon",
                 beneficiary_email="hari.seldon@example.com",
@@ -304,14 +270,11 @@ class SerializeBookingRecapHistoryTest:
                 booking_is_used=True,
                 booking_is_reimbursed=True,
                 payment_date=datetime(2020, 5, 3, 10, 0),
-                date_used=datetime(2020, 4, 3, 10, 0)
+                date_used=datetime(2020, 4, 3, 10, 0),
             )
         ]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=list(bookings_recap),
-            page=0,
-            pages=1,
-            total=2
+            bookings_recap=list(bookings_recap), page=0, pages=1, total=2
         )
 
         # When
@@ -320,19 +283,19 @@ class SerializeBookingRecapHistoryTest:
         # Then
         expected_booking_recap_history = [
             {
-                'status': 'booked',
-                'date': '2020-01-01T10:00:00',
+                "status": "booked",
+                "date": "2020-01-01T10:00:00",
             },
             {
-                'status': 'validated',
-                'date': '2020-04-03T10:00:00',
+                "status": "validated",
+                "date": "2020-04-03T10:00:00",
             },
             {
-                'status': 'reimbursed',
-                'date': '2020-05-03T10:00:00',
-            }
+                "status": "reimbursed",
+                "date": "2020-05-03T10:00:00",
+            },
         ]
-        assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history
+        assert results["bookings_recap"][0]["booking_status_history"] == expected_booking_recap_history
 
     def test_should_return_booking_recap_history_with_date_used_when_used(self, app: fixture):
         # Given
@@ -340,21 +303,18 @@ class SerializeBookingRecapHistoryTest:
         bookings_recap = [
             create_domain_thing_booking_recap(
                 offer_name="Martine a la playa",
-                offer_isbn='987654345678',
+                offer_isbn="987654345678",
                 beneficiary_firstname="Hari",
                 beneficiary_lastname="Seldon",
                 beneficiary_email="hari.seldon@example.com",
                 booking_date=booking_date,
                 booking_token="LUNE",
                 booking_is_used=True,
-                date_used=datetime(2020, 4, 3, 10, 0)
+                date_used=datetime(2020, 4, 3, 10, 0),
             )
         ]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=list(bookings_recap),
-            page=0,
-            pages=1,
-            total=2
+            bookings_recap=list(bookings_recap), page=0, pages=1, total=2
         )
 
         # When
@@ -363,15 +323,15 @@ class SerializeBookingRecapHistoryTest:
         # Then
         expected_booking_recap_history = [
             {
-                'status': 'booked',
-                'date': '2020-01-01T10:00:00',
+                "status": "booked",
+                "date": "2020-01-01T10:00:00",
             },
             {
-                'status': 'validated',
-                'date': '2020-04-03T10:00:00',
-            }
+                "status": "validated",
+                "date": "2020-04-03T10:00:00",
+            },
         ]
-        assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history
+        assert results["bookings_recap"][0]["booking_status_history"] == expected_booking_recap_history
 
     def test_should_return_booking_recap_history_with_only_booking_date_when_just_booked(self, app: fixture):
         # Given
@@ -379,19 +339,16 @@ class SerializeBookingRecapHistoryTest:
         bookings_recap = [
             create_domain_thing_booking_recap(
                 offer_name="Martine a la playa",
-                offer_isbn='987654345678',
+                offer_isbn="987654345678",
                 beneficiary_firstname="Hari",
                 beneficiary_lastname="Seldon",
                 beneficiary_email="hari.seldon@example.com",
                 booking_date=booking_date,
-                booking_token="LUNE"
+                booking_token="LUNE",
             )
         ]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=list(bookings_recap),
-            page=0,
-            pages=1,
-            total=2
+            bookings_recap=list(bookings_recap), page=0, pages=1, total=2
         )
 
         # When
@@ -400,19 +357,21 @@ class SerializeBookingRecapHistoryTest:
         # Then
         expected_booking_recap_history = [
             {
-                'status': 'booked',
-                'date': '2020-01-01T10:00:00',
+                "status": "booked",
+                "date": "2020-01-01T10:00:00",
             },
         ]
-        assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history
+        assert results["bookings_recap"][0]["booking_status_history"] == expected_booking_recap_history
 
-    def test_should_return_booking_recap_history_with_empty_validated_date_when_booking_was_not_validated_but_reimbursed(self, app:fixture):
+    def test_should_return_booking_recap_history_with_empty_validated_date_when_booking_was_not_validated_but_reimbursed(
+        self, app: fixture
+    ):
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
             create_domain_thing_booking_recap(
                 offer_name="Martine a la playa",
-                offer_isbn='987654345678',
+                offer_isbn="987654345678",
                 beneficiary_firstname="Hari",
                 beneficiary_lastname="Seldon",
                 beneficiary_email="hari.seldon@example.com",
@@ -421,14 +380,11 @@ class SerializeBookingRecapHistoryTest:
                 booking_is_used=False,
                 booking_is_reimbursed=True,
                 payment_date=datetime(2020, 5, 3, 10, 0),
-                date_used=None
+                date_used=None,
             )
         ]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=list(bookings_recap),
-            page=0,
-            pages=1,
-            total=2
+            bookings_recap=list(bookings_recap), page=0, pages=1, total=2
         )
 
         # When
@@ -437,16 +393,16 @@ class SerializeBookingRecapHistoryTest:
         # Then
         expected_booking_recap_history = [
             {
-                'status': 'booked',
-                'date': '2020-01-01T10:00:00',
+                "status": "booked",
+                "date": "2020-01-01T10:00:00",
             },
             {
-                'status': 'validated',
-                'date': None,
+                "status": "validated",
+                "date": None,
             },
             {
-                'status': 'reimbursed',
-                'date': '2020-05-03T10:00:00',
-            }
+                "status": "reimbursed",
+                "date": "2020-05-03T10:00:00",
+            },
         ]
-        assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history
+        assert results["bookings_recap"][0]["booking_status_history"] == expected_booking_recap_history

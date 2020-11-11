@@ -31,25 +31,27 @@ def create(session: Session, order: Callable = order_by_digital_offers_v3) -> No
 
 
 def clean(app: Flask) -> None:
-    db.session.execute('UPDATE feature SET "isActive" = FALSE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
+    db.session.execute("UPDATE feature SET \"isActive\" = FALSE WHERE name = 'UPDATE_DISCOVERY_VIEW'")
     db.session.commit()
 
-    db.session.execute("""
+    db.session.execute(
+        """
       SELECT pg_cancel_backend(pid)
        FROM pg_stat_activity
         WHERE state = 'active'
          AND query = 'REFRESH MATERIALIZED VIEW CONCURRENTLY discovery_view_v3';
-    """)
+    """
+    )
     db.session.commit()
 
-    engine = sqlalchemy.create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+    engine = sqlalchemy.create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
     connection = engine.raw_connection()
     connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     cursor = connection.cursor()
     cursor.execute("VACUUM discovery_view_v3;")
     connection.close()
 
-    db.session.execute('UPDATE feature SET "isActive" = TRUE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
+    db.session.execute("UPDATE feature SET \"isActive\" = TRUE WHERE name = 'UPDATE_DISCOVERY_VIEW'")
     db.session.commit()
 
 
@@ -60,7 +62,8 @@ def refresh(concurrently: bool = True) -> None:
 
 def _create_discovery_view(session: Session, order: Callable, name: str) -> None:
     get_recommendable_offers = _create_function_get_recommendable_offers_ordered_by_digital_offers(session, order)
-    session.execute(f"""
+    session.execute(
+        f"""
         CREATE MATERIALIZED VIEW IF NOT EXISTS {name} AS
             SELECT
                 ROW_NUMBER() OVER ()                AS "offerDiscoveryOrder",
@@ -75,17 +78,21 @@ def _create_discovery_view(session: Session, order: Callable, name: str) -> None
             LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
                 AND offer_mediation."isActive"
             ORDER BY recommendable_offers.partitioned_offers;
-    """)
-    session.execute(f"""
+    """
+    )
+    session.execute(
+        f"""
         CREATE UNIQUE INDEX ON {name} ("offerDiscoveryOrder");
-    """)
+    """
+    )
 
 
 def _create_function_get_recommendable_offers_ordered_by_digital_offers(session, order: Callable) -> str:
     get_offer_score = _create_function_get_offer_score(session)
     get_active_offers_ids = _create_function_get_active_offers_ids(session)
 
-    session.execute(f"""
+    session.execute(
+        f"""
         CREATE OR REPLACE FUNCTION get_recommendable_offers()
         RETURNS TABLE (
             criterion_score BIGINT,
@@ -114,13 +121,15 @@ def _create_function_get_recommendable_offers_ordered_by_digital_offers(session,
         END
         $body$
         LANGUAGE plpgsql;
-    """)
-    return 'get_recommendable_offers'
+    """
+    )
+    return "get_recommendable_offers"
 
 
 def _create_function_offer_has_at_least_one_bookable_stock(session) -> str:
-    function_name = 'offer_has_at_least_one_bookable_stock'
-    session.execute(f"""
+    function_name = "offer_has_at_least_one_bookable_stock"
+    session.execute(
+        f"""
         CREATE OR REPLACE FUNCTION {function_name}(offer_id BIGINT)
         RETURNS SETOF INTEGER AS $body$
         BEGIN
@@ -144,13 +153,15 @@ def _create_function_offer_has_at_least_one_bookable_stock(session) -> str:
         END
         $body$
         LANGUAGE plpgsql;
-    """)
+    """
+    )
     return function_name
 
 
 def _create_function_offer_has_at_least_one_active_mediation(session) -> str:
-    function_name = 'offer_has_at_least_one_active_mediation'
-    session.execute(f"""
+    function_name = "offer_has_at_least_one_active_mediation"
+    session.execute(
+        f"""
         CREATE OR REPLACE FUNCTION {function_name}(offer_id BIGINT)
         RETURNS SETOF INTEGER AS $body$
         BEGIN
@@ -162,13 +173,15 @@ def _create_function_offer_has_at_least_one_active_mediation(session) -> str:
         END
         $body$
         LANGUAGE plpgsql;
-    """)
+    """
+    )
     return function_name
 
 
 def _create_function_event_is_in_less_than_10_days(session) -> str:
-    function_name = 'event_is_in_less_than_10_days'
-    session.execute(f"""
+    function_name = "event_is_in_less_than_10_days"
+    session.execute(
+        f"""
         CREATE OR REPLACE FUNCTION {function_name}(offer_id BIGINT)
         RETURNS SETOF INTEGER AS $body$
         BEGIN
@@ -182,16 +195,18 @@ def _create_function_event_is_in_less_than_10_days(session) -> str:
         END
         $body$
         LANGUAGE plpgsql;
-    """)
+    """
+    )
     return function_name
 
 
 def _create_function_get_active_offers_ids(session) -> str:
-    function_name = 'get_active_offers_ids'
+    function_name = "get_active_offers_ids"
     offer_has_at_least_one_active_mediation = _create_function_offer_has_at_least_one_active_mediation(session)
     offer_has_at_least_one_bookable_stock = _create_function_offer_has_at_least_one_bookable_stock(session)
 
-    session.execute(f"""
+    session.execute(
+        f"""
         CREATE OR REPLACE FUNCTION {function_name}(with_mediation bool)
         RETURNS SETOF BIGINT AS
         $body$
@@ -215,13 +230,15 @@ def _create_function_get_active_offers_ids(session) -> str:
         END;
         $body$
         LANGUAGE plpgsql;
-    """)
+    """
+    )
     return function_name
 
 
 def _create_function_get_offer_score(session) -> str:
-    function_name = 'get_offer_score'
-    session.execute(f"""
+    function_name = "get_offer_score"
+    session.execute(
+        f"""
         CREATE OR REPLACE FUNCTION {function_name}(offer_id BIGINT)
         RETURNS SETOF BIGINT AS $body$
         BEGIN
@@ -233,5 +250,6 @@ def _create_function_get_offer_score(session) -> str:
         END
         $body$
         LANGUAGE plpgsql;
-    """)
+    """
+    )
     return function_name

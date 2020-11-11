@@ -12,9 +12,7 @@ def get_testcafe_helper(module_name, getter_name):
 def get_testcafe_helpers(module_name):
     module = getattr(getters, module_name)
     items = [
-        (key.split('get_')[1].upper(), getattr(module, key)())
-        for key in dir(module)
-        if key.startswith('get_existing')
+        (key.split("get_")[1].upper(), getattr(module, key)()) for key in dir(module) if key.startswith("get_existing")
     ]
     return dict(items)
 
@@ -24,13 +22,10 @@ def print_dumped_object(obj):
 
 
 def get_all_getters():
-    module_names = [
-        m for m in dir(getters)
-        if type(getattr(getters, m)).__name__ == 'module'
-    ]
+    module_names = [m for m in dir(getters) if type(getattr(getters, m)).__name__ == "module"]
     helpers = {}
     for module_name in module_names:
-        if module_name == 'sandboxes':
+        if module_name == "sandboxes":
             continue
         helpers.update(get_testcafe_helpers(module_name))
     return helpers
@@ -43,15 +38,15 @@ def print_testcafe_helper(module_name, getter_name):
 
 def print_testcafe_helpers(module_name):
     helpers_by_name = get_testcafe_helpers(module_name)
-    print('\n{} :'.format(module_name))
+    print("\n{} :".format(module_name))
     print_dumped_object(helpers_by_name)
 
 
 def print_all_testcafe_helpers():
     module_names = [
-        module_name for module_name in dir(getters)
-        if type(getattr(getters, module_name)).__name__ == 'module' \
-        and module_name != 'sandboxes'
+        module_name
+        for module_name in dir(getters)
+        if type(getattr(getters, module_name)).__name__ == "module" and module_name != "sandboxes"
     ]
     for module_name in module_names:
         print_testcafe_helpers(module_name)

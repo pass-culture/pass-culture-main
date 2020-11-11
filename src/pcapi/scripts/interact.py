@@ -18,10 +18,10 @@ from pcapi.utils.mailing import MAILJET_API_SECRET
 
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
+app.secret_key = os.environ.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version="v3")
 db.init_app(app)
 db.app = app
 
@@ -49,13 +49,14 @@ from pcapi.utils.token import *
 
 def set_python_prompt():
     env = config.ENV
-    if env == 'production':
-        color = '\x1b[1;49;31m'  # red
-    elif env == 'staging':
-        color = '\x1b[1;49;35m'  # purple
+    if env == "production":
+        color = "\x1b[1;49;31m"  # red
+    elif env == "staging":
+        color = "\x1b[1;49;35m"  # purple
     else:
         color = None
     if color:
-        sys.ps1 = f'{color}{env} >>>\x1b[0m '
+        sys.ps1 = f"{color}{env} >>>\x1b[0m "
+
 
 set_python_prompt()

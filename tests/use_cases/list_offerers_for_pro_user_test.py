@@ -15,9 +15,9 @@ class OfferersRequestParametersTest:
             user_is_admin=False,
             is_filtered_by_offerer_status=False,
             only_validated_offerers=False,
-            pagination_limit='15',
-            keywords='some keywords',
-            page='2',
+            pagination_limit="15",
+            keywords="some keywords",
+            page="2",
         )
 
         # Then
@@ -25,7 +25,7 @@ class OfferersRequestParametersTest:
         assert offerers_request_parameters.user_is_admin is False
         assert offerers_request_parameters.is_filtered_by_offerer_status is False
         assert offerers_request_parameters.only_validated_offerers is False
-        assert offerers_request_parameters.keywords == 'some keywords'
+        assert offerers_request_parameters.keywords == "some keywords"
         assert offerers_request_parameters.page == 2
         assert offerers_request_parameters.pagination_limit == 15
 
@@ -35,7 +35,8 @@ class ListOfferersForProUserTest:
         self.paginated_offerers_repository = PaginatedOfferersSQLRepository()
         self.paginated_offerers_repository.with_status_and_keywords = MagicMock()
         self.list_offerers_for_pro_user = ListOfferersForProUser(
-            paginated_offerers_repository=self.paginated_offerers_repository)
+            paginated_offerers_repository=self.paginated_offerers_repository
+        )
 
     def should_call_get_paginated_offerers_repository(self):
         # Given
@@ -44,9 +45,9 @@ class ListOfferersForProUserTest:
             user_is_admin=False,
             is_filtered_by_offerer_status=False,
             only_validated_offerers=False,
-            pagination_limit='10',
-            keywords='Offerer or venue name',
-            page='2',
+            pagination_limit="10",
+            keywords="Offerer or venue name",
+            page="2",
         )
 
         # When
@@ -59,6 +60,6 @@ class ListOfferersForProUserTest:
             is_filtered_by_offerer_status=False,
             only_validated_offerers=False,
             pagination_limit=10,
-            keywords='Offerer or venue name',
+            keywords="Offerer or venue name",
             page=2,
         )

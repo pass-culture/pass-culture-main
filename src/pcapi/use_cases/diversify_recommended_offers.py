@@ -11,7 +11,8 @@ def order_offers_by_diversified_types(offers: List[DiscoveryViewV3]) -> List[Dis
     offers_by_type = _get_offers_grouped_by_type_and_onlineless(offers)
 
     offers_by_type_ordered_by_frequency = collections.OrderedDict(
-        sorted(offers_by_type.items(), key=_get_number_of_offers_by_type, reverse=True))
+        sorted(offers_by_type.items(), key=_get_number_of_offers_by_type, reverse=True)
+    )
 
     diversified_offers = []
 
@@ -39,4 +40,4 @@ def _get_number_of_offers_by_type(type_and_offers: Tuple) -> int:
 
 
 def _compute_offer_type_and_oneliness(offer: Offer) -> str:
-    return str(offer.type) + '_DIGITAL' if offer.url else str(offer.type) + '_PHYSICAL'
+    return str(offer.type) + "_DIGITAL" if offer.url else str(offer.type) + "_PHYSICAL"

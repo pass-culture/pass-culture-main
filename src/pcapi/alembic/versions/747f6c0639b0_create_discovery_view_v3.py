@@ -10,14 +10,15 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '747f6c0639b0'
-down_revision = '2b44409d9f54'
+revision = "747f6c0639b0"
+down_revision = "2b44409d9f54"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.execute("""
+    op.execute(
+        """
         CREATE MATERIALIZED VIEW IF NOT EXISTS discovery_view_v3 AS
             SELECT
                 ROW_NUMBER() OVER ()                AS "offerDiscoveryOrder",
@@ -34,10 +35,13 @@ def upgrade():
             ORDER BY recommendable_offers.partitioned_offers;
 
             CREATE UNIQUE INDEX ON discovery_view_v3 ("offerDiscoveryOrder");
-    """)
+    """
+    )
 
 
 def downgrade():
-    op.execute("""
+    op.execute(
+        """
         DROP MATERIALIZED VIEW discovery_view_v3;
-    """)
+    """
+    )

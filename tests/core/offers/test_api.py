@@ -13,8 +13,7 @@ from pcapi.models.feature import override_features
 
 @pytest.mark.usefixtures("db_session")
 class CreateStockTest:
-
-    @mock.patch('pcapi.connectors.redis.add_offer_id')
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
     def test_create_thing_offer(self, mocked_add_offer_id):
         offer = factories.ThingOfferFactory()
 
@@ -47,7 +46,7 @@ class CreateStockTest:
         assert stock.bookingLimitDatetime == booking_limit
 
     @override_features(SYNCHRONIZE_ALGOLIA=False)
-    @mock.patch('pcapi.connectors.redis.add_offer_id')
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
     def test_do_not_sync_algolia_if_feature_is_disabled(self, mocked_add_offer_id):
         offer = factories.ThingOfferFactory()
 
@@ -61,13 +60,13 @@ class CreateStockTest:
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_stock(offer=offer, price=10, beginning=None, booking_limit_datetime=None)
 
-        assert 'beginningDatetime' in error.value.errors
+        assert "beginningDatetime" in error.value.errors
 
     def test_fail_if_offer_is_not_editable(self):
         offerer = offerers_factories.ProviderFactory()
-        offer = factories.ThingOfferFactory(lastProvider=offerer, idAtProviders='1')
+        offer = factories.ThingOfferFactory(lastProvider=offerer, idAtProviders="1")
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_stock(offer=offer, price=10, beginning=None, booking_limit_datetime=None)
 
-        assert error.value.errors == {'global': ['Les offres importées ne sont pas modifiables']}
+        assert error.value.errors == {"global": ["Les offres importées ne sont pas modifiables"]}

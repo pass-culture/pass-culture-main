@@ -25,11 +25,13 @@ class FindIrisesLocatedNearVenueTest:
         offerer = create_offerer()
         venue_in_paris = create_venue(offerer=offerer, longitude=2.351499, latitude=48.856610)
 
-        polygon_amiens = Polygon([(2.295693, 49.894169), (2.295693, 49.894173),
-                                  (2.295697, 49.894173), (2.295697, 49.894169)])
+        polygon_amiens = Polygon(
+            [(2.295693, 49.894169), (2.295693, 49.894173), (2.295697, 49.894173), (2.295697, 49.894169)]
+        )
 
-        polygon_beauvais = Polygon([(2.086668, 49.440898), (2.086668, 49.440902),
-                                    (2.086672, 49.440902), (2.086672, 49.440898)])
+        polygon_beauvais = Polygon(
+            [(2.086668, 49.440898), (2.086668, 49.440902), (2.086672, 49.440902), (2.086672, 49.440898)]
+        )
 
         iris_amiens = create_iris(polygon_amiens)
         iris_beauvais = create_iris(polygon_beauvais)
@@ -86,8 +88,8 @@ class DeleteVenueFromIrisVenuesTest:
     def test_should_delete_given_venue_from_iris_venues(self, app):
         # Given
         offerer = create_offerer()
-        venue_1 = create_venue(offerer, siret='12345678912345')
-        venue_2 = create_venue(offerer, siret='98765432198765')
+        venue_1 = create_venue(offerer, siret="12345678912345")
+        venue_2 = create_venue(offerer, siret="98765432198765")
 
         polygon_1 = Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])
         polygon_2 = Polygon([(0.1, 0.5), (0.6, 0.2), (0.8, 0.2), (0.9, 0.1)])
@@ -115,7 +117,7 @@ class DeleteVenueFromIrisVenuesTest:
     def test_should_not_delete_from_iris_venues_if_venue_id_is_none(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, siret='12345678912345')
+        venue = create_venue(offerer, siret="12345678912345")
         polygon = Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])
         iris = create_iris(polygon)
 
@@ -138,8 +140,9 @@ class GetIrisContainingUserLocationTest:
         user_longitude = 2.295695
 
         polygon_1 = Polygon([(0, 0), (0, 2), (2, 0), (2, 2)])
-        polygon_2 = Polygon([(2.195693, 49.994169), (2.195693, 47.894173),
-                             (2.595697, 47.894173), (2.595697, 49.994169)])
+        polygon_2 = Polygon(
+            [(2.195693, 49.994169), (2.195693, 47.894173), (2.595697, 47.894173), (2.595697, 49.994169)]
+        )
 
         iris_1 = create_iris(polygon_1)
         iris_2 = create_iris(polygon_2)
@@ -158,10 +161,12 @@ class GetIrisContainingUserLocationTest:
         user_latitude = 49.894171
         user_longitude = 2.295695
 
-        polygon_1 = Polygon([(2.095693, 50.994169), (2.095693, 47.894173),
-                             (2.795697, 47.894173), (2.795697, 50.994169)])
-        polygon_2 = Polygon([(2.195693, 49.994169), (2.195693, 47.894173),
-                             (2.595697, 47.894173), (2.595697, 49.994169)])
+        polygon_1 = Polygon(
+            [(2.095693, 50.994169), (2.095693, 47.894173), (2.795697, 47.894173), (2.795697, 50.994169)]
+        )
+        polygon_2 = Polygon(
+            [(2.195693, 49.994169), (2.195693, 47.894173), (2.595697, 47.894173), (2.595697, 49.994169)]
+        )
 
         iris_1 = create_iris(polygon_1)
         iris_2 = create_iris(polygon_2)
@@ -192,7 +197,7 @@ class FindVenuesLocatedNearIrisTest:
     def test_should_return_ids_list_of_venues_located_near_given_iris(self, app):
         # given
         offerer = create_offerer()
-        venue = create_venue(offerer, siret='12345678912345')
+        venue = create_venue(offerer, siret="12345678912345")
 
         polygon = Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])
 

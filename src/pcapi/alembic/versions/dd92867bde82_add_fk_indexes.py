@@ -9,8 +9,8 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = 'dd92867bde82'
-down_revision = '3f915af15e86'
+revision = "dd92867bde82"
+down_revision = "3f915af15e86"
 branch_labels = None
 depends_on = None
 
@@ -26,7 +26,8 @@ def upgrade():
           CREATE INDEX IF NOT EXISTS "ix_booking_recommendationId" ON booking USING btree ("recommendationId");
           CREATE INDEX IF NOT EXISTS "ix_user_offerer_offererId" ON user_offerer USING btree ("offererId");
           CREATE INDEX IF NOT EXISTS "ix_recommendationinviteforEventOccurrenceId" ON recommendation USING btree ("inviteforEventOccurrenceId");
-        """)
+        """
+    )
     pass
 
 
@@ -41,5 +42,6 @@ def downgrade():
           DROP INDEX "ix_booking_recommendationId";
           DROP INDEX "ix_user_offerer_offererId";
           DROP INDEX "ix_recommendationinviteforEventOccurrenceId";
-        """)
+        """
+    )
     pass

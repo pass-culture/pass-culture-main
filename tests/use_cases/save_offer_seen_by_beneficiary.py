@@ -24,7 +24,6 @@ class SaveSeenOffersTest:
         beneficiary = create_user()
         repository.save(beneficiary, offer)
 
-
         # when
         save_seen_offer(beneficiary.id, offer.id)
 

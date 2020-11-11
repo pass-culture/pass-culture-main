@@ -17,14 +17,15 @@ class CheckUserIsLoggedInOrEmailIsProvidedTest:
             check_user_is_logged_in_or_email_is_provided(user, email)
 
         # Then
-        assert excinfo.value.errors['email'] == [
-            "Vous devez préciser l'email de l'utilisateur quand vous n'êtes pas connecté(e)"]
+        assert excinfo.value.errors["email"] == [
+            "Vous devez préciser l'email de l'utilisateur quand vous n'êtes pas connecté(e)"
+        ]
 
     def test_does_not_raise_error_when_email_is_provided(self):
         # Given
         user = UserSQLEntity()
         user.is_authenticated = False
-        email = 'fake@example.com'
+        email = "fake@example.com"
 
         # When
         try:
@@ -38,7 +39,7 @@ class CheckUserIsLoggedInOrEmailIsProvidedTest:
         # Given
         user = UserSQLEntity()
         user.is_authenticated = True
-        email = 'fake@example.com'
+        email = "fake@example.com"
 
         # When
         try:

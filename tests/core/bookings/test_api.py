@@ -21,8 +21,8 @@ from pcapi.utils.token import random_token
 
 @pytest.mark.usefixtures("db_session")
 class BookOfferTest:
-    @mock.patch('pcapi.infrastructure.services.notification.mailjet_notification_service.send_raw_email')
-    @mock.patch('pcapi.connectors.redis.add_offer_id')
+    @mock.patch("pcapi.infrastructure.services.notification.mailjet_notification_service.send_raw_email")
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
     def test_create_booking(self, mocked_add_offer_id, mocked_send_raw_email):
         user = users_factories.UserFactory()
         stock = offers_factories.StockFactory(price=10)
@@ -40,10 +40,10 @@ class BookOfferTest:
 
         mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=stock.offer.id)
 
-        email_data1 = mocked_send_raw_email.call_args_list[0][1]['data']
-        assert email_data1['MJ-TemplateID'] == 1095029  # to offerer
-        email_data2 = mocked_send_raw_email.call_args_list[1][1]['data']
-        assert email_data2['MJ-TemplateID'] == 1163067  # to beneficiary
+        email_data1 = mocked_send_raw_email.call_args_list[0][1]["data"]
+        assert email_data1["MJ-TemplateID"] == 1095029  # to offerer
+        email_data2 = mocked_send_raw_email.call_args_list[1][1]["data"]
+        assert email_data2["MJ-TemplateID"] == 1163067  # to beneficiary
 
     def test_create_event_booking(self):
         ten_days_from_now = datetime.utcnow() + timedelta(days=10)
@@ -76,7 +76,7 @@ class BookOfferTest:
         assert booking.recommendation == recommendation
 
     @override_features(SYNCHRONIZE_ALGOLIA=False)
-    @mock.patch('pcapi.connectors.redis.add_offer_id')
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
     def test_do_not_sync_algolia_if_feature_is_disabled(self, mocked_add_offer_id):
         user = users_factories.UserFactory()
         stock = offers_factories.StockFactory()
@@ -90,7 +90,7 @@ class BookOfferTest:
 
         with pytest.raises(api_errors.ApiErrors) as exc:
             api.book_offer(beneficiary=user, stock=stock, quantity=1)
-        assert 'insufficientFunds' in exc.value.errors
+        assert "insufficientFunds" in exc.value.errors
 
     def test_raise_if_pro_user(self):
         user = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=False)
@@ -98,7 +98,7 @@ class BookOfferTest:
 
         with pytest.raises(api_errors.ApiErrors) as exc:
             api.book_offer(beneficiary=user, stock=stock, quantity=1)
-        assert 'insufficientFunds' in exc.value.errors
+        assert "insufficientFunds" in exc.value.errors
 
     def test_raise_if_no_more_stock(self):
         booking = factories.BookingFactory(stock__quantity=1)
@@ -138,21 +138,20 @@ class BookOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelByBeneficiaryTest:
-
-    @mock.patch('pcapi.infrastructure.services.notification.mailjet_notification_service.send_raw_email')
+    @mock.patch("pcapi.infrastructure.services.notification.mailjet_notification_service.send_raw_email")
     def test_cancel_booking(self, mocked_send_raw_email):
         booking = factories.BookingFactory()
 
         api.cancel_booking_by_beneficiary(booking.user, booking)
 
         assert booking.isCancelled
-        email_data1 = mocked_send_raw_email.call_args_list[0][1]['data']
-        assert email_data1['Mj-TemplateID'] == 1091464  # to beneficiary
-        email_data2 = mocked_send_raw_email.call_args_list[1][1]['data']
-        assert email_data2['MJ-TemplateID'] == 780015  # to offerer
+        email_data1 = mocked_send_raw_email.call_args_list[0][1]["data"]
+        assert email_data1["Mj-TemplateID"] == 1091464  # to beneficiary
+        email_data2 = mocked_send_raw_email.call_args_list[1][1]["data"]
+        assert email_data2["MJ-TemplateID"] == 780015  # to offerer
 
     @override_features(SYNCHRONIZE_ALGOLIA=False)
-    @mock.patch('pcapi.connectors.redis.add_offer_id')
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
     def test_do_not_sync_algolia_if_feature_is_disabled(self, mocked_add_offer_id):
         booking = factories.BookingFactory()
         api.cancel_booking_by_beneficiary(booking.user, booking)
@@ -173,31 +172,37 @@ class CancelByBeneficiaryTest:
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             api.cancel_booking_by_beneficiary(booking.user, booking)
         assert not booking.isCancelled
-        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
+        assert exc.value.errors["booking"] == [
+            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+        ]
 
     def test_raise_if_booking_created_too_long_ago_to_cancel_booking(self):
         event_date_far_enough_to_cancel_booking = datetime.now() + timedelta(days=2, minutes=1)
         booking_date_too_long_ago_to_cancel_booking = datetime.utcnow() - timedelta(days=2, minutes=1)
         booking = factories.BookingFactory(
             stock__beginningDatetime=event_date_far_enough_to_cancel_booking,
-            dateCreated=booking_date_too_long_ago_to_cancel_booking
+            dateCreated=booking_date_too_long_ago_to_cancel_booking,
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             api.cancel_booking_by_beneficiary(booking.user, booking)
         assert not booking.isCancelled
-        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
+        assert exc.value.errors["booking"] == [
+            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+        ]
 
     def test_raise_if_event_too_close_and_booked_long_ago(self):
         booking_date_too_long_ago_to_cancel_booking = datetime.utcnow() - timedelta(days=2, minutes=1)
         event_date_too_close_to_cancel_booking = datetime.now() + timedelta(days=1)
         booking = factories.BookingFactory(
             stock__beginningDatetime=event_date_too_close_to_cancel_booking,
-            dateCreated=booking_date_too_long_ago_to_cancel_booking
+            dateCreated=booking_date_too_long_ago_to_cancel_booking,
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             api.cancel_booking_by_beneficiary(booking.user, booking)
         assert not booking.isCancelled
-        assert exc.value.errors['booking'] == ["Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"]
+        assert exc.value.errors["booking"] == [
+            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+        ]
 
     def test_raise_if_trying_to_cancel_someone_else_s_booking(self):
         booking = factories.BookingFactory()
@@ -236,9 +241,7 @@ class MarkAsUsedTest:
         assert booking.isUsed
 
     def test_mark_as_used_when_stock_starts_soon(self):
-        booking = factories.BookingFactory(
-            stock__beginningDatetime=datetime.now() + timedelta(days=1)
-        )
+        booking = factories.BookingFactory(stock__beginningDatetime=datetime.now() + timedelta(days=1))
         api.mark_as_used(booking)
         assert booking.isUsed
 
@@ -255,9 +258,7 @@ class MarkAsUsedTest:
         assert not booking.isUsed
 
     def test_raise_if_too_soon_to_mark_as_used(self):
-        booking = factories.BookingFactory(
-            stock__beginningDatetime=datetime.now() + timedelta(days=4)
-        )
+        booking = factories.BookingFactory(stock__beginningDatetime=datetime.now() + timedelta(days=4))
         with pytest.raises(api_errors.ForbiddenError):
             api.mark_as_used(booking)
         assert not booking.isUsed
@@ -300,7 +301,7 @@ class MarkAsUnusedTest:
 
 
 class GenerateQrCodeTest:
-    @mock.patch('qrcode.QRCode')
+    @mock.patch("qrcode.QRCode")
     def test_correct_technical_parameters(self, build_qr_code):
         api.generate_qr_code(random_token(), offer_extra_data={})
         build_qr_code.assert_called_once_with(
@@ -310,43 +311,36 @@ class GenerateQrCodeTest:
             border=1,
         )
 
-    @mock.patch('qrcode.QRCode.make_image')
-    def test_should_build_qr_code_with_correct_image_parameters(
-            self,
-            build_qr_code_image_parameters
-    ):
-        api.generate_qr_code(booking_token='ABCDE', offer_extra_data={})
+    @mock.patch("qrcode.QRCode.make_image")
+    def test_should_build_qr_code_with_correct_image_parameters(self, build_qr_code_image_parameters):
+        api.generate_qr_code(booking_token="ABCDE", offer_extra_data={})
         build_qr_code_image_parameters.assert_called_once_with(
-            back_color='white',
-            fill_color='black',
+            back_color="white",
+            fill_color="black",
         )
 
-    @mock.patch('qrcode.QRCode.add_data')
+    @mock.patch("qrcode.QRCode.add_data")
     def test_include_product_isbn_if_provided(self, build_qr_code_booking_info):
-        api.generate_qr_code('ABCDE', offer_extra_data={})
-        build_qr_code_booking_info.assert_called_once_with(
-            f'PASSCULTURE:v2;'
-            f'TOKEN:ABCDE'
-        )
+        api.generate_qr_code("ABCDE", offer_extra_data={})
+        build_qr_code_booking_info.assert_called_once_with(f"PASSCULTURE:v2;" f"TOKEN:ABCDE")
 
         build_qr_code_booking_info.reset_mock()
-        api.generate_qr_code('ABCDE', offer_extra_data={'isbn': '123456789'})
-        build_qr_code_booking_info.assert_called_once_with(
-            f'PASSCULTURE:v2;'
-            f'EAN13:123456789;'
-            f'TOKEN:ABCDE'
-        )
+        api.generate_qr_code("ABCDE", offer_extra_data={"isbn": "123456789"})
+        build_qr_code_booking_info.assert_called_once_with(f"PASSCULTURE:v2;" f"EAN13:123456789;" f"TOKEN:ABCDE")
 
     def test_generated_qr_code(self):
-        qr_code = api.generate_qr_code('ABCDE', offer_extra_data={})
+        qr_code = api.generate_qr_code("ABCDE", offer_extra_data={})
         assert isinstance(qr_code, str)
-        assert qr_code == "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJsAAACbAQAAAABdGtQhAAABs0lEQVR4nL1XMY7bMBCcFQXQqagf0EDeYSlp8o/8w7Hko/8VyfcR6gdURwKSJ4VdxYc0580WJDDFDHZJzoBCPNVcPWPAZ8EiIlKq5ZcUkWEWkfrTnB+DHRnRukDHBJAclIQoNeyI8758wwVFmhdwflD1fWMF2HNjXsL5b9BEdBw0hYQrIAkoXXOEZdIRQgaA3LoQc+tCBGCiihBJkiMMLVNPklQSmsiIjqvPrVs9mbQ6mpLhY2GI6BiUhG5uBW8uRDu6QMDpjK4uP3DxkLR9LSds+/wlKV1v+wYz4brYyGnmBGp5Xfk+r750zXEulav9ruOq5QxOxI6uhh2x7e3bSzifqwaW1QscPNikvuzQ/9Tp6ODDxBu2fekTAKFWHgFbhytMtL+bC3ZYdM4IWRJgR0daJkN7czoPtsLBD76cgDnTD8jvSS0m5nUGFtlLhU3ktOhE+d29c5d6kskwt0qje+SRcPBoXYhZy+uQOzJydCFaJsMsWnmUW5jIKT16g9boHuChMbyn31XpHT3AK46wZwlx176M829QuKL0Cdi1rp7t6HQs6H4yvOGIDPR6t07+12/iD1lz9hCJWM0gAAAAAElFTkSuQmCC"
+        assert (
+            qr_code
+            == "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJsAAACbAQAAAABdGtQhAAABs0lEQVR4nL1XMY7bMBCcFQXQqagf0EDeYSlp8o/8w7Hko/8VyfcR6gdURwKSJ4VdxYc0580WJDDFDHZJzoBCPNVcPWPAZ8EiIlKq5ZcUkWEWkfrTnB+DHRnRukDHBJAclIQoNeyI8758wwVFmhdwflD1fWMF2HNjXsL5b9BEdBw0hYQrIAkoXXOEZdIRQgaA3LoQc+tCBGCiihBJkiMMLVNPklQSmsiIjqvPrVs9mbQ6mpLhY2GI6BiUhG5uBW8uRDu6QMDpjK4uP3DxkLR9LSds+/wlKV1v+wYz4brYyGnmBGp5Xfk+r750zXEulav9ruOq5QxOxI6uhh2x7e3bSzifqwaW1QscPNikvuzQ/9Tp6ODDxBu2fekTAKFWHgFbhytMtL+bC3ZYdM4IWRJgR0daJkN7czoPtsLBD76cgDnTD8jvSS0m5nUGFtlLhU3ktOhE+d29c5d6kskwt0qje+SRcPBoXYhZy+uQOzJydCFaJsMsWnmUW5jIKT16g9boHuChMbyn31XpHT3AK46wZwlx176M829QuKL0Cdi1rp7t6HQs6H4yvOGIDPR6t07+12/iD1lz9hCJWM0gAAAAAElFTkSuQmCC"
+        )
 
 
 @pytest.mark.parametrize(
     "booking_date",
-    [datetime(2020, 7, 14, 15, 30), datetime(2020, 10, 25, 1, 45),  datetime.now()],
-    ids=["14 Jul", "Daylight Saving Switch", "Now"]
+    [datetime(2020, 7, 14, 15, 30), datetime(2020, 10, 25, 1, 45), datetime.now()],
+    ids=["14 Jul", "Daylight Saving Switch", "Now"],
 )
 @pytest.mark.usefixtures("db_session")
 class ComputeConfirmationDateTest:
@@ -358,15 +352,20 @@ class ComputeConfirmationDateTest:
     def test_returns_creation_date_if_event_begins_too_soon(self, booking_date):
         event_date_too_close_to_cancel_booking = booking_date + timedelta(days=1)
         booking_creation = booking_date
-        assert api.compute_confirmation_date(event_date_too_close_to_cancel_booking, booking_creation) == booking_creation
+        assert (
+            api.compute_confirmation_date(event_date_too_close_to_cancel_booking, booking_creation) == booking_creation
+        )
 
     def test_returns_two_days_after_booking_creation_if_event_begins_in_more_than_five_days(self, booking_date):
         event_date_more_ten_days_from_now = booking_date + timedelta(days=6)
         booking_creation = booking_date
-        assert api.compute_confirmation_date(event_date_more_ten_days_from_now, booking_creation) == booking_creation + timedelta(days=2)
+        assert api.compute_confirmation_date(
+            event_date_more_ten_days_from_now, booking_creation
+        ) == booking_creation + timedelta(days=2)
 
     def test_returns_three_days_before_event_if_event_begins_between_three_and_five_days_from_now(self, booking_date):
         event_date_four_days_from_now = booking_date + timedelta(days=4)
         booking_creation = booking_date
-        assert api.compute_confirmation_date(event_date_four_days_from_now, booking_creation) == event_date_four_days_from_now - timedelta(days=3)
-
+        assert api.compute_confirmation_date(
+            event_date_four_days_from_now, booking_creation
+        ) == event_date_four_days_from_now - timedelta(days=3)

@@ -93,8 +93,8 @@ class FindPaymentEligibleBookingsForOffererTest:
         beneficiary = create_user()
         create_deposit(beneficiary)
 
-        offerer = create_offerer(siren='123456789')
-        venue = create_venue(offerer, siret=f'{offerer.siren}12345')
+        offerer = create_offerer(siren="123456789")
+        venue = create_venue(offerer, siret=f"{offerer.siren}12345")
         past_event_stock = create_stock_with_event_offer(
             offerer=offerer, venue=venue, beginning_datetime=TWO_DAYS_AGO, booking_limit_datetime=THREE_DAYS_AGO
         )
@@ -105,15 +105,22 @@ class FindPaymentEligibleBookingsForOffererTest:
         future_event_booking = create_booking(user=beneficiary, is_used=True, stock=future_event_stock, venue=venue)
         thing_booking = create_booking(user=beneficiary, is_used=True, venue=venue)
 
-        another_offerer = create_offerer(siren='987654321')
-        another_venue = create_venue(another_offerer, siret=f'{another_offerer.siren}12345')
+        another_offerer = create_offerer(siren="987654321")
+        another_venue = create_venue(another_offerer, siret=f"{another_offerer.siren}12345")
         another_thing_booking = create_booking(user=beneficiary, is_used=True, venue=another_venue)
         another_past_event_stock = create_stock_with_event_offer(
-            offerer=another_offerer, venue=another_venue, beginning_datetime=TWO_DAYS_AGO, booking_limit_datetime=THREE_DAYS_AGO
+            offerer=another_offerer,
+            venue=another_venue,
+            beginning_datetime=TWO_DAYS_AGO,
+            booking_limit_datetime=THREE_DAYS_AGO,
         )
-        another_past_event_booking = create_booking(user=beneficiary, is_used=True, stock=another_past_event_stock, venue=venue)
+        another_past_event_booking = create_booking(
+            user=beneficiary, is_used=True, stock=another_past_event_stock, venue=venue
+        )
 
-        repository.save(past_event_booking, future_event_booking, thing_booking, another_thing_booking, another_past_event_booking)
+        repository.save(
+            past_event_booking, future_event_booking, thing_booking, another_thing_booking, another_past_event_booking
+        )
 
         # When
         bookings = booking_repository.find_bookings_eligible_for_payment_for_offerer(offerer.id)
@@ -211,8 +218,12 @@ class FindPaymentEligibleBookingsForOffererTest:
         future_event_stock = create_stock_with_event_offer(
             offerer=offerer, venue=venue, beginning_datetime=tomorrow, booking_limit_datetime=tomorrow
         )
-        yesterday_event_booking = create_booking(user=beneficiary, is_used=True, stock=yesterday_event_stock, venue=venue)
-        today_past_event_booking = create_booking(user=beneficiary, is_used=True, stock=today_past_event_stock, venue=venue)
+        yesterday_event_booking = create_booking(
+            user=beneficiary, is_used=True, stock=yesterday_event_stock, venue=venue
+        )
+        today_past_event_booking = create_booking(
+            user=beneficiary, is_used=True, stock=today_past_event_stock, venue=venue
+        )
         future_event_booking = create_booking(user=beneficiary, is_used=True, stock=future_event_stock, venue=venue)
         repository.save(yesterday_event_booking, today_past_event_booking, future_event_booking)
 
@@ -231,24 +242,35 @@ class FindPaymentEligibleBookingsForOffererTest:
         create_deposit(beneficiary)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        in_the_past_less_than_automatic_refund_delay = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY + timedelta(
-            days=1)
+        in_the_past_less_than_automatic_refund_delay = (
+            datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY + timedelta(days=1)
+        )
         in_the_past_more_than_automatic_refund_delay = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY
 
-        event_stock_finished_more_than_automatic_refund_delay_ago = \
-            create_stock_with_event_offer(offerer=offerer,
-                                          venue=venue,
-                                          beginning_datetime=in_the_past_more_than_automatic_refund_delay,
-                                          booking_limit_datetime=in_the_past_more_than_automatic_refund_delay)
-        event_stock_finished_less_than_automatic_refund_delay_ago = \
-            create_stock_with_event_offer(offerer=offerer,
-                                          venue=venue,
-                                          beginning_datetime=in_the_past_less_than_automatic_refund_delay,
-                                          booking_limit_datetime=in_the_past_less_than_automatic_refund_delay)
-        event_booking1 = create_booking(user=beneficiary, is_used=False,
-                                        stock=event_stock_finished_more_than_automatic_refund_delay_ago, venue=venue)
-        event_booking2 = create_booking(user=beneficiary, is_used=False,
-                                        stock=event_stock_finished_less_than_automatic_refund_delay_ago, venue=venue)
+        event_stock_finished_more_than_automatic_refund_delay_ago = create_stock_with_event_offer(
+            offerer=offerer,
+            venue=venue,
+            beginning_datetime=in_the_past_more_than_automatic_refund_delay,
+            booking_limit_datetime=in_the_past_more_than_automatic_refund_delay,
+        )
+        event_stock_finished_less_than_automatic_refund_delay_ago = create_stock_with_event_offer(
+            offerer=offerer,
+            venue=venue,
+            beginning_datetime=in_the_past_less_than_automatic_refund_delay,
+            booking_limit_datetime=in_the_past_less_than_automatic_refund_delay,
+        )
+        event_booking1 = create_booking(
+            user=beneficiary,
+            is_used=False,
+            stock=event_stock_finished_more_than_automatic_refund_delay_ago,
+            venue=venue,
+        )
+        event_booking2 = create_booking(
+            user=beneficiary,
+            is_used=False,
+            stock=event_stock_finished_less_than_automatic_refund_delay_ago,
+            venue=venue,
+        )
         repository.save(event_booking1, event_booking2)
 
         # When
@@ -265,8 +287,8 @@ class FindPaymentEligibleBookingsForVenueTest:
         beneficiary = create_user()
         create_deposit(beneficiary)
 
-        offerer = create_offerer(siren='123456789')
-        venue = create_venue(offerer, siret=f'{offerer.siren}12345')
+        offerer = create_offerer(siren="123456789")
+        venue = create_venue(offerer, siret=f"{offerer.siren}12345")
         past_event_stock = create_stock_with_event_offer(
             offerer=offerer, venue=venue, beginning_datetime=TWO_DAYS_AGO, booking_limit_datetime=THREE_DAYS_AGO
         )
@@ -277,15 +299,22 @@ class FindPaymentEligibleBookingsForVenueTest:
         future_event_booking = create_booking(user=beneficiary, is_used=True, stock=future_event_stock, venue=venue)
         thing_booking = create_booking(user=beneficiary, is_used=True, venue=venue)
 
-        another_offerer = create_offerer(siren='987654321')
-        another_venue = create_venue(another_offerer, siret=f'{another_offerer.siren}12345')
+        another_offerer = create_offerer(siren="987654321")
+        another_venue = create_venue(another_offerer, siret=f"{another_offerer.siren}12345")
         another_thing_booking = create_booking(user=beneficiary, is_used=True, venue=another_venue)
         another_past_event_stock = create_stock_with_event_offer(
-            offerer=another_offerer, venue=another_venue, beginning_datetime=TWO_DAYS_AGO, booking_limit_datetime=THREE_DAYS_AGO
+            offerer=another_offerer,
+            venue=another_venue,
+            beginning_datetime=TWO_DAYS_AGO,
+            booking_limit_datetime=THREE_DAYS_AGO,
         )
-        another_past_event_booking = create_booking(user=beneficiary, is_used=True, stock=another_past_event_stock, venue=venue)
+        another_past_event_booking = create_booking(
+            user=beneficiary, is_used=True, stock=another_past_event_stock, venue=venue
+        )
 
-        repository.save(past_event_booking, future_event_booking, thing_booking, another_thing_booking, another_past_event_booking)
+        repository.save(
+            past_event_booking, future_event_booking, thing_booking, another_thing_booking, another_past_event_booking
+        )
 
         # When
         bookings = booking_repository.find_bookings_eligible_for_payment_for_venue(venue.id)
@@ -333,7 +362,7 @@ class FindDateUsedTest:
         create_deposit(user)
         booking = create_booking(user=user)
         repository.save(booking)
-        activity_insert = create_booking_activity(booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28))
+        activity_insert = create_booking_activity(booking, "booking", "insert", issued_at=datetime(2018, 1, 28))
         save_all_activities(activity_insert)
 
         # when
@@ -350,8 +379,7 @@ class FindUserActivationBookingTest:
         user = create_user()
         offerer = create_offerer()
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        activation_offer = create_offer_with_thing_product(
-            venue_online, thing_type=ThingType.ACTIVATION)
+        activation_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.ACTIVATION)
         activation_stock = create_stock_from_offer(activation_offer, price=0, quantity=200)
         activation_booking = create_booking(user=user, stock=activation_stock, venue=venue_online)
         repository.save(activation_booking)
@@ -368,8 +396,7 @@ class FindUserActivationBookingTest:
         user = create_user()
         offerer = create_offerer()
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        activation_offer = create_offer_with_event_product(
-            venue_online, event_type=EventType.ACTIVATION)
+        activation_offer = create_offer_with_event_product(venue_online, event_type=EventType.ACTIVATION)
         activation_stock = create_stock_from_offer(activation_offer, price=0, quantity=200)
         activation_booking = create_booking(user=user, stock=activation_stock, venue=venue_online)
         repository.save(activation_booking)
@@ -386,8 +413,7 @@ class FindUserActivationBookingTest:
         user = create_user()
         offerer = create_offerer()
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        book_offer = create_offer_with_thing_product(
-            venue_online, thing_type=ThingType.LIVRE_EDITION)
+        book_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.LIVRE_EDITION)
         book_stock = create_stock_from_offer(book_offer, price=0, quantity=200)
         book_booking = create_booking(user=user, stock=book_stock, venue=venue_online)
         repository.save(book_booking)
@@ -406,8 +432,7 @@ class GetExistingTokensTest:
         user = create_user()
         offerer = create_offerer()
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        book_offer = create_offer_with_thing_product(
-            venue_online, thing_type=ThingType.LIVRE_EDITION)
+        book_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.LIVRE_EDITION)
         book_stock = create_stock_from_offer(book_offer, price=0, quantity=200)
         booking1 = create_booking(user=user, stock=book_stock, venue=venue_online)
         booking2 = create_booking(user=user, stock=book_stock, venue=venue_online)
@@ -459,17 +484,16 @@ class FindByTest:
 
             # when
             with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
-                booking_repository.find_by('UNKNOWN')
+                booking_repository.find_by("UNKNOWN")
 
             # then
-            assert resource_not_found_error.value.errors['global'] == [
-                "Cette contremarque n'a pas été trouvée"]
+            assert resource_not_found_error.value.errors["global"] == ["Cette contremarque n'a pas été trouvée"]
 
     class ByTokenAndEmailTest:
         @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_and_email_are_known(self, app: fixture):
             # given
-            user = create_user(email='user@example.com')
+            user = create_user(email="user@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
@@ -477,7 +501,7 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            result = booking_repository.find_by(booking.token, email='user@example.com')
+            result = booking_repository.find_by(booking.token, email="user@example.com")
 
             # then
             assert result.id == booking.id
@@ -485,7 +509,7 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_is_known_and_email_is_known_case_insensitively(self, app: fixture):
             # given
-            user = create_user(email='USer@eXAMple.COm')
+            user = create_user(email="USer@eXAMple.COm")
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
@@ -493,7 +517,7 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            result = booking_repository.find_by(booking.token, email='USER@example.COM')
+            result = booking_repository.find_by(booking.token, email="USER@example.COM")
 
             # then
             assert result.id == booking.id
@@ -501,7 +525,7 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_is_known_and_email_is_known_with_trailing_spaces(self, app: fixture):
             # given
-            user = create_user(email='user@example.com')
+            user = create_user(email="user@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
@@ -509,7 +533,7 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            result = booking_repository.find_by(booking.token, email='   user@example.com  ')
+            result = booking_repository.find_by(booking.token, email="   user@example.com  ")
 
             # then
             assert result.id == booking.id
@@ -517,7 +541,7 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_exception_if_token_is_known_but_email_is_unknown(self, app: fixture):
             # given
-            user = create_user(email='user@example.com')
+            user = create_user(email="user@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
@@ -526,17 +550,16 @@ class FindByTest:
 
             # when
             with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
-                booking_repository.find_by(booking.token, email='other.user@example.com')
+                booking_repository.find_by(booking.token, email="other.user@example.com")
 
             # then
-            assert resource_not_found_error.value.errors['global'] == [
-                "Cette contremarque n'a pas été trouvée"]
+            assert resource_not_found_error.value.errors["global"] == ["Cette contremarque n'a pas été trouvée"]
 
     class ByTokenAndEmailAndOfferIdTest:
         @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_and_email_and_offer_id_for_thing_are_known(self, app: fixture):
             # given
-            user = create_user(email='user@example.com')
+            user = create_user(email="user@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
@@ -544,8 +567,7 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            result = booking_repository.find_by(booking.token, email='user@example.com',
-                                             offer_id=stock.offer.id)
+            result = booking_repository.find_by(booking.token, email="user@example.com", offer_id=stock.offer.id)
 
             # then
             assert result.id == booking.id
@@ -553,7 +575,7 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_and_email_and_offer_id_for_event_are_known(self, app: fixture):
             # given
-            user = create_user(email='user@example.com')
+            user = create_user(email="user@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -561,8 +583,7 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            result = booking_repository.find_by(booking.token, email='user@example.com',
-                                             offer_id=stock.offer.id)
+            result = booking_repository.find_by(booking.token, email="user@example.com", offer_id=stock.offer.id)
 
             # then
             assert result.id == booking.id
@@ -570,7 +591,7 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_and_email_are_known_but_offer_id_is_unknown(self, app: fixture):
             # given
-            user = create_user(email='user@example.com')
+            user = create_user(email="user@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
@@ -579,12 +600,10 @@ class FindByTest:
 
             # when
             with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
-                booking_repository.find_by(
-                    booking.token, email='user@example.com', offer_id=1234)
+                booking_repository.find_by(booking.token, email="user@example.com", offer_id=1234)
 
             # then
-            assert resource_not_found_error.value.errors['global'] == [
-                "Cette contremarque n'a pas été trouvée"]
+            assert resource_not_found_error.value.errors["global"] == ["Cette contremarque n'a pas été trouvée"]
 
 
 class SaveBookingTest:
@@ -595,8 +614,8 @@ class SaveBookingTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, price=0, quantity=1)
-        user_cancelled = create_user(email='cancelled@example.com')
-        user_booked = create_user(email='booked@example.com')
+        user_cancelled = create_user(email="cancelled@example.com")
+        user_booked = create_user(email="booked@example.com")
         cancelled_booking = create_booking(user=user_cancelled, stock=stock, is_cancelled=True)
         repository.save(cancelled_booking)
         booking = create_booking(user=user_booked, stock=stock, is_cancelled=False)
@@ -615,8 +634,8 @@ class SaveBookingTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, price=0, quantity=1)
-        user1 = create_user(email='cancelled@example.com')
-        user2 = create_user(email='booked@example.com')
+        user1 = create_user(email="cancelled@example.com")
+        user2 = create_user(email="booked@example.com")
         booking1 = create_booking(user=user1, stock=stock, is_cancelled=False)
         repository.save(booking1)
         booking2 = create_booking(user=user2, stock=stock, is_cancelled=False)
@@ -626,8 +645,7 @@ class SaveBookingTest:
             repository.save(booking2)
 
         # Then
-        assert api_errors.value.errors['global'] == [
-            'La quantité disponible pour cette offre est atteinte.']
+        assert api_errors.value.errors["global"] == ["La quantité disponible pour cette offre est atteinte."]
 
 
 class CountNonCancelledBookingsTest:
@@ -669,13 +687,11 @@ class CountNonCancelledBookingsTest:
     def test_returns_zero_if_two_users_have_activation_booking(self, app: fixture):
         # Given
         user1 = create_user()
-        user2 = create_user(email='user2@example.com')
+        user2 = create_user(email="user2@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer1 = create_offer_with_thing_product(
-            venue, thing_type=ThingType.ACTIVATION)
-        offer2 = create_offer_with_event_product(
-            venue, event_type=EventType.ACTIVATION)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
         booking1 = create_booking(user=user1, stock=stock1)
@@ -693,7 +709,7 @@ class CountNonCancelledBookingsByDepartementTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_1_if_one_user_has_one_non_cancelled_booking(self, app: fixture):
         # Given
-        user_having_booked = create_user(departement_code='76')
+        user_having_booked = create_user(departement_code="76")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -702,7 +718,7 @@ class CountNonCancelledBookingsByDepartementTest:
         repository.save(booking)
 
         # When
-        count = booking_repository.count_non_cancelled_by_departement('76')
+        count = booking_repository.count_non_cancelled_by_departement("76")
 
         # Then
         assert count == 1
@@ -710,7 +726,7 @@ class CountNonCancelledBookingsByDepartementTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_one_user_has_one_cancelled_booking(self, app: fixture):
         # Given
-        user_having_booked = create_user(departement_code='76')
+        user_having_booked = create_user(departement_code="76")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -719,7 +735,7 @@ class CountNonCancelledBookingsByDepartementTest:
         repository.save(booking)
 
         # When
-        count = booking_repository.count_non_cancelled_by_departement('76')
+        count = booking_repository.count_non_cancelled_by_departement("76")
 
         # Then
         assert count == 0
@@ -727,7 +743,7 @@ class CountNonCancelledBookingsByDepartementTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_if_user_comes_from_wrong_departement(self, app: fixture):
         # Given
-        user_having_booked = create_user(departement_code='76')
+        user_having_booked = create_user(departement_code="76")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -736,7 +752,7 @@ class CountNonCancelledBookingsByDepartementTest:
         repository.save(booking)
 
         # When
-        count = booking_repository.count_non_cancelled_by_departement('81')
+        count = booking_repository.count_non_cancelled_by_departement("81")
 
         # Then
         assert count == 0
@@ -744,14 +760,12 @@ class CountNonCancelledBookingsByDepartementTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_zero_if_users_only_have_activation_bookings(self, app: fixture):
         # Given
-        user1 = create_user(departement_code='76')
-        user2 = create_user(departement_code='76', email='user2@example.com')
+        user1 = create_user(departement_code="76")
+        user2 = create_user(departement_code="76", email="user2@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer1 = create_offer_with_thing_product(
-            venue, thing_type=ThingType.ACTIVATION)
-        offer2 = create_offer_with_event_product(
-            venue, event_type=EventType.ACTIVATION)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
         booking1 = create_booking(user=user1, stock=stock1)
@@ -759,7 +773,7 @@ class CountNonCancelledBookingsByDepartementTest:
         repository.save(booking1, booking2)
 
         # When
-        count = booking_repository.count_non_cancelled_by_departement('76')
+        count = booking_repository.count_non_cancelled_by_departement("76")
 
         # Then
         assert count == 0
@@ -807,10 +821,8 @@ class GetAllCancelledBookingsCountTest:
         beginning_datetime = datetime.utcnow() + timedelta(hours=47)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer1 = create_offer_with_event_product(
-            venue, event_type=EventType.ACTIVATION)
-        offer2 = create_offer_with_thing_product(
-            venue, thing_type=ThingType.ACTIVATION)
+        offer1 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+        offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         stock1 = create_stock(beginning_datetime=beginning_datetime, offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
         user = create_user()
@@ -834,12 +846,12 @@ class GetAllCancelledBookingsByDepartementCountTest:
         venue = create_venue(offerer)
         event_offer = create_offer_with_event_product(venue)
         event_stock = create_stock(beginning_datetime=beginning_datetime, offer=event_offer, price=0)
-        user = create_user(departement_code='76')
+        user = create_user(departement_code="76")
         booking = create_booking(user=user, stock=event_stock, is_cancelled=False)
         repository.save(booking)
 
         # When
-        number_of_bookings = booking_repository.count_cancelled_by_departement('76')
+        number_of_bookings = booking_repository.count_cancelled_by_departement("76")
 
         # Then
         assert number_of_bookings == 0
@@ -852,12 +864,12 @@ class GetAllCancelledBookingsByDepartementCountTest:
         venue = create_venue(offerer)
         event_offer = create_offer_with_event_product(venue)
         event_stock = create_stock(beginning_datetime=beginning_datetime, offer=event_offer, price=0)
-        user = create_user(departement_code='76')
+        user = create_user(departement_code="76")
         booking = create_booking(user=user, stock=event_stock, is_cancelled=True)
         repository.save(booking)
 
         # When
-        number_of_bookings = booking_repository.count_cancelled_by_departement('76')
+        number_of_bookings = booking_repository.count_cancelled_by_departement("76")
 
         # Then
         assert number_of_bookings == 1
@@ -865,8 +877,8 @@ class GetAllCancelledBookingsByDepartementCountTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_filtered_on_user_departement(self, app: fixture):
         # Given
-        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
-        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+        user_in_76 = create_user(departement_code="76", email="user-76@example.net")
+        user_in_41 = create_user(departement_code="41", email="user-41@example.net")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -877,7 +889,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         repository.save(booking1, booking2, booking3)
 
         # When
-        number_of_bookings = booking_repository.count_cancelled_by_departement('41')
+        number_of_bookings = booking_repository.count_cancelled_by_departement("41")
 
         # Then
         assert number_of_bookings == 1
@@ -885,13 +897,11 @@ class GetAllCancelledBookingsByDepartementCountTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_zero_if_only_activation_bookings(self, app: fixture):
         # Given
-        user = create_user(departement_code='41')
+        user = create_user(departement_code="41")
         offerer = create_offerer()
-        venue = create_venue(offerer, postal_code='78000')
-        offer1 = create_offer_with_thing_product(
-            venue, thing_type=ThingType.ACTIVATION)
-        offer2 = create_offer_with_event_product(
-            venue, event_type=EventType.ACTIVATION)
+        venue = create_venue(offerer, postal_code="78000")
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
         booking1 = create_booking(user=user, stock=stock1, is_cancelled=True)
@@ -899,7 +909,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = booking_repository.count_cancelled_by_departement('41')
+        number_of_bookings = booking_repository.count_cancelled_by_departement("41")
 
         # Then
         assert number_of_bookings == 0
@@ -955,10 +965,8 @@ class CountAllBookingsTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer1 = create_offer_with_thing_product(
-            venue, thing_type=ThingType.ACTIVATION)
-        offer2 = create_offer_with_event_product(
-            venue, event_type=EventType.ACTIVATION)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
         user = create_user()
@@ -977,7 +985,7 @@ class CountBookingsByDepartementTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_no_bookings(self, app: fixture):
         # When
-        number_of_bookings = booking_repository.count_by_departement('74')
+        number_of_bookings = booking_repository.count_by_departement("74")
 
         # Then
         assert number_of_bookings == 0
@@ -989,13 +997,13 @@ class CountBookingsByDepartementTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        user = create_user(departement_code='74')
+        user = create_user(departement_code="74")
         booking1 = create_booking(user=user, stock=stock)
         booking2 = create_booking(user=user, stock=stock, is_cancelled=True)
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = booking_repository.count_by_departement('74')
+        number_of_bookings = booking_repository.count_by_departement("74")
 
         # Then
         assert number_of_bookings == 2
@@ -1003,8 +1011,8 @@ class CountBookingsByDepartementTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_1_when_bookings_are_filtered_by_departement(self, app: fixture):
         # Given
-        user_in_76 = create_user(departement_code='76', email='user-76@example.net')
-        user_in_41 = create_user(departement_code='41', email='user-41@example.net')
+        user_in_76 = create_user(departement_code="76", email="user-76@example.net")
+        user_in_41 = create_user(departement_code="41", email="user-41@example.net")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -1014,7 +1022,7 @@ class CountBookingsByDepartementTest:
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = booking_repository.count_by_departement('76')
+        number_of_bookings = booking_repository.count_by_departement("76")
 
         # Then
         assert number_of_bookings == 1
@@ -1022,13 +1030,11 @@ class CountBookingsByDepartementTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_0_when_bookings_are_on_activation_offers(self, app: fixture):
         # Given
-        user = create_user(departement_code='76')
+        user = create_user(departement_code="76")
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer1 = create_offer_with_thing_product(
-            venue, thing_type=ThingType.ACTIVATION)
-        offer2 = create_offer_with_event_product(
-            venue, event_type=EventType.ACTIVATION)
+        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
         booking1 = create_booking(user=user, stock=stock1)
@@ -1036,7 +1042,7 @@ class CountBookingsByDepartementTest:
         repository.save(booking1, booking2)
 
         # When
-        number_of_bookings = booking_repository.count_by_departement('76')
+        number_of_bookings = booking_repository.count_by_departement("76")
 
         # Then
         assert number_of_bookings == 0
@@ -1122,13 +1128,13 @@ class GetValidBookingsByUserId:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_by_user_id(self, app: fixture):
         # Given
-        user1 = create_user(email='me@example.net')
+        user1 = create_user(email="me@example.net")
         deposit1 = create_deposit(user1)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        user2 = create_user(email='fa@example.net')
+        user2 = create_user(email="fa@example.net")
         deposit2 = create_deposit(user2)
         booking1 = create_booking(user=user1, stock=stock)
         booking2 = create_booking(user=user2, stock=stock)
@@ -1197,12 +1203,15 @@ class GetValidBookingsByUserId:
         stock2 = create_stock(beginning_datetime=two_days, booking_limit_datetime=NOW, offer=offer2)
         offer3 = create_offer_with_event_product(venue)
         stock3 = create_stock(beginning_datetime=two_days_bis, booking_limit_datetime=NOW, offer=offer3)
-        booking1 = create_booking(user=user, stock=stock1,
-                                  recommendation=create_recommendation(user=user, offer=offer1))
-        booking2 = create_booking(user=user, stock=stock2,
-                                  recommendation=create_recommendation(user=user, offer=offer2))
-        booking3 = create_booking(user=user, stock=stock3,
-                                  recommendation=create_recommendation(user=user, offer=offer3))
+        booking1 = create_booking(
+            user=user, stock=stock1, recommendation=create_recommendation(user=user, offer=offer1)
+        )
+        booking2 = create_booking(
+            user=user, stock=stock2, recommendation=create_recommendation(user=user, offer=offer2)
+        )
+        booking3 = create_booking(
+            user=user, stock=stock3, recommendation=create_recommendation(user=user, offer=offer3)
+        )
         repository.save(booking1, booking2, booking3)
 
         # When
@@ -1218,7 +1227,7 @@ class FindByTokenTest:
         # Given
         beneficiary = create_user()
         create_deposit(beneficiary)
-        valid_booking = create_booking(user=beneficiary, token='123456', is_used=True)
+        valid_booking = create_booking(user=beneficiary, token="123456", is_used=True)
         repository.save(valid_booking)
 
         # When
@@ -1230,10 +1239,10 @@ class FindByTokenTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_nothing_when_invalid_token_is_given(self, app: fixture):
         # Given
-        invalid_token = 'fake_token'
+        invalid_token = "fake_token"
         beneficiary = create_user()
         create_deposit(beneficiary)
-        valid_booking = create_booking(user=beneficiary, token='123456', is_used=True)
+        valid_booking = create_booking(user=beneficiary, token="123456", is_used=True)
         repository.save(valid_booking)
 
         # When
@@ -1247,7 +1256,7 @@ class FindByTokenTest:
         # Given
         beneficiary = create_user()
         create_deposit(beneficiary)
-        valid_booking = create_booking(user=beneficiary, token='123456', is_used=False)
+        valid_booking = create_booking(user=beneficiary, token="123456", is_used=False)
         repository.save(valid_booking)
 
         # When
@@ -1309,16 +1318,17 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com', first_name='Ron', last_name='Weasley')
+        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
         create_deposit(beneficiary, 500)
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, idx=15)
-        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name='Harry Potter')
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name="Harry Potter")
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=booking_date,
-                                 token='ABCDEF', is_used=True, amount=12)
+        booking = create_booking(
+            user=beneficiary, stock=stock, date_created=booking_date, token="ABCDEF", is_used=True, amount=12
+        )
         repository.save(user_offerer, booking)
 
         # When
@@ -1328,13 +1338,13 @@ class FindByProUserIdTest:
         assert len(bookings_recap_paginated.bookings_recap) == 1
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.offer_identifier == stock.offer.id
-        assert expected_booking_recap.offer_name == 'Harry Potter'
+        assert expected_booking_recap.offer_name == "Harry Potter"
         assert expected_booking_recap.offerer_name == offerer.name
-        assert expected_booking_recap.beneficiary_firstname == 'Ron'
-        assert expected_booking_recap.beneficiary_lastname == 'Weasley'
-        assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
-        assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz('Europe/Paris'))
-        assert expected_booking_recap.booking_token == 'ABCDEF'
+        assert expected_booking_recap.beneficiary_firstname == "Ron"
+        assert expected_booking_recap.beneficiary_lastname == "Weasley"
+        assert expected_booking_recap.beneficiary_email == "beneficiary@example.com"
+        assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz("Europe/Paris"))
+        assert expected_booking_recap.booking_token == "ABCDEF"
         assert expected_booking_recap.booking_is_used is True
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
@@ -1342,13 +1352,14 @@ class FindByProUserIdTest:
         assert expected_booking_recap.venue_identifier == venue.id
         assert expected_booking_recap.booking_amount == 12
         assert expected_booking_recap.booking_status_history.booking_date == booking_date.astimezone(
-            tz.gettz('Europe/Paris'))
+            tz.gettz("Europe/Paris")
+        )
         assert expected_booking_recap.venue_is_virtual == venue.isVirtual
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com')
+        beneficiary = create_user(email="beneficiary@example.com")
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
@@ -1369,16 +1380,16 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_reimbursed_when_a_payment_was_sent(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com',
-                                  first_name='Ron', last_name='Weasley')
+        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
-        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name='Harry Potter')
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name="Harry Potter")
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF',
-                                 is_cancelled=True)
+        booking = create_booking(
+            user=beneficiary, stock=stock, date_created=yesterday, token="ABCDEF", is_cancelled=True
+        )
         payment = create_payment(booking=booking, offerer=offerer, status=TransactionStatus.SENT)
         repository.save(user_offerer, payment)
 
@@ -1390,12 +1401,12 @@ class FindByProUserIdTest:
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert not isinstance(expected_booking_recap, EventBookingRecap)
         assert expected_booking_recap.offer_identifier == stock.offer.id
-        assert expected_booking_recap.offer_name == 'Harry Potter'
-        assert expected_booking_recap.beneficiary_firstname == 'Ron'
-        assert expected_booking_recap.beneficiary_lastname == 'Weasley'
-        assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
-        assert expected_booking_recap.booking_date == yesterday.astimezone(tz.gettz('Europe/Paris'))
-        assert expected_booking_recap.booking_token == 'ABCDEF'
+        assert expected_booking_recap.offer_name == "Harry Potter"
+        assert expected_booking_recap.beneficiary_firstname == "Ron"
+        assert expected_booking_recap.beneficiary_lastname == "Weasley"
+        assert expected_booking_recap.beneficiary_email == "beneficiary@example.com"
+        assert expected_booking_recap.booking_date == yesterday.astimezone(tz.gettz("Europe/Paris"))
+        assert expected_booking_recap.booking_token == "ABCDEF"
         assert expected_booking_recap.booking_is_used is False
         assert expected_booking_recap.booking_is_cancelled is True
         assert expected_booking_recap.booking_is_reimbursed is True
@@ -1403,15 +1414,16 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com',
-                                  first_name='Ron', last_name='Weasley')
+        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer, idx='15')
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0, beginning_datetime=datetime.utcnow() + timedelta(hours=98))
+        venue = create_venue(offerer, idx="15")
+        stock = create_stock_with_event_offer(
+            offerer=offerer, venue=venue, price=0, beginning_datetime=datetime.utcnow() + timedelta(hours=98)
+        )
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF')
+        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token="ABCDEF")
         repository.save(user_offerer, booking)
 
         # When
@@ -1423,32 +1435,34 @@ class FindByProUserIdTest:
         assert isinstance(expected_booking_recap, EventBookingRecap)
         assert expected_booking_recap.offer_identifier == stock.offer.id
         assert expected_booking_recap.offer_name == stock.offer.name
-        assert expected_booking_recap.beneficiary_firstname == 'Ron'
-        assert expected_booking_recap.beneficiary_lastname == 'Weasley'
-        assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
-        assert expected_booking_recap.booking_date == yesterday.astimezone(tz.gettz('Europe/Paris'))
-        assert expected_booking_recap.booking_token == 'ABCDEF'
+        assert expected_booking_recap.beneficiary_firstname == "Ron"
+        assert expected_booking_recap.beneficiary_lastname == "Weasley"
+        assert expected_booking_recap.beneficiary_email == "beneficiary@example.com"
+        assert expected_booking_recap.booking_date == yesterday.astimezone(tz.gettz("Europe/Paris"))
+        assert expected_booking_recap.booking_token == "ABCDEF"
         assert expected_booking_recap.booking_is_used is False
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
         assert expected_booking_recap.booking_is_confirmed is False
         assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime.astimezone(
-            tz.gettz('Europe/Paris'))
+            tz.gettz("Europe/Paris")
+        )
         assert expected_booking_recap.venue_identifier == venue.id
         assert isinstance(expected_booking_recap.booking_status_history, BookingRecapHistory)
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(self, app: fixture):
+    def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(
+        self, app: fixture
+    ):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com',
-                                  first_name='Ron', last_name='Weasley')
+        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer, idx='15')
+        venue = create_venue(offerer, idx="15")
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
         more_than_two_days_ago = datetime.utcnow() - timedelta(days=3)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=more_than_two_days_ago, token='ABCDEF')
+        booking = create_booking(user=beneficiary, stock=stock, date_created=more_than_two_days_ago, token="ABCDEF")
         repository.save(user_offerer, booking)
 
         # When
@@ -1462,19 +1476,26 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_payment_date_when_booking_has_been_reimbursed(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com',
-                                  first_name='Ron', last_name='Weasley')
+        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
         create_deposit(beneficiary)
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer, idx='15')
+        venue = create_venue(offerer, idx="15")
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=5)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF', amount=5,
-                                 is_used=True, date_used=yesterday)
-        payment = create_payment(booking=booking, offerer=offerer, amount=5, status=TransactionStatus.SENT,
-                                 status_date=yesterday)
+        booking = create_booking(
+            user=beneficiary,
+            stock=stock,
+            date_created=yesterday,
+            token="ABCDEF",
+            amount=5,
+            is_used=True,
+            date_used=yesterday,
+        )
+        payment = create_payment(
+            booking=booking, offerer=offerer, amount=5, status=TransactionStatus.SENT, status_date=yesterday
+        )
         repository.save(user_offerer, payment)
 
         # When
@@ -1485,22 +1506,30 @@ class FindByProUserIdTest:
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_is_reimbursed is True
         assert expected_booking_recap.booking_status_history.payment_date == yesterday.astimezone(
-            tz.gettz('Europe/Paris'))
+            tz.gettz("Europe/Paris")
+        )
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com',
-                                  first_name='Ron', last_name='Weasley')
+        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
         create_deposit(beneficiary)
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer, idx='15')
+        venue = create_venue(offerer, idx="15")
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=5)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF', amount=5,
-                                 is_used=True, date_used=yesterday, is_cancelled=True)
+        booking = create_booking(
+            user=beneficiary,
+            stock=stock,
+            date_created=yesterday,
+            token="ABCDEF",
+            amount=5,
+            is_used=True,
+            date_used=yesterday,
+            is_cancelled=True,
+        )
         repository.save(user_offerer, booking)
 
         # When
@@ -1513,20 +1542,28 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_status_history.cancellation_date is not None
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(self,
-                                                                                                       app: fixture):
+    def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(
+        self, app: fixture
+    ):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com',
-                                  first_name='Ron', last_name='Weasley')
+        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
         create_deposit(beneficiary)
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer, idx='15')
+        venue = create_venue(offerer, idx="15")
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=5)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF', amount=5,
-                                 is_used=True, date_used=yesterday, is_cancelled=False)
+        booking = create_booking(
+            user=beneficiary,
+            stock=stock,
+            date_created=yesterday,
+            token="ABCDEF",
+            amount=5,
+            is_used=True,
+            date_used=yesterday,
+            is_cancelled=False,
+        )
         repository.save(user_offerer, booking)
 
         # When
@@ -1544,7 +1581,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com')
+        beneficiary = create_user(email="beneficiary@example.com")
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
@@ -1553,9 +1590,9 @@ class FindByProUserIdTest:
         stock = create_stock(offer=offer, price=0)
         today = datetime.utcnow()
         booking = create_booking(user=beneficiary, stock=stock, token="ABCD", date_created=today)
-        offerer2 = create_offerer(siren='8765432')
+        offerer2 = create_offerer(siren="8765432")
         user_offerer2 = create_user_offerer(user, offerer2)
-        venue2 = create_venue(offerer2, siret='8765432098765')
+        venue2 = create_venue(offerer2, siret="8765432098765")
         offer2 = create_offer_with_thing_product(venue2)
         stock2 = create_stock(offer=offer2, price=0)
         booking2 = create_booking(user=beneficiary, stock=stock2, token="FGHI", date_created=today)
@@ -1570,7 +1607,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_from_first_page(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com')
+        beneficiary = create_user(email="beneficiary@example.com")
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
@@ -1596,7 +1633,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_from_second_page(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com')
+        beneficiary = create_user(email="beneficiary@example.com")
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
@@ -1622,10 +1659,10 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com')
+        beneficiary = create_user(email="beneficiary@example.com")
         user = create_user()
         offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer, validation_token='token')
+        user_offerer = create_user_offerer(user, offerer, validation_token="token")
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
@@ -1641,7 +1678,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com')
+        beneficiary = create_user(email="beneficiary@example.com")
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
@@ -1666,7 +1703,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com')
+        beneficiary = create_user(email="beneficiary@example.com")
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
@@ -1692,15 +1729,14 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com',
-                                  first_name='Ron', last_name='Weasley')
+        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
         user = create_user()
-        offerer = create_offerer(postal_code='97300')
+        offerer = create_offerer(postal_code="97300")
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, idx=15, is_virtual=True, siret=None)
-        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name='Harry Potter')
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name="Harry Potter")
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=booking_date, token='ABCDEF', is_used=True)
+        booking = create_booking(user=beneficiary, stock=stock, date_created=booking_date, token="ABCDEF", is_used=True)
         repository.save(user_offerer, booking)
 
         # When
@@ -1709,22 +1745,22 @@ class FindByProUserIdTest:
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz('America/Cayenne'))
+        assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz("America/Cayenne"))
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_isbn_when_information_is_available(self, app: fixture):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com',
-                                  first_name='Ron', last_name='Weasley')
+        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
         user = create_user()
-        offerer = create_offerer(postal_code='97300')
+        offerer = create_offerer(postal_code="97300")
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, idx=15, is_virtual=True, siret=None)
-        offer = create_offer_with_thing_product(thing_name='Harry Potter', venue=venue,
-                                                extra_data=dict({'isbn': '9876543234'}))
+        offer = create_offer_with_thing_product(
+            thing_name="Harry Potter", venue=venue, extra_data=dict({"isbn": "9876543234"})
+        )
         stock = create_stock(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=booking_date, token='ABCDEF', is_used=True)
+        booking = create_booking(user=beneficiary, stock=stock, date_created=booking_date, token="ABCDEF", is_used=True)
         repository.save(user_offerer, booking)
 
         # When
@@ -1733,53 +1769,47 @@ class FindByProUserIdTest:
         # Then
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert isinstance(expected_booking_recap, BookBookingRecap)
-        assert expected_booking_recap.offer_isbn == '9876543234'
+        assert expected_booking_recap.offer_isbn == "9876543234"
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_venue_name_when_public_name_is_not_provided(self, app):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com', first_name='Ron', last_name='Weasley')
+        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
 
         venue_for_event = create_venue(offerer, idx=17, name="Lieu pour un événement", siret="11816909600069")
         offer_for_event = create_offer_with_event_product(
-            event_name='Shutter Island',
+            event_name="Shutter Island",
             venue=venue_for_event,
         )
         stock_for_event = create_stock(offer=offer_for_event, price=0)
-        booking_for_event = create_booking(user=beneficiary,
-                                           stock=stock_for_event,
-                                           date_created=datetime(2020, 1, 3),
-                                           token='BBBBBB',
-                                           is_used=True)
+        booking_for_event = create_booking(
+            user=beneficiary, stock=stock_for_event, date_created=datetime(2020, 1, 3), token="BBBBBB", is_used=True
+        )
         venue_for_book = create_venue(offerer, idx=15, name="Lieu pour un livre", siret="41816609600069")
         offer_for_book = create_offer_with_thing_product(
-            thing_name='Harry Potter',
-            venue=venue_for_book,
-            extra_data=dict({'isbn': '9876543234'})
+            thing_name="Harry Potter", venue=venue_for_book, extra_data=dict({"isbn": "9876543234"})
         )
         stock_for_book = create_stock(offer=offer_for_book, price=0)
-        booking_for_book = create_booking(user=beneficiary,
-                                          stock=stock_for_book,
-                                          date_created=datetime(2020, 1, 2),
-                                          token='AAAAAA',
-                                          is_used=True)
-
-        venue_for_thing = create_venue(offerer, idx=16, name="Lieu pour un bien qui n'est pas un livre",
-                                       siret="83994784300018")
-        stock_for_thing = create_stock_with_thing_offer(
-            offerer=offerer,
-            venue=venue_for_thing,
-            price=0,
-            name='Harry Potter'
+        booking_for_book = create_booking(
+            user=beneficiary, stock=stock_for_book, date_created=datetime(2020, 1, 2), token="AAAAAA", is_used=True
         )
-        booking_for_thing = create_booking(user=beneficiary,
-                                           stock=stock_for_thing,
-                                           date_created=(datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)),
-                                           token='ABCDEF',
-                                           is_used=True)
+
+        venue_for_thing = create_venue(
+            offerer, idx=16, name="Lieu pour un bien qui n'est pas un livre", siret="83994784300018"
+        )
+        stock_for_thing = create_stock_with_thing_offer(
+            offerer=offerer, venue=venue_for_thing, price=0, name="Harry Potter"
+        )
+        booking_for_thing = create_booking(
+            user=beneficiary,
+            stock=stock_for_thing,
+            date_created=(datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)),
+            token="ABCDEF",
+            is_used=True,
+        )
         repository.save(user_offerer, booking_for_thing, booking_for_book, booking_for_event)
 
         # When
@@ -1793,51 +1823,50 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_venue_public_name_when_public_name_is_provided(self, app):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com', first_name='Ron', last_name='Weasley')
+        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
 
-        venue_for_event = create_venue(offerer, idx=17, name="Opéra paris", public_name="Super Opéra de Paris",
-                                       siret="11816909600069")
+        venue_for_event = create_venue(
+            offerer, idx=17, name="Opéra paris", public_name="Super Opéra de Paris", siret="11816909600069"
+        )
         offer_for_event = create_offer_with_event_product(
-            event_name='Shutter Island',
+            event_name="Shutter Island",
             venue=venue_for_event,
         )
         stock_for_event = create_stock(offer=offer_for_event, price=0)
-        booking_for_event = create_booking(user=beneficiary,
-                                           stock=stock_for_event,
-                                           date_created=datetime(2020, 1, 3),
-                                           token='BBBBBB',
-                                           is_used=True)
-        venue_for_book = create_venue(offerer, idx=15, name="Lieu pour un livre", public_name="Librairie Châtelet",
-                                      siret="41816609600069")
+        booking_for_event = create_booking(
+            user=beneficiary, stock=stock_for_event, date_created=datetime(2020, 1, 3), token="BBBBBB", is_used=True
+        )
+        venue_for_book = create_venue(
+            offerer, idx=15, name="Lieu pour un livre", public_name="Librairie Châtelet", siret="41816609600069"
+        )
         offer_for_book = create_offer_with_thing_product(
-            thing_name='Harry Potter',
-            venue=venue_for_book,
-            extra_data=dict({'isbn': '9876543234'})
+            thing_name="Harry Potter", venue=venue_for_book, extra_data=dict({"isbn": "9876543234"})
         )
         stock_for_book = create_stock(offer=offer_for_book, price=0)
-        booking_for_book = create_booking(user=beneficiary,
-                                          stock=stock_for_book,
-                                          date_created=datetime(2020, 1, 2),
-                                          token='AAAAAA',
-                                          is_used=True)
-
-        venue_for_thing = create_venue(offerer, idx=16, name="Lieu pour un bien qui n'est pas un livre",
-                                       public_name="Guitar Center",
-                                       siret="83994784300018")
-        stock_for_thing = create_stock_with_thing_offer(
-            offerer=offerer,
-            venue=venue_for_thing,
-            price=0,
-            name='Harry Potter'
+        booking_for_book = create_booking(
+            user=beneficiary, stock=stock_for_book, date_created=datetime(2020, 1, 2), token="AAAAAA", is_used=True
         )
-        booking_for_thing = create_booking(user=beneficiary,
-                                           stock=stock_for_thing,
-                                           date_created=(datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)),
-                                           token='ABCDEF',
-                                           is_used=True)
+
+        venue_for_thing = create_venue(
+            offerer,
+            idx=16,
+            name="Lieu pour un bien qui n'est pas un livre",
+            public_name="Guitar Center",
+            siret="83994784300018",
+        )
+        stock_for_thing = create_stock_with_thing_offer(
+            offerer=offerer, venue=venue_for_thing, price=0, name="Harry Potter"
+        )
+        booking_for_thing = create_booking(
+            user=beneficiary,
+            stock=stock_for_thing,
+            date_created=(datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)),
+            token="ABCDEF",
+            is_used=True,
+        )
         repository.save(user_offerer, booking_for_thing, booking_for_book, booking_for_event)
 
         # When
@@ -1869,7 +1898,7 @@ class FindFirstMatchingFromOfferByUserTest:
     def test_should_return_nothing_when_beneficiary_has_no_bookings(self, app: fixture):
         # Given
         beneficiary = create_user(idx=1)
-        other_beneficiary = create_user(email='other_beneficiary@example.com', idx=2)
+        other_beneficiary = create_user(email="other_beneficiary@example.com", idx=2)
         create_deposit(user=other_beneficiary)
         offerer = create_offerer()
         venue = create_venue(offerer)

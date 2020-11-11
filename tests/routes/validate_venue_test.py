@@ -24,15 +24,15 @@ class Get:
             token = venue.validationToken
 
             # When
-            response = TestClient(app.test_client()).get('/validate/venue?token={}'.format(token))
+            response = TestClient(app.test_client()).get("/validate/venue?token={}".format(token))
 
             # Then
             assert response.status_code == 202
             db.session.refresh(venue)
             assert venue.isValidated
 
-        @patch('pcapi.routes.validate.feature_queries.is_active', return_value=True)
-        @patch('pcapi.routes.validate.redis.add_venue_id')
+        @patch("pcapi.routes.validate.feature_queries.is_active", return_value=True)
+        @patch("pcapi.routes.validate.redis.add_venue_id")
         @pytest.mark.usefixtures("db_session")
         def expect_venue_id_to_be_added_to_redis(self, mock_redis, mock_feature, app):
             # Given
@@ -42,18 +42,18 @@ class Get:
             repository.save(venue)
 
             # When
-            response = TestClient(app.test_client()).get(f'/validate/venue?token={venue.validationToken}')
+            response = TestClient(app.test_client()).get(f"/validate/venue?token={venue.validationToken}")
 
             # Then
             assert response.status_code == 202
             assert mock_redis.call_count == 1
-            assert mock_redis.call_args_list == [
-                call(client=app.redis_client, venue_id=venue.id)
-            ]
+            assert mock_redis.call_args_list == [call(client=app.redis_client, venue_id=venue.id)]
 
         @pytest.mark.usefixtures("db_session")
-        @patch('pcapi.routes.validate.link_valid_venue_to_irises')
-        def expect_link_venue_to_iris_if_valid_to_be_called_for_validated_venue(self, mocked_link_venue_to_iris_if_valid, app):
+        @patch("pcapi.routes.validate.link_valid_venue_to_irises")
+        def expect_link_venue_to_iris_if_valid_to_be_called_for_validated_venue(
+            self, mocked_link_venue_to_iris_if_valid, app
+        ):
             # Given
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -63,7 +63,7 @@ class Get:
             token = venue.validationToken
 
             # When
-            response = TestClient(app.test_client()).get(f'/validate/venue?token={token}')
+            response = TestClient(app.test_client()).get(f"/validate/venue?token={token}")
 
             # Then
             assert response.status_code == 202
@@ -73,18 +73,18 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_no_validation_token_is_provided(self, app):
             # When
-            response = TestClient(app.test_client()).get('/validate/venue')
+            response = TestClient(app.test_client()).get("/validate/venue")
 
             # Then
             assert response.status_code == 400
-            assert response.json['token'] == ['Vous devez fournir un jeton de validation']
+            assert response.json["token"] == ["Vous devez fournir un jeton de validation"]
 
     class Returns404:
         @pytest.mark.usefixtures("db_session")
         def when_validation_token_is_unknown(self, app):
             # When
-            response = TestClient(app.test_client()).get(f'/validate/venue?token=12345')
+            response = TestClient(app.test_client()).get(f"/validate/venue?token=12345")
 
             # Then
             assert response.status_code == 404
-            assert response.json['token'] == ['Jeton inconnu']
+            assert response.json["token"] == ["Jeton inconnu"]

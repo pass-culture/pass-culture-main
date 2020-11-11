@@ -29,12 +29,10 @@ class Put:
 
             auth_request = TestClient(app.test_client()).with_auth(beneficiary.email)
 
-            data = {"offerId": humanize(offer.id),
-                    "dateSeen": "2018-12-17T15:59:11.689000Z"}
+            data = {"offerId": humanize(offer.id), "dateSeen": "2018-12-17T15:59:11.689000Z"}
 
             # When
-            response = auth_request.put('/seen_offers',
-                                        json=data)
+            response = auth_request.put("/seen_offers", json=data)
             # Then
             assert response.status_code == 200
             assert SeenOffer.query.count() == 1
@@ -47,25 +45,23 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(beneficiary.email)
             repository.save(beneficiary)
 
-
             # When
-            response = auth_request.put('/seen_offers')
+            response = auth_request.put("/seen_offers")
 
             # Then
             assert response.status_code == 400
 
         @pytest.mark.usefixtures("db_session")
-        @patch('pcapi.routes.seen_offers.check_payload_is_valid')
+        @patch("pcapi.routes.seen_offers.check_payload_is_valid")
         def when_json_is_empty(self, check_payload_is_valid_mock, app):
             # Given
             beneficiary = create_user()
             auth_request = TestClient(app.test_client()).with_auth(beneficiary.email)
             repository.save(beneficiary)
-            check_payload_is_valid_mock.side_effect = PayloadMissing({'global': 'Données manquantes'})
-
+            check_payload_is_valid_mock.side_effect = PayloadMissing({"global": "Données manquantes"})
 
             # When
-            response = auth_request.put('/seen_offers', json={})
+            response = auth_request.put("/seen_offers", json={})
 
             # Then
             assert response.status_code == 400
@@ -74,7 +70,7 @@ class Put:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_not_logged_in(self, app):
             # When
-            response = TestClient(app.test_client()).put('/seen_offers')
+            response = TestClient(app.test_client()).put("/seen_offers")
 
             # Then
             assert response.status_code == 401
@@ -86,8 +82,7 @@ class Put:
             deactivate_feature(FeatureToggle.SAVE_SEEN_OFFERS)
 
             # When
-            response = TestClient(app.test_client()).put('/seen_offers')
+            response = TestClient(app.test_client()).put("/seen_offers")
 
             # Then
             assert response.status_code == 403
-

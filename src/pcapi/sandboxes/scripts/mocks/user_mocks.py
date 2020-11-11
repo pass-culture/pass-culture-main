@@ -17,8 +17,7 @@ MOCK_FIRST_NAMES = [
     "Cassidy",
     "Napoleon",
     "Lilou",
-    "Gege"
-    "X"
+    "Gege" "X",
 ]
 
 MOCK_LAST_NAMES = [
@@ -47,12 +46,7 @@ MOCK_LAST_NAMES = [
     "Zabolescu",
     "Miroton",
     "Barjabule",
-    "XjdRdnnss"
+    "XjdRdnnss",
 ]
 
-MOCK_DOMAINS = [
-    "momarx.io",
-    "hlettre.com",
-    "youpi.com",
-    "violet.fr"
-]
+MOCK_DOMAINS = ["momarx.io", "hlettre.com", "youpi.com", "violet.fr"]

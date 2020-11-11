@@ -11,7 +11,15 @@ class OfferRecapStock:
 
 
 class OfferRecapVenue:
-    def __init__(self, identifier: Identifier, is_virtual: bool, managing_offerer_id: int, name: str, public_name: str, offerer_name: str):
+    def __init__(
+        self,
+        identifier: Identifier,
+        is_virtual: bool,
+        managing_offerer_id: int,
+        name: str,
+        public_name: str,
+        offerer_name: str,
+    ):
         self.identifier = identifier
         self.is_virtual = is_virtual
         self.managing_offerer_id = Identifier(managing_offerer_id)
@@ -21,23 +29,25 @@ class OfferRecapVenue:
 
 
 class OfferRecap:
-    def __init__(self,
-                 identifier: Identifier,
-                 has_booking_limit_datetimes_passed: bool,
-                 is_active: bool,
-                 is_editable: bool,
-                 is_event: bool,
-                 is_thing: bool,
-                 name: str,
-                 thumb_url: str,
-                 offer_type: str,
-                 venue_identifier: Identifier,
-                 venue_is_virtual: bool,
-                 venue_managing_offerer_id: int,
-                 venue_name: str,
-                 venue_offerer_name: str,
-                 venue_public_name: str,
-                 stocks: List[Dict], ):
+    def __init__(
+        self,
+        identifier: Identifier,
+        has_booking_limit_datetimes_passed: bool,
+        is_active: bool,
+        is_editable: bool,
+        is_event: bool,
+        is_thing: bool,
+        name: str,
+        thumb_url: str,
+        offer_type: str,
+        venue_identifier: Identifier,
+        venue_is_virtual: bool,
+        venue_managing_offerer_id: int,
+        venue_name: str,
+        venue_offerer_name: str,
+        venue_public_name: str,
+        stocks: List[Dict],
+    ):
         self.identifier = identifier
         self.has_booking_limit_datetimes_passed = has_booking_limit_datetimes_passed
         self.is_active = is_active
@@ -47,7 +57,14 @@ class OfferRecap:
         self.name = name
         self.thumb_url = thumb_url
         self.offer_type = offer_type
-        self.venue = OfferRecapVenue(venue_identifier, venue_is_virtual, venue_managing_offerer_id, venue_name, venue_public_name, venue_offerer_name)
+        self.venue = OfferRecapVenue(
+            venue_identifier,
+            venue_is_virtual,
+            venue_managing_offerer_id,
+            venue_name,
+            venue_public_name,
+            venue_offerer_name,
+        )
         self.stocks = [OfferRecapStock(stock["identifier"], stock["remaining_quantity"]) for stock in stocks]
 
 

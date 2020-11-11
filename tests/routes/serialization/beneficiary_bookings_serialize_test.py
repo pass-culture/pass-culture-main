@@ -11,8 +11,8 @@ from pcapi.routes.serialization.beneficiary_bookings_serialize import serialize_
 
 class BeneficiaryBookingsSerializeTest:
     class SerializeBeneficiaryBookingsTest:
-        @freeze_time('2019-1-1')
-        @patch('pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
+        @freeze_time("2019-1-1")
+        @patch("pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url", return_value="http://example.com")
         def should_return_expected_json_without_qr_code(self, mock_get_storage):
             # Given
             stocks = [
@@ -41,129 +41,130 @@ class BeneficiaryBookingsSerializeTest:
                 quantity=2,
                 recommendationId=None,
                 stockId=56,
-                token='TOKEN',
+                token="TOKEN",
                 userId=12,
                 offerId=45,
-                name='Ma super offre',
-                type='EventType.PRATIQUE_ARTISTIQUE',
-                url='http://url.com',
-                email='john@example.com',
+                name="Ma super offre",
+                type="EventType.PRATIQUE_ARTISTIQUE",
+                url="http://url.com",
+                email="john@example.com",
                 beginningDatetime=datetime(2019, 3, 8),
                 venueId=87,
-                departementCode='70',
+                departementCode="70",
                 withdrawalDetails=None,
                 isDuo=True,
-                extraData={'isbn': '9876543678'},
+                extraData={"isbn": "9876543678"},
                 durationMinutes=180,
-                description='Ma super decription',
+                description="Ma super decription",
                 isNational=False,
                 mediaUrls=[],
-                venueName='Théâtre',
-                address='5 rue du cinéma',
-                postalCode='70200',
-                city='Lure',
+                venueName="Théâtre",
+                address="5 rue du cinéma",
+                postalCode="70200",
+                city="Lure",
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
                 productId=12,
                 thumbCount=1,
-                active_mediations=[]
+                active_mediations=[],
             )
-            beneficiary_bookings = BeneficiaryBookingsWithStocks(
-                bookings=[beneficiary_booking],
-                stocks=stocks
-            )
+            beneficiary_bookings = BeneficiaryBookingsWithStocks(bookings=[beneficiary_booking], stocks=stocks)
 
             # When
             serialized_beneficiary_booking = serialize_beneficiary_bookings(
-                beneficiary_bookings=beneficiary_bookings,
-                with_qr_code=False)
+                beneficiary_bookings=beneficiary_bookings, with_qr_code=False
+            )
 
             # Then
-            assert serialized_beneficiary_booking == [{
-                'amount': 12,
-                'cancellationDate': '2019-03-12T00:00:00Z',
-                'completedUrl': 'http://url.com',
-                'dateCreated': '2019-02-07T00:00:00Z',
-                'dateUsed': '2019-04-07T00:00:00Z',
-                'id': 'AQ',
-                'isCancelled': False,
-                'isEventExpired': False,
-                'isUsed': True,
-                'quantity': 2,
-                'recommendationId': None,
-                'stock': {
-                    'beginningDatetime': '2019-03-08T00:00:00Z',
-                    'id': 'HA',
-                    'isEventExpired': False,
-                    'offer': {
-                        'description': 'Ma super decription',
-                        'durationMinutes': 180,
-                        'extraData': {'isbn': '9876543678'},
-                        'id': 'FU',
-                        'isDigital': True,
-                        'isDuo': True,
-                        'isEvent': True,
-                        'isNational': False,
-                        'name': 'Ma super offre',
-                        'isBookable': True,
-                        'offerType': {
-                            'appLabel': 'Pratique artistique',
-                            'conditionalFields': ['speaker'],
-                            'description': 'Jamais osé monter sur les '
-                                           'planches ? Tenter '
-                                           'd’apprendre la guitare, le '
-                                           'piano ou la photographie ? '
-                                           'Partir cinq jours découvrir '
-                                           'un autre monde ? Bricoler '
-                                           'dans un fablab, ou pourquoi '
-                                           'pas, enregistrer votre '
-                                           'premier titre ?',
-                            'isActive': True,
-                            'offlineOnly': True,
-                            'onlineOnly': False,
-                            'proLabel': 'Pratique artistique - séances '
-                                        "d'essai et stages ponctuels",
-                            'sublabel': 'Pratiquer',
-                            'type': 'Event',
-                            'value': 'EventType.PRATIQUE_ARTISTIQUE'},
-                        'stocks': [{
-                            'beginningDatetime': '2019-01-07T00:00:00Z',
-                            'bookingLimitDatetime': '2019-02-07T00:00:00Z',
-                            'dateCreated': '2019-01-05T00:00:00Z',
-                            'dateModified': '2019-01-07T00:00:00Z',
-                            'id': 'AE',
-                            'offerId': 'FU',
-                            'price': 10.99,
-                            'quantity': 34,
-                            'isBookable': True,
-                            'remainingQuantity': 'unlimited',
-                        }],
-                        'thumbUrl': 'http://example.com/thumbs/products/BQ',
-                        'venue': {
-                            'address': '5 rue du cinéma',
-                            'city': 'Lure',
-                            'departementCode': '70',
-                            'id': 'K4',
-                            'latitude': 9.45678,
-                            'longitude': 45.0987654,
-                            'name': 'Théâtre',
-                            'postalCode': '70200'
+            assert serialized_beneficiary_booking == [
+                {
+                    "amount": 12,
+                    "cancellationDate": "2019-03-12T00:00:00Z",
+                    "completedUrl": "http://url.com",
+                    "dateCreated": "2019-02-07T00:00:00Z",
+                    "dateUsed": "2019-04-07T00:00:00Z",
+                    "id": "AQ",
+                    "isCancelled": False,
+                    "isEventExpired": False,
+                    "isUsed": True,
+                    "quantity": 2,
+                    "recommendationId": None,
+                    "stock": {
+                        "beginningDatetime": "2019-03-08T00:00:00Z",
+                        "id": "HA",
+                        "isEventExpired": False,
+                        "offer": {
+                            "description": "Ma super decription",
+                            "durationMinutes": 180,
+                            "extraData": {"isbn": "9876543678"},
+                            "id": "FU",
+                            "isDigital": True,
+                            "isDuo": True,
+                            "isEvent": True,
+                            "isNational": False,
+                            "name": "Ma super offre",
+                            "isBookable": True,
+                            "offerType": {
+                                "appLabel": "Pratique artistique",
+                                "conditionalFields": ["speaker"],
+                                "description": "Jamais osé monter sur les "
+                                "planches ? Tenter "
+                                "d’apprendre la guitare, le "
+                                "piano ou la photographie ? "
+                                "Partir cinq jours découvrir "
+                                "un autre monde ? Bricoler "
+                                "dans un fablab, ou pourquoi "
+                                "pas, enregistrer votre "
+                                "premier titre ?",
+                                "isActive": True,
+                                "offlineOnly": True,
+                                "onlineOnly": False,
+                                "proLabel": "Pratique artistique - séances " "d'essai et stages ponctuels",
+                                "sublabel": "Pratiquer",
+                                "type": "Event",
+                                "value": "EventType.PRATIQUE_ARTISTIQUE",
+                            },
+                            "stocks": [
+                                {
+                                    "beginningDatetime": "2019-01-07T00:00:00Z",
+                                    "bookingLimitDatetime": "2019-02-07T00:00:00Z",
+                                    "dateCreated": "2019-01-05T00:00:00Z",
+                                    "dateModified": "2019-01-07T00:00:00Z",
+                                    "id": "AE",
+                                    "offerId": "FU",
+                                    "price": 10.99,
+                                    "quantity": 34,
+                                    "isBookable": True,
+                                    "remainingQuantity": "unlimited",
+                                }
+                            ],
+                            "thumbUrl": "http://example.com/thumbs/products/BQ",
+                            "venue": {
+                                "address": "5 rue du cinéma",
+                                "city": "Lure",
+                                "departementCode": "70",
+                                "id": "K4",
+                                "latitude": 9.45678,
+                                "longitude": 45.0987654,
+                                "name": "Théâtre",
+                                "postalCode": "70200",
+                            },
+                            "venueId": "K4",
+                            "withdrawalDetails": None,
                         },
-                        'venueId': 'K4',
-                        'withdrawalDetails': None
+                        "offerId": "FU",
+                        "price": 12.89,
                     },
-                    'offerId': 'FU',
-                    'price': 12.89
-                },
-                'stockId': 'HA',
-                'token': 'TOKEN',
-                'userId': 'BQ'
-            }]
+                    "stockId": "HA",
+                    "token": "TOKEN",
+                    "userId": "BQ",
+                }
+            ]
 
-        @freeze_time('2019-1-1')
-        @patch('pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
-        @patch('pcapi.core.bookings.api.generate_qr_code', return_value='fake_qr_code')
+        @freeze_time("2019-1-1")
+        @patch("pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url", return_value="http://example.com")
+        @patch("pcapi.core.bookings.api.generate_qr_code", return_value="fake_qr_code")
         def should_return_expected_json_with_qr_code(self, mock_generate_qr_code, mock_get_storage):
             # Given
             stocks = [
@@ -192,129 +193,130 @@ class BeneficiaryBookingsSerializeTest:
                 quantity=2,
                 recommendationId=None,
                 stockId=56,
-                token='TOKEN',
+                token="TOKEN",
                 userId=12,
                 offerId=45,
-                name='Ma super offre',
-                type='EventType.PRATIQUE_ARTISTIQUE',
-                url='http://url.com',
-                email='john@example.com',
+                name="Ma super offre",
+                type="EventType.PRATIQUE_ARTISTIQUE",
+                url="http://url.com",
+                email="john@example.com",
                 beginningDatetime=datetime(2019, 3, 8),
                 venueId=87,
-                departementCode='70',
+                departementCode="70",
                 withdrawalDetails=None,
                 isDuo=True,
-                extraData={'isbn': '9876543678'},
+                extraData={"isbn": "9876543678"},
                 durationMinutes=180,
-                description='Ma super decription',
+                description="Ma super decription",
                 isNational=False,
                 mediaUrls=[],
-                venueName='Théâtre',
-                address='5 rue du cinéma',
-                postalCode='70200',
-                city='Lure',
+                venueName="Théâtre",
+                address="5 rue du cinéma",
+                postalCode="70200",
+                city="Lure",
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
                 productId=12,
                 thumbCount=1,
-                active_mediations=[]
+                active_mediations=[],
             )
-            beneficiary_bookings = BeneficiaryBookingsWithStocks(
-                bookings=[beneficiary_booking],
-                stocks=stocks
-            )
+            beneficiary_bookings = BeneficiaryBookingsWithStocks(bookings=[beneficiary_booking], stocks=stocks)
 
             # When
             serialized_beneficiary_booking = serialize_beneficiary_bookings(
-                beneficiary_bookings=beneficiary_bookings,
-                with_qr_code=True)
+                beneficiary_bookings=beneficiary_bookings, with_qr_code=True
+            )
 
             # Then
-            assert serialized_beneficiary_booking == [{
-                'amount': 12,
-                'cancellationDate': '2019-03-12T00:00:00Z',
-                'completedUrl': 'http://url.com',
-                'dateCreated': '2019-02-07T00:00:00Z',
-                'dateUsed': '2019-04-07T00:00:00Z',
-                'id': 'AQ',
-                'isCancelled': False,
-                'isEventExpired': False,
-                'isUsed': True,
-                'qrCode': 'fake_qr_code',
-                'quantity': 2,
-                'recommendationId': None,
-                'stock': {
-                    'beginningDatetime': '2019-03-08T00:00:00Z',
-                    'id': 'HA',
-                    'isEventExpired': False,
-                    'offer': {
-                        'description': 'Ma super decription',
-                        'durationMinutes': 180,
-                        'extraData': {'isbn': '9876543678'},
-                        'id': 'FU',
-                        'isDigital': True,
-                        'isDuo': True,
-                        'isEvent': True,
-                        'isNational': False,
-                        'name': 'Ma super offre',
-                        'isBookable': True,
-                        'offerType': {
-                            'appLabel': 'Pratique artistique',
-                            'conditionalFields': ['speaker'],
-                            'description': 'Jamais osé monter sur les '
-                                           'planches ? Tenter '
-                                           'd’apprendre la guitare, le '
-                                           'piano ou la photographie ? '
-                                           'Partir cinq jours découvrir '
-                                           'un autre monde ? Bricoler '
-                                           'dans un fablab, ou pourquoi '
-                                           'pas, enregistrer votre '
-                                           'premier titre ?',
-                            'isActive': True,
-                            'offlineOnly': True,
-                            'onlineOnly': False,
-                            'proLabel': 'Pratique artistique - séances '
-                                        "d'essai et stages ponctuels",
-                            'sublabel': 'Pratiquer',
-                            'type': 'Event',
-                            'value': 'EventType.PRATIQUE_ARTISTIQUE'},
-                        'stocks': [{
-                            'beginningDatetime': '2019-01-07T00:00:00Z',
-                            'bookingLimitDatetime': '2019-02-07T00:00:00Z',
-                            'dateCreated': '2019-01-05T00:00:00Z',
-                            'dateModified': '2019-01-07T00:00:00Z',
-                            'id': 'AE',
-                            'offerId': 'FU',
-                            'price': 10.99,
-                            'quantity': 34,
-                            'isBookable': True,
-                            'remainingQuantity': 'unlimited',
-                        }],
-                        'thumbUrl': 'http://example.com/thumbs/products/BQ',
-                        'venue': {
-                            'address': '5 rue du cinéma',
-                            'city': 'Lure',
-                            'departementCode': '70',
-                            'id': 'K4',
-                            'latitude': 9.45678,
-                            'longitude': 45.0987654,
-                            'name': 'Théâtre',
-                            'postalCode': '70200'
+            assert serialized_beneficiary_booking == [
+                {
+                    "amount": 12,
+                    "cancellationDate": "2019-03-12T00:00:00Z",
+                    "completedUrl": "http://url.com",
+                    "dateCreated": "2019-02-07T00:00:00Z",
+                    "dateUsed": "2019-04-07T00:00:00Z",
+                    "id": "AQ",
+                    "isCancelled": False,
+                    "isEventExpired": False,
+                    "isUsed": True,
+                    "qrCode": "fake_qr_code",
+                    "quantity": 2,
+                    "recommendationId": None,
+                    "stock": {
+                        "beginningDatetime": "2019-03-08T00:00:00Z",
+                        "id": "HA",
+                        "isEventExpired": False,
+                        "offer": {
+                            "description": "Ma super decription",
+                            "durationMinutes": 180,
+                            "extraData": {"isbn": "9876543678"},
+                            "id": "FU",
+                            "isDigital": True,
+                            "isDuo": True,
+                            "isEvent": True,
+                            "isNational": False,
+                            "name": "Ma super offre",
+                            "isBookable": True,
+                            "offerType": {
+                                "appLabel": "Pratique artistique",
+                                "conditionalFields": ["speaker"],
+                                "description": "Jamais osé monter sur les "
+                                "planches ? Tenter "
+                                "d’apprendre la guitare, le "
+                                "piano ou la photographie ? "
+                                "Partir cinq jours découvrir "
+                                "un autre monde ? Bricoler "
+                                "dans un fablab, ou pourquoi "
+                                "pas, enregistrer votre "
+                                "premier titre ?",
+                                "isActive": True,
+                                "offlineOnly": True,
+                                "onlineOnly": False,
+                                "proLabel": "Pratique artistique - séances " "d'essai et stages ponctuels",
+                                "sublabel": "Pratiquer",
+                                "type": "Event",
+                                "value": "EventType.PRATIQUE_ARTISTIQUE",
+                            },
+                            "stocks": [
+                                {
+                                    "beginningDatetime": "2019-01-07T00:00:00Z",
+                                    "bookingLimitDatetime": "2019-02-07T00:00:00Z",
+                                    "dateCreated": "2019-01-05T00:00:00Z",
+                                    "dateModified": "2019-01-07T00:00:00Z",
+                                    "id": "AE",
+                                    "offerId": "FU",
+                                    "price": 10.99,
+                                    "quantity": 34,
+                                    "isBookable": True,
+                                    "remainingQuantity": "unlimited",
+                                }
+                            ],
+                            "thumbUrl": "http://example.com/thumbs/products/BQ",
+                            "venue": {
+                                "address": "5 rue du cinéma",
+                                "city": "Lure",
+                                "departementCode": "70",
+                                "id": "K4",
+                                "latitude": 9.45678,
+                                "longitude": 45.0987654,
+                                "name": "Théâtre",
+                                "postalCode": "70200",
+                            },
+                            "venueId": "K4",
+                            "withdrawalDetails": None,
                         },
-                        'venueId': 'K4',
-                        'withdrawalDetails': None
+                        "offerId": "FU",
+                        "price": 12.89,
                     },
-                    'offerId': 'FU',
-                    'price': 12.89
-                },
-                'stockId': 'HA',
-                'token': 'TOKEN',
-                'userId': 'BQ'
-            }]
+                    "stockId": "HA",
+                    "token": "TOKEN",
+                    "userId": "BQ",
+                }
+            ]
 
-        @freeze_time('2019-1-1')
-        @patch('pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
+        @freeze_time("2019-1-1")
+        @patch("pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url", return_value="http://example.com")
         def test_offer_should_not_be_bookable_when_all_stock_are_not_bookable(self, mock_get_storage):
             # Given
             stocks = [
@@ -341,7 +343,7 @@ class BeneficiaryBookingsSerializeTest:
                     bookingLimitDatetime=datetime(2019, 2, 7),
                     isSoftDeleted=False,
                     isOfferActive=False,
-                )
+                ),
             ]
 
             beneficiary_booking = BeneficiaryBooking(
@@ -355,49 +357,46 @@ class BeneficiaryBookingsSerializeTest:
                 quantity=2,
                 recommendationId=None,
                 stockId=56,
-                token='TOKEN',
+                token="TOKEN",
                 userId=12,
                 offerId=45,
-                name='Ma super offre',
-                type='EventType.PRATIQUE_ARTISTIQUE',
-                url='http://url.com',
-                email='john@example.com',
+                name="Ma super offre",
+                type="EventType.PRATIQUE_ARTISTIQUE",
+                url="http://url.com",
+                email="john@example.com",
                 beginningDatetime=datetime(2019, 3, 8),
                 venueId=87,
-                departementCode='70',
+                departementCode="70",
                 withdrawalDetails=None,
                 isDuo=True,
-                extraData={'isbn': '9876543678'},
+                extraData={"isbn": "9876543678"},
                 durationMinutes=180,
-                description='Ma super decription',
+                description="Ma super decription",
                 isNational=False,
                 mediaUrls=[],
-                venueName='Théâtre',
-                address='5 rue du cinéma',
-                postalCode='70200',
-                city='Lure',
+                venueName="Théâtre",
+                address="5 rue du cinéma",
+                postalCode="70200",
+                city="Lure",
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
                 productId=12,
                 thumbCount=1,
-                active_mediations=[]
+                active_mediations=[],
             )
-            beneficiary_bookings = BeneficiaryBookingsWithStocks(
-                bookings=[beneficiary_booking],
-                stocks=stocks
-            )
+            beneficiary_bookings = BeneficiaryBookingsWithStocks(bookings=[beneficiary_booking], stocks=stocks)
 
             # When
             serialized_beneficiary_booking = serialize_beneficiary_bookings(
-                beneficiary_bookings=beneficiary_bookings,
-                with_qr_code=True)
+                beneficiary_bookings=beneficiary_bookings, with_qr_code=True
+            )
 
             # Then
-            assert serialized_beneficiary_booking[0]['stock']['offer']['isBookable'] is False
+            assert serialized_beneficiary_booking[0]["stock"]["offer"]["isBookable"] is False
 
-        @freeze_time('2019-1-1')
-        @patch('pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url', return_value='http://example.com')
+        @freeze_time("2019-1-1")
+        @patch("pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url", return_value="http://example.com")
         def test_offer_should_be_bookable_when_at_least_one_stock_is_bookable(self, mock_get_storage):
             # Given
             stocks = [
@@ -424,7 +423,7 @@ class BeneficiaryBookingsSerializeTest:
                     bookingLimitDatetime=datetime(2019, 2, 7),
                     isSoftDeleted=False,
                     isOfferActive=False,
-                )
+                ),
             ]
 
             beneficiary_booking = BeneficiaryBooking(
@@ -438,43 +437,40 @@ class BeneficiaryBookingsSerializeTest:
                 quantity=2,
                 recommendationId=None,
                 stockId=56,
-                token='TOKEN',
+                token="TOKEN",
                 userId=12,
                 offerId=45,
-                name='Ma super offre',
-                type='EventType.PRATIQUE_ARTISTIQUE',
-                url='http://url.com',
-                email='john@example.com',
+                name="Ma super offre",
+                type="EventType.PRATIQUE_ARTISTIQUE",
+                url="http://url.com",
+                email="john@example.com",
                 beginningDatetime=datetime(2019, 3, 8),
                 venueId=87,
-                departementCode='70',
+                departementCode="70",
                 withdrawalDetails=None,
                 isDuo=True,
-                extraData={'isbn': '9876543678'},
+                extraData={"isbn": "9876543678"},
                 durationMinutes=180,
-                description='Ma super decription',
+                description="Ma super decription",
                 isNational=False,
                 mediaUrls=[],
-                venueName='Théâtre',
-                address='5 rue du cinéma',
-                postalCode='70200',
-                city='Lure',
+                venueName="Théâtre",
+                address="5 rue du cinéma",
+                postalCode="70200",
+                city="Lure",
                 latitude=9.45678,
                 longitude=45.0987654,
                 price=12.89,
                 productId=12,
                 thumbCount=1,
-                active_mediations=[]
+                active_mediations=[],
             )
-            beneficiary_bookings = BeneficiaryBookingsWithStocks(
-                bookings=[beneficiary_booking],
-                stocks=stocks
-            )
+            beneficiary_bookings = BeneficiaryBookingsWithStocks(bookings=[beneficiary_booking], stocks=stocks)
 
             # When
             serialized_beneficiary_booking = serialize_beneficiary_bookings(
-                beneficiary_bookings=beneficiary_bookings,
-                with_qr_code=True)
+                beneficiary_bookings=beneficiary_bookings, with_qr_code=True
+            )
 
             # Then
-            assert serialized_beneficiary_booking[0]['stock']['offer']['isBookable'] is True
+            assert serialized_beneficiary_booking[0]["stock"]["offer"]["isBookable"] is True

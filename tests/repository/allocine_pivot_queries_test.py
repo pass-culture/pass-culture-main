@@ -13,8 +13,8 @@ class HasAllocinePivotForVenueTest:
     def test_should_return_false_when_venue_has_no_siret(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, siret=None, comment='En attente de siret')
-        allocine_pivot = create_allocine_pivot(siret='12345678912345')
+        venue = create_venue(offerer, siret=None, comment="En attente de siret")
+        allocine_pivot = create_allocine_pivot(siret="12345678912345")
         repository.save(venue, allocine_pivot)
 
         # When
@@ -29,8 +29,8 @@ class GetAllocineTheaterIdForVenueTest:
     def test_should_not_return_value_when_not_matching_in_allocine_pivot(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, siret=None, comment='En attente de siret')
-        allocine_pivot = create_allocine_pivot(siret='12345678912345')
+        venue = create_venue(offerer, siret=None, comment="En attente de siret")
+        allocine_pivot = create_allocine_pivot(siret="12345678912345")
         repository.save(venue, allocine_pivot)
 
         # When
@@ -43,12 +43,12 @@ class GetAllocineTheaterIdForVenueTest:
     def test_should_return_theaterId_when_siret_is_present_in_allocine_pivot(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, siret='12345678912345', comment='En attente de siret')
-        allocine_pivot = create_allocine_pivot(siret='12345678912345', theater_id='XXXXXXXXXXXXXXXXXX==')
+        venue = create_venue(offerer, siret="12345678912345", comment="En attente de siret")
+        allocine_pivot = create_allocine_pivot(siret="12345678912345", theater_id="XXXXXXXXXXXXXXXXXX==")
         repository.save(venue, allocine_pivot)
 
         # When
         allocine_theater_id = get_allocine_theaterId_for_venue(venue)
 
         # Then
-        assert allocine_theater_id == 'XXXXXXXXXXXXXXXXXX=='
+        assert allocine_theater_id == "XXXXXXXXXXXXXXXXXX=="

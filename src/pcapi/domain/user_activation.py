@@ -14,21 +14,23 @@ from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 
 
-IMPORT_STATUS_MODIFICATION_RULE = 'Seuls les dossiers au statut DUPLICATE peuvent être modifiés (aux statuts REJECTED ou RETRY uniquement)'
+IMPORT_STATUS_MODIFICATION_RULE = (
+    "Seuls les dossiers au statut DUPLICATE peuvent être modifiés (aux statuts REJECTED ou RETRY uniquement)"
+)
 
 
 def create_initial_deposit(user_to_activate: UserSQLEntity) -> Deposit:
     existing_deposits = Deposit.query.filter_by(userId=user_to_activate.id).all()
     if existing_deposits:
         error = AlreadyActivatedException()
-        error.add_error('user', 'Cet utilisateur a déjà crédité son pass Culture')
+        error.add_error("user", "Cet utilisateur a déjà crédité son pass Culture")
         raise error
 
     else:
         deposit = Deposit()
         deposit.amount = 500
         deposit.user = user_to_activate
-        deposit.source = 'fichier csv'
+        deposit.source = "fichier csv"
         return deposit
 
 
@@ -47,16 +49,16 @@ def is_activation_booking(booking):
 
 def create_beneficiary_from_application(application_detail: dict) -> UserSQLEntity:
     beneficiary = UserSQLEntity()
-    beneficiary.lastName = application_detail['last_name']
-    beneficiary.firstName = application_detail['first_name']
-    beneficiary.publicName = '%s %s' % (application_detail['first_name'], application_detail['last_name'])
-    beneficiary.email = application_detail['email']
-    beneficiary.phoneNumber = application_detail['phone']
-    beneficiary.departementCode = application_detail['department']
-    beneficiary.postalCode = application_detail['postal_code']
-    beneficiary.dateOfBirth = application_detail['birth_date']
-    beneficiary.civility = application_detail['civility']
-    beneficiary.activity = application_detail['activity']
+    beneficiary.lastName = application_detail["last_name"]
+    beneficiary.firstName = application_detail["first_name"]
+    beneficiary.publicName = "%s %s" % (application_detail["first_name"], application_detail["last_name"])
+    beneficiary.email = application_detail["email"]
+    beneficiary.phoneNumber = application_detail["phone"]
+    beneficiary.departementCode = application_detail["department"]
+    beneficiary.postalCode = application_detail["postal_code"]
+    beneficiary.dateOfBirth = application_detail["birth_date"]
+    beneficiary.civility = application_detail["civility"]
+    beneficiary.activity = application_detail["activity"]
     beneficiary.canBookFreeOffers = True
     beneficiary.isAdmin = False
     beneficiary.password = random_password()
@@ -65,7 +67,7 @@ def create_beneficiary_from_application(application_detail: dict) -> UserSQLEnti
 
     deposit = Deposit()
     deposit.amount = 500
-    deposit.source = 'démarches simplifiées dossier [%s]' % application_detail['application_id']
+    deposit.source = "démarches simplifiées dossier [%s]" % application_detail["application_id"]
     beneficiary.deposits = [deposit]
 
     return beneficiary

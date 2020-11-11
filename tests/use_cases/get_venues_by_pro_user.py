@@ -15,8 +15,9 @@ class GetAllVenuesByProUserTest:
 
     def test_get_all_venue_by_pro_user(self) -> None:
         # Given
-        venue = VenueWithOffererName(identifier=10, name='Librairie Kléber', offerer_name='Gilbert Joseph',
-                                     is_virtual=False)
+        venue = VenueWithOffererName(
+            identifier=10, name="Librairie Kléber", offerer_name="Gilbert Joseph", is_virtual=False
+        )
         self.venue_repository.get_by_pro_identifier.return_value = [venue]
 
         # When

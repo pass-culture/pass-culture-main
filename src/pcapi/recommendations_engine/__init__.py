@@ -4,7 +4,7 @@ from pcapi.recommendations_engine.recommendations import give_requested_recommen
 
 
 __all__ = (
-    'create_recommendations_for_discovery',
-    'get_offers_for_recommendations_discovery',
-    'give_requested_recommendation_to_user',
+    "create_recommendations_for_discovery",
+    "get_offers_for_recommendations_discovery",
+    "give_requested_recommendation_to_user",
 )

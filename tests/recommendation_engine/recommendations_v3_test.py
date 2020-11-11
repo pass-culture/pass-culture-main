@@ -42,8 +42,9 @@ class CreateRecommendationsForDiscoveryTest:
         discovery_view_v3_queries.refresh(concurrently=False)
 
         # When
-        recommendations = create_recommendations_for_discovery_v3(user=user, user_iris_id=iris.id,
-                                                                  sent_offers_ids=sent_offers_ids)
+        recommendations = create_recommendations_for_discovery_v3(
+            user=user, user_iris_id=iris.id, sent_offers_ids=sent_offers_ids
+        )
 
         # Then
         mediations = list(map(lambda x: x.mediationId, recommendations))
@@ -52,18 +53,17 @@ class CreateRecommendationsForDiscoveryTest:
         assert humanize(mediation2.id) not in mediations
         assert humanize(mediation1.id) not in mediations
 
-    @patch('pcapi.recommendations_engine.recommendations.get_offers_for_recommendation_v3')
+    @patch("pcapi.recommendations_engine.recommendations.get_offers_for_recommendation_v3")
     def test_requests_offers_with_same_criteria(self, mock_get_offers_for_recommendation_v3):
         # Given
         user = create_user()
 
         # When
-        create_recommendations_for_discovery_v3(user, user_iris_id=1, user_is_geolocated=True,
-                                                sent_offers_ids=[], limit=30)
+        create_recommendations_for_discovery_v3(
+            user, user_iris_id=1, user_is_geolocated=True, sent_offers_ids=[], limit=30
+        )
 
         # Then
-        mock_get_offers_for_recommendation_v3.assert_called_once_with(user=user,
-                                                                      user_iris_id=1,
-                                                                      user_is_geolocated=True,
-                                                                      limit=30,
-                                                                      sent_offers_ids=[])
+        mock_get_offers_for_recommendation_v3.assert_called_once_with(
+            user=user, user_iris_id=1, user_is_geolocated=True, limit=30, sent_offers_ids=[]
+        )

@@ -24,6 +24,6 @@ def delete_product_from_isbn_file(file_path: str):
 
 
 def read_isbn_from_file(file_path: str) -> [str]:
-    with open(file_path, mode='r', newline='\n') as file:
+    with open(file_path, mode="r", newline="\n") as file:
         book_isbns = file.read().splitlines()
     return book_isbns

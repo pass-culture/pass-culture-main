@@ -55,18 +55,15 @@ from pcapi.scripts.iris.import_iris import create_centroid_from_polygon
 from pcapi.utils.token import random_token
 
 
-API_URL = 'http://localhost:5000'
+API_URL = "http://localhost:5000"
 DEFAULT_USER = UserSQLEntity()
-PLAIN_DEFAULT_TESTING_PASSWORD = 'user@AZERTY123'
+PLAIN_DEFAULT_TESTING_PASSWORD = "user@AZERTY123"
 DEFAULT_USER.setPassword(PLAIN_DEFAULT_TESTING_PASSWORD)
 HASHED_DEFAULT_TESTING_PASSWORD = DEFAULT_USER.password
-DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID = int(
-    os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', 88))
+DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID = int(os.environ.get("DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID", 88))
 
 
-def create_api_key(idx: int = None,
-                   offerer_id: int = 99,
-                   value: str = 'A_MOCKED_API_KEY') -> ApiKey:
+def create_api_key(idx: int = None, offerer_id: int = 99, value: str = "A_MOCKED_API_KEY") -> ApiKey:
     api_key = ApiKey()
     api_key.id = idx
     api_key.offererId = offerer_id
@@ -75,14 +72,16 @@ def create_api_key(idx: int = None,
     return api_key
 
 
-def create_bank_information(application_id: int = 1,
-                            bic: str = 'QSDFGH8Z555',
-                            date_modified: datetime = None,
-                            iban: str = 'FR7630006000011234567890189',
-                            idx: int = None,
-                            offerer: Offerer = None,
-                            venue: VenueSQLEntity = None,
-                            status: BankInformationStatus = BankInformationStatus.ACCEPTED) -> BankInformation:
+def create_bank_information(
+    application_id: int = 1,
+    bic: str = "QSDFGH8Z555",
+    date_modified: datetime = None,
+    iban: str = "FR7630006000011234567890189",
+    idx: int = None,
+    offerer: Offerer = None,
+    venue: VenueSQLEntity = None,
+    status: BankInformationStatus = BankInformationStatus.ACCEPTED,
+) -> BankInformation:
     bank_information = BankInformation()
     bank_information.applicationId = application_id
     bank_information.bic = bic
@@ -96,14 +95,16 @@ def create_bank_information(application_id: int = 1,
     return bank_information
 
 
-def create_beneficiary_import(application_id: int = 99,
-                              date: datetime = datetime.utcnow(),
-                              detail: str = None,
-                              idx: int = None,
-                              source_id: int = DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID,
-                              source: str = BeneficiaryImportSources.demarches_simplifiees.value,
-                              status: ImportStatus = ImportStatus.CREATED,
-                              user: UserSQLEntity = None) -> BeneficiaryImport:
+def create_beneficiary_import(
+    application_id: int = 99,
+    date: datetime = datetime.utcnow(),
+    detail: str = None,
+    idx: int = None,
+    source_id: int = DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID,
+    source: str = BeneficiaryImportSources.demarches_simplifiees.value,
+    status: ImportStatus = ImportStatus.CREATED,
+    user: UserSQLEntity = None,
+) -> BeneficiaryImport:
     import_status = BeneficiaryImportStatus()
     import_status.date = date
     import_status.detail = detail
@@ -120,9 +121,7 @@ def create_beneficiary_import(application_id: int = 99,
     return beneficiary_import
 
 
-def create_criterion(description: str = None,
-                     name: str = 'best offer',
-                     score_delta: int = 1) -> Criterion:
+def create_criterion(description: str = None, name: str = "best offer", score_delta: int = 1) -> Criterion:
     criterion = Criterion()
     criterion.name = name
     criterion.description = description
@@ -131,29 +130,38 @@ def create_criterion(description: str = None,
     return criterion
 
 
-def create_booking(user: UserSQLEntity,
-                   amount: Optional[Union[Decimal, float]] = None,
-                   date_created: datetime = datetime.utcnow(),
-                   date_used: datetime = None,
-                   idx: int = None,
-                   is_cancelled: bool = False,
-                   is_used: bool = False,
-                   quantity: int = 1,
-                   recommendation: Recommendation = None,
-                   stock: StockSQLEntity = None,
-                   token: str = None,
-                   venue: VenueSQLEntity = None) -> Booking:
+def create_booking(
+    user: UserSQLEntity,
+    amount: Optional[Union[Decimal, float]] = None,
+    date_created: datetime = datetime.utcnow(),
+    date_used: datetime = None,
+    idx: int = None,
+    is_cancelled: bool = False,
+    is_used: bool = False,
+    quantity: int = 1,
+    recommendation: Recommendation = None,
+    stock: StockSQLEntity = None,
+    token: str = None,
+    venue: VenueSQLEntity = None,
+) -> Booking:
     booking = Booking()
-    offerer = create_offerer(siren='987654321', address='Test address', city='Test city', postal_code='93000',
-                             name='Test name')
+    offerer = create_offerer(
+        siren="987654321", address="Test address", city="Test city", postal_code="93000", name="Test name"
+    )
     if venue is None:
-        venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr',
-                             address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
+        venue = create_venue(
+            offerer=offerer,
+            name="Test offerer",
+            booking_email="reservations@test.fr",
+            address="123 rue test",
+            postal_code="93000",
+            city="Test city",
+            departement_code="93",
+        )
     if stock is None:
         price = amount if amount is not None else 10
         product_with_thing_type = create_offer_with_thing_product(venue)
-        stock = create_stock_with_thing_offer(
-            offerer=offerer, venue=venue, offer=product_with_thing_type, price=price)
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=product_with_thing_type, price=price)
 
     if recommendation:
         booking.recommendation = recommendation
@@ -177,11 +185,13 @@ def create_booking(user: UserSQLEntity,
     return booking
 
 
-def create_deposit(user: UserSQLEntity,
-                   amount: int = 500,
-                   date_created: datetime = datetime.utcnow(),
-                   idx: int = None,
-                   source: str = 'public') -> Deposit:
+def create_deposit(
+    user: UserSQLEntity,
+    amount: int = 500,
+    date_created: datetime = datetime.utcnow(),
+    idx: int = None,
+    source: str = "public",
+) -> Deposit:
     deposit = Deposit()
     deposit.amount = amount
     deposit.dateCreated = date_created
@@ -192,10 +202,9 @@ def create_deposit(user: UserSQLEntity,
     return deposit
 
 
-def create_favorite(idx: int = None,
-                    mediation: MediationSQLEntity = None,
-                    offer: Offer = None,
-                    user: UserSQLEntity = None) -> FavoriteSQLEntity:
+def create_favorite(
+    idx: int = None, mediation: MediationSQLEntity = None, offer: Offer = None, user: UserSQLEntity = None
+) -> FavoriteSQLEntity:
     favorite = FavoriteSQLEntity()
     favorite.id = idx
     favorite.mediation = mediation
@@ -205,17 +214,18 @@ def create_favorite(idx: int = None,
     return favorite
 
 
-def create_mediation(offer: Offer = None,
-                     author: UserSQLEntity = None,
-                     credit: str = None,
-                     date_created: datetime = datetime.utcnow(),
-                     date_modified_at_last_provider: datetime = None,
-                     id_at_providers: str = None,
-                     idx: int = None,
-                     is_active: bool = True,
-                     last_provider_id: int = None,
-                     thumb_count: int = 0,
-                     ) -> MediationSQLEntity:
+def create_mediation(
+    offer: Offer = None,
+    author: UserSQLEntity = None,
+    credit: str = None,
+    date_created: datetime = datetime.utcnow(),
+    date_modified_at_last_provider: datetime = None,
+    id_at_providers: str = None,
+    idx: int = None,
+    is_active: bool = True,
+    last_provider_id: int = None,
+    thumb_count: int = 0,
+) -> MediationSQLEntity:
     mediation = MediationSQLEntity()
     mediation.author = author
     mediation.credit = credit
@@ -231,19 +241,21 @@ def create_mediation(offer: Offer = None,
     return mediation
 
 
-def create_offerer(address: str = None,
-                   city: str = 'Montreuil',
-                   date_created: datetime = datetime.utcnow(),
-                   date_modified_at_last_provider: datetime = None,
-                   idx: int = None,
-                   id_at_providers: str = None,
-                   is_active: bool = True,
-                   last_provider_id: int = None,
-                   name: str = 'Test Offerer',
-                   postal_code: str = '93100',
-                   siren: Optional[str] = '123456789',
-                   thumb_count: int = 0,
-                   validation_token: str = None) -> Offerer:
+def create_offerer(
+    address: str = None,
+    city: str = "Montreuil",
+    date_created: datetime = datetime.utcnow(),
+    date_modified_at_last_provider: datetime = None,
+    idx: int = None,
+    id_at_providers: str = None,
+    is_active: bool = True,
+    last_provider_id: int = None,
+    name: str = "Test Offerer",
+    postal_code: str = "93100",
+    siren: Optional[str] = "123456789",
+    thumb_count: int = 0,
+    validation_token: str = None,
+) -> Offerer:
     offerer = Offerer()
     offerer.address = address
     offerer.city = city
@@ -262,23 +274,25 @@ def create_offerer(address: str = None,
     return offerer
 
 
-def create_payment(booking: Booking,
-                   offerer: Offerer,
-                   amount: int = 10,
-                   author: str = 'test author',
-                   bic: str = None,
-                   comment: str = None,
-                   iban: str = None,
-                   idx: int = None,
-                   payment_message: PaymentMessage = None,
-                   payment_message_name: str = None,
-                   reimbursement_rate: float = 0.5,
-                   reimbursement_rule: str = 'remboursement à 100%',
-                   status: TransactionStatus = TransactionStatus.PENDING,
-                   detail: str = None,
-                   status_date: datetime = datetime.utcnow(),
-                   transaction_end_to_end_id: str = None,
-                   transaction_label: str = None) -> Payment:
+def create_payment(
+    booking: Booking,
+    offerer: Offerer,
+    amount: int = 10,
+    author: str = "test author",
+    bic: str = None,
+    comment: str = None,
+    iban: str = None,
+    idx: int = None,
+    payment_message: PaymentMessage = None,
+    payment_message_name: str = None,
+    reimbursement_rate: float = 0.5,
+    reimbursement_rule: str = "remboursement à 100%",
+    status: TransactionStatus = TransactionStatus.PENDING,
+    detail: str = None,
+    status_date: datetime = datetime.utcnow(),
+    transaction_end_to_end_id: str = None,
+    transaction_label: str = None,
+) -> Payment:
     payment_status = PaymentStatus()
     payment_status.status = status
     payment_status.date = status_date
@@ -293,8 +307,7 @@ def create_payment(booking: Booking,
     payment.iban = iban
     payment.id = idx
     if payment_message_name:
-        payment.paymentMessage = create_payment_message(
-            name=payment_message_name)
+        payment.paymentMessage = create_payment_message(name=payment_message_name)
     elif payment_message:
         payment.paymentMessage = payment_message
     payment.recipientName = offerer.name
@@ -308,24 +321,26 @@ def create_payment(booking: Booking,
     return payment
 
 
-def create_payment_details(booking_amount: int = 15,
-                           booking_date: datetime = datetime.utcnow() - timedelta(days=10),
-                           booking_used_date: datetime = datetime.utcnow() - timedelta(days=5),
-                           booking_user_email: str = 'john.doe@example.com',
-                           booking_user_id: int = 1234,
-                           offer_name: str = 'Blake & Mortimer',
-                           offer_type: ThingType = ThingType.LIVRE_EDITION,
-                           offerer_name: str = 'Les petites librairies',
-                           offerer_siren: str = '123456789',
-                           payment_iban: str = 'FR7630001007941234567890185',
-                           payment_id: int = 123,
-                           payment_message_name: str = 'AZERTY123456',
-                           reimbursed_amount: float = 7.5,
-                           reimbursement_rate: float = 0.5,
-                           transaction_end_to_end_id: str = None,
-                           venue_name: str = 'Vive les BDs',
-                           venue_siret: str = '12345678912345',
-                           venue_humanized_id: str = 'AE') -> PaymentDetails:
+def create_payment_details(
+    booking_amount: int = 15,
+    booking_date: datetime = datetime.utcnow() - timedelta(days=10),
+    booking_used_date: datetime = datetime.utcnow() - timedelta(days=5),
+    booking_user_email: str = "john.doe@example.com",
+    booking_user_id: int = 1234,
+    offer_name: str = "Blake & Mortimer",
+    offer_type: ThingType = ThingType.LIVRE_EDITION,
+    offerer_name: str = "Les petites librairies",
+    offerer_siren: str = "123456789",
+    payment_iban: str = "FR7630001007941234567890185",
+    payment_id: int = 123,
+    payment_message_name: str = "AZERTY123456",
+    reimbursed_amount: float = 7.5,
+    reimbursement_rate: float = 0.5,
+    transaction_end_to_end_id: str = None,
+    venue_name: str = "Vive les BDs",
+    venue_siret: str = "12345678912345",
+    venue_humanized_id: str = "AE",
+) -> PaymentDetails:
     payment_details = PaymentDetails()
     payment_details.booking_amount = booking_amount
     payment_details.booking_date = booking_date
@@ -349,26 +364,25 @@ def create_payment_details(booking_amount: int = 15,
     return payment_details
 
 
-def create_payment_message(checksum: str = None,
-                           idx: int = None,
-                           name: str = 'ABCD123') -> PaymentMessage:
+def create_payment_message(checksum: str = None, idx: int = None, name: str = "ABCD123") -> PaymentMessage:
     payment_message = PaymentMessage()
-    payment_message.checksum = checksum if checksum else sha256(
-        name.encode('utf-8')).digest()
+    payment_message.checksum = checksum if checksum else sha256(name.encode("utf-8")).digest()
     payment_message.id = idx
     payment_message.name = name
 
     return payment_message
 
 
-def create_provider(api_key: str = None,
-                    api_key_generation_date: datetime = None,
-                    idx: int = None,
-                    is_active: bool = True,
-                    is_enable_for_pro: bool = True,
-                    local_class: str = 'TiteLive',
-                    name: str = 'My Test Provider',
-                    require_provider_identifier: bool = True) -> Provider:
+def create_provider(
+    api_key: str = None,
+    api_key_generation_date: datetime = None,
+    idx: int = None,
+    is_active: bool = True,
+    is_enable_for_pro: bool = True,
+    local_class: str = "TiteLive",
+    name: str = "My Test Provider",
+    require_provider_identifier: bool = True,
+) -> Provider:
     provider = Provider()
     provider.apiKey = api_key
     provider.apiKeyGenerationDate = api_key_generation_date
@@ -382,17 +396,19 @@ def create_provider(api_key: str = None,
     return provider
 
 
-def create_recommendation(offer: Offer = None,
-                          user: UserSQLEntity = None,
-                          date_created: datetime = datetime.utcnow(),
-                          date_read: datetime = None,
-                          date_updated: datetime = datetime.utcnow(),
-                          idx: int = None,
-                          is_clicked: bool = False,
-                          is_first: bool = False,
-                          mediation: MediationSQLEntity = None,
-                          search: str = None,
-                          share_medium: str = None) -> Recommendation:
+def create_recommendation(
+    offer: Offer = None,
+    user: UserSQLEntity = None,
+    date_created: datetime = datetime.utcnow(),
+    date_read: datetime = None,
+    date_updated: datetime = datetime.utcnow(),
+    idx: int = None,
+    is_clicked: bool = False,
+    is_first: bool = False,
+    mediation: MediationSQLEntity = None,
+    search: str = None,
+    share_medium: str = None,
+) -> Recommendation:
     recommendation = Recommendation()
     recommendation.dateCreated = date_created
     recommendation.dateRead = date_read
@@ -419,18 +435,20 @@ def create_seen_offer(offer: Offer, user: UserSQLEntity, date_seen: Optional[dat
     return seen_offer
 
 
-def create_stock(beginning_datetime: Optional[datetime] = None,
-                 booking_limit_datetime: Optional[datetime] = None,
-                 date_created: datetime = datetime.utcnow(),
-                 date_modified: datetime = datetime.utcnow(),
-                 date_modified_at_last_provider: Optional[datetime] = None,
-                 idx: Optional[int] = None,
-                 id_at_providers: Optional[str] = None,
-                 is_soft_deleted: bool = False,
-                 last_provider_id: Optional[int] = None,
-                 offer: Optional[Offer] = None,
-                 price: float = 10,
-                 quantity: Optional[int] = None) -> StockSQLEntity:
+def create_stock(
+    beginning_datetime: Optional[datetime] = None,
+    booking_limit_datetime: Optional[datetime] = None,
+    date_created: datetime = datetime.utcnow(),
+    date_modified: datetime = datetime.utcnow(),
+    date_modified_at_last_provider: Optional[datetime] = None,
+    idx: Optional[int] = None,
+    id_at_providers: Optional[str] = None,
+    is_soft_deleted: bool = False,
+    last_provider_id: Optional[int] = None,
+    offer: Optional[Offer] = None,
+    price: float = 10,
+    quantity: Optional[int] = None,
+) -> StockSQLEntity:
     stock = StockSQLEntity()
     stock.quantity = quantity
     stock.beginningDatetime = beginning_datetime
@@ -449,28 +467,30 @@ def create_stock(beginning_datetime: Optional[datetime] = None,
     return stock
 
 
-def create_user(activity: str = None,
-                can_book_free_offers: bool = True,
-                civility: str = None,
-                cultural_survey_id: str = None,
-                cultural_survey_filled_date: datetime = None,
-                date_created: datetime = datetime.utcnow(),
-                date_of_birth: datetime = None,
-                departement_code: str = '93',
-                email: str = 'john.doe@example.com',
-                first_name: str = None,
-                has_seen_tutorials: bool = None,
-                idx: int = None,
-                is_admin: bool = False,
-                last_name: str = None,
-                needs_to_fill_cultural_survey: bool = False,
-                password: str = None,
-                phone_number: str = None,
-                postal_code: str = None,
-                public_name: str = 'John Doe',
-                reset_password_token: str = None,
-                reset_password_token_validity_limit: datetime = None,
-                validation_token: str = None) -> UserSQLEntity:
+def create_user(
+    activity: str = None,
+    can_book_free_offers: bool = True,
+    civility: str = None,
+    cultural_survey_id: str = None,
+    cultural_survey_filled_date: datetime = None,
+    date_created: datetime = datetime.utcnow(),
+    date_of_birth: datetime = None,
+    departement_code: str = "93",
+    email: str = "john.doe@example.com",
+    first_name: str = None,
+    has_seen_tutorials: bool = None,
+    idx: int = None,
+    is_admin: bool = False,
+    last_name: str = None,
+    needs_to_fill_cultural_survey: bool = False,
+    password: str = None,
+    phone_number: str = None,
+    postal_code: str = None,
+    public_name: str = "John Doe",
+    reset_password_token: str = None,
+    reset_password_token_validity_limit: datetime = None,
+    validation_token: str = None,
+) -> UserSQLEntity:
     user = UserSQLEntity()
     user.activity = activity
     user.canBookFreeOffers = can_book_free_offers
@@ -503,11 +523,9 @@ def create_user(activity: str = None,
     return user
 
 
-def create_user_offerer(user: UserSQLEntity,
-                        offerer: Offerer,
-                        idx: int = None,
-                        is_admin: bool = False,
-                        validation_token: str = None) -> UserOfferer:
+def create_user_offerer(
+    user: UserSQLEntity, offerer: Offerer, idx: int = None, is_admin: bool = False, validation_token: str = None
+) -> UserOfferer:
     user_offerer = UserOfferer()
     user_offerer.id = idx
     user_offerer.offerer = offerer
@@ -518,27 +536,29 @@ def create_user_offerer(user: UserSQLEntity,
     return user_offerer
 
 
-def create_venue(offerer: Offerer,
-                 address: Optional[str] = '123 rue de Paris',
-                 booking_email: Optional[str] = None,
-                 city: Optional[str] = 'Montreuil',
-                 comment: Optional[str] = None,
-                 date_modified_at_last_provider: Optional[datetime] = None,
-                 departement_code: Optional[str] = '93',
-                 idx: Optional[int] = None,
-                 id_at_providers: Optional[str] = None,
-                 is_virtual: bool = False,
-                 last_provider_id: Optional[int] = None,
-                 latitude: Optional[float] = None,
-                 longitude: Optional[float] = None,
-                 name: str = 'La petite librairie',
-                 postal_code: Optional[str] = '93100',
-                 public_name: Optional[str] = None,
-                 siret: Optional[str] = '12345678912345',
-                 thumb_count: int = 0,
-                 validation_token: Optional[str] = None,
-                 venue_type_id: int = None,
-                 date_created: Optional[datetime] = datetime.now()) -> VenueSQLEntity:
+def create_venue(
+    offerer: Offerer,
+    address: Optional[str] = "123 rue de Paris",
+    booking_email: Optional[str] = None,
+    city: Optional[str] = "Montreuil",
+    comment: Optional[str] = None,
+    date_modified_at_last_provider: Optional[datetime] = None,
+    departement_code: Optional[str] = "93",
+    idx: Optional[int] = None,
+    id_at_providers: Optional[str] = None,
+    is_virtual: bool = False,
+    last_provider_id: Optional[int] = None,
+    latitude: Optional[float] = None,
+    longitude: Optional[float] = None,
+    name: str = "La petite librairie",
+    postal_code: Optional[str] = "93100",
+    public_name: Optional[str] = None,
+    siret: Optional[str] = "12345678912345",
+    thumb_count: int = 0,
+    validation_token: Optional[str] = None,
+    venue_type_id: int = None,
+    date_created: Optional[datetime] = datetime.now(),
+) -> VenueSQLEntity:
     venue = VenueSQLEntity()
     venue.bookingEmail = booking_email
     venue.comment = comment
@@ -567,17 +587,18 @@ def create_venue(offerer: Offerer,
     return venue
 
 
-def create_venue_provider(venue: VenueSQLEntity,
-                          provider: Provider,
-                          date_modified_at_last_provider: datetime = None,
-                          id_at_providers: str = None,
-                          idx: int = None,
-                          is_active: bool = True,
-                          last_provider_id: int = None,
-                          last_sync_date: datetime = None,
-                          venue_id_at_offer_provider: str = '123456789',
-                          sync_worker_id: str = None
-                          ) -> VenueProvider:
+def create_venue_provider(
+    venue: VenueSQLEntity,
+    provider: Provider,
+    date_modified_at_last_provider: datetime = None,
+    id_at_providers: str = None,
+    idx: int = None,
+    is_active: bool = True,
+    last_provider_id: int = None,
+    last_sync_date: datetime = None,
+    venue_id_at_offer_provider: str = "123456789",
+    sync_worker_id: str = None,
+) -> VenueProvider:
     venue_provider = VenueProvider()
     venue_provider.dateModifiedAtLastProvider = date_modified_at_last_provider
     venue_provider.id = idx
@@ -608,9 +629,13 @@ def create_venue_label(label: str, idx: Optional[int] = None) -> VenueLabelSQLEn
     return venue_label
 
 
-def create_allocine_venue_provider(venue: VenueSQLEntity, allocine_provider: Provider, is_duo: bool = False,
-                                   quantity: Optional[int] = None,
-                                   venue_id_at_offer_provider: str = None) -> AllocineVenueProvider:
+def create_allocine_venue_provider(
+    venue: VenueSQLEntity,
+    allocine_provider: Provider,
+    is_duo: bool = False,
+    quantity: Optional[int] = None,
+    venue_id_at_offer_provider: str = None,
+) -> AllocineVenueProvider:
     allocine_venue_provider = AllocineVenueProvider()
     allocine_venue_provider.venue = venue
     allocine_venue_provider.provider = allocine_provider
@@ -620,10 +645,12 @@ def create_allocine_venue_provider(venue: VenueSQLEntity, allocine_provider: Pro
     return allocine_venue_provider
 
 
-def create_allocine_venue_provider_price_rule(allocine_venue_provider: AllocineVenueProvider,
-                                              idx: int = None,
-                                              price: int = 10,
-                                              price_rule: PriceRule = PriceRule.default) -> AllocineVenueProviderPriceRule:
+def create_allocine_venue_provider_price_rule(
+    allocine_venue_provider: AllocineVenueProvider,
+    idx: int = None,
+    price: int = 10,
+    price_rule: PriceRule = PriceRule.default,
+) -> AllocineVenueProviderPriceRule:
     venue_provider_price_rule = AllocineVenueProviderPriceRule()
     venue_provider_price_rule.id = idx
     venue_provider_price_rule.price = price
@@ -633,15 +660,19 @@ def create_allocine_venue_provider_price_rule(allocine_venue_provider: AllocineV
     return venue_provider_price_rule
 
 
-def create_allocine_pivot(siret: str = '12345678912345', theater_id: str = 'XXXXXXXXXXXXXXXXXX==') -> AllocinePivot:
+def create_allocine_pivot(siret: str = "12345678912345", theater_id: str = "XXXXXXXXXXXXXXXXXX==") -> AllocinePivot:
     allocine_pivot = AllocinePivot()
     allocine_pivot.siret = siret
     allocine_pivot.theaterId = theater_id
     return allocine_pivot
 
 
-def create_payment_status(payment: Payment, detail: str = None, status: TransactionStatus = TransactionStatus.PENDING,
-                          date: datetime = datetime.utcnow()) -> PaymentStatus:
+def create_payment_status(
+    payment: Payment,
+    detail: str = None,
+    status: TransactionStatus = TransactionStatus.PENDING,
+    date: datetime = datetime.utcnow(),
+) -> PaymentStatus:
     payment_status = PaymentStatus()
     payment_status.payment = payment
     payment_status.detail = detail
@@ -650,10 +681,9 @@ def create_payment_status(payment: Payment, detail: str = None, status: Transact
     return payment_status
 
 
-def create_iris(polygon: Polygon, iris_code: str = '123456789') -> IrisFrance:
+def create_iris(polygon: Polygon, iris_code: str = "123456789") -> IrisFrance:
     iris = IrisFrance()
-    iris.centroid = from_shape(create_centroid_from_polygon(
-        polygon), srid=WGS_SPATIAL_REFERENCE_IDENTIFIER)
+    iris.centroid = from_shape(create_centroid_from_polygon(polygon), srid=WGS_SPATIAL_REFERENCE_IDENTIFIER)
     iris.irisCode = iris_code
     iris.shape = from_shape(polygon, srid=WGS_SPATIAL_REFERENCE_IDENTIFIER)
     return iris

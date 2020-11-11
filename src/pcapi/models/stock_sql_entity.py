@@ -26,41 +26,22 @@ from pcapi.utils.logger import logger
 EVENT_AUTOMATIC_REFUND_DELAY = timedelta(hours=48)
 
 
-class StockSQLEntity(PcObject,
-                     Model,
-                     ProvidableMixin,
-                     SoftDeletableMixin,
-                     VersionedMixin):
-    __tablename__ = 'stock'
+class StockSQLEntity(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin):
+    __tablename__ = "stock"
 
-    id = Column(BigInteger,
-                primary_key=True,
-                autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    dateCreated = Column(DateTime,
-                         nullable=False,
-                         default=datetime.utcnow)
+    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    dateModified = Column(DateTime,
-                          nullable=False,
-                          default=datetime.utcnow)
+    dateModified = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    beginningDatetime = Column(DateTime,
-                               index=True,
-                               nullable=True)
+    beginningDatetime = Column(DateTime, index=True, nullable=True)
 
-    offerId = Column(BigInteger,
-                     ForeignKey('offer.id'),
-                     index=True,
-                     nullable=False)
+    offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer = relationship('Offer',
-                         foreign_keys=[offerId],
-                         backref='stocks')
+    offer = relationship("Offer", foreign_keys=[offerId], backref="stocks")
 
-    price = Column(Numeric(10, 2),
-                   CheckConstraint('price >= 0', name='check_price_is_not_negative'),
-                   nullable=False)
+    price = Column(Numeric(10, 2), CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False)
 
     quantity = Column(Integer, nullable=True)
 
@@ -98,7 +79,7 @@ class StockSQLEntity(PcObject,
 
     @property
     def remainingQuantity(self):
-        return 'unlimited' if self.quantity is None else self.quantity - self.bookingsQuantity
+        return "unlimited" if self.quantity is None else self.quantity - self.bookingsQuantity
 
     @property
     def isEventExpired(self):
@@ -118,23 +99,23 @@ class StockSQLEntity(PcObject,
 
     @staticmethod
     def restize_internal_error(ie):
-        if 'check_stock' in str(ie.orig):
-            if 'quantity_too_low' in str(ie.orig):
-                return ['quantity', 'Le stock total ne peut être inférieur au nombre de réservations']
-            elif 'bookingLimitDatetime_too_late' in str(ie.orig):
-                return ['bookingLimitDatetime',
-                        'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement']
+        if "check_stock" in str(ie.orig):
+            if "quantity_too_low" in str(ie.orig):
+                return ["quantity", "Le stock total ne peut être inférieur au nombre de réservations"]
+            elif "bookingLimitDatetime_too_late" in str(ie.orig):
+                return [
+                    "bookingLimitDatetime",
+                    "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement",
+                ]
             else:
                 logger.error("Unexpected error in patch stocks: " + pformat(ie))
         return PcObject.restize_internal_error(ie)
 
 
-@listens_for(StockSQLEntity, 'before_insert')
+@listens_for(StockSQLEntity, "before_insert")
 def before_insert(mapper, configuration, self):
     if self.beginningDatetime and not self.bookingLimitDatetime:
-        self.bookingLimitDatetime = self.beginningDatetime \
-                                        .replace(hour=23) \
-                                        .replace(minute=59) - timedelta(days=3)
+        self.bookingLimitDatetime = self.beginningDatetime.replace(hour=23).replace(minute=59) - timedelta(days=3)
 
 
 StockSQLEntity.trig_ddl = """
@@ -175,9 +156,7 @@ StockSQLEntity.trig_ddl = """
     FOR EACH ROW EXECUTE PROCEDURE check_stock()
     """
 
-event.listen(StockSQLEntity.__table__,
-             'after_create',
-             DDL(StockSQLEntity.trig_ddl))
+event.listen(StockSQLEntity.__table__, "after_create", DDL(StockSQLEntity.trig_ddl))
 
 StockSQLEntity.trig_update_date_ddl = """
     CREATE OR REPLACE FUNCTION save_stock_modification_date()
@@ -198,6 +177,4 @@ StockSQLEntity.trig_update_date_ddl = """
     EXECUTE PROCEDURE save_stock_modification_date()
     """
 
-event.listen(StockSQLEntity.__table__,
-             'after_create',
-             DDL(StockSQLEntity.trig_update_date_ddl))
+event.listen(StockSQLEntity.__table__, "after_create", DDL(StockSQLEntity.trig_update_date_ddl))

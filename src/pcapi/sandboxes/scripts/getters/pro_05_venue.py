@@ -14,16 +14,15 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
     user = query.first()
 
     offerer = [
-        uo.offerer for uo in user.UserOfferers
-        if uo.offerer.validationToken == None \
-        and uo.validationToken == None \
+        uo.offerer
+        for uo in user.UserOfferers
+        if uo.offerer.validationToken == None
+        and uo.validationToken == None
         and all([v.isVirtual for v in uo.offerer.managedVenues])
     ][0]
 
-    return {
-        "offerer": get_offerer_helper(offerer),
-        "user": get_pro_helper(user)
-    }
+    return {"offerer": get_offerer_helper(offerer), "user": get_pro_helper(user)}
+
 
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_at_least_one_physical_venue():
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
@@ -38,5 +37,5 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
                     return {
                         "offerer": get_offerer_helper(uo.offerer),
                         "user": get_pro_helper(user),
-                        "venue": get_venue_helper(venue)
+                        "venue": get_venue_helper(venue),
                     }

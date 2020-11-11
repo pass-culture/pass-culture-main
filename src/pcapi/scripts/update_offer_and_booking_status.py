@@ -27,5 +27,5 @@ def update_offer_and_booking_status(booking_tokens_file_path: str):
 
 
 def _read_booking_tokens_from_file(file_path: str) -> [str]:
-    with open(file_path, mode='r', newline='\n') as file:
+    with open(file_path, mode="r", newline="\n") as file:
         return file.read().splitlines()

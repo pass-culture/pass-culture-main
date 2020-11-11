@@ -17,12 +17,12 @@ API_KEYS_VALUES = [
     "MAX98A9UTUVQEQ3MS9ZY2A5924CMBMZQ5EFM3AA4RUPYTUB99YFA4AF4RU6EJYXM",
     "894QN4UA7MFAFAS944XEF9799AHQDMVAXU5YV9AMZ48949TE7U6UKULQGUQAEM9A",
     "3A6M3YHM9UXQ84FA5QLMPE9MFEEAD4E9A49U7AXMMMFMFM3YKUPM7QW9X95U39RQ",
-    "7MGQLYGQAMZMVEK9GUSQNMEYL9Z4Q4LYBY3AJ989C924897EZQ6MFME4LEUMXQ3E"
+    "7MGQLYGQAMZMVEK9GUSQNMEYL9Z4Q4LYBY3AJ989C924897EZQ6MFME4LEUMXQ3E",
 ]
 
 
 def create_industrial_pro_users_api_keys(offerers_by_name):
-    logger.info('create_industrial_pro_users_api_keys')
+    logger.info("create_industrial_pro_users_api_keys")
     api_key = {}
     counter = 0
 
@@ -31,4 +31,4 @@ def create_industrial_pro_users_api_keys(offerers_by_name):
         counter += 1
 
     repository.save(*api_key.values())
-    logger.info('created {} offerers with api key'.format(len(offerers_by_name)))
+    logger.info("created {} offerers with api key".format(len(offerers_by_name)))

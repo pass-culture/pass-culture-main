@@ -7,25 +7,19 @@ from pcapi.repository import repository
 
 class BankInformationsSQLRepository(BankInformationsRepository):
     def find_by_offerer(self, offerer_id: str) -> BankInformations:
-        bank_informations_sql_entity = BankInformationsSQLEntity.query \
-            .filter_by(offererId=offerer_id) \
-            .one_or_none()
+        bank_informations_sql_entity = BankInformationsSQLEntity.query.filter_by(offererId=offerer_id).one_or_none()
 
         if bank_informations_sql_entity is not None:
             return bank_informations_domain_converter.to_domain(bank_informations_sql_entity)
 
     def find_by_venue(self, venue_id: str) -> BankInformations:
-        bank_informations_sql_entity = BankInformationsSQLEntity.query \
-            .filter_by(venueId=venue_id) \
-            .one_or_none()
+        bank_informations_sql_entity = BankInformationsSQLEntity.query.filter_by(venueId=venue_id).one_or_none()
 
         if bank_informations_sql_entity is not None:
             return bank_informations_domain_converter.to_domain(bank_informations_sql_entity)
 
     def get_by_application(self, application_id: str) -> BankInformations:
-        bank_informations_sql_entity = BankInformationsSQLEntity.query \
-            .filter_by(applicationId=application_id) \
-            .first()
+        bank_informations_sql_entity = BankInformationsSQLEntity.query.filter_by(applicationId=application_id).first()
 
         if bank_informations_sql_entity is not None:
             return bank_informations_domain_converter.to_domain(bank_informations_sql_entity)
@@ -36,9 +30,9 @@ class BankInformationsSQLRepository(BankInformationsRepository):
         return bank_informations
 
     def update_by_application_id(self, bank_informations: BankInformations) -> BankInformations:
-        bank_informations_sql_entity = BankInformationsSQLEntity.query \
-            .filter_by(applicationId=bank_informations.application_id) \
-            .one_or_none()
+        bank_informations_sql_entity = BankInformationsSQLEntity.query.filter_by(
+            applicationId=bank_informations.application_id
+        ).one_or_none()
 
         if bank_informations_sql_entity is not None:
             bank_informations_sql_entity.applicationId = bank_informations.application_id
@@ -53,9 +47,9 @@ class BankInformationsSQLRepository(BankInformationsRepository):
             return bank_informations
 
     def update_by_offerer_id(self, bank_informations: BankInformations) -> BankInformations:
-        bank_informations_sql_entity = BankInformationsSQLEntity.query \
-            .filter_by(offererId=bank_informations.offerer_id) \
-            .one_or_none()
+        bank_informations_sql_entity = BankInformationsSQLEntity.query.filter_by(
+            offererId=bank_informations.offerer_id
+        ).one_or_none()
 
         if bank_informations_sql_entity is not None:
             bank_informations_sql_entity.applicationId = bank_informations.application_id
@@ -69,9 +63,9 @@ class BankInformationsSQLRepository(BankInformationsRepository):
             return bank_informations
 
     def update_by_venue_id(self, bank_informations: BankInformations) -> BankInformations:
-        bank_informations_sql_entity = BankInformationsSQLEntity.query \
-            .filter_by(venueId=bank_informations.venue_id) \
-            .one_or_none()
+        bank_informations_sql_entity = BankInformationsSQLEntity.query.filter_by(
+            venueId=bank_informations.venue_id
+        ).one_or_none()
 
         if bank_informations_sql_entity is not None:
             bank_informations_sql_entity.applicationId = bank_informations.application_id
@@ -83,4 +77,3 @@ class BankInformationsSQLRepository(BankInformationsRepository):
 
             repository.save(bank_informations_sql_entity)
             return bank_informations
-

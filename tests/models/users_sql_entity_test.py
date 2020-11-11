@@ -60,8 +60,8 @@ class HasRightsTest:
     def test_user_has_no_editor_right_on_offerer_if_he_is_attached_but_not_validated_yet(self, app):
         # given
         offerer = create_offerer()
-        user = create_user(email='bobby@test.com', is_admin=False)
-        user_offerer = create_user_offerer(user, offerer, validation_token='AZEFRGTHRQFQ')
+        user = create_user(email="bobby@test.com", is_admin=False)
+        user_offerer = create_user_offerer(user, offerer, validation_token="AZEFRGTHRQFQ")
         repository.save(user_offerer)
 
         # when
@@ -280,11 +280,11 @@ class HasPhysicalVenuesTest:
         # given
         user = create_user()
         offerer = create_offerer()
-        offerer2 = create_offerer(siren='123456788')
+        offerer2 = create_offerer(siren="123456788")
         user_offerer = create_user_offerer(user, offerer)
         user_offerer2 = create_user_offerer(user, offerer2)
         offerer_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        offerer2_physical_venue = create_venue(offerer2, siret='12345678856734')
+        offerer2_physical_venue = create_venue(offerer2, siret="12345678856734")
         offerer2_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         repository.save(offerer_virtual_venue, offerer2_physical_venue, user_offerer, user_offerer2)
 
@@ -308,13 +308,15 @@ class nOffersTest:
         # given
         user = create_user()
         offerer = create_offerer()
-        offerer2 = create_offerer(siren='123456788')
+        offerer2 = create_offerer(siren="123456788")
         user_offerer = create_user_offerer(user, offerer)
         user_offerer2 = create_user_offerer(user, offerer2)
         offerer_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        offerer2_physical_venue = create_venue(offerer2, siret='12345678856734')
+        offerer2_physical_venue = create_venue(offerer2, siret="12345678856734")
         offerer2_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        offer = create_offer_with_thing_product(offerer_virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO, url='http://fake.url')
+        offer = create_offer_with_thing_product(
+            offerer_virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO, url="http://fake.url"
+        )
         offer2 = create_offer_with_thing_product(offerer2_physical_venue)
 
         repository.save(offer, offer2, user_offerer, user_offerer2)
@@ -353,26 +355,24 @@ class needsToSeeTutorialsTest:
 
 
 class DevEnvironmentPasswordHasherTest:
-
     def test_hash_password_uses_md5(self):
-        hashed = user_sql_entity.hash_password('secret')
-        assert hashed == b'5ebe2294ecd0e0f08eab7690d2a6ee69'
+        hashed = user_sql_entity.hash_password("secret")
+        assert hashed == b"5ebe2294ecd0e0f08eab7690d2a6ee69"
 
     def test_check_password(self):
-        hashed = user_sql_entity.hash_password('secret')
-        assert not user_sql_entity.check_password('wrong', hashed)
-        assert user_sql_entity.check_password('secret', hashed)
+        hashed = user_sql_entity.hash_password("secret")
+        assert not user_sql_entity.check_password("wrong", hashed)
+        assert user_sql_entity.check_password("secret", hashed)
 
 
-@patch('pcapi.models.user_sql_entity.IS_DEV', False)
+@patch("pcapi.models.user_sql_entity.IS_DEV", False)
 class ProdEnvironmentPasswordHasherTest:
-
     def test_hash_password_uses_bcrypt(self):
-        hashed = user_sql_entity.hash_password('secret')
-        assert hashed != 'secret'
-        assert hashed.startswith(b'$2b$')  # bcrypt prefix
+        hashed = user_sql_entity.hash_password("secret")
+        assert hashed != "secret"
+        assert hashed.startswith(b"$2b$")  # bcrypt prefix
 
     def test_check_password(self):
-        hashed = user_sql_entity.hash_password('secret')
-        assert not user_sql_entity.check_password('wrong', hashed)
-        assert user_sql_entity.check_password('secret', hashed)
+        hashed = user_sql_entity.hash_password("secret")
+        assert not user_sql_entity.check_password("wrong", hashed)
+        assert user_sql_entity.check_password("secret", hashed)

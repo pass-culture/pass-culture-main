@@ -14,8 +14,7 @@ class checkPayloadIsValidTest:
             check_payload_is_valid(payload)
 
         # then
-        assert error.value.errors['global'] == ['Données manquantes']
-
+        assert error.value.errors["global"] == ["Données manquantes"]
 
     def test_should_not_raise_payload_error(self):
         # given

@@ -12,37 +12,31 @@ from pcapi.utils.inflect_engine import inflect_engine
 
 
 def get_storage_base_url():
-    return os.environ.get('OBJECT_STORAGE_URL')
+    return os.environ.get("OBJECT_STORAGE_URL")
 
 
 def swift_con():
-    user = os.environ.get('OVH_USER')
-    key = os.environ.get('OVH_PASSWORD')
-    tenant_name = os.environ.get('OVH_TENANT_NAME')
-    region_name = os.environ.get('OVH_REGION_NAME', 'GRA')
+    user = os.environ.get("OVH_USER")
+    key = os.environ.get("OVH_PASSWORD")
+    tenant_name = os.environ.get("OVH_TENANT_NAME")
+    region_name = os.environ.get("OVH_REGION_NAME", "GRA")
 
-    auth_url = 'https://auth.cloud.ovh.net/v3/'
-    options = {
-        'region_name': region_name
-    }
-    auth_version = '3'
-    return swiftclient.Connection(user=user,
-                                  key=key,
-                                  authurl=auth_url,
-                                  os_options=options,
-                                  tenant_name=tenant_name,
-                                  auth_version=auth_version)
+    auth_url = "https://auth.cloud.ovh.net/v3/"
+    options = {"region_name": region_name}
+    auth_version = "3"
+    return swiftclient.Connection(
+        user=user, key=key, authurl=auth_url, os_options=options, tenant_name=tenant_name, auth_version=auth_version
+    )
 
 
-STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__))) \
-              / '..' / 'static' / 'object_store_data'
+STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__))) / ".." / "static" / "object_store_data"
 
 
 def local_dir(bucket, id):
-    if '/' in id:
+    if "/" in id:
         idFolders = PurePath(id).parent
     else:
-        idFolders = ''
+        idFolders = ""
     return STORAGE_DIR / bucket / idFolders
 
 
@@ -66,14 +60,9 @@ def store_public_object(bucket, id, blob, content_type, symlink_path=None):
         new_file = open(file_local_path, "wb")
         new_file.write(blob)
     else:
-        container_name = os.environ.get('OVH_BUCKET_NAME')
-        storage_path = 'thumbs/' + id
-        swift_con().put_object(
-            container_name,
-            storage_path,
-            contents=blob,
-            content_type=content_type
-        )
+        container_name = os.environ.get("OVH_BUCKET_NAME")
+        storage_path = "thumbs/" + id
+        swift_con().put_object(container_name, storage_path, contents=blob, content_type=content_type)
 
 
 def delete_public_object(bucket, id):
@@ -90,7 +79,9 @@ def get_public_object_date(bucket, id):
 
 
 def build_thumb_path(pc_object: Model, index: int) -> str:
-    return inflect_engine.plural(pc_object.__class__.__tablename__.lower()) \
-           + "/" \
-           + humanize(pc_object.id) \
-           + (('_' + str(index)) if index > 0 else '')
+    return (
+        inflect_engine.plural(pc_object.__class__.__tablename__.lower())
+        + "/"
+        + humanize(pc_object.id)
+        + (("_" + str(index)) if index > 0 else "")
+    )

@@ -18,7 +18,7 @@ def serialize(value, column=None):
 
 @serialize.register(int)
 def _(value, column=None):
-    if column is not None and isinstance(column.type, Integer) and column.key.lower().endswith('id'):
+    if column is not None and isinstance(column.type, Integer) and column.key.lower().endswith("id"):
         return humanize(value)
 
     return value
@@ -41,7 +41,7 @@ def _(value, column=None):
 
 @serialize.register(DateTimeRange)
 def _(value, column=None):
-    return {'start': value.lower, 'end': value.upper}
+    return {"start": value.lower, "end": value.upper}
 
 
 @serialize.register(bytes)

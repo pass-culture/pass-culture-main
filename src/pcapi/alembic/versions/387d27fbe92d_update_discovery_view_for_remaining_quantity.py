@@ -10,14 +10,15 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '387d27fbe92d'
-down_revision = '48440c1d122a'
+revision = "387d27fbe92d"
+down_revision = "48440c1d122a"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.execute("""
+    op.execute(
+        """
             CREATE OR REPLACE FUNCTION offer_has_at_least_one_bookable_stock(offer_id BIGINT)
             RETURNS SETOF INTEGER AS
             $body$
@@ -41,11 +42,13 @@ def upgrade():
             END
             $body$
             LANGUAGE plpgsql;
-        """)
+        """
+    )
 
 
 def downgrade():
-    op.execute("""
+    op.execute(
+        """
             CREATE OR REPLACE FUNCTION offer_has_at_least_one_bookable_stock(offer_id BIGINT)
             RETURNS SETOF INTEGER AS
             $body$
@@ -72,4 +75,5 @@ def downgrade():
             END
             $body$
             LANGUAGE plpgsql;
-        """)
+        """
+    )

@@ -11,17 +11,12 @@ from pcapi.models.pc_object import PcObject
 
 
 class EmailStatus(enum.Enum):
-    SENT = 'SENT'
-    ERROR = 'ERROR'
+    SENT = "SENT"
+    ERROR = "ERROR"
 
 
 class Email(PcObject, Model):
-    content = Column(JSON,
-                     nullable=False)
-    status = Column(Enum(EmailStatus),
-                    nullable=False,
-                    index=True)
+    content = Column(JSON, nullable=False)
+    status = Column(Enum(EmailStatus), nullable=False, index=True)
 
-    datetime = Column(DateTime,
-                      nullable=False,
-                      default=datetime.utcnow)
+    datetime = Column(DateTime, nullable=False, default=datetime.utcnow)

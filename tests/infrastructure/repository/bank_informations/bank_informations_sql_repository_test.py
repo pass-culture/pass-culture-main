@@ -27,12 +27,10 @@ class BankInformationsSQLRepositoryTest:
         bank_informations = create_bank_information(offerer=offerer)
         repository.save(bank_informations)
 
-        expected_bank_informations = bank_informations_domain_converter.to_domain(
-            bank_informations)
+        expected_bank_informations = bank_informations_domain_converter.to_domain(bank_informations)
 
         # when
-        bank_informations = self.bank_informations_sql_repository.find_by_offerer(
-            offerer_id=offerer.id)
+        bank_informations = self.bank_informations_sql_repository.find_by_offerer(offerer_id=offerer.id)
 
         # then
         assert bank_informations.application_id == expected_bank_informations.application_id
@@ -49,8 +47,7 @@ class BankInformationsSQLRepositoryTest:
         repository.save(bank_informations)
 
         # when
-        bank_informations = self.bank_informations_sql_repository.find_by_offerer(
-            offerer_id=0)
+        bank_informations = self.bank_informations_sql_repository.find_by_offerer(offerer_id=0)
 
         # then
         assert bank_informations is None
@@ -63,12 +60,10 @@ class BankInformationsSQLRepositoryTest:
         bank_informations = create_bank_information(venue=venue)
         repository.save(bank_informations)
 
-        expected_bank_informations = bank_informations_domain_converter.to_domain(
-            bank_informations)
+        expected_bank_informations = bank_informations_domain_converter.to_domain(bank_informations)
 
         # when
-        bank_informations = self.bank_informations_sql_repository.find_by_venue(
-            venue_id=venue.id)
+        bank_informations = self.bank_informations_sql_repository.find_by_venue(venue_id=venue.id)
 
         # then
         assert bank_informations.application_id == expected_bank_informations.application_id
@@ -85,8 +80,7 @@ class BankInformationsSQLRepositoryTest:
         repository.save(bank_informations)
 
         # when
-        bank_informations = self.bank_informations_sql_repository.find_by_venue(
-            venue_id=0)
+        bank_informations = self.bank_informations_sql_repository.find_by_venue(venue_id=0)
 
         # then
         assert bank_informations is None
@@ -95,16 +89,13 @@ class BankInformationsSQLRepositoryTest:
     def test_returns_bank_informations_when_there_is_bank_informations_associated_with_this_application_id(self, app):
         # given
         offerer = create_offerer()
-        bank_informations = create_bank_information(
-            offerer=offerer, application_id=2)
+        bank_informations = create_bank_information(offerer=offerer, application_id=2)
         repository.save(bank_informations)
 
-        expected_bank_informations = bank_informations_domain_converter.to_domain(
-            bank_informations)
+        expected_bank_informations = bank_informations_domain_converter.to_domain(bank_informations)
 
         # when
-        bank_informations = self.bank_informations_sql_repository.get_by_application(
-            application_id=2)
+        bank_informations = self.bank_informations_sql_repository.get_by_application(application_id=2)
 
         # then
         assert bank_informations.application_id == expected_bank_informations.application_id
@@ -117,17 +108,14 @@ class BankInformationsSQLRepositoryTest:
     def test_returns_none_when_there_is_no_bank_informations_associated_with_this_application_id(self, app):
         # given
         offerer = create_offerer()
-        bank_informations = create_bank_information(
-            offerer=offerer, application_id=2)
+        bank_informations = create_bank_information(offerer=offerer, application_id=2)
         repository.save(bank_informations)
 
         # when
-        bank_informations = self.bank_informations_sql_repository.get_by_application(
-            application_id=1)
+        bank_informations = self.bank_informations_sql_repository.get_by_application(application_id=1)
 
         # then
         assert bank_informations is None
-
 
     @pytest.mark.usefixtures("db_session")
     def test_should_create_bank_informations_on_save_when_bank_informations_does_not_exist(self, app):
@@ -138,13 +126,12 @@ class BankInformationsSQLRepositoryTest:
             offerer_id=offerer.id,
             status=BankInformationStatus.ACCEPTED,
             application_id=8,
-            iban='FR7630006000011234567890189',
-            bic='QSDFGH8Z555'
+            iban="FR7630006000011234567890189",
+            bic="QSDFGH8Z555",
         )
 
         # when
-        bank_informations_saved = self.bank_informations_sql_repository.save(
-            bank_informations_to_save)
+        bank_informations_saved = self.bank_informations_sql_repository.save(bank_informations_to_save)
 
         # then
         assert BankInformationsSQLEntity.query.count() == 1
@@ -161,12 +148,10 @@ class BankInformationsSQLRepositoryTest:
         assert bank_informations_saved.iban == bank_informations_to_save.iban
         assert bank_informations_saved.bic == bank_informations_to_save.bic
 
-
     @pytest.mark.usefixtures("db_session")
     def test_should_not_create_bank_informations_on_save_when_no_offerer_associated_in_database(self, app):
         # given
-        bank_informations_to_save = BankInformations(
-            offerer_id= 9 ,status='ACCEPTED', application_id=8)
+        bank_informations_to_save = BankInformations(offerer_id=9, status="ACCEPTED", application_id=8)
 
         # when
         with pytest.raises(ApiErrors) as error:
@@ -174,16 +159,19 @@ class BankInformationsSQLRepositoryTest:
 
         # then
         assert BankInformationsSQLEntity.query.count() == 0
-        assert error.value.errors['offererId'] == ['Aucun objet ne correspond \u00e0 cet identifiant dans notre base de donn\u00e9es']
+        assert error.value.errors["offererId"] == [
+            "Aucun objet ne correspond \u00e0 cet identifiant dans notre base de donn\u00e9es"
+        ]
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_not_create_bank_informations_on_save_when_bank_infos_is_already_associated_to_an_offerer_in_database(self, app):
+    def test_should_not_create_bank_informations_on_save_when_bank_infos_is_already_associated_to_an_offerer_in_database(
+        self, app
+    ):
         # given
         offerer = create_offerer()
         bank_informations = create_bank_information(offerer=offerer)
         repository.save(bank_informations)
-        bank_informations_to_save = BankInformations(
-            offerer_id=offerer.id, status='ACCEPTED', application_id=8)
+        bank_informations_to_save = BankInformations(offerer_id=offerer.id, status="ACCEPTED", application_id=8)
 
         # when
         with pytest.raises(ApiErrors) as error:
@@ -191,27 +179,30 @@ class BankInformationsSQLRepositoryTest:
 
         # then
         assert BankInformationsSQLEntity.query.count() == 1
-        assert error.value.errors['"offererId"'] == ['Une entrée avec cet identifiant existe déjà dans notre base de données']
+        assert error.value.errors['"offererId"'] == [
+            "Une entrée avec cet identifiant existe déjà dans notre base de données"
+        ]
 
     @pytest.mark.usefixtures("db_session")
     def test_should_update_bank_informations_when_bank_informations_already_exist_for_offerer(self, app):
         # given
         offerer = create_offerer()
         bank_informations_sql = create_bank_information(
-            offerer=offerer, application_id=9, status=BankInformationStatus.DRAFT, iban=None, bic=None)
+            offerer=offerer, application_id=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
+        )
         repository.save(bank_informations_sql)
 
         bank_informations_to_save = BankInformations(
             status=BankInformationStatus.ACCEPTED,
             application_id=9,
-            iban='FR7630006000011234567890189',
-            bic='QSDFGH8Z555',
+            iban="FR7630006000011234567890189",
+            bic="QSDFGH8Z555",
             offerer_id=offerer.id,
-            date_modified=datetime(2018,2,3))
+            date_modified=datetime(2018, 2, 3),
+        )
 
         # when
-        bank_informations_saved = self.bank_informations_sql_repository.update_by_offerer_id(
-            bank_informations_to_save)
+        bank_informations_saved = self.bank_informations_sql_repository.update_by_offerer_id(bank_informations_to_save)
 
         # then
         assert BankInformationsSQLEntity.query.count() == 1
@@ -234,12 +225,15 @@ class BankInformationsSQLRepositoryTest:
         bank_informations_to_save = BankInformations(
             status=BankInformationStatus.ACCEPTED,
             application_id=9,
-            iban='FR7630006000011234567890189',
-            bic='QSDFGH8Z555',
-            offerer_id=1)
+            iban="FR7630006000011234567890189",
+            bic="QSDFGH8Z555",
+            offerer_id=1,
+        )
 
         # when
-        bank_informations_updated = self.bank_informations_sql_repository.update_by_offerer_id(bank_informations_to_save)
+        bank_informations_updated = self.bank_informations_sql_repository.update_by_offerer_id(
+            bank_informations_to_save
+        )
 
         # then
         assert BankInformationsSQLEntity.query.count() == 0
@@ -250,20 +244,23 @@ class BankInformationsSQLRepositoryTest:
         # given
         offerer = create_offerer()
         bank_informations_sql = create_bank_information(
-            offerer=offerer, application_id=9, status=BankInformationStatus.DRAFT, iban=None, bic=None)
+            offerer=offerer, application_id=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
+        )
         repository.save(bank_informations_sql)
 
         bank_informations_to_save = BankInformations(
             status=BankInformationStatus.ACCEPTED,
             application_id=9,
-            iban='FR7630006000011234567890189',
-            bic='QSDFGH8Z555',
+            iban="FR7630006000011234567890189",
+            bic="QSDFGH8Z555",
             offerer_id=offerer.id,
-            date_modified=datetime(2018,2,3))
+            date_modified=datetime(2018, 2, 3),
+        )
 
         # when
         bank_informations_saved = self.bank_informations_sql_repository.update_by_application_id(
-            bank_informations_to_save)
+            bank_informations_to_save
+        )
 
         # then
         assert BankInformationsSQLEntity.query.count() == 1
@@ -286,12 +283,15 @@ class BankInformationsSQLRepositoryTest:
         bank_informations_to_save = BankInformations(
             status=BankInformationStatus.ACCEPTED,
             application_id=9,
-            iban='FR7630006000011234567890189',
-            bic='QSDFGH8Z555',
-            offerer_id=1)
+            iban="FR7630006000011234567890189",
+            bic="QSDFGH8Z555",
+            offerer_id=1,
+        )
 
         # when
-        bank_informations_updated = self.bank_informations_sql_repository.update_by_application_id(bank_informations_to_save)
+        bank_informations_updated = self.bank_informations_sql_repository.update_by_application_id(
+            bank_informations_to_save
+        )
 
         # then
         assert BankInformationsSQLEntity.query.count() == 0
@@ -303,20 +303,21 @@ class BankInformationsSQLRepositoryTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         bank_informations_sql = create_bank_information(
-            venue=venue, application_id=9, status=BankInformationStatus.DRAFT, iban=None, bic=None)
+            venue=venue, application_id=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
+        )
         repository.save(bank_informations_sql)
 
         bank_informations_to_save = BankInformations(
             status=BankInformationStatus.ACCEPTED,
             application_id=9,
-            iban='FR7630006000011234567890189',
-            bic='QSDFGH8Z555',
+            iban="FR7630006000011234567890189",
+            bic="QSDFGH8Z555",
             venue_id=venue.id,
-            date_modified=datetime(2018,2,3))
+            date_modified=datetime(2018, 2, 3),
+        )
 
         # when
-        bank_informations_saved = self.bank_informations_sql_repository.update_by_venue_id(
-            bank_informations_to_save)
+        bank_informations_saved = self.bank_informations_sql_repository.update_by_venue_id(bank_informations_to_save)
 
         # then
         assert BankInformationsSQLEntity.query.count() == 1
@@ -339,9 +340,10 @@ class BankInformationsSQLRepositoryTest:
         bank_informations_to_save = BankInformations(
             status=BankInformationStatus.ACCEPTED,
             application_id=9,
-            iban='FR7630006000011234567890189',
-            bic='QSDFGH8Z555',
-            venue_id=1)
+            iban="FR7630006000011234567890189",
+            bic="QSDFGH8Z555",
+            venue_id=1,
+        )
 
         # when
         bank_informations_updated = self.bank_informations_sql_repository.update_by_venue_id(bank_informations_to_save)

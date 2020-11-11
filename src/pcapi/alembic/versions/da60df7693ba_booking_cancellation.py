@@ -9,15 +9,15 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = 'da60df7693ba'
-down_revision = '6d1eec337686'
+revision = "da60df7693ba"
+down_revision = "6d1eec337686"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.execute(
-    """
+        """
       BEGIN TRANSACTION;
         ALTER TABLE "booking" ADD COLUMN "isCancelled" BOOLEAN DEFAULT False;
         CREATE OR REPLACE FUNCTION check_booking()
@@ -41,7 +41,8 @@ def upgrade():
         ON booking
         FOR EACH ROW EXECUTE PROCEDURE check_booking();
       COMMIT;
-      """)
+      """
+    )
 
 
 def downgrade():

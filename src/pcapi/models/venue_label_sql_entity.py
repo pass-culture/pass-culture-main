@@ -7,8 +7,8 @@ from pcapi.models.db import Model
 
 
 class VenueLabelSQLEntity(PcObject, Model):
-    __tablename__ = 'venue_label'
+    __tablename__ = "venue_label"
 
     label = Column(String(100), nullable=False)
 
-    venue = relationship('VenueSQLEntity')
+    venue = relationship("VenueSQLEntity")

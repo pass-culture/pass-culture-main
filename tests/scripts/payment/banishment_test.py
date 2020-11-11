@@ -16,7 +16,7 @@ from pcapi.scripts.payment.banishment import parse_raw_payments_ids
 class ParseRawPaymentIdsTest:
     def test_returns_a_list_of_integers(self):
         # given
-        raw_ids = '111,222,333'
+        raw_ids = "111,222,333"
 
         # when
         ids = parse_raw_payments_ids(raw_ids)
@@ -26,7 +26,7 @@ class ParseRawPaymentIdsTest:
 
     def test_raises_an_exception_if_integers_are_not_separated_by_commas(self):
         # given
-        raw_ids = '111-222-333'
+        raw_ids = "111-222-333"
 
         # when
         with pytest.raises(ValueError):
@@ -42,9 +42,9 @@ class DoBanPaymentsTest:
         deposit = create_deposit(user)
         offerer = booking.stock.offer.venue.managingOfferer
 
-        transaction1 = create_payment_message(name='XML1')
-        transaction2 = create_payment_message(name='XML2')
-        transaction3 = create_payment_message(name='XML3')
+        transaction1 = create_payment_message(name="XML1")
+        transaction2 = create_payment_message(name="XML2")
+        transaction3 = create_payment_message(name="XML3")
 
         uuid1, uuid2, uuid3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
 
@@ -58,7 +58,7 @@ class DoBanPaymentsTest:
         repository.save(deposit, payment1, payment2, payment3, payment4, payment5, payment6)
 
         # when
-        do_ban_payments('XML1', [payment1.id, payment5.id])
+        do_ban_payments("XML1", [payment1.id, payment5.id])
 
         # then
         assert payment1.currentStatus.status == TransactionStatus.BANNED
@@ -76,8 +76,8 @@ class DoBanPaymentsTest:
         deposit = create_deposit(user)
         offerer = booking.stock.offer.venue.managingOfferer
 
-        transaction1 = create_payment_message(name='XML1')
-        transaction2 = create_payment_message(name='XML2')
+        transaction1 = create_payment_message(name="XML1")
+        transaction2 = create_payment_message(name="XML2")
 
         uuid1, uuid2 = uuid.uuid4(), uuid.uuid4()
 
@@ -87,7 +87,7 @@ class DoBanPaymentsTest:
         repository.save(deposit, payment1, payment2)
 
         # when
-        do_ban_payments('XML1', [payment1.id, 123456])
+        do_ban_payments("XML1", [payment1.id, 123456])
 
         # then
         assert payment1.currentStatus.status == TransactionStatus.PENDING

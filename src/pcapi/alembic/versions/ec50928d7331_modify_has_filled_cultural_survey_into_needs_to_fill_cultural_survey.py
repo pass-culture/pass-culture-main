@@ -10,34 +10,34 @@ from sqlalchemy.sql import expression
 
 
 # revision identifiers, used by Alembic.
-revision = 'ec50928d7331'
-down_revision = '0df577e35e9f'
+revision = "ec50928d7331"
+down_revision = "0df577e35e9f"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.alter_column(
-        'user',
-        'hasFilledCulturalSurvey',
-        new_column_name='needsToFillCulturalSurvey',
-        server_default=expression.true()
+        "user", "hasFilledCulturalSurvey", new_column_name="needsToFillCulturalSurvey", server_default=expression.true()
     )
-    op.execute("""
+    op.execute(
+        """
         UPDATE "user"
         SET "needsToFillCulturalSurvey" = False
-        """)
-
+        """
+    )
 
 
 def downgrade():
     op.alter_column(
-        'user',
-        'needsToFillCulturalSurvey',
-        new_column_name='hasFilledCulturalSurvey',
-        server_default=expression.false()
+        "user",
+        "needsToFillCulturalSurvey",
+        new_column_name="hasFilledCulturalSurvey",
+        server_default=expression.false(),
     )
-    op.execute("""
+    op.execute(
+        """
         UPDATE "user"
         SET "hasFilledCulturalSurvey" = True
-        """)
+        """
+    )

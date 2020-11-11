@@ -7,10 +7,8 @@ class IsAlgoliaIndexingTest:
     def when_changes_on_name_are_triggered(self):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='old names')
-        payload = {
-            'name': 'my new name'
-        }
+        venue = create_venue(offerer, name="old names")
+        payload = {"name": "my new name"}
 
         # When
         result = is_algolia_indexing(venue, payload)
@@ -21,10 +19,8 @@ class IsAlgoliaIndexingTest:
     def when_changes_on_public_name_are_triggered(self):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, public_name='old name')
-        payload = {
-            'publicName': 'my new name'
-        }
+        venue = create_venue(offerer, public_name="old name")
+        payload = {"publicName": "my new name"}
 
         # When
         result = is_algolia_indexing(venue, payload)
@@ -35,10 +31,8 @@ class IsAlgoliaIndexingTest:
     def when_changes_on_city_are_triggered(self):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, city='old City')
-        payload = {
-            'city': 'My new city'
-        }
+        venue = create_venue(offerer, city="old City")
+        payload = {"city": "My new city"}
 
         # When
         result = is_algolia_indexing(venue, payload)
@@ -50,10 +44,7 @@ class IsAlgoliaIndexingTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        payload = {
-            'siret': '7896542311234',
-            'banana': None
-        }
+        payload = {"siret": "7896542311234", "banana": None}
 
         # When
         result = is_algolia_indexing(venue, payload)
@@ -64,14 +55,11 @@ class IsAlgoliaIndexingTest:
     def when_changes_in_payload_are_same_as_previous_it_should_return_false(self):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, city='old City')
-        payload = {
-            'city': 'old City'
-        }
+        venue = create_venue(offerer, city="old City")
+        payload = {"city": "old City"}
 
         # When
         result = is_algolia_indexing(venue, payload)
 
         # Then
         assert result == False
-

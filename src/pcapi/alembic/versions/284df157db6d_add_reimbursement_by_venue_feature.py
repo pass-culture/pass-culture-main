@@ -12,46 +12,45 @@ import sqlalchemy as sa
 
 
 class FeatureToggle(Enum):
-    DEGRESSIVE_REIMBURSEMENT_RATE = 'Permettre le remboursement avec un barème dégressif par lieu'
+    DEGRESSIVE_REIMBURSEMENT_RATE = "Permettre le remboursement avec un barème dégressif par lieu"
 
 
 # revision identifiers, used by Alembic.
-revision = '284df157db6d'
-down_revision = '883df84383c1'
+revision = "284df157db6d"
+down_revision = "883df84383c1"
 branch_labels = None
 depends_on = None
 
 
-previous_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER')
-new_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE')
+previous_values = ("WEBAPP_SIGNUP", "FAVORITE_OFFER")
+new_values = ("WEBAPP_SIGNUP", "FAVORITE_OFFER", "DEGRESSIVE_REIMBURSEMENT_RATE")
 
-previous_enum = sa.Enum(*previous_values, name='featuretoggle')
-new_enum = sa.Enum(*new_values, name='featuretoggle')
-temporary_enum = sa.Enum(*new_values, name='tmp_featuretoggle')
+previous_enum = sa.Enum(*previous_values, name="featuretoggle")
+new_enum = sa.Enum(*new_values, name="featuretoggle")
+temporary_enum = sa.Enum(*new_values, name="tmp_featuretoggle")
 
 
 def upgrade():
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle'
-               ' USING name::text::tmp_featuretoggle')
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle" " USING name::text::tmp_featuretoggle")
     previous_enum.drop(op.get_bind(), checkfirst=False)
     new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle'
-               ' USING name::text::featuretoggle')
-    op.execute("""
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle" " USING name::text::featuretoggle")
+    op.execute(
+        """
         INSERT INTO feature (name, description, "isActive")
         VALUES ('%s', '%s', FALSE);
-        """ % (FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE.name, FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE.value))
+        """
+        % (FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE.name, FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE.value)
+    )
     temporary_enum.drop(op.get_bind(), checkfirst=False)
 
 
 def downgrade():
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle'
-               ' USING name::text::tmp_featuretoggle')
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle" " USING name::text::tmp_featuretoggle")
     new_enum.drop(op.get_bind(), checkfirst=False)
     previous_enum.create(op.get_bind(), checkfirst=False)
     op.execute("DELETE FROM feature WHERE name = 'DEGRESSIVE_REIMBURSEMENT_RATE'")
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle'
-               ' USING name::text::featuretoggle')
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle" " USING name::text::featuretoggle")
     temporary_enum.drop(op.get_bind(), checkfirst=False)

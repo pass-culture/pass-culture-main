@@ -15,4 +15,4 @@ class Criterion(PcObject, Model):
     scoreDelta = Column(Integer, nullable=False)
 
     def __repr__(self):
-        return '%s' % self.name
+        return "%s" % self.name

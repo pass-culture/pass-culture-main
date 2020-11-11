@@ -18,25 +18,23 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(BankInformation)
-    query = query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id).join(Offer).filter(
-        (Offer.type.in_([str(event_type) for event_type in EventType])) & \
-        (~Offer.stocks.any())
+    query = (
+        query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id)
+        .join(Offer)
+        .filter((Offer.type.in_([str(event_type) for event_type in EventType])) & (~Offer.stocks.any()))
     )
     user = query.first()
 
     for uo in user.UserOfferers:
-        if uo.validationToken == None \
-                and uo.offerer.validationToken == None \
-                and uo.offerer.iban:
+        if uo.validationToken == None and uo.offerer.validationToken == None and uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if offer.isEvent \
-                            and len(offer.stocks) == 0:
+                    if offer.isEvent and len(offer.stocks) == 0:
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
                             "user": get_pro_helper(user),
-                            "venue": get_venue_helper(venue)
+                            "venue": get_venue_helper(venue),
                         }
 
 
@@ -44,20 +42,19 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(BankInformation)
-    query = query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id) \
-        .join(Offer) \
-        .join(StockSQLEntity) \
+    query = (
+        query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id)
+        .join(Offer)
+        .join(StockSQLEntity)
         .filter((StockSQLEntity.beginningDatetime != None))
+    )
     user = query.first()
 
     for uo in user.UserOfferers:
-        if uo.validationToken == None \
-                and uo.offerer.validationToken == None \
-                and uo.offerer.iban:
+        if uo.validationToken == None and uo.offerer.validationToken == None and uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if offer.isEvent \
-                            and offer.stocks:
+                    if offer.isEvent and offer.stocks:
                         for stock in offer.stocks:
                             if stock.beginningDatetime:
                                 return {
@@ -65,7 +62,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                                     "offerer": get_offerer_helper(uo.offerer),
                                     "stock": get_stock_helper(stock),
                                     "user": get_pro_helper(user),
-                                    "venue": get_venue_helper(venue)
+                                    "venue": get_venue_helper(venue),
                                 }
 
 
@@ -73,15 +70,11 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(BankInformation)
-    query = query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id) \
-        .join(Offer) \
-        .join(Offer.stocks)
+    query = query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id).join(Offer).join(Offer.stocks)
     user = query.first()
 
     for uo in user.UserOfferers:
-        if uo.validationToken == None \
-                and uo.offerer.validationToken == None \
-                and uo.offerer.iban:
+        if uo.validationToken == None and uo.offerer.validationToken == None and uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
                     if offer.isThing and offer.stocks and offer.isEditable:
@@ -90,7 +83,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                             "offerer": get_offerer_helper(uo.offerer),
                             "stock": get_stock_helper(offer.stocks[0]),
                             "user": get_pro_helper(user),
-                            "venue": get_venue_helper(venue)
+                            "venue": get_venue_helper(venue),
                         }
 
 
@@ -98,16 +91,15 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.filter(Offerer.bankInformation == None)
-    query = query.join(VenueSQLEntity).filter(VenueSQLEntity.offers.any(
-        (Offer.type.in_([str(thing_type) for thing_type in ThingType])) & \
-        (~Offer.stocks.any())
-    ))
+    query = query.join(VenueSQLEntity).filter(
+        VenueSQLEntity.offers.any(
+            (Offer.type.in_([str(thing_type) for thing_type in ThingType])) & (~Offer.stocks.any())
+        )
+    )
     user = query.first()
 
     for uo in user.UserOfferers:
-        if uo.validationToken == None \
-                and uo.offerer.validationToken == None \
-                and not uo.offerer.iban:
+        if uo.validationToken == None and uo.offerer.validationToken == None and not uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
                     if offer.isThing and len(offer.stocks) == 0 and offer.isEditable:
@@ -115,7 +107,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
                             "user": get_pro_helper(user),
-                            "venue": get_venue_helper(venue)
+                            "venue": get_venue_helper(venue),
                         }
 
 
@@ -128,9 +120,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
     user = query.first()
 
     for uo in user.UserOfferers:
-        if uo.validationToken == None \
-                and uo.offerer.validationToken == None \
-                and not uo.offerer.iban:
+        if uo.validationToken == None and uo.offerer.validationToken == None and not uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 if not venue.isVirtual:
                     for offer in venue.offers:
@@ -139,5 +129,5 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
                                 "offer": get_offer_helper(offer),
                                 "offerer": get_offerer_helper(uo.offerer),
                                 "user": get_pro_helper(user),
-                                "venue": get_venue_helper(venue)
+                                "venue": get_venue_helper(venue),
                             }

@@ -10,15 +10,16 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5bccb7eb3d68'
-down_revision = '85af82acac13'
+revision = "5bccb7eb3d68"
+down_revision = "85af82acac13"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.add_column('booking', sa.Column('cancellationDate', sa.DateTime, nullable=True))
-    op.execute("""
+    op.add_column("booking", sa.Column("cancellationDate", sa.DateTime, nullable=True))
+    op.execute(
+        """
         BEGIN TRANSACTION;
             CREATE OR REPLACE FUNCTION save_cancellation_date()
             RETURNS TRIGGER AS $$
@@ -39,14 +40,17 @@ def upgrade():
             FOR EACH ROW
             EXECUTE PROCEDURE save_cancellation_date();
         COMMIT;
-    """)
+    """
+    )
 
 
 def downgrade():
-    op.drop_column('booking', 'cancellationDate')
-    op.execute("""
+    op.drop_column("booking", "cancellationDate")
+    op.execute(
+        """
         BEGIN TRANSACTION;
             DROP TRIGGER IF EXISTS stock_update_cancellation_date ON booking;
             DROP FUNCTION IF EXISTS save_cancellation_date;
         COMMIT;
-    """)
+    """
+    )

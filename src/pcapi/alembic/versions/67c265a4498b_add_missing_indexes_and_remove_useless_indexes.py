@@ -9,15 +9,15 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = '67c265a4498b'
-down_revision = '52400a8d7e49'
+revision = "67c265a4498b"
+down_revision = "52400a8d7e49"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.execute(
-        '''
+        """
         DROP INDEX IF EXISTS "idx_beneficiary_import_status_authorId";
         DROP INDEX IF EXISTS "idx_offer_criterion_criterionId";
         DROP INDEX IF EXISTS "ix_payment_transactionId";
@@ -33,13 +33,13 @@ def upgrade():
 
         CREATE INDEX IF NOT EXISTS "idx_provider_name" ON provider ("name");
         CREATE INDEX IF NOT EXISTS "idx_venue_provider_providerId" ON venue_provider ("providerId");
-        '''
+        """
     )
 
 
 def downgrade():
     op.execute(
-        '''
+        """
         CREATE INDEX IF NOT EXISTS "idx_beneficiary_import_status_authorId" ON beneficiary_import_status ("authorId");
         CREATE INDEX IF NOT EXISTS "idx_offer_criterion_criterionId" ON offer_criterion ("criterionId");
         CREATE INDEX IF NOT EXISTS "ix_payment_transactionId" ON payment ("paymentMessageId");
@@ -55,5 +55,5 @@ def downgrade():
 
         DROP INDEX IF EXISTS "idx_provider_name";
         DROP INDEX IF EXISTS "idx_venue_provider_providerId";
-        '''
+        """
     )

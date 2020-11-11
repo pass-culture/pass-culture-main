@@ -9,15 +9,15 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = 'e2960d28528f'
-down_revision = '0e764b59ccbc'
+revision = "e2960d28528f"
+down_revision = "0e764b59ccbc"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.execute(
-      'BEGIN TRANSACTION;'
+        "BEGIN TRANSACTION;"
         'DROP TABLE IF EXISTS "stock";'  # automatically created by SQLAlchemy
         'ALTER TABLE "offer" RENAME TO "stock";'
         'ALTER SEQUENCE "offer_id_seq" RENAME TO "stock_id_seq";'
@@ -29,7 +29,6 @@ def upgrade():
         'ALTER TABLE "stock" RENAME CONSTRAINT "offer_eventOccurrenceId_fkey" TO "stock_eventOccurrenceId_fkey";'
         'ALTER TABLE "stock" RENAME CONSTRAINT "check_offer_has_event_occurrence_or_occasion" TO "check_stock_has_event_occurrence_or_offer";'
         'ALTER INDEX "ix_offer_occasionId" RENAME TO "ix_stock_offerId";'
-
         'ALTER TABLE "occasion" RENAME TO "offer";'
         'ALTER SEQUENCE "occasion_id_seq" RENAME TO "offer_id_seq";'
         'ALTER TABLE "offer" RENAME CONSTRAINT "occasion_pkey" TO "offer_pkey";'
@@ -39,14 +38,12 @@ def upgrade():
         'ALTER TABLE "offer" RENAME CONSTRAINT "occasion_venueId_fkey" TO "offer_venueId_fkey";'
         'ALTER TABLE "offer" RENAME CONSTRAINT "occasion_idAtProviders_key" TO "offer_idAtProviders_key";'
         'ALTER TABLE "offer" RENAME CONSTRAINT "occasion_thingId_fkey" TO "offer_thingId_fkey";'
-
         'ALTER INDEX "ix_booking_offerId" RENAME TO "ix_booking_stockId";'
         'ALTER INDEX "ix_event_occurrence_occasionId" RENAME TO "ix_event_occurrence_offerId";'
         'ALTER INDEX "ix_mediation_occasionId" RENAME TO "ix_mediation_offerId";'
         'ALTER INDEX "ix_occasion_venueId" RENAME TO "ix_offer_venueId";'
         'ALTER INDEX "ix_offer_available" RENAME TO "ix_stock_available";'
         'ALTER INDEX "ix_offer_eventOccurrenceId" RENAME TO "ix_stock_eventOccurrenceId";'
-
         'ALTER TABLE "booking" RENAME COLUMN "offerId" TO "stockId";'
         'ALTER TABLE "booking" RENAME CONSTRAINT "booking_offerId_fkey" TO "booking_stockId_fkey";'
         'ALTER TABLE "event_occurrence" RENAME COLUMN "occasionId" TO "offerId";'
@@ -56,9 +53,8 @@ def upgrade():
         'ALTER TABLE "recommendation" RENAME COLUMN "occasionId" TO "offerId";'
         'ALTER TABLE "recommendation" RENAME CONSTRAINT "recommendation_occasionId_fkey" TO "recommendation_offerId_fkey";'
         'ALTER INDEX "ix_recommendation_occasionId" RENAME TO "ix_recommendation_offerId";'
-
-        'DROP TRIGGER offer_update ON stock;'
-        'DROP FUNCTION check_offer;'
+        "DROP TRIGGER offer_update ON stock;"
+        "DROP FUNCTION check_offer;"
         + """
          CREATE OR REPLACE FUNCTION check_stock()
          RETURNS TRIGGER AS $$
@@ -83,7 +79,8 @@ def upgrade():
          CREATE CONSTRAINT TRIGGER stock_update AFTER INSERT OR UPDATE
          ON stock
          FOR EACH ROW EXECUTE PROCEDURE check_stock()
-        """ + ';'
+        """
+        + ";"
         + """
          CREATE OR REPLACE FUNCTION get_wallet_balance(user_id BIGINT)
          RETURNS NUMERIC(10,2) AS $$
@@ -118,8 +115,10 @@ def upgrade():
          CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
          ON booking
          FOR EACH ROW EXECUTE PROCEDURE check_booking()
-         """ + ';'
-      'COMMIT;')
+         """
+        + ";"
+        "COMMIT;"
+    )
 
 
 def downgrade():

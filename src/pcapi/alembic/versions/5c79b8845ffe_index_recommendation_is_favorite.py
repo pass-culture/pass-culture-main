@@ -9,15 +9,15 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = '5c79b8845ffe'
-down_revision = '5f072f461580'
+revision = "5c79b8845ffe"
+down_revision = "5f072f461580"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.create_index(op.f('ix_recommendation_isFavorite'), 'recommendation', ['isFavorite'], unique=False)
+    op.create_index(op.f("ix_recommendation_isFavorite"), "recommendation", ["isFavorite"], unique=False)
 
 
 def downgrade():
-    op.drop_index('ix_recommendation_isFavorite', table_name='recommendation')
+    op.drop_index("ix_recommendation_isFavorite", table_name="recommendation")

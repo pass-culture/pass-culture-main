@@ -17,8 +17,8 @@ class GetVenueLabelsTest:
     def test_should_return_the_list(self, app):
         # Given
         venue_labels = [
-            VenueLabel(identifier=12, label='Maison des illustres'),
-            VenueLabel(identifier=15, label='Monuments historiques'),
+            VenueLabel(identifier=12, label="Maison des illustres"),
+            VenueLabel(identifier=15, label="Monuments historiques"),
         ]
         self.venue_label_repository.get_all.return_value = venue_labels
 

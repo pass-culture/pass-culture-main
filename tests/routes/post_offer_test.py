@@ -32,11 +32,7 @@ class Returns400:
         repository.save(user)
 
         # When
-        request = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post(f"{API_URL}/offers", json=json)
-        )
+        request = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/offers", json=json)
 
         # Then
         assert request.status_code == 400
@@ -58,11 +54,7 @@ class Returns400:
         }
 
         # When
-        request = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post(f"{API_URL}/offers", json=json)
-        )
+        request = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/offers", json=json)
 
         # Then
         assert request.status_code == 201
@@ -78,17 +70,11 @@ class Returns400:
         repository.save(user)
 
         # When
-        request = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post(f"{API_URL}/offers", json=json)
-        )
+        request = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/offers", json=json)
 
         # Then
         assert request.status_code == 400
-        assert request.json["global"] == [
-            "Aucun objet ne correspond à cet identifiant dans notre base de données"
-        ]
+        assert request.json["global"] == ["Aucun objet ne correspond à cet identifiant dans notre base de données"]
 
     def when_new_offer_has_errors(self, app, db_session):
         # Given
@@ -106,17 +92,11 @@ class Returns400:
         }
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post(f"{API_URL}/offers", json=json)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/offers", json=json)
 
         # Then
         assert response.status_code == 400
-        assert response.json["url"] == [
-            "Une offre de type Jeux (support physique) ne peut pas être numérique"
-        ]
+        assert response.json["url"] == ["Une offre de type Jeux (support physique) ne peut pas être numérique"]
 
     def when_offer_type_is_unknown(self, app, db_session):
         # Given
@@ -136,11 +116,7 @@ class Returns400:
         }
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post(f"{API_URL}/offers", json=json)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/offers", json=json)
 
         # Then
         assert response.status_code == 400
@@ -164,17 +140,11 @@ class Returns400:
         }
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post(f"{API_URL}/offers", json=json)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/offers", json=json)
 
         # Then
         assert response.status_code == 400
-        assert response.json["name"] == [
-            "Le titre de l’offre doit faire au maximum 90 caractères."
-        ]
+        assert response.json["name"] == ["Le titre de l’offre doit faire au maximum 90 caractères."]
 
 
 class Returns201:
@@ -196,11 +166,7 @@ class Returns201:
         }
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post(f"{API_URL}/offers", json=json)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/offers", json=json)
 
         # Then
         assert response.status_code == 201
@@ -233,11 +199,7 @@ class Returns201:
         }
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post(f"{API_URL}/offers", json=json)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/offers", json=json)
 
         # Then
         offer_id = dehumanize(response.json["id"])
@@ -263,11 +225,7 @@ class Returns201:
         }
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post(f"{API_URL}/offers", json=json)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/offers", json=json)
 
         # Then
         assert response.status_code == 201
@@ -294,13 +252,9 @@ class Returns201:
         date_now = datetime(2020, 10, 15)
 
         user = create_user(email="user@test.com")
-        offerer = create_offerer(
-            date_created=date_now, date_modified_at_last_provider=date_now
-        )
+        offerer = create_offerer(date_created=date_now, date_modified_at_last_provider=date_now)
         user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(
-            offerer, date_created=date_now, date_modified_at_last_provider=date_now
-        )
+        venue = create_venue(offerer, date_created=date_now, date_modified_at_last_provider=date_now)
         thing_product = create_product_with_thing_type(
             date_modified_at_last_provider=date_now, id_at_providers="1234567891"
         )
@@ -337,13 +291,9 @@ class Returns201:
         # then
         assert response.status_code == 201
 
-    def when_creating_a_new_activation_event_offer_as_a_global_admin(
-        self, app, db_session
-    ):
+    def when_creating_a_new_activation_event_offer_as_a_global_admin(self, app, db_session):
         # Given
-        user = create_user(
-            can_book_free_offers=False, email="test@email.com", is_admin=True
-        )
+        user = create_user(can_book_free_offers=False, email="test@email.com", is_admin=True)
         offerer = create_offerer()
         venue = create_venue(offerer)
         repository.save(user, venue)
@@ -356,20 +306,14 @@ class Returns201:
         }
 
         # When
-        request = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post(f"{API_URL}/offers", json=json)
-        )
+        request = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/offers", json=json)
 
         # Then
         assert request.status_code == 201
 
 
 class Returns403:
-    def when_creating_a_new_activation_event_offer_as_an_offerer_editor(
-        self, app, db_session
-    ):
+    def when_creating_a_new_activation_event_offer_as_an_offerer_editor(self, app, db_session):
         # Given
         user = create_user(email="test@email.com", is_admin=False)
         offerer = create_offerer()
@@ -385,11 +329,7 @@ class Returns403:
         }
 
         # When
-        request = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post(f"{API_URL}/offers", json=json)
-        )
+        request = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/offers", json=json)
 
         # Then
         assert request.status_code == 403
@@ -397,9 +337,7 @@ class Returns403:
             "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"
         ]
 
-    def when_creating_a_new_activation_event_offer_as_an_offerer_admin(
-        self, app, db_session
-    ):
+    def when_creating_a_new_activation_event_offer_as_an_offerer_admin(self, app, db_session):
         # Given
         user = create_user(email="test@email.com", is_admin=False)
         offerer = create_offerer()
@@ -415,11 +353,7 @@ class Returns403:
         }
 
         # When
-        request = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post(f"{API_URL}/offers", json=json)
-        )
+        request = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/offers", json=json)
 
         # Then
         assert request.status_code == 403
@@ -443,11 +377,7 @@ class Returns403:
         }
 
         # When
-        request = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .post(f"{API_URL}/offers", json=json)
-        )
+        request = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/offers", json=json)
 
         # Then
         assert request.status_code == 403

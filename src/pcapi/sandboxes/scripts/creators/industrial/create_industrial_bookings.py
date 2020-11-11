@@ -13,7 +13,7 @@ BOOKINGS_USED_REMOVE_MODULO = 3
 
 
 def create_industrial_bookings(recommendations_by_name):
-    logger.info('create_industrial_bookings')
+    logger.info("create_industrial_bookings")
 
     bookings_by_name = {}
 
@@ -23,10 +23,7 @@ def create_industrial_bookings(recommendations_by_name):
 
     recommendation_items = recommendations_by_name.items()
 
-    recommendation_items_with_booking = remove_every(
-        recommendation_items,
-        RECOMMENDATIONS_WITH_BOOKINGS_REMOVE_RATIO
-    )
+    recommendation_items_with_booking = remove_every(recommendation_items, RECOMMENDATIONS_WITH_BOOKINGS_REMOVE_RATIO)
 
     for (recommendation_index, (recommendation_name, recommendation)) in enumerate(recommendation_items_with_booking):
 
@@ -39,18 +36,16 @@ def create_industrial_bookings(recommendations_by_name):
         if not_bookable_recommendation:
             continue
 
-        user_has_no_booking = \
-            user.firstName != "PC Test Jeune" or \
-            "has-signed-up" in user.email
+        user_has_no_booking = user.firstName != "PC Test Jeune" or "has-signed-up" in user.email
 
         if user_has_no_booking:
             continue
 
-        user_has_only_activation_booked = \
-            "has-booked-activation" in user.email or \
-            "has-confirmed-activation" in user.email
+        user_has_only_activation_booked = (
+            "has-booked-activation" in user.email or "has-confirmed-activation" in user.email
+        )
 
-        is_activation_offer = offer.product.offerType['value'] == str(EventType.ACTIVATION)
+        is_activation_offer = offer.product.offerType["value"] == str(EventType.ACTIVATION)
 
         if user_has_only_activation_booked and not is_activation_offer:
             continue
@@ -65,9 +60,11 @@ def create_industrial_bookings(recommendations_by_name):
 
             is_used = False
             if is_activation_offer:
-                is_used = "has-confirmed-activation" in user.email or \
-                          "has-booked-some" in user.email or \
-                          "has-no-more-money" in user.email
+                is_used = (
+                    "has-confirmed-activation" in user.email
+                    or "has-booked-some" in user.email
+                    or "has-no-more-money" in user.email
+                )
             else:
                 # (BOOKINGS_USED_REMOVE_MODULO-1)/BOOKINGS_USED_REMOVE_MODULO are used
                 is_used = recommendation_index % BOOKINGS_USED_REMOVE_MODULO != 0
@@ -80,13 +77,15 @@ def create_industrial_bookings(recommendations_by_name):
             else:
                 booking_amount = None
 
-            bookings_by_name[booking_name] = create_booking(user=user,
-                                                            amount=booking_amount,
-                                                            is_used=is_used,
-                                                            recommendation=recommendation,
-                                                            stock=stock,
-                                                            token=str(token),
-                                                            venue=recommendation.offer.venue)
+            bookings_by_name[booking_name] = create_booking(
+                user=user,
+                amount=booking_amount,
+                is_used=is_used,
+                recommendation=recommendation,
+                stock=stock,
+                token=str(token),
+                venue=recommendation.offer.venue,
+            )
 
             token += 1
 
@@ -95,4 +94,4 @@ def create_industrial_bookings(recommendations_by_name):
 
     repository.save(*bookings_by_name.values())
 
-    logger.info('created {} bookings'.format(len(bookings_by_name)))
+    logger.info("created {} bookings".format(len(bookings_by_name)))

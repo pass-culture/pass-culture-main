@@ -26,7 +26,7 @@ class CheckFeatureConsistencyTest:
         features = []
         for feature_toggle in FeatureToggle:
             feature = Feature()
-            feature.populate_from_dict({'name': feature_toggle})
+            feature.populate_from_dict({"name": feature_toggle})
             features.append(feature)
         find_all_features.return_value = features
 

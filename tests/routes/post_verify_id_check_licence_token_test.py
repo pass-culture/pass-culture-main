@@ -7,7 +7,7 @@ from tests.conftest import TestClient
 
 
 def check_token_mock(token: str):
-    return token == 'authorized-token'
+    return token == "authorized-token"
 
 
 def check_token_failed_mock(token: typing.Optional[str]):
@@ -19,11 +19,10 @@ class Post:
         @patch("pcapi.routes.beneficiaries.is_licence_token_valid", check_token_mock)
         def when_has_the_exact_payload(self, app):
             # Given
-            data = {'token': 'authorized-token'}
+            data = {"token": "authorized-token"}
 
             # When
-            response = TestClient(app.test_client()) \
-                .post('/beneficiaries/licence_verify', json=data)
+            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
 
             # Then
             assert response.status_code == 200
@@ -32,22 +31,19 @@ class Post:
         @patch("pcapi.routes.beneficiaries.is_licence_token_valid", check_token_mock)
         def when_token_is_wrong(self, app):
             # Given
-            data = {'token': 'wrong-token'}
+            data = {"token": "wrong-token"}
 
             # When
-            response = TestClient(app.test_client()) \
-                .post(f'/beneficiaries/licence_verify', json=data)
+            response = TestClient(app.test_client()).post(f"/beneficiaries/licence_verify", json=data)
 
             # Then
             assert response.status_code == 422
-
 
     class Returns400:
         @patch("pcapi.routes.beneficiaries.is_licence_token_valid", check_token_mock)
         def when_has_no_payload(self, app):
             # When
-            response = TestClient(app.test_client()) \
-                .post('/beneficiaries/licence_verify')
+            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify")
 
             # Then
             assert response.status_code == 400
@@ -55,11 +51,10 @@ class Post:
         @patch("pcapi.routes.beneficiaries.is_licence_token_valid", check_token_failed_mock)
         def when_token_is_null(self, app):
             # Given
-            data = {'token': None}
+            data = {"token": None}
 
             # When
-            response = TestClient(app.test_client()) \
-                .post(f'/beneficiaries/licence_verify', json=data)
+            response = TestClient(app.test_client()).post(f"/beneficiaries/licence_verify", json=data)
 
             # Then
             assert response.status_code == 400
@@ -67,11 +62,10 @@ class Post:
         @patch("pcapi.routes.beneficiaries.is_licence_token_valid", check_token_failed_mock)
         def when_token_is_the_string_null(self, app):
             # Given
-            data = {'token': "null"}
+            data = {"token": "null"}
 
             # When
-            response = TestClient(app.test_client()) \
-                .post(f'/beneficiaries/licence_verify', json=data)
+            response = TestClient(app.test_client()).post(f"/beneficiaries/licence_verify", json=data)
 
             # Then
             assert response.status_code == 400
@@ -79,11 +73,10 @@ class Post:
         @patch("pcapi.routes.beneficiaries.is_licence_token_valid", check_token_mock)
         def when_has_wrong_token_key(self, app):
             # Given
-            data = {'custom-token': 'authorized-token'}
+            data = {"custom-token": "authorized-token"}
 
             # When
-            response = TestClient(app.test_client()) \
-                .post('/beneficiaries/licence_verify', json=data)
+            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
 
             # Then
             assert response.status_code == 400

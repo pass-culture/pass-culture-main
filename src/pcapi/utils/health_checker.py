@@ -14,6 +14,6 @@ def check_database_connection() -> bool:
 
 
 def read_version_from_file() -> str:
-    with open('version.txt', 'r') as content_file:
+    with open("version.txt", "r") as content_file:
         output = content_file.read()
     return output

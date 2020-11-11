@@ -11,7 +11,6 @@ from pcapi.scripts.update_booking_cancellation_date_from_activity import update_
 
 
 class UpdateBookingCancellationDateFromActivityTest:
-
     @staticmethod
     def setup_method():
         db.engine.execute("ALTER TABLE booking DISABLE TRIGGER stock_update_cancellation_date;")
@@ -36,8 +35,7 @@ class UpdateBookingCancellationDateFromActivityTest:
 
         # Then
         count_of_cancelled_booking_without_cancellation_date = Booking.query.filter(
-            (Booking.cancellationDate == None),
-            (Booking.isCancelled == True)
+            (Booking.cancellationDate == None), (Booking.isCancelled == True)
         ).count()
 
         assert count_of_cancelled_booking_without_cancellation_date == 0

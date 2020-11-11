@@ -14,9 +14,10 @@ from pcapi.model_creators.specific_creators import create_offer_with_event_produ
 
 
 class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
-    @patch('pcapi.emails.user_notification_after_stock_update.feature_send_mail_to_users_enabled')
-    def test_should_send_email_to_user_when_feature_send_mail_to_users_is_enabled(self,
-                                                                                  feature_send_mail_to_users_enabled):
+    @patch("pcapi.emails.user_notification_after_stock_update.feature_send_mail_to_users_enabled")
+    def test_should_send_email_to_user_when_feature_send_mail_to_users_is_enabled(
+        self, feature_send_mail_to_users_enabled
+    ):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -30,11 +31,12 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         booking_info_for_mailjet = retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking)
 
         # Then
-        assert booking_info_for_mailjet['To'] == user.email
+        assert booking_info_for_mailjet["To"] == user.email
 
-    @patch('pcapi.emails.user_notification_after_stock_update.feature_send_mail_to_users_enabled')
-    def test_should_send_email_to_specific_email_address_when_feature_send_mail_to_users_is_disabled(self,
-                                                                                                     feature_send_mail_to_users_enabled):
+    @patch("pcapi.emails.user_notification_after_stock_update.feature_send_mail_to_users_enabled")
+    def test_should_send_email_to_specific_email_address_when_feature_send_mail_to_users_is_disabled(
+        self, feature_send_mail_to_users_enabled
+    ):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -48,7 +50,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         booking_info_for_mailjet = retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking)
 
         # Then
-        assert booking_info_for_mailjet['To'] == 'dev@example.com'
+        assert booking_info_for_mailjet["To"] == "dev@example.com"
 
     def test_should_send_email_when_stock_date_have_been_changed(self, app):
         # Given
@@ -59,7 +61,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name='Offer name')
+        offer = create_offer_with_event_product(venue, event_name="Offer name")
         stock = create_stock(beginning_datetime=beginning_datetime, offer=offer, price=20)
         booking = create_booking(user=user, stock=stock)
 
@@ -70,15 +72,15 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
 
         # Then
         assert booking_info_for_mailjet == {
-            'FromEmail': 'support@example.com',
-            'MJ-TemplateID': 1332139,
-            'MJ-TemplateLanguage': True,
-            'To': 'dev@example.com',
-            'Vars': {
-                'offer_name': booking.stock.offer.name,
-                'user_first_name': user.firstName,
-                'venue_name': booking.stock.offer.venue.name,
-                'event_date': 'mardi 20 août 2019',
-                'event_hour': '14h',
-            }
+            "FromEmail": "support@example.com",
+            "MJ-TemplateID": 1332139,
+            "MJ-TemplateLanguage": True,
+            "To": "dev@example.com",
+            "Vars": {
+                "offer_name": booking.stock.offer.name,
+                "user_first_name": user.firstName,
+                "venue_name": booking.stock.offer.venue.name,
+                "event_date": "mardi 20 août 2019",
+                "event_hour": "14h",
+            },
         }

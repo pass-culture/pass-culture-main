@@ -10,14 +10,15 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '2b44409d9f54'
-down_revision = 'da973e646e06'
+revision = "2b44409d9f54"
+down_revision = "da973e646e06"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.execute("""
+    op.execute(
+        """
         CREATE OR REPLACE FUNCTION get_recommendable_offers_ordered_by_digital_offers()
         RETURNS TABLE (
             criterion_score BIGINT,
@@ -81,11 +82,15 @@ def upgrade():
         END
         $body$
         LANGUAGE plpgsql;
-    """)
-    op.execute("""
+    """
+    )
+    op.execute(
+        """
         DROP MATERIALIZED VIEW discovery_view;
-    """)
-    op.execute("""
+    """
+    )
+    op.execute(
+        """
         CREATE MATERIALIZED VIEW IF NOT EXISTS discovery_view AS
             SELECT
                 ROW_NUMBER() OVER ()                AS "offerDiscoveryOrder",
@@ -100,18 +105,24 @@ def upgrade():
             LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
                 AND offer_mediation."isActive"
             ORDER BY recommendable_offers.partitioned_offers;
-    """)
-    op.execute("""
+    """
+    )
+    op.execute(
+        """
         CREATE UNIQUE INDEX ON discovery_view ("offerDiscoveryOrder");
         COMMIT;
-    """)
+    """
+    )
 
 
 def downgrade():
-    op.execute("""
+    op.execute(
+        """
         DROP MATERIALIZED VIEW discovery_view;
-    """)
-    op.execute("""
+    """
+    )
+    op.execute(
+        """
         CREATE MATERIALIZED VIEW IF NOT EXISTS discovery_view AS
             SELECT
                 ROW_NUMBER() OVER ()                AS "offerDiscoveryOrder",
@@ -126,11 +137,16 @@ def downgrade():
             LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
                 AND offer_mediation."isActive"
             ORDER BY recommendable_offers.partitioned_offers;
-    """)
-    op.execute("""
+    """
+    )
+    op.execute(
+        """
         CREATE UNIQUE INDEX ON discovery_view ("offerDiscoveryOrder");
         COMMIT;
-    """)
-    op.execute("""
+    """
+    )
+    op.execute(
+        """
         DROP FUNCTION get_recommendable_offers_ordered_by_digital_offers;
-    """)
+    """
+    )

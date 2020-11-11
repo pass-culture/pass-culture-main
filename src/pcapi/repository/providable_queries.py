@@ -30,15 +30,12 @@ def update_chunk(chunk_to_update: Dict):
 
 def _filter_matching_pc_object_in_chunk(model_in_chunk: Model, chunk_to_update: Dict) -> List[Model]:
     return list(
-        filter(lambda item: _extract_model_name_from_chunk_key(item[0]) == model_in_chunk,
-               chunk_to_update.items())
+        filter(lambda item: _extract_model_name_from_chunk_key(item[0]) == model_in_chunk, chunk_to_update.items())
     )
 
 
 def _extract_dict_values_from_chunk(matching_tuples_in_chunk: List[Model]) -> List[Dict]:
-    return list(
-        dictify_pc_object(pc_object_item) for pc_object_key, pc_object_item in matching_tuples_in_chunk
-    )
+    return list(dictify_pc_object(pc_object_item) for pc_object_key, pc_object_item in matching_tuples_in_chunk)
 
 
 def get_existing_object(model_type: Model, id_at_providers: str) -> Optional[Dict]:
@@ -54,31 +51,31 @@ def get_last_update_for_provider(provider_id: int, pc_obj: Model) -> datetime:
 def _dict_to_object(object_dict: Dict, model_object: Model) -> Model:
     pc_object = {}
     for key, value in object_dict.items():
-        if key.endswith('Id'):
+        if key.endswith("Id"):
             pc_object[key] = humanize(value)
         else:
             pc_object[key] = value
     pc_obj = model_object(from_dict=pc_object)
-    pc_obj.id = pc_object['id']
+    pc_obj.id = pc_object["id"]
     return pc_obj
 
 
 def dictify_pc_object(object_to_update: Model) -> Dict:
     dict_to_update = object_to_update.__dict__.copy()
-    if '_sa_instance_state' in dict_to_update:
-        del dict_to_update['_sa_instance_state']
-    if 'datePublished' in dict_to_update:
-        del dict_to_update['datePublished']
-    if 'venue' in dict_to_update:
-        del dict_to_update['venue']
-    if 'offer' in dict_to_update:
-        del dict_to_update['offer']
-    if 'stocks' in dict_to_update:
-        del dict_to_update['stocks']
-    if 'remainingQuantity' in dict_to_update:
-        del dict_to_update['remainingQuantity']
+    if "_sa_instance_state" in dict_to_update:
+        del dict_to_update["_sa_instance_state"]
+    if "datePublished" in dict_to_update:
+        del dict_to_update["datePublished"]
+    if "venue" in dict_to_update:
+        del dict_to_update["venue"]
+    if "offer" in dict_to_update:
+        del dict_to_update["offer"]
+    if "stocks" in dict_to_update:
+        del dict_to_update["stocks"]
+    if "remainingQuantity" in dict_to_update:
+        del dict_to_update["remainingQuantity"]
     return dict_to_update
 
 
 def _extract_model_name_from_chunk_key(chunk_key: str) -> str:
-    return chunk_key.split('|')[1]
+    return chunk_key.split("|")[1]

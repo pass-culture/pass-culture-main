@@ -10,11 +10,12 @@ class ApiEntrepriseException(Exception):
 
 
 def get_by_offerer(offerer: Offerer) -> Dict:
-    response = requests.get(f'https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/{offerer.siren}',
-                            verify=False)
+    response = requests.get(
+        f"https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/{offerer.siren}", verify=False
+    )
 
     if response.status_code != 200:
-        raise ApiEntrepriseException('Error getting API entreprise DATA for SIREN : {}'.format(offerer.siren))
+        raise ApiEntrepriseException("Error getting API entreprise DATA for SIREN : {}".format(offerer.siren))
 
     response_json = response.json()
     etablissements = response_json["unite_legale"].pop("etablissements")
@@ -24,6 +25,7 @@ def get_by_offerer(offerer: Offerer) -> Dict:
 
 
 def _extract_etablissements_communs_siren(etablissements: List[dict]) -> List[dict]:
-    etablissements_communs = [etablissement for etablissement in etablissements if
-                              etablissement["etablissement_siege"] == "false"]
+    etablissements_communs = [
+        etablissement for etablissement in etablissements if etablissement["etablissement_siege"] == "false"
+    ]
     return [etablissement["siret"] for etablissement in etablissements_communs]

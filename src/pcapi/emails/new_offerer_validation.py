@@ -14,12 +14,12 @@ def retrieve_data_for_new_offerer_validation_email(offerer: Offerer) -> Dict:
     environment = format_environment_for_email()
 
     return {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'MJ-TemplateID': 778723,
-        'MJ-TemplateLanguage': True,
-        'To': pro_user_email,
-        'Vars': {
-            'offerer_name': offerer.name,
-            'env': environment,
+        "FromEmail": SUPPORT_EMAIL_ADDRESS,
+        "MJ-TemplateID": 778723,
+        "MJ-TemplateLanguage": True,
+        "To": pro_user_email,
+        "Vars": {
+            "offerer_name": offerer.name,
+            "env": environment,
         },
     }

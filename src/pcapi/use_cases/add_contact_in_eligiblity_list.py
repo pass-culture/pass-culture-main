@@ -10,4 +10,3 @@ class AddContactInEligibilityList:
         beneficiary_contact = BeneficiaryContact(contact_email, contact_date_of_birth, contact_department_code)
         self.notification_service.create_mailing_contact(beneficiary_contact)
         self.notification_service.add_contact_to_eligible_soon_list(beneficiary_contact)
-

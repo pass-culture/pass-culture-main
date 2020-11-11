@@ -20,4 +20,4 @@ def test_save_user_offerer_raise_api_error_when_not_unique(app):
     with pytest.raises(ApiErrors) as error:
         repository.save(uo2)
 
-    assert error.value.errors["global"] == ['Une entrée avec cet identifiant existe déjà dans notre base de données']
+    assert error.value.errors["global"] == ["Une entrée avec cet identifiant existe déjà dans notre base de données"]

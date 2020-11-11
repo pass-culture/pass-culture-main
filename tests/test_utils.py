@@ -15,16 +15,14 @@ def deactivate_feature(feature_toggle: FeatureToggle):
     repository.save(feature)
 
 
-def create_mocked_bookings(num_bookings: int,
-                           venue_email: str,
-                           name: str = 'Offer name') -> List[Booking]:
+def create_mocked_bookings(num_bookings: int, venue_email: str, name: str = "Offer name") -> List[Booking]:
     bookings = []
 
     for counter in range(num_bookings):
         booking = Mock(spec=Booking)
-        booking.user.email = 'user_email%s' % counter
-        booking.user.firstName = 'First %s' % counter
-        booking.user.lastName = 'Last %s' % counter
+        booking.user.email = "user_email%s" % counter
+        booking.user.firstName = "First %s" % counter
+        booking.user.lastName = "Last %s" % counter
         booking.stock.offer.bookingEmail = venue_email
         booking.stock.offer.product.name = name
         bookings.append(booking)

@@ -23,16 +23,18 @@ def import_iris_shape_file_to_table(file_path: str) -> None:
 
 def read_iris_shape_file(file_path: str) -> GeoDataFrame:
     iris_data = gpd.read_file(file_path)
-    filtered_iris_data = iris_data[['CODE_IRIS', 'geometry']]
+    filtered_iris_data = iris_data[["CODE_IRIS", "geometry"]]
     return filtered_iris_data.to_crs(WGS_SPATIAL_REFERENCE_IDENTIFIER)
 
 
 def fill_iris_from(iris_row: GeoSeries) -> IrisFrance:
     iris = IrisFrance()
 
-    iris.centroid = from_shape(create_centroid_from_polygon(iris_row['geometry']), srid=WGS_SPATIAL_REFERENCE_IDENTIFIER)
-    iris.irisCode = iris_row['CODE_IRIS']
-    iris.shape = from_shape(iris_row['geometry'], srid=WGS_SPATIAL_REFERENCE_IDENTIFIER)
+    iris.centroid = from_shape(
+        create_centroid_from_polygon(iris_row["geometry"]), srid=WGS_SPATIAL_REFERENCE_IDENTIFIER
+    )
+    iris.irisCode = iris_row["CODE_IRIS"]
+    iris.shape = from_shape(iris_row["geometry"], srid=WGS_SPATIAL_REFERENCE_IDENTIFIER)
 
     return iris
 

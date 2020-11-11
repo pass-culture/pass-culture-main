@@ -21,8 +21,9 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
         offers_ids = [booking.offerId for booking in booking_sql_entity_views]
         stock_sql_entity_views = _get_stocks_information(offers_ids)
         mediations_sql_entity_views = _get_mediations_information(offers_ids)
-        mediations = [active_mediation_domain_converter.to_domain(mediation) for mediation in
-                      mediations_sql_entity_views]
+        mediations = [
+            active_mediation_domain_converter.to_domain(mediation) for mediation in mediations_sql_entity_views
+        ]
         stocks = [stock_domain_converter.to_domain(stock) for stock in stock_sql_entity_views]
 
         beneficiary_bookings = []
@@ -72,83 +73,84 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
 
 
 def _get_mediations_information(offers_ids: List[int]) -> List[object]:
-    return MediationSQLEntity.query \
-        .join(Offer, Offer.id == MediationSQLEntity.offerId) \
-        .filter(MediationSQLEntity.offerId.in_(offers_ids)) \
-        .filter(MediationSQLEntity.isActive == True) \
-        .with_entities(MediationSQLEntity.id,
-                       MediationSQLEntity.dateCreated,
-                       MediationSQLEntity.offerId) \
+    return (
+        MediationSQLEntity.query.join(Offer, Offer.id == MediationSQLEntity.offerId)
+        .filter(MediationSQLEntity.offerId.in_(offers_ids))
+        .filter(MediationSQLEntity.isActive == True)
+        .with_entities(MediationSQLEntity.id, MediationSQLEntity.dateCreated, MediationSQLEntity.offerId)
         .all()
+    )
 
 
 def _get_stocks_information(offers_ids: List[int]) -> List[object]:
-    return StockSQLEntity.query \
-        .join(Offer, Offer.id == StockSQLEntity.offerId) \
-        .filter(StockSQLEntity.offerId.in_(offers_ids)) \
-        .with_entities(StockSQLEntity.dateCreated,
-                       StockSQLEntity.beginningDatetime,
-                       StockSQLEntity.bookingLimitDatetime,
-                       StockSQLEntity.dateModified,
-                       StockSQLEntity.offerId,
-                       StockSQLEntity.quantity,
-                       StockSQLEntity.price,
-                       StockSQLEntity.id,
-                       StockSQLEntity.isSoftDeleted,
-                       Offer.isActive) \
+    return (
+        StockSQLEntity.query.join(Offer, Offer.id == StockSQLEntity.offerId)
+        .filter(StockSQLEntity.offerId.in_(offers_ids))
+        .with_entities(
+            StockSQLEntity.dateCreated,
+            StockSQLEntity.beginningDatetime,
+            StockSQLEntity.bookingLimitDatetime,
+            StockSQLEntity.dateModified,
+            StockSQLEntity.offerId,
+            StockSQLEntity.quantity,
+            StockSQLEntity.price,
+            StockSQLEntity.id,
+            StockSQLEntity.isSoftDeleted,
+            Offer.isActive,
+        )
         .all()
+    )
 
 
 def _get_bookings_information(beneficiary_id: int) -> List[object]:
-    offer_activation_types = ['ThingType.ACTIVATION', 'EventType.ACTIVATION']
-    return Booking.query \
-        .join(UserSQLEntity, UserSQLEntity.id == Booking.userId) \
-        .join(StockSQLEntity, StockSQLEntity.id == Booking.stockId) \
-        .join(Offer) \
-        .join(Product, Offer.productId == Product.id) \
-        .join(VenueSQLEntity) \
-        .filter(Booking.userId == beneficiary_id) \
-        .filter(Offer.type.notin_(offer_activation_types)) \
-        .distinct(Booking.stockId) \
-        .order_by(Booking.stockId,
-                  Booking.isCancelled,
-                  Booking.dateCreated.desc()
-                  ) \
-        .with_entities(Booking.amount,
-                       Booking.cancellationDate,
-                       Booking.dateCreated,
-                       Booking.dateUsed,
-                       Booking.id,
-                       Booking.isCancelled,
-                       Booking.isUsed,
-                       Booking.quantity,
-                       Booking.recommendationId,
-                       Booking.stockId,
-                       Booking.token,
-                       Booking.userId,
-                       Offer.id.label("offerId"),
-                       Offer.name,
-                       Offer.type,
-                       Offer.url,
-                       Offer.withdrawalDetails,
-                       Offer.isDuo,
-                       Offer.extraData,
-                       Offer.durationMinutes,
-                       Offer.description,
-                       Offer.mediaUrls,
-                       Offer.isNational,
-                       Product.id.label("productId"),
-                       Product.thumbCount,
-                       UserSQLEntity.email,
-                       StockSQLEntity.beginningDatetime,
-                       StockSQLEntity.price,
-                       VenueSQLEntity.id.label("venueId"),
-                       VenueSQLEntity.departementCode,
-                       VenueSQLEntity.name.label("venueName"),
-                       VenueSQLEntity.address,
-                       VenueSQLEntity.postalCode,
-                       VenueSQLEntity.city,
-                       VenueSQLEntity.latitude,
-                       VenueSQLEntity.longitude,
-                       ) \
+    offer_activation_types = ["ThingType.ACTIVATION", "EventType.ACTIVATION"]
+    return (
+        Booking.query.join(UserSQLEntity, UserSQLEntity.id == Booking.userId)
+        .join(StockSQLEntity, StockSQLEntity.id == Booking.stockId)
+        .join(Offer)
+        .join(Product, Offer.productId == Product.id)
+        .join(VenueSQLEntity)
+        .filter(Booking.userId == beneficiary_id)
+        .filter(Offer.type.notin_(offer_activation_types))
+        .distinct(Booking.stockId)
+        .order_by(Booking.stockId, Booking.isCancelled, Booking.dateCreated.desc())
+        .with_entities(
+            Booking.amount,
+            Booking.cancellationDate,
+            Booking.dateCreated,
+            Booking.dateUsed,
+            Booking.id,
+            Booking.isCancelled,
+            Booking.isUsed,
+            Booking.quantity,
+            Booking.recommendationId,
+            Booking.stockId,
+            Booking.token,
+            Booking.userId,
+            Offer.id.label("offerId"),
+            Offer.name,
+            Offer.type,
+            Offer.url,
+            Offer.withdrawalDetails,
+            Offer.isDuo,
+            Offer.extraData,
+            Offer.durationMinutes,
+            Offer.description,
+            Offer.mediaUrls,
+            Offer.isNational,
+            Product.id.label("productId"),
+            Product.thumbCount,
+            UserSQLEntity.email,
+            StockSQLEntity.beginningDatetime,
+            StockSQLEntity.price,
+            VenueSQLEntity.id.label("venueId"),
+            VenueSQLEntity.departementCode,
+            VenueSQLEntity.name.label("venueName"),
+            VenueSQLEntity.address,
+            VenueSQLEntity.postalCode,
+            VenueSQLEntity.city,
+            VenueSQLEntity.latitude,
+            VenueSQLEntity.longitude,
+        )
         .all()
+    )

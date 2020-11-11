@@ -9,14 +9,15 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = '4fc1f5367b4c'
-down_revision = 'd176385d379e'
+revision = "4fc1f5367b4c"
+down_revision = "d176385d379e"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.execute("""
+    op.execute(
+        """
          CREATE OR REPLACE FUNCTION get_wallet_balance(user_id BIGINT)
          RETURNS NUMERIC(10,2) AS $$
          BEGIN
@@ -50,7 +51,9 @@ def upgrade():
          CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
          ON booking
          FOR EACH ROW EXECUTE PROCEDURE check_booking()
-         """ + ';')
+         """
+        + ";"
+    )
 
 
 def downgrade():

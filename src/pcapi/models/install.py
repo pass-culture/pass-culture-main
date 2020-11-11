@@ -28,13 +28,7 @@ def install_features():
     features = []
     for toggle in FeatureToggle:
         feature = Feature()
-        feature.populate_from_dict(
-            {
-                'description': toggle.value,
-                'name': toggle,
-                'is_active': True
-            }
-        )
+        feature.populate_from_dict({"description": toggle.value, "name": toggle, "is_active": True})
         features.append(feature)
     repository.save(*features)
 

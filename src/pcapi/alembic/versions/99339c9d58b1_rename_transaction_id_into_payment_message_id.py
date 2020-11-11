@@ -9,16 +9,15 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = '99339c9d58b1'
-down_revision = '53d63e0caa42'
+revision = "99339c9d58b1"
+down_revision = "53d63e0caa42"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.alter_column('payment', 'transactionId', new_column_name='paymentMessageId')
-
+    op.alter_column("payment", "transactionId", new_column_name="paymentMessageId")
 
 
 def downgrade():
-    op.alter_column('payment', 'paymentMessageId', new_column_name='transactionId')
+    op.alter_column("payment", "paymentMessageId", new_column_name="transactionId")

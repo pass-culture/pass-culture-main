@@ -6,5 +6,5 @@ class PayloadMissing(ApiErrors):
 
 
 def check_payload_is_valid(payload: dict):
-    if ("offerId" not in payload):
-        raise PayloadMissing({'global': ['Données manquantes']})
+    if "offerId" not in payload:
+        raise PayloadMissing({"global": ["Données manquantes"]})

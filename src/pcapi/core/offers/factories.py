@@ -13,14 +13,14 @@ class OffererFactory(BaseFactory):
     class Meta:
         model = models.Offerer
 
-    name = factory.Sequence('Le Petit Rintintin Management {}'.format)
-    postalCode = '75000'
-    city = 'Paris'
+    name = factory.Sequence("Le Petit Rintintin Management {}".format)
+    postalCode = "75000"
+    city = "Paris"
 
     @factory.iterator
     def siren():
-        for i in range(10**9):
-            yield f'{i:09}'
+        for i in range(10 ** 9):
+            yield f"{i:09}"
 
 
 class UserOffererFactory(BaseFactory):
@@ -45,19 +45,19 @@ class VenueFactory(BaseFactory):
         model = models.VenueSQLEntity
 
     name = factory.Sequence("Le Petit Rintintin {}".format)
-    departementCode = '75'
+    departementCode = "75"
     latitude = 48.87004
     longitude = 2.37850
     managingOfferer = factory.SubFactory(OffererFactory)
-    postalCode = '75000'
-    city = 'Paris'
-    publicName = factory.SelfAttribute('name')
+    postalCode = "75000"
+    city = "Paris"
+    publicName = factory.SelfAttribute("name")
 
     # FIXME: should depend on self.offerer.siret
     @factory.iterator
     def siret():
-        for i in range(10**14):
-            yield f'{i:014}'
+        for i in range(10 ** 14):
+            yield f"{i:014}"
 
 
 class ProductFactory(BaseFactory):
@@ -83,10 +83,10 @@ class OfferFactory(BaseFactory):
 
     product = factory.SubFactory(ProductFactory)
     venue = factory.SubFactory(VenueFactory)
-    type = factory.SelfAttribute('product.type')
-    name = factory.SelfAttribute('product.name')
-    description = factory.SelfAttribute('product.description')
-    url = factory.SelfAttribute('product.url')
+    type = factory.SelfAttribute("product.type")
+    name = factory.SelfAttribute("product.name")
+    description = factory.SelfAttribute("product.description")
+    url = factory.SelfAttribute("product.url")
 
 
 class EventOfferFactory(OfferFactory):

@@ -31,48 +31,52 @@ def get_total_amount_spent(departement_code: str = None) -> float:
     if departement_code:
         query = query.join(UserSQLEntity).filter(UserSQLEntity.departementCode == departement_code)
 
-    return float(query \
-                 .filter(Booking.isCancelled == False) \
-                 .scalar())
+    return float(query.filter(Booking.isCancelled == False).scalar())
 
 
 def get_total_amount_to_pay(departement_code: str = None) -> float:
-    query = db.session.query(func.coalesce(func.sum(Payment.amount), 0)) \
-        .filter(Payment.currentStatus != TransactionStatus.BANNED)
+    query = db.session.query(func.coalesce(func.sum(Payment.amount), 0)).filter(
+        Payment.currentStatus != TransactionStatus.BANNED
+    )
 
     if departement_code:
-        query = query.join(Booking) \
-            .join(StockSQLEntity) \
-            .join(Offer) \
-            .join(VenueSQLEntity) \
-            .join(UserSQLEntity, UserSQLEntity.id == Booking.userId) \
+        query = (
+            query.join(Booking)
+            .join(StockSQLEntity)
+            .join(Offer)
+            .join(VenueSQLEntity)
+            .join(UserSQLEntity, UserSQLEntity.id == Booking.userId)
             .filter(UserSQLEntity.departementCode == departement_code)
+        )
 
-    return float(query \
-                 .scalar())
+    return float(query.scalar())
 
 
 def get_top_20_offers_table(departement_code: str = None) -> pandas.DataFrame:
     top_20_offers_by_number_of_bookings = _query_get_top_20_offers_by_number_of_bookings(departement_code)
-    return pandas.DataFrame(columns=['Offre', 'Nombre de réservations', 'Montant dépensé'],
-                            data=top_20_offers_by_number_of_bookings)
+    return pandas.DataFrame(
+        columns=["Offre", "Nombre de réservations", "Montant dépensé"], data=top_20_offers_by_number_of_bookings
+    )
 
 
 def get_top_20_offerers_table_by_number_of_bookings(departement_code: str = None) -> pandas.DataFrame:
     top_20_offers_by_number_of_bookings = _query_get_top_20_offerers_by_number_of_bookings(departement_code)
-    return pandas.DataFrame(columns=['Structure', 'Nombre de réservations', 'Montant dépensé'],
-                            data=top_20_offers_by_number_of_bookings)
+    return pandas.DataFrame(
+        columns=["Structure", "Nombre de réservations", "Montant dépensé"], data=top_20_offers_by_number_of_bookings
+    )
 
 
 def get_top_20_offerers_by_amount_table(departement_code: str = None) -> pandas.DataFrame:
     top_20_offers_by_number_of_bookings = _query_get_top_20_offerers_by_booking_amounts(departement_code)
-    return pandas.DataFrame(columns=['Structure', 'Nombre de réservations', 'Montant dépensé'],
-                            data=top_20_offers_by_number_of_bookings)
+    return pandas.DataFrame(
+        columns=["Structure", "Nombre de réservations", "Montant dépensé"], data=top_20_offers_by_number_of_bookings
+    )
 
 
 def _query_get_top_20_offers_by_number_of_bookings(departement_code: str = None) -> List[Tuple[str, int, float]]:
     if departement_code:
-        query = text("""
+        query = text(
+            """
             SELECT offer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
             FROM offer
             JOIN stock ON stock."offerId" = offer.id
@@ -85,9 +89,11 @@ def _query_get_top_20_offers_by_number_of_bookings(departement_code: str = None)
             GROUP BY offer.id, offer.name
             ORDER BY quantity DESC, offer.name ASC
             LIMIT 20;
-            """).bindparams(departementCode=departement_code)
+            """
+        ).bindparams(departementCode=departement_code)
     else:
-        query = text("""
+        query = text(
+            """
             SELECT offer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
             FROM offer
             JOIN stock ON stock."offerId" = offer.id
@@ -98,14 +104,16 @@ def _query_get_top_20_offers_by_number_of_bookings(departement_code: str = None)
             GROUP BY offer.id, offer.name
             ORDER BY quantity DESC, offer.name ASC
             LIMIT 20;
-            """)
+            """
+        )
 
     return db.engine.execute(query).fetchall()
 
 
 def _query_get_top_20_offerers_by_number_of_bookings(departement_code: str = None) -> List[Tuple[str, int, float]]:
     if departement_code:
-        query = text("""
+        query = text(
+            """
             SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
             FROM offerer
             JOIN venue ON offerer.id = venue."managingOffererId"
@@ -120,7 +128,8 @@ def _query_get_top_20_offerers_by_number_of_bookings(departement_code: str = Non
             GROUP BY offerer.id, offerer.name
             ORDER BY quantity DESC, offerer.name ASC
             LIMIT 20;
-            """).bindparams(departementCode=departement_code)
+            """
+        ).bindparams(departementCode=departement_code)
     else:
         query = """
             SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
@@ -142,7 +151,8 @@ def _query_get_top_20_offerers_by_number_of_bookings(departement_code: str = Non
 
 def _query_get_top_20_offerers_by_booking_amounts(departement_code: str = None) -> List[Tuple[str, int, float]]:
     if departement_code:
-        query = text("""
+        query = text(
+            """
             SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount) AS booking_amount
             FROM offerer
             JOIN venue ON venue."managingOffererId" = offerer.id
@@ -157,7 +167,8 @@ def _query_get_top_20_offerers_by_booking_amounts(departement_code: str = None) 
             GROUP BY offerer.id, offerer.name
             ORDER BY booking_amount DESC, offerer.name ASC
             LIMIT 20;
-            """).bindparams(departementCode=departement_code)
+            """
+        ).bindparams(departementCode=departement_code)
     else:
         query = """
         SELECT offerer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount) AS booking_amount

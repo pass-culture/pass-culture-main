@@ -15,7 +15,7 @@ from pcapi.scripts.booking.canceling_token_validation import canceling_token_val
 @pytest.mark.usefixtures("db_session")
 def test_should_update_booking_when_valid_token_is_given_and_no_payment_associated(app):
     # Given
-    token = '123456'
+    token = "123456"
     beneficiary = create_user()
     create_deposit(user=beneficiary)
     invalid_booking = create_booking(date_used=datetime(2020, 1, 1), is_used=True, token=token, user=beneficiary)
@@ -26,7 +26,7 @@ def test_should_update_booking_when_valid_token_is_given_and_no_payment_associat
 
     # Then
     booking = Booking.query.first()
-    assert booking.token == '123456'
+    assert booking.token == "123456"
     assert booking.isUsed is False
     assert booking.dateUsed is None
 
@@ -34,7 +34,7 @@ def test_should_update_booking_when_valid_token_is_given_and_no_payment_associat
 @pytest.mark.usefixtures("db_session")
 def test_should_do_nothing_when_valid_token_is_given_but_the_booking_is_linked_to_a_payment(app):
     # Given
-    token = '123456'
+    token = "123456"
     beneficiary = create_user()
     create_deposit(user=beneficiary)
     invalid_booking = create_booking(date_used=datetime(2020, 1, 1), is_used=True, token=token, user=beneficiary)
@@ -47,6 +47,6 @@ def test_should_do_nothing_when_valid_token_is_given_but_the_booking_is_linked_t
 
     # Then
     booking = Booking.query.first()
-    assert booking.token == '123456'
+    assert booking.token == "123456"
     assert booking.isUsed is True
     assert booking.dateUsed == datetime(2020, 1, 1)

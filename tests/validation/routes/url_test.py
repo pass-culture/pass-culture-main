@@ -18,7 +18,7 @@ def test_is_url_safe_does_not_raise_an_error_if_url_is_none():
 
 def test_is_url_safe_does_not_raise_an_error_if_url_is_empty():
     # given
-    url = ''
+    url = ""
 
     # when
     try:
@@ -30,7 +30,7 @@ def test_is_url_safe_does_not_raise_an_error_if_url_is_empty():
 
 def test_is_url_safe_does_not_raise_an_error_if_url_starts_with_http():
     # given
-    url = 'http://some.valid.url'
+    url = "http://some.valid.url"
 
     # when
     try:
@@ -42,7 +42,7 @@ def test_is_url_safe_does_not_raise_an_error_if_url_starts_with_http():
 
 def test_is_url_safe_does_not_raise_an_error_if_url_starts_with_https():
     # given
-    url = 'https://some.valid.url'
+    url = "https://some.valid.url"
 
     # when
     try:
@@ -54,26 +54,26 @@ def test_is_url_safe_does_not_raise_an_error_if_url_starts_with_https():
 
 def test_is_url_safe_raises_an_error_if_url_does_not_start_with_http():
     # given
-    url = 'htpp://some.invalid.url'
+    url = "htpp://some.invalid.url"
 
     # when
     with pytest.raises(ApiErrors) as e:
         is_url_safe(url)
 
     # then
-    assert e.value.errors['url'] == ["L'URL doit commencer par \"http://\" ou \"https://\""]
+    assert e.value.errors["url"] == ['L\'URL doit commencer par "http://" ou "https://"']
 
 
 def test_is_url_safe_raises_an_error_if_url_does_not_start_with_https():
     # given
-    url = 'httpssss://some.invalid.url'
+    url = "httpssss://some.invalid.url"
 
     # when
     with pytest.raises(ApiErrors) as e:
         is_url_safe(url)
 
     # then
-    assert e.value.errors['url'] == ["L'URL doit commencer par \"http://\" ou \"https://\""]
+    assert e.value.errors["url"] == ['L\'URL doit commencer par "http://" ou "https://"']
 
 
 def test_is_url_safe_raises_an_error_if_url_starts_with_javascript():
@@ -85,7 +85,7 @@ def test_is_url_safe_raises_an_error_if_url_starts_with_javascript():
         is_url_safe(url)
 
     # then
-    assert e.value.errors['url'] == ["L'URL doit commencer par \"http://\" ou \"https://\""]
+    assert e.value.errors["url"] == ['L\'URL doit commencer par "http://" ou "https://"']
 
 
 def test_is_url_safe_raises_an_error_if_url_starts_with_encoded_javascript():
@@ -97,4 +97,4 @@ def test_is_url_safe_raises_an_error_if_url_starts_with_encoded_javascript():
         is_url_safe(url)
 
     # then
-    assert e.value.errors['url'] == ["L'URL doit commencer par \"http://\" ou \"https://\""]
+    assert e.value.errors["url"] == ['L\'URL doit commencer par "http://" ou "https://"']

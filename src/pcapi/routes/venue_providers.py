@@ -33,52 +33,47 @@ from pcapi.validation.routes.venue_providers import check_existing_provider
 from pcapi.validation.routes.venue_providers import check_new_venue_provider_information
 
 
-@private_api.route('/venueProviders', methods=['GET'])
+@private_api.route("/venueProviders", methods=["GET"])
 @login_required
 def list_venue_providers():
-    venue_id = request.args.get('venueId')
+    venue_id = request.args.get("venueId")
     if venue_id is None:
         e = ApiErrors()
-        e.add_error('venueId', 'Vous devez obligatoirement fournir le paramètre venueId')
+        e.add_error("venueId", "Vous devez obligatoirement fournir le paramètre venueId")
         return jsonify(e.errors), 400
 
-    vp_query = VenueProvider.query \
-        .filter_by(venueId=dehumanize(venue_id))
-    return jsonify([
-        as_dict(venue_provider, includes=VENUE_PROVIDER_INCLUDES)
-        for venue_provider in vp_query.all()
-    ])
+    vp_query = VenueProvider.query.filter_by(venueId=dehumanize(venue_id))
+    return jsonify([as_dict(venue_provider, includes=VENUE_PROVIDER_INCLUDES) for venue_provider in vp_query.all()])
 
 
-@private_api.route('/venueProviders/<id>', methods=['GET'])
+@private_api.route("/venueProviders/<id>", methods=["GET"])
 @login_required
 def get_venue_provider(id):
     venue_provider = load_or_404(VenueProvider, id)
     return jsonify(as_dict(venue_provider, includes=VENUE_PROVIDER_INCLUDES))
 
 
-@private_api.route('/venueProviders', methods=['POST'])
+@private_api.route("/venueProviders", methods=["POST"])
 @login_required
 @expect_json_data
 def create_venue_provider():
     venue_provider_payload = request.json
     check_new_venue_provider_information(venue_provider_payload)
 
-    provider_id = dehumanize(venue_provider_payload['providerId'])
+    provider_id = dehumanize(venue_provider_payload["providerId"])
     provider = get_provider_enabled_for_pro_by_id(provider_id)
     check_existing_provider(provider)
 
     provider_class = getattr(pcapi.local_providers, provider.localClass)
     if provider_class == AllocineStocks:
-        new_venue_provider = connect_venue_to_allocine(venue_provider_payload,
-                                                       find_by_id,
-                                                       get_allocine_theaterId_for_venue)
+        new_venue_provider = connect_venue_to_allocine(
+            venue_provider_payload, find_by_id, get_allocine_theaterId_for_venue
+        )
     else:
         stock_provider_repository = _get_stock_provider_repository(provider_class)
-        new_venue_provider = connect_venue_to_provider(provider_class,
-                                                       stock_provider_repository,
-                                                       venue_provider_payload,
-                                                       find_by_id)
+        new_venue_provider = connect_venue_to_provider(
+            provider_class, stock_provider_repository, venue_provider_payload, find_by_id
+        )
 
     _run_first_synchronization(new_venue_provider)
 
@@ -90,10 +85,12 @@ def _get_stock_provider_repository(provider_class) -> StockProviderRepository:
         LibrairesStocks: api_libraires_stocks,
         FnacStocks: api_fnac_stocks,
         TiteLiveStocks: api_titelive_stocks,
-        PraxielStocks: api_praxiel_stocks
+        PraxielStocks: api_praxiel_stocks,
     }
     return providers.get(provider_class, None)
 
 
 def _run_first_synchronization(new_venue_provider: VenueProvider):
-    subprocess.Popen(['python', 'src/pcapi/scripts/pc.py', 'update_providables', '--venue-provider-id', str(new_venue_provider.id)])
+    subprocess.Popen(
+        ["python", "src/pcapi/scripts/pc.py", "update_providables", "--venue-provider-id", str(new_venue_provider.id)]
+    )

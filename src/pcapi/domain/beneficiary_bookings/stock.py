@@ -3,18 +3,19 @@ from typing import Optional
 
 
 class Stock(object):
-    def __init__(self,
-                 id: int,
-                 quantity: Optional[int],
-                 offerId: int,
-                 price: float,
-                 dateCreated: datetime,
-                 dateModified: datetime,
-                 isSoftDeleted: bool,
-                 isOfferActive: bool,
-                 beginningDatetime: Optional[datetime] = None,
-                 bookingLimitDatetime: Optional[datetime] = None,
-                 ):
+    def __init__(
+        self,
+        id: int,
+        quantity: Optional[int],
+        offerId: int,
+        price: float,
+        dateCreated: datetime,
+        dateModified: datetime,
+        isSoftDeleted: bool,
+        isOfferActive: bool,
+        beginningDatetime: Optional[datetime] = None,
+        bookingLimitDatetime: Optional[datetime] = None,
+    ):
         self.is_offer_active = isOfferActive
         self.is_soft_deleted = isSoftDeleted
         self.id = id

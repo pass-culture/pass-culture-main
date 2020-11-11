@@ -4,7 +4,7 @@ from pcapi.models import VenueSQLEntity
 from pcapi.routes.serialization import as_dict
 
 
-VENUE_ALGOLIA_INDEXED_FIELDS = ['name', 'publicName', 'city']
+VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "city"]
 
 
 def is_algolia_indexing(previous_venue: VenueSQLEntity, payload: Dict) -> bool:

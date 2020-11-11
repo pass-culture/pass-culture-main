@@ -60,16 +60,12 @@ def list_stocks():
     )
 
 
-@private_api.route(
-    "/stocks/<stock_id>", methods=["GET"], defaults={"mediation_id": None}
-)
+@private_api.route("/stocks/<stock_id>", methods=["GET"], defaults={"mediation_id": None})
 @private_api.route("/stocks/<stock_id>/<mediation_id>", methods=["GET"])
 @login_or_api_key_required
 def get_stock(stock_id, mediation_id):
     filters = request.args.copy()
-    query = find_stocks_with_possible_filters(filters, current_user).filter_by(
-        id=dehumanize(stock_id)
-    )
+    query = find_stocks_with_possible_filters(filters, current_user).filter_by(id=dehumanize(stock_id))
 
     if mediation_id is not None:
         mediation = load_or_404(MediationSQLEntity, mediation_id)
@@ -120,12 +116,8 @@ def edit_stock(stock_id: str, body: StockEditionBodyModel) -> StockResponseIdMod
     if stock_from_allocine_provider:
         stock_editable_fields = get_editable_fields_for_allocine_stocks()
         existing_stock_data = jsonify(as_dict(stock)).json
-        fields_to_update = get_only_fields_with_value_to_be_updated(
-            existing_stock_data, stock_data
-        )
-        check_only_editable_fields_will_be_updated(
-            fields_to_update, stock_editable_fields
-        )
+        fields_to_update = get_only_fields_with_value_to_be_updated(existing_stock_data, stock_data)
+        check_only_editable_fields_will_be_updated(fields_to_update, stock_editable_fields)
 
         stock.fieldsUpdated = fields_to_update
 
@@ -136,9 +128,7 @@ def edit_stock(stock_id: str, body: StockEditionBodyModel) -> StockResponseIdMod
         bookings = find_not_cancelled_bookings_by_stock(stock)
         if bookings:
             try:
-                send_batch_stock_postponement_emails_to_users(
-                    bookings, send_email=send_raw_email
-                )
+                send_batch_stock_postponement_emails_to_users(bookings, send_email=send_raw_email)
             except MailServiceException as mail_service_exception:
                 app.logger.exception("Email service failure", mail_service_exception)
 
@@ -162,9 +152,7 @@ def delete_stock(id: str) -> StockResponseIdModel:
     if bookings:
         try:
             send_batch_cancellation_emails_to_users(bookings, send_raw_email)
-            send_offerer_bookings_recap_email_after_offerer_cancellation(
-                bookings, send_raw_email
-            )
+            send_offerer_bookings_recap_email_after_offerer_cancellation(bookings, send_raw_email)
         except MailServiceException as e:
             app.logger.exception("Mail service failure", e)
 

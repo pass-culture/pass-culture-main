@@ -18,10 +18,8 @@ def read_things_date(date):
 
 def put_today_file_at_end_of_list(ordered_files_list, date_regexp):
     today = datetime.utcnow().day
-    files_after_today = list(filter(lambda f: get_date_from_filename(f, date_regexp) > today,
-                                    ordered_files_list))
-    files_before_today = list(filter(lambda f: get_date_from_filename(f, date_regexp) <= today,
-                                     ordered_files_list))
+    files_after_today = list(filter(lambda f: get_date_from_filename(f, date_regexp) > today, ordered_files_list))
+    files_before_today = list(filter(lambda f: get_date_from_filename(f, date_regexp) <= today, ordered_files_list))
     return files_after_today + files_before_today
 
 
@@ -32,5 +30,5 @@ def get_date_from_filename(filename: str, date_regexp: Pattern) -> int:
         real_filename = filename
     match = date_regexp.search(str(real_filename))
     if not match:
-        raise ValueError('Invalid filename in Titelive folder : %s' % filename)
+        raise ValueError("Invalid filename in Titelive folder : %s" % filename)
     return int(match.groups()[-1])

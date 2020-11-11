@@ -21,8 +21,10 @@ class UpdateIsActiveStatusTest:
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offers = [create_offer_with_event_product(venue, is_active=True),
-                  create_offer_with_event_product(venue, is_active=False)]
+        offers = [
+            create_offer_with_event_product(venue, is_active=True),
+            create_offer_with_event_product(venue, is_active=False),
+        ]
         status = True
 
         # when
@@ -37,8 +39,10 @@ class UpdateIsActiveStatusTest:
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offers = [create_offer_with_event_product(venue, is_active=True),
-                  create_offer_with_event_product(venue, is_active=False)]
+        offers = [
+            create_offer_with_event_product(venue, is_active=True),
+            create_offer_with_event_product(venue, is_active=False),
+        ]
         status = False
 
         # when
@@ -73,7 +77,7 @@ class IsFromAllocineTest:
         # Given
         offer = Offer()
         offer.lastProviderId = 1
-        offer.lastProvider = create_provider(local_class='AllocineStocks')
+        offer.lastProvider = create_provider(local_class="AllocineStocks")
 
         # When
         result = is_from_allocine(offer)
@@ -85,7 +89,7 @@ class IsFromAllocineTest:
         # Given
         offer = Offer()
         offer.lastProviderId = 2
-        offer.lastProvider = create_provider(local_class='OpenAgenda')
+        offer.lastProvider = create_provider(local_class="OpenAgenda")
 
         # When
         result = is_from_allocine(offer)

@@ -15,9 +15,7 @@ def initialize_offer_from_product_id(product_id: int) -> Offer:
     return offer
 
 
-def fill_offer_with_new_data(
-    product_dict: Dict[str, Any], user: UserSQLEntity
-) -> Offer:
+def fill_offer_with_new_data(product_dict: Dict[str, Any], user: UserSQLEntity) -> Offer:
     product = Product()
     url = product_dict.get("url")
     if url:

@@ -17,8 +17,8 @@ class Post:
             # given
             user = create_user(can_book_free_offers=False, is_admin=True)
             payment_message = create_payment_message(
-                name='passCulture-SCT-20181015-114356',
-                checksum=b'\x86\x05[(j\xfd\x111l\xd7\xca\xcd\x00\xe6\x104\xfd\xde\xdd\xa5\x0c#L\x01W\xa8\xf0\xdan0\x93\x1e'
+                name="passCulture-SCT-20181015-114356",
+                checksum=b"\x86\x05[(j\xfd\x111l\xd7\xca\xcd\x00\xe6\x104\xfd\xde\xdd\xa5\x0c#L\x01W\xa8\xf0\xdan0\x93\x1e",
             )
             repository.save(user, payment_message)
 
@@ -26,36 +26,31 @@ class Post:
 
             # when
             response = auth_request.post(
-                '/validate/payment_message',
-                files={'file': (BytesIO(VALID_MESSAGE.encode('utf-8')), 'message.xml')}
+                "/validate/payment_message", files={"file": (BytesIO(VALID_MESSAGE.encode("utf-8")), "message.xml")}
             )
 
             # then
             assert response.status_code == 200
-            assert response.json['checksum'] == '86055b286afd11316cd7cacd00e61034fddedda50c234c0157a8f0da6e30931e'
+            assert response.json["checksum"] == "86055b286afd11316cd7cacd00e61034fddedda50c234c0157a8f0da6e30931e"
 
     class Returns400:
         @pytest.mark.usefixtures("db_session")
         def when_given_checksum_does_not_match_known_checksum(self, app):
             # given
             user = create_user(can_book_free_offers=False, is_admin=True)
-            payment_message = create_payment_message(
-                name='passCulture-SCT-20181015-114356',
-                checksum=b'FAKE_CHECKSUM'
-            )
+            payment_message = create_payment_message(name="passCulture-SCT-20181015-114356", checksum=b"FAKE_CHECKSUM")
             repository.save(user, payment_message)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
             response = auth_request.post(
-                '/validate/payment_message',
-                files={'file': (BytesIO(VALID_MESSAGE.encode('utf-8')), 'message.xml')}
+                "/validate/payment_message", files={"file": (BytesIO(VALID_MESSAGE.encode("utf-8")), "message.xml")}
             )
 
             # then
             assert response.status_code == 400
-            assert response.json['xml'] == [
+            assert response.json["xml"] == [
                 "L'intégrité du document n'est pas validée car la somme de contrôle est invalide : "
                 "86055b286afd11316cd7cacd00e61034fddedda50c234c0157a8f0da6e30931e"
             ]
@@ -65,9 +60,9 @@ class Post:
         def when_current_user_is_not_logged_in(self, app):
             # when
             response = TestClient(app.test_client()).post(
-                '/validate/payment_message',
-                files={'file': (BytesIO(VALID_MESSAGE.encode('utf-8')), 'message.xml')},
-                headers={'origin': 'http://localhost:3000'}
+                "/validate/payment_message",
+                files={"file": (BytesIO(VALID_MESSAGE.encode("utf-8")), "message.xml")},
+                headers={"origin": "http://localhost:3000"},
             )
 
             # then
@@ -79,8 +74,8 @@ class Post:
             # given
             user = create_user(can_book_free_offers=True, is_admin=False)
             message = create_payment_message(
-                name='passCulture-SCT-20181015-114356',
-                checksum=b'\x86\x05[(j\xfd\x111l\xd7\xca\xcd\x00\xe6\x104\xfd\xde\xdd\xa5\x0c#L\x01W\xa8\xf0\xdan0\x93\x1e'
+                name="passCulture-SCT-20181015-114356",
+                checksum=b"\x86\x05[(j\xfd\x111l\xd7\xca\xcd\x00\xe6\x104\xfd\xde\xdd\xa5\x0c#L\x01W\xa8\xf0\xdan0\x93\x1e",
             )
             repository.save(user, message)
 
@@ -88,8 +83,7 @@ class Post:
 
             # when
             response = auth_request.post(
-                '/validate/payment_message',
-                files={'file': (BytesIO(VALID_MESSAGE.encode('utf-8')), 'message.xml')}
+                "/validate/payment_message", files={"file": (BytesIO(VALID_MESSAGE.encode("utf-8")), "message.xml")}
             )
 
             # then
@@ -106,12 +100,9 @@ class Post:
 
             # when
             response = auth_request.post(
-                '/validate/payment_message',
-                files={'file': (BytesIO(VALID_MESSAGE.encode('utf-8')), 'message.xml')}
+                "/validate/payment_message", files={"file": (BytesIO(VALID_MESSAGE.encode("utf-8")), "message.xml")}
             )
 
             # then
             assert response.status_code == 404
-            assert response.json['xml'] == [
-                "L'identifiant du document XML 'MsgId' est inconnu"
-            ]
+            assert response.json["xml"] == ["L'identifiant du document XML 'MsgId' est inconnu"]

@@ -19,10 +19,10 @@ class GetActiveVenueProvidersForSpecificProviderTest:
     def test_should_return_all_venue_provider_matching_provider_id(self, app):
         # Given
         offerer = create_offerer()
-        venue1 = create_venue(offerer, siret='12345678901234')
+        venue1 = create_venue(offerer, siret="12345678901234")
         venue2 = create_venue(offerer)
-        titelive_provider = activate_provider('TiteLiveStocks')
-        allocine_provider = activate_provider('AllocineStocks')
+        titelive_provider = activate_provider("TiteLiveStocks")
+        allocine_provider = activate_provider("AllocineStocks")
         venue_provider1 = create_venue_provider(venue1, titelive_provider)
         venue_provider2 = create_venue_provider(venue2, allocine_provider)
         repository.save(venue_provider1, venue_provider2)
@@ -37,9 +37,9 @@ class GetActiveVenueProvidersForSpecificProviderTest:
     def test_should_return_all_active_venue_providers_matching_provider_id(self, app):
         # Given
         offerer = create_offerer()
-        venue1 = create_venue(offerer, siret='12345678901234')
+        venue1 = create_venue(offerer, siret="12345678901234")
         venue2 = create_venue(offerer)
-        titelive_provider = activate_provider('TiteLiveStocks')
+        titelive_provider = activate_provider("TiteLiveStocks")
         venue_provider1 = create_venue_provider(venue1, titelive_provider)
         venue_provider2 = create_venue_provider(venue2, titelive_provider, is_active=False)
         repository.save(venue_provider1, venue_provider2)
@@ -57,8 +57,8 @@ class GetVenueProvidersToSyncTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        titelive_provider = activate_provider('TiteLiveStocks')
-        allocine_provider = activate_provider('AllocineStocks')
+        titelive_provider = activate_provider("TiteLiveStocks")
+        allocine_provider = activate_provider("AllocineStocks")
         venue_provider_titelive = create_venue_provider(venue, titelive_provider)
         venue_provider_allocine = create_venue_provider(venue, allocine_provider)
         repository.save(venue_provider_titelive, venue_provider_allocine)
@@ -73,12 +73,13 @@ class GetVenueProvidersToSyncTest:
     def test_should_return_venue_provider_with_no_worker_id(self, app):
         # Given
         offerer = create_offerer()
-        venue_1 = create_venue(offerer, siret='12345678901234')
+        venue_1 = create_venue(offerer, siret="12345678901234")
         venue_2 = create_venue(offerer)
-        titelive_provider = activate_provider('TiteLiveStocks')
+        titelive_provider = activate_provider("TiteLiveStocks")
         venue_provider_1 = create_venue_provider(venue_1, titelive_provider, last_sync_date=None, sync_worker_id=None)
-        venue_provider_2 = create_venue_provider(venue_2, titelive_provider, last_sync_date=None,
-                                                 sync_worker_id='123456789098765432345634')
+        venue_provider_2 = create_venue_provider(
+            venue_2, titelive_provider, last_sync_date=None, sync_worker_id="123456789098765432345634"
+        )
         repository.save(venue_provider_1, venue_provider_2)
 
         # When
@@ -93,11 +94,11 @@ class GetNbContainersAtWorkTest:
     def test_should_return_number_of_venue_provider_with_worker_id(self, app):
         # Given
         offerer = create_offerer()
-        venue_1 = create_venue(offerer, siret='12345678901234')
+        venue_1 = create_venue(offerer, siret="12345678901234")
         venue_2 = create_venue(offerer)
-        titelive_provider = activate_provider('TiteLiveStocks')
+        titelive_provider = activate_provider("TiteLiveStocks")
         venue_provider_1 = create_venue_provider(venue_1, titelive_provider)
-        venue_provider_2 = create_venue_provider(venue_2, titelive_provider, sync_worker_id='1234567')
+        venue_provider_2 = create_venue_provider(venue_2, titelive_provider, sync_worker_id="1234567")
         repository.save(venue_provider_1, venue_provider_2)
 
         # When
@@ -113,7 +114,7 @@ class GetVenueProviderByIdTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        titelive_provider = activate_provider('TiteLiveStocks')
+        titelive_provider = activate_provider("TiteLiveStocks")
         venue_provider = create_venue_provider(venue, titelive_provider)
         repository.save(venue_provider)
 
@@ -129,7 +130,7 @@ class GetVenueProviderByIdTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        titelive_provider = activate_provider('AllocineStocks')
+        titelive_provider = activate_provider("AllocineStocks")
         venue_provider = create_allocine_venue_provider(venue, titelive_provider)
         repository.save(venue_provider)
 

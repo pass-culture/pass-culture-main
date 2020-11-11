@@ -13,7 +13,7 @@ def should_create_link_between_siret_and_theater(app):
     offerer = create_offerer()
     venue = create_venue(offerer)
     repository.save(venue)
-    theater_id = 'XXXXXXXXXXXXXXXXXX=='
+    theater_id = "XXXXXXXXXXXXXXXXXX=="
 
     # When
     link_theater_to_siret(venue.siret, theater_id)

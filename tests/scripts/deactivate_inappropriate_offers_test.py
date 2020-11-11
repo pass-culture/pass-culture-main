@@ -13,13 +13,13 @@ from pcapi.scripts.deactivate_inappropriate_offers import deactivate_inappropria
 
 
 class DeactivateInappropriateOffersTest:
-    @patch('pcapi.scripts.deactivate_inappropriate_offers.redis')
+    @patch("pcapi.scripts.deactivate_inappropriate_offers.redis")
     @pytest.mark.usefixtures("db_session")
     def test_should_deactivate_offers_with_inappropriate_content(self, mocked_redis, app):
         # Given
         offerer = create_offerer()
-        product_1 = create_product_with_thing_type(description='premier produit inapproprié')
-        product_2 = create_product_with_thing_type(description='second produit inapproprié')
+        product_1 = create_product_with_thing_type(description="premier produit inapproprié")
+        product_2 = create_product_with_thing_type(description="second produit inapproprié")
         venue = create_venue(offerer)
         offer_1 = create_offer_with_thing_product(product=product_1, venue=venue)
         offer_2 = create_offer_with_thing_product(product=product_2, venue=venue)

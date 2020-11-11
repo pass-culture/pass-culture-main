@@ -13,7 +13,6 @@ from pcapi.repository import repository
 
 
 class StockSQLRepositoryTest:
-
     def setup_method(self):
         self.stock_sql_repository = StockSQLRepository()
 
@@ -24,10 +23,7 @@ class StockSQLRepositoryTest:
         venue = create_venue(offerer)
         thing_offer = create_offer_with_thing_product(venue)
         stock_sql_entity = create_stock_from_offer(
-            offer=thing_offer,
-            quantity=2,
-            price=10,
-            booking_limit_datetime=datetime(2020, 3, 18)
+            offer=thing_offer, quantity=2, price=10, booking_limit_datetime=datetime(2020, 3, 18)
         )
         repository.save(stock_sql_entity)
 
@@ -41,7 +37,7 @@ class StockSQLRepositoryTest:
             beginning_datetime=None,
             booking_limit_datetime=datetime(2020, 3, 18),
             price=10,
-            offer=thing_offer
+            offer=thing_offer,
         )
         assert type(stock) == Stock
         assert self._are_stocks_equals(stock, expected_stock)
@@ -55,11 +51,13 @@ class StockSQLRepositoryTest:
             self.stock_sql_repository.find_stock_by_id(unknown_id)
 
         # Then
-        assert error.value.errors['stockId'] == ['stockId ne correspond à aucun stock']
+        assert error.value.errors["stockId"] == ["stockId ne correspond à aucun stock"]
 
     def _are_stocks_equals(self, stock1: Stock, stock2: Stock) -> bool:
-        return stock1.quantity == stock2.quantity \
-               and stock1.bookingLimitDatetime == stock2.bookingLimitDatetime \
-               and stock1.beginningDatetime == stock2.beginningDatetime \
-               and stock1.price == stock2.price \
-               and stock1.offer == stock2.offer
+        return (
+            stock1.quantity == stock2.quantity
+            and stock1.bookingLimitDatetime == stock2.bookingLimitDatetime
+            and stock1.beginningDatetime == stock2.beginningDatetime
+            and stock1.price == stock2.price
+            and stock1.offer == stock2.offer
+        )

@@ -11,16 +11,14 @@ from pcapi.repository import repository
 
 class ProOffererAttachmentValidationEmailTest:
     @pytest.mark.usefixtures("db_session")
-    @patch('pcapi.emails.offerer_ongoing_attachment.feature_send_mail_to_users_enabled', return_value=False)
-    @patch('pcapi.emails.offerer_ongoing_attachment.format_environment_for_email', return_value='-testing')
-    @patch('pcapi.emails.offerer_ongoing_attachment.find_user_offerer_email', return_value='pro@example.com')
-    def test_should_return_data_email_with_dev_email_address_when_not_in_production(self,
-                                                                                    feature_send_mail_to_users_enabled,
-                                                                                    format_environment_for_email,
-                                                                                    find_user_offerer_email,
-                                                                                    app):
+    @patch("pcapi.emails.offerer_ongoing_attachment.feature_send_mail_to_users_enabled", return_value=False)
+    @patch("pcapi.emails.offerer_ongoing_attachment.format_environment_for_email", return_value="-testing")
+    @patch("pcapi.emails.offerer_ongoing_attachment.find_user_offerer_email", return_value="pro@example.com")
+    def test_should_return_data_email_with_dev_email_address_when_not_in_production(
+        self, feature_send_mail_to_users_enabled, format_environment_for_email, find_user_offerer_email, app
+    ):
         # Given
-        offerer = create_offerer(name='Le Théâtre SAS')
+        offerer = create_offerer(name="Le Théâtre SAS")
         pro_user = create_user()
         user_offerer = create_user_offerer(pro_user, offerer)
 
@@ -31,30 +29,23 @@ class ProOffererAttachmentValidationEmailTest:
 
         # Then
         assert offerer_attachment_validation_email == {
-            'FromEmail': 'support@example.com',
-            'MJ-TemplateID': 778749,
-            'MJ-TemplateLanguage': True,
-            'To': 'dev@example.com',
-            'Vars':
-                {
-                    'nom_structure': 'Le Théâtre SAS',
-                    'env': '-testing'
-                }
+            "FromEmail": "support@example.com",
+            "MJ-TemplateID": 778749,
+            "MJ-TemplateLanguage": True,
+            "To": "dev@example.com",
+            "Vars": {"nom_structure": "Le Théâtre SAS", "env": "-testing"},
         }
 
     @pytest.mark.usefixtures("db_session")
-    @patch('pcapi.emails.offerer_ongoing_attachment.feature_send_mail_to_users_enabled', return_value=True)
-    @patch('pcapi.emails.offerer_ongoing_attachment.format_environment_for_email', return_value='')
-    @patch('pcapi.emails.offerer_ongoing_attachment.find_user_offerer_email',
-           return_value='pro@example.com')
-    def test_should_return_data_email_with_pro_email_address_when_environment_is_production(self,
-                                                                                            feature_send_mail_to_users_enabled,
-                                                                                            format_environment_for_email,
-                                                                                            find_user_offerer_email,
-                                                                                            app):
+    @patch("pcapi.emails.offerer_ongoing_attachment.feature_send_mail_to_users_enabled", return_value=True)
+    @patch("pcapi.emails.offerer_ongoing_attachment.format_environment_for_email", return_value="")
+    @patch("pcapi.emails.offerer_ongoing_attachment.find_user_offerer_email", return_value="pro@example.com")
+    def test_should_return_data_email_with_pro_email_address_when_environment_is_production(
+        self, feature_send_mail_to_users_enabled, format_environment_for_email, find_user_offerer_email, app
+    ):
         # Given
-        offerer = create_offerer(name='Le Théâtre SAS')
-        pro_user = create_user(email='pro@example.com')
+        offerer = create_offerer(name="Le Théâtre SAS")
+        pro_user = create_user(email="pro@example.com")
         user_offerer = create_user_offerer(pro_user, offerer)
 
         repository.save(user_offerer)
@@ -64,13 +55,9 @@ class ProOffererAttachmentValidationEmailTest:
 
         # Then
         assert offerer_attachment_validation_email == {
-            'FromEmail': 'support@example.com',
-            'MJ-TemplateID': 778749,
-            'MJ-TemplateLanguage': True,
-            'To': 'pro@example.com',
-            'Vars':
-                {
-                    'nom_structure': 'Le Théâtre SAS',
-                    'env': ''
-                }
+            "FromEmail": "support@example.com",
+            "MJ-TemplateID": 778749,
+            "MJ-TemplateLanguage": True,
+            "To": "pro@example.com",
+            "Vars": {"nom_structure": "Le Théâtre SAS", "env": ""},
         }

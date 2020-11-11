@@ -14,8 +14,7 @@ CHUNK_SIZE = 1000
 
 def get_pc_object_by_id_in_database(pc_object_id: int, pc_model: Model) -> Optional[Model]:
     connection = db.engine.connect()
-    query = select([pc_model]). \
-        where(pc_model.id == pc_object_id)
+    query = select([pc_model]).where(pc_model.id == pc_object_id)
     db_object_dict = connection.execute(query).fetchone()
     if db_object_dict:
         return _dict_to_object(db_object_dict, pc_model)

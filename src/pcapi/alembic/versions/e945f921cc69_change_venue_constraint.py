@@ -9,17 +9,17 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = 'e945f921cc69'
-down_revision = 'de36871d256e'
+revision = "e945f921cc69"
+down_revision = "de36871d256e"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.drop_constraint('check_is_virtual_xor_has_address', 'venue')
+    op.drop_constraint("check_is_virtual_xor_has_address", "venue")
     op.create_check_constraint(
-        constraint_name='check_is_virtual_xor_has_address',
-        table_name='venue',
+        constraint_name="check_is_virtual_xor_has_address",
+        table_name="venue",
         condition="""
         (
             "isVirtual" IS TRUE
@@ -37,18 +37,20 @@ def upgrade():
             AND (siret is NULL and comment is NOT NULL)
             AND (address IS NOT NULL AND "postalCode" IS NOT NULL AND city IS NOT NULL AND "departementCode" IS NOT NULL)
         )
-        """
+        """,
     )
 
 
 def downgrade():
-    op.drop_constraint('check_is_virtual_xor_has_address', 'venue')
-    op.execute("""
+    op.drop_constraint("check_is_virtual_xor_has_address", "venue")
+    op.execute(
+        """
         UPDATE venue SET address = '' WHERE siret IS NOT NULL AND address IS NULL;
-    """)
+    """
+    )
     op.create_check_constraint(
-        constraint_name='check_is_virtual_xor_has_address',
-        table_name='venue',
+        constraint_name="check_is_virtual_xor_has_address",
+        table_name="venue",
         condition="""
         (
             "isVirtual" IS TRUE
@@ -59,5 +61,5 @@ def downgrade():
             "isVirtual" IS FALSE
             AND (address IS NOT NULL AND "postalCode" IS NOT NULL AND city IS NOT NULL AND "departementCode" IS NOT NULL)
         )
-        """
-)
+        """,
+    )

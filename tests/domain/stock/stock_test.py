@@ -12,7 +12,7 @@ from pcapi.model_creators.specific_creators import create_stock_from_offer
 
 
 class HasBookingLimitDatetimePassedTest:
-    @freeze_time('2019-07-10')
+    @freeze_time("2019-07-10")
     def test_should_return_true_when_booking_limit_datetime_is_in_the_past(self):
         # Given
         stock = Stock(
@@ -32,7 +32,7 @@ class HasBookingLimitDatetimePassedTest:
         # Then
         assert has_booking_limit_datetime_passed
 
-    @freeze_time('2019-07-10')
+    @freeze_time("2019-07-10")
     def test_should_return_false_when_booking_limit_datetime_is_in_the_future(self):
         # Given
         stock = Stock(
@@ -52,7 +52,7 @@ class HasBookingLimitDatetimePassedTest:
         # Then
         assert not has_booking_limit_datetime_passed
 
-    @freeze_time('2019-07-10')
+    @freeze_time("2019-07-10")
     def test_should_return_false_when_no_booking_datetime_limit(self):
         # Given
         stock = Stock(
@@ -214,4 +214,4 @@ class StockRemainingQuantityTest:
         remaining_quantity = stock.remaining_quantity()
 
         # Then
-        assert remaining_quantity == 'unlimited'
+        assert remaining_quantity == "unlimited"

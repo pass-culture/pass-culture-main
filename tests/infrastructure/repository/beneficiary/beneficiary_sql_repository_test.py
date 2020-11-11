@@ -15,8 +15,14 @@ class BeneficiarySQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_user_with_correct_information(self, app):
         # Given
-        beneficiary_sql_entity = create_user(idx=12, can_book_free_offers=True, email='john.doe@example.com',
-                                             first_name='John', last_name='Doe', departement_code='75')
+        beneficiary_sql_entity = create_user(
+            idx=12,
+            can_book_free_offers=True,
+            email="john.doe@example.com",
+            first_name="John",
+            last_name="Doe",
+            departement_code="75",
+        )
         create_deposit(user=beneficiary_sql_entity, amount=230)
         repository.save(beneficiary_sql_entity)
 
@@ -27,12 +33,12 @@ class BeneficiarySQLRepositoryTest:
         expected_user = Beneficiary(
             identifier=beneficiary_sql_entity.id,
             can_book_free_offers=True,
-            email='john.doe@example.com',
-            first_name='John',
-            last_name='Doe',
-            department_code='75',
+            email="john.doe@example.com",
+            first_name="John",
+            last_name="Doe",
+            department_code="75",
             wallet_balance=230,
-            reset_password_token=''
+            reset_password_token="",
         )
         assert isinstance(user, Beneficiary)
         assert user.identifier == expected_user.identifier
@@ -52,4 +58,4 @@ class BeneficiarySQLRepositoryTest:
             self.beneficiary_sql_repository.find_beneficiary_by_user_id(unknown_id)
 
         # Then
-        assert error.value.errors['userId'] == ['userId ne correspond à aucun bénéficiaire']
+        assert error.value.errors["userId"] == ["userId ne correspond à aucun bénéficiaire"]

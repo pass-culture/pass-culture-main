@@ -23,18 +23,11 @@ from pcapi.models.pc_object import PcObject
 
 
 class Payment(PcObject, Model):
-    id = Column(BigInteger,
-                primary_key=True,
-                autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    bookingId = Column(BigInteger,
-                       ForeignKey("booking.id"),
-                       index=True,
-                       nullable=False)
+    bookingId = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
 
-    booking = relationship('Booking',
-                           foreign_keys=[bookingId],
-                           backref='payments')
+    booking = relationship("Booking", foreign_keys=[bookingId], backref="payments")
 
     amount = Column(Numeric(10, 2), nullable=False)
 
@@ -48,10 +41,14 @@ class Payment(PcObject, Model):
 
     iban = Column(String(27), nullable=True)
 
-    bic = Column(String(11),
-                 CheckConstraint('(iban IS NULL AND bic IS NULL) OR (iban IS NOT NULL AND bic IS NOT NULL)',
-                                 name='check_iban_and_bic_xor_not_iban_and_not_bic'),
-                 nullable=True)
+    bic = Column(
+        String(11),
+        CheckConstraint(
+            "(iban IS NULL AND bic IS NULL) OR (iban IS NOT NULL AND bic IS NOT NULL)",
+            name="check_iban_and_bic_xor_not_iban_and_not_bic",
+        ),
+        nullable=True,
+    )
 
     comment = Column(Text, nullable=True)
 
@@ -61,13 +58,9 @@ class Payment(PcObject, Model):
 
     transactionLabel = Column(String(140), nullable=True)
 
-    paymentMessageId = Column(BigInteger,
-                              ForeignKey('payment_message.id'),
-                              nullable=True)
+    paymentMessageId = Column(BigInteger, ForeignKey("payment_message.id"), nullable=True)
 
-    paymentMessage = relationship('PaymentMessage',
-                                  foreign_keys=[paymentMessageId],
-                                  backref=backref("payments"))
+    paymentMessage = relationship("PaymentMessage", foreign_keys=[paymentMessageId], backref=backref("payments"))
 
     @property
     def paymentMessageName(self):
@@ -79,18 +72,18 @@ class Payment(PcObject, Model):
 
     @hybrid_property
     def currentStatus(self):
-        statuses_by_date_desc = sorted(
-            self.statuses, key=lambda x: x.date, reverse=True)
+        statuses_by_date_desc = sorted(self.statuses, key=lambda x: x.date, reverse=True)
         return statuses_by_date_desc[0]
 
     @currentStatus.expression
     def currentStatus(cls):
-        return db.session \
-            .query(PaymentStatus.status) \
-            .filter(PaymentStatus.paymentId == cls.id) \
-            .order_by(desc(PaymentStatus.date)) \
-            .limit(1) \
+        return (
+            db.session.query(PaymentStatus.status)
+            .filter(PaymentStatus.paymentId == cls.id)
+            .order_by(desc(PaymentStatus.date))
+            .limit(1)
             .as_scalar()
+        )
 
     @hybrid_property
     def lastProcessedDate(self):
@@ -100,13 +93,14 @@ class Payment(PcObject, Model):
 
     @lastProcessedDate.expression
     def lastProcessedDate(cls):
-        return db.session \
-            .query(PaymentStatus.date) \
-            .filter(PaymentStatus.paymentId == cls.id) \
-            .filter(PaymentStatus.status == TransactionStatus.SENT) \
-            .order_by(PaymentStatus.date.asc()) \
-            .limit(1) \
+        return (
+            db.session.query(PaymentStatus.date)
+            .filter(PaymentStatus.paymentId == cls.id)
+            .filter(PaymentStatus.status == TransactionStatus.SENT)
+            .order_by(PaymentStatus.date.asc())
+            .limit(1)
             .as_scalar()
+        )
 
     def setStatus(self, status: TransactionStatus, detail: str = None):
         payment_status = PaymentStatus()

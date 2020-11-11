@@ -18,7 +18,7 @@ class DeleteUserSessionTest:
         try:
             delete_user_session(user_id, session_id)
         except:
-            pytest.fail('Should not raise an error when no session found')
+            pytest.fail("Should not raise an error when no session found")
 
     @pytest.mark.usefixtures("db_session")
     def test_remove_session_for_user(self, app):

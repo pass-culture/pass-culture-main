@@ -34,14 +34,14 @@ def process_eligible_offers(client: Redis, offer_ids: List[int], from_provider_u
                 offer_details = get_offer_details(client=client, offer_id=offer.id)
                 if offer_details and is_eligible_for_reindexing(offer, offer_details):
                     offers_to_add.append(build_object(offer=offer))
-                    add_to_indexed_offers(pipeline=pipeline,
-                                          offer_id=offer.id,
-                                          offer_details=_build_offer_details_to_be_indexed(offer))
+                    add_to_indexed_offers(
+                        pipeline=pipeline, offer_id=offer.id, offer_details=_build_offer_details_to_be_indexed(offer)
+                    )
             else:
                 offers_to_add.append(build_object(offer=offer))
-                add_to_indexed_offers(pipeline=pipeline,
-                                      offer_id=offer.id,
-                                      offer_details=_build_offer_details_to_be_indexed(offer))
+                add_to_indexed_offers(
+                    pipeline=pipeline, offer_id=offer.id, offer_details=_build_offer_details_to_be_indexed(offer)
+                )
         else:
             if offer_exists:
                 offers_to_delete.append(offer.id)
@@ -53,7 +53,7 @@ def process_eligible_offers(client: Redis, offer_ids: List[int], from_provider_u
         _process_deleting(client=client, offer_ids_to_delete=offers_to_delete)
 
     if len(offers_to_add) == 0 and len(offers_to_delete):
-        logger.info(f'[ALGOLIA] no objects were added nor deleted!')
+        logger.info(f"[ALGOLIA] no objects were added nor deleted!")
 
 
 def delete_expired_offers(client: Redis, offer_ids: List[int]) -> None:
@@ -76,21 +76,17 @@ def _build_offer_details_to_be_indexed(offer: Offer) -> dict:
     if offer.isEvent:
         event_dates = list(map(lambda stock: datetime.timestamp(stock.beginningDatetime), stocks))
 
-    return {
-        'name': offer.name,
-        'dates': event_dates,
-        'prices': prices
-    }
+    return {"name": offer.name, "dates": event_dates, "prices": prices}
 
 
 def _process_adding(pipeline: Pipeline, client: Redis, offer_ids: List[int], adding_objects: List[dict]) -> None:
     try:
         add_objects(objects=adding_objects)
-        logger.info(f'[ALGOLIA] {len(adding_objects)} objects were indexed!')
+        logger.info(f"[ALGOLIA] {len(adding_objects)} objects were indexed!")
         pipeline.execute()
         pipeline.reset()
     except AlgoliaException as error:
-        logger.exception(f'[ALGOLIA] error when adding objects {error}')
+        logger.exception(f"[ALGOLIA] error when adding objects {error}")
         add_offer_ids_in_error(client=client, offer_ids=offer_ids)
         pipeline.reset()
         pass
@@ -101,7 +97,7 @@ def _process_deleting(client: Redis, offer_ids_to_delete: List[int]) -> None:
     try:
         delete_objects(object_ids=humanized_offer_ids_to_delete)
         delete_indexed_offers(client=client, offer_ids=offer_ids_to_delete)
-        logger.info(f'[ALGOLIA] {len(offer_ids_to_delete)} objects were deleted from index!')
+        logger.info(f"[ALGOLIA] {len(offer_ids_to_delete)} objects were deleted from index!")
     except AlgoliaException as error:
-        logger.exception(f'[ALGOLIA] error when deleting objects {error}')
+        logger.exception(f"[ALGOLIA] error when deleting objects {error}")
         add_offer_ids_in_error(client=client, offer_ids=offer_ids_to_delete)

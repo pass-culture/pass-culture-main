@@ -9,16 +9,8 @@ from pcapi.sandboxes.scripts.utils.helpers import get_recommendation_helper
 
 def get_existing_webapp_user_with_no_date_read():
     query = keep_only_webapp_users(UserSQLEntity.query)
-    query = query.filter_by(
-        needsToFillCulturalSurvey=False,
-        resetPasswordToken=None,
-        hasSeenTutorials=True
-    )
-    query = query.filter(
-        ~UserSQLEntity.recommendations.any(
-            Recommendation.dateRead != None
-        )
-    )
+    query = query.filter_by(needsToFillCulturalSurvey=False, resetPasswordToken=None, hasSeenTutorials=True)
+    query = query.filter(~UserSQLEntity.recommendations.any(Recommendation.dateRead != None))
     user = query.first()
 
     return {
@@ -34,7 +26,7 @@ def get_existing_webapp_user_with_at_least_one_recommendation():
     recommendation = query.first()
     return {
         "user": get_beneficiary_helper(recommendation.user),
-        "recommendation": get_recommendation_helper(recommendation)
+        "recommendation": get_recommendation_helper(recommendation),
     }
 
 
@@ -43,6 +35,4 @@ def get_existing_webapp_user_with_bookings():
     query = query.join(Booking)
     user = query.first()
 
-    return {
-        "user": get_beneficiary_helper(user)
-    }
+    return {"user": get_beneficiary_helper(user)}

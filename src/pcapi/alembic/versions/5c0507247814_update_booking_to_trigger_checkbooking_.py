@@ -10,27 +10,31 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5c0507247814'
-down_revision = '2b6541bb0076'
+revision = "5c0507247814"
+down_revision = "2b6541bb0076"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.execute('''
+    op.execute(
+        """
         DROP TRIGGER IF EXISTS booking_update ON booking;
         CREATE CONSTRAINT TRIGGER booking_update 
         AFTER INSERT 
         OR UPDATE OF quantity, amount, "isCancelled", "isUsed", "userId"  
         ON booking
         FOR EACH ROW EXECUTE PROCEDURE check_booking()
-    ''')
+    """
+    )
 
 
 def downgrade():
-    op.execute('''
+    op.execute(
+        """
         DROP TRIGGER IF EXISTS booking_update ON booking;
         CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
         ON booking
         FOR EACH ROW EXECUTE PROCEDURE check_booking()
-    ''')
+    """
+    )

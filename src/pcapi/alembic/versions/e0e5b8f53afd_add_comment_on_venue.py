@@ -10,14 +10,14 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e0e5b8f53afd'
-down_revision = 'caafac8f5105'
+revision = "e0e5b8f53afd"
+down_revision = "caafac8f5105"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.add_column('venue', sa.Column('comment', sa.TEXT, nullable=True))
+    op.add_column("venue", sa.Column("comment", sa.TEXT, nullable=True))
     op.execute(
         """
         UPDATE venue
@@ -27,16 +27,16 @@ def upgrade():
         """
     )
     op.create_check_constraint(
-        constraint_name='check_has_siret_xor_comment_xor_isVirtual',
-        table_name='venue',
+        constraint_name="check_has_siret_xor_comment_xor_isVirtual",
+        table_name="venue",
         condition="""
         (siret IS NULL AND comment IS NULL AND "isVirtual" IS TRUE)
         OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
         OR (siret IS NOT NULL AND comment IS NULL AND "isVirtual" IS FALSE)
-        """
+        """,
     )
 
 
 def downgrade():
-    op.drop_constraint('check_has_siret_xor_comment_xor_isVirtual', 'venue')
-    op.drop_column('venue', 'comment')
+    op.drop_constraint("check_has_siret_xor_comment_xor_isVirtual", "venue")
+    op.drop_column("venue", "comment")

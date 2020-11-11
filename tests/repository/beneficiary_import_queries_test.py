@@ -21,8 +21,9 @@ class IsAlreadyImportedTest:
         # given
         now = datetime.utcnow()
         beneficiary = create_user(date_created=now)
-        beneficiary_import = create_beneficiary_import(user=beneficiary, status=ImportStatus.CREATED,
-                                                       application_id=123)
+        beneficiary_import = create_beneficiary_import(
+            user=beneficiary, status=ImportStatus.CREATED, application_id=123
+        )
 
         repository.save(beneficiary_import)
 
@@ -37,9 +38,9 @@ class IsAlreadyImportedTest:
         # given
         now = datetime.utcnow()
         beneficiary = create_user(date_created=now)
-        beneficiary_import = create_beneficiary_import(user=beneficiary,
-                                                       status=ImportStatus.DUPLICATE,
-                                                       application_id=123)
+        beneficiary_import = create_beneficiary_import(
+            user=beneficiary, status=ImportStatus.DUPLICATE, application_id=123
+        )
 
         repository.save(beneficiary_import)
 
@@ -54,9 +55,9 @@ class IsAlreadyImportedTest:
         # given
         now = datetime.utcnow()
         beneficiary = create_user(date_created=now)
-        beneficiary_import = create_beneficiary_import(user=beneficiary,
-                                                       status=ImportStatus.REJECTED,
-                                                       application_id=123)
+        beneficiary_import = create_beneficiary_import(
+            user=beneficiary, status=ImportStatus.REJECTED, application_id=123
+        )
 
         repository.save(beneficiary_import)
 
@@ -71,9 +72,7 @@ class IsAlreadyImportedTest:
         # given
         now = datetime.utcnow()
         beneficiary = create_user(date_created=now)
-        beneficiary_import = create_beneficiary_import(user=beneficiary,
-                                                       status=ImportStatus.ERROR,
-                                                       application_id=123)
+        beneficiary_import = create_beneficiary_import(user=beneficiary, status=ImportStatus.ERROR, application_id=123)
 
         repository.save(beneficiary_import)
 
@@ -88,9 +87,7 @@ class IsAlreadyImportedTest:
         # given
         now = datetime.utcnow()
         beneficiary = create_user(date_created=now)
-        beneficiary_import = create_beneficiary_import(user=beneficiary,
-                                                       status=ImportStatus.RETRY,
-                                                       application_id=123)
+        beneficiary_import = create_beneficiary_import(user=beneficiary, status=ImportStatus.RETRY, application_id=123)
 
         repository.save(beneficiary_import)
 
@@ -105,9 +102,9 @@ class IsAlreadyImportedTest:
         # given
         now = datetime.utcnow()
         beneficiary = create_user(date_created=now)
-        beneficiary_import = create_beneficiary_import(user=beneficiary,
-                                                       status=ImportStatus.CREATED,
-                                                       application_id=123)
+        beneficiary_import = create_beneficiary_import(
+            user=beneficiary, status=ImportStatus.CREATED, application_id=123
+        )
 
         repository.save(beneficiary_import)
 
@@ -122,8 +119,13 @@ class SaveBeneficiaryImportWithStatusTest:
     @pytest.mark.usefixtures("db_session")
     def test_a_status_is_set_on_a_new_import(self, app):
         # when
-        save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=14562,
-                                            user=None)
+        save_beneficiary_import_with_status(
+            ImportStatus.DUPLICATE,
+            123,
+            source=BeneficiaryImportSources.demarches_simplifiees,
+            source_id=14562,
+            user=None,
+        )
 
         # then
         beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
@@ -132,8 +134,13 @@ class SaveBeneficiaryImportWithStatusTest:
     @pytest.mark.usefixtures("db_session")
     def test_a_beneficiary_import_is_saved_with_all_fields(self, app):
         # when
-        save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=145236,
-                                            user=None)
+        save_beneficiary_import_with_status(
+            ImportStatus.DUPLICATE,
+            123,
+            source=BeneficiaryImportSources.demarches_simplifiees,
+            source_id=145236,
+            user=None,
+        )
 
         # then
         beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
@@ -146,13 +153,23 @@ class SaveBeneficiaryImportWithStatusTest:
         # given
         two_days_ago = datetime.utcnow() - timedelta(days=2)
         with freeze_time(two_days_ago):
-            save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=14562,
-                                                user=None)
+            save_beneficiary_import_with_status(
+                ImportStatus.DUPLICATE,
+                123,
+                source=BeneficiaryImportSources.demarches_simplifiees,
+                source_id=14562,
+                user=None,
+            )
         beneficiary = create_user()
 
         # when
-        save_beneficiary_import_with_status(ImportStatus.CREATED, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=14562,
-                                            user=beneficiary)
+        save_beneficiary_import_with_status(
+            ImportStatus.CREATED,
+            123,
+            source=BeneficiaryImportSources.demarches_simplifiees,
+            source_id=14562,
+            user=beneficiary,
+        )
 
         # then
         beneficiary_imports = BeneficiaryImport.query.filter_by(applicationId=123).all()
@@ -166,12 +183,22 @@ class SaveBeneficiaryImportWithStatusTest:
         two_days_ago = datetime.utcnow() - timedelta(days=2)
         beneficiary = create_user()
         with freeze_time(two_days_ago):
-            save_beneficiary_import_with_status(ImportStatus.CREATED, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=14562,
-                                                user=beneficiary)
+            save_beneficiary_import_with_status(
+                ImportStatus.CREATED,
+                123,
+                source=BeneficiaryImportSources.demarches_simplifiees,
+                source_id=14562,
+                user=beneficiary,
+            )
 
         # When
-        save_beneficiary_import_with_status(ImportStatus.REJECTED, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=14562,
-                                            user=None)
+        save_beneficiary_import_with_status(
+            ImportStatus.REJECTED,
+            123,
+            source=BeneficiaryImportSources.demarches_simplifiees,
+            source_id=14562,
+            user=None,
+        )
 
         # Then
         beneficiary_imports = BeneficiaryImport.query.filter_by(applicationId=123).first()
@@ -186,7 +213,7 @@ class FindApplicationsIdsToRetryTest:
         imports = [
             create_beneficiary_import(status=ImportStatus.RETRY, application_id=456),
             create_beneficiary_import(status=ImportStatus.RETRY, application_id=123),
-            create_beneficiary_import(user=beneficiary, status=ImportStatus.CREATED, application_id=789)
+            create_beneficiary_import(user=beneficiary, status=ImportStatus.CREATED, application_id=789),
         ]
 
         repository.save(*imports)
@@ -204,7 +231,7 @@ class FindApplicationsIdsToRetryTest:
         imports = [
             create_beneficiary_import(status=ImportStatus.DUPLICATE, application_id=456),
             create_beneficiary_import(status=ImportStatus.ERROR, application_id=123),
-            create_beneficiary_import(user=beneficiary, status=ImportStatus.CREATED, application_id=789)
+            create_beneficiary_import(user=beneficiary, status=ImportStatus.CREATED, application_id=789),
         ]
 
         repository.save(*imports)

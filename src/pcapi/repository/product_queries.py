@@ -19,12 +19,9 @@ class ProductWithBookingsException(Exception):
 
 
 def delete_unwanted_existing_product(isbn: str):
-    product_has_at_least_one_booking = Product.query \
-        .filter_by(idAtProviders=isbn) \
-        .join(Offer) \
-        .join(StockSQLEntity) \
-        .join(Booking) \
-        .count() > 0
+    product_has_at_least_one_booking = (
+        Product.query.filter_by(idAtProviders=isbn).join(Offer).join(StockSQLEntity).join(Booking).count() > 0
+    )
     product = find_active_book_product_by_isbn(isbn)
 
     if not product:
@@ -58,8 +55,9 @@ def find_by_id(product_id: int) -> Product:
 
 
 def find_active_book_product_by_isbn(isbn: str) -> Optional[Product]:
-    return Product.query \
-        .filter(Product.isGcuCompatible) \
-        .filter(Product.type == str(ThingType.LIVRE_EDITION)) \
-        .filter(Product.idAtProviders == isbn) \
+    return (
+        Product.query.filter(Product.isGcuCompatible)
+        .filter(Product.type == str(ThingType.LIVRE_EDITION))
+        .filter(Product.idAtProviders == isbn)
         .one_or_none()
+    )

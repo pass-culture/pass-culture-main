@@ -16,11 +16,11 @@ def retrieve_data_for_reset_password_user_email(user: UserSQLEntity) -> Dict:
     env = format_environment_for_email()
 
     return {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'MJ-TemplateID': 912168,
-        'MJ-TemplateLanguage': True,
-        'To': user_email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-        'Vars': {'prenom_user': user_first_name, 'token': user_reset_password_token, 'env': env},
+        "FromEmail": SUPPORT_EMAIL_ADDRESS,
+        "MJ-TemplateID": 912168,
+        "MJ-TemplateLanguage": True,
+        "To": user_email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
+        "Vars": {"prenom_user": user_first_name, "token": user_reset_password_token, "env": env},
     }
 
 
@@ -34,9 +34,9 @@ def retrieve_data_for_reset_password_user_native_app_email(user: UserSQLEntity) 
     )
 
     return {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'MJ-TemplateID': 1838526,
-        'MJ-TemplateLanguage': True,
-        'To': user_email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-        'Vars': {'native_app_link': reset_password_link},
+        "FromEmail": SUPPORT_EMAIL_ADDRESS,
+        "MJ-TemplateID": 1838526,
+        "MJ-TemplateLanguage": True,
+        "To": user_email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
+        "Vars": {"native_app_link": reset_password_link},
     }

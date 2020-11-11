@@ -30,10 +30,12 @@ from pcapi.scripts.dashboard.write_dashboard import write_dashboard
 from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
 
 
-DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID',
-                                                                   None)
-DEMARCHES_SIMPLIFIEES_NEW_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2',
-                                                                   None)
+DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID = os.environ.get(
+    "DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID", None
+)
+DEMARCHES_SIMPLIFIEES_NEW_ENROLLMENT_PROCEDURE_ID = os.environ.get(
+    "DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2", None
+)
 
 
 @log_cron
@@ -65,6 +67,7 @@ def synchronize_fnac_stocks(app) -> None:
     fnac_stocks_provider_id = get_provider_by_local_class("FnacStocks").id
     synchronize_venue_providers_for_provider(fnac_stocks_provider_id)
 
+
 @log_cron
 @cron_context
 def synchronize_praxiel_stocks(app) -> None:
@@ -78,7 +81,8 @@ def synchronize_praxiel_stocks(app) -> None:
 def pc_old_remote_import_beneficiaries(app) -> None:
     procedure_id = int(DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID)
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
-        BeneficiaryImportSources.demarches_simplifiees, procedure_id)
+        BeneficiaryImportSources.demarches_simplifiees, procedure_id
+    )
     old_remote_import.run(import_from_date)
 
 
@@ -87,7 +91,8 @@ def pc_old_remote_import_beneficiaries(app) -> None:
 def pc_remote_import_beneficiaries(app) -> None:
     procedure_id = int(DEMARCHES_SIMPLIFIEES_NEW_ENROLLMENT_PROCEDURE_ID)
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
-        BeneficiaryImportSources.demarches_simplifiees, procedure_id)
+        BeneficiaryImportSources.demarches_simplifiees, procedure_id
+    )
     remote_import.run(import_from_date)
 
 
@@ -130,62 +135,40 @@ def pc_clean_discovery_views(app) -> None:
         discovery_view_queries.clean(app)
 
 
-if __name__ == '__main__':
-    discovery_view_refresh_frequency = os.environ.get('RECO_VIEW_REFRESH_FREQUENCY', '*')
-    old_seen_offers_delete_frequency = os.environ.get('SEEN_OFFERS_DELETE_FREQUENCY', '*')
-    clean_discovery_frequency = os.environ.get('CLEAN_DISCOVERY_FREQUENCY', '*')
+if __name__ == "__main__":
+    discovery_view_refresh_frequency = os.environ.get("RECO_VIEW_REFRESH_FREQUENCY", "*")
+    old_seen_offers_delete_frequency = os.environ.get("SEEN_OFFERS_DELETE_FREQUENCY", "*")
+    clean_discovery_frequency = os.environ.get("CLEAN_DISCOVERY_FREQUENCY", "*")
 
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
 
-    scheduler.add_job(synchronize_allocine_stocks, 'cron',
-                      [app],
-                      day='*', hour='23')
+    scheduler.add_job(synchronize_allocine_stocks, "cron", [app], day="*", hour="23")
 
-    scheduler.add_job(synchronize_libraires_stocks, 'cron',
-                      [app],
-                      day='*', hour='22')
+    scheduler.add_job(synchronize_libraires_stocks, "cron", [app], day="*", hour="22")
 
-    scheduler.add_job(synchronize_fnac_stocks, 'cron',
-                      [app],
-                      day='*', hour='1')
+    scheduler.add_job(synchronize_fnac_stocks, "cron", [app], day="*", hour="1")
 
-    scheduler.add_job(synchronize_praxiel_stocks, 'cron',
-                      [app],
-                      day='*', hour='0')
+    scheduler.add_job(synchronize_praxiel_stocks, "cron", [app], day="*", hour="0")
 
-    scheduler.add_job(pc_old_remote_import_beneficiaries, 'cron',
-                      [app],
-                      day='*')
+    scheduler.add_job(pc_old_remote_import_beneficiaries, "cron", [app], day="*")
 
-    scheduler.add_job(pc_remote_import_beneficiaries, 'cron',
-                      [app],
-                      day='*')
+    scheduler.add_job(pc_remote_import_beneficiaries, "cron", [app], day="*")
 
     if feature_write_dashboard_enabled():
-        scheduler.add_job(pc_write_dashboard, 'cron',
-                          [app],
-                          day='*', hour='4')
+        scheduler.add_job(pc_write_dashboard, "cron", [app], day="*", hour="4")
 
     if feature_clean_seen_offers_enabled():
-        scheduler.add_job(pc_remove_old_seen_offers, 'cron',
-                          [app],
-                          day=old_seen_offers_delete_frequency)
+        scheduler.add_job(pc_remove_old_seen_offers, "cron", [app], day=old_seen_offers_delete_frequency)
 
-    scheduler.add_job(update_booking_used, 'cron',
-                      [app],
-                      day='*', hour='0')
+    scheduler.add_job(update_booking_used, "cron", [app], day="*", hour="0")
 
-    scheduler.add_job(pc_update_recommendations_view, 'cron',
-                      [app],
-                      minute=discovery_view_refresh_frequency)
+    scheduler.add_job(pc_update_recommendations_view, "cron", [app], minute=discovery_view_refresh_frequency)
 
-    scheduler.add_job(pc_update_recommendations_view_with_geolocation, 'cron',
-                      [app],
-                      minute=discovery_view_refresh_frequency)
+    scheduler.add_job(
+        pc_update_recommendations_view_with_geolocation, "cron", [app], minute=discovery_view_refresh_frequency
+    )
 
-    scheduler.add_job(pc_clean_discovery_views, 'cron',
-                      [app],
-                      hour=clean_discovery_frequency)
+    scheduler.add_job(pc_clean_discovery_views, "cron", [app], hour=clean_discovery_frequency)
 
     scheduler.start()

@@ -7,15 +7,17 @@ from pcapi.models import Offer
 
 
 class Stock(object):
-    def __init__(self,
-                 identifier: int,
-                 quantity: Optional[int],
-                 offer: Offer,
-                 price: float,
-                 beginning_datetime: Optional[datetime] = None,
-                 booking_limit_datetime: Optional[datetime] = None,
-                 is_soft_deleted: bool = False,
-                 bookings: List[Booking] = []):
+    def __init__(
+        self,
+        identifier: int,
+        quantity: Optional[int],
+        offer: Offer,
+        price: float,
+        beginning_datetime: Optional[datetime] = None,
+        booking_limit_datetime: Optional[datetime] = None,
+        is_soft_deleted: bool = False,
+        bookings: List[Booking] = [],
+    ):
         self.identifier = identifier
         self.quantity = quantity
         self.beginningDatetime: datetime = beginning_datetime
@@ -34,7 +36,7 @@ class Stock(object):
         return sum([booking.quantity for booking in self.bookings if not booking.isCancelled])
 
     def remaining_quantity(self):
-        return 'unlimited' if self.quantity is None else self.quantity - self.bookings_quantity()
+        return "unlimited" if self.quantity is None else self.quantity - self.bookings_quantity()
 
     def is_bookable(self):
         if self.has_booking_limit_datetime_passed():

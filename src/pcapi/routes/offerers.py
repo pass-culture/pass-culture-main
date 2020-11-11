@@ -42,21 +42,21 @@ def get_dict_offerers(offerers: List[Offerer]) -> list:
     return [as_dict(offerer, includes=OFFERER_INCLUDES) for offerer in offerers]
 
 
-@private_api.route('/offerers', methods=['GET'])
+@private_api.route("/offerers", methods=["GET"])
 @login_required
 def list_offerers():
-    keywords = request.args.get('keywords')
-    only_validated_offerers = request.args.get('validated')
+    keywords = request.args.get("keywords")
+    only_validated_offerers = request.args.get("validated")
 
     is_filtered_by_offerer_status = only_validated_offerers is not None
 
     if is_filtered_by_offerer_status:
-        if only_validated_offerers.lower() not in ('true', 'false'):
+        if only_validated_offerers.lower() not in ("true", "false"):
             errors = ApiErrors()
-            errors.add_error('validated', 'Le paramètre \'validated\' doit être \'true\' ou \'false\'')
+            errors.add_error("validated", "Le paramètre 'validated' doit être 'true' ou 'false'")
             raise errors
 
-        only_validated_offerers = only_validated_offerers.lower() == 'true'
+        only_validated_offerers = only_validated_offerers.lower() == "true"
 
     offerers_request_parameters = OfferersRequestParameters(
         user_id=current_user.id,
@@ -64,22 +64,20 @@ def list_offerers():
         is_filtered_by_offerer_status=is_filtered_by_offerer_status,
         only_validated_offerers=only_validated_offerers,
         keywords=keywords,
-        pagination_limit=request.args.get('paginate', '10'),
-        page=request.args.get('page', '0'),
+        pagination_limit=request.args.get("paginate", "10"),
+        page=request.args.get("page", "0"),
     )
 
-    paginated_offerers = list_offerers_for_pro_user.execute(
-        offerers_request_parameters=offerers_request_parameters
-    )
+    paginated_offerers = list_offerers_for_pro_user.execute(offerers_request_parameters=offerers_request_parameters)
 
     response = jsonify(get_dict_offerers(paginated_offerers.offerers))
-    response.headers['Total-Data-Count'] = paginated_offerers.total
-    response.headers['Access-Control-Expose-Headers'] = 'Total-Data-Count'
+    response.headers["Total-Data-Count"] = paginated_offerers.total
+    response.headers["Access-Control-Expose-Headers"] = "Total-Data-Count"
 
     return response, 200
 
 
-@private_api.route('/offerers/<id>', methods=['GET'])
+@private_api.route("/offerers/<id>", methods=["GET"])
 @login_required
 def get_offerer(id):
     ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
@@ -88,11 +86,11 @@ def get_offerer(id):
     return jsonify(get_dict_offerer(offerer)), 200
 
 
-@private_api.route('/offerers', methods=['POST'])
+@private_api.route("/offerers", methods=["POST"])
 @login_or_api_key_required
 @expect_json_data
 def create_offerer():
-    siren = request.json['siren']
+    siren = request.json["siren"]
     offerer = find_by_siren(siren)
 
     if offerer is not None:
@@ -103,8 +101,10 @@ def create_offerer():
         try:
             send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
         except MailServiceException as mail_service_exception:
-            app.logger.exception('[send_ongoing_offerer_attachment_information_email_to_pro] '
-                             'Mail service failure', mail_service_exception)
+            app.logger.exception(
+                "[send_ongoing_offerer_attachment_information_email_to_pro] " "Mail service failure",
+                mail_service_exception,
+            )
     else:
         offerer = Offerer()
         offerer.populate_from_dict(request.json)
@@ -121,7 +121,7 @@ def create_offerer():
     return jsonify(get_dict_offerer(offerer)), 201
 
 
-@private_api.route('/offerers/<offererId>', methods=['PATCH'])
+@private_api.route("/offerers/<offererId>", methods=["PATCH"])
 @login_or_api_key_required
 @expect_json_data
 def patch_offerer(offererId):
@@ -129,7 +129,7 @@ def patch_offerer(offererId):
     data = request.json
     check_valid_edition(data)
     offerer = Offerer.query.filter_by(id=dehumanize(offererId)).first()
-    offerer.populate_from_dict(data, skipped_keys=['validationToken'])
+    offerer.populate_from_dict(data, skipped_keys=["validationToken"])
     repository.save(offerer)
     return jsonify(get_dict_offerer(offerer)), 200
 
@@ -138,13 +138,13 @@ def _send_to_pro_offer_validation_in_progress_email(user: UserSQLEntity, offerer
     try:
         send_pro_user_waiting_for_validation_by_admin_email(user, send_raw_email, offerer)
     except MailServiceException as mail_service_exception:
-        app.logger.exception('[send_pro_user_waiting_for_validation_by_admin_email] '
-                         'Mail service failure', mail_service_exception)
+        app.logger.exception(
+            "[send_pro_user_waiting_for_validation_by_admin_email] " "Mail service failure", mail_service_exception
+        )
 
 
 def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: UserOfferer) -> bool:
     try:
         maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
     except MailServiceException as mail_service_exception:
-        app.logger.exception('[maybe_send_offerer_validation_email] '
-                         'Mail service failure', mail_service_exception)
+        app.logger.exception("[maybe_send_offerer_validation_email] " "Mail service failure", mail_service_exception)

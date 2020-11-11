@@ -17,13 +17,21 @@ class RemoveDuoOptionForAllocineOffersTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
 
-        allocine_provider = get_provider_by_local_class('AllocineStocks')
-        allocine_offer_1 = create_offer_with_thing_product(venue, idx=1,
-                                                           last_provider_id=allocine_provider.id,
-                                                           id_at_providers='offer1', last_provider=allocine_provider)
-        allocine_offer_2 = create_offer_with_event_product(venue, idx=2,
-                                                           last_provider_id=allocine_provider.id,
-                                                           id_at_providers='offer2', last_provider=allocine_provider)
+        allocine_provider = get_provider_by_local_class("AllocineStocks")
+        allocine_offer_1 = create_offer_with_thing_product(
+            venue,
+            idx=1,
+            last_provider_id=allocine_provider.id,
+            id_at_providers="offer1",
+            last_provider=allocine_provider,
+        )
+        allocine_offer_2 = create_offer_with_event_product(
+            venue,
+            idx=2,
+            last_provider_id=allocine_provider.id,
+            id_at_providers="offer2",
+            last_provider=allocine_provider,
+        )
 
         other_offer = create_offer_with_thing_product(venue, idx=3)
 

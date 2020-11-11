@@ -34,23 +34,24 @@ class Put:
             repository.save(booking)
 
             # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .put(f'/bookings/{humanize(booking.id)}/cancel')
+            response = (
+                TestClient(app.test_client()).with_auth(user.email).put(f"/bookings/{humanize(booking.id)}/cancel")
+            )
 
             # Then
             assert response.status_code == 200
             assert Booking.query.get(booking.id).isCancelled
-            assert response.json == {'amount': 10.0,
-                                     'completedUrl': None,
-                                     'id': humanize(booking.id),
-                                     'isCancelled': True,
-                                     'quantity': booking.quantity,
-                                     'stock': {'price': 10.0},
-                                     'stockId': humanize(stock.id),
-                                     'token': booking.token,
-                                     'user': {'id': humanize(user.id), 'wallet_balance': 500.0}
-                                     }
+            assert response.json == {
+                "amount": 10.0,
+                "completedUrl": None,
+                "id": humanize(booking.id),
+                "isCancelled": True,
+                "quantity": booking.quantity,
+                "stock": {"price": 10.0},
+                "stockId": humanize(stock.id),
+                "token": booking.token,
+                "user": {"id": humanize(user.id), "wallet_balance": 500.0},
+            }
 
     class Returns400:
         @pytest.mark.usefixtures("db_session")
@@ -62,29 +63,29 @@ class Put:
             repository.save(booking)
 
             # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .put(f'/bookings/{humanize(booking.id)}/cancel')
+            response = (
+                TestClient(app.test_client()).with_auth(user.email).put(f"/bookings/{humanize(booking.id)}/cancel")
+            )
 
             # Then
             assert response.status_code == 400
-            assert response.json['booking'] == ["Impossible d'annuler une réservation consommée"]
+            assert response.json["booking"] == ["Impossible d'annuler une réservation consommée"]
             assert not Booking.query.get(booking.id).isCancelled
 
     class Returns404:
         @pytest.mark.usefixtures("db_session")
         def when_cancelling_a_booking_of_someone_else(self, app):
             # Given
-            other_user = create_user(email='test2@example.com')
+            other_user = create_user(email="test2@example.com")
             booking = create_booking(other_user)
             user = create_user()
             create_deposit(other_user, amount=500)
             repository.save(user, booking)
 
             # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .put(f'/bookings/{humanize(booking.id)}/cancel')
+            response = (
+                TestClient(app.test_client()).with_auth(user.email).put(f"/bookings/{humanize(booking.id)}/cancel")
+            )
 
             # Then
             assert response.status_code == 404
@@ -97,9 +98,7 @@ class Put:
             repository.save(user)
 
             # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .put('/bookings/AX/cancel')
+            response = TestClient(app.test_client()).with_auth(user.email).put("/bookings/AX/cancel")
 
             # Then
             assert response.status_code == 404

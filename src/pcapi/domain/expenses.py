@@ -13,7 +13,7 @@ PHYSICAL_EXPENSES_CAPPED_TYPES = [
     ThingType.JEUX,
     ThingType.LIVRE_EDITION,
     ThingType.MUSIQUE,
-    ThingType.OEUVRE_ART
+    ThingType.OEUVRE_ART,
 ]
 DIGITAL_EXPENSES_CAPPED_TYPES = [
     ThingType.AUDIOVISUEL,
@@ -22,7 +22,7 @@ DIGITAL_EXPENSES_CAPPED_TYPES = [
     ThingType.LIVRE_AUDIO,
     ThingType.LIVRE_EDITION,
     ThingType.MUSIQUE,
-    ThingType.PRESSE_ABO
+    ThingType.PRESSE_ABO,
 ]
 
 SUBVENTION_TOTAL = Decimal(500)
@@ -36,9 +36,9 @@ def get_expenses(bookings: List[Booking]) -> Dict:
     digital_expenses = _compute_booking_expenses(bookings, _get_bookings_of_digital_things)
 
     return {
-        'all': {'max': SUBVENTION_TOTAL, 'actual': total_expenses},
-        'physical': {'max': SUBVENTION_PHYSICAL_THINGS, 'actual': physical_expenses},
-        'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': digital_expenses}
+        "all": {"max": SUBVENTION_TOTAL, "actual": total_expenses},
+        "physical": {"max": SUBVENTION_PHYSICAL_THINGS, "actual": physical_expenses},
+        "digital": {"max": SUBVENTION_DIGITAL_THINGS, "actual": digital_expenses},
     }
 
 

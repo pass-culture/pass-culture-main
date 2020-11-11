@@ -8,14 +8,17 @@ from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import humanize
 
 
-def serialize_beneficiary_bookings(beneficiary_bookings: BeneficiaryBookingsWithStocks, with_qr_code: bool = False) -> List:
+def serialize_beneficiary_bookings(
+    beneficiary_bookings: BeneficiaryBookingsWithStocks, with_qr_code: bool = False
+) -> List:
     results = []
     for beneficiary_booking in beneficiary_bookings.bookings:
-        serialized_stocks = _serialize_stocks_for_beneficiary_bookings(beneficiary_booking.offerId,
-                                                                       beneficiary_bookings.stocks)
-        serialized_booking = _serialize_beneficiary_booking(beneficiary_booking,
-                                                            serialized_stocks,
-                                                            with_qr_code=with_qr_code)
+        serialized_stocks = _serialize_stocks_for_beneficiary_bookings(
+            beneficiary_booking.offerId, beneficiary_bookings.stocks
+        )
+        serialized_booking = _serialize_beneficiary_booking(
+            beneficiary_booking, serialized_stocks, with_qr_code=with_qr_code
+        )
         results.append(serialized_booking)
     return results
 
@@ -31,7 +34,7 @@ def _serialize_stock_for_beneficiary_booking(stock: Stock) -> Dict:
         "price": stock.price,
         "id": humanize(stock.id),
         "isBookable": stock.is_available_for_booking,
-        "remainingQuantity": 'unlimited',
+        "remainingQuantity": "unlimited",
     }
 
 
@@ -44,8 +47,9 @@ def _serialize_offer_is_bookable(serialized_stocks: List[Dict]) -> bool:
     return True in are_stocks_bookable
 
 
-def _serialize_beneficiary_booking(beneficiary_booking: BeneficiaryBooking, serialized_stocks: List[Dict],
-                                   with_qr_code: bool = False) -> Dict:
+def _serialize_beneficiary_booking(
+    beneficiary_booking: BeneficiaryBooking, serialized_stocks: List[Dict], with_qr_code: bool = False
+) -> Dict:
     dictified_booking = {
         "completedUrl": beneficiary_booking.booking_access_url,
         "isEventExpired": beneficiary_booking.is_event_expired,

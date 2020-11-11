@@ -9,8 +9,8 @@ class GetAllVenueTypes:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_the_venue_types(self, app):
         # Given
-        cinema = create_venue_type(label='Cinema', idx=1)
-        musee = create_venue_type(label='Musée', idx=2)
+        cinema = create_venue_type(label="Cinema", idx=1)
+        musee = create_venue_type(label="Musée", idx=2)
         repository.save(cinema, musee)
 
         # When

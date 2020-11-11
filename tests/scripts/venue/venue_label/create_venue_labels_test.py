@@ -10,7 +10,7 @@ class SaveNewVenueLabelsTest:
         # Given
         venue_labels_to_create = [
             "Architecture contemporaine remarquable",
-            "CAC - Centre d'art contemporain d'intérêt national"
+            "CAC - Centre d'art contemporain d'intérêt national",
         ]
 
         # When
@@ -19,7 +19,9 @@ class SaveNewVenueLabelsTest:
         # Then
         venue_labels_sql_entities = VenueLabelSQLEntity.query.all()
         assert len(venue_labels_sql_entities) == 2
-        assert "Architecture contemporaine remarquable" in [venue_label.label for venue_label in
-                                                            venue_labels_sql_entities]
-        assert "CAC - Centre d'art contemporain d'intérêt national" in [venue_label.label for venue_label in
-                                                                        venue_labels_sql_entities]
+        assert "Architecture contemporaine remarquable" in [
+            venue_label.label for venue_label in venue_labels_sql_entities
+        ]
+        assert "CAC - Centre d'art contemporain d'intérêt national" in [
+            venue_label.label for venue_label in venue_labels_sql_entities
+        ]

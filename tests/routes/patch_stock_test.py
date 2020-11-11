@@ -52,9 +52,7 @@ class Returns200:
         # then
         assert request_update.status_code == 200
         request_after_update = (
-            TestClient(app.test_client())
-            .with_auth("user@example.com")
-            .get("/stocks/" + humanized_stock_id)
+            TestClient(app.test_client()).with_auth("user@example.com").get("/stocks/" + humanized_stock_id)
         )
         date_modified = request_after_update.json["dateModified"]
 
@@ -90,11 +88,7 @@ class Returns200:
 
         # then
         assert request_update.status_code == 200
-        request_after_update = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .get("/stocks/" + humanized_stock_id)
-        )
+        request_after_update = TestClient(app.test_client()).with_auth(user.email).get("/stocks/" + humanized_stock_id)
         assert request_after_update.json["quantity"] == 5
         assert request_after_update.json["price"] == 20
 
@@ -120,11 +114,7 @@ class Returns200:
         }
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .patch("/stocks/" + humanize(stock.id), json=data)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).patch("/stocks/" + humanize(stock.id), json=data)
 
         # Then
         assert response.status_code == 200
@@ -132,14 +122,10 @@ class Returns200:
 
     @override_features(SYNCHRONIZE_ALGOLIA=True)
     @patch("pcapi.routes.stocks.redis.add_offer_id")
-    def when_stock_is_edited_expect_offer_id_to_be_added_to_redis(
-        self, mock_redis, app, db_session
-    ):
+    def when_stock_is_edited_expect_offer_id_to_be_added_to_redis(self, mock_redis, app, db_session):
         # given
         user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
-        stock = offers_factories.StockFactory(
-            offer__product__type=str(EventType.JEUX), price=100, quantity=10
-        )
+        stock = offers_factories.StockFactory(offer__product__type=str(EventType.JEUX), price=100, quantity=10)
 
         # when
         request_update = (
@@ -150,13 +136,9 @@ class Returns200:
 
         # then
         assert request_update.status_code == 200
-        mock_redis.assert_called_once_with(
-            client=app.redis_client, offer_id=stock.offerId
-        )
+        mock_redis.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
 
-    def when_offer_come_from_allocine_provider_and_fields_updated_in_stock_are_editable(
-        self, app, db_session
-    ):
+    def when_offer_come_from_allocine_provider_and_fields_updated_in_stock_are_editable(self, app, db_session):
         # given
         date_event = datetime(2020, 10, 15)
 
@@ -208,9 +190,7 @@ class Returns200:
         event_date = datetime.utcnow() + timedelta(days=1)
 
         user = users_factories.UserFactory()
-        admin = users_factories.UserFactory(
-            email="admin@email.fr", canBookFreeOffers=False, isAdmin=True
-        )
+        admin = users_factories.UserFactory(email="admin@email.fr", canBookFreeOffers=False, isAdmin=True)
         stock = offers_factories.StockFactory(
             offer__product__type=str(EventType.JEUX),
             price=0,
@@ -220,9 +200,7 @@ class Returns200:
         booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
         find_not_cancelled_bookings_by_stock.return_value = [booking]
-        serialized_date = serialize(
-            stock.beginningDatetime + timedelta(days=1) + timedelta(hours=3)
-        )
+        serialized_date = serialize(stock.beginningDatetime + timedelta(days=1) + timedelta(hours=3))
 
         # When
         request_update = (
@@ -252,9 +230,7 @@ class Returns200:
     ):
         # Given
         user = users_factories.UserFactory()
-        admin = users_factories.UserFactory(
-            email="admin@email.fr", canBookFreeOffers=False, isAdmin=True
-        )
+        admin = users_factories.UserFactory(email="admin@email.fr", canBookFreeOffers=False, isAdmin=True)
         stock = offers_factories.StockFactory(
             price=0,
         )
@@ -326,9 +302,7 @@ class Returns400:
     def when_quantity_below_existing_bookings_quantity(self, app, db_session):
         # given
         user = users_factories.UserFactory()
-        admin = users_factories.UserFactory(
-            email="admin@email.fr", canBookFreeOffers=False, isAdmin=True
-        )
+        admin = users_factories.UserFactory(email="admin@email.fr", canBookFreeOffers=False, isAdmin=True)
         stock = offers_factories.StockFactory(price=0, quantity=1)
         booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
@@ -341,11 +315,7 @@ class Returns400:
 
         # then
         assert response.status_code == 400
-        assert response.json == {
-            "quantity": [
-                "Le stock total ne peut être inférieur au nombre de réservations"
-            ]
-        }
+        assert response.json == {"quantity": ["Le stock total ne peut être inférieur au nombre de réservations"]}
 
     def when_booking_limit_datetime_is_none_for_event(self, app, db_session):
         # Given
@@ -359,17 +329,11 @@ class Returns400:
         }
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .patch("/stocks/" + humanize(stock.id), json=data)
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).patch("/stocks/" + humanize(stock.id), json=data)
 
         # Then
         assert response.status_code == 400
-        assert response.json == {
-            "bookingLimitDatetime": ["Ce paramètre est obligatoire"]
-        }
+        assert response.json == {"bookingLimitDatetime": ["Ce paramètre est obligatoire"]}
 
     def when_offer_come_from_titelive_provider(self, app, db_session):
         # given
@@ -401,19 +365,11 @@ class Returns400:
 
         # then
         assert request_update.status_code == 400
-        request_after_update = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .get("/stocks/" + humanized_stock_id)
-        )
+        request_after_update = TestClient(app.test_client()).with_auth(user.email).get("/stocks/" + humanized_stock_id)
         assert request_after_update.json["quantity"] == 10
-        assert request_update.json["global"] == [
-            "Les offres importées ne sont pas modifiables"
-        ]
+        assert request_update.json["global"] == ["Les offres importées ne sont pas modifiables"]
 
-    def when_update_allocine_offer_with_new_values_for_non_editable_fields(
-        self, app, db_session
-    ):
+    def when_update_allocine_offer_with_new_values_for_non_editable_fields(self, app, db_session):
         # given
         allocine_provider = get_provider_by_local_class("AllocineStocks")
 
@@ -429,9 +385,7 @@ class Returns400:
             lastProvider=allocine_provider,
             idAtProviders=idAtProviders,
         )
-        stock = offers_factories.StockFactory(
-            offer=offer, quantity=10, price=10, idAtProviders=idAtProviders
-        )
+        stock = offers_factories.StockFactory(offer=offer, quantity=10, price=10, idAtProviders=idAtProviders)
 
         humanized_stock_id = humanize(stock.id)
 
@@ -451,9 +405,7 @@ class Returns400:
 
         # then
         assert request_update.status_code == 400
-        assert request_update.json["global"] == [
-            "Pour les offres importées, certains champs ne sont pas modifiables"
-        ]
+        assert request_update.json["global"] == ["Pour les offres importées, certains champs ne sont pas modifiables"]
 
         existing_stock = StockSQLEntity.query.one()
         assert existing_stock.quantity == 10
@@ -479,7 +431,5 @@ class Returns403:
         # then
         assert response.status_code == 403
         assert response.json == {
-            "global": [
-                "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
-            ]
+            "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
         }

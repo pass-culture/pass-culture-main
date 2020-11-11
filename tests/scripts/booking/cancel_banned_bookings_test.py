@@ -100,12 +100,18 @@ class CancelBannedBookingsTest:
         assert corrected_booking.dateUsed is not None
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_not_cancel_reimbursed_and_banned_bookings_with_current_status_banned_and_unwanted_sent_date(self, app):
+    def test_should_not_cancel_reimbursed_and_banned_bookings_with_current_status_banned_and_unwanted_sent_date(
+        self, app
+    ):
         # Given
         unwanted_sent_date = self.WANTED_SENT_DATETIME - timedelta(days=1)
         booking = create_booking(stock=self.stock, user=self.beneficiary, date_used=datetime.utcnow(), is_used=True)
-        payment = create_payment(offerer=self.offerer, booking=booking, status=TransactionStatus.SENT, status_date=unwanted_sent_date)
-        payment_banned_status = create_payment_status(payment=payment, status=TransactionStatus.BANNED, date=self.WANTED_BANNED_DATETIME)
+        payment = create_payment(
+            offerer=self.offerer, booking=booking, status=TransactionStatus.SENT, status_date=unwanted_sent_date
+        )
+        payment_banned_status = create_payment_status(
+            payment=payment, status=TransactionStatus.BANNED, date=self.WANTED_BANNED_DATETIME
+        )
         payment.statuses.append(payment_banned_status)
         repository.save(payment)
 
@@ -120,10 +126,14 @@ class CancelBannedBookingsTest:
         assert corrected_booking.dateUsed is not None
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_not_cancel_reimbursed_and_banned_bookings_with_current_status_banned_and_unwanted_banned_date(self, app):
+    def test_should_not_cancel_reimbursed_and_banned_bookings_with_current_status_banned_and_unwanted_banned_date(
+        self, app
+    ):
         # Given
         booking = create_booking(stock=self.stock, user=self.beneficiary, date_used=datetime.utcnow(), is_used=True)
-        payment = create_payment(offerer=self.offerer, booking=booking, status=TransactionStatus.SENT, status_date=self.WANTED_SENT_DATETIME)
+        payment = create_payment(
+            offerer=self.offerer, booking=booking, status=TransactionStatus.SENT, status_date=self.WANTED_SENT_DATETIME
+        )
         payment.setStatus(TransactionStatus.BANNED)
         repository.save(payment)
 
@@ -141,8 +151,12 @@ class CancelBannedBookingsTest:
     def test_should_cancel_reimbursed_and_banned_bookings_with_current_status_banned_and_wanted_dates(self, app):
         # Given
         booking = create_booking(stock=self.stock, user=self.beneficiary, date_used=datetime.utcnow(), is_used=True)
-        payment = create_payment(offerer=self.offerer, booking=booking, status=TransactionStatus.SENT, status_date=self.WANTED_SENT_DATETIME)
-        payment_banned_status = create_payment_status(payment=payment, status=TransactionStatus.BANNED, date=self.WANTED_BANNED_DATETIME)
+        payment = create_payment(
+            offerer=self.offerer, booking=booking, status=TransactionStatus.SENT, status_date=self.WANTED_SENT_DATETIME
+        )
+        payment_banned_status = create_payment_status(
+            payment=payment, status=TransactionStatus.BANNED, date=self.WANTED_BANNED_DATETIME
+        )
         payment.statuses.append(payment_banned_status)
         repository.save(payment)
 

@@ -12,46 +12,45 @@ import sqlalchemy as sa
 
 
 class FeatureToggle(Enum):
-    QR_CODE = 'Permettre la validation d''une contremarque via QR code'
+    QR_CODE = "Permettre la validation d" "une contremarque via QR code"
 
 
 # revision identifiers, used by Alembic.
-revision = '8ab840b8db67'
-down_revision = 'eda764ae6b37'
+revision = "8ab840b8db67"
+down_revision = "eda764ae6b37"
 branch_labels = None
 depends_on = None
 
 
-previous_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'DUO_OFFER')
-new_values = ('WEBAPP_SIGNUP', 'FAVORITE_OFFER', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'DUO_OFFER', 'QR_CODE')
+previous_values = ("WEBAPP_SIGNUP", "FAVORITE_OFFER", "DEGRESSIVE_REIMBURSEMENT_RATE", "DUO_OFFER")
+new_values = ("WEBAPP_SIGNUP", "FAVORITE_OFFER", "DEGRESSIVE_REIMBURSEMENT_RATE", "DUO_OFFER", "QR_CODE")
 
-previous_enum = sa.Enum(*previous_values, name='featuretoggle')
-new_enum = sa.Enum(*new_values, name='featuretoggle')
-temporary_enum = sa.Enum(*new_values, name='tmp_featuretoggle')
+previous_enum = sa.Enum(*previous_values, name="featuretoggle")
+new_enum = sa.Enum(*new_values, name="featuretoggle")
+temporary_enum = sa.Enum(*new_values, name="tmp_featuretoggle")
 
 
 def upgrade():
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle'
-               ' USING name::text::tmp_featuretoggle')
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle" " USING name::text::tmp_featuretoggle")
     previous_enum.drop(op.get_bind(), checkfirst=False)
     new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle'
-               ' USING name::text::featuretoggle')
-    op.execute("""
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle" " USING name::text::featuretoggle")
+    op.execute(
+        """
         INSERT INTO feature (name, description, "isActive")
         VALUES ('%s', '%s', FALSE);
-        """ % (FeatureToggle.QR_CODE.name, FeatureToggle.QR_CODE.value))
+        """
+        % (FeatureToggle.QR_CODE.name, FeatureToggle.QR_CODE.value)
+    )
     temporary_enum.drop(op.get_bind(), checkfirst=False)
 
 
 def downgrade():
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle'
-               ' USING name::text::tmp_featuretoggle')
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle" " USING name::text::tmp_featuretoggle")
     new_enum.drop(op.get_bind(), checkfirst=False)
     previous_enum.create(op.get_bind(), checkfirst=False)
     op.execute("DELETE FROM feature WHERE name = 'QR_CODE'")
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle'
-               ' USING name::text::featuretoggle')
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle" " USING name::text::featuretoggle")
     temporary_enum.drop(op.get_bind(), checkfirst=False)

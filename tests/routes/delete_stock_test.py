@@ -41,9 +41,7 @@ class Returns200:
 
         # when
         response = (
-            TestClient(app.test_client())
-            .with_auth("notadmin@example.com")
-            .delete("/stocks/" + humanize(stock.id))
+            TestClient(app.test_client()).with_auth("notadmin@example.com").delete("/stocks/" + humanize(stock.id))
         )
 
         # then
@@ -53,9 +51,7 @@ class Returns200:
 
     def expect_bookings_to_be_cancelled(self, app, db_session):
         # given
-        admin = users_factories.UserFactory(
-            email="admin@email.com", isAdmin=True, canBookFreeOffers=False
-        )
+        admin = users_factories.UserFactory(email="admin@email.com", isAdmin=True, canBookFreeOffers=False)
         stock = offers_factories.StockFactory(
             dateCreated=NOW,
             dateModified=NOW,
@@ -63,19 +59,11 @@ class Returns200:
             price=0,
         )
         other_user = users_factories.UserFactory(email="consumer@test.com")
-        booking1 = bookings_factories.BookingFactory(
-            user=other_user, isCancelled=False, stock=stock
-        )
-        booking2 = bookings_factories.BookingFactory(
-            user=other_user, isCancelled=False, stock=stock
-        )
+        booking1 = bookings_factories.BookingFactory(user=other_user, isCancelled=False, stock=stock)
+        booking2 = bookings_factories.BookingFactory(user=other_user, isCancelled=False, stock=stock)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_auth(admin.email)
-            .delete("/stocks/" + humanize(stock.id))
-        )
+        response = TestClient(app.test_client()).with_auth(admin.email).delete("/stocks/" + humanize(stock.id))
 
         # then
         assert response.status_code == 200
@@ -85,13 +73,9 @@ class Returns200:
         assert stock.isSoftDeleted is True
 
     @freeze_time("2020-10-15 00:00:00")
-    def expect_booking_to_be_cancelled_when_stock_is_an_event_that_ended_less_than_two_days_ago(
-        self, app, db_session
-    ):
+    def expect_booking_to_be_cancelled_when_stock_is_an_event_that_ended_less_than_two_days_ago(self, app, db_session):
         # given
-        admin = users_factories.UserFactory(
-            email="admin@email.com", isAdmin=True, canBookFreeOffers=False
-        )
+        admin = users_factories.UserFactory(email="admin@email.com", isAdmin=True, canBookFreeOffers=False)
         user = users_factories.UserFactory(email="consumer@test.com")
         stock = offers_factories.StockFactory(
             offer__product__type=str(EventType.JEUX),
@@ -103,16 +87,10 @@ class Returns200:
             beginningDatetime=NOW - timedelta(hours=47),
             bookingLimitDatetime=NOW - timedelta(days=6),
         )
-        booking = bookings_factories.BookingFactory(
-            user=user, isCancelled=False, stock=stock
-        )
+        booking = bookings_factories.BookingFactory(user=user, isCancelled=False, stock=stock)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_auth(admin.email)
-            .delete("/stocks/" + humanize(stock.id))
-        )
+        response = TestClient(app.test_client()).with_auth(admin.email).delete("/stocks/" + humanize(stock.id))
 
         # then
         assert response.status_code == 200
@@ -139,11 +117,7 @@ class Returns200:
         stock = offers_factories.StockFactory(offer=offer, idAtProviders=idAtProviders)
 
         # When
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .delete("/stocks/" + humanize(stock.id))
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).delete("/stocks/" + humanize(stock.id))
 
         # Then
         assert response.status_code == 200
@@ -151,26 +125,18 @@ class Returns200:
 
     @override_features(SYNCHRONIZE_ALGOLIA=True)
     @patch("pcapi.routes.stocks.redis.add_offer_id")
-    def when_stock_is_deleted_expect_offer_id_to_be_added_to_redis(
-        self, mock_redis, app, db_session
-    ):
+    def when_stock_is_deleted_expect_offer_id_to_be_added_to_redis(self, mock_redis, app, db_session):
         # given
         user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
         stock = offers_factories.StockFactory()
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .delete("/stocks/" + humanize(stock.id))
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).delete("/stocks/" + humanize(stock.id))
 
         # then
         assert response.status_code == 200
         assert stock.isSoftDeleted is True
-        mock_redis.assert_called_once_with(
-            client=app.redis_client, offer_id=stock.offerId
-        )
+        mock_redis.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
 
 
 class Returns400:
@@ -193,24 +159,16 @@ class Returns400:
         stock = offers_factories.StockFactory(offer=offer, idAtProviders=idAtProviders)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .delete("/stocks/" + humanize(stock.id))
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).delete("/stocks/" + humanize(stock.id))
 
         # then
         assert response.status_code == 400
-        assert response.json["global"] == [
-            "Les offres importées ne sont pas modifiables"
-        ]
+        assert response.json["global"] == ["Les offres importées ne sont pas modifiables"]
 
     @freeze_time("2020-10-15 00:00:00")
     def when_stock_is_an_event_that_ended_more_than_two_days_ago(self, app, db_session):
         # given
-        admin = users_factories.UserFactory(
-            email="admin@email.com", isAdmin=True, canBookFreeOffers=False
-        )
+        admin = users_factories.UserFactory(email="admin@email.com", isAdmin=True, canBookFreeOffers=False)
         user = users_factories.UserFactory(email="consumer@test.com")
         product = offers_factories.ProductFactory(type=str(EventType.JEUX))
         offer = offers_factories.OfferFactory(product=product)
@@ -224,22 +182,15 @@ class Returns400:
             beginningDatetime=NOW - timedelta(hours=49),
             bookingLimitDatetime=NOW - timedelta(days=6),
         )
-        booking = bookings_factories.BookingFactory(
-            user=user, isCancelled=False, stock=stock
-        )
+        booking = bookings_factories.BookingFactory(user=user, isCancelled=False, stock=stock)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_auth(admin.email)
-            .delete("/stocks/" + humanize(stock.id))
-        )
+        response = TestClient(app.test_client()).with_auth(admin.email).delete("/stocks/" + humanize(stock.id))
 
         # then
         assert response.status_code == 400
         assert response.json["global"] == [
-            "L'événement s'est terminé il y a plus de deux jours, "
-            "la suppression est impossible."
+            "L'événement s'est terminé il y a plus de deux jours, " "la suppression est impossible."
         ]
 
 
@@ -259,11 +210,7 @@ class Returns403:
         )
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_auth(user.email)
-            .delete("/stocks/" + humanize(stock.id))
-        )
+        response = TestClient(app.test_client()).with_auth(user.email).delete("/stocks/" + humanize(stock.id))
 
         # then
         assert response.status_code == 403

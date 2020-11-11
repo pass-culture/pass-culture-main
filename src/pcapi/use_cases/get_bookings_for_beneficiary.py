@@ -7,6 +7,4 @@ class GetBookingsForBeneficiary:
         self.beneficiary_bookings_repository = beneficiary_bookings_repository
 
     def execute(self, beneficiary_id: int) -> BeneficiaryBookingsWithStocks:
-        return self.beneficiary_bookings_repository.get_beneficiary_bookings(
-            beneficiary_id=beneficiary_id
-        )
+        return self.beneficiary_bookings_repository.get_beneficiary_bookings(beneficiary_id=beneficiary_id)

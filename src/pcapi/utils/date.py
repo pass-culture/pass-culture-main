@@ -8,7 +8,7 @@ from dateutil import tz
 
 TODAY = datetime.combine(datetime.utcnow(), time(hour=20))
 DATE_ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-DEFAULT_STORED_TIMEZONE = 'UTC'
+DEFAULT_STORED_TIMEZONE = "UTC"
 ENGLISH_TO_FRENCH_MONTH = {
     "January": "Janvier",
     "February": "Février",
@@ -21,7 +21,7 @@ ENGLISH_TO_FRENCH_MONTH = {
     "September": "Septembre",
     "October": "Octobre",
     "November": "Novembre",
-    "December": "Décembre"
+    "December": "Décembre",
 }
 
 
@@ -52,20 +52,18 @@ def match_format(value: str, format: str) -> str:
 
 
 def format_datetime(date_time: datetime) -> str:
-    return babel_format_datetime(date_time,
-                                 format='long',
-                                 locale='fr')[:-9]
+    return babel_format_datetime(date_time, format="long", locale="fr")[:-9]
 
 
 def get_department_timezone(departement_code: str) -> str:
     assert isinstance(departement_code, str)
 
-    if departement_code == '973':
-        return 'America/Cayenne'
-    if departement_code == '974':
-        return 'Indian/Reunion'
+    if departement_code == "973":
+        return "America/Cayenne"
+    if departement_code == "974":
+        return "Indian/Reunion"
 
-    return 'Europe/Paris'
+    return "Europe/Paris"
 
 
 def utc_datetime_to_department_timezone(date_time: datetime, departement_code: str) -> datetime:
@@ -84,11 +82,11 @@ def format_into_timezoned_date(date_to_format: datetime) -> str:
 
 
 def get_date_formatted_for_email(date_time: datetime) -> str:
-    return format_date(date_time, format='d MMMM', locale='fr')
+    return format_date(date_time, format="d MMMM", locale="fr")
 
 
 def get_time_formatted_for_email(date_time: datetime) -> str:
-    return date_time.strftime('%Hh%M')
+    return date_time.strftime("%Hh%M")
 
 
 def get_time_in_seconds_from_datetime(date_time: datetime) -> int:

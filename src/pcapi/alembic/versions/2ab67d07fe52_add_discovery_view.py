@@ -10,14 +10,15 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 
-revision = '2ab67d07fe52'
-down_revision = '6b76c225cc26'
+revision = "2ab67d07fe52"
+down_revision = "6b76c225cc26"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.execute(f"""
+    op.execute(
+        f"""
                 CREATE OR REPLACE FUNCTION get_offer_score(offer_id BIGINT)
                 RETURNS SETOF BIGINT AS
                 $body$
@@ -30,9 +31,11 @@ def upgrade():
                 END
                 $body$
                 LANGUAGE plpgsql;
-            """)
+            """
+    )
 
-    op.execute(f"""
+    op.execute(
+        f"""
                 CREATE OR REPLACE FUNCTION event_is_in_less_than_10_days(offer_id BIGINT)
                 RETURNS SETOF INTEGER AS
                 $body$
@@ -47,9 +50,11 @@ def upgrade():
                 END
                 $body$
                 LANGUAGE plpgsql;
-            """)
+            """
+    )
 
-    op.execute("""
+    op.execute(
+        """
                 CREATE OR REPLACE FUNCTION offer_has_at_least_one_active_mediation(offer_id BIGINT)
                 RETURNS SETOF INTEGER AS
                 $body$
@@ -62,8 +67,10 @@ def upgrade():
                 END
                 $body$
                 LANGUAGE plpgsql;
-            """)
-    op.execute("""
+            """
+    )
+    op.execute(
+        """
                 CREATE OR REPLACE FUNCTION offer_has_at_least_one_bookable_stock(offer_id BIGINT)
                 RETURNS SETOF INTEGER AS
                 $body$
@@ -90,9 +97,11 @@ def upgrade():
                 END
                 $body$
                 LANGUAGE plpgsql;
-            """)
+            """
+    )
 
-    op.execute("""
+    op.execute(
+        """
                 CREATE OR REPLACE FUNCTION get_recommendable_offers()
                 RETURNS TABLE (
                     criterion_score BIGINT,
@@ -143,9 +152,11 @@ def upgrade():
                 END
                 $body$
                 LANGUAGE plpgsql;            
-            """)
+            """
+    )
 
-    op.execute(f"""
+    op.execute(
+        f"""
             CREATE MATERIALIZED VIEW IF NOT EXISTS discovery_view
                 AS SELECT
                    row_number() OVER () AS "offerDiscoveryOrder",
@@ -160,17 +171,22 @@ def upgrade():
                 LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
                             AND offer_mediation."isActive"
                 ORDER BY recommendable_offers.partitioned_offers;
-        """)
+        """
+    )
 
-    op.execute(f""" CREATE UNIQUE INDEX IF NOT EXISTS "discovery_view_offerDiscoveryOrder_idx" ON discovery_view ("offerDiscoveryOrder"); """)
+    op.execute(
+        f""" CREATE UNIQUE INDEX IF NOT EXISTS "discovery_view_offerDiscoveryOrder_idx" ON discovery_view ("offerDiscoveryOrder"); """
+    )
 
 
 def downgrade():
-    op.execute(f"""
+    op.execute(
+        f"""
         DROP MATERIALIZED VIEW discovery_view;
         DROP FUNCTION get_offer_score;
         DROP FUNCTION event_is_in_less_than_10_days;
         DROP FUNCTION offer_has_at_least_one_bookable_stock;
         DROP FUNCTION offer_has_at_least_one_active_mediation;
         DROP FUNCTION get_recommendable_offers;
-    """)
+    """
+    )

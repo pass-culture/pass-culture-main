@@ -9,15 +9,15 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = 'e387ee2c380d'
-down_revision = '6213b64185a5'
+revision = "e387ee2c380d"
+down_revision = "6213b64185a5"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.execute(
-        '''
+        """
         CREATE INDEX IF NOT EXISTS "idx_api_key_offererId" ON api_key ("offererId");
         CREATE INDEX IF NOT EXISTS "idx_api_key_value" ON api_key ("value");
 
@@ -35,13 +35,13 @@ def upgrade():
         CREATE INDEX IF NOT EXISTS "idx_offer_criterion_offerId" ON offer_criterion ("offerId");
         ALTER TABLE ONLY offer_criterion ADD CONSTRAINT "offer_criterion_criterionId_fkey" FOREIGN KEY ("criterionId") REFERENCES criterion(id);
         ALTER TABLE ONLY offer_criterion ADD CONSTRAINT "offer_criterion_offerId_fkey" FOREIGN KEY ("offerId") REFERENCES offer(id);
-        '''
+        """
     )
 
 
 def downgrade():
     op.execute(
-        '''
+        """
         DROP INDEX IF EXISTS "idx_api_key_offererId";
         DROP INDEX IF EXISTS "idx_api_key_value";
 
@@ -54,5 +54,5 @@ def downgrade():
 
         DROP INDEX IF EXISTS "idx_offer_criterion_criterionId";
         DROP INDEX IF EXISTS "idx_offer_criterion_offerId";
-        '''
+        """
     )

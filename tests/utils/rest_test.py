@@ -22,8 +22,9 @@ class TestLoadOrRaiseErrorTest:
         with pytest.raises(ApiErrors) as error:
             load_or_raise_error(VenueSQLEntity, id)
 
-        assert error.value.errors['global'] == [
-            'Aucun objet ne correspond à cet identifiant dans notre base de données']
+        assert error.value.errors["global"] == [
+            "Aucun objet ne correspond à cet identifiant dans notre base de données"
+        ]
 
     @pytest.mark.usefixtures("db_session")
     def test_raises_api_error_if_no_object(self, app):
@@ -76,7 +77,7 @@ class TestCheckOrderByTest:
     def test_check_order_by_raises_no_exception_when_given_mixed_list(self, app):
         # When
         try:
-            check_order_by([Offer.id, Offer.venueId.desc(), func.random(), 'id'])
+            check_order_by([Offer.id, Offer.venueId.desc(), func.random(), "id"])
         except ApiErrors:
             # Then
             assert pytest.fail("Should not fail with valid params")
@@ -84,7 +85,7 @@ class TestCheckOrderByTest:
     def test_check_order_by_raises_no_exception_when_given_colum_name_as_string(self, app):
         # When
         try:
-            check_order_by('venueId')
+            check_order_by("venueId")
         except ApiErrors:
             # Then
             assert pytest.fail("Should not fail with valid params")
@@ -114,7 +115,8 @@ class TestCheckOrderByTest:
             assert pytest.fail("Should not fail with valid params")
 
     def test_check_order_by_raises_no_exception_when_given_colum_name_as_string_with_quotes_and_table_name_with_quotes(
-            self, app):
+        self, app
+    ):
         # When
         try:
             check_order_by('"Offer"."venueId" DESC')
@@ -141,15 +143,15 @@ class TestCheckOrderByTest:
     def test_check_order_by_raises_an_exception_when_given_list_containing_invalid_part(self, app):
         # When
         with pytest.raises(ApiErrors) as e:
-            check_order_by([Offer.id, func.random(), 'select * from toto'])
+            check_order_by([Offer.id, func.random(), "select * from toto"])
 
         # Then
-        assert 'order_by' in e.value.errors
+        assert "order_by" in e.value.errors
 
     def test_check_order_by_raises_an_exception_when_given_select_statement(self, app):
         # When
         with pytest.raises(ApiErrors) as e:
-            check_order_by('select plop from offer')
+            check_order_by("select plop from offer")
 
         # Then
-        assert 'order_by' in e.value.errors
+        assert "order_by" in e.value.errors

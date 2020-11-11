@@ -12,30 +12,39 @@ from postgresql_audit.base import VersioningManager
 from pcapi.models import MediationSQLEntity
 
 
-revision = '09857d7d7492'
-down_revision = '253b0a83eead'
+revision = "09857d7d7492"
+down_revision = "253b0a83eead"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    versioned_tables_to_migrate = ['offerer', 'venue', 'offer', 'stock', 'booking', 'mediation', 'product', 'bank_information', 'venue_provider']
+    versioned_tables_to_migrate = [
+        "offerer",
+        "venue",
+        "offer",
+        "stock",
+        "booking",
+        "mediation",
+        "product",
+        "bank_information",
+        "venue_provider",
+    ]
     for table_name in versioned_tables_to_migrate:
         op.execute(f'DROP TRIGGER IF EXISTS audit_trigger_row ON "{table_name}";')
 
-    versioning_manager = VersioningManager(schema_name='public')
+    versioning_manager = VersioningManager(schema_name="public")
     versioning_manager.create_audit_table(MediationSQLEntity.__table__, op.get_bind())
 
     for table_name in versioned_tables_to_migrate:
-        op.execute(f'''
+        op.execute(
+            f"""
             SELECT public.audit_table(oid) 
             FROM pg_class 
             WHERE oid = '{table_name}'::regclass;
-        ''')
+        """
+        )
 
 
 def downgrade():
     pass
-
-
-

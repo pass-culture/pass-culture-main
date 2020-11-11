@@ -11,5 +11,5 @@ def to_domain(user_sql_entity: UserSQLEntity) -> Beneficiary:
         last_name=user_sql_entity.lastName,
         department_code=user_sql_entity.departementCode,
         wallet_balance=user_sql_entity.wallet_balance,
-        reset_password_token=user_sql_entity.resetPasswordToken
+        reset_password_token=user_sql_entity.resetPasswordToken,
     )

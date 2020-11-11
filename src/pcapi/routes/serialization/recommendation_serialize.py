@@ -10,8 +10,9 @@ from pcapi.utils.includes import RECOMMENDATION_INCLUDES
 
 
 def serialize_recommendations(recommendations: List[Recommendation], user_id: int) -> List[Dict]:
-    serialized_recommendations = [serialize_recommendation(recommendation, user_id, query_booking=False)
-                                  for recommendation in recommendations]
+    serialized_recommendations = [
+        serialize_recommendation(recommendation, user_id, query_booking=False) for recommendation in recommendations
+    ]
     bookings = booking_repository.find_user_bookings_for_recommendation(user_id)
     bookings_by_offer = _get_bookings_by_offer(bookings)
     for serialized_recommendation in serialized_recommendations:
@@ -20,7 +21,7 @@ def serialize_recommendations(recommendations: List[Recommendation], user_id: in
             bookings_for_recommendation = bookings_by_offer[offer_id]
         else:
             bookings_for_recommendation = []
-        serialized_recommendation['bookings'] = _serialize_bookings(bookings_for_recommendation)
+        serialized_recommendation["bookings"] = _serialize_bookings(bookings_for_recommendation)
 
     return serialized_recommendations
 
@@ -29,7 +30,7 @@ def serialize_recommendation(recommendation: Recommendation, user_id: int, query
     serialized_recommendation = as_dict(recommendation, includes=RECOMMENDATION_INCLUDES)
     if query_booking and recommendation.offer:
         bookings = booking_repository.find_from_recommendation(recommendation, user_id)
-        serialized_recommendation['bookings'] = _serialize_bookings(bookings)
+        serialized_recommendation["bookings"] = _serialize_bookings(bookings)
 
     add_offer_and_stock_information(serialized_recommendation)
 
@@ -37,10 +38,10 @@ def serialize_recommendation(recommendation: Recommendation, user_id: int, query
 
 
 def add_offer_and_stock_information(serialized_recommendation: Dict) -> None:
-    serialized_recommendation['offer']['isBookable'] = True
-    for index, stock in enumerate(serialized_recommendation['offer']['stocks']):
-        serialized_recommendation['offer']['stocks'][index]['isBookable'] = True
-        serialized_recommendation['offer']['stocks'][index]['remainingQuantity'] = 'unlimited'
+    serialized_recommendation["offer"]["isBookable"] = True
+    for index, stock in enumerate(serialized_recommendation["offer"]["stocks"]):
+        serialized_recommendation["offer"]["stocks"][index]["isBookable"] = True
+        serialized_recommendation["offer"]["stocks"][index]["remainingQuantity"] = "unlimited"
 
 
 def _serialize_bookings(bookings: List[Booking]) -> List[Dict]:

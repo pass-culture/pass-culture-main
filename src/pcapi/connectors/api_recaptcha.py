@@ -3,16 +3,16 @@ import os
 from pcapi.utils import requests
 
 
-RECAPTCHA_API_URL = 'https://www.google.com/recaptcha/api/siteverify'
+RECAPTCHA_API_URL = "https://www.google.com/recaptcha/api/siteverify"
 RECAPTCHA_SECRET = os.environ.get("RECAPTCHA_SECRET")
 RECAPTCHA_REQUIRED_SCORE = os.environ.get("RECAPTCHA_REQUIRED_SCORE", 0.5)
 RECAPTCHA_ERROR_CODES = {
-    'missing-input-secret': 'The secret parameter is missing.',
-    'invalid-input-secret': 'The secret parameter is invalid or malformed.',
-    'missing-input-response': 'The response parameter is missing.',
-    'invalid-input-response': 'The response parameter is invalid or malformed.',
-    'bad-request': 'The request is invalid or malformed.',
-    'timeout-or-duplicate': 'The response is no longer valid: either is too old or has been used previously.',
+    "missing-input-secret": "The secret parameter is missing.",
+    "invalid-input-secret": "The secret parameter is invalid or malformed.",
+    "missing-input-response": "The response parameter is missing.",
+    "invalid-input-response": "The response parameter is invalid or malformed.",
+    "bad-request": "The request is invalid or malformed.",
+    "timeout-or-duplicate": "The response is no longer valid: either is too old or has been used previously.",
 }
 
 
@@ -24,10 +24,7 @@ def validate_recaptcha_token(token: str, original_action: str) -> bool:
     if not token:
         return False
 
-    params = {
-        "secret": RECAPTCHA_SECRET,
-        "response": token
-    }
+    params = {"secret": RECAPTCHA_SECRET, "response": token}
     api_response = requests.post(RECAPTCHA_API_URL, data=params)
 
     if api_response.status_code != 200:
@@ -45,11 +42,11 @@ def validate_recaptcha_token(token: str, original_action: str) -> bool:
         raise ReCaptchaException(f"Encountered the following error(s): {errors_list}")
 
     if json_response["success"]:
-        action = json_response.get('action', "")
+        action = json_response.get("action", "")
         if action != original_action:
             raise ReCaptchaException(f"The action '{action}' does not match '{original_action}' from the form")
 
-        score = json_response.get('score', 0)
+        score = json_response.get("score", 0)
         return score >= RECAPTCHA_REQUIRED_SCORE
 
     raise ReCaptchaException("This is not a valid reCAPTCHA token")

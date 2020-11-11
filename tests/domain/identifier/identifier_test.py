@@ -14,7 +14,7 @@ class IdentifierTest:
             Identifier(0)
 
         # Then
-        assert str(exception.value) == 'Identifier should be a strictly positive number'
+        assert str(exception.value) == "Identifier should be a strictly positive number"
 
     def should_be_a_strictly_positive_number(self):
         # When
@@ -22,7 +22,7 @@ class IdentifierTest:
             Identifier(-1)
 
         # Then
-        assert str(exception.value) == 'Identifier should be a strictly positive number'
+        assert str(exception.value) == "Identifier should be a strictly positive number"
 
     def should_not_be_equal_with_another_object(self):
         # When
@@ -80,7 +80,7 @@ class ScrambledTest:
         scrambled_identifier = Identifier(12452).scrambled
 
         # Then
-        assert re.match('[A-Z0-9]*', scrambled_identifier)
+        assert re.match("[A-Z0-9]*", scrambled_identifier)
 
     def should_be_unique_for_a_given_persisted_identifier(self):
         # When
