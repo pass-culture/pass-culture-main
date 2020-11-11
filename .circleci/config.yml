@@ -53,8 +53,11 @@ jobs:
             python -m nltk.downloader punkt stopwords &> /dev/null
             if [ ! -z "$(alembic branches)" ]; then echo "Multiple alembic heads found"; exit 1; fi
       - run:
-          name: Check imports are sorted
+          name: Check imports are well organized with isort
           command: venv/bin/isort . --check-only
+      - run:
+          name: Check code is well formatted with black
+          command: venv/bin/black . --check
       - when:
           condition: << parameters.is_nightly_build >>
           steps:
