@@ -29,11 +29,6 @@ from pcapi.validation.routes.users import check_valid_signup_pro
 from pcapi.validation.routes.users import check_valid_signup_webapp
 
 
-@private_api.route("/users/signup", methods=["POST"])
-def signup_old():
-    return redirect("/users/signup/webapp", code=308)
-
-
 @private_api.route("/users/signup/webapp", methods=["POST"])
 @feature_required(FeatureToggle.WEBAPP_SIGNUP)
 def signup_webapp():

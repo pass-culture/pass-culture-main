@@ -129,22 +129,6 @@ class Post:
             created_user = UserSQLEntity.query.filter_by(email="toto@btmx.fr").first()
             assert created_user.needsToFillCulturalSurvey == True
 
-        @patch("pcapi.routes.signup.get_authorized_emails_and_dept_codes")
-        @pytest.mark.usefixtures("db_session")
-        def when_calling_old_route(self, get_authorized_emails_and_dept_codes, app):
-            # Given
-            data = BASE_DATA.copy()
-            get_authorized_emails_and_dept_codes.return_value = (["toto@btmx.fr"], ["93"])
-
-            # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup", json=data, headers={"origin": "http://localhost:3000"}
-            )
-
-            # Then
-            assert response.status_code == 308
-            assert response.headers.get("Location") == "http://localhost/users/signup/webapp"
-
     class Returns400:
         @pytest.mark.usefixtures("db_session")
         def when_email_missing(self, app):
