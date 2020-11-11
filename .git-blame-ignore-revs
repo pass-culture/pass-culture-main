@@ -21,3 +21,6 @@
 
 # Apply isort to project
 52d4e04e85d2b84b031db595a5db7a69b079f2a9
+
+# Apply black to project
+ce0a25c3ee362c6943ccc31f58378a109a760215
