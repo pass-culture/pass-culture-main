@@ -72,7 +72,7 @@ jobs:
             - run:
                 name: Running tests
                 command: |
-                  RUN_ENV=tests venv/bin/pytest tests --junitxml=test-results/junit.xml -x
+                  RUN_ENV=tests venv/bin/pytest tests --junitxml=test-results/junit.xml
       - store_test_results:
           path: test-results
       - store_artifacts:
