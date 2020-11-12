@@ -386,6 +386,7 @@ class Offers extends PureComponent {
   }
 
   resetFilters = () => {
+    this.setState({ offerer: null })
     this.setState({ searchFilters: { ...DEFAULT_SEARCH_FILTERS } }, () => {
       this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
     })
@@ -420,8 +421,20 @@ class Offers extends PureComponent {
     </div>
   )
 
+  hasSearchFilters = () => {
+    // We dont want "no results for filters" to disappear on filters change
+    // so we need to use saved search filters and not local state ones.
+    const { savedSearchFilters } = this.props
+    return Object.keys(savedSearchFilters)
+      .map(
+        field =>
+          savedSearchFilters[field] !== { ...DEFAULT_SEARCH_FILTERS, page: DEFAULT_PAGE }[field]
+      )
+      .includes(true)
+  }
+
   renderSearchResults = () => {
-    const { offers, savedSearchFilters } = this.props
+    const { offers } = this.props
     const { isLoading } = this.state
 
     if (isLoading) {
@@ -431,12 +444,8 @@ class Offers extends PureComponent {
     if (offers.length) {
       return this.renderTable()
     }
-    // We dont want "no results for filters" to disappear on filters change
-    // so we need to use saved search filters and not local state ones.
-    const hasSearchFilters = Object.keys(savedSearchFilters)
-      .map(field => savedSearchFilters[field] !== DEFAULT_SEARCH_FILTERS[field])
-      .includes(true)
-    if (hasSearchFilters) {
+
+    if (this.hasSearchFilters()) {
       return this.renderNoResultsForFilters()
     }
 
@@ -478,11 +487,12 @@ class Offers extends PureComponent {
             {'Rechercher une offre'}
           </h3>
           <Link
-            className="tertiary-link primary-color"
+            className={`tertiary-link ${this.hasSearchFilters() ? 'primary-color' : ''}`}
             onClick={this.resetFilters}
             to="/offres"
           >
-            {'Réinitialiser tous les filtres'}
+            {'Réinitialiser les filtres'}
+            {this.hasSearchFilters()}
           </Link>
         </span>
         {offerer && (
