@@ -11,12 +11,12 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.models import Booking
 from pcapi.repository import repository
-from pcapi.repository.clean_database import clean_all_database
 from pcapi.scripts.booking.cancel_bookings_of_events_from_file import _cancel_bookings_of_offers_from_rows
 
 
+@pytest.mark.usefixtures("db_session")
 class CancelBookingsOfEventsFromFileTest:
-    def setup_class(self):
+    def test_cancel_bookings_of_offers_from_rows(self):
         beneficiary = create_user()
         create_deposit(user=beneficiary)
         offerer_to_cancel = create_offerer(name="Librairie les petits parapluies gris", siren="123456789")
@@ -75,12 +75,6 @@ class CancelBookingsOfEventsFromFileTest:
             ],
         ]
 
-    def teardown_class(self):
-        clean_all_database()
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_cancel_bookings_of_selected_offers(self):
-        # When
         _cancel_bookings_of_offers_from_rows(self.csv_rows)
 
         # Then
@@ -90,22 +84,10 @@ class CancelBookingsOfEventsFromFileTest:
         assert saved_booking.isUsed is False
         assert saved_booking.dateUsed is None
 
-    @pytest.mark.usefixtures("db_session")
-    def test_should_not_cancel_bookings_of_unselected_offers(self):
-        # When
-        _cancel_bookings_of_offers_from_rows(self.csv_rows)
-
-        # Then
         saved_booking = Booking.query.get(self.booking_to_not_cancel.id)
         assert saved_booking.isCancelled is False
         assert saved_booking.cancellationDate is None
 
-    @pytest.mark.usefixtures("db_session")
-    def test_should_not_cancel_bookings_of_specific_tokens(self):
-        # When
-        _cancel_bookings_of_offers_from_rows(self.csv_rows)
-
-        # Then
         saved_2QLYYA_booking = Booking.query.get(self.booking_2QLYYA_not_to_cancel.id)
         assert saved_2QLYYA_booking.isCancelled is False
         assert saved_2QLYYA_booking.cancellationDate is None
