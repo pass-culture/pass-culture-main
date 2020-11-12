@@ -1,7 +1,5 @@
 import datetime
 
-import pytz
-
 from pcapi.core.bookings import conf
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
@@ -108,23 +106,25 @@ def check_offerer_can_cancel_booking(booking):
 # route should have an exception handler that turns it into the
 # desired HTTP-related exception (such as ResourceGone and Forbidden)
 # See also functions below.
-def check_is_usable(booking):
+def check_is_usable(booking: Booking) -> None:
     if booking.isUsed:
         gone = api_errors.ResourceGoneError()
         gone.add_error("booking", "Cette réservation a déjà été validée")
         raise gone
+
     if booking.isCancelled:
         gone = api_errors.ResourceGoneError()
         gone.add_error("booking", "Cette réservation a été annulée")
         raise gone
-    if (
-        booking.stock.beginningDatetime
-        and booking.stock.beginningDatetime > datetime.datetime.utcnow() + conf.USE_BOOKING_BEFORE_EVENT_DELAY
-    ):
+
+    is_booking_for_event_and_not_confirmed = booking.stock.beginningDatetime and not booking.isConfirmed
+    if is_booking_for_event_and_not_confirmed:
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error(
-            "beginningDatetime",
-            "Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l'évènement",
+            "booking",
+            "Vous ne pouvez pas valider cette contremarque moins de 48h après la réservation"
+            " faite par l’utilisateur. "
+            "Rendez-vous dans la section “Réservations” pour découvrir le statut de vos réservations.",
         )
         raise forbidden
 

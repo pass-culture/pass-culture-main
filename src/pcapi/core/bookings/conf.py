@@ -1,8 +1,6 @@
 import datetime
 
 
-USE_BOOKING_BEFORE_EVENT_DELAY = datetime.timedelta(hours=72)
-
 CONFIRM_BOOKING_AFTER_CREATION_DELAY = datetime.timedelta(hours=48)
 CONFIRM_BOOKING_BEFORE_EVENT_DELAY = datetime.timedelta(hours=72)
 

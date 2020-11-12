@@ -174,36 +174,44 @@ class CheckExpenseLimitsTest:
 
 @pytest.mark.usefixtures("db_session")
 class CheckIsUsableTest:
-    def test_raise_if_used(self):
+    def should_raise_if_used(self):
         booking = factories.BookingFactory(isUsed=True)
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_is_usable(booking)
         assert exc.value.errors["booking"] == ["Cette réservation a déjà été validée"]
 
-    def test_raise_if_cancelled(self):
+    def should_raise_if_cancelled(self):
         booking = factories.BookingFactory(isCancelled=True)
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_is_usable(booking)
         assert exc.value.errors["booking"] == ["Cette réservation a été annulée"]
 
-    def test_raise_if_too_soon_to_mark_as_used(self):
+    def should_pass_if_no_beginning_datetime(self):
+        booking = factories.BookingFactory(stock__beginningDatetime=None)
+        validation.check_is_usable(booking)
+
+    def should_pass_when_event_begins_in_less_than_72_hours(self):
+        soon = datetime.utcnow() + timedelta(hours=72)
+        booking = factories.BookingFactory(stock__beginningDatetime=soon)
+        validation.check_is_usable(booking)
+
+    def should_pass_when_event_begins_in_more_than_72_hours_and_booking_created_more_than_48_hours_ago(self):
+        next_week = datetime.utcnow() + timedelta(weeks=1)
+        three_days_ago = datetime.utcnow() - timedelta(days=3)
+        booking = factories.BookingFactory(stock__beginningDatetime=next_week, dateCreated=three_days_ago)
+        validation.check_is_usable(booking)
+
+    def should_raise_when_event_booking_not_confirmed(self):
+        next_week = datetime.utcnow() + timedelta(weeks=1)
         booking = factories.BookingFactory(
-            stock__beginningDatetime=datetime.utcnow() + timedelta(days=4),
+            stock__beginningDatetime=next_week,
         )
         with pytest.raises(api_errors.ForbiddenError) as exc:
             validation.check_is_usable(booking)
-        assert exc.value.errors["beginningDatetime"] == [
-            "Vous ne pouvez pas valider cette contremarque plus de 72h " "avant le début de l'évènement"
+        assert exc.value.errors["booking"] == [
+            "Vous ne pouvez pas valider cette contremarque moins de 48h après la réservation faite par l’utilisateur. "
+            "Rendez-vous dans la section “Réservations” pour découvrir le statut de vos réservations."
         ]
-
-    def test_ok_if_no_beginning_datetime(self):
-        booking = factories.BookingFactory(stock__beginningDatetime=None)
-        validation.check_is_usable(booking)  # should not raise
-
-    def test_ok_if_beginning_datetime_is_soon_enough(self):
-        soon = datetime.utcnow() + timedelta(days=2)
-        booking = factories.BookingFactory(stock__beginningDatetime=soon)
-        validation.check_is_usable(booking)  # should not raise
 
 
 @pytest.mark.usefixtures("db_session")

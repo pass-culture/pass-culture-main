@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from unittest import mock
 import urllib.parse
 
 import pytest
@@ -18,13 +19,13 @@ from pcapi.model_creators.specific_creators import create_event_occurrence
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
-from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.models import Booking
 from pcapi.models import Deposit
 from pcapi.models import EventType
 from pcapi.models import ThingType
 from pcapi.models import UserSQLEntity
+from pcapi.models import api_errors
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
@@ -144,7 +145,7 @@ class Returns204:  # No Content
         assert user.canBookFreeOffers
 
 
-class Returns403:  # Forbidden
+class Returns403:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_editor_and_valid_email(self, app):
         # Given
@@ -170,29 +171,24 @@ class Returns403:  # Forbidden
         ]
         assert not Booking.query.get(booking_id).isUsed
 
+    @mock.patch("pcapi.core.bookings.validation.check_is_usable")
     @pytest.mark.usefixtures("db_session")
-    def when_booking_beginning_datetime_in_more_than_72_hours(self, app):
+    def when_booking_not_confirmed(self, mocked_check_is_usable, app):
         # Given
-        user = create_user()
-        pro_user = create_user(email="admin@email.fr")
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(pro_user, offerer)
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        four_days_from_now = datetime.utcnow() + timedelta(days=4)
-        stock = create_stock_from_offer(offer, price=0, beginning_datetime=four_days_from_now)
-        booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(booking, user_offerer)
+        next_week = datetime.utcnow() + timedelta(weeks=1)
+        booking = bookings_factories.BookingFactory(stock__beginningDatetime=next_week)
+        pro_user = users_factories.UserFactory(email="pro@example.com")
+        offerer = booking.stock.offer.venue.managingOfferer
+        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         url = "/bookings/token/{}".format(booking.token)
+        mocked_check_is_usable.side_effect = api_errors.ForbiddenError(errors={"booking": ["Not confirmed"]})
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@email.fr").patch(url)
+        response = TestClient(app.test_client()).with_auth("pro@example.com").patch(url)
 
         # Then
         assert response.status_code == 403
-        assert response.json["beginningDatetime"] == [
-            "Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l'évènement"
-        ]
+        assert response.json["booking"] == ["Not confirmed"]
 
     @pytest.mark.usefixtures("db_session")
     def when_it_is_an_offer_on_an_activation_event_and_user_patching_is_not_global_admin(self, app):
