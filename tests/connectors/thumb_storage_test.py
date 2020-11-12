@@ -37,7 +37,7 @@ def test_read_thumb_returns_request_content_when_url_is_fine(mocked_requests_get
             self.status_code = 200
             self.headers = {"Content-type": "image/kikou"}
 
-    form = CreateMediationBodyModel(thumbUrl='https://my-image-url.jpg', offerId=1, offererId=1)
+    form = CreateMediationBodyModel(thumbUrl="https://my-image-url.jpg", offerId=1, offererId=1)
     mocked_requests_get.return_value = MockResponse()
 
     # when
@@ -50,7 +50,7 @@ def test_read_thumb_returns_request_content_when_url_is_fine(mocked_requests_get
 @patch("pcapi.connectors.thumb_storage.requests.get", side_effect=Exception)
 def test_read_thumb_returns_api_error_when_request_raise_ssl_error(mocked_requests_get):
     # given
-    form = CreateMediationBodyModel(thumbUrl='https://my-image-url.jpg', offerId=1, offererId=1)
+    form = CreateMediationBodyModel(thumbUrl="https://my-image-url.jpg", offerId=1, offererId=1)
     # when
     with pytest.raises(ApiErrors) as api_errors:
         read_thumb(files={}, form=form)

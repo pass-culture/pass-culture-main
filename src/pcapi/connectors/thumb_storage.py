@@ -31,7 +31,7 @@ def read_thumb(files=None, form=None):
             return _fetch_image(form.thumb_url)
         except ValueError as value_error:
             logger.exception(value_error)
-            raise ApiErrors({'thumb_url': ["L'adresse saisie n'est pas valide"]})
+            raise ApiErrors({"thumb_url": ["L'adresse saisie n'est pas valide"]})
 
 
 def create_thumb(
