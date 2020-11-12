@@ -74,19 +74,6 @@
     margin-bottom: rem(12px);
   }
 
-  .main-list-title {
-    border-bottom: thin solid;
-    display: block;
-    font-weight: $weight-bold;
-    margin: 0.75rem 0;
-    overflow-y: hidden;
-    text-transform: uppercase;
-
-    span {
-      margin-top: rem(3.5px);
-    }
-  }
-
   .field-content {
     padding-left: rem(5px);
     vertical-align: middle;

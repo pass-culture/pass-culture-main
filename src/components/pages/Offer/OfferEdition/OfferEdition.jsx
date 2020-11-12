@@ -463,7 +463,7 @@ class OfferEdition extends PureComponent {
           {offer && <MediationsManager offerId={offer.id} />}
 
           {showAllForm && (
-            <div>
+            <div className="section">
               <h2 className="main-list-title">
                 {'Infos pratiques'}
               </h2>
