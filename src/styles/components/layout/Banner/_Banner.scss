@@ -2,7 +2,7 @@
   &.attention {
     background: $attention;
   }
-  
+
   &.notification-info {
     background: $notification-info;
   }
@@ -17,7 +17,7 @@
 }
 
 .bi-external-link {
-  font-weight: $weight-bold;
+  @extend .tertiary-link;
 
   > img {
     vertical-align: sub;

@@ -5,6 +5,7 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
 import StyleguideAgenda from './StyleguideAgenda'
+import StyleguideBanners from './StyleguideElements/StyleguideBanners'
 import StyleguideButtons from './StyleguideElements/StyleguideButtons'
 import StyleguideInputText from './StyleguideElements/StyleguideInputText'
 import StyleguideSelect from './StyleguideElements/StyleguideSelect'
@@ -40,6 +41,12 @@ const Styleguide = () => (
       componentName="Select"
     />
     <StyleguideSelect />
+
+    <StyleguideTitle
+      className="sg-banner"
+      componentName="Bannière"
+    />
+    <StyleguideBanners />
   </Main>
 )
 

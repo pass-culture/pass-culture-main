@@ -35,6 +35,14 @@ const StyleguideAgenda = () => {
           {'Select'}
         </a>
       </li>
+      <li>
+        <a
+          className="tertiary-link"
+          href="#sg-banner"
+        >
+          {'Bannières'}
+        </a>
+      </li>
     </ul>
   )
 }
