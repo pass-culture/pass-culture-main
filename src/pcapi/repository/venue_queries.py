@@ -27,10 +27,7 @@ def find_by_managing_offerer_id(offerer_id: int) -> VenueSQLEntity:
 
 
 def find_by_managing_offerer_id_and_siret(offerer_id: int, siret: str) -> VenueSQLEntity:
-    return VenueSQLEntity.query \
-        .filter_by(managingOffererId=offerer_id) \
-        .filter_by(siret=siret) \
-        .one_or_none()
+    return VenueSQLEntity.query.filter_by(managingOffererId=offerer_id).filter_by(siret=siret).one_or_none()
 
 
 def find_by_managing_user(user: UserSQLEntity) -> List[VenueSQLEntity]:

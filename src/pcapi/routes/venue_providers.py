@@ -43,7 +43,8 @@ def list_venue_providers():
     vp_query = VenueProvider.query.filter_by(venueId=dehumanize(venue_id))
     return jsonify([as_dict(venue_provider, includes=VENUE_PROVIDER_INCLUDES) for venue_provider in vp_query.all()])
 
-@private_api.route('/venueProviders', methods=['POST'])
+
+@private_api.route("/venueProviders", methods=["POST"])
 @login_required
 @expect_json_data
 def create_venue_provider():
@@ -82,5 +83,5 @@ def _get_stock_provider_repository(provider_class) -> StockProviderRepository:
 
 def _run_first_synchronization(new_venue_provider: VenueProvider):
     subprocess.Popen(
-        ['python', 'src/pcapi/scripts/pc.py', 'update_providables', '--venue-provider-id', str(new_venue_provider.id)]
+        ["python", "src/pcapi/scripts/pc.py", "update_providables", "--venue-provider-id", str(new_venue_provider.id)]
     )

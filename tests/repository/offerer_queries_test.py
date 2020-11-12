@@ -79,7 +79,6 @@ def test_find_email_of_user_offerer_should_returns_email(app):
     assert result == "pro@example.com"
 
 
-
 @pytest.mark.usefixtures("db_session")
 def test_find_first_by_user_offerer_id_returns_the_first_offerer_that_was_created(app):
     # given
