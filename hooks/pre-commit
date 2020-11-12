@@ -2,7 +2,7 @@
 
 counter=0
 
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' ':!tests')
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.py')
 if [[ "$STAGED_FILES" = "" ]]; then
   exit 0
 fi
