@@ -492,7 +492,6 @@ class Offers extends PureComponent {
             to="/offres"
           >
             {'Réinitialiser les filtres'}
-            {this.hasSearchFilters()}
           </Link>
         </span>
         {offerer && (
