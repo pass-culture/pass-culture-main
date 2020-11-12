@@ -270,39 +270,62 @@ class PaginatedOfferSQLRepositoryTest:
             self.user_offerer = create_user_offerer(self.pro, self.offerer)
 
             self.inactive_thing_offer_with_stock_with_remaining_quantity = create_offer_with_thing_product(
-                venue, is_active=False
+                venue, is_active=False, description="inactive_thing_offer_with_stock_with_remaining_quantity"
             )
             self.inactive_thing_offer_without_remaining_quantity = create_offer_with_thing_product(
-                venue, is_active=False
+                venue, is_active=False, description="inactive_thing_offer_without_remaining_quantity"
             )
-            self.inactive_thing_offer_without_stock = create_offer_with_thing_product(venue, is_active=False)
-            self.inactive_expired_event_offer = create_offer_with_event_product(venue, is_active=False)
+            self.inactive_thing_offer_without_stock = create_offer_with_thing_product(
+                venue, is_active=False, description="inactive_thing_offer_without_stock"
+            )
+            self.inactive_expired_event_offer = create_offer_with_event_product(
+                venue, is_active=False, description="inactive_expired_event_offer"
+            )
             self.active_thing_offer_with_one_stock_with_remaining_quantity = create_offer_with_thing_product(
-                venue, is_active=True
+                venue, is_active=True, description="active_thing_offer_with_one_stock_with_remaining_quantity"
             )
             self.active_thing_offer_with_all_stocks_without_quantity = create_offer_with_thing_product(
-                venue, is_active=True
+                venue, is_active=True, description="active_thing_offer_with_all_stocks_without_quantity"
             )
             self.active_event_offer_with_stock_in_the_future_without_quantity = create_offer_with_event_product(
-                venue=venue
+                venue=venue, description="active_event_offer_with_stock_in_the_future_without_quantity"
             )
             self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity = (
-                create_offer_with_event_product(venue=venue)
+                create_offer_with_event_product(
+                    venue=venue, description="active_event_offer_with_one_stock_in_the_future_with_remaining_quantity"
+                )
             )
-            self.sold_old_thing_offer_with_all_stocks_empty = create_offer_with_thing_product(venue)
+            self.sold_old_thing_offer_with_all_stocks_empty = create_offer_with_thing_product(
+                venue, description="sold_old_thing_offer_with_all_stocks_empty"
+            )
             self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity = (
-                create_offer_with_event_product(venue=venue)
+                create_offer_with_event_product(
+                    venue=venue,
+                    description="sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity",
+                )
             )
-            self.sold_out_thing_offer_without_stock = create_offer_with_thing_product(venue)
-            self.sold_out_event_offer_without_stock = create_offer_with_event_product(venue=venue)
+            self.sold_out_thing_offer_without_stock = create_offer_with_thing_product(
+                venue, description="sold_out_thing_offer_without_stock"
+            )
+            self.sold_out_event_offer_without_stock = create_offer_with_event_product(
+                venue=venue, description="sold_out_event_offer_without_stock"
+            )
+            self.sold_out_event_offer_with_only_one_stock_soft_deleted = create_offer_with_event_product(
+                venue=venue, description="sold_out_event_offer_with_only_one_stock_soft_deleted"
+            )
             self.expired_event_offer_with_stock_in_the_past_without_quantity = create_offer_with_event_product(
-                venue=venue
+                venue=venue, description="expired_event_offer_with_stock_in_the_past_without_quantity"
             )
             self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity = (
-                create_offer_with_event_product(venue=venue)
+                create_offer_with_event_product(
+                    venue=venue, description="expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity"
+                )
             )
             self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity = (
-                create_offer_with_event_product(venue=venue)
+                create_offer_with_event_product(
+                    venue=venue,
+                    description="expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity",
+                )
             )
 
         def save_data_set(self):
@@ -399,6 +422,9 @@ class PaginatedOfferSQLRepositoryTest:
                 quantity=None,
             )
             stock_19 = create_stock_from_offer(self.inactive_thing_offer_without_remaining_quantity, quantity=0)
+            stock_20 = create_stock_from_offer(
+                self.sold_out_event_offer_with_only_one_stock_soft_deleted, quantity=10, soft_deleted=True
+            )
             booking = create_booking(user=beneficiary, stock=stock_14)
             booking_cancelled = create_booking(user=beneficiary, stock=stock_9, is_cancelled=True)
             stocks = [
@@ -419,6 +445,7 @@ class PaginatedOfferSQLRepositoryTest:
                 stock_17,
                 stock_18,
                 stock_19,
+                stock_20,
             ]
 
             repository.save(
@@ -458,6 +485,7 @@ class PaginatedOfferSQLRepositoryTest:
                 Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id)
                 not in offer_ids
             )
+            assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
             assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) not in offer_ids
             assert (
@@ -498,6 +526,7 @@ class PaginatedOfferSQLRepositoryTest:
                 Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id)
                 not in offer_ids
             )
+            assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
             assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) not in offer_ids
             assert (
@@ -538,6 +567,7 @@ class PaginatedOfferSQLRepositoryTest:
                 Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id)
                 in offer_ids
             )
+            assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) in offer_ids
             assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) not in offer_ids
             assert (
@@ -562,7 +592,7 @@ class PaginatedOfferSQLRepositoryTest:
             # then
             offer_ids = [offer.identifier for offer in paginated_offers.offers]
             assert Identifier(self.sold_out_thing_offer_without_stock.id) in offer_ids
-            assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) not in offer_ids
+            assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) in offer_ids
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_with_no_remaining_quantity_and_no_bookings_when_requesting_sold_out_status(self, app):
@@ -641,6 +671,7 @@ class PaginatedOfferSQLRepositoryTest:
                 Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id)
                 not in offer_ids
             )
+            assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
             assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) in offer_ids
             assert (
@@ -679,5 +710,6 @@ class PaginatedOfferSQLRepositoryTest:
                 Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id)
                 not in offer_ids
             )
+            assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
             assert Identifier(sold_out_offer_on_other_venue.id) in offer_ids
