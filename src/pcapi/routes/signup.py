@@ -127,12 +127,11 @@ def _generate_offerer(data):
     return offerer
 
 
-def _set_offerer_departement_code(new_user, offerer):
+def _set_offerer_departement_code(new_user: UserSQLEntity, offerer: Offerer) -> UserSQLEntity:
     if IS_INTEGRATION:
         new_user.departementCode = "00"
     elif offerer.postalCode is not None:
-        offerer_dept_code = PostalCode(offerer.postalCode).get_departement_code()
-        new_user.departementCode = "93" if offerer_dept_code in ILE_DE_FRANCE_DEPT_CODES else offerer_dept_code
+        new_user.departementCode = PostalCode(offerer.postalCode).get_departement_code()
     else:
         new_user.departementCode = "XX"  # We don't want to trigger an error on this:
         # we want the error on user

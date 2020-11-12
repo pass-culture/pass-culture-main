@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue_type
@@ -10,6 +11,7 @@ from pcapi.models.user_offerer import RightsType
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
+from pcapi.routes.signup import _set_offerer_departement_code
 
 from tests.conftest import TestClient
 
@@ -471,3 +473,39 @@ class Post:
             assert response.status_code == 400
             error = response.json
             assert "postalCode" in error
+
+
+class SetOffererDepartementCodeTest:
+    @patch("pcapi.routes.signup.IS_INTEGRATION", True)
+    def should_set_user_department_to_all_departments_in_integration(self):
+        # Given
+        new_user = create_user()
+        offerer = create_offerer(postal_code="75019")
+
+        # When
+        updated_user = _set_offerer_departement_code(new_user, offerer)
+
+        # Then
+        assert updated_user.departementCode == "00"
+
+    def should_set_user_department_to_undefined_department_code_when_offerer_has_none(self):
+        # Given
+        new_user = create_user()
+        offerer = create_offerer(postal_code=None)
+
+        # When
+        updated_user = _set_offerer_departement_code(new_user, offerer)
+
+        # Then
+        assert updated_user.departementCode == "XX"
+
+    def should_set_user_department_code_based_on_offerer(self):
+        # Given
+        new_user = create_user()
+        offerer = create_offerer(postal_code="75019")
+
+        # When
+        updated_user = _set_offerer_departement_code(new_user, offerer)
+
+        # Then
+        assert updated_user.departementCode == "75"
