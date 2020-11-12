@@ -22,10 +22,10 @@ class RequestWrapperTest:
         mocked_request_function = Mock()
 
         # when
-        _wrapper(mocked_request_function, 'GET', 'https://example.net', **dict(timeout=40))
+        _wrapper(mocked_request_function, "GET", "https://example.net", **dict(timeout=40))
 
         # then
-        mocked_request_function.assert_called_once_with(method='GET', url='https://example.net',timeout=40)
+        mocked_request_function.assert_called_once_with(method="GET", url="https://example.net", timeout=40)
 
     def test_should_propagate_any_exception(self):
         # given
