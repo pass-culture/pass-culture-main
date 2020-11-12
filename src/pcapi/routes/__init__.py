@@ -11,7 +11,6 @@ def install_routes(app: Flask) -> None:
     import pcapi.routes.beneficiaries
     import pcapi.routes.bookings
     import pcapi.routes.error_handlers
-    import pcapi.routes.export
     import pcapi.routes.favorites
     import pcapi.routes.features
     import pcapi.routes.health_check

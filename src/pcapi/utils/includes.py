@@ -135,44 +135,9 @@ VENUE_INCLUDES = [
 
 VENUE_PROVIDER_INCLUDES = ["provider", "nOffers", "-_sa_polymorphic_on"]
 
-OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
-    "validationToken",
-    "-thumbCount",
-    "-idAtProviders",
-    {
-        "key": "UserOfferers",
-        "includes": [
-            {
-                "key": "user",
-                "includes": [
-                    "validationToken",
-                    "-resetPasswordTokenValidityLimit",
-                    "-resetPasswordToken",
-                    "-clearTextPassword",
-                    "-password",
-                    "-dateOfBirth",
-                    "-id",
-                ],
-            }
-        ],
-    },
-    {
-        "key": "managedVenues",
-        "includes": [
-            "validationToken",
-            "-publicName",
-            "-thumbCount",
-            "-idAtProviders",
-            "-isVirtual",
-            "-lastProviderId",
-            "-latitude",
-            "-longitude",
-            "-dateModifiedAtLastProvider",
-        ],
-    },
+MEDIATION_INCLUDES = [
+    "thumbUrl"
 ]
-
-MEDIATION_INCLUDES = ["thumbUrl"]
 
 FEATURE_INCLUDES = ["nameKey"]
 

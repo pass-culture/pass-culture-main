@@ -12,7 +12,6 @@ from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 from pcapi.models.activity import load_activity
 from pcapi.models.db import db
-from pcapi.repository.offerer_queries import _filter_by_sirens
 
 
 def find_by_id(venue_id: int) -> VenueSQLEntity:
@@ -28,75 +27,10 @@ def find_by_managing_offerer_id(offerer_id: int) -> VenueSQLEntity:
 
 
 def find_by_managing_offerer_id_and_siret(offerer_id: int, siret: str) -> VenueSQLEntity:
-    return VenueSQLEntity.query.filter_by(managingOffererId=offerer_id).filter_by(siret=siret).one_or_none()
-
-
-def find_filtered_venues(
-    sirens=None,
-    dpts=None,
-    zip_codes=None,
-    from_date=None,
-    to_date=None,
-    has_siret=None,
-    is_virtual=None,
-    offer_status=None,
-    is_validated=None,
-    has_validated_offerer=None,
-    has_offerer_with_siren=None,
-    has_validated_user_offerer=None,
-    has_validated_user=None,
-):
-    query = db.session.query(VenueSQLEntity)
-    if dpts:
-        query = _filter_by_dpts(query, dpts)
-
-    if zip_codes:
-        query = _filter_by_zipcodes(query, zip_codes)
-
-    if from_date or to_date:
-        query = _filter_by_date(query, from_date, to_date)
-
-    if has_siret is not None:
-        query = _filter_by_has_siret(query, has_siret)
-
-    if is_virtual is not None:
-        query = _filter_by_is_virtual(query, is_virtual)
-
-    if offer_status:
-        query = _filter_by_offer_status(query, offer_status)
-
-    if is_validated is not None:
-        query = _filter_by_is_validated(query, is_validated)
-
-    if (
-        has_validated_offerer is not None
-        or has_offerer_with_siren is not None
-        or has_validated_user_offerer is not None
-        or has_validated_user is not None
-        or sirens is not None
-    ):
-        query = query.join(Offerer)
-
-    if sirens is not None:
-        query = _filter_by_sirens(query, sirens)
-
-    if has_validated_offerer is not None:
-        query = _filter_by_has_validated_offerer(query, has_validated_offerer)
-
-    if has_offerer_with_siren is not None:
-        query = _filter_by_has_offerer_with_siren(query, has_offerer_with_siren)
-
-    if has_validated_user_offerer is not None or has_validated_user is not None:
-        query = query.join(UserOfferer)
-
-    if has_validated_user_offerer is not None:
-        query = _filter_by_has_validated_user_offerer(query, has_validated_user_offerer)
-
-    if has_validated_user is not None:
-        query = _filter_by_has_validated_user(query, has_validated_user)
-
-    result = query.all()
-    return result
+    return VenueSQLEntity.query \
+        .filter_by(managingOffererId=offerer_id) \
+        .filter_by(siret=siret) \
+        .one_or_none()
 
 
 def find_by_managing_user(user: UserSQLEntity) -> List[VenueSQLEntity]:
