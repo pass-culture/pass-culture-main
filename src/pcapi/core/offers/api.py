@@ -43,6 +43,8 @@ def list_offers_for_pro_user(
     name_keywords: Optional[str] = None,
     status: Optional[str] = None,
     creation_mode: Optional[str] = None,
+    period_beginning_date: Optional[str] = None,
+    period_ending_date: Optional[str] = None,
 ) -> PaginatedOffersRecap:
     return offers_repository.get_paginated_offers_for_offerer_venue_and_keywords(
         user_id=user_id,
@@ -55,6 +57,8 @@ def list_offers_for_pro_user(
         name_keywords=name_keywords,
         status=status,
         creation_mode=creation_mode,
+        period_beginning_date=period_beginning_date,
+        period_ending_date=period_ending_date,
     )
 
 

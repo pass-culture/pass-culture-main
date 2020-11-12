@@ -156,6 +156,8 @@ class ListOffersQueryModel(BaseModel):
     venue_id: Optional[int]
     type_id: Optional[str]
     creation_mode: Optional[str]
+    period_beginning_date: Optional[str]
+    period_ending_date: Optional[str]
 
     _cast_paginate = cast_optional_field_str_to_int("paginate")
     _cast_page = cast_optional_field_str_to_int("page")

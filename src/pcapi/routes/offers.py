@@ -45,6 +45,8 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
         page=query.page,
         status=query.status,
         creation_mode=query.creation_mode,
+        period_beginning_date=query.period_beginning_date,
+        period_ending_date=query.period_ending_date,
     )
 
     return ListOffersResponseModel(**serialize_offers_recap_paginated(paginated_offers))
