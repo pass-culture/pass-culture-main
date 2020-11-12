@@ -24,11 +24,9 @@ from pcapi.repository.venue_queries import find_by_id
 from pcapi.routes.serialization import as_dict
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 from pcapi.use_cases.connect_venue_to_provider import connect_venue_to_provider
-from pcapi.utils.config import API_ROOT_PATH
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import VENUE_PROVIDER_INCLUDES
 from pcapi.utils.rest import expect_json_data
-from pcapi.utils.rest import load_or_404
 from pcapi.validation.routes.venue_providers import check_existing_provider
 from pcapi.validation.routes.venue_providers import check_new_venue_provider_information
 
@@ -45,15 +43,7 @@ def list_venue_providers():
     vp_query = VenueProvider.query.filter_by(venueId=dehumanize(venue_id))
     return jsonify([as_dict(venue_provider, includes=VENUE_PROVIDER_INCLUDES) for venue_provider in vp_query.all()])
 
-
-@private_api.route("/venueProviders/<id>", methods=["GET"])
-@login_required
-def get_venue_provider(id):
-    venue_provider = load_or_404(VenueProvider, id)
-    return jsonify(as_dict(venue_provider, includes=VENUE_PROVIDER_INCLUDES))
-
-
-@private_api.route("/venueProviders", methods=["POST"])
+@private_api.route('/venueProviders', methods=['POST'])
 @login_required
 @expect_json_data
 def create_venue_provider():
@@ -92,5 +82,5 @@ def _get_stock_provider_repository(provider_class) -> StockProviderRepository:
 
 def _run_first_synchronization(new_venue_provider: VenueProvider):
     subprocess.Popen(
-        ["python", "src/pcapi/scripts/pc.py", "update_providables", "--venue-provider-id", str(new_venue_provider.id)]
+        ['python', 'src/pcapi/scripts/pc.py', 'update_providables', '--venue-provider-id', str(new_venue_provider.id)]
     )
