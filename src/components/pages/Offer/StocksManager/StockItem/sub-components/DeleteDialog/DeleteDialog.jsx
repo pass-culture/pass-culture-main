@@ -10,7 +10,9 @@ const DeleteDialog = ({ isEvent, onCancelDeleteClick, onConfirmDeleteClick }) =>
       {isEvent ? 'cette date' : 'ce stock'}
       {', '}
       {'vous supprimerez aussi toutes les réservations associées. '}
-      {isEvent && <br />}
+      <br />
+      {"L'ensemble des utilisateurs seront automatiquement avertis par mail. "}
+      <br />
       {'Êtes-vous sûr de vouloir continuer ?'}
     </td>
 

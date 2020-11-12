@@ -15,7 +15,9 @@ describe('src | components | pages | Offer | StockItem | DeleteDialog', () => {
 
     // then
     const td = wrapper.find('td')
-    expect(td.at(0).text()).toBe('En confirmant l’annulation de cette date, vous supprimerez aussi toutes les réservations associées. Êtes-vous sûr de vouloir continuer ?')
+    expect(td.at(0).text()).toBe(
+      "En confirmant l’annulation de cette date, vous supprimerez aussi toutes les réservations associées. L'ensemble des utilisateurs seront automatiquement avertis par mail. Êtes-vous sûr de vouloir continuer ?"
+    )
     expect(td.at(1).find('button').find({ children: 'Oui' })).toHaveLength(1)
     expect(td.at(2).find('button').find({ children: 'Non' })).toHaveLength(1)
   })
@@ -31,7 +33,9 @@ describe('src | components | pages | Offer | StockItem | DeleteDialog', () => {
 
     // then
     const td = wrapper.find('td')
-    expect(td.at(0).text()).toBe('En confirmant l’annulation de ce stock, vous supprimerez aussi toutes les réservations associées. Êtes-vous sûr de vouloir continuer ?')
+    expect(td.at(0).text()).toBe(
+      "En confirmant l’annulation de ce stock, vous supprimerez aussi toutes les réservations associées. L'ensemble des utilisateurs seront automatiquement avertis par mail. Êtes-vous sûr de vouloir continuer ?"
+    )
     expect(td.at(1).find('button').find({ children: 'Oui' })).toHaveLength(1)
     expect(td.at(2).find('button').find({ children: 'Non' })).toHaveLength(1)
   })
