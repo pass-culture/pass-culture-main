@@ -3,10 +3,11 @@ import React, { Fragment } from 'react'
 
 import Icon from 'components/layout/Icon'
 
-import { OFFER_STATUS_LIST } from './_constants'
+import { ADMINS_DISABLED_FILTERS_MESSAGE, OFFER_STATUS_LIST } from './_constants'
 import { OffersStatusFiltersModal } from './OffersStatusFiltersModal/OffersStatusFiltersModal'
 
 const StatusFiltersButton = ({
+  disabled,
   refreshOffers,
   status,
   updateStatusFilter,
@@ -21,7 +22,9 @@ const StatusFiltersButton = ({
   return (
     <Fragment>
       <button
+        disabled={disabled}
         onClick={toggleStatusFiltersVisibility}
+        title={disabled ? ADMINS_DISABLED_FILTERS_MESSAGE : undefined}
         type="button"
       >
         {'Statut'}
@@ -45,11 +48,13 @@ const StatusFiltersButton = ({
 export default StatusFiltersButton
 
 StatusFiltersButton.defaultProps = {
+  disabled: false,
   isStatusFiltersVisible: false,
   status: null,
 }
 
 StatusFiltersButton.propTypes = {
+  disabled: PropTypes.bool,
   isStatusFiltersVisible: PropTypes.bool,
   refreshOffers: PropTypes.func.isRequired,
   setIsStatusFiltersVisible: PropTypes.func.isRequired,

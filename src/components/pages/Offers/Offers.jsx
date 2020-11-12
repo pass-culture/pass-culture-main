@@ -15,12 +15,12 @@ import { mapApiToBrowser, mapBrowserToApi, translateQueryParamsToApiParams } fro
 
 import {
   DEFAULT_SEARCH_FILTERS,
-  ALL_OFFERERS,
   ALL_VENUES_OPTION,
   ALL_TYPES_OPTION,
   CREATION_MODES_FILTERS,
   DEFAULT_CREATION_MODE,
   DEFAULT_PAGE,
+  ADMINS_DISABLED_FILTERS_MESSAGE,
 } from './_constants'
 import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
@@ -61,7 +61,7 @@ class Offers extends PureComponent {
     const { searchFilters } = this.state
     const { getOfferer } = this.props
 
-    if (searchFilters.offererId !== ALL_OFFERERS) {
+    if (searchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId) {
       getOfferer(searchFilters.offererId).then(offerer => this.setState({ offerer }))
     }
 
@@ -176,41 +176,75 @@ class Offers extends PureComponent {
     )
   }
 
+  hasSearchFilters(searchFilters, filterNames = Object.keys(searchFilters)) {
+    return filterNames
+      .map(
+        filterName =>
+          searchFilters[filterName] !==
+          { ...DEFAULT_SEARCH_FILTERS, page: DEFAULT_PAGE }[filterName]
+      )
+      .includes(true)
+  }
+
+  isAdminForbidden(searchFilters) {
+    const { currentUser } = this.props
+    return currentUser.isAdmin && !this.hasSearchFilters(searchFilters, ['venueId', 'offererId'])
+  }
+
   handleOffererFilterRemoval = () => {
-    this.setSearchFilters('offererId', ALL_OFFERERS)
+    const newSearchFilters = {
+      offererId: DEFAULT_SEARCH_FILTERS.offererId,
+      status: this.getDefaultStatusIfNecessary(this.state.searchFilters.venueId),
+    }
+    this.setSearchFilters(newSearchFilters)
     this.setState({ offerer: null, page: DEFAULT_PAGE }, () => {
       this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
       this.fetchAndFormatVenues()
     })
   }
 
-  setSearchFilters(field, value) {
+  getDefaultStatusIfNecessary(venueId, offererId = DEFAULT_SEARCH_FILTERS.offererId) {
+    const isVenueFilterSelected = venueId !== DEFAULT_SEARCH_FILTERS.venueId
+    const isOffererFilterApplied = offererId !== DEFAULT_SEARCH_FILTERS.offererId
+    const isFilterByVenuOrOfferer = isVenueFilterSelected || isOffererFilterApplied
+
+    return this.props.currentUser.isAdmin && !isFilterByVenuOrOfferer
+      ? DEFAULT_SEARCH_FILTERS.status
+      : this.state.searchFilters.status
+  }
+
+  setSearchFilters(newSearchFilters) {
     const { searchFilters } = this.state
     const updatedSearchFilters = {
       ...searchFilters,
-      [field]: value,
+      ...newSearchFilters,
     }
     this.setState({ searchFilters: updatedSearchFilters })
   }
 
   storeNameSearchValue = event => {
-    this.setSearchFilters('name', event.target.value)
+    this.setSearchFilters({ name: event.target.value })
   }
 
   storeSelectedVenue = event => {
-    this.setSearchFilters('venueId', event.target.value)
+    const selectedVenueId = event.target.value
+    const newSearchFilters = {
+      venueId: selectedVenueId,
+      status: this.getDefaultStatusIfNecessary(selectedVenueId, this.state.searchFilters.offererId),
+    }
+    this.setSearchFilters(newSearchFilters)
   }
 
   storeSelectedType = event => {
-    this.setSearchFilters('typeId', event.target.value)
+    this.setSearchFilters({ typeId: event.target.value })
   }
 
   updateStatusFilter = selectedStatus => {
-    this.setSearchFilters('status', selectedStatus)
+    this.setSearchFilters({ status: selectedStatus })
   }
 
   storeCreationMode = event => {
-    this.setSearchFilters('creationMode', event.target.value)
+    this.setSearchFilters({ creationMode: event.target.value })
   }
 
   onPreviousPageClick = () => {
@@ -287,7 +321,7 @@ class Offers extends PureComponent {
               type="button"
             >
               <Icon
-                alt="Supprimer le filtre"
+                alt="Supprimer le filtre par structure"
                 svg="ico-close-b"
               />
             </button>
@@ -369,36 +403,38 @@ class Offers extends PureComponent {
   }
 
   renderTableHead = () => {
-    const { currentUser, offers } = this.props
+    const { offers, savedSearchFilters } = this.props
     const { areAllOffersSelected, isStatusFiltersVisible, searchFilters } = this.state
+
     return (
       <thead>
         <tr>
-          {currentUser.isAdmin ? (
-            <Fragment>
-              <th />
-              <th />
-            </Fragment>
-          ) : (
-            <Fragment>
-              <th className="th-checkbox">
-                {offers.length ? (
-                  <input
-                    checked={areAllOffersSelected}
-                    className="select-offer-checkbox"
-                    id="select-offer-checkbox"
-                    onChange={this.selectAllOffers}
-                    type="checkbox"
-                  />
-                ) : null}
-              </th>
-              <th className="th-checkbox-label">
-                <label htmlFor="select-offer-checkbox">
-                  {areAllOffersSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
-                </label>
-              </th>
-            </Fragment>
-          )}
+          <th className="th-checkbox">
+            <input
+              checked={areAllOffersSelected}
+              className="select-offer-checkbox"
+              disabled={this.isAdminForbidden(savedSearchFilters) || !offers.length}
+              id="select-offer-checkbox"
+              onChange={this.selectAllOffers}
+              type="checkbox"
+            />
+          </th>
+          <th
+            className={`th-checkbox-label ${
+              this.isAdminForbidden(savedSearchFilters) || !offers.length ? 'label-disabled' : ''
+            }`}
+          >
+            <label
+              htmlFor="select-offer-checkbox"
+              title={
+                this.isAdminForbidden(savedSearchFilters)
+                  ? ADMINS_DISABLED_FILTERS_MESSAGE
+                  : undefined
+              }
+            >
+              {areAllOffersSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
+            </label>
+          </th>
           <th />
           <th>
             {'Lieu'}
@@ -406,21 +442,16 @@ class Offers extends PureComponent {
           <th>
             {'Stock'}
           </th>
-          {currentUser.isAdmin ? (
-            <th>
-              {'Statut'}
-            </th>
-          ) : (
-            <th className="th-with-filter">
-              <StatusFiltersButton
-                isStatusFiltersVisible={isStatusFiltersVisible}
-                refreshOffers={this.handleOnSubmit}
-                setIsStatusFiltersVisible={this.setIsStatusFiltersVisible}
-                status={searchFilters.status}
-                updateStatusFilter={this.updateStatusFilter}
-              />
-            </th>
-          )}
+          <th className="th-with-filter">
+            <StatusFiltersButton
+              disabled={this.isAdminForbidden(searchFilters)}
+              isStatusFiltersVisible={isStatusFiltersVisible}
+              refreshOffers={this.handleOnSubmit}
+              setIsStatusFiltersVisible={this.setIsStatusFiltersVisible}
+              status={searchFilters.status}
+              updateStatusFilter={this.updateStatusFilter}
+            />
+          </th>
           <th />
           <th />
         </tr>
@@ -520,20 +551,8 @@ class Offers extends PureComponent {
     </div>
   )
 
-  hasSearchFilters = () => {
-    // We dont want "no results for filters" to disappear on filters change
-    // so we need to use saved search filters and not local state ones.
-    const { savedSearchFilters } = this.props
-    return Object.keys(savedSearchFilters)
-      .map(
-        field =>
-          savedSearchFilters[field] !== { ...DEFAULT_SEARCH_FILTERS, page: DEFAULT_PAGE }[field]
-      )
-      .includes(true)
-  }
-
   renderSearchResults = () => {
-    const { offers } = this.props
+    const { offers, savedSearchFilters } = this.props
     const { isLoading } = this.state
 
     if (isLoading) {
@@ -544,7 +563,7 @@ class Offers extends PureComponent {
       return this.renderTable()
     }
 
-    if (this.hasSearchFilters()) {
+    if (this.hasSearchFilters(savedSearchFilters)) {
       return this.renderNoResultsForFilters()
     }
 
@@ -552,11 +571,11 @@ class Offers extends PureComponent {
   }
 
   render() {
-    const { currentUser, offers } = this.props
+    const { currentUser, offers, savedSearchFilters } = this.props
     const { isLoading } = this.state
     const { isAdmin } = currentUser || {}
 
-    const hasOffers = !!offers.length || this.hasSearchFilters()
+    const hasOffers = !!offers.length || this.hasSearchFilters(savedSearchFilters)
     const displayOffers = isLoading || hasOffers
 
     const actionLink =
@@ -591,7 +610,7 @@ class Offers extends PureComponent {
               <h3 className="subtitle">
                 {'Rechercher une offre'}
               </h3>
-              {this.hasSearchFilters() ? (
+              {this.hasSearchFilters(savedSearchFilters) ? (
                 <Link
                   className="reset-filters-link"
                   onClick={this.resetFilters}

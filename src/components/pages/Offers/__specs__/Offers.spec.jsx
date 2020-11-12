@@ -111,7 +111,14 @@ describe('src | components | pages | Offers | Offers', () => {
         change,
         parse,
       },
-      savedSearchFilters: {},
+      savedSearchFilters: {
+        name: '',
+        offererId: 'all',
+        venueId: 'all',
+        typeId: 'all',
+        status: 'all',
+        creationMode: 'all',
+      },
       setSelectedOfferIds: jest.fn(),
       showActionsBar: jest.fn(),
       hideActionsBar: jest.fn(),
@@ -203,7 +210,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => expect(screen.queryByText('My other offer')).not.toBeNull())
     })
 
-    it('should display a unchecked by default checkbox to select all offers when user is not admin', async () => {
+    it('should display an unchecked by default checkbox to select all offers when user is not admin', async () => {
       // Given
       props.currentUser.isAdmin = false
       props.offers = [
@@ -240,43 +247,7 @@ describe('src | components | pages | Offers | Offers', () => {
       const selectAllOffersCheckbox = screen.queryByLabelText('Tout sélectionner')
       expect(selectAllOffersCheckbox).toBeInTheDocument()
       expect(selectAllOffersCheckbox).not.toBeChecked()
-    })
-
-    it('should not display a unchecked by default checkbox to select all offers when user is admin', async () => {
-      // Given
-      props.currentUser.isAdmin = true
-      props.offers = [
-        {
-          id: 'M4',
-          isActive: true,
-          isEditable: true,
-          isFullyBooked: false,
-          isEvent: true,
-          isThing: false,
-          hasBookingLimitDatetimesPassed: false,
-          name: 'My little offer',
-          thumbUrl: '/my-fake-thumb',
-          venueId: 'JI',
-        },
-        {
-          id: 'AE3',
-          isActive: true,
-          isEditable: true,
-          isFullyBooked: true,
-          isEvent: false,
-          isThing: true,
-          hasBookingLimitDatetimesPassed: false,
-          name: 'My other offer',
-          thumbUrl: '/my-other-fake-thumb',
-          venueId: 'JI',
-        },
-      ]
-
-      // When
-      await renderOffers(props, store)
-
-      // Then
-      expect(screen.queryByLabelText('Tout sélectionner')).not.toBeInTheDocument()
+      expect(selectAllOffersCheckbox).not.toBeDisabled()
     })
 
     describe('total number of offers', () => {
@@ -404,7 +375,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
 
       describe('status filters', () => {
-        it('should not render status filters', async () => {
+        it('should not display status filters modal', async () => {
           // Given
           props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
 
@@ -420,20 +391,6 @@ describe('src | components | pages | Offers | Offers', () => {
           expect(screen.queryByLabelText('Épuisée')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Expirée')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Appliquer')).not.toBeInTheDocument()
-        })
-
-        it('should disable status filters when user is admin', async () => {
-          // Given
-          props.currentUser.isAdmin = true
-          props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI' }]
-
-          // When
-          await renderOffers(props, store)
-
-          // Then
-          expect(
-            screen.queryByAltText('Afficher ou masquer le filtre par statut')
-          ).not.toBeInTheDocument()
         })
 
         it('should display status filters with "Tous" as default value when clicking on "Statut" filter icon', async () => {
@@ -519,28 +476,282 @@ describe('src | components | pages | Offers | Offers', () => {
           expect(noOffersText).toBeInTheDocument()
         })
       })
+
+      describe('when user is admin', () => {
+        beforeEach(() => {
+          props.currentUser.isAdmin = true
+        })
+
+        describe('status filter', () => {
+          it('should disable status filters when no venue nor offerer filter is selected', async () => {
+            // When
+            await renderOffers(props, store)
+
+            // Then
+            const statusFiltersIcon = screen.getByAltText(
+              'Afficher ou masquer le filtre par statut'
+            )
+            expect(statusFiltersIcon.closest('button')).toBeDisabled()
+          })
+
+          it('should disable status filters when no venue filter is selected, even if one venue filter is currently applied', async () => {
+            // Given
+            props.query.parse.mockReturnValueOnce({ lieu: 'JI' })
+            await renderOffers(props, store)
+
+            // When
+            fireEvent.change(screen.getByDisplayValue('Ma venue'), { target: { value: 'all' } })
+
+            // Then
+            const statusFiltersIcon = screen.getByAltText(
+              'Afficher ou masquer le filtre par statut'
+            )
+            expect(statusFiltersIcon.closest('button')).toBeDisabled()
+          })
+
+          it('should reset and disable status filter when venue filter is deselected', async () => {
+            // Given
+            const { id: venueId, name: venueName } = proVenues[0]
+            props.query.parse.mockReturnValueOnce({ lieu: venueId, statut: 'inactive' })
+            await renderOffers(props, store)
+            fireEvent.change(screen.getByDisplayValue(venueName), { target: { value: ALL_VENUES } })
+
+            // When
+            await fireEvent.click(screen.getByText('Lancer la recherche'))
+
+            // Then
+            const statusFiltersIcon = screen.getByAltText(
+              'Afficher ou masquer le filtre par statut'
+            )
+            expect(statusFiltersIcon.closest('button')).toBeDisabled()
+            expect(props.loadOffers).toHaveBeenLastCalledWith({
+              name: DEFAULT_SEARCH_FILTERS.name,
+              page: DEFAULT_PAGE,
+              venueId: DEFAULT_SEARCH_FILTERS.venueId,
+              typeId: DEFAULT_SEARCH_FILTERS.typeId,
+              offererId: DEFAULT_SEARCH_FILTERS.offererId,
+              status: DEFAULT_SEARCH_FILTERS.status,
+              creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+            })
+          })
+
+          it('should not reset or disable status filter when venue filter is deselected while offerer filter is applied', async () => {
+            // Given
+            const { id: venueId, name: venueName } = proVenues[0]
+            props.query.parse.mockReturnValueOnce({
+              lieu: venueId,
+              statut: 'inactive',
+              structure: 'EF',
+            })
+            await renderOffers(props, store)
+            fireEvent.change(screen.getByDisplayValue(venueName), { target: { value: ALL_VENUES } })
+
+            // When
+            await fireEvent.click(screen.getByText('Lancer la recherche'))
+
+            // Then
+            const statusFiltersIcon = screen.getByAltText(
+              'Afficher ou masquer le filtre par statut'
+            )
+            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+            expect(props.loadOffers).toHaveBeenLastCalledWith({
+              name: DEFAULT_SEARCH_FILTERS.name,
+              page: DEFAULT_PAGE,
+              venueId: DEFAULT_SEARCH_FILTERS.venueId,
+              typeId: DEFAULT_SEARCH_FILTERS.typeId,
+              offererId: 'EF',
+              status: 'inactive',
+              creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+            })
+          })
+
+          it('should reset and disable status filter when offerer filter is removed', async () => {
+            // Given
+            const offerer = { name: 'La structure', id: 'EF' }
+            props.getOfferer.mockResolvedValueOnce(offerer)
+            props.query.parse.mockReturnValueOnce({ structure: offerer.id, statut: 'inactive' })
+            await renderOffers(props, store)
+
+            // When
+            await fireEvent.click(screen.getByAltText('Supprimer le filtre par structure'))
+
+            // Then
+            const statusFiltersIcon = screen.getByAltText(
+              'Afficher ou masquer le filtre par statut'
+            )
+            expect(statusFiltersIcon.closest('button')).toBeDisabled()
+            expect(props.loadOffers).toHaveBeenLastCalledWith({
+              name: DEFAULT_SEARCH_FILTERS.name,
+              page: DEFAULT_PAGE,
+              venueId: DEFAULT_SEARCH_FILTERS.venueId,
+              typeId: DEFAULT_SEARCH_FILTERS.typeId,
+              offererId: DEFAULT_SEARCH_FILTERS.offererId,
+              status: DEFAULT_SEARCH_FILTERS.status,
+              creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+            })
+          })
+
+          it('should not reset or disable status filter when offerer filter is removed while venue filter is applied', async () => {
+            // Given
+            const { id: venueId } = proVenues[0]
+            const offerer = { name: 'La structure', id: 'EF' }
+            props.getOfferer.mockResolvedValueOnce(offerer)
+            props.query.parse.mockReturnValueOnce({
+              lieu: venueId,
+              statut: 'inactive',
+              structure: offerer.id,
+            })
+            await renderOffers(props, store)
+
+            // When
+            await fireEvent.click(screen.getByAltText('Supprimer le filtre par structure'))
+
+            // Then
+            const statusFiltersIcon = screen.getByAltText(
+              'Afficher ou masquer le filtre par statut'
+            )
+            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+            expect(props.loadOffers).toHaveBeenLastCalledWith({
+              name: DEFAULT_SEARCH_FILTERS.name,
+              page: DEFAULT_PAGE,
+              venueId: venueId,
+              typeId: DEFAULT_SEARCH_FILTERS.typeId,
+              offererId: DEFAULT_SEARCH_FILTERS.offererId,
+              status: 'inactive',
+              creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+            })
+          })
+
+          it('should enable status filters when venue is selected but filter is not applied', async () => {
+            // Given
+            await renderOffers(props, store)
+
+            // When
+            fireEvent.change(screen.getByDisplayValue('Tous les lieux'), {
+              target: { value: 'JI' },
+            })
+
+            // Then
+            const statusFiltersIcon = screen.getByAltText(
+              'Afficher ou masquer le filtre par statut'
+            )
+            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+          })
+
+          it('should enable status filters when venue filter is applied', async () => {
+            // Given
+            props.query.parse.mockReturnValueOnce({ lieu: 'IJ' })
+
+            // When
+            await renderOffers(props, store)
+
+            // Then
+            const statusFiltersIcon = screen.getByAltText(
+              'Afficher ou masquer le filtre par statut'
+            )
+            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+          })
+
+          it('should enable status filters when offerer filter is applied', async () => {
+            // Given
+            props.query.parse.mockReturnValueOnce({ structure: 'A4' })
+
+            // When
+            await renderOffers(props, store)
+
+            // Then
+            const statusFiltersIcon = screen.getByAltText(
+              'Afficher ou masquer le filtre par statut'
+            )
+            expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
+          })
+        })
+
+        describe('select all offers checkbox', () => {
+          it('should disable select all checkbox when no venue nor offerer filter is applied', async () => {
+            // When
+            await renderOffers(props, store)
+
+            // Then
+            const selectAllOffersCheckbox = screen.getByLabelText('Tout sélectionner')
+            expect(selectAllOffersCheckbox).toBeDisabled()
+          })
+
+          it('should not disable select all checkbox when no venue filter is selected but one is currently applied', async () => {
+            // Given
+            props.query.parse.mockReturnValueOnce({ lieu: 'JI' })
+            props.savedSearchFilters.venueId = 'JI'
+            await renderOffers(props, store)
+
+            // When
+            fireEvent.change(screen.getByDisplayValue('Ma venue'), { target: { value: 'all' } })
+
+            // Then
+            const selectAllOffersCheckbox = screen.getByLabelText('Tout sélectionner')
+            expect(selectAllOffersCheckbox).not.toBeDisabled()
+          })
+
+          it('should disable select all checkbox when venue filter is selected but not applied', async () => {
+            // Given
+            await renderOffers(props, store)
+
+            // When
+            fireEvent.change(screen.getByDisplayValue('Tous les lieux'), {
+              target: { value: 'JI' },
+            })
+
+            // Then
+            const selectAllOffersCheckbox = screen.getByLabelText('Tout sélectionner')
+            expect(selectAllOffersCheckbox).toBeDisabled()
+          })
+
+          it('should enable select all checkbox when venue filter is applied', async () => {
+            // Given
+            props.query.parse.mockReturnValueOnce({ lieu: 'IJ' })
+            props.savedSearchFilters.venueId = 'IJ'
+
+            // When
+            await renderOffers(props, store)
+
+            // Then
+            const selectAllOffersCheckbox = screen.getByLabelText('Tout sélectionner')
+            expect(selectAllOffersCheckbox).not.toBeDisabled()
+          })
+
+          it('should enable select all checkbox when offerer filter is applied', async () => {
+            // Given
+            props.query.parse.mockReturnValueOnce({ structure: 'A4' })
+            props.savedSearchFilters.offererId = 'A4'
+
+            // When
+            await renderOffers(props, store)
+
+            // Then
+            const selectAllOffersCheckbox = screen.getByLabelText('Tout sélectionner')
+            expect(selectAllOffersCheckbox).not.toBeDisabled()
+          })
+        })
+      })
     })
   })
 
   describe('on click on search button', () => {
     it('should load offers with default filters when no changes where made', async () => {
       // Given
-      renderOffers(props, store)
+      await renderOffers(props, store)
 
       // When
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.loadOffers).toHaveBeenCalledWith({
-          name: DEFAULT_SEARCH_FILTERS.name,
-          page: DEFAULT_PAGE,
-          venueId: DEFAULT_SEARCH_FILTERS.venueId,
-          typeId: DEFAULT_SEARCH_FILTERS.typeId,
-          offererId: DEFAULT_SEARCH_FILTERS.offererId,
-          status: DEFAULT_SEARCH_FILTERS.status,
-          creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-        })
+      expect(props.loadOffers).toHaveBeenCalledWith({
+        name: DEFAULT_SEARCH_FILTERS.name,
+        page: DEFAULT_PAGE,
+        venueId: DEFAULT_SEARCH_FILTERS.venueId,
+        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        offererId: DEFAULT_SEARCH_FILTERS.offererId,
+        status: DEFAULT_SEARCH_FILTERS.status,
+        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
       })
     })
 
@@ -860,15 +1071,13 @@ describe('src | components | pages | Offers | Offers', () => {
       // Given
       props.query.parse.mockReturnValueOnce({ structure: 'A4' })
       props.getOfferer.mockResolvedValueOnce({ name: 'La structure' })
-      renderOffers(props, store)
+      await renderOffers(props, store)
 
       // When
-      await waitFor(() => {
-        fireEvent.click(screen.getByAltText('Supprimer le filtre'))
-      })
+      await fireEvent.click(screen.getByAltText('Supprimer le filtre par structure'))
 
       // Then
-      expect(screen.queryByText('La structure')).toBeNull()
+      expect(screen.queryByText('La structure')).not.toBeInTheDocument()
     })
 
     it('should have creation mode value when user filters by creation mode', async () => {

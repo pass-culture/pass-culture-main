@@ -95,6 +95,10 @@
 
       input {
         font-size: 1rem;
+
+        &:disabled {
+          cursor: not-allowed;
+        }
       }
     }
 
@@ -106,6 +110,15 @@
       label {
         cursor: pointer;
       }
+
+      &.label-disabled {
+        opacity: 0.3;
+
+        label {
+          cursor: not-allowed;
+        }
+      }
+
     }
 
     th.th-with-filter {
@@ -140,6 +153,10 @@
             border-radius: 4px;
             filter: unset;
           }
+        }
+        
+        &:disabled {
+          cursor: not-allowed;
         }
       }
     }
