@@ -71,15 +71,24 @@ C'est tout le framework du Pass Culture!
 
 Les actions suivantes sont requises afin de faire fonctionner l'IDE correctement côté API et de pouvoir lancer les `hooks` de `pre-commit`
 
-- Installer Python 3.7 (via le marketplace)
-- `cd pass-culture-main/api`
-- `python3 -m venv venv`
-- `source venv/bin/activate`
-- `pip install -r requirements.txt`
-- `pip install -e .`
-- Installation de nltk:
-  - Version Ubuntu: `python -m nltk.downloader punkt stopwords`
-  - Version Mac: `pip install nltk`
+Les actions suivantes sont requises afin de faire fonctionner l'API et de pouvoir lancer les `hooks` de `pre-commit`
+
+- installer Python 3.7 (via le marketplace)
+- monter un virtualenv ([lien](https://docs.python.org/3/library/venv.html)) afin d'avoir un environnement isolé et contextualisé pour les besoins de l'API
+
+- **MacOS uniquement**: `brew install libpq`
+- **Ubuntu/Debian uniquement**: `apt-get install libpq-dev`
+
+- exécuter les commandes suivantes :
+
+  1. `cd pass-culture-main/api`
+  2. `python3 -m venv venv`
+  3. `source venv/bin/activate`
+  4. `pip install -r requirements.txt`
+  5. `pip install -e .`
+  - Installation de nltk:
+    - Version Ubuntu: `python -m nltk.downloader punkt stopwords`
+    - Version Mac: `pip install nltk`
 
 ### Exécution des tests (API, WebApp, Pro)
 
