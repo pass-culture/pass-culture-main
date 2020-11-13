@@ -62,16 +62,6 @@ def put_read_recommendations():
     return jsonify(serialize_recommendations(read_recommendations, user_id=current_user.id)), 200
 
 
-@private_api.route("/recommendations/v2", methods=["PUT"])
-def put_recommendations_old_v2():
-    return redirect("/recommendations", code=308)
-
-
-@private_api.route("/recommendations/v3", methods=["PUT"])
-def put_recommendations_old_v3():
-    return redirect("/recommendations", code=308)
-
-
 @private_api.route("/recommendations", methods=["PUT"])
 @login_required
 @expect_json_data
