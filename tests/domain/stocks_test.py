@@ -6,7 +6,6 @@ import pytest
 
 from pcapi.domain.stocks import TooLateToDeleteError
 from pcapi.domain.stocks import delete_stock_and_cancel_bookings
-from pcapi.domain.stocks import have_beginning_date_been_modified
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_provider
 from pcapi.model_creators.generic_creators import create_stock
@@ -165,68 +164,3 @@ class DeleteStockAndCancelBookingsTest:
 
                 # then
                 assert self.stock.isSoftDeleted
-
-
-class CheckDateHaveBeenModifiedTest:
-    def setup_method(self):
-        self.stock = create_stock(beginning_datetime=datetime(2020, 4, 12, 12, 0, 0))
-
-    def test_should_return_true_when_beginning_date_time_have_been_changed_with_ymdthmsfz_pattern(self):
-        # Given
-        request_data = {"beginningDatetime": "2020-02-08T14:30:00.000Z"}
-
-        # When
-        check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
-
-        # Then
-        assert check_date is True
-
-    def test_should_return_true_when_beginning_date_time_have_been_changed_with_ymdthmsz_pattern(self):
-        # Given
-        request_data = {"beginningDatetime": "2020-02-08T14:30:00Z"}
-
-        # When
-        check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
-
-        # Then
-        assert check_date is True
-
-    def test_should_return_true_when_beginning_date_time_have_been_changed_with_ymdthmsfs_pattern(self):
-        # Given
-        request_data = {"beginningDatetime": "2020-02-08T14:30:00"}
-
-        # When
-        check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
-
-        # Then
-        assert check_date is True
-
-    def test_should_return_false_when_beginning_date_time_in_ymdthmsz_format_have_not_been_changed(self):
-        # Given
-        request_data = {"beginningDatetime": "2020-04-12T12:00:00Z"}
-
-        # When
-        check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
-
-        # Then
-        assert check_date is False
-
-    def test_should_return_false_when_beginning_date_time_in_ymdthmsfz_format_have_not_been_changed(self):
-        # Given
-        request_data = {"beginningDatetime": "2020-04-12T12:00:00.000Z"}
-
-        # When
-        check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
-
-        # Then
-        assert check_date is False
-
-    def test_should_return_false_when_beginning_date_time_in_ymdthmsfs_format_have_not_been_changed(self):
-        # Given
-        request_data = {"beginningDatetime": "2020-04-12T12:00:00"}
-
-        # When
-        check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
-
-        # Then
-        assert check_date is False

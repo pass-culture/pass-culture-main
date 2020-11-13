@@ -4,8 +4,11 @@ from typing import Optional
 from flask import current_app as app
 
 from pcapi.connectors import redis
-from pcapi.core.offers.repository import get_paginated_offers_for_offerer_venue_and_keywords
-from pcapi.domain.admin_emails import send_offer_creation_notification_to_administration
+import pcapi.core.bookings.repository as bookings_repository
+import pcapi.core.offers.repository as offers_repository
+from pcapi.domain import admin_emails
+from pcapi.domain import user_emails
+import pcapi.domain.allocine as domain_allocine
 from pcapi.domain.create_offer import fill_offer_with_new_data
 from pcapi.domain.create_offer import initialize_offer_from_product_id
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
@@ -17,8 +20,8 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
+from pcapi.utils import mailing
 from pcapi.utils.config import PRO_URL
-from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.rest import ensure_current_user_has_rights
 from pcapi.utils.rest import load_or_raise_error
 
@@ -42,7 +45,7 @@ def list_offers_for_pro_user(
     status: Optional[str] = None,
     creation_mode: Optional[str] = None,
 ) -> PaginatedOffersRecap:
-    return get_paginated_offers_for_offerer_venue_and_keywords(
+    return offers_repository.get_paginated_offers_for_offerer_venue_and_keywords(
         user_id=user_id,
         user_is_admin=user_is_admin,
         offerer_id=offerer_id,
@@ -70,7 +73,7 @@ def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> models.
     offer.venue = venue
     offer.bookingEmail = offer_data.booking_email
     repository.save(offer)
-    send_offer_creation_notification_to_administration(offer, user, PRO_URL, send_raw_email)
+    admin_emails.send_offer_creation_notification_to_administration(offer, user, PRO_URL, mailing.send_raw_email)
 
     return offer
 
@@ -100,5 +103,58 @@ def create_stock(
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+
+    return stock
+
+
+def edit_stock(
+    stock: StockSQLEntity,
+    price: int = None,
+    quantity: int = None,
+    beginning: datetime.datetime = None,
+    booking_limit_datetime: datetime.datetime = None,
+) -> StockSQLEntity:
+    validation.check_stock_is_updatable(stock)
+    validation.check_required_dates_for_stock(stock.offer, beginning, booking_limit_datetime)
+
+    updates = {
+        "price": price,
+        "quantity": quantity,
+        "beginningDatetime": beginning,
+        "bookingLimitDatetime": booking_limit_datetime,
+    }
+    if stock.offer.isFromAllocine:
+        # fmt: off
+        updated_fields = {
+            attr
+            for attr, new_value in updates.items()
+            if new_value != getattr(stock, attr)
+        }
+        # fmt: on
+        validation.check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields)
+        stock.fieldsUpdated = list(updated_fields)
+
+    previous_beginning = stock.beginningDatetime
+
+    for model_attr, value in updates.items():
+        setattr(stock, model_attr, value)
+    repository.save(stock)
+
+    if beginning != previous_beginning:
+        bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
+        if bookings:
+            try:
+                user_emails.send_batch_stock_postponement_emails_to_users(bookings, send_email=mailing.send_raw_email)
+            except mailing.MailServiceException as mail_service_exception:
+                # fmt: off
+                app.logger.exception(
+                    "Could not notify beneficiaries about update of stock=%s: exc",
+                    stock.id,
+                    mail_service_exception,
+                )
+                # fmt: on
+
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     return stock

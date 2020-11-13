@@ -1,8 +1,7 @@
 from flask import current_app as app
 
 from pcapi.connectors import redis
-from pcapi.core.offers.validation import check_offer_is_editable
-from pcapi.domain.offers import is_from_allocine
+from pcapi.core.offers import validation
 from pcapi.models import Offer
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
@@ -11,9 +10,9 @@ from pcapi.validation.routes.offers import check_edition_for_allocine_offer_is_v
 
 
 def update_an_offer(offer: Offer, modifications: dict) -> Offer:
-    check_offer_is_editable(offer)
+    validation.check_offer_is_editable(offer)
 
-    if is_from_allocine(offer):
+    if offer.isFromAllocine:
         offer = _update_offer_for_allocine_offers(offer, modifications)
     else:
         offer = _update_offer(offer, modifications)

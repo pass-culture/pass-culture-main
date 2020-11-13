@@ -111,13 +111,17 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
     def isEditable(self) -> bool:
         if not self.isFromProvider:
             return True
-        if not self.lastProvider.localClass:
-            return False
-        return "Allocine" in self.lastProvider.localClass
+        return self.isFromAllocine
 
     @property
     def isFromProvider(self) -> bool:
         return self.lastProviderId is not None
+
+    @property
+    def isFromAllocine(self) -> bool:
+        from pcapi import local_providers  # avoid import loop
+
+        return self.isFromProvider and self.lastProvider.localClass == local_providers.AllocineStocks.__name__
 
     @property
     def isBookable(self) -> bool:

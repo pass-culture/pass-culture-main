@@ -30,8 +30,8 @@ class StockCreationBodyModel(BaseModel):
 
 
 class StockEditionBodyModel(BaseModel):
-    beginning_datetime: Optional[str]
-    booking_limit_datetime: Optional[str]
+    beginning_datetime: Optional[datetime.datetime]
+    booking_limit_datetime: Optional[datetime.datetime]
     offer_id: Optional[str]
     price: Optional[float]
     quantity: Optional[int]

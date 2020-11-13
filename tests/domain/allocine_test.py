@@ -3,7 +3,6 @@ from unittest.mock import Mock
 
 from pcapi.domain.allocine import _exclude_movie_showtimes_with_special_event_type
 from pcapi.domain.allocine import get_editable_fields_for_allocine_offers
-from pcapi.domain.allocine import get_editable_fields_for_allocine_stocks
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
 
@@ -126,14 +125,6 @@ class RemoveMovieShowsWithSpecialEventTypeTest:
                 }
             }
         ]
-
-
-class GetEditableFieldsForAllocineStocksTest:
-    def test_should_return_editable_fields_for_stocks_from_allocine(self, app):
-        manually_editable_fields = get_editable_fields_for_allocine_stocks()
-
-        # Then
-        assert manually_editable_fields == ["quantity", "price", "bookingLimitDatetime"]
 
 
 class GetEditableFieldsForAllocineOfferTest:

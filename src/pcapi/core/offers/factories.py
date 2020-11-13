@@ -1,3 +1,5 @@
+import datetime
+
 import factory
 
 from pcapi import models
@@ -104,3 +106,9 @@ class StockFactory(BaseFactory):
     offer = factory.SubFactory(OfferFactory)
     price = 10
     quantity = 1000
+
+
+class EventStockFactory(StockFactory):
+    offer = factory.SubFactory(EventOfferFactory)
+    beginningDatetime = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=5))
+    bookingLimitDatetime = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=4))

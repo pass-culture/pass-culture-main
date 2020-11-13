@@ -1,5 +1,4 @@
 from typing import Callable
-from typing import List
 
 from pcapi.connectors.api_allocine import get_movie_poster_from_allocine
 from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine
@@ -32,9 +31,5 @@ def _exclude_movie_showtimes_with_special_event_type(movies_showtime: list) -> l
     )
 
 
-def get_editable_fields_for_allocine_stocks() -> List:
-    return ["quantity", "price", "bookingLimitDatetime"]
-
-
-def get_editable_fields_for_allocine_offers() -> dict:
+def get_editable_fields_for_allocine_offers() -> set:
     return {"isDuo"}

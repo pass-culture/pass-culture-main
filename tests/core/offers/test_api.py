@@ -4,6 +4,8 @@ from unittest import mock
 from flask import current_app as app
 import pytest
 
+from pcapi import models
+import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import factories
@@ -70,3 +72,138 @@ class CreateStockTest:
             api.create_stock(offer=offer, price=10, beginning=None, booking_limit_datetime=None)
 
         assert error.value.errors == {"global": ["Les offres importées ne sont pas modifiables"]}
+
+
+@pytest.mark.usefixtures("db_session")
+class EditStockTest:
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
+    def test_edit_stock_basics(self, mocked_add_offer_id):
+        stock = factories.EventStockFactory()
+
+        beginning = datetime.datetime.now() + datetime.timedelta(days=2)
+        booking_limit_datetime = datetime.datetime.now() + datetime.timedelta(days=1)
+        api.edit_stock(
+            stock,
+            price=5,
+            quantity=20,
+            beginning=beginning,
+            booking_limit_datetime=booking_limit_datetime,
+        )
+
+        stock = models.StockSQLEntity.query.one()
+        assert stock.price == 5
+        assert stock.quantity == 20
+        assert stock.beginningDatetime == beginning
+        assert stock.bookingLimitDatetime == booking_limit_datetime
+        mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
+
+    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
+    def test_sends_email_if_beginning_changes(self, mocked_send_email):
+        stock = factories.EventStockFactory()
+        booking1 = bookings_factories.BookingFactory(stock=stock)
+        bookings_factories.BookingFactory(stock=stock, isCancelled=True)
+
+        beginning = datetime.datetime.now() + datetime.timedelta(days=10)
+        api.edit_stock(
+            stock,
+            price=5,
+            quantity=20,
+            beginning=beginning,
+            booking_limit_datetime=stock.bookingLimitDatetime,
+        )
+
+        stock = models.StockSQLEntity.query.one()
+        assert stock.beginningDatetime == beginning
+        notified_bookings = mocked_send_email.call_args_list[0][0][0]
+        assert notified_bookings == [booking1]
+
+    def test_checks_number_of_reservations(self):
+        stock = factories.EventStockFactory()
+        bookings_factories.BookingFactory(stock=stock)
+        bookings_factories.BookingFactory(stock=stock)
+        bookings_factories.BookingFactory(stock=stock, isCancelled=True)
+
+        # With a quantity too low
+        quantity = 0
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.edit_stock(
+                stock,
+                price=stock.price,
+                quantity=quantity,
+                beginning=stock.beginningDatetime,
+                booking_limit_datetime=stock.bookingLimitDatetime,
+            )
+        msg = "Le stock total ne peut être inférieur au nombre de réservations"
+        assert error.value.errors["quantity"][0] == msg
+
+        # With enough quantity
+        quantity = 2
+        api.edit_stock(
+            stock,
+            price=stock.price,
+            quantity=quantity,
+            beginning=stock.beginningDatetime,
+            booking_limit_datetime=stock.bookingLimitDatetime,
+        )
+        stock = models.StockSQLEntity.query.one()
+        assert stock.quantity == 2
+
+    def test_checks_booking_limit_is_after_beginning(self):
+        stock = factories.EventStockFactory()
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.edit_stock(
+                stock,
+                price=stock.price,
+                quantity=stock.quantity,
+                beginning=datetime.datetime.now(),
+                booking_limit_datetime=datetime.datetime.now() + datetime.timedelta(days=1),
+            )
+        msg = "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement"
+        assert error.value.errors["bookingLimitDatetime"][0] == msg
+
+    def test_cannot_edit_if_provider_is_titelive(self):
+        provider = offerers_factories.ProviderFactory(localClass="TiteLiveStocks")
+        stock = factories.EventStockFactory(offer__lastProvider=provider, offer__idAtProviders="1")
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.edit_stock(
+                stock,
+                price=stock.price,
+                quantity=stock.quantity,
+                beginning=stock.beginningDatetime,
+                booking_limit_datetime=stock.bookingLimitDatetime,
+            )
+        msg = "Les offres importées ne sont pas modifiables"
+        assert error.value.errors["global"][0] == msg
+
+    def test_can_edit_only_some_fields_if_provider_is_allocine(self):
+        provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
+        stock = factories.EventStockFactory(
+            offer__lastProvider=provider,
+            offer__idAtProviders="1",
+        )
+        initial_beginning = stock.beginningDatetime
+
+        # Try to change everything, including "beginningDatetime" which is forbidden.
+        new_booking_limit = datetime.datetime.now() + datetime.timedelta(days=1)
+        changes = {
+            "price": 5,
+            "quantity": 20,
+            "beginning": datetime.datetime.now() + datetime.timedelta(days=2),
+            "booking_limit_datetime": new_booking_limit,
+        }
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.edit_stock(stock, **changes)
+        msg = "Pour les offres importées, certains champs ne sont pas modifiables"
+        assert error.value.errors["global"][0] == msg
+
+        # Try to change everything except "beginningDatetime".
+        changes["beginning"] = stock.beginningDatetime
+        api.edit_stock(stock, **changes)
+        stock = models.StockSQLEntity.query.one()
+        assert stock.price == 5
+        assert stock.quantity == 20
+        assert stock.beginningDatetime == initial_beginning
+        assert stock.bookingLimitDatetime == new_booking_limit
+        assert set(stock.fieldsUpdated) == {"price", "quantity", "bookingLimitDatetime"}

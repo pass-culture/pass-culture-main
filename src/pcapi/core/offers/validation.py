@@ -2,7 +2,11 @@ from datetime import datetime
 from typing import Optional
 
 from pcapi.models import Offer
+from pcapi.models import StockSQLEntity
 from pcapi.models.api_errors import ApiErrors
+
+
+EDITABLE_FIELDS_FOR_ALLOCINE_STOCK = {"bookingLimitDatetime", "price", "quantity"}
 
 
 def check_offer_is_editable(offer: Offer):
@@ -40,3 +44,20 @@ def check_required_dates_for_stock(
 
         if not booking_limit_datetime:
             raise ApiErrors({"bookingLimitDatetime": ["Ce paramètre est obligatoire"]})
+
+
+def check_stock_is_updatable(stock: StockSQLEntity) -> None:
+    check_offer_is_editable(stock.offer)
+
+    if stock.isEventExpired:
+        api_errors = ApiErrors()
+        api_errors.add_error("global", "Les événements passés ne sont pas modifiables")
+        raise api_errors
+
+
+def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: set) -> None:
+    if not updated_fields.issubset(EDITABLE_FIELDS_FOR_ALLOCINE_STOCK):
+        api_errors = ApiErrors()
+        api_errors.status_code = 400
+        api_errors.add_error("global", "Pour les offres importées, certains champs ne sont pas modifiables")
+        raise api_errors
