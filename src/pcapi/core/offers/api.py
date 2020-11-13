@@ -16,7 +16,6 @@ from pcapi.models import VenueSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
-from pcapi.repository import user_offerer_queries
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.utils.config import PRO_URL
 from pcapi.utils.mailing import send_raw_email
@@ -43,16 +42,6 @@ def list_offers_for_pro_user(
     status: Optional[str] = None,
     creation_mode: Optional[str] = None,
 ) -> PaginatedOffersRecap:
-    if not user_is_admin:
-        if venue_id:
-            venue = VenueSQLEntity.query.filter_by(id=venue_id).first_or_404()
-            offerer_id = offerer_id or venue.managingOffererId
-        if offerer_id is not None:
-            user_offerer = user_offerer_queries.find_one_or_none_by_user_id_and_offerer_id(
-                user_id=user_id, offerer_id=offerer_id
-            )
-            validation.check_user_has_rights_on_offerer(user_offerer)
-
     return get_paginated_offers_for_offerer_venue_and_keywords(
         user_id=user_id,
         user_is_admin=user_is_admin,

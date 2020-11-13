@@ -93,8 +93,7 @@ def get_offers_by_filters(
             query.join(VenueSQLEntity)
             .join(Offerer)
             .join(UserOfferer)
-            .filter(UserOfferer.userId == user_id)
-            .filter(UserOfferer.validationToken == None)
+            .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken == None))
         )
     if offerer_id is not None:
         venue_alias = aliased(VenueSQLEntity)
@@ -152,7 +151,7 @@ def _filter_by_status(query: Query, datetime_now: datetime, status: str) -> Quer
             .filter(
                 or_(StockSQLEntity.beginningDatetime.is_(None), StockSQLEntity.bookingLimitDatetime >= datetime_now)
             )
-            .filter(not_(and_(not_(StockSQLEntity.id.is_(None)), StockSQLEntity.quantity.is_(None))))
+            .filter(or_(StockSQLEntity.id.is_(None), not_(StockSQLEntity.quantity.is_(None))))
             .outerjoin(Booking, and_(StockSQLEntity.id == Booking.stockId, Booking.isCancelled.is_(False)))
             .group_by(Offer.id)
             .having(coalesce(func.sum(StockSQLEntity.quantity), 0) == coalesce(func.sum(Booking.quantity), 0))

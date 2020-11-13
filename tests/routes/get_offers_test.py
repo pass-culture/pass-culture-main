@@ -99,7 +99,7 @@ class Returns200:
         assert len(offers) == 1
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_paginated_with_pagination_details_in_body(self, list_offers_mock, app, db_session):
+    def should_return_paginated_offers_with_pagination_details_in_body(self, list_offers_mock, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -145,7 +145,7 @@ class Returns200:
         }
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_venue_id(self, list_offers_mock, app, db_session):
+    def should_filter_offers_by_given_venue_id(self, list_offers_mock, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -174,7 +174,7 @@ class Returns200:
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_status(self, list_offers_mock, app, db_session):
+    def should_filter_offers_by_given_status(self, list_offers_mock, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -200,7 +200,7 @@ class Returns200:
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_offerer_id(self, list_offers_mock, app, db_session):
+    def should_filter_offers_by_given_offerer_id(self, list_offers_mock, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -229,7 +229,7 @@ class Returns200:
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_creation_mode(self, list_offers_mock, app, db_session):
+    def should_filter_offers_by_given_creation_mode(self, list_offers_mock, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -254,23 +254,7 @@ class Returns200:
             creation_mode="imported",
         )
 
-
-class Returns404:
-    def when_requested_venue_does_not_exist(self, app, db_session):
-        # Given
-        user = create_user(email="user@test.com")
-        repository.save(user)
-
-        # when
-        response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?venueId=ABC")
-
-        # then
-        assert response.status_code == 404
-        assert response.json == {"global": ["La page que vous recherchez n'existe pas"]}
-
-
-class Returns403:
-    def when_user_has_no_rights_on_requested_venue(self, app, db_session):
+    def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, app, db_session):
         # Given
         user = create_user(email="user@test.com")
         offerer = create_offerer()
@@ -283,12 +267,15 @@ class Returns403:
         )
 
         # then
-        assert response.status_code == 403
+        assert response.status_code == 200
         assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+            "offers": [],
+            "page": 1,
+            "page_count": 0,
+            "total_count": 0,
         }
 
-    def when_user_offerer_is_not_validated(self, app, db_session):
+    def should_return_no_offerswhen_user_offerer_is_not_validated(self, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -303,7 +290,24 @@ class Returns403:
         )
 
         # then
-        assert response.status_code == 403
+        assert response.status_code == 200
         assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+            "offers": [],
+            "page": 1,
+            "page_count": 0,
+            "total_count": 0,
         }
+
+
+class Returns404:
+    def when_requested_venue_does_not_exist(self, app, db_session):
+        # Given
+        user = create_user(email="user@test.com")
+        repository.save(user)
+
+        # when
+        response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?venueId=ABC")
+
+        # then
+        assert response.status_code == 404
+        assert response.json == {"global": ["La page que vous recherchez n'existe pas"]}
