@@ -4,8 +4,6 @@ import os
 import gspread
 from memoize import Memoizer
 from oauth2client.service_account import ServiceAccountCredentials
-import pygsheets
-from pygsheets import Spreadsheet
 
 
 user_spreadsheet_store = {}
@@ -55,9 +53,3 @@ def get_authorized_emails_and_dept_codes():
     values = worksheet.get_all_values()[1:]
 
     return list(map(lambda v: v[email_index], values)), list(map(lambda v: v[departement_index], values))
-
-
-def get_dashboard_spreadsheet() -> Spreadsheet:
-    sheet_name = os.environ.get("DASHBOARD_GSHEET_NAME")
-    gc = pygsheets.authorize(service_account_env_var="PC_GOOGLE_KEY")
-    return gc.open(sheet_name)
