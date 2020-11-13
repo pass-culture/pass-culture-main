@@ -57,7 +57,7 @@ class ProviderAPITest:
 
             # Then
             requests.get.assert_called_once_with(
-                url="http://example.com/stocks/12345678912345", params={"limit": "1000"}, headers={}, timeout=30
+                url="http://example.com/stocks/12345678912345", params={"limit": "1000"}, headers={}, timeout=60
             )
 
         @patch("pcapi.infrastructure.repository.stock_provider.provider_api.requests")
@@ -77,7 +77,7 @@ class ProviderAPITest:
                 url="http://example.com/stocks/12345678912345",
                 params={"limit": "1000", "after": last_processed_isbn},
                 headers={},
-                timeout=30,
+                timeout=60,
             )
 
         @patch("pcapi.infrastructure.repository.stock_provider.provider_api.requests")
@@ -97,7 +97,7 @@ class ProviderAPITest:
                 url="http://example.com/stocks/12345678912345",
                 params={"limit": "1000", "modifiedSince": modified_since},
                 headers={},
-                timeout=30,
+                timeout=60,
             )
 
         @patch("pcapi.infrastructure.repository.stock_provider.provider_api.requests")
@@ -117,7 +117,7 @@ class ProviderAPITest:
                 url="http://example.com/stocks/12345678912345",
                 params={"limit": "1000", "after": last_processed_isbn, "modifiedSince": modified_since},
                 headers={},
-                timeout=30,
+                timeout=60,
             )
 
         @patch("pcapi.infrastructure.repository.stock_provider.provider_api.requests")
@@ -140,7 +140,7 @@ class ProviderAPITest:
                 url="http://example.com/stocks/12345678912345",
                 params={"limit": "1000", "after": last_processed_isbn, "modifiedSince": modified_since},
                 headers={"Authorization": "Basic 744563534"},
-                timeout=30,
+                timeout=60,
             )
 
     class IsSiretRegisteredTest:
@@ -158,7 +158,7 @@ class ProviderAPITest:
             self.provider_api.is_siret_registered(siret)
 
             # Then
-            requests.get.assert_called_once_with(url="http://example.com/stocks/12345678912345", headers={}, timeout=30)
+            requests.get.assert_called_once_with(url="http://example.com/stocks/12345678912345", headers={}, timeout=60)
 
         @patch("pcapi.infrastructure.repository.stock_provider.provider_api.requests")
         def should_returns_true_if_api_returns_200(self, requests):
@@ -200,5 +200,5 @@ class ProviderAPITest:
 
             # Then
             requests.get.assert_called_once_with(
-                url="http://example.com/stocks/12345678912345", headers={"Authorization": "Basic 744563534"}, timeout=30
+                url="http://example.com/stocks/12345678912345", headers={"Authorization": "Basic 744563534"}, timeout=60
             )

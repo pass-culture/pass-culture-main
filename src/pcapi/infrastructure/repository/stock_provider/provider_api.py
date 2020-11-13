@@ -7,7 +7,7 @@ class ProviderAPIException(Exception):
     pass
 
 
-REQUEST_TIMEOUT_FOR_PROVIDERS_IN_SECOND = 30
+REQUEST_TIMEOUT_FOR_PROVIDERS_IN_SECOND = 60
 
 
 class ProviderAPI:
