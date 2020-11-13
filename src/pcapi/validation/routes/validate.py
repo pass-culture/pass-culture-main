@@ -14,10 +14,3 @@ def check_validation_request(token):
         error = ApiErrors()
         error.add_error("token", "Vous devez fournir un jeton de validation")
         raise error
-
-
-def check_venue_found(venue):
-    if venue is None:
-        error = ResourceNotFoundError()
-        error.add_error("token", "Jeton inconnu")
-        raise error

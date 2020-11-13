@@ -13,7 +13,6 @@ from pcapi.models import BeneficiaryImportSources
 from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import ImportStatus
 from pcapi.models import Offerer
-from pcapi.models import RightsType
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
 from pcapi.models.db import db
@@ -44,21 +43,6 @@ def find_by_validation_token(token: str) -> UserSQLEntity:
 
 def find_user_by_reset_password_token(token: str) -> UserSQLEntity:
     return UserSQLEntity.query.filter_by(resetPasswordToken=token).first()
-
-
-def find_all_emails_of_user_offerers_admins(offerer_id: int) -> List[str]:
-    filter_validated_user_offerers_with_admin_rights = (UserOfferer.rights == RightsType.admin) & (
-        UserOfferer.validationToken == None
-    )
-    admins = (
-        UserSQLEntity.query.join(UserOfferer)
-        .filter(filter_validated_user_offerers_with_admin_rights)
-        .join(Offerer)
-        .filter_by(id=offerer_id)
-        .all()
-    )
-
-    return [result.email for result in admins]
 
 
 def get_all_users_wallet_balances() -> List[WalletBalance]:

@@ -22,7 +22,6 @@ from pcapi.domain.user_emails import send_reset_password_email_to_user
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_user_validation_email
 from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
-from pcapi.domain.user_emails import send_venue_validation_confirmation_email
 from pcapi.domain.user_emails import send_warning_to_beneficiary_after_pro_booking_cancellation
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_deposit
@@ -350,64 +349,6 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
             bookings, recipients
         )
         mocked_send_email.assert_called_once_with(data={"Mj-TemplateID": 1116333})
-
-
-class SendVenueValidationConfirmationEmailTest:
-    @patch(
-        "pcapi.domain.user_emails.find_all_emails_of_user_offerers_admins",
-        return_value=["admin1@example.com", "admin2@example.com"],
-    )
-    @patch("pcapi.domain.user_emails.make_venue_validated_email", return_value={"Html-part": ""})
-    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
-    def when_feature_send_mail_to_users_enabled_sends_email_to_all_users_linked_to_offerer(
-        self,
-        mock_feature_send_mail_to_users_enabled,
-        mock_make_venue_validated_email,
-        mock_find_all_emails_of_user_offerers_admins,
-        app,
-    ):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        mocked_send_email = Mock()
-
-        # When
-        send_venue_validation_confirmation_email(venue, mocked_send_email)
-
-        # Then
-        mock_make_venue_validated_email.assert_called_once_with(venue)
-
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]["data"]["To"] == "admin1@example.com, admin2@example.com"
-
-    @patch(
-        "pcapi.domain.user_emails.find_all_emails_of_user_offerers_admins",
-        return_value=["admin1@example.com", "admin2@example.com"],
-    )
-    @patch("pcapi.domain.user_emails.make_venue_validated_email", return_value={"Html-part": ""})
-    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=False)
-    def when_feature_send_mail_to_users_enabled_sends_email_to_pass_culutre_dev(
-        self,
-        mock_feature_send_mail_to_users_enabled,
-        mock_make_venue_validated_email,
-        mock_find_all_emails_of_user_offerers_admins,
-        app,
-    ):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        mocked_send_email = Mock()
-
-        # When
-        send_venue_validation_confirmation_email(venue, mocked_send_email)
-
-        # Then
-        mock_make_venue_validated_email.assert_called_once_with(venue)
-
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]["data"]["To"] == "dev@example.com"
 
 
 class SendUserValidationEmailTest:

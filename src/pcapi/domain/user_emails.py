@@ -37,13 +37,10 @@ from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_us
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
-from pcapi.models import VenueSQLEntity
-from pcapi.repository.user_queries import find_all_emails_of_user_offerers_admins
 from pcapi.utils.mailing import ADMINISTRATION_EMAIL_ADDRESS
 from pcapi.utils.mailing import compute_email_html_part_and_recipients
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 from pcapi.utils.mailing import make_user_validation_email
-from pcapi.utils.mailing import make_venue_validated_email
 
 
 def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool]) -> None:
@@ -144,13 +141,6 @@ def send_booking_cancellation_emails_to_user_and_offerer(
     if is_offerer_cancellation:
         send_warning_to_beneficiary_after_pro_booking_cancellation(booking, send_email)
         send_offerer_driven_cancellation_email_to_offerer(booking, send_email)
-
-
-def send_venue_validation_confirmation_email(venue: VenueSQLEntity, send_email: Callable[..., bool]) -> None:
-    recipients = find_all_emails_of_user_offerers_admins(venue.managingOffererId)
-    email = make_venue_validated_email(venue)
-    email["Html-part"], email["To"] = compute_email_html_part_and_recipients(email["Html-part"], recipients)
-    send_email(data=email)
 
 
 def send_user_validation_email(

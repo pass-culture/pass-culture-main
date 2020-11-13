@@ -1,5 +1,4 @@
 from flask import current_app as app
-from flask import request
 
 from pcapi.connectors import redis
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
@@ -8,12 +7,10 @@ from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_off
 from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
 from pcapi.domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email
 from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
-from pcapi.domain.user_emails import send_venue_validation_confirmation_email
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models import VenueSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
@@ -26,7 +23,6 @@ from pcapi.utils.mailing import send_raw_email
 from pcapi.validation.routes.users import check_validation_token_has_been_already_used
 from pcapi.validation.routes.validate import check_valid_token_for_user_validation
 from pcapi.validation.routes.validate import check_validation_request
-from pcapi.validation.routes.validate import check_venue_found
 
 
 @public_api.route("/validate/user-offerer/<token>", methods=["GET"])
@@ -68,26 +64,6 @@ def validate_new_offerer(token):
         send_validation_confirmation_email_to_pro(offerer, send_raw_email)
     except MailServiceException as mail_service_exception:
         app.logger.exception("Email service failure", mail_service_exception)
-    return "Validation effectuée", 202
-
-
-@public_api.route("/validate/venue/", methods=["GET"])
-def validate_venue():
-    token = request.args.get("token")
-    check_validation_request(token)
-    venue = VenueSQLEntity.query.filter_by(validationToken=token).first()
-    check_venue_found(venue)
-    venue.validationToken = None
-    link_valid_venue_to_irises(venue)
-    repository.save(venue)
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
-
-    try:
-        send_venue_validation_confirmation_email(venue, send_raw_email)
-    except MailServiceException as mail_service_exception:
-        app.logger.exception("Email service failure", mail_service_exception)
-
     return "Validation effectuée", 202
 
 

@@ -21,7 +21,6 @@ from pcapi.models import Offerer
 from pcapi.models import StockSQLEntity
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
-from pcapi.models import VenueSQLEntity
 from pcapi.models.email import EmailStatus
 from pcapi.repository.email_queries import save
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
@@ -343,18 +342,6 @@ def make_activation_users_email(csv: str) -> Dict:
             }
         ],
         "Html-part": "",
-    }
-
-
-def make_venue_validated_email(venue: VenueSQLEntity) -> Dict:
-    html = render_template("mails/venue_validation_confirmation_email.html", venue=venue)
-    return {
-        "Subject": 'Validation du rattachement du lieu "{}" à votre structure "{}"'.format(
-            venue.name, venue.managingOfferer.name
-        ),
-        "FromEmail": SUPPORT_EMAIL_ADDRESS,
-        "FromName": "pass Culture pro",
-        "Html-part": html,
     }
 
 
