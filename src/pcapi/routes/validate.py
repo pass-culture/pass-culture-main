@@ -1,8 +1,5 @@
 from flask import current_app as app
-from flask import jsonify
 from flask import request
-from flask_login import current_user
-from flask_login import login_required
 
 from pcapi.connectors import redis
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
@@ -14,12 +11,9 @@ from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
 from pcapi.domain.user_emails import send_venue_validation_confirmation_email
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
-from pcapi.models import ApiErrors
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.models import VenueSQLEntity
-from pcapi.models.api_errors import ForbiddenError
-from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
