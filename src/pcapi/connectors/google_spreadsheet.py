@@ -1,9 +1,9 @@
 import json
 import os
 
+from google.oauth2.service_account import Credentials
 import gspread
 from memoize import Memoizer
-from oauth2client.service_account import ServiceAccountCredentials
 
 
 user_spreadsheet_store = {}
@@ -15,20 +15,15 @@ class MissingGoogleKeyException(Exception):
 
 
 def get_credentials():
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     google_key = os.environ.get("PC_GOOGLE_KEY")
-    if google_key:
-        # FIXME(cgaunet, 2020-11-24): We need to do this because parsing env variables yml
-        # to give it to terraform, replaces double quotes with single quotes making it not json friendly
-        google_key_json = google_key.replace("'", '"')
-        google_key_json_payload = json.loads(google_key_json, strict=False)
-        key_path = "/tmp/data.json"
-        with open(key_path, "w") as outfile:
-            json.dump(google_key_json_payload, outfile)
-        credentials = ServiceAccountCredentials.from_json_keyfile_name(key_path, scope)
-        os.remove(key_path)
-        return credentials
-    raise MissingGoogleKeyException
+    if not google_key:
+        raise MissingGoogleKeyException()
+    scopes = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    # FIXME(cgaunet, 2020-11-24): We need to do this because parsing env variables yml
+    # to give it to terraform, replaces double quotes with single quotes making it not json friendly
+    google_key = google_key.replace("'", '"')
+    account_info = json.loads(google_key)
+    return Credentials.from_service_account_info(account_info, scopes=scopes)
 
 
 @memo(max_age=60)

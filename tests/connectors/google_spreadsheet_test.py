@@ -1,3 +1,4 @@
+import json
 from unittest.mock import patch
 
 import pytest
@@ -8,26 +9,30 @@ from pcapi.connectors.google_spreadsheet import get_credentials
 
 class GetCredentialsTest:
     @patch("pcapi.connectors.google_spreadsheet.os.environ.get")
-    @patch("pcapi.connectors.google_spreadsheet.ServiceAccountCredentials")
+    @patch("google.oauth2.service_account.Credentials.from_service_account_info")
     def test_calls_service_account_credentials_from_temp_file_created_from_environ_variable_when_exists(
-        self, ServiceAccountCredentials, get_environment
+        self,
+        from_service_account_info,
+        get_environment,
     ):
         # Given
-        get_environment.return_value = (
-            "{'type': 'service_account', 'project_id': 'quickstart-1563873852000', 'private_key_id': '128899911',"
-            " 'private_key': '-----BEGIN PRIVATE KEY-----\nMIIBAQDoIMQFqZcXC+iE\nnf7NOhDx5EXgrVVnjUE\nt/engEnp\n"
-            "-----END PRIVATE KEY-----\n', 'client_email': 'dashboard@gserviceaccount.com', 'client_id': '123456789',"
-            " 'auth_uri': 'oauth2_uri', 'token_uri': 'token_uri', 'auth_provider_x509_cert_url': 'oauth2_cert_url',"
-            " 'client_x509_cert_url': 'cert_url'}"
-        )
+        account_info = {
+            "type": "service_account",
+            "project_id": "pass-culture",
+            "client_email": "a@example.com",
+            "client_id": "1",
+            "token_uri": "https://www.example.com/",
+        }
+        # FIXME(cgaunet, 2020-11-24): see `get_credentials` as for why we replace double quotes.
+        get_environment.return_value = json.dumps(account_info).replace('"', "'")
 
         # When
         get_credentials()
 
         # Then
-        ServiceAccountCredentials.from_json_keyfile_name.assert_called_with(
-            "/tmp/data.json", ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        )
+        assert from_service_account_info.call_args[0][0] == account_info
+        expected_scopes = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+        assert from_service_account_info.call_args[1] == {"scopes": expected_scopes}
 
     @patch("pcapi.connectors.google_spreadsheet.os.environ.get")
     def test_raises_exception_when_no_environ_variable(self, get_environment):
