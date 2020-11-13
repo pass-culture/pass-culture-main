@@ -19,11 +19,6 @@ from pcapi.models.db import db
 from pcapi.models.payment_status import TransactionStatus
 
 
-def find_message_checksum(message_name: str) -> Optional[str]:
-    message = PaymentMessage.query.filter_by(name=message_name).first()
-    return message.checksum if message else None
-
-
 def find_error_payments() -> List[Payment]:
     query = render_template("sql/find_payment_ids_with_last_status.sql", status="ERROR")
     error_payment_ids = db.session.query(PaymentStatus.paymentId).from_statement(text(query)).all()

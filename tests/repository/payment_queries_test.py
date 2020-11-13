@@ -19,34 +19,6 @@ from pcapi.repository import payment_queries
 from pcapi.repository import repository
 
 
-class FindMessageChecksumTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_a_checksum_if_message_id_is_known(self, app):
-        # given
-        message_id = "ABCD1234"
-        message = create_payment_message(name=message_id)
-        repository.save(message)
-
-        # when
-        checksum = payment_queries.find_message_checksum(message_id)
-
-        # then
-        assert checksum == message.checksum
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_none_is_message_id_is_unknown(self, app):
-        # given
-        message_id = "ABCD1234"
-        message = create_payment_message(name=message_id)
-        repository.save(message)
-
-        # when
-        checksum = payment_queries.find_message_checksum("EFGH5678")
-
-        # then
-        assert checksum is None
-
-
 class FindErrorPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_payments_with_last_payment_status_error(self, app):

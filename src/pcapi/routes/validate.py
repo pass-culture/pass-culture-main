@@ -7,8 +7,6 @@ from flask_login import login_required
 from pcapi.connectors import redis
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.iris import link_valid_venue_to_irises
-from pcapi.domain.payments import generate_file_checksum
-from pcapi.domain.payments import read_message_name_in_message_file
 from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
 from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
 from pcapi.domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email
@@ -27,7 +25,6 @@ from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository import user_offerer_queries
 from pcapi.repository import user_queries
-from pcapi.repository.payment_queries import find_message_checksum
 from pcapi.repository.user_offerer_queries import count_pro_attached_to_offerer
 from pcapi.utils.config import IS_INTEGRATION
 from pcapi.utils.mailing import MailServiceException
@@ -137,34 +134,6 @@ def validate_user(token):
                 )
 
     return "", 204
-
-
-@private_api.route("/validate/payment_message", methods=["POST"])
-@login_required
-def certify_message_file_authenticity():
-    if not current_user.isAdmin:
-        raise ForbiddenError()
-
-    xml_content = request.files["file"].read().decode("utf-8")
-    message_id = read_message_name_in_message_file(xml_content)
-    found_checksum = find_message_checksum(message_id)
-
-    if not found_checksum:
-        raise ResourceNotFoundError({"xml": ["L'identifiant du document XML 'MsgId' est inconnu"]})
-
-    given_checksum = generate_file_checksum(xml_content)
-
-    if found_checksum != given_checksum:
-        raise ApiErrors(
-            {
-                "xml": [
-                    "L'intégrité du document n'est pas validée car la somme de contrôle est invalide : %s"
-                    % given_checksum.hex()
-                ]
-            }
-        )
-
-    return jsonify({"checksum": given_checksum.hex()}), 200
 
 
 def _ask_for_validation(offerer: Offerer, user_offerer: UserOfferer):

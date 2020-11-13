@@ -250,13 +250,6 @@ def generate_payment_message(name: str, checksum: str, payments: List[Payment]) 
     return payment_message
 
 
-def read_message_name_in_message_file(xml_file: str) -> str:
-    xml = BytesIO(xml_file.encode())
-    tree = etree.parse(xml, etree.XMLParser())
-    node = tree.find("//ns:GrpHdr/ns:MsgId", namespaces=XML_NAMESPACE)
-    return node.text
-
-
 def group_payments_by_status(payments: List[Payment]) -> Dict:
     groups = {}
     for p in payments:
