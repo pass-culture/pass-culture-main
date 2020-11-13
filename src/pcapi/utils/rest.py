@@ -2,7 +2,6 @@
 from functools import wraps
 import re
 
-from flask import jsonify
 from flask import request
 from flask_login import current_user
 from sqlalchemy import text
@@ -12,8 +11,6 @@ from sqlalchemy.sql.elements import UnaryExpression
 from sqlalchemy.sql.functions import random
 
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
-from pcapi.routes.serialization import as_dict
 from pcapi.utils.human_ids import dehumanize
 
 
@@ -94,56 +91,6 @@ def check_order_by(order_by):
         order_by = re.sub("coalesce\\((.*?)\\)", "\\1", order_by, flags=re.IGNORECASE)
         for part in order_by.split(","):
             check_single_order_by_string(part)
-
-
-def handle_rest_get_list(
-    modelClass,
-    query=None,
-    refine=None,
-    order_by=None,
-    includes=(),
-    print_elements=None,
-    paginate=None,
-    page=None,
-    with_total_data_count=False,
-    should_distinct=False,
-):
-
-    if query is None:
-        query = modelClass.query
-
-    if issubclass(modelClass, SoftDeletableMixin):
-        query = query.filter_by(isSoftDeleted=False)
-
-    if refine:
-        query = refine(query)
-
-    if order_by:
-        check_order_by(order_by)
-        query = query_with_order_by(query, order_by)
-
-    if should_distinct and with_total_data_count:
-        total_data_count = query.distinct().count()
-    elif with_total_data_count:
-        total_data_count = query.count()
-
-    if paginate:
-        if page is not None:
-            page = int(page)
-        query = query.paginate(page, per_page=paginate, error_out=False).items
-
-    elements = [as_dict(o, includes=includes) for o in query]
-
-    if print_elements:
-        print(elements)
-
-    response = jsonify(elements)
-
-    if with_total_data_count:
-        response.headers["Total-Data-Count"] = total_data_count
-        response.headers["Access-Control-Expose-Headers"] = "Total-Data-Count"
-
-    return response, 200
 
 
 def ensure_current_user_has_rights(rights, offerer_id, user=current_user):

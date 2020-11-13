@@ -51,26 +51,10 @@ class Returns200:
 
         # then
         assert request_update.status_code == 200
-        request_after_update = (
-            TestClient(app.test_client()).with_auth("user@example.com").get("/stocks/" + humanized_stock_id)
-        )
-        date_modified = request_after_update.json["dateModified"]
+        assert request_update.json == {"id": humanize(stock.id)}
 
-        assert request_after_update.json == {
-            "beginningDatetime": None,
-            "bookingLimitDatetime": None,
-            "dateCreated": "2020-10-15T00:00:00Z",
-            "dateModified": date_modified,
-            "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
-            "fieldsUpdated": [],
-            "id": humanize(stock.id),
-            "idAtProviders": None,
-            "isSoftDeleted": False,
-            "lastProviderId": None,
-            "offerId": humanize(offer.id),
-            "price": 20.0,
-            "quantity": 5,
-        }
+        assert stock.quantity == 5
+        assert stock.price == 20
 
     def when_user_is_admin(self, app, db_session):
         # given
@@ -88,9 +72,8 @@ class Returns200:
 
         # then
         assert request_update.status_code == 200
-        request_after_update = TestClient(app.test_client()).with_auth(user.email).get("/stocks/" + humanized_stock_id)
-        assert request_after_update.json["quantity"] == 5
-        assert request_after_update.json["price"] == 20
+        assert stock.quantity == 5
+        assert stock.price == 20
 
     def when_booking_limit_datetime_is_none_for_thing(self, app, db_session):
         # Given
@@ -119,6 +102,9 @@ class Returns200:
         # Then
         assert response.status_code == 200
         assert response.json["id"] == humanize(stock.id)
+
+        assert stock.bookingLimitDatetime == None
+        assert stock.price == 120
 
     @override_features(SYNCHRONIZE_ALGOLIA=True)
     @patch("pcapi.routes.stocks.redis.add_offer_id")
@@ -176,9 +162,9 @@ class Returns200:
 
         # then
         assert request_update.status_code == 200
-        updated_stock = StockSQLEntity.query.one()
-        assert updated_stock.quantity == 5
-        assert updated_stock.price == 20
+
+        assert stock.quantity == 5
+        assert stock.price == 20
 
     @patch("pcapi.routes.stocks.send_raw_email")
     @patch("pcapi.routes.stocks.find_not_cancelled_bookings_by_stock")
@@ -365,9 +351,9 @@ class Returns400:
 
         # then
         assert request_update.status_code == 400
-        request_after_update = TestClient(app.test_client()).with_auth(user.email).get("/stocks/" + humanized_stock_id)
-        assert request_after_update.json["quantity"] == 10
         assert request_update.json["global"] == ["Les offres importées ne sont pas modifiables"]
+
+        assert stock.quantity == 10
 
     def when_update_allocine_offer_with_new_values_for_non_editable_fields(self, app, db_session):
         # given

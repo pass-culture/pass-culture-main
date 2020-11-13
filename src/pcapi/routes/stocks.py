@@ -1,7 +1,5 @@
 from flask import current_app as app
 from flask import jsonify
-from flask import request
-from flask_login import current_user
 
 from pcapi.connectors import redis
 from pcapi.core.bookings.repository import find_not_cancelled_bookings_by_stock
@@ -16,14 +14,12 @@ from pcapi.flask_app import private_api
 from pcapi.models import Product
 from pcapi.models import VenueSQLEntity
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.mediation_sql_entity import MediationSQLEntity
 from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.user_offerer import RightsType
 from pcapi.repository import feature_queries
 from pcapi.repository import offerer_queries
 from pcapi.repository import repository
 from pcapi.repository.offer_queries import get_offer_by_id
-from pcapi.repository.stock_queries import find_stocks_with_possible_filters
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
@@ -33,7 +29,6 @@ from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.rest import ensure_current_user_has_rights
-from pcapi.utils.rest import handle_rest_get_list
 from pcapi.utils.rest import load_or_404
 from pcapi.utils.rest import login_or_api_key_required
 from pcapi.validation.routes.stocks import check_dates_are_allowed_on_existing_stock
@@ -47,35 +42,6 @@ search_models = [
     Product,
     VenueSQLEntity,
 ]
-
-
-@private_api.route("/stocks", methods=["GET"])
-@login_or_api_key_required
-def list_stocks():
-    filters = request.args.copy()
-    return handle_rest_get_list(
-        StockSQLEntity,
-        query=find_stocks_with_possible_filters(filters, current_user),
-        paginate=50,
-    )
-
-
-@private_api.route("/stocks/<stock_id>", methods=["GET"], defaults={"mediation_id": None})
-@private_api.route("/stocks/<stock_id>/<mediation_id>", methods=["GET"])
-@login_or_api_key_required
-def get_stock(stock_id, mediation_id):
-    filters = request.args.copy()
-    query = find_stocks_with_possible_filters(filters, current_user).filter_by(id=dehumanize(stock_id))
-
-    if mediation_id is not None:
-        mediation = load_or_404(MediationSQLEntity, mediation_id)
-
-    if stock_id == "0":
-        stock = {"id": "0", "thing": {"id": "0", "mediations": [mediation]}}
-        return jsonify(stock)
-    else:
-        stock = query.first_or_404()
-        return jsonify(as_dict(stock))
 
 
 @private_api.route("/stocks", methods=["POST"])
