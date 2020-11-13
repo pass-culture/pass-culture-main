@@ -26,15 +26,19 @@ from .serialization import authentication
 
 
 @blueprint.native_v1.route("/signin", methods=["POST"])
-@spectree_serialize(response_model=authentication.SigninResponse, on_success_status=200, api=blueprint.api)  # type: ignore
+@spectree_serialize(
+    response_model=authentication.SigninResponse,
+    on_success_status=200,
+    api=blueprint.api,
+)  # type: ignore
 def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     try:
         user_api.get_user_with_credentials(body.identifier, body.password)
     except user_exceptions.CredentialsException as exc:
-        errors = ApiErrors()
-        errors.status_code = 400
-        errors.add_error("general", "Identifiant ou Mot de passe incorrect")
-        raise errors from exc
+        raise ApiErrors(
+            {"general": ["Identifiant ou Mot de passe incorrect"]},
+            status_code=400,
+        ) from exc
 
     return authentication.SigninResponse(
         access_token=create_access_token(identity=body.identifier),
@@ -65,10 +69,10 @@ def password_reset_request(body: PasswordResetRequestRequest) -> None:
 
     if not is_email_sent:
         app.logger.error("Email service failure when user request password reset with %s", user.email)
-        errors = ApiErrors()
-        errors.add_error("email", "L'email n'a pas pu être envoyé")
-        errors.status_code = 400
-        raise errors
+        raise ApiErrors(
+            {"email": ["L'email n'a pas pu être envoyé"]},
+            status_code=400,
+        )
 
 
 @blueprint.native_v1.route("/protected", methods=["GET"])
@@ -82,21 +86,16 @@ def protected() -> any:  # type: ignore
 @blueprint.native_v1.route("/reset_password", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def reset_password(body: ResetPasswordRequest) -> None:
+    error = {"token": ["Le token de changement de mot de passe est invalide."]}
     user = find_user_by_reset_password_token(body.reset_password_token)
 
-    def raiseApiError() -> None:
-        errors = ApiErrors()
-        errors.add_error("token", "Le token de changement de mot de passe est invalide.")
-        errors.status_code = 400
-        raise errors
-
     if not user:
-        raiseApiError()
+        raise ApiErrors(error, status_code=400)
 
     try:
         check_reset_token_validity(user)
-    except ApiErrors:
-        raiseApiError()
+    except ApiErrors as exc:
+        raise ApiErrors(error, status_code=400) from exc
 
     check_password_strength("newPassword", body.new_password)
 

@@ -3,20 +3,25 @@ from typing import Optional
 
 
 class ApiErrors(Exception):
-    def __init__(self, errors: dict = None):
-        self.errors = errors if errors else {}
+    status_code: int = 400
 
-    def add_error(self, field, error) -> None:
+    def __init__(self, errors: dict = None, status_code: Optional[int] = None):
+        self.errors = errors if errors else {}
+        if status_code:
+            self.status_code = status_code
+        super().__init__()
+
+    def add_error(self, field: str, error: str) -> None:
         if field in self.errors:
             self.errors[field].append(error)
         else:
             self.errors[field] = [error]
 
-    def check_min_length(self, field, value, length) -> None:
+    def check_min_length(self, field: str, value: str, length: int) -> None:
         if len(value) < length:
             self.add_error(field, "Tu dois saisir au moins " + str(length) + " caractères.")
 
-    def check_email(self, field, value) -> None:
+    def check_email(self, field: str, value: str) -> None:
         if not "@" in value:
             self.add_error(field, "L’e-mail doit contenir un @.")
 
@@ -24,32 +29,31 @@ class ApiErrors(Exception):
         if len(self.errors) > 0:
             raise self
 
-    def __str__(self) -> None:
+    def __str__(self) -> str:
         if self.errors:
             return json.dumps(self.errors, indent=2)
-
-    status_code: Optional[int] = None
+        return super().__str__()
 
 
 class ResourceGoneError(ApiErrors):
-    pass
+    status_code = 410
 
 
 class ResourceNotFoundError(ApiErrors):
-    pass
+    status_code = 404
 
 
 class ForbiddenError(ApiErrors):
-    pass
+    status_code = 403
 
 
 class DecimalCastError(ApiErrors):
-    pass
+    status_code = 400
 
 
 class DateTimeCastError(ApiErrors):
-    pass
+    status_code = 400
 
 
 class UuidCastError(ApiErrors):
-    pass
+    status_code = 400

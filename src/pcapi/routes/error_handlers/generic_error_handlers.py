@@ -9,14 +9,10 @@ from werkzeug.exceptions import MethodNotAllowed
 from werkzeug.exceptions import NotFound
 
 from pcapi.domain.identifier.identifier import NonProperlyFormattedScrambledId
-from pcapi.domain.stocks import TooLateToDeleteError
 from pcapi.domain.user_activation import AlreadyActivatedException
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
-from pcapi.models.api_errors import ForbiddenError
-from pcapi.models.api_errors import ResourceGoneError
-from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.utils.human_ids import NonDehumanizableId
 
 
@@ -28,26 +24,6 @@ def restize_not_found_route_errors(error: NotFound) -> Tuple[Dict, int]:
 @app.errorhandler(ApiErrors)
 def restize_api_errors(error: ApiErrors) -> Tuple[Dict, int]:
     return jsonify(error.errors), error.status_code or 400
-
-
-@app.errorhandler(TooLateToDeleteError)
-def restize_too_late_to_delete_error(error: TooLateToDeleteError) -> Tuple[Dict, int]:
-    return jsonify(error.errors), error.status_code or 400
-
-
-@app.errorhandler(ForbiddenError)
-def restize_forbidden_error(error: ForbiddenError) -> Tuple[Dict, int]:
-    return jsonify(error.errors), 403
-
-
-@app.errorhandler(ResourceGoneError)
-def restize_resource_gone_error(error: ResourceGoneError) -> Tuple[Dict, int]:
-    return jsonify(error.errors), error.status_code or 410
-
-
-@app.errorhandler(ResourceNotFoundError)
-def restize_booking_not_found_error(error: ResourceNotFoundError) -> Tuple[Dict, int]:
-    return jsonify(error.errors), error.status_code or 404
 
 
 @app.errorhandler(Exception)
