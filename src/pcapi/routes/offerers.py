@@ -29,7 +29,6 @@ from pcapi.utils.rest import ensure_current_user_has_rights
 from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import load_or_404
 from pcapi.utils.rest import login_or_api_key_required
-from pcapi.validation.routes.offerers import check_valid_edition
 
 
 def get_dict_offerer(offerer: Offerer) -> dict:
@@ -119,19 +118,6 @@ def create_offerer():
     _send_to_pc_admin_offerer_to_validate_email(offerer, user_offerer)
 
     return jsonify(get_dict_offerer(offerer)), 201
-
-
-@private_api.route("/offerers/<offererId>", methods=["PATCH"])
-@login_or_api_key_required
-@expect_json_data
-def patch_offerer(offererId):
-    ensure_current_user_has_rights(RightsType.admin, dehumanize(offererId))
-    data = request.json
-    check_valid_edition(data)
-    offerer = Offerer.query.filter_by(id=dehumanize(offererId)).first()
-    offerer.populate_from_dict(data, skipped_keys=["validationToken"])
-    repository.save(offerer)
-    return jsonify(get_dict_offerer(offerer)), 200
 
 
 def _send_to_pro_offer_validation_in_progress_email(user: UserSQLEntity, offerer: Offerer) -> bool:
