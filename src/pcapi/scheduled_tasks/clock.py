@@ -147,9 +147,6 @@ if __name__ == "__main__":
 
     scheduler.add_job(pc_remote_import_beneficiaries, "cron", [app], day="*")
 
-    if feature_write_dashboard_enabled():
-        scheduler.add_job(pc_write_dashboard, "cron", [app], day="*", hour="4")
-
     if feature_clean_seen_offers_enabled():
         scheduler.add_job(pc_remove_old_seen_offers, "cron", [app], day=old_seen_offers_delete_frequency)
 
