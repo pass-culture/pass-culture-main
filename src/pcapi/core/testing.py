@@ -20,6 +20,7 @@ AUTHENTICATION_QUERIES = 4
 class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         abstract = True
+        # See comment in _save()
         # sqlalchemy_session = pcapi.models.db.session
         sqlalchemy_session = "ignored"  # see hack in `_save()`
         sqlalchemy_session_persistence = "commit"
@@ -75,6 +76,15 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
         elif session_persistence == factory.alchemy.SESSION_PERSISTENCE_COMMIT:
             session.commit()
         return obj
+
+    @classmethod
+    def _get_or_create(cls, model_class, session, *args, **kwargs):
+        from pcapi.models import db
+
+        # See comment in _save for the reason why we inject the
+        # session like this.
+        session = db.session
+        return super()._get_or_create(model_class, session, *args, **kwargs)
 
 
 @contextlib.contextmanager

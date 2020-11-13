@@ -9,6 +9,7 @@ from pcapi.core.testing import BaseFactory
 class ProviderFactory(BaseFactory):
     class Meta:
         model = models.Provider
+        sqlalchemy_get_or_create = ["localClass"]
 
     name = factory.Sequence("Provider {}".format)
     localClass = None
