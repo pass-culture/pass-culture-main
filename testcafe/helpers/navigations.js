@@ -98,7 +98,7 @@ export const navigateToNewOfferAs = (user, offerer, venue, userRole) => async t 
 export const navigateToOfferAs = (user, offer, userRole) => async t => {
   const searchInput = Selector('#offre')
   const submitButton = Selector('button[type="submit"]')
-  const offerAnchor = Selector(`a[href^="/offres/${offer.id}"]`)
+  const offerAnchor = Selector(`a[href^="/offres/${offer.id}"]`).withText(offer.name)
 
   if (!userRole) {
     await t.useRole(createUserRole(user))

@@ -71,10 +71,16 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
         />
       </td>
       <td className="thumb-column">
-        <Thumb
-          alt="Miniature d'offre"
-          url={offer.thumbUrl}
-        />
+        <Link
+          className="name"
+          title="Afficher le détail de l'offre"
+          to={`/offres/${offer.id}`}
+        >
+          <Thumb
+            alt="Miniature d'offre"
+            url={offer.thumbUrl}
+          />
+        </Link>
       </td>
       <td className="title-column">
         <Link
