@@ -130,13 +130,13 @@
   }
 
   .vertical-bar {
-    width: 1px;
+    width: rem(1px);
   }
 
   .period-filter:focus-within {
     .vertical-bar {
       background-color: $primary;
-      width: 2px;
+      width: rem(2px);
     }
   }
 

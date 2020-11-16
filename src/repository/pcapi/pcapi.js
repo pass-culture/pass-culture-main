@@ -1,5 +1,3 @@
-import moment from 'moment/moment'
-
 import { DEFAULT_SEARCH_FILTERS, DEFAULT_PAGE } from 'components/pages/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 
@@ -85,13 +83,11 @@ const createRequestBody = searchFilters => {
   }
 
   if (searchFilters.periodBeginningDate !== DEFAULT_SEARCH_FILTERS.periodBeginningDate) {
-    body.periodBeginningDate = searchFilters.periodBeginningDate.format('YYYY-MM-DD HH:mm:ss')
+    body.periodBeginningDate = searchFilters.periodBeginningDate
   }
 
   if (searchFilters.periodEndingDate !== DEFAULT_SEARCH_FILTERS.periodEndingDate) {
-    body.periodEndingDate = moment(searchFilters.periodEndingDate)
-      .endOf('day')
-      .format('YYYY-MM-DD HH:mm:ss')
+    body.periodEndingDate = searchFilters.periodEndingDate
   }
 
   return body

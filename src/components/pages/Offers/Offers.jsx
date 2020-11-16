@@ -54,11 +54,8 @@ class Offers extends PureComponent {
           ? mapBrowserToApi[searchFilters.creationMode]
           : DEFAULT_SEARCH_FILTERS.creationMode,
         periodBeginningDate:
-          (searchFilters.eventBeginningPeriod && moment(searchFilters.eventBeginningPeriod)) ||
-          DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-        periodEndingDate:
-          (searchFilters.eventEndingPeriod && moment(searchFilters.eventEndingPeriod)) ||
-          DEFAULT_SEARCH_FILTERS.periodEndingDate,
+          searchFilters.periodBeginningDate || DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+        periodEndingDate: searchFilters.periodEndingDate || DEFAULT_SEARCH_FILTERS.periodEndingDate,
       },
       offerer: null,
       venueOptions: [],
@@ -96,12 +93,10 @@ class Offers extends PureComponent {
 
     const { searchFilters, page } = this.state
     let queryParams = Object.keys(searchFilters).reduce((params, field) => {
-      if (searchFilters[field] === DEFAULT_SEARCH_FILTERS[field]) {
-        return params
-      }
       return {
         ...params,
-        [mapApiToBrowser[field]]: searchFilters[field],
+        [mapApiToBrowser[field]]:
+          searchFilters[field] === DEFAULT_SEARCH_FILTERS[field] ? null : searchFilters[field],
       }
     }, {})
 
@@ -114,18 +109,6 @@ class Offers extends PureComponent {
 
     if (page !== DEFAULT_PAGE) {
       queryParams.page = page
-    }
-
-    if (searchFilters.periodBeginningDate !== DEFAULT_SEARCH_FILTERS.periodBeginningDate) {
-      queryParams.periodBeginningDate = searchFilters.periodBeginningDate.format(
-        'YYYY-MM-DD HH:mm:ss'
-      )
-    }
-
-    if (searchFilters.periodEndingDate !== DEFAULT_SEARCH_FILTERS.periodEndingDate) {
-      queryParams.periodEndingDate = moment(searchFilters.periodEndingDate)
-        .endOf('day')
-        .format('YYYY-MM-DD HH:mm:ss')
     }
 
     query.change(queryParams)
@@ -342,16 +325,16 @@ class Offers extends PureComponent {
   }
 
   handlePeriodStartDateChange = periodBeginningDate => {
-    const dateToFilter =
-      periodBeginningDate === null
-        ? DEFAULT_SEARCH_FILTERS.periodBeginningDate
-        : periodBeginningDate
+    const dateToFilter = periodBeginningDate
+      ? periodBeginningDate.format()
+      : DEFAULT_SEARCH_FILTERS.periodBeginningDate
     this.setSearchFilters('periodBeginningDate', dateToFilter)
   }
 
   handlePeriodEndDateChange = periodEndingDate => {
-    const dateToFilter =
-      periodEndingDate === null ? DEFAULT_SEARCH_FILTERS.periodEndingDate : periodEndingDate
+    const dateToFilter = periodEndingDate
+      ? periodEndingDate.endOf('day').format()
+      : DEFAULT_SEARCH_FILTERS.periodEndingDate
     this.setSearchFilters('periodEndingDate', dateToFilter)
   }
 
@@ -662,6 +645,11 @@ class Offers extends PureComponent {
     const { currentUser, offers, savedSearchFilters } = this.props
     const { isLoading } = this.state
     const { isAdmin } = currentUser || {}
+    const { searchFilters, offerer, typeOptions, venueOptions } = this.state
+    const periodBeginningDateToMomentFormat =
+      searchFilters.periodBeginningDate && moment(searchFilters.periodBeginningDate)
+    const periodEndingDateToMomentFormat =
+      searchFilters.periodEndingDate && moment(searchFilters.periodEndingDate)
 
     const hasOffers = !!offers.length || this.hasSearchFilters(savedSearchFilters)
     const displayOffers = isLoading || hasOffers
