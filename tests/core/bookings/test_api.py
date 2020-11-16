@@ -5,6 +5,7 @@ from unittest import mock
 from flask import current_app as app
 import pytest
 import pytz
+from freezegun import freeze_time
 
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
@@ -369,3 +370,25 @@ class ComputeConfirmationDateTest:
         assert api.compute_confirmation_date(
             event_date_four_days_from_now, booking_creation
         ) == event_date_four_days_from_now - timedelta(days=3)
+
+
+@freeze_time("2020-11-17 09:21:34")
+@pytest.mark.usefixtures("db_session")
+class UpdateConfirmationDatesTest:
+    def test_should_update_bookings(self):
+        #  Given
+        booking = factories.BookingFactory(
+            dateCreated=(datetime.now() - timedelta(days=1)),
+        )
+        booking2 = factories.BookingFactory(
+            dateCreated=(datetime.now() - timedelta(days=4)),
+        )
+
+        # When
+        new_bookings = api.update_confirmation_dates([booking, booking2], datetime.now() + timedelta(days=4))
+
+        # Then
+        assert booking in new_bookings
+        assert booking.confirmationDate == datetime(2020, 11, 18, 9, 21, 34)
+        assert booking2 in new_bookings
+        assert booking2.confirmationDate == datetime(2020, 11, 15, 9, 21, 34)

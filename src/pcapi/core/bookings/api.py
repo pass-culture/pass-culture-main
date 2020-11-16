@@ -1,7 +1,7 @@
 import base64
 import datetime
 import io
-import typing
+from typing import List, Optional, Dict
 
 from PIL import Image
 from flask import current_app as app
@@ -130,7 +130,7 @@ def mark_as_unused(booking: Booking) -> None:
     repository.save(booking)
 
 
-def generate_qr_code(booking_token: str, offer_extra_data: typing.Dict) -> str:
+def generate_qr_code(booking_token: str, offer_extra_data: Dict) -> str:
     qr = qrcode.QRCode(
         version=QR_CODE_VERSION,
         error_correction=qrcode.constants.ERROR_CORRECT_Q,
@@ -162,8 +162,8 @@ def _convert_image_to_base64(image: Image) -> str:
 
 
 def compute_confirmation_date(
-    event_beginning: typing.Optional[datetime.datetime], booking_creation: datetime.datetime
-) -> typing.Optional[datetime.datetime]:
+    event_beginning: Optional[datetime.datetime], booking_creation: datetime.datetime
+) -> Optional[datetime.datetime]:
     if event_beginning:
         if event_beginning.tzinfo:
             tz_naive_event_beginning = event_beginning.astimezone(pytz.utc)
@@ -178,3 +178,10 @@ def compute_confirmation_date(
         )
         return latest_date_between_earliest_date_in_cancellation_period_and_booking_creation
     return None
+
+
+def update_confirmation_dates(bookings: List[Booking], beginning_datetime: datetime.datetime) -> List[Booking]:
+    for booking in bookings:
+        booking.confirmationDate = compute_confirmation_date(beginning_datetime, booking.dateCreated)
+    repository.save(*bookings)
+    return bookings
