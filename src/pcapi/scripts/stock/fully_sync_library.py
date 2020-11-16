@@ -7,11 +7,9 @@ from pcapi.repository import repository
 
 
 def fully_sync_library(venue_id: int) -> None:
-    stocks = StockSQLEntity.query \
-        .join(Offer) \
-        .filter(Offer.venueId == venue_id) \
-        .filter(Offer.idAtProviders != None) \
-        .all()
+    stocks = (
+        StockSQLEntity.query.join(Offer).filter(Offer.venueId == venue_id).filter(Offer.idAtProviders != None).all()
+    )
 
     for stock in stocks:
         stock.quantity = count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
