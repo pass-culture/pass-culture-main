@@ -5,7 +5,6 @@ from pcapi.utils import requests
 
 RECAPTCHA_API_URL = "https://www.google.com/recaptcha/api/siteverify"
 RECAPTCHA_SECRET = os.environ.get("RECAPTCHA_SECRET")
-RECAPTCHA_REQUIRED_SCORE = os.environ.get("RECAPTCHA_REQUIRED_SCORE", 0.5)
 RECAPTCHA_ERROR_CODES = {
     "missing-input-secret": "The secret parameter is missing.",
     "invalid-input-secret": "The secret parameter is invalid or malformed.",
@@ -20,7 +19,7 @@ class ReCaptchaException(Exception):
     pass
 
 
-def validate_recaptcha_token(token: str, original_action: str) -> bool:
+def validate_recaptcha_token(token: str, original_action: str, minimal_score: float) -> bool:
     if not token:
         return False
 
@@ -46,7 +45,7 @@ def validate_recaptcha_token(token: str, original_action: str) -> bool:
         if action != original_action:
             raise ReCaptchaException(f"The action '{action}' does not match '{original_action}' from the form")
 
-        score = json_response.get("score", 0)
-        return score >= RECAPTCHA_REQUIRED_SCORE
+        response_score = json_response.get("score", 0)
+        return response_score >= minimal_score
 
     raise ReCaptchaException("This is not a valid reCAPTCHA token")
