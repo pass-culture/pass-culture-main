@@ -238,6 +238,8 @@ def get_all_offers_id_by_filters(
     type_id: Optional[str] = None,
     name_keywords: Optional[str] = None,
     creation_mode: Optional[str] = None,
+    period_beginning_date: Optional[str] = None,
+    period_ending_date: Optional[str] = None,
 ) -> List[int]:
     query = get_offers_by_filters(
         user_id=user_id,
@@ -248,6 +250,8 @@ def get_all_offers_id_by_filters(
         type_id=type_id,
         name_keywords=name_keywords,
         creation_mode=creation_mode,
+        period_beginning_date=period_beginning_date,
+        period_ending_date=period_ending_date,
     ).with_entities(Offer.id)
 
     offer_ids_as_tuple = query.all()

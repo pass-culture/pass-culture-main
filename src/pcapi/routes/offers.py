@@ -98,6 +98,8 @@ def patch_all_offers_active_status() -> None:
         type_id=type_id,
         name_keywords=name_keywords,
         creation_mode=payload.get("creationMode"),
+        period_beginning_date=payload.get("period_beginning_date"),
+        period_ending_date=payload.get("period_ending_date"),
     )
 
     return "", 204
