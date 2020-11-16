@@ -91,19 +91,18 @@ describe('bookingFormContent', () => {
 
     it('should display a notice regarding the cancellation period', () => {
       // given
-      const dateOf2020_11_06T14h35 = 1604669693
-      jest.spyOn(Date, 'now').mockImplementation(() => dateOf2020_11_06T14h35)
-      const beginningDatetime = moment().add(5, 'days')
+      const inFiveDays = moment().add(5, 'days')
+      const now = moment().add(2, 'days')
       props.isEvent = true
       props.values = {
         bookables: [
           {
-            beginningDatetime,
-            cancellationLimitDate: '2020-11-10T14:35:00.00Z',
+            beginningDatetime: inFiveDays,
+            cancellationLimitDate: now.format('YYYY-MM-DDTHH:mm:ss.00Z'),
             id: 'AE',
           },
         ],
-        date: beginningDatetime,
+        date: inFiveDays,
       }
 
       // when
@@ -111,8 +110,33 @@ describe('bookingFormContent', () => {
 
       // then
       expect(
-        wrapper.find({ children: 'Réservation annulable jusqu’au 10/11/2020 14:35' })
+        wrapper.find({
+          children: `Réservation annulable jusqu’au ${now.format('DD/MM/YYYY H:mm')}`,
+        })
       ).toHaveLength(1)
+    })
+
+    it('should display a notice when the user cant cancel the booking', () => {
+      // given
+      const inTwoDays = moment().add(2, 'days')
+      const now = moment().format('YYYY-MM-DDTHH:mm:ss.00Z')
+      props.isEvent = true
+      props.values = {
+        bookables: [
+          {
+            beginningDatetime: inTwoDays,
+            cancellationLimitDate: now,
+            id: 'AE',
+          },
+        ],
+        date: inTwoDays,
+      }
+
+      // when
+      const wrapper = shallow(<BookingFormContent {...props} />)
+
+      // then
+      expect(wrapper.find({ children: 'Cette réservation n’est pas annulable' })).toHaveLength(1)
     })
 
     it('should render a Field component with the proper props', () => {

@@ -73,6 +73,28 @@ class BookingFormContent extends PureComponent {
     )
   }
 
+  cancellation_limit_date_sentences = (bookableTimes, hasBookableTimes, isEvent) => {
+    if (bookableTimes.length === 0) return null
+
+    const cancellation_limit_date = moment(bookableTimes[0].cancellationLimitDate)
+    const now = moment().format('YYYY-MM-DD')
+    let sentence = ''
+
+    if (cancellation_limit_date.format('YYYY-MM-DD') === now) {
+      sentence = 'Cette réservation n’est pas annulable'
+    } else if (bookableTimes && hasBookableTimes && isEvent) {
+      sentence = `Réservation annulable jusqu’au ${cancellation_limit_date.format(
+        'DD/MM/YYYY H:mm'
+      )}`
+    }
+
+    return (
+      <p className="bc-cancellation-delay">
+        {sentence}
+      </p>
+    )
+  }
+
   render() {
     const {
       extraClassName,
@@ -138,13 +160,7 @@ class BookingFormContent extends PureComponent {
           </p>
         )}
 
-        {bookableTimes && hasBookableTimes && isEvent && (
-          <p className="bc-cancellation-delay">
-            {`Réservation annulable jusqu’au ${moment(
-              bookableTimes[0].cancellationLimitDate
-            ).format('DD/MM/YYYY H:mm')}`}
-          </p>
-        )}
+        {this.cancellation_limit_date_sentences(bookableTimes, hasBookableTimes, isEvent)}
       </form>
     )
   }
