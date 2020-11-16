@@ -55,10 +55,10 @@ class Offers extends PureComponent {
           : DEFAULT_SEARCH_FILTERS.creationMode,
         periodBeginningDate:
           (searchFilters.eventBeginningPeriod && moment(searchFilters.eventBeginningPeriod)) ||
-          DEFAULT_SEARCH_FILTERS.eventPeriod,
+          DEFAULT_SEARCH_FILTERS.periodBeginningDate,
         periodEndingDate:
           (searchFilters.eventEndingPeriod && moment(searchFilters.eventEndingPeriod)) ||
-          DEFAULT_SEARCH_FILTERS.eventPeriod,
+          DEFAULT_SEARCH_FILTERS.periodEndingDate,
       },
       offerer: null,
       venueOptions: [],
@@ -116,13 +116,13 @@ class Offers extends PureComponent {
       queryParams.page = page
     }
 
-    if (searchFilters.periodBeginningDate !== DEFAULT_SEARCH_FILTERS.eventPeriod) {
+    if (searchFilters.periodBeginningDate !== DEFAULT_SEARCH_FILTERS.periodBeginningDate) {
       queryParams.periodBeginningDate = searchFilters.periodBeginningDate.format(
         'YYYY-MM-DD HH:mm:ss'
       )
     }
 
-    if (searchFilters.periodEndingDate !== DEFAULT_SEARCH_FILTERS.eventPeriod) {
+    if (searchFilters.periodEndingDate !== DEFAULT_SEARCH_FILTERS.periodEndingDate) {
       queryParams.periodEndingDate = moment(searchFilters.periodEndingDate)
         .endOf('day')
         .format('YYYY-MM-DD HH:mm:ss')
@@ -343,13 +343,15 @@ class Offers extends PureComponent {
 
   handlePeriodStartDateChange = periodBeginningDate => {
     const dateToFilter =
-      periodBeginningDate === null ? DEFAULT_SEARCH_FILTERS.eventPeriod : periodBeginningDate
+      periodBeginningDate === null
+        ? DEFAULT_SEARCH_FILTERS.periodBeginningDate
+        : periodBeginningDate
     this.setSearchFilters('periodBeginningDate', dateToFilter)
   }
 
   handlePeriodEndDateChange = periodEndingDate => {
     const dateToFilter =
-      periodEndingDate === null ? DEFAULT_SEARCH_FILTERS.eventPeriod : periodEndingDate
+      periodEndingDate === null ? DEFAULT_SEARCH_FILTERS.periodEndingDate : periodEndingDate
     this.setSearchFilters('periodEndingDate', dateToFilter)
   }
 

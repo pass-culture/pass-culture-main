@@ -18,6 +18,7 @@ import {
   ALL_TYPES_OPTION,
   ALL_VENUES,
   ALL_VENUES_OPTION,
+  ALL_EVENT_PERIODS,
   CREATION_MODES_FILTERS,
   DEFAULT_CREATION_MODE,
   DEFAULT_PAGE,
@@ -146,6 +147,8 @@ describe('src | components | pages | Offers | Offers', () => {
         offererId: ALL_OFFERERS,
         status: ALL_STATUS,
         creationMode: DEFAULT_CREATION_MODE.id,
+        periodBeginningDate: ALL_EVENT_PERIODS,
+        periodEndingDate: ALL_EVENT_PERIODS,
       })
     })
 
@@ -374,6 +377,15 @@ describe('src | components | pages | Offers | Offers', () => {
         expect(screen.getByDisplayValue('Importée')).toBeInTheDocument()
       })
 
+      it('should render event period filter with no default option', async () => {
+        // Given
+        await renderOffers(props, store)
+
+        // Then
+        let eventPeriodSelect = screen.queryAllByPlaceholderText('JJ/MM/AAAA')
+        expect(eventPeriodSelect).toHaveLength(2)
+      })
+
       describe('status filters', () => {
         it('should not display status filters modal', async () => {
           // Given
@@ -429,6 +441,8 @@ describe('src | components | pages | Offers | Offers', () => {
             page: DEFAULT_PAGE,
             venueId: DEFAULT_SEARCH_FILTERS.venueId,
             typeId: DEFAULT_SEARCH_FILTERS.typeId,
+            periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+            periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
             status: 'expired',
           })
         })
@@ -752,6 +766,8 @@ describe('src | components | pages | Offers | Offers', () => {
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+        periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+        periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     })
 
@@ -775,6 +791,8 @@ describe('src | components | pages | Offers | Offers', () => {
           offererId: DEFAULT_SEARCH_FILTERS.offererId,
           status: DEFAULT_SEARCH_FILTERS.status,
           creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+          periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+          periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
         })
       })
     })
@@ -800,6 +818,8 @@ describe('src | components | pages | Offers | Offers', () => {
           offererId: DEFAULT_SEARCH_FILTERS.offererId,
           status: DEFAULT_SEARCH_FILTERS.status,
           creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+          periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+          periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
         })
       })
     })
@@ -824,6 +844,8 @@ describe('src | components | pages | Offers | Offers', () => {
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+        periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+        periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     })
 
@@ -846,6 +868,8 @@ describe('src | components | pages | Offers | Offers', () => {
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
+        periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+        periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     })
   })
@@ -956,6 +980,8 @@ describe('src | components | pages | Offers | Offers', () => {
           page: DEFAULT_PAGE,
           status: ALL_STATUS,
           creationMode: DEFAULT_CREATION_MODE.id,
+          periodBeginningDate: ALL_EVENT_PERIODS,
+          periodEndingDate: ALL_EVENT_PERIODS,
         })
       })
     })
@@ -1204,6 +1230,8 @@ describe('src | components | pages | Offers | Offers', () => {
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
+        periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+        periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     })
 
@@ -1227,6 +1255,8 @@ describe('src | components | pages | Offers | Offers', () => {
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
+        periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+        periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     })
 

@@ -49,6 +49,8 @@ export const updateOffersActiveStatus = (
     page = DEFAULT_PAGE,
     ids = [],
     isActive,
+    periodBeginningDate = DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+    periodEndingDate = DEFAULT_SEARCH_FILTERS.periodEndingDate,
   }
 ) => {
   const formattedBody = createRequestBody({
@@ -59,6 +61,8 @@ export const updateOffersActiveStatus = (
     page,
     status,
     creationMode,
+    periodBeginningDate,
+    periodEndingDate,
   })
 
   if (areAllOffersSelected) {
