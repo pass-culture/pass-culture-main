@@ -1,5 +1,4 @@
 from flask import current_app as app
-from flask import jsonify
 
 from pcapi.connectors import redis
 import pcapi.core.offers.api as offers_api
@@ -8,7 +7,6 @@ from pcapi.domain.user_emails import send_batch_cancellation_emails_to_users
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
-from pcapi.models import Product
 from pcapi.models import VenueSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.stock_sql_entity import StockSQLEntity
@@ -17,7 +15,6 @@ from pcapi.repository import feature_queries
 from pcapi.repository import offerer_queries
 from pcapi.repository import repository
 from pcapi.repository.offer_queries import get_offer_by_id
-from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.routes.serialization.stock_serialize import StockResponseIdModel
@@ -28,13 +25,6 @@ from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.rest import ensure_current_user_has_rights
 from pcapi.utils.rest import load_or_404
 from pcapi.utils.rest import login_or_api_key_required
-
-
-search_models = [
-    # Order is important
-    Product,
-    VenueSQLEntity,
-]
 
 
 @private_api.route("/stocks", methods=["POST"])
