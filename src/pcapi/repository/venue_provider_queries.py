@@ -11,7 +11,8 @@ def get_active_venue_providers_for_specific_provider(provider_id: int) -> List[V
 
 def get_venue_providers_to_sync(provider_id: int) -> List[VenueProvider]:
     return (
-        VenueProvider.query.filter(VenueProvider.providerId == provider_id)
+        VenueProvider.query.filter(VenueProvider.isActive == True)
+        .filter(VenueProvider.providerId == provider_id)
         .filter(VenueProvider.syncWorkerId == None)
         .all()
     )
