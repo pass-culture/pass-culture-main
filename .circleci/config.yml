@@ -54,15 +54,18 @@ jobs:
             if [ ! -z "$(alembic branches)" ]; then echo "Multiple alembic heads found"; exit 1; fi
       - run:
           name: Check imports are well organized with isort
+          when: always
           command: venv/bin/isort . --check-only
       - run:
           name: Check code is well formatted with black
+          when: always
           command: venv/bin/black . --check
       - when:
           condition: << parameters.is_nightly_build >>
           steps:
             - run:
                 name: Running tests
+                when: always
                 command: |
                   RUN_ENV=tests venv/bin/pytest tests --cov --cov-report html --junitxml=test-results/junit.xml
                   venv/bin/coveralls
@@ -70,6 +73,7 @@ jobs:
           condition: << parameters.is_nightly_build >>
           steps:
             - run:
+                when: always
                 name: Running tests
                 command: |
                   RUN_ENV=tests venv/bin/pytest tests --junitxml=test-results/junit.xml
