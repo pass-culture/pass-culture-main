@@ -7990,11 +7990,6 @@ known-css-properties@^0.19.0:
   resolved "https://registry.yarnpkg.com/known-css-properties/-/known-css-properties-0.19.0.tgz#5d92b7fa16c72d971bda9b7fe295bdf61836ee5b"
   integrity sha512-eYboRV94Vco725nKMlpkn3nV2+96p9c3gKXRsYqAJSswSENvBhN7n5L+uDhY58xQa0UukWsDMTGELzmD8Q+wTA==
 
-la-sass-vy@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/la-sass-vy/-/la-sass-vy-1.0.1.tgz#121771a6752518335e6ef6000fb1dcaa10b502e1"
-  integrity sha512-Oz2i6ZDfFFCg+LWHm47wkMm7dhwh5Uk7krHcDCL6tYDr7ZAConSXit4/B5R3zOZCXlDFQaxk9Xfg1qKnBSpOUQ==
-
 language-subtag-registry@~0.3.2:
   version "0.3.20"
   resolved "https://registry.yarnpkg.com/language-subtag-registry/-/language-subtag-registry-0.3.20.tgz#a00a37121894f224f763268e431c55556b0c0755"
