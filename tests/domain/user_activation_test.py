@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import pytest
 
-from pcapi.core.bookings.models import ActivationUser
+from pcapi.domain.user_activation import ActivationUser
 from pcapi.domain.user_activation import generate_activation_users_csv
 from pcapi.domain.user_activation import is_activation_booking
 from pcapi.domain.user_activation import is_import_status_change_allowed

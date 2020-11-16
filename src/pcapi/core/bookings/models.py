@@ -125,25 +125,6 @@ class Booking(PcObject, Model, VersionedMixin):
         return self.confirmationDate and self.confirmationDate <= datetime.utcnow()
 
 
-# FIXME: move this out of the `models` module
-class ActivationUser:
-    CSV_HEADER = [
-        "Prénom",
-        "Nom",
-        "Email",
-        "Contremarque d'activation",
-    ]
-
-    def __init__(self, booking: Booking):
-        self.first_name = booking.user.firstName
-        self.last_name = booking.user.lastName
-        self.email = booking.user.email
-        self.token = booking.token
-
-    def as_csv_row(self):
-        return [self.first_name, self.last_name, self.email, self.token]
-
-
 Booking.trig_ddl = """
     DROP FUNCTION IF EXISTS get_wallet_balance(user_id BIGINT);
 

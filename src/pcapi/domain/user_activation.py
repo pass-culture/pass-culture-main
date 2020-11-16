@@ -2,7 +2,6 @@ import csv
 from io import StringIO
 from typing import Iterable
 
-from pcapi.core.bookings.models import ActivationUser
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models.api_errors import ApiErrors
@@ -17,6 +16,24 @@ from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 IMPORT_STATUS_MODIFICATION_RULE = (
     "Seuls les dossiers au statut DUPLICATE peuvent être modifiés (aux statuts REJECTED ou RETRY uniquement)"
 )
+
+
+class ActivationUser:
+    CSV_HEADER = [
+        "Prénom",
+        "Nom",
+        "Email",
+        "Contremarque d'activation",
+    ]
+
+    def __init__(self, booking):
+        self.first_name = booking.user.firstName
+        self.last_name = booking.user.lastName
+        self.email = booking.user.email
+        self.token = booking.token
+
+    def as_csv_row(self):
+        return [self.first_name, self.last_name, self.email, self.token]
 
 
 def create_initial_deposit(user_to_activate: UserSQLEntity) -> Deposit:

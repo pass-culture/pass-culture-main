@@ -2,8 +2,8 @@ from decimal import Decimal
 from typing import Dict
 from typing import List
 
-from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import Offer
+from pcapi.models import Booking
+from pcapi.models import Offer
 from pcapi.models.offer_type import ThingType
 
 

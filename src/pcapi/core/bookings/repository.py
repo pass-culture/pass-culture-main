@@ -16,8 +16,6 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import selectinload
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
-from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import Offer
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
@@ -25,6 +23,8 @@ from pcapi.domain.booking_recap.booking_recap import ThingBookingRecap
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 import pcapi.domain.expenses
 from pcapi.domain.postal_code.postal_code import PostalCode
+from pcapi.models import Booking
+from pcapi.models import Offer
 from pcapi.models import UserOfferer
 from pcapi.models import VenueSQLEntity
 from pcapi.models.api_errors import ResourceNotFoundError

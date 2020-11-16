@@ -7,11 +7,11 @@ from typing import Iterable
 from typing import List
 from typing import Set
 
-from pcapi.core.bookings.models import ActivationUser
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.domain.admin_emails import send_users_activation_report
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
+from pcapi.domain.user_activation import ActivationUser
 from pcapi.domain.user_activation import generate_activation_users_csv
 from pcapi.models import Booking
 from pcapi.models import StockSQLEntity
