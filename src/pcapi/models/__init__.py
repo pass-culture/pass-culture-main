@@ -1,5 +1,6 @@
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
+from pcapi.core.users.models import Token
 from pcapi.models.allocine_pivot import AllocinePivot
 from pcapi.models.allocine_venue_provider import AllocineVenueProvider
 from pcapi.models.allocine_venue_provider_price_rule import AllocineVenueProviderPriceRule
@@ -99,6 +100,7 @@ __all__ = (
     "DiscoveryViewV3",
     "RightsType",
     "ThingType",
+    "Token",
     "UserOfferer",
     "UserSQLEntity",
     "UserSession",
@@ -145,6 +147,7 @@ models = (
     IrisFrance,
     IrisVenues,
     SeenOffer,
+    Token,
 )
 
 materialized_views = (
