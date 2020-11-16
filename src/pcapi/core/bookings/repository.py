@@ -384,52 +384,6 @@ def _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers() 
     )
 
 
-def _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_thing_or_event_begun_before_today_offers() -> Query:
-    return _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers().filter(
-        (cast(StockSQLEntity.beginningDatetime, Date) < date.today()) | (StockSQLEntity.beginningDatetime.is_(None))
-    )
-
-
-def find_not_used_and_not_cancelled() -> List[Booking]:
-    return Booking.query.filter(Booking.isUsed == False).filter(Booking.isCancelled == False).all()
-
-
-def find_user_bookings_for_recommendation(user_id: int) -> List[Booking]:
-    return _build_find_ordered_user_bookings(user_id).all()
-
-
-def get_only_offer_ids_from_bookings(user: UserSQLEntity) -> List[int]:
-    offers_booked = (
-        Offer.query.join(StockSQLEntity).join(Booking).filter_by(userId=user.id).with_entities(Offer.id).all()
-    )
-    return [offer.id for offer in offers_booked]
-
-
-def find_used_by_token(token: str) -> Booking:
-    return Booking.query.filter_by(token=token).filter_by(isUsed=True).first()
-
-
-def count_not_cancelled_bookings_quantity_by_stock_id(stock_id: int) -> int:
-    bookings = (
-        Booking.query.join(StockSQLEntity)
-        .filter(Booking.isCancelled == False)
-        .filter(Booking.stockId == stock_id)
-        .all()
-    )
-
-    return sum([booking.quantity for booking in bookings])
-
-
-def find_first_matching_from_offer_by_user(offer_id: int, user_id: int) -> Optional[Booking]:
-    return (
-        Booking.query.filter_by(userId=user_id)
-        .join(StockSQLEntity)
-        .filter(StockSQLEntity.offerId == offer_id)
-        .order_by(desc(Booking.dateCreated))
-        .first()
-    )
-
-
 def _build_find_ordered_user_bookings(user_id: int) -> Query:
     return (
         Booking.query.join(StockSQLEntity)
