@@ -36,6 +36,5 @@ const CREATION_MODES_OPTIONS = [
   { displayName: 'Importée', id: 'imported' },
 ]
 export const [DEFAULT_CREATION_MODE, ...CREATION_MODES_FILTERS] = CREATION_MODES_OPTIONS
-export const DEFAULT_EVENT_PERIOD = ''
 export const ADMINS_DISABLED_FILTERS_MESSAGE =
   'Sélectionnez une structure et/ou un lieu pour activer les filtres'

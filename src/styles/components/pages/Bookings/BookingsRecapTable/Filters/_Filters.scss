@@ -206,88 +206,8 @@
     }
   }
 
-  .fw-booking-date {
+  .period-filter {
     padding-left: rem(24px);
-
-    .fw-booking-date-inputs {
-      display: flex;
-      border-radius: rem(20px);
-      box-shadow: 2px 2px 6px 0 $black-shadow;
-      height: rem(40px);
-      margin-top: rem(12px);
-
-      .fw-booking-date-begin-picker:focus-within {
-        .field-date-begin {
-          border-color: $primary;
-        }
-      }
-
-      .fw-booking-date-end-picker:focus-within {
-        .field-date-end {
-          border-color: $primary;
-        }
-      }
-
-      button {
-        outline: none;
-      }
-
-      .field-date {
-        box-shadow: none;
-      }
-
-      .fw-booking-date-input {
-        background: none;
-        border: 0;
-        cursor: pointer;
-        font-size: rem(16px);
-        outline: none;
-        padding-left: rem(10px);
-        width: rem(135px);
-
-        &:disabled {
-          color: $grey-dark;
-          cursor: initial;
-          opacity: 1;
-
-          &::placeholder {
-            color: $grey-dark;
-          }
-        }
-      }
-
-      .field-date-begin {
-        border-right: none;
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-        height: rem(40px);
-
-        &:focus-within {
-          border-color: $primary;
-        }
-      }
-
-      .field-date-end {
-        border-left: none;
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-        height: rem(40px);
-
-        &:focus-within {
-          border-color: $primary;
-        }
-      }
-
-      &.disabled {
-        box-shadow: none;
-      }
-    }
-  }
-
-  .fw-booking-date:focus-within {
-    .vertical-bar {
-      background-color: $primary;
-    }
   }
 }
 

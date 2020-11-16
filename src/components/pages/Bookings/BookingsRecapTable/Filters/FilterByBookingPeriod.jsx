@@ -1,10 +1,10 @@
 import moment from 'moment/moment'
 import PropTypes from 'prop-types'
 import React from 'react'
-import DatePicker from 'react-datepicker'
+
+import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 
 import { EMPTY_FILTER_VALUE } from './_constants'
-import InputWithCalendar from './InputWithCalendar'
 
 const FilterByBookingPeriod = ({
   isDisabled,
@@ -30,54 +30,16 @@ const FilterByBookingPeriod = ({
   }
 
   return (
-    <div className="fw-booking-date">
-      <label
-        className="fw-booking-date-label"
-        htmlFor="select-filter-booking-date"
-      >
-        {'Période de réservation'}
-      </label>
-      <div
-        className={`fw-booking-date-inputs ${isDisabled ? 'disabled' : ''}`}
-        id="select-filter-booking-date"
-      >
-        <div className="fw-booking-date-begin-picker">
-          <DatePicker
-            className="fw-booking-date-input"
-            customInput={(
-              <InputWithCalendar
-                customClass={`field-date-only field-date-begin ${isDisabled ? 'disabled' : ''}`}
-              />
-            )}
-            disabled={isDisabled}
-            dropdownMode="select"
-            maxDate={selectedBookingEndingDate}
-            minDate={oldestBookingDate}
-            onChange={handleBookingBeginningDateChange}
-            placeholderText="JJ/MM/AAAA"
-            selected={selectedBookingBeginningDate}
-          />
-        </div>
-        <span className="vertical-bar" />
-        <div className="fw-booking-date-end-picker">
-          <DatePicker
-            className="fw-booking-date-input"
-            customInput={(
-              <InputWithCalendar
-                customClass={`field-date-only field-date-end ${isDisabled ? 'disabled' : ''}`}
-              />
-            )}
-            disabled={isDisabled}
-            dropdownMode="select"
-            maxDate={moment()}
-            minDate={selectedBookingBeginningDate}
-            onChange={handleBookingEndingDateChange}
-            placeholderText="JJ/MM/AAAA"
-            selected={selectedBookingEndingDate}
-          />
-        </div>
-      </div>
-    </div>
+    <PeriodSelector
+      changePeriodBeginningDateValue={handleBookingBeginningDateChange}
+      changePeriodEndingDateValue={handleBookingEndingDateChange}
+      isDisabled={isDisabled}
+      label="Période de réservation"
+      maxDateEnding={moment()}
+      minDateBeginning={oldestBookingDate}
+      periodBeginningDate={selectedBookingBeginningDate}
+      periodEndingDate={selectedBookingEndingDate}
+    />
   )
 }
 

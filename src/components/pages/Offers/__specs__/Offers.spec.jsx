@@ -377,12 +377,12 @@ describe('src | components | pages | Offers | Offers', () => {
         expect(screen.getByDisplayValue('Importée')).toBeInTheDocument()
       })
 
-      it('should render event period filter with no default option', async () => {
-        // Given
+      it('should display event period filter with no default option', async () => {
+        // When
         await renderOffers(props, store)
 
         // Then
-        let eventPeriodSelect = screen.queryAllByPlaceholderText('JJ/MM/AAAA')
+        const eventPeriodSelect = screen.queryAllByPlaceholderText('JJ/MM/AAAA')
         expect(eventPeriodSelect).toHaveLength(2)
       })
 
@@ -546,6 +546,8 @@ describe('src | components | pages | Offers | Offers', () => {
               offererId: DEFAULT_SEARCH_FILTERS.offererId,
               status: DEFAULT_SEARCH_FILTERS.status,
               creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+              periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+              periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
             })
           })
 
@@ -576,6 +578,8 @@ describe('src | components | pages | Offers | Offers', () => {
               offererId: 'EF',
               status: 'inactive',
               creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+              periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+              periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
             })
           })
 
@@ -602,6 +606,8 @@ describe('src | components | pages | Offers | Offers', () => {
               offererId: DEFAULT_SEARCH_FILTERS.offererId,
               status: DEFAULT_SEARCH_FILTERS.status,
               creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+              periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+              periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
             })
           })
 
@@ -633,6 +639,8 @@ describe('src | components | pages | Offers | Offers', () => {
               offererId: DEFAULT_SEARCH_FILTERS.offererId,
               status: 'inactive',
               creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+              periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+              periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
             })
           })
 
@@ -874,6 +882,60 @@ describe('src | components | pages | Offers | Offers', () => {
     })
   })
 
+  describe('on click on event filter ending date', () => {
+    it('should properly format received date', async () => {
+      // Given
+      renderOffers(props, store)
+      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre'), {
+        target: { value: 'Any word' },
+      })
+
+      // When
+      fireEvent.click(screen.getByText('Lancer la recherche'))
+
+      // Then
+      await waitFor(() => {
+        expect(props.loadOffers).toHaveBeenCalledWith({
+          name: 'Any word',
+          page: DEFAULT_PAGE,
+          venueId: DEFAULT_SEARCH_FILTERS.venueId,
+          typeId: DEFAULT_SEARCH_FILTERS.typeId,
+          offererId: DEFAULT_SEARCH_FILTERS.offererId,
+          status: DEFAULT_SEARCH_FILTERS.status,
+          creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+          periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+          periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
+        })
+      })
+    })
+
+    it('should set new date value on filters', async () => {
+      // Given
+      renderOffers(props, store)
+      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre'), {
+        target: { value: 'Any word' },
+      })
+
+      // When
+      fireEvent.click(screen.getByText('Lancer la recherche'))
+
+      // Then
+      await waitFor(() => {
+        expect(props.loadOffers).toHaveBeenCalledWith({
+          name: 'Any word',
+          page: DEFAULT_PAGE,
+          venueId: DEFAULT_SEARCH_FILTERS.venueId,
+          typeId: DEFAULT_SEARCH_FILTERS.typeId,
+          offererId: DEFAULT_SEARCH_FILTERS.offererId,
+          status: DEFAULT_SEARCH_FILTERS.status,
+          creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+          periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+          periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
+        })
+      })
+    })
+  })
+
   describe('button to create an offer', () => {
     it('should not be displayed when user is an admin', () => {
       // Given
@@ -917,7 +979,15 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
+          categorie: null,
+          creation: null,
+          lieu: null,
+          nom: null,
           page: 2,
+          'periode-evenement-debut': null,
+          'periode-evenement-fin': null,
+          statut: null,
+          structure: null,
         })
       })
     })
@@ -937,7 +1007,16 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       await waitFor(() => {
-        expect(props.query.change).toHaveBeenCalledWith({})
+        expect(props.query.change).toHaveBeenCalledWith({
+          categorie: null,
+          creation: null,
+          lieu: null,
+          nom: null,
+          'periode-evenement-debut': null,
+          'periode-evenement-fin': null,
+          statut: null,
+          structure: null,
+        })
       })
     })
 
@@ -956,7 +1035,14 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
+          categorie: null,
+          creation: null,
+          lieu: null,
           nom: 'AnyWord',
+          'periode-evenement-debut': null,
+          'periode-evenement-fin': null,
+          statut: null,
+          structure: null,
         })
       })
     })
@@ -1000,7 +1086,16 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       await waitFor(() => {
-        expect(props.query.change).toHaveBeenCalledWith({})
+        expect(props.query.change).toHaveBeenCalledWith({
+          categorie: null,
+          creation: null,
+          lieu: null,
+          nom: null,
+          'periode-evenement-debut': null,
+          'periode-evenement-fin': null,
+          statut: null,
+          structure: null,
+        })
       })
     })
 
@@ -1019,6 +1114,13 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
           lieu: proVenues[0].id,
+          categorie: null,
+          creation: null,
+          nom: null,
+          'periode-evenement-debut': null,
+          'periode-evenement-fin': null,
+          statut: null,
+          structure: null,
         })
       })
     })
@@ -1043,6 +1145,13 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => {
         expect(props.query.change).toHaveBeenCalledWith({
           categorie: 'test_id_1',
+          creation: null,
+          lieu: null,
+          nom: null,
+          'periode-evenement-debut': null,
+          'periode-evenement-fin': null,
+          statut: null,
+          structure: null,
         })
       })
     })
@@ -1061,6 +1170,13 @@ describe('src | components | pages | Offers | Offers', () => {
       await waitFor(() => {
         expect(props.query.change).toHaveBeenLastCalledWith({
           statut: 'epuisee',
+          categorie: null,
+          creation: null,
+          lieu: null,
+          nom: null,
+          'periode-evenement-debut': null,
+          'periode-evenement-fin': null,
+          structure: null,
         })
       })
     })
@@ -1077,7 +1193,16 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       await waitFor(() => {
-        expect(props.query.change).toHaveBeenLastCalledWith({})
+        expect(props.query.change).toHaveBeenLastCalledWith({
+          categorie: null,
+          creation: null,
+          lieu: null,
+          nom: null,
+          'periode-evenement-debut': null,
+          'periode-evenement-fin': null,
+          statut: null,
+          structure: null,
+        })
       })
     })
 
@@ -1117,6 +1242,13 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(props.query.change).toHaveBeenLastCalledWith({
         creation: 'manuelle',
+        categorie: null,
+        lieu: null,
+        nom: null,
+        'periode-evenement-debut': null,
+        'periode-evenement-fin': null,
+        statut: null,
+        structure: null,
       })
     })
 
@@ -1134,7 +1266,16 @@ describe('src | components | pages | Offers | Offers', () => {
       await fireEvent.click(searchButton)
 
       // Then
-      expect(props.query.change).toHaveBeenLastCalledWith({})
+      expect(props.query.change).toHaveBeenLastCalledWith({
+        categorie: null,
+        creation: null,
+        lieu: null,
+        nom: null,
+        'periode-evenement-debut': null,
+        'periode-evenement-fin': null,
+        statut: null,
+        structure: null,
+      })
     })
   })
 

@@ -1,50 +1,34 @@
-import moment from 'moment/moment'
 import PropTypes from 'prop-types'
 import React from 'react'
 import DatePicker from 'react-datepicker'
 
 import InputWithCalendar from './InputWithCalendar'
 
-const EMPTY_FILTER_VALUE = ''
-
 const PeriodSelector = ({
+  changePeriodBeginningDateValue,
+  changePeriodEndingDateValue,
   isDisabled,
-  oldestBookingDate,
-  updateFilters,
-  selectedBookingBeginningDate,
-  selectedBookingEndingDate,
+  label,
+  maxDateEnding,
+  minDateBeginning,
+  periodBeginningDate,
+  periodEndingDate,
 }) => {
-  function handleBookingBeginningDateChange(bookingBeginningDate) {
-    const dateToFilter =
-      bookingBeginningDate === null ? EMPTY_FILTER_VALUE : bookingBeginningDate.format('YYYY-MM-DD')
-    const updatedFilter = { bookingBeginningDate: dateToFilter }
-    const updatedSelectedContent = { selectedBookingBeginningDate: bookingBeginningDate }
-    updateFilters(updatedFilter, updatedSelectedContent)
-  }
-
-  function handleBookingEndingDateChange(bookingEndingDate) {
-    const dateToFilter =
-      bookingEndingDate === null ? EMPTY_FILTER_VALUE : bookingEndingDate.format('YYYY-MM-DD')
-    const updatedFilter = { bookingEndingDate: dateToFilter }
-    const updatedSelectedContent = { selectedBookingEndingDate: bookingEndingDate }
-    updateFilters(updatedFilter, updatedSelectedContent)
-  }
-
   return (
-    <div className="fw-booking-date">
+    <div className="period-filter">
       <label
-        className="fw-booking-date-label"
-        htmlFor="select-filter-booking-date"
+        className="period-filter-label"
+        htmlFor="select-filter-date"
       >
-        {'Période de réservation'}
+        {label}
       </label>
       <div
-        className={`fw-booking-date-inputs ${isDisabled ? 'disabled' : ''}`}
-        id="select-filter-booking-date"
+        className={`period-filter-inputs ${isDisabled ? 'disabled' : ''}`}
+        id="select-filter-date"
       >
-        <div className="fw-booking-date-begin-picker">
+        <div className="period-filter-begin-picker">
           <DatePicker
-            className="fw-booking-date-input"
+            className="period-filter-input"
             customInput={(
               <InputWithCalendar
                 customClass={`field-date-only field-date-begin ${isDisabled ? 'disabled' : ''}`}
@@ -52,17 +36,17 @@ const PeriodSelector = ({
             )}
             disabled={isDisabled}
             dropdownMode="select"
-            maxDate={selectedBookingEndingDate}
-            minDate={oldestBookingDate}
-            onChange={handleBookingBeginningDateChange}
+            maxDate={periodEndingDate}
+            minDate={minDateBeginning}
+            onChange={changePeriodBeginningDateValue}
             placeholderText="JJ/MM/AAAA"
-            selected={selectedBookingBeginningDate}
+            selected={periodBeginningDate}
           />
         </div>
         <span className="vertical-bar" />
-        <div className="fw-booking-date-end-picker">
+        <div className="period-filter-end-picker">
           <DatePicker
-            className="fw-booking-date-input"
+            className="period-filter-input"
             customInput={(
               <InputWithCalendar
                 customClass={`field-date-only field-date-end ${isDisabled ? 'disabled' : ''}`}
@@ -70,11 +54,11 @@ const PeriodSelector = ({
             )}
             disabled={isDisabled}
             dropdownMode="select"
-            maxDate={moment()}
-            minDate={selectedBookingBeginningDate}
-            onChange={handleBookingEndingDateChange}
+            maxDate={maxDateEnding}
+            minDate={periodBeginningDate}
+            onChange={changePeriodEndingDateValue}
             placeholderText="JJ/MM/AAAA"
-            selected={selectedBookingEndingDate}
+            selected={periodEndingDate}
           />
         </div>
       </div>
@@ -82,13 +66,20 @@ const PeriodSelector = ({
   )
 }
 
+PeriodSelector.defaultProps = {
+  maxDateEnding: '',
+  minDateBeginning: '',
+}
+
 PeriodSelector.propTypes = {
+  changePeriodBeginningDateValue: PropTypes.func.isRequired,
+  changePeriodEndingDateValue: PropTypes.func.isRequired,
   isDisabled: PropTypes.bool.isRequired,
-  oldestBookingDate: PropTypes.string.isRequired,
-  selectedBookingBeginningDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string])
-    .isRequired,
-  selectedBookingEndingDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]).isRequired,
-  updateFilters: PropTypes.func.isRequired,
+  label: PropTypes.string.isRequired,
+  maxDateEnding: PropTypes.string,
+  minDateBeginning: PropTypes.string,
+  periodBeginningDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]).isRequired,
+  periodEndingDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]).isRequired,
 }
 
 export default PeriodSelector

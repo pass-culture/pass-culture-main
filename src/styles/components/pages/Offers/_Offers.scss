@@ -51,82 +51,35 @@
   .period-filter {
     margin-left: rem(10px);
     margin-top: rem(24px);
+  }
 
-    .period-filter-inputs {
-      display: flex;
-      height: rem(40px);
-      margin-top: rem(8px);
+  .period-filter-inputs {
+    box-shadow: none;
+    margin-top: rem(8px);
+  }
 
-      .field-date {
-        align-items: center;
-        background-image: url(/icons/ico-calendar.svg);
-        background-position-x: 90%;
-        background-position-y: center;
-        background-repeat: no-repeat;
-        border: 1px solid $grey-medium;
-        display: flex;
-        height: rem(40px);
+  .field-date {
+    border: 1px solid $grey-medium;
 
-        &:focus-within {
-          border-color: $primary;
-          border-width: 2px;
-        }
-
-        &.disabled {
-          background-image: url(/icons/ico-calendar-disabled.svg);
-        }
-      }
-
-      .period-filter-input {
-        background: none;
-        border: 0;
-        cursor: pointer;
-        font-size: rem(16px);
-        outline: none;
-        padding-left: rem(10px);
-        width: rem(130px);
-
-        &:disabled {
-          color: $grey-dark;
-          cursor: initial;
-          opacity: 1;
-
-          &::placeholder {
-            color: $grey-dark;
-          }
-        }
-      }
-
-      .field-date-only {
-        border-radius: 20px;
-      }
-
-      .field-date-begin {
-        border-bottom-right-radius: 0;
-        border-right: none;
-        border-top-right-radius: 0;
-        height: rem(40px);
-
-        &:focus-within {
-          border-color: $primary;
-        }
-      }
-
-      .field-date-end {
-        border-bottom-left-radius: 0;
-        border-left: none;
-        border-top-left-radius: 0;
-        height: rem(40px);
-
-        &:focus-within {
-          border-color: $primary;
-        }
-      }
-
-      &.disabled {
-        box-shadow: none;
-      }
+    &:focus-within {
+      border-width: 2px;
     }
+  }
+
+  .period-filter-inputs .period-filter-input {
+    width: rem(130px);
+  }
+
+  .field-date-begin {
+    border-bottom-left-radius: 20px;
+    border-right: none;
+    border-top-left-radius: 20px;
+  }
+
+  .field-date-end {
+    border-bottom-right-radius: 20px;
+    border-left: none;
+    border-top-right-radius: 20px;
   }
 
   .vertical-bar {
@@ -135,7 +88,6 @@
 
   .period-filter:focus-within {
     .vertical-bar {
-      background-color: $primary;
       width: rem(2px);
     }
   }
@@ -155,24 +107,6 @@
 
   .offers-count {
     margin-bottom: rem(33px);
-  }
-
-  .offers-list-actions {
-    border-bottom: 1px solid $grey-dark;
-    display: flex;
-    font-size: 0.8rem;
-    margin-bottom: rem(16px);
-    padding-bottom: rem(8px);
-
-    button {
-      font-weight: 500;
-      height: auto;
-      margin-right: rem(8px);
-    }
-
-    button:first-child {
-      border-right: 1px solid $grey-dark;
-    }
   }
 
   table {
@@ -249,7 +183,7 @@
             filter: unset;
           }
         }
-        
+
         &:disabled {
           cursor: not-allowed;
         }
@@ -309,8 +243,8 @@
   }
 
   .search-no-results {
-    text-align: center;
     color: $grey-dark;
+    text-align: center;
 
     img {
       margin: rem(10px) 0 rem(30px)
@@ -321,27 +255,26 @@
     }
   }
 
-  .subtitle-container {
-    .subtitle {
-      margin-right: rem(20px);
-    }
+  .subtitle-container .subtitle {
+    margin-right: rem(20px);
   }
+
   .subtitle {
+    display: inline-block;
     font-size: rem(20px);
     font-weight: 600;
-    display: inline-block;
   }
 
   .reset-filters-link {
     color: $primary;
-    line-height: rem(22px);
     font-weight: 500;
+    line-height: rem(22px);
 
     &:hover {
       text-decoration: underline;
     }
 
-    &.disabled{
+    &.disabled {
       color: $grey-dark;
 
       &:hover {
@@ -354,9 +287,9 @@
   .no-search-results {
     align-items: center;
     color: $grey-dark;
+    display: flex;
     flex-direction: column;
     font-size: rem(16px);
-    display: flex;
 
     .image {
       margin-top: rem(40px);
@@ -367,6 +300,7 @@
       margin-bottom: rem(8px);
       margin-top: rem(24px);
     }
+
     a {
       margin-bottom: rem(48px);
       margin-top: rem(48px);
