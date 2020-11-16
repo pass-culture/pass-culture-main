@@ -25,6 +25,7 @@ def validate_generic(model: Model) -> ApiErrors:
             and not column.foreign_keys
             and not column.primary_key
             and column.default is None
+            and column.server_default is None
             and value is None
         ):
             api_errors.add_error(key, "Cette information est obligatoire")

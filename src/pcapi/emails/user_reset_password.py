@@ -24,13 +24,12 @@ def retrieve_data_for_reset_password_user_email(user: UserSQLEntity) -> Dict:
     }
 
 
-def retrieve_data_for_reset_password_user_native_app_email(user: UserSQLEntity) -> Dict:
-    user_email = user.email
-    user_reset_password_token = user.resetPasswordToken
-    expiration_timestamp = int(datetime.utcnow().timestamp())
+def retrieve_data_for_reset_password_native_app_email(
+    user_email: str, token_value: str, expiration_date: datetime
+) -> Dict:
     reset_password_link = (
-        f"{NATIVE_APP_URL}/mot-de-passe-perdu?token={user_reset_password_token}"
-        f"&expiration_timestamp={expiration_timestamp}"
+        f"{NATIVE_APP_URL}/mot-de-passe-perdu?token={token_value}"
+        f"&expiration_timestamp={int(expiration_date.timestamp())}"
     )
 
     return {

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Callable
 from typing import List
 from typing import Union
@@ -32,8 +33,8 @@ from pcapi.emails.pro_waiting_validation import retrieve_data_for_pro_user_waiti
 from pcapi.emails.user_notification_after_stock_update import (
     retrieve_data_to_warn_user_after_stock_update_affecting_booking,
 )
+from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_native_app_email
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_email
-from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_native_app_email
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
@@ -87,13 +88,18 @@ def send_warning_to_beneficiary_after_pro_booking_cancellation(
     send_email(data=data)
 
 
-def send_reset_password_email_to_user(
-    user: UserSQLEntity, send_email: Callable[..., bool], is_native_app: bool = False
+def send_reset_password_email_to_user(user: UserSQLEntity, send_email: Callable[..., bool]) -> bool:
+    data = retrieve_data_for_reset_password_user_email(user)
+    return send_email(data=data)
+
+
+def send_reset_password_email_to_native_app_user(
+    user_email: str,
+    token_value: str,
+    expiration_date: datetime,
+    send_email: Callable[..., bool],
 ) -> bool:
-    if is_native_app:
-        data = retrieve_data_for_reset_password_user_native_app_email(user)
-    else:
-        data = retrieve_data_for_reset_password_user_email(user)
+    data = retrieve_data_for_reset_password_native_app_email(user_email, token_value, expiration_date)
     return send_email(data=data)
 
 

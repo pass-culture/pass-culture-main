@@ -1,6 +1,9 @@
+import enum
+
 from sqlalchemy import BigInteger
 from sqlalchemy import Column
 from sqlalchemy import DateTime
+from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import String
 from sqlalchemy import func
@@ -8,6 +11,13 @@ from sqlalchemy.orm import relationship
 
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
+
+
+ALGORITHM_HS_256 = "HS256"
+
+
+class TokenType(enum.Enum):
+    RESET_PASSWORD = "reset-password"
 
 
 class Token(PcObject, Model):
@@ -21,7 +31,7 @@ class Token(PcObject, Model):
 
     value = Column(String, index=True, unique=True, nullable=False)
 
-    type = Column(String, nullable=False)
+    type = Column(Enum(TokenType, create_constraint=False), nullable=False)
 
     creationDate = Column(DateTime, nullable=False, server_default=func.now())
 

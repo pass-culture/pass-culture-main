@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import current_app as app
 from flask import jsonify
 from flask_jwt_extended import create_access_token
@@ -8,14 +10,14 @@ from flask_jwt_extended import jwt_required
 
 from pcapi.core.users import api as user_api
 from pcapi.core.users import exceptions as user_exceptions
+from pcapi.core.users.api import generate_and_save_token
+from pcapi.core.users.api import get_user_with_valid_token
+from pcapi.core.users.models import TokenType
 from pcapi.domain.password import check_password_strength
-from pcapi.domain.password import check_reset_token_validity
-from pcapi.domain.password import generate_reset_token
-from pcapi.domain.user_emails import send_reset_password_email_to_user
+from pcapi.domain.user_emails import send_reset_password_email_to_native_app_user
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
-from pcapi.repository.user_queries import find_user_by_reset_password_token
 from pcapi.routes.native.v1.serialization.authentication import PasswordResetRequestRequest
 from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRequest
 from pcapi.serialization.decorator import spectree_serialize
@@ -23,6 +25,9 @@ from pcapi.utils.mailing import send_raw_email
 
 from . import blueprint
 from .serialization import authentication
+
+
+RESET_PASSWORD_TOKEN_LIFE_TIME = timedelta(hours=24)
 
 
 @blueprint.native_v1.route("/signin", methods=["POST"])
@@ -62,10 +67,13 @@ def password_reset_request(body: PasswordResetRequestRequest) -> None:
     if not user:
         return
 
-    generate_reset_token(user)
-    repository.save(user)
+    reset_password_token = generate_and_save_token(
+        user, TokenType.RESET_PASSWORD, life_time=RESET_PASSWORD_TOKEN_LIFE_TIME
+    )
 
-    is_email_sent = send_reset_password_email_to_user(user, send_raw_email, is_native_app=True)
+    is_email_sent = send_reset_password_email_to_native_app_user(
+        user.email, reset_password_token.value, reset_password_token.expirationDate, send_raw_email
+    )
 
     if not is_email_sent:
         app.logger.error("Email service failure when user request password reset with %s", user.email)
@@ -86,16 +94,10 @@ def protected() -> any:  # type: ignore
 @blueprint.native_v1.route("/reset_password", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def reset_password(body: ResetPasswordRequest) -> None:
-    error = {"token": ["Le token de changement de mot de passe est invalide."]}
-    user = find_user_by_reset_password_token(body.reset_password_token)
+    user = get_user_with_valid_token(body.reset_password_token, [TokenType.RESET_PASSWORD])
 
     if not user:
-        raise ApiErrors(error, status_code=400)
-
-    try:
-        check_reset_token_validity(user)
-    except ApiErrors as exc:
-        raise ApiErrors(error, status_code=400) from exc
+        raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
 
     check_password_strength("newPassword", body.new_password)
 

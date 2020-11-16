@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import Mock
 from unittest.mock import call
 from unittest.mock import patch
@@ -5,6 +6,7 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.users.models import Token
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
 from pcapi.domain.user_emails import send_activation_email
@@ -17,6 +19,7 @@ from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_off
 from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
 from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
+from pcapi.domain.user_emails import send_reset_password_email_to_native_app_user
 from pcapi.domain.user_emails import send_reset_password_email_to_pro
 from pcapi.domain.user_emails import send_reset_password_email_to_user
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
@@ -474,21 +477,24 @@ class SendResetPasswordUserEmailTest:
         mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 912168})
 
     @patch(
-        "pcapi.domain.user_emails.retrieve_data_for_reset_password_user_native_app_email",
+        "pcapi.domain.user_emails.retrieve_data_for_reset_password_native_app_email",
         return_value={"MJ-TemplateID": 12345},
     )
-    def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(
-        self, mock_retrieve_data_for_reset_password_user_native_app_email
+    def when_feature_send_emails_enabled_sends_a_reset_password_email_to_native_app_user(
+        self, retrieve_data_for_reset_password_native_app_email
     ):
         # given
         user = create_user(email="bobby@example.com", first_name="Bobby", reset_password_token="AZ45KNB99H")
         mocked_send_email = Mock()
+        token = Token(value="token-value", expirationDate=datetime.now())
 
         # when
-        send_reset_password_email_to_user(user, mocked_send_email, is_native_app=True)
+        send_reset_password_email_to_native_app_user(user.email, token.value, token.expirationDate, mocked_send_email)
 
         # then
-        mock_retrieve_data_for_reset_password_user_native_app_email.assert_called_once_with(user)
+        retrieve_data_for_reset_password_native_app_email.assert_called_once_with(
+            user.email, token.value, token.expirationDate
+        )
         mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 12345})
 
 
