@@ -479,6 +479,10 @@ class Offers extends PureComponent {
   }
 
   resetFilters = () => {
+    if (!this.hasSearchFilters()) {
+      return
+    }
+
     this.setState({ offerer: null })
     this.setState({ searchFilters: { ...DEFAULT_SEARCH_FILTERS } }, () => {
       this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
@@ -503,7 +507,7 @@ class Offers extends PureComponent {
           {'Vous pouvez modifer votre recherche ou'}
           <br />
           <Link
-            className="tertiary-link primary-color"
+            className="reset-filters-link"
             onClick={this.resetFilters}
             to="/offres"
           >
@@ -585,13 +589,19 @@ class Offers extends PureComponent {
               <h3 className="subtitle">
                 {'Rechercher une offre'}
               </h3>
-              <Link
-                className={`tertiary-link ${this.hasSearchFilters() ? 'primary-color' : ''}`}
-                onClick={this.resetFilters}
-                to="/offres"
-              >
-                {'Réinitialiser les filtres'}
-              </Link>
+              {this.hasSearchFilters() ? (
+                <Link
+                  className="reset-filters-link"
+                  onClick={this.resetFilters}
+                  to="/offres"
+                >
+                  {'Réinitialiser les filtres'}
+                </Link>
+              ) : (
+                <span className="reset-filters-link disabled">
+                  {'Réinitialiser les filtres'}
+                </span>
+              )}
             </span>
 
             {this.renderSearchFilters()}
