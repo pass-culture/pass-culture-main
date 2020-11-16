@@ -32,7 +32,7 @@ class StockCreationBodyModel(BaseModel):
 class StockEditionBodyModel(BaseModel):
     beginning_datetime: Optional[str]
     booking_limit_datetime: Optional[str]
-    offer_id: Optional[int]
+    offer_id: Optional[str]
     price: Optional[float]
     quantity: Optional[int]
 
@@ -42,8 +42,6 @@ class StockEditionBodyModel(BaseModel):
     beginning_time: Optional[str]
     offerer_id: Optional[str]
     id: Optional[Any]
-
-    _dehumanize_offer_id = dehumanize_field("offer_id")
 
     class Config:
         alias_generator = to_camel

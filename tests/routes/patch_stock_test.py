@@ -7,6 +7,12 @@ from freezegun import freeze_time
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
+from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.models import EventType
 from pcapi.models import Provider
 from pcapi.models import StockSQLEntity
@@ -126,7 +132,7 @@ class Returns200:
 
     def when_offer_come_from_allocine_provider_and_fields_updated_in_stock_are_editable(self, app, db_session):
         # given
-        date_event = datetime(2020, 10, 15)
+        date_event = datetime.utcnow() + timedelta(days=1)
 
         allocine_provider = get_provider_by_local_class("AllocineStocks")
 
@@ -141,6 +147,7 @@ class Returns200:
             lastProviderId=allocine_provider.id,
             lastProvider=allocine_provider,
             idAtProviders=idAtProviders,
+            type="EventType.CINEMA",
         )
         stock = offers_factories.StockFactory(
             offer=offer,
@@ -149,6 +156,7 @@ class Returns200:
             dateCreated=date_event,
             dateModified=date_event,
             dateModifiedAtLastProvider=date_event,
+            beginningDatetime=date_event,
         )
 
         humanized_stock_id = humanize(stock.id)
@@ -157,7 +165,19 @@ class Returns200:
         request_update = (
             TestClient(app.test_client())
             .with_auth(user.email)
-            .patch(f"/stocks/{humanized_stock_id}", json={"quantity": 5, "price": 20})
+            .patch(
+                f"/stocks/{humanized_stock_id}",
+                json={
+                    "beginningDatetime": serialize(stock.beginningDatetime),
+                    "beginningTime": "19:00",
+                    "bookingLimitDatetime": serialize(stock.bookingLimitDatetime),
+                    "id": humanized_stock_id,
+                    "offerId": humanize(offer.id),
+                    "offererId": humanize(venue.managingOffererId),
+                    "price": 20,
+                    "quantity": 5,
+                },
+            )
         )
 
         # then
