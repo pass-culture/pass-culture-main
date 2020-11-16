@@ -40,7 +40,7 @@ class PostResetPassword:
 
             # then
             assert response.status_code == 400
-            assert response.json["email"] == ["L'email est manquant"]
+            assert response.json["email"] == ["Ce champ est obligatoire"]
 
     class Returns204:
         @pytest.mark.usefixtures("db_session")

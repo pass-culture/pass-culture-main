@@ -44,22 +44,10 @@ def validate_change_password_request(json: Dict) -> None:
         raise api_errors
 
 
-def generate_reset_token(user, validity_duration_hours=24):
+def generate_reset_token(user: UserSQLEntity, validity_duration_hours: int = 24) -> None:
     token = random_token(length=RESET_PASSWORD_TOKEN_LENGTH)
     user.resetPasswordToken = token
     user.resetPasswordTokenValidityLimit = datetime.utcnow() + timedelta(hours=validity_duration_hours)
-
-
-def validate_reset_request(request):
-    if "email" not in request.get_json():
-        errors = ApiErrors()
-        errors.add_error("email", "L'email est manquant")
-        raise errors
-
-    if not request.get_json()["email"]:
-        errors = ApiErrors()
-        errors.add_error("email", "L'email renseigné est vide")
-        raise errors
 
 
 def validate_new_password_request(request):

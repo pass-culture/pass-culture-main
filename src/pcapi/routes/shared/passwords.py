@@ -9,7 +9,6 @@ from pcapi.domain.password import check_reset_token_validity
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import validate_change_password_request
 from pcapi.domain.password import validate_new_password_request
-from pcapi.domain.password import validate_reset_request
 from pcapi.domain.user_emails import send_reset_password_email_to_pro
 from pcapi.domain.user_emails import send_reset_password_email_to_user
 from pcapi.flask_app import private_api
@@ -17,6 +16,8 @@ from pcapi.models import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.repository.user_queries import find_user_by_reset_password_token
+from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
+from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.rest import expect_json_data
@@ -39,14 +40,13 @@ def post_change_password():
 
 
 @private_api.route("/users/reset-password", methods=["POST"])
-@expect_json_data
-def post_for_password_token():
-    validate_reset_request(request)
-    email = request.get_json()["email"]
-    user = find_user_by_email(email)
+@spectree_serialize(on_success_status=204)
+def post_for_password_token(body: ResetPasswordBodyModel) -> None:
+    user = find_user_by_email(body.email)
 
     if not user:
-        return "", 204
+        # Here we also return a 204 to prevent attacker from discovering which email exists in db
+        return
 
     generate_reset_token(user)
     repository.save(user)
@@ -63,8 +63,6 @@ def post_for_password_token():
             send_reset_password_email_to_pro(user, send_raw_email)
         except MailServiceException as mail_service_exception:
             app.logger.exception("[send_reset_password_email_to_pro] " "Mail service failure", mail_service_exception)
-
-    return "", 204
 
 
 @private_api.route("/users/new-password", methods=["POST"])
