@@ -17,7 +17,7 @@ class Patch:
         def when_changes_are_allowed(self, app):
             # given
             now = datetime.now()
-            user = create_user(last_connection_date=now)
+            user = create_user(last_connection_date=now, date_of_birth=now)
             repository.save(user)
             user_id = user.id
             data = {
@@ -48,7 +48,7 @@ class Patch:
                 "city": None,
                 "civility": None,
                 "dateCreated": format_into_utc_date(user.dateCreated),
-                "dateOfBirth": None,
+                "dateOfBirth": format_into_utc_date(now),
                 "departementCode": "97",
                 "email": "new@email.com",
                 "firstName": None,

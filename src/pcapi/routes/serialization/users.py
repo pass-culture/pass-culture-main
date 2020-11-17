@@ -39,7 +39,7 @@ class PatchUserResponseModel(BaseModel):
     city: Optional[str]
     civility: Optional[str]
     dateCreated: datetime
-    dateOfBirth: Optional[str]
+    dateOfBirth: Optional[datetime]
     firstName: Optional[str]
     hasOffers: bool
     hasPhysicalVenues: bool
