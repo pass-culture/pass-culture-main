@@ -6,8 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self' blob: data: https: http: gap://ready 'unsafe-inline'; connect-src 'self' https: http: ws://localhost:3000 wss://app.passculture-local:3000">
+  <% if (process.env.NODE_ENV === 'development') { %>
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self' blob: data: https: http: gap://ready 'unsafe-inline'; connect-src 'self' https: http: ws://*:3000 wss://*:3000">
+  <% } else { %>
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self' blob: data: https: http: gap://ready 'unsafe-inline'; connect-src 'self' https: http: ">
+  <% } %>
   <link rel="manifest" href="/manifest.json">
   <link rel="shortcut icon" href="/manifest-icons/app-icon-iphone.png">
   <link rel="apple-touch-icon" href="/manifest-icons/app-icon-iphone@3x.png">
