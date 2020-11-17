@@ -96,7 +96,6 @@
     "autoprefixer": "9.6.1",
     "babel-core": "6.26.3",
     "babel-eslint": "^10.1.0",
-    "babel-jest": "20.0.3",
     "babel-loader": "7.1.5",
     "babel-polyfill": "^6.26.0",
     "babel-preset-react-app": "^3.1.0",
