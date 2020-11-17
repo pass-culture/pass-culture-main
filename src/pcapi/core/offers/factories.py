@@ -111,4 +111,4 @@ class StockFactory(BaseFactory):
 class EventStockFactory(StockFactory):
     offer = factory.SubFactory(EventOfferFactory)
     beginningDatetime = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=5))
-    bookingLimitDatetime = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=4))
+    bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
