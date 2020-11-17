@@ -1,11 +1,6 @@
 from typing import Dict
 
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
-from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPIException
-from pcapi.utils import requests
-
-
-REQUEST_TIMEOUT_FOR_PROVIDERS_IN_SECOND = 60
 
 
 class TiteliveProviderAPI(ProviderAPI):
@@ -17,6 +12,7 @@ class TiteliveProviderAPI(ProviderAPI):
 
         if last_processed_isbn:
             params["after"] = last_processed_isbn
+
         if modified_since:
             params["modifiedSince"] = modified_since
         else:

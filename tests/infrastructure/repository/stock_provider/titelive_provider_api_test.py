@@ -3,8 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
-from pcapi.infrastructure.repository.stock_provider.titelive_provider_api import ProviderAPIException
+from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPIException
 from pcapi.infrastructure.repository.stock_provider.titelive_provider_api import TiteliveProviderAPI
 
 
@@ -27,8 +26,6 @@ class TiteliveProviderAPITest:
             # Then
             assert str(exception.value) == "Error 400 when getting ProviderAPI stocks for SIRET: 12345678912345"
 
-            requests.get = MagicMock()
-
         @patch("pcapi.infrastructure.repository.stock_provider.provider_api.requests")
         def should_return_empty_json_body_when_provider_returns_200_with_no_body(self, requests):
             # Given
@@ -43,8 +40,6 @@ class TiteliveProviderAPITest:
 
             # Then
             assert response == {}
-
-            requests.get = MagicMock()
 
         @patch("pcapi.infrastructure.repository.stock_provider.provider_api.requests")
         def should_call_provider_api_with_given_siret(self, requests):
@@ -65,12 +60,13 @@ class TiteliveProviderAPITest:
             )
 
         @patch("pcapi.infrastructure.repository.stock_provider.provider_api.requests")
-        def should_call_provider_api_with_given_siret_and_last_processed_isbn(self, requests):
+        def should_call_provider_api_with_available_stocks_after_last_isbn(self, requests):
             # Given
             requests.get = MagicMock()
             siret = "12345678912345"
             last_processed_isbn = "9780199536986"
             modified_since = ""
+            only_available_stocks = "1"
             requests.get.return_value = MagicMock(status_code=200)
 
             # When
@@ -79,27 +75,27 @@ class TiteliveProviderAPITest:
             # Then
             requests.get.assert_called_once_with(
                 url="http://example.com/stocks/12345678912345",
-                params={"limit": "1000", "after": last_processed_isbn, "inStock": "1"},
+                params={"limit": "1000", "after": last_processed_isbn, "inStock": only_available_stocks},
                 headers={},
                 timeout=60,
             )
 
         @patch("pcapi.infrastructure.repository.stock_provider.provider_api.requests")
-        def should_call_provider_api_with_given_siret_and_last_modification_date(self, requests):
+        def should_call_provider_api_with_all_stocks_after_last_synchronization(self, requests):
             # Given
             requests.get = MagicMock()
             siret = "12345678912345"
             last_processed_isbn = ""
-            modified_since = "2019-12-16T00:00:00"
+            last_synchronization_date = "2019-12-16T00:00:00"
             requests.get.return_value = MagicMock(status_code=200)
 
             # When
-            self.provider_api.stocks(siret, last_processed_isbn, modified_since)
+            self.provider_api.stocks(siret, last_processed_isbn, last_synchronization_date)
 
             # Then
             requests.get.assert_called_once_with(
                 url="http://example.com/stocks/12345678912345",
-                params={"limit": "1000", "modifiedSince": modified_since},
+                params={"limit": "1000", "modifiedSince": last_synchronization_date},
                 headers={},
                 timeout=60,
             )
