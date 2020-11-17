@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 
 from pcapi.model_creators.generic_creators import API_URL
@@ -7,6 +9,7 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models import Offer
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
@@ -102,6 +105,8 @@ class Patch:
             offer_not_corresponding_to_filters_3 = create_offer_with_thing_product(
                 venue_1, idx=5, is_active=True, thing_name="Pas celle ci"
             )
+            stock_corresponding_to_filters = create_stock_from_offer(offer=offer_corresponding_to_filters_1, beginning_datetime=datetime(2020, 10, 10, 10, 00, 00, 0))
+            stock_not_corresponding_to_filters = create_stock_from_offer(offer=offer_corresponding_to_filters_2, beginning_datetime=datetime(2020, 11, 11, 10, 00, 00, 0))
 
             repository.save(
                 offer_corresponding_to_filters_1,
@@ -111,6 +116,8 @@ class Patch:
                 offer_not_corresponding_to_filters_3,
                 user,
                 user_offerer,
+                stock_corresponding_to_filters,
+                stock_not_corresponding_to_filters,
             )
 
             json = {
@@ -119,6 +126,8 @@ class Patch:
                 "venueId": humanize(venue_1.id),
                 "name": "OK",
                 "creationMode": "imported",
+                'periodBeginningDate': '2020-10-09T00:00:00Z',
+                'periodEndingDate': '2020-10-11T23:59:59Z',
             }
 
             # When
@@ -131,7 +140,7 @@ class Patch:
             # Then
             assert response.status_code == 204
             assert Offer.query.get(offer_corresponding_to_filters_1.id).isActive == False
-            assert Offer.query.get(offer_corresponding_to_filters_2.id).isActive == False
+            assert Offer.query.get(offer_corresponding_to_filters_2.id).isActive == True
             assert Offer.query.get(offer_not_corresponding_to_filters_1.id).isActive == True
             assert Offer.query.get(offer_not_corresponding_to_filters_2.id).isActive == True
             assert Offer.query.get(offer_not_corresponding_to_filters_3.id).isActive == True

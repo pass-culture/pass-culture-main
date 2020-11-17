@@ -169,6 +169,8 @@ class Returns200:
             offers_per_page=None,
             name_keywords=None,
             page=None,
+            period_beginning_date=None,
+            period_ending_date=None,
             status=None,
             creation_mode=None,
         )
@@ -195,6 +197,8 @@ class Returns200:
             offers_per_page=None,
             name_keywords=None,
             page=None,
+            period_beginning_date=None,
+            period_ending_date=None,
             status="active",
             creation_mode=None,
         )
@@ -224,6 +228,8 @@ class Returns200:
             offers_per_page=None,
             name_keywords=None,
             page=None,
+            period_beginning_date=None,
+            period_ending_date=None,
             status=None,
             creation_mode=None,
         )
@@ -250,8 +256,92 @@ class Returns200:
             offers_per_page=None,
             name_keywords=None,
             page=None,
+            period_beginning_date=None,
+            period_ending_date=None,
             status=None,
             creation_mode="imported",
+        )
+
+    @patch("pcapi.routes.offers.list_offers_for_pro_user")
+    def test_results_are_filtered_by_given_period_beginning_date(
+            self, list_offers_mock, app, db_session
+    ):
+        # given
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        repository.save(user_offerer)
+
+        # when
+        response = (
+            TestClient(app.test_client())
+                .with_auth(email=user.email)
+                .get("/offers?periodBeginningDate=2020-10-11T00:00:00Z")
+        )
+
+        # then
+        assert response.status_code == 200
+        list_offers_mock.assert_called_once_with(
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
+            offerer_id=None,
+            venue_id=None,
+            type_id=None,
+            offers_per_page=None,
+            name_keywords=None,
+            page=None,
+            period_beginning_date='2020-10-11T00:00:00Z',
+            period_ending_date=None,
+            status=None,
+            creation_mode=None,
+        )
+
+    @patch("pcapi.routes.offers.list_offers_for_pro_user")
+    def test_results_are_filtered_by_given_period_ending_date(
+            self, list_offers_mock, app, db_session
+    ):
+        # given
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        repository.save(user_offerer)
+
+        # when
+        response = (
+            TestClient(app.test_client())
+                .with_auth(email=user.email)
+                .get("/offers?periodEndingDate=2020-10-11T23:59:59Z")
+        )
+
+        # then
+        assert response.status_code == 200
+        list_offers_mock.assert_called_once_with(
+            user_id=user.id,
+            user_is_admin=user.isAdmin,
+            offerer_id=None,
+            venue_id=None,
+            type_id=None,
+            offers_per_page=None,
+            name_keywords=None,
+            page=None,
+            period_beginning_date=None,
+            period_ending_date='2020-10-11T23:59:59Z',
+            status=None,
+            creation_mode=None,
+        )
+
+
+class Returns404:
+    def when_requested_venue_does_not_exist(self, app, db_session):
+        # Given
+        user = create_user(email="user@test.com")
+        repository.save(user)
+
+        # when
+        response = (
+            TestClient(app.test_client())
+            .with_auth(email=user.email)
+            .get("/offers?venueId=ABC")
         )
 
     def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, app, db_session):

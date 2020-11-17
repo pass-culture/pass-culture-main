@@ -97,8 +97,6 @@ def get_offers_by_filters(
     datetime_now = datetime.utcnow()
     query = Offer.query
 
-    if status is not None:
-        query = _filter_by_status(query, user_id, datetime_now, status)
     if venue_id is not None:
         query = query.filter(Offer.venueId == venue_id)
     if type_id is not None:
