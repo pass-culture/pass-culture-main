@@ -84,6 +84,9 @@ def post_new_password():
     check_password_strength("newPassword", new_password)
 
     user.setPassword(new_password)
+    if not user.isEmailValidated:
+        user.isEmailValidated = True
+
     repository.save(user)
 
     return "", 204

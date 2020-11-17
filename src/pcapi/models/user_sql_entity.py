@@ -123,6 +123,8 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     hasSeenTutorials = Column(Boolean, nullable=True)
 
+    isEmailValidated = Column(Boolean, nullable=True)
+
     def checkPassword(self, passwordToCheck):
         return check_password(passwordToCheck, self.password)
 
@@ -156,7 +158,7 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
         return False
 
     def populate_from_dict(self, data):
-        super(UserSQLEntity, self).populate_from_dict(data)
+        super().populate_from_dict(data)
         if data.__contains__("password") and data["password"]:
             self.setPassword(data["password"])
 

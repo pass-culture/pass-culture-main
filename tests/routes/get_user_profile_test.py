@@ -54,6 +54,7 @@ class Get:
                 "hasPhysicalVenues": False,
                 "id": humanize(user.id),
                 "isAdmin": False,
+                "isEmailValidated": None,
                 "lastConnectionDate": None,
                 "lastName": "Smisse",
                 "needsToFillCulturalSurvey": False,
