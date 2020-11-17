@@ -21,6 +21,7 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.rest import expect_json_data
+from pcapi.validation.routes.passwords import validate_reset_password_token
 
 
 @private_api.route("/users/current/change-password", methods=["POST"])
@@ -42,6 +43,7 @@ def post_change_password():
 @private_api.route("/users/reset-password", methods=["POST"])
 @spectree_serialize(on_success_status=204)
 def post_for_password_token(body: ResetPasswordBodyModel) -> None:
+    validate_reset_password_token(body.token)
     user = find_user_by_email(body.email)
 
     if not user:

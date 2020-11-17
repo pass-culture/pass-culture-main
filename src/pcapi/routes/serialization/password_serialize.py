@@ -8,6 +8,7 @@ from pcapi.models.api_errors import ApiErrors
 
 class ResetPasswordBodyModel(BaseModel):
     email: str
+    token: str
 
     @validator("email")
     def validate_email_not_empty(cls, email: str) -> Optional[str]:  # typing: ignore # pylint: disable=no-self-argument
