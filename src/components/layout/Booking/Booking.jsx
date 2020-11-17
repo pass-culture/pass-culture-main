@@ -54,7 +54,7 @@ class Booking extends PureComponent {
   }
 
   handleRequestSuccess = (state, action) => {
-    const { trackBookingSuccess } = this.props
+    const { trackBookingSuccess, dispatchFetchCurrentUser } = this.props
     const { payload } = action
     const { datum } = payload
     const nextState = {
@@ -64,6 +64,7 @@ class Booking extends PureComponent {
     }
     trackBookingSuccess()
     this.setState(nextState)
+    dispatchFetchCurrentUser()
   }
 
   handleRequestFail = (state, action) => {

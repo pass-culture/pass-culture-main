@@ -19,10 +19,6 @@ export const bookingNormalizer = {
     },
     stateKey: 'stocks',
   },
-  user: {
-    isMergingDatum: true,
-    stateKey: 'users',
-  },
 }
 
 export const favoriteNormalizer = {

@@ -15,6 +15,8 @@ import { bookingNormalizer } from '../../../../../../utils/normalizers'
 import withTracking from '../../../../../hocs/withTracking'
 import CancellingAction from './CancellingAction'
 import PopinButton from './PopinButton'
+import { getCurrentUser } from '../../../../../../redux/actions/repository/currentUser'
+import { setCurrentUser } from '../../../../../../redux/actions/currentUser'
 
 export const getCancellingUrl = (bookingId, params, pathname, search) => {
   let bookingUrl = pathname
@@ -66,11 +68,17 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     dispatch(openSharePopin(options))
   }
 
-  const handleSuccessPopin = offerId => {
+  const dispatchFetchCurrentUser = async () => {
+    const currentUser = await getCurrentUser()
+    return dispatch(setCurrentUser(currentUser))
+  }
+
+  const handleSuccessPopin = async offerId => {
     dispatch(closeSharePopin())
     const successUrl = `${pathname}/confirmation${search}`
     ownProps.tracking.trackEvent({ action: 'cancelBooking', name: offerId })
     history.push(successUrl)
+    await dispatchFetchCurrentUser()
   }
 
   const cancelBooking = (bookingId, offerId) => {

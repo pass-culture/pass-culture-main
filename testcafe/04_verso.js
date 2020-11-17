@@ -4,7 +4,7 @@ import { fetchSandbox } from './helpers/sandboxes'
 import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 import getPageUrl from './helpers/getPageUrl'
 import { ROOT_PATH } from '../src/utils/config'
-import getUserWalletValue from './helpers/getUserWalletValue'
+import getUserWalletValue, { getVersoWalletValue } from './helpers/getUserWalletValue'
 
 const offerDetailsURL = `${ROOT_PATH}offre/details`
 const bookingsDetailsURL = `${ROOT_PATH}reservations/details`
@@ -89,10 +89,17 @@ test("parcours complet de réservation d'une offre thing", async t => {
 
   currentBookedToken = await bookingToken.textContent
   currentBookedToken = currentBookedToken.toLowerCase()
+
   await t
     .click(bookingSuccessButton)
     .expect(checkReversedIcon.exists)
     .ok()
+
+  const testWalletValue = await getVersoWalletValue()
+
+  await t
+    .expect(testWalletValue)
+    .lt(previousWalletValue)
 
   await t.navigateTo(`${ROOT_PATH}profil`)
   const currentWalletValue = await getUserWalletValue()

@@ -7,4 +7,11 @@ const getUserWalletValue = async () => {
   return parseFloat(value)
 }
 
+export const getVersoWalletValue = async () => {
+  const classWalletValue = '.verso-wallet-amount'
+  const profileWalletValue = await Selector(classWalletValue).textContent
+  const value = profileWalletValue.replace('€', '')
+  return parseFloat(value)
+}
+
 export default getUserWalletValue
