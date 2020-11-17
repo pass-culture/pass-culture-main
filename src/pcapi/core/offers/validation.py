@@ -5,6 +5,8 @@ from pcapi.models import Offer
 from pcapi.models import StockSQLEntity
 from pcapi.models.api_errors import ApiErrors
 
+from . import exceptions
+
 
 EDITABLE_FIELDS_FOR_ALLOCINE_STOCK = {"bookingLimitDatetime", "price", "quantity"}
 
@@ -53,6 +55,13 @@ def check_stock_is_updatable(stock: StockSQLEntity) -> None:
         api_errors = ApiErrors()
         api_errors.add_error("global", "Les événements passés ne sont pas modifiables")
         raise api_errors
+
+
+def check_stock_is_deletable(stock: StockSQLEntity) -> None:
+    check_offer_is_editable(stock.offer)
+
+    if not stock.isEventDeletable:
+        raise exceptions.TooLateToDeleteStock()
 
 
 def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: set) -> None:

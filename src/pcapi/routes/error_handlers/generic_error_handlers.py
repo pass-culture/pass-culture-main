@@ -8,6 +8,7 @@ import simplejson as json
 from werkzeug.exceptions import MethodNotAllowed
 from werkzeug.exceptions import NotFound
 
+import pcapi.core.offers.exceptions as offers_exceptions
 from pcapi.domain.identifier.identifier import NonProperlyFormattedScrambledId
 from pcapi.domain.user_activation import AlreadyActivatedException
 from pcapi.models.api_errors import ApiErrors
@@ -24,6 +25,11 @@ def restize_not_found_route_errors(error: NotFound) -> Tuple[Dict, int]:
 @app.errorhandler(ApiErrors)
 def restize_api_errors(error: ApiErrors) -> Tuple[Dict, int]:
     return jsonify(error.errors), error.status_code or 400
+
+
+@app.errorhandler(offers_exceptions.TooLateToDeleteStock)
+def restize_too_late_to_delete_stock(error: offers_exceptions.TooLateToDeleteStock) -> Tuple[Dict, int]:
+    return jsonify(error.errors), 400
 
 
 @app.errorhandler(Exception)

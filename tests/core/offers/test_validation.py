@@ -3,6 +3,7 @@ import datetime
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers import validation
 from pcapi.models.api_errors import ApiErrors
@@ -105,3 +106,35 @@ class CheckStocksAreEditableForOfferTest:
     def should_not_raise_an_error_when_offer_is_not_from_provider(self):
         offer = factories.OfferFactory(lastProvider=None)
         validation.check_stocks_are_editable_for_offer(offer)  # should not raise
+
+
+@pytest.mark.usefixtures("db_session")
+class CheckStockIsDeletableTest:
+    def test_ok_if_stock_from_allocine(self):
+        provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
+        offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+        stock = factories.StockFactory(offer=offer)
+
+        validation.check_stock_is_deletable(stock)  # should not raise
+
+    def test_raise_if_stock_from_provider_that_is_not_allocine(self):
+        provider = offerers_factories.ProviderFactory()
+        offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+        stock = factories.StockFactory(offer=offer)
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stock_is_deletable(stock)
+        assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
+
+    def test_ok_if_event_stock_started_recently_enough(self):
+        recently = datetime.datetime.now() - datetime.timedelta(days=1)
+        stock = factories.EventStockFactory(beginningDatetime=recently)
+
+        validation.check_stock_is_deletable(stock)  # should not raise
+
+    def test_raise_if_event_stock_started_long_ago(self):
+        too_long_ago = datetime.datetime.now() - datetime.timedelta(days=3)
+        stock = factories.EventStockFactory(beginningDatetime=too_long_ago)
+
+        with pytest.raises(exceptions.TooLateToDeleteStock):
+            validation.check_stock_is_deletable(stock)

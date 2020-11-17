@@ -8,7 +8,6 @@ import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.offers.repository as offers_repository
 from pcapi.domain import admin_emails
 from pcapi.domain import user_emails
-import pcapi.domain.allocine as domain_allocine
 from pcapi.domain.create_offer import fill_offer_with_new_data
 from pcapi.domain.create_offer import initialize_offer_from_product_id
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
@@ -145,12 +144,12 @@ def edit_stock(
         if bookings:
             try:
                 user_emails.send_batch_stock_postponement_emails_to_users(bookings, send_email=mailing.send_raw_email)
-            except mailing.MailServiceException as mail_service_exception:
+            except mailing.MailServiceException as exc:
                 # fmt: off
                 app.logger.exception(
-                    "Could not notify beneficiaries about update of stock=%s: exc",
+                    "Could not notify beneficiaries about update of stock=%s: %s",
                     stock.id,
-                    mail_service_exception,
+                    exc,
                 )
                 # fmt: on
 
@@ -158,3 +157,32 @@ def edit_stock(
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     return stock
+
+
+def delete_stock(stock: StockSQLEntity) -> None:
+    validation.check_stock_is_deletable(stock)
+
+    stock.isSoftDeleted = True
+
+    cancelled_bookings = []
+    for booking in stock.bookings:
+        if not booking.isCancelled and not booking.isUsed:
+            booking.isCancelled = True
+            cancelled_bookings.append(booking)
+
+    repository.save(stock, *cancelled_bookings)
+
+    if cancelled_bookings:
+        try:
+            user_emails.send_batch_cancellation_emails_to_users(cancelled_bookings, mailing.send_raw_email)
+        except mailing.MailServiceException as exc:
+            app.logger.exception("Could not notify beneficiaries about deletion of stock=%s: %s", stock.id, exc)
+        try:
+            user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation(
+                cancelled_bookings, mailing.send_raw_email
+            )
+        except mailing.MailServiceException as exc:
+            app.logger.exception("Could not notify offerer about deletion of stock=%s: %s", stock.id, exc)
+
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
