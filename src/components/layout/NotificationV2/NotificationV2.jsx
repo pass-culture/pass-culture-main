@@ -7,10 +7,13 @@ import { NOTIFICATION_SHOW_DURATION, NOTIFICATION_TRANSITION_DURATION } from './
 
 const NotificationV2 = ({ hideNotification, notification }) => {
   const [isVisible, setIsVisible] = useState(false)
+  const [isInDom, setIsInDom] = useState(false)
+
   useEffect(() => {
     let timer
     if (notification.text) {
       setIsVisible(true)
+      setIsInDom(true)
       timer = setTimeout(() => setIsVisible(false), NOTIFICATION_SHOW_DURATION)
     }
     return () => clearTimeout(timer)
@@ -19,7 +22,10 @@ const NotificationV2 = ({ hideNotification, notification }) => {
   useEffect(() => {
     let timer
     if (!isVisible && notification.text) {
-      timer = setTimeout(() => hideNotification(), NOTIFICATION_TRANSITION_DURATION)
+      timer = setTimeout(() => {
+        setIsInDom(false)
+        hideNotification()
+      }, NOTIFICATION_TRANSITION_DURATION)
     }
     return () => clearTimeout(timer)
   }, [hideNotification, isVisible, notification.text])
@@ -30,12 +36,16 @@ const NotificationV2 = ({ hideNotification, notification }) => {
     svg = 'ico-notification-success-white'
   }
 
-  return (
-    <div className={`notification-v2 is-${type || 'info'} ${isVisible ? 'show' : 'hide'}`}>
-      <Icon svg={svg} />
-      {text}
-    </div>
-  )
+  if (isInDom) {
+    return (
+      <div className={`notification-v2 is-${type || 'info'} ${isVisible ? 'show' : 'hide'}`}>
+        <Icon svg={svg} />
+        {text}
+      </div>
+    )
+  } else {
+    return null
+  }
 }
 
 NotificationV2.propTypes = {
