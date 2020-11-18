@@ -4,6 +4,7 @@ import { requestData } from 'redux-saga-data'
 
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { searchSelector } from 'store/selectors/search'
+import { getReCaptchaToken } from 'utils/recaptcha'
 
 import LostPassword from './LostPassword'
 
@@ -24,14 +25,16 @@ export const mapStateToProps = (state, ownProps) => {
 
 export const mapDispatchToProps = dispatch => ({
   submitResetPasswordRequest: (emailValue, success, fail) => {
-    dispatch(
-      requestData({
-        apiPath: '/users/reset-password',
-        body: { email: emailValue },
-        handleFail: fail,
-        handleSuccess: success,
-        method: 'POST',
-      })
+    getReCaptchaToken('resetPassword').then(token =>
+      dispatch(
+        requestData({
+          apiPath: '/users/reset-password',
+          body: { email: emailValue, token: token },
+          handleFail: fail,
+          handleSuccess: success,
+          method: 'POST',
+        })
+      )
     )
   },
 
