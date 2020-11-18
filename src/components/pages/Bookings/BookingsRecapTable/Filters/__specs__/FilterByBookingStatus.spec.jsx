@@ -106,6 +106,7 @@ describe('components | FilterByBookingStatus', () => {
       expect(checkbox).toHaveLength(2)
       expect(checkbox.at(0).props()).toStrictEqual({
         checked: true,
+        className: 'input-checkbox',
         'data-status-filter-tooltip': true,
         id: 'bs-booked',
         name: 'booked',
@@ -114,6 +115,7 @@ describe('components | FilterByBookingStatus', () => {
       })
       expect(checkbox.at(1).props()).toStrictEqual({
         checked: true,
+        className: 'input-checkbox',
         'data-status-filter-tooltip': true,
         id: 'bs-validated',
         name: 'validated',

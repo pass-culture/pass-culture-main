@@ -4,21 +4,18 @@ import { Field } from 'react-final-form'
 
 class CheckboxField extends PureComponent {
   renderField = ({ input }) => {
-    const {
-      checked,
-      id,
-      label,
-    } = this.props
+    const { checked, id, label } = this.props
 
     return (
       <div>
         <input
           {...input}
+          className="input-checkbox"
           defaultChecked={checked}
           id={id}
           type="checkbox"
         />
-        { label && (
+        {label && (
           <label htmlFor={id}>
             {label}
           </label>

@@ -4,6 +4,7 @@ import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
+import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
 import Select from 'components/layout/inputs/Select'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Main from 'components/layout/Main'
@@ -442,13 +443,14 @@ class Offers extends PureComponent {
       <thead>
         <tr>
           <th className="th-checkbox">
-            <input
+            <CheckboxInput
               checked={areAllOffersSelected}
-              className="select-offer-checkbox"
+              className="input-checkbox select-offer-checkbox"
               disabled={this.isAdminForbidden(savedSearchFilters) || !offers.length}
+              hiddenLabel
               id="select-offer-checkbox"
+              label="Selectionner toutes les offres"
               onChange={this.selectAllOffers}
-              type="checkbox"
             />
           </th>
           <th

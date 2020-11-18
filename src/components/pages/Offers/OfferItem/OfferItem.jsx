@@ -3,6 +3,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
+import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
 import Thumb from 'components/layout/Thumb'
 import { isOfferFullyBooked } from 'components/pages/Offers/domain/isOfferFullyBooked'
 import { computeVenueDisplayName } from 'repository/venuesService'
@@ -60,14 +61,15 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
   return (
     <tr className={`offer-item ${isOfferInactiveOrExpired ? 'inactive' : ''} offer-row`}>
       <td className="select-column">
-        <input
+        <CheckboxInput
           checked={isSelected}
           className="select-offer-checkbox"
           data-testid={`select-offer-${offer.id}`}
           disabled={disabled}
+          hiddenLabel
           id={`select-offer-${offer.id}`}
+          label={`Selectionner l'offre ${offer.name}`}
           onChange={handleOnChangeSelected}
-          type="checkbox"
         />
       </td>
       <td className="thumb-column">
