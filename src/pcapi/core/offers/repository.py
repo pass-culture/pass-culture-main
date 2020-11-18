@@ -35,18 +35,18 @@ ACTIVE_STATUS = "active"
 
 
 def get_paginated_offers_for_offerer_venue_and_keywords(
-        user_id: int,
-        user_is_admin: bool,
-        page: Optional[int],
-        offers_per_page: int,
-        offerer_id: Optional[int] = None,
-        status: Optional[str] = None,
-        venue_id: Optional[int] = None,
-        type_id: Optional[str] = None,
-        name_keywords: Optional[str] = None,
-        creation_mode: Optional[str] = None,
-        period_beginning_date: Optional[str] = None,
-        period_ending_date: Optional[str] = None,
+    user_id: int,
+    user_is_admin: bool,
+    page: Optional[int],
+    offers_per_page: int,
+    offerer_id: Optional[int] = None,
+    status: Optional[str] = None,
+    venue_id: Optional[int] = None,
+    type_id: Optional[str] = None,
+    name_keywords: Optional[str] = None,
+    creation_mode: Optional[str] = None,
+    period_beginning_date: Optional[str] = None,
+    period_ending_date: Optional[str] = None,
 ) -> PaginatedOffersRecap:
     query = get_offers_by_filters(
         user_id=user_id,
@@ -83,16 +83,16 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
 
 
 def get_offers_by_filters(
-        user_id: int,
-        user_is_admin: bool,
-        offerer_id: Optional[int] = None,
-        status: Optional[str] = None,
-        venue_id: Optional[int] = None,
-        type_id: Optional[str] = None,
-        name_keywords: Optional[str] = None,
-        creation_mode: Optional[str] = None,
-        period_beginning_date: Optional[str] = None,
-        period_ending_date: Optional[str] = None,
+    user_id: int,
+    user_is_admin: bool,
+    offerer_id: Optional[int] = None,
+    status: Optional[str] = None,
+    venue_id: Optional[int] = None,
+    type_id: Optional[str] = None,
+    name_keywords: Optional[str] = None,
+    creation_mode: Optional[str] = None,
+    period_beginning_date: Optional[str] = None,
+    period_ending_date: Optional[str] = None,
 ) -> Query:
     datetime_now = datetime.utcnow()
     query = Offer.query
@@ -105,9 +105,7 @@ def get_offers_by_filters(
         query = _filter_by_creation_mode(query, creation_mode)
     if offerer_id is not None:
         venue_alias = aliased(VenueSQLEntity)
-        query = query \
-            .join(venue_alias) \
-            .filter(venue_alias.managingOffererId == offerer_id)
+        query = query.join(venue_alias).filter(venue_alias.managingOffererId == offerer_id)
     if not user_is_admin:
         query = (
             query.join(VenueSQLEntity)

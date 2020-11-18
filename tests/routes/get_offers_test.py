@@ -263,9 +263,7 @@ class Returns200:
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_period_beginning_date(
-            self, list_offers_mock, app, db_session
-    ):
+    def test_results_are_filtered_by_given_period_beginning_date(self, list_offers_mock, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -275,8 +273,8 @@ class Returns200:
         # when
         response = (
             TestClient(app.test_client())
-                .with_auth(email=user.email)
-                .get("/offers?periodBeginningDate=2020-10-11T00:00:00Z")
+            .with_auth(email=user.email)
+            .get("/offers?periodBeginningDate=2020-10-11T00:00:00Z")
         )
 
         # then
@@ -290,16 +288,14 @@ class Returns200:
             offers_per_page=None,
             name_keywords=None,
             page=None,
-            period_beginning_date='2020-10-11T00:00:00Z',
+            period_beginning_date="2020-10-11T00:00:00Z",
             period_ending_date=None,
             status=None,
             creation_mode=None,
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_period_ending_date(
-            self, list_offers_mock, app, db_session
-    ):
+    def test_results_are_filtered_by_given_period_ending_date(self, list_offers_mock, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -309,8 +305,8 @@ class Returns200:
         # when
         response = (
             TestClient(app.test_client())
-                .with_auth(email=user.email)
-                .get("/offers?periodEndingDate=2020-10-11T23:59:59Z")
+            .with_auth(email=user.email)
+            .get("/offers?periodEndingDate=2020-10-11T23:59:59Z")
         )
 
         # then
@@ -325,7 +321,7 @@ class Returns200:
             name_keywords=None,
             page=None,
             period_beginning_date=None,
-            period_ending_date='2020-10-11T23:59:59Z',
+            period_ending_date="2020-10-11T23:59:59Z",
             status=None,
             creation_mode=None,
         )
@@ -338,11 +334,7 @@ class Returns404:
         repository.save(user)
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_auth(email=user.email)
-            .get("/offers?venueId=ABC")
-        )
+        response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?venueId=ABC")
 
     def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, app, db_session):
         # Given

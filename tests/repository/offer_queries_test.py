@@ -767,13 +767,25 @@ class GetAllOffersIdByFiltersTest:
             last_provider=provider,
             last_provider_id=provider.id,
         )
-        wanted_offer2 = create_offer_with_thing_product(venue=wanted_venue, thing_name='Wanted name 2', is_active=False, last_provider=provider, last_provider_id=provider.id)
+        wanted_offer2 = create_offer_with_thing_product(
+            venue=wanted_venue,
+            thing_name="Wanted name 2",
+            is_active=False,
+            last_provider=provider,
+            last_provider_id=provider.id,
+        )
         unwanted_offer2 = create_offer_with_thing_product(venue=wanted_venue, is_active=False)
         unwanted_offer3 = create_offer_with_thing_product(venue=wanted_venue)
         unwanted_offer4 = create_offer_with_thing_product(venue=unwanted_venue)
-        wanted_stock = create_stock_from_offer(offer=wanted_offer, beginning_datetime=datetime(2020, 10, 10, 10, 00, 00, 0))
-        unwanted_stock = create_stock_from_offer(offer=wanted_offer2, beginning_datetime=datetime(2020, 11, 11, 10, 00, 00, 0))
-        repository.save(user, wanted_offer, unwanted_offer2, unwanted_offer3, unwanted_offer4, wanted_stock, unwanted_stock)
+        wanted_stock = create_stock_from_offer(
+            offer=wanted_offer, beginning_datetime=datetime(2020, 10, 10, 10, 00, 00, 0)
+        )
+        unwanted_stock = create_stock_from_offer(
+            offer=wanted_offer2, beginning_datetime=datetime(2020, 11, 11, 10, 00, 00, 0)
+        )
+        repository.save(
+            user, wanted_offer, unwanted_offer2, unwanted_offer3, unwanted_offer4, wanted_stock, unwanted_stock
+        )
 
         # When
         offers_id = get_all_offers_id_by_filters(
@@ -784,8 +796,8 @@ class GetAllOffersIdByFiltersTest:
             venue_id=wanted_venue.id,
             name_keywords="Wanted",
             creation_mode="imported",
-            period_beginning_date='2020-10-09T00:00:00Z',
-            period_ending_date='2020-10-11T00:00:00Z',
+            period_beginning_date="2020-10-09T00:00:00Z",
+            period_ending_date="2020-10-11T00:00:00Z",
         )
 
         # Then

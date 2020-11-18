@@ -128,8 +128,8 @@ class UpdateAllOffersIsActiveStatusTest:
             type_id="ThingType",
             name_keywords="search",
             creation_mode="imported",
-            period_beginning_date='2020-10-10T00:00:00Z',
-            period_ending_date='2020-10-11T23:59:59Z',
+            period_beginning_date="2020-10-10T00:00:00Z",
+            period_ending_date="2020-10-11T23:59:59Z",
         )
 
         # Then
@@ -142,6 +142,6 @@ class UpdateAllOffersIsActiveStatusTest:
             type_id="ThingType",
             name_keywords="search",
             creation_mode="imported",
-            period_beginning_date='2020-10-10T00:00:00Z',
-            period_ending_date='2020-10-11T23:59:59Z',
+            period_beginning_date="2020-10-10T00:00:00Z",
+            period_ending_date="2020-10-11T23:59:59Z",
         )
