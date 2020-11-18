@@ -4,6 +4,7 @@ import { Form as FinalForm } from 'react-final-form'
 import { connect } from 'react-redux'
 
 import { requestData } from '../../../../utils/fetch-normalize-data/requestData'
+import { getReCaptchaToken } from '../../../../utils/recaptcha'
 
 const noop = () => {}
 
@@ -39,21 +40,33 @@ const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
       })
     }
 
-    handleOnFormSubmit = formValues => {
+    promiseOnFormSubmit = (body, resolve) => {
       const { dispatch } = this.props
+
+      const config = {
+        apiPath: routePath,
+        body,
+        handleFail: this.handleRequestFail(resolve),
+        handleSuccess: this.handleRequestSuccess(resolve),
+        method: routeMethod,
+      }
+      dispatch(requestData(config))
+    }
+
+    handleOnFormSubmit = formValues => {
       this.setState({ isloading: true })
+
       // NOTE: on retourne une promise au formulaire
       // pour pouvoir gérer les erreurs de l'API
       // directement dans les champs du formulaire
       const formSubmitPromise = new Promise(resolve => {
-        const config = {
-          apiPath: routePath,
-          body: { ...formValues },
-          handleFail: this.handleRequestFail(resolve),
-          handleSuccess: this.handleRequestSuccess(resolve),
-          method: routeMethod,
+        if (routePath === '/users/reset-password') {
+          getReCaptchaToken('resetPassword').then(token => {
+            this.promiseOnFormSubmit({ ...formValues, token: token }, resolve)
+          })
+        } else {
+          this.promiseOnFormSubmit(formValues, resolve)
         }
-        dispatch(requestData(config))
       })
       return formSubmitPromise
     }
@@ -70,7 +83,11 @@ const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
     }) => {
       const { isloading } = this.state
       const canSubmit =
-        (values.newPasswordConfirm === values.newPassword && !pristine && !hasSubmitErrors && !hasValidationErrors && !isloading) ||
+        (values.newPasswordConfirm === values.newPassword &&
+          !pristine &&
+          !hasSubmitErrors &&
+          !hasValidationErrors &&
+          !isloading) ||
         (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
 
       return (

@@ -7,8 +7,10 @@ import PageNotFoundContainer from '../../layout/ErrorBoundaries/ErrorsPage/PageN
 import RequestEmailForm from './RequestEmailForm/RequestEmailForm'
 import ResetPasswordForm from './ResetPasswordForm/ResetPasswordForm'
 import SuccessView from './SuccessView/SuccessView'
+import { useReCaptchaScript } from '../../../utils/recaptcha'
 
 const ForgotPassword = ({ location }) => {
+  useReCaptchaScript()
   const { token } = parse(location.search)
   const initialValues = { token }
   const FormComponent = !token ? RequestEmailForm : ResetPasswordForm
