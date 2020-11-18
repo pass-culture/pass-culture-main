@@ -42,7 +42,9 @@ class Offers extends PureComponent {
         offererId: searchFilters.offererId || DEFAULT_SEARCH_FILTERS.offererId,
         venueId: searchFilters.venueId || DEFAULT_SEARCH_FILTERS.venueId,
         typeId: searchFilters.typeId || DEFAULT_SEARCH_FILTERS.typeId,
-        status: searchFilters.status || DEFAULT_SEARCH_FILTERS.status,
+        status: searchFilters.status
+          ? mapBrowserToApi[searchFilters.status]
+          : DEFAULT_SEARCH_FILTERS.status,
         creationMode: searchFilters.creationMode
           ? mapBrowserToApi[searchFilters.creationMode]
           : DEFAULT_SEARCH_FILTERS.creationMode,
