@@ -8,6 +8,7 @@ from typing import List
 from typing import Set
 
 import pcapi.core.bookings.repository as booking_repository
+import pcapi.core.offers.repository as offers_repository
 from pcapi.domain.admin_emails import send_users_activation_report
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
@@ -18,7 +19,6 @@ from pcapi.models import StockSQLEntity
 from pcapi.models import UserSQLEntity
 from pcapi.models.user_sql_entity import hash_password
 from pcapi.repository import repository
-from pcapi.repository.stock_queries import find_online_activation_stock
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from pcapi.scripts.interact import app
@@ -144,7 +144,7 @@ def run(csv_file_path: str) -> None:
     logger.info("[START] Création des utilisateurs avec contremarques d'activation")
     logger.info("-------------------------------------------------------------------------------\n")
 
-    stock = find_online_activation_stock()
+    stock = offers_repository.find_online_activation_stock()
     if not stock:
         logger.error("No activation stock found")
         exit(1)

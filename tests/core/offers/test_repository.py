@@ -3,7 +3,8 @@ from datetime import timedelta
 
 import pytest
 
-from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import factories
+from pcapi.core.offers.repository import find_online_activation_stock
 from pcapi.core.offers.repository import get_paginated_offers_for_offerer_venue_and_keywords
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
@@ -99,9 +100,9 @@ class PaginatedOfferSQLRepositoryTest:
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_of_given_venue(self, app):
-        user_offerer = offers_factories.UserOffererFactory()
-        offer_for_requested_venue = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
-        offer_for_other_venue = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
+        user_offerer = factories.UserOffererFactory()
+        offer_for_requested_venue = factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
+        offer_for_other_venue = factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
 
         # when
         paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
@@ -119,13 +120,11 @@ class PaginatedOfferSQLRepositoryTest:
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_of_given_type(self, app):
-        user_offerer = offers_factories.UserOffererFactory()
-        requested_offer = offers_factories.OfferFactory(
+        user_offerer = factories.UserOffererFactory()
+        requested_offer = factories.OfferFactory(
             type=str(ThingType.AUDIOVISUEL), venue__managingOfferer=user_offerer.offerer
         )
-        other_offer = offers_factories.OfferFactory(
-            type=str(ThingType.JEUX), venue__managingOfferer=user_offerer.offerer
-        )
+        other_offer = factories.OfferFactory(type=str(ThingType.JEUX), venue__managingOfferer=user_offerer.offerer)
 
         paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
             user_id=user_offerer.user.id,
@@ -713,3 +712,19 @@ class PaginatedOfferSQLRepositoryTest:
             assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
             assert Identifier(sold_out_offer_on_other_venue.id) in offer_ids
+
+
+@pytest.mark.usefixtures("db_session")
+def test_find_online_activation_stock(app):
+    factories.EventStockFactory()
+    factories.StockFactory(offer__type=str(ThingType.ACTIVATION), offer__venue__isVirtual=False)
+
+    # assert find_online_activation_stock() is None
+
+    activation_stock = factories.StockFactory(
+        offer__type=str(ThingType.ACTIVATION),
+        offer__venue=factories.VirtualVenueFactory(),
+        offer__product__type=str(ThingType.ACTIVATION),
+    )
+
+    assert find_online_activation_stock() == activation_stock

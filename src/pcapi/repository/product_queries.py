@@ -1,5 +1,6 @@
 from typing import Optional
 
+import pcapi.core.offers.repository as offers_repository
 from pcapi.domain.offers import update_is_active_status
 from pcapi.models import Booking
 from pcapi.models import Offer
@@ -11,7 +12,6 @@ from pcapi.repository.favorite_queries import get_favorites_for_offers
 from pcapi.repository.mediation_queries import get_mediations_for_offers
 from pcapi.repository.offer_queries import get_offers_by_product_id
 from pcapi.repository.recommendation_queries import get_recommendations_for_offers
-from pcapi.repository.stock_queries import get_stocks_for_offers
 
 
 class ProductWithBookingsException(Exception):
@@ -39,7 +39,7 @@ def delete_unwanted_existing_product(isbn: str):
     offers = get_offers_by_product_id(product.id)
     offer_ids = [offer.id for offer in offers]
     objects_to_delete = objects_to_delete + offers
-    stocks = get_stocks_for_offers(offer_ids)
+    stocks = offers_repository.get_stocks_for_offers(offer_ids)
     objects_to_delete = objects_to_delete + stocks
     recommendations = get_recommendations_for_offers(offer_ids)
     mediations = get_mediations_for_offers(offer_ids)

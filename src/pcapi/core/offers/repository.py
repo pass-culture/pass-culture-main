@@ -1,5 +1,6 @@
 from datetime import datetime
 import math
+from typing import List
 from typing import Optional
 
 from sqlalchemy import and_
@@ -17,7 +18,9 @@ from pcapi.domain.ts_vector import create_filter_on_ts_vector_matching_all_keywo
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
 from pcapi.models import Offer
 from pcapi.models import Offerer
+from pcapi.models import Product
 from pcapi.models import StockSQLEntity
+from pcapi.models import ThingType
 from pcapi.models import UserOfferer
 from pcapi.models import VenueSQLEntity
 
@@ -167,3 +170,18 @@ def _filter_by_status(query: Query, datetime_now: datetime, status: str) -> Quer
     elif status == INACTIVE_STATUS:
         query = query.filter(Offer.isActive.is_(False))
     return query
+
+
+def find_online_activation_stock():
+    return (
+        StockSQLEntity.query.join(Offer)
+        .join(VenueSQLEntity)
+        .filter_by(isVirtual=True)
+        .join(Product, Offer.productId == Product.id)
+        .filter_by(type=str(ThingType.ACTIVATION))
+        .first()
+    )
+
+
+def get_stocks_for_offers(offer_ids: List[int]) -> List[StockSQLEntity]:
+    return StockSQLEntity.query.filter(StockSQLEntity.offerId.in_(offer_ids)).all()
