@@ -1,18 +1,18 @@
 [submodule "api"]
 	path = api
-	url = git@github.com:betagouv/pass-culture-api.git
+	url = git@github.com:pass-culture/pass-culture-api.git
 [submodule "doc"]
 	path = doc
-	url = git@github.com:betagouv/pass-culture-doc.git
+	url = git@github.com:pass-culture/pass-culture-doc.git
 [submodule "shared"]
 	path = shared
 	url = git@github.com:betagouv/pass-culture-shared.git
 [submodule "pro"]
 	path = pro
-	url = git@github.com:betagouv/pass-culture-pro.git
+	url = git@github.com:pass-culture/pass-culture-pro.git
 [submodule "webapp"]
 	path = webapp
-	url = git@github.com:betagouv/pass-culture-browser.git
+	url = git@github.com:pass-culture/pass-culture-browser.git
 [submodule "maintenance-site"]
 	path = maintenance-site
-	url = git@github.com:betagouv/pc-maintenance.git
+	url = git@github.com:pass-culture/pc-maintenance.git
