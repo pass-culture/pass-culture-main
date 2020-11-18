@@ -205,9 +205,5 @@ class SerializeBookingMinimalTest:
                 "price": 10,
             },
             "token": "GQTQR9",
-            "user": {
-                "id": humanize(booking.userId),
-                "wallet_balance": 499.0,
-            },
             "completedUrl": None,
         }

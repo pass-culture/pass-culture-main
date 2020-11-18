@@ -1,9 +1,7 @@
 from typing import Dict
 from typing import Optional
-from typing import Union
 
 from pydantic import BaseModel
-from pydantic import Field
 
 from pcapi.models import Booking
 from pcapi.models import EventType
@@ -74,20 +72,11 @@ def serialize_booking_minimal(booking: Booking) -> Dict:
         "stockId": humanize(booking.stockId),
         "stock": {"price": booking.stock.price},
         "token": booking.token,
-        "user": {
-            "id": humanize(booking.userId),
-            "wallet_balance": float(booking.user.wallet_balance),
-        },
     }
 
 
 class PostBookingStockModel(BaseModel):
     price: float
-
-
-class PostBookingUserModel(BaseModel):
-    id: str
-    wallet_balance: float
 
 
 class PostBookingBodyModel(BaseModel):
@@ -108,7 +97,6 @@ class PostBookingResponseModel(BaseModel):
     stock: PostBookingStockModel
     stockId: str
     token: str
-    user: PostBookingUserModel
 
     class Config:
         allow_population_by_field_name = True

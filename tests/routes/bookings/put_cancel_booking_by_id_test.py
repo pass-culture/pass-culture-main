@@ -50,7 +50,6 @@ class Put:
                 "stock": {"price": 10.0},
                 "stockId": humanize(stock.id),
                 "token": booking.token,
-                "user": {"id": humanize(user.id), "wallet_balance": 500.0},
             }
 
     class Returns400:

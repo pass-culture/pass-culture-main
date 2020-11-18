@@ -31,10 +31,6 @@ class Returns201:
             "stock": {"price": 10.0},
             "stockId": humanize(stock.id),
             "token": booking.token,
-            "user": {
-                "id": humanize(user.id),
-                "wallet_balance": 490.0,
-            },
         }
 
 
