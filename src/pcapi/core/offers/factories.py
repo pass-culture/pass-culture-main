@@ -62,6 +62,14 @@ class VenueFactory(BaseFactory):
             yield f"{i:014}"
 
 
+class VirtualVenueFactory(VenueFactory):
+    isVirtual = True
+    departementCode = None
+    postalCode = None
+    city = None
+    siret = None
+
+
 class ProductFactory(BaseFactory):
     class Meta:
         model = models.Product
