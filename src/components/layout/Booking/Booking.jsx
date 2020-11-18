@@ -54,7 +54,7 @@ class Booking extends PureComponent {
   }
 
   handleRequestSuccess = (state, action) => {
-    const { trackBookingSuccess, dispatchFetchCurrentUser } = this.props
+    const { trackBookingSuccess, getCurrentUserInformation } = this.props
     const { payload } = action
     const { datum } = payload
     const nextState = {
@@ -64,7 +64,7 @@ class Booking extends PureComponent {
     }
     trackBookingSuccess()
     this.setState(nextState)
-    dispatchFetchCurrentUser()
+    getCurrentUserInformation()
   }
 
   handleRequestFail = (state, action) => {
@@ -235,6 +235,7 @@ Booking.defaultProps = {
 Booking.propTypes = {
   bookables: PropTypes.arrayOf(PropTypes.shape()),
   extraClassName: PropTypes.string,
+  getCurrentUserInformation: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,

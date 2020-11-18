@@ -68,7 +68,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     dispatch(openSharePopin(options))
   }
 
-  const dispatchFetchCurrentUser = async () => {
+  const getCurrentUserInformation = async () => {
     const currentUser = await getCurrentUser()
     return dispatch(setCurrentUser(currentUser))
   }
@@ -78,7 +78,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     const successUrl = `${pathname}/confirmation${search}`
     ownProps.tracking.trackEvent({ action: 'cancelBooking', name: offerId })
     history.push(successUrl)
-    await dispatchFetchCurrentUser()
+    await getCurrentUserInformation()
   }
 
   const cancelBooking = (bookingId, offerId) => {

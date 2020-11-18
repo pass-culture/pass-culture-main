@@ -9,7 +9,7 @@ import { requestData } from '../../../utils/fetch-normalize-data/requestData'
 import { bookingNormalizer } from '../../../utils/normalizers'
 import withTracking from '../../hocs/withTracking'
 import Booking from './Booking'
-import { fetchCurrentUser, setCurrentUser } from '../../../redux/actions/currentUser'
+import { setCurrentUser } from '../../../redux/actions/currentUser'
 import { getCurrentUser } from '../../../redux/actions/repository/currentUser'
 
 export const mapStateToProps = (state, ownProps) => {
@@ -40,7 +40,7 @@ export const mapDispatchToProps = dispatch => (
       })
     )
   },
-  dispatchFetchCurrentUser: async () => {
+  getCurrentUserInformation: async () => {
     const currentUser = await getCurrentUser()
     return dispatch(setCurrentUser(currentUser))
   }
