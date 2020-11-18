@@ -238,7 +238,7 @@ class Returns404:
 
         # Then
         assert response.status_code == 404
-        assert Booking.query.get(booking_id).isUsed == False
+        assert not Booking.query.get(booking_id).isUsed
 
     @pytest.mark.usefixtures("db_session")
     def when_booking_user_email_with_special_character_not_url_encoded(self, app):
