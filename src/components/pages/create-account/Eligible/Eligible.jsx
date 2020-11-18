@@ -11,7 +11,7 @@ const Eligible = () => {
 
   const handleClick = useCallback(() => {
     setIsDisabled(true)
-    getReCaptchaToken().then(
+    getReCaptchaToken('submit').then(
       token => (window.location.href = `${ID_CHECK_URL}?licence_token=${token}`)
     )
   })
