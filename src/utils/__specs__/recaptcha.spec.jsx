@@ -2,7 +2,7 @@ import React from 'react'
 import { mount } from 'enzyme'
 import { useReCaptchaScript } from '../recaptcha'
 
-jest.mock('../../../../../utils/config', () => ({
+jest.mock('../config', () => ({
   RECAPTCHA_SITE_KEY: 'recaptcha-site-key',
 }))
 

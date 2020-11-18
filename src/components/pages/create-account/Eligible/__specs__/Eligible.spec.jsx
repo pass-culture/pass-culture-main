@@ -8,7 +8,7 @@ import Eligible from '../Eligible'
 jest.mock('../../../../../utils/config', () => ({
   ID_CHECK_URL: 'https://id-check-url/premiere-page',
 }))
-jest.mock('../../utils/recaptcha', () => ({
+jest.mock('../../../../../utils/recaptcha', () => ({
   getReCaptchaToken() {
     return Promise.resolve('recaptcha-token')
   },

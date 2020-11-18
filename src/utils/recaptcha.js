@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { RECAPTCHA_SITE_KEY } from '../../../../utils/config'
+import { RECAPTCHA_SITE_KEY } from './config'
 
 export const useReCaptchaScript = () =>
   useEffect(() => {

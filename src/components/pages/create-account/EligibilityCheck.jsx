@@ -15,7 +15,7 @@ import { DepartmentEligibleSoon } from './EligibleSoon/DepartmentEligibleSoon'
 import IneligibleOverEighteen from './IneligibleOverEighteen/IneligibleOverEighteen'
 import IneligibleUnderEighteen from './IneligibleUnderEighteen/IneligibleUnderEighteen'
 import { RecaptchaNotice } from './RecaptchaNotice'
-import { useReCaptchaScript } from './utils/recaptcha'
+import { useReCaptchaScript } from '../../../utils/recaptcha'
 
 const EligibilityCheck = ({ history, trackEligibility }) => {
   useReCaptchaScript()

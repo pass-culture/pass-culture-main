@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { ID_CHECK_URL } from '../../../../utils/config'
 import { Animation } from '../Animation/Animation'
-import { getReCaptchaToken } from '../utils/recaptcha'
+import { getReCaptchaToken } from '../../../../utils/recaptcha'
 import Icon from '../../../layout/Icon/Icon'
 
 const Eligible = () => {
