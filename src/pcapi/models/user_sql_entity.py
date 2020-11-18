@@ -17,13 +17,13 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.offers.models import StockSQLEntity
 from pcapi.domain.expenses import get_expenses
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.deposit import Deposit
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
-from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.user_offerer import RightsType
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.versioned_mixin import VersionedMixin

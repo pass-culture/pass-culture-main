@@ -9,6 +9,7 @@ from pytest import fixture
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import find_by_pro_user_id
 from pcapi.core.bookings.repository import find_first_matching_from_offer_by_user
+from pcapi.core.offers.models import EVENT_AUTOMATIC_REFUND_DELAY
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
@@ -34,7 +35,6 @@ from pcapi.models import ThingType
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY
 from pcapi.repository import repository
 
 

@@ -3,7 +3,7 @@ from flask import current_app as app
 from pcapi.connectors import redis
 from pcapi.core.bookings import models
 from pcapi.core.bookings import validation
-from pcapi.models.stock_sql_entity import StockSQLEntity
+from pcapi.models import StockSQLEntity
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.token import random_token

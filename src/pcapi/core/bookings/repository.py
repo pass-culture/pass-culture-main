@@ -25,6 +25,7 @@ import pcapi.domain.expenses
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import Booking
 from pcapi.models import Offer
+from pcapi.models import StockSQLEntity
 from pcapi.models import UserOfferer
 from pcapi.models import VenueSQLEntity
 from pcapi.models.api_errors import ResourceNotFoundError
@@ -35,7 +36,6 @@ from pcapi.models.offerer import Offerer
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.recommendation import Recommendation
-from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.utils.date import get_department_timezone
 

@@ -6,12 +6,12 @@ from sqlalchemy.orm import aliased
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import StockSQLEntity
 from pcapi.models import Offerer
 from pcapi.models import PaymentStatus
 from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 from pcapi.models.payment import Payment
-from pcapi.models.stock_sql_entity import StockSQLEntity
 
 
 def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:

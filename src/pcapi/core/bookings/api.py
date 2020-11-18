@@ -12,10 +12,10 @@ import qrcode.image.svg
 from pcapi.connectors import redis
 from pcapi.core.bookings import conf
 from pcapi.core.bookings.models import Booking
+from pcapi.core.offers.models import StockSQLEntity
 from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.recommendation import Recommendation
-from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import feature_queries
 from pcapi.repository import repository

@@ -6,7 +6,7 @@ from sqlalchemy.sql.sqltypes import DateTime
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
-from pcapi.models.stock_sql_entity import StockSQLEntity
+from pcapi.core.offers.models import StockSQLEntity
 from pcapi.repository import repository
 from pcapi.repository.venue_queries import find_by_id
 from pcapi.utils.human_ids import dehumanize

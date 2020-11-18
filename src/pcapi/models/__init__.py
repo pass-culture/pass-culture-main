@@ -1,5 +1,6 @@
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import StockSQLEntity
 from pcapi.core.users.models import Token
 from pcapi.models.allocine_pivot import AllocinePivot
 from pcapi.models.allocine_venue_provider import AllocineVenueProvider
@@ -41,7 +42,6 @@ from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.provider import Provider
 from pcapi.models.recommendation import Recommendation
 from pcapi.models.seen_offers import SeenOffer
-from pcapi.models.stock_sql_entity import StockSQLEntity
 from pcapi.models.user_offerer import RightsType
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession

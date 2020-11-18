@@ -16,7 +16,6 @@ def install_scripts():
     from pcapi.models.providable_mixin import ProvidableMixin
     from pcapi.models.provider import Provider
     from pcapi.models.recommendation import Recommendation
-    from pcapi.models.stock_sql_entity import StockSQLEntity
     from pcapi.models.user_offerer import UserOfferer
     from pcapi.models.user_sql_entity import UserSQLEntity
     from pcapi.models.venue_provider import VenueProvider
