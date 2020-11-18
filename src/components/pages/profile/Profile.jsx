@@ -13,8 +13,8 @@ import { handleEditPasswordSubmit } from './repository/handleEditPasswordSubmit'
 import User from './ValueObjects/User'
 
 const Profile = ({ history, match, user }) => {
-  const { email, departmentCode } = user
-  const department = getDepartment(departmentCode)
+  const { email, departementCode } = user
+  const department = getDepartment(departementCode)
 
   return (
     <Switch>
