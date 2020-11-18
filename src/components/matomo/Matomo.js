@@ -14,14 +14,14 @@ const Matomo = ({ history, location, userId }) => {
 
   if (document.referrer.includes('android-app://' + ANDROID_APPLICATION_ID)) {
     Matomo.push(['setUserId', userId + ' on TWA'])
-    Matomo.push(['setCustomVariable', 1, "platform", "application", "visit"])
+    Matomo.push(['setCustomVariable', 1, 'platform', 'application', 'visit'])
   } else {
     Matomo.push(['setUserId', userId + ' on WEBAPP'])
-    Matomo.push(['setCustomVariable', 1, "platform", "browser", "visit"])
+    Matomo.push(['setCustomVariable', 1, 'platform', 'browser', 'visit'])
   }
 
-
   useEffect(() => {
+    trackPageView()
     const unlisten = history.listen(() => {
       trackPageView()
     })
@@ -29,7 +29,7 @@ const Matomo = ({ history, location, userId }) => {
     return () => {
       unlisten()
     }
-  }, [])
+  })
 
   if (location.pathname == '/connexion') {
     Matomo.push(['resetUserId'])

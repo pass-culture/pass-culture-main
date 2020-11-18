@@ -6,11 +6,14 @@ import { Router } from 'react-router'
 
 import { getStubStore } from '../../../utils/stubStore'
 import MatomoContainer from '../MatomoContainer'
+import trackPageView from '../../../tracking/trackPageView'
 
 jest.mock('../../../utils/config', () => ({
   MATOMO_GEOLOCATION_GOAL_ID: 1,
   ANDROID_APPLICATION_ID: 'app.passculture.testing.webapp',
 }))
+
+jest.mock('../../../tracking/trackPageView')
 
 describe('src | components | Matomo', () => {
   let fakeMatomo
@@ -30,6 +33,10 @@ describe('src | components | Matomo', () => {
     })
   })
 
+  afterEach(() => {
+    trackPageView.mockClear()
+  })
+
   it('should push a new page displayed event', () => {
     // when
     mount(
@@ -42,6 +49,37 @@ describe('src | components | Matomo', () => {
 
     // then
     expect(fakeMatomo.push).toHaveBeenNthCalledWith(1, ['setCustomUrl', '/router/path'])
+  })
+
+  it('should track on direct access', () => {
+    // when
+    mount(
+      <Router history={history}>
+        <Provider store={store}>
+          <MatomoContainer {...props} />
+        </Provider>
+      </Router>
+    )
+
+    // then
+    expect(trackPageView).toHaveBeenCalledWith()
+  })
+
+  it('should also track page view on URL change', () => {
+    // given
+    mount(
+      <Router history={history}>
+        <Provider store={store}>
+          <MatomoContainer {...props} />
+        </Provider>
+      </Router>
+    )
+
+    // when
+    history.push(`/connexion`)
+
+    // then
+    expect(trackPageView).toHaveBeenCalledTimes(2)
   })
 
   it('should push the page title', () => {
