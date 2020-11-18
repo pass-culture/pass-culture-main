@@ -4,7 +4,7 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.scripts.delete_corrupted_allocine_stocks import delete_corrupted_allocine_stocks
@@ -30,7 +30,7 @@ class DeleteCorruptedAllocineStocksTest:
         delete_corrupted_allocine_stocks()
 
         # Then
-        assert StockSQLEntity.query.count() == 0
+        assert Stock.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_should_not_delete_stock_from_allocine_with_new_id_format(self, app):
@@ -51,7 +51,7 @@ class DeleteCorruptedAllocineStocksTest:
         delete_corrupted_allocine_stocks()
 
         # Then
-        assert StockSQLEntity.query.count() == 1
+        assert Stock.query.count() == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_should_not_delete_stock_from_other_provider_than_allocine(self, app):
@@ -72,7 +72,7 @@ class DeleteCorruptedAllocineStocksTest:
         delete_corrupted_allocine_stocks()
 
         # Then
-        assert StockSQLEntity.query.count() == 1
+        assert Stock.query.count() == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_should_not_delete_stock_from_allocine_when_not_sof_deleted(self, app):
@@ -93,4 +93,4 @@ class DeleteCorruptedAllocineStocksTest:
         delete_corrupted_allocine_stocks()
 
         # Then
-        assert StockSQLEntity.query.count() == 1
+        assert Stock.query.count() == 1

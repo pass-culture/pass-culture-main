@@ -19,7 +19,7 @@ from pcapi.models import Product
 from pcapi.models import Provider
 from pcapi.models import Recommendation
 from pcapi.models import RightsType
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
@@ -284,8 +284,8 @@ def create_stock(
     last_provider_id: int = None,
     offer: Offer = None,
     price: float = 10,
-) -> StockSQLEntity:
-    stock = StockSQLEntity()
+) -> Stock:
+    stock = Stock()
     stock.quantity = quantity
     stock.beginningDatetime = beginning_datetime
     stock.bookingLimitDatetime = booking_limit_datetime
@@ -464,7 +464,7 @@ def create_booking(
     is_used: bool = False,
     quantity: int = 1,
     recommendation: Recommendation = None,
-    stock: StockSQLEntity = None,
+    stock: Stock = None,
     token: str = None,
     venue: VenueSQLEntity = None,
 ) -> Booking:

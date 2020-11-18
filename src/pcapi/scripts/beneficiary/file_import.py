@@ -15,7 +15,7 @@ from pcapi.domain.password import random_password
 from pcapi.domain.user_activation import ActivationUser
 from pcapi.domain.user_activation import generate_activation_users_csv
 from pcapi.models import Booking
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import UserSQLEntity
 from pcapi.models.user_sql_entity import hash_password
 from pcapi.repository import repository
@@ -44,7 +44,7 @@ ACTIVATION_USER_RECIPIENTS = parse_email_addresses(os.environ.get("ACTIVATION_US
 
 def create_users_with_activation_bookings(
     csv_rows: List[List[str]],
-    stock: StockSQLEntity,
+    stock: Stock,
     existing_tokens: Set[str],
     find_user: Callable = find_user_by_email,
     find_activation_booking: Callable = booking_repository.find_user_activation_booking,
@@ -71,7 +71,7 @@ def create_users_with_activation_bookings(
     return bookings
 
 
-def create_booking_for(user: UserSQLEntity, stock: StockSQLEntity, token: str) -> Booking:
+def create_booking_for(user: UserSQLEntity, stock: Stock, token: str) -> Booking:
     booking = Booking()
     booking.stock = stock
     booking.user = user

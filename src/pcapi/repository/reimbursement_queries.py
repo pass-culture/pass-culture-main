@@ -6,7 +6,7 @@ from sqlalchemy.orm import aliased
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import StockSQLEntity
+from pcapi.core.offers.models import Stock
 from pcapi.models import Offerer
 from pcapi.models import PaymentStatus
 from pcapi.models import UserSQLEntity
@@ -23,7 +23,7 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
         .join(Booking)
         .join(UserSQLEntity)
         .reset_joinpoint()
-        .join(StockSQLEntity)
+        .join(Stock)
         .join(Offer)
         .join(VenueSQLEntity)
         .filter(VenueSQLEntity.managingOffererId == offerer_id)

@@ -24,7 +24,7 @@ from pcapi.models import ApiKey
 from pcapi.models import EventType
 from pcapi.models import Recommendation
 from pcapi.models import RightsType
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import UserSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ProductType
@@ -96,7 +96,7 @@ def get_booking(booking_id: int):
 @expect_json_data
 @spectree_serialize(response_model=PostBookingResponseModel, on_success_status=201)
 def create_booking(body: PostBookingBodyModel) -> PostBookingResponseModel:
-    stock = StockSQLEntity.query.filter_by(id=dehumanize(body.stock_id)).first_or_404() if body.stock_id else None
+    stock = Stock.query.filter_by(id=dehumanize(body.stock_id)).first_or_404() if body.stock_id else None
     recommendation = (
         Recommendation.query.filter_by(id=dehumanize(body.recommendation_id)).first_or_404()
         if body.recommendation_id

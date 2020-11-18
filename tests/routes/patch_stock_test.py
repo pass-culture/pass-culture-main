@@ -5,7 +5,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -33,7 +33,7 @@ class Returns200:
 
         # then
         assert response.status_code == 200
-        stock = StockSQLEntity.query.one()
+        stock = Stock.query.one()
         assert stock.price == 20
         assert stock.quantity == 5
 
@@ -64,7 +64,7 @@ class Returns200:
 
         # then
         assert response.status_code == 200
-        stock = StockSQLEntity.query.one()
+        stock = Stock.query.one()
         assert stock.price == 20
         assert stock.quantity == 5
         assert stock.beginningDatetime == beginning
@@ -120,7 +120,7 @@ class Returns200:
 
         # then
         assert response.status_code == 200
-        stock = StockSQLEntity.query.one()
+        stock = Stock.query.one()
         assert stock.price == 20
         assert stock.quantity == 5
         assert stock.beginningDatetime == initial_beginning

@@ -5,7 +5,7 @@ from sqlalchemy import and_
 
 from pcapi.models import Booking
 from pcapi.models import Payment
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.repository import repository
 
 
@@ -17,10 +17,10 @@ def cancel_booking_status_for_events_happening_during_quarantine():
 def find_bookings_to_cancel() -> List[Booking]:
     minimal_date = datetime(2020, 3, 14, 0, 0, 0)
     return (
-        Booking.query.join(StockSQLEntity)
+        Booking.query.join(Stock)
         .filter(
-            and_(StockSQLEntity.beginningDatetime > minimal_date),
-            (StockSQLEntity.beginningDatetime < datetime.utcnow()),
+            and_(Stock.beginningDatetime > minimal_date),
+            (Stock.beginningDatetime < datetime.utcnow()),
         )
         .outerjoin(Payment, Payment.bookingId == Booking.id)
         .all()

@@ -109,7 +109,7 @@ class ThingOfferFactory(OfferFactory):
 
 class StockFactory(BaseFactory):
     class Meta:
-        model = models.StockSQLEntity
+        model = models.Stock
 
     offer = factory.SubFactory(OfferFactory)
     price = 10

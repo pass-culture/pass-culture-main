@@ -15,7 +15,7 @@ from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
 from pcapi.models import Offer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.repository import repository
 
 
@@ -49,7 +49,7 @@ class PraxielStocksTest:
 
             assert offer_providable_info.type == Offer
             assert offer_providable_info.id_at_providers == "9780199536986@12345678912345"
-            assert stock_providable_info.type == StockSQLEntity
+            assert stock_providable_info.type == Stock
             assert stock_providable_info.id_at_providers == "9780199536986@12345678912345"
 
     class UpdateObjectsTest:
@@ -78,7 +78,7 @@ class PraxielStocksTest:
 
             # Then
             offer = Offer.query.first()
-            stock = StockSQLEntity.query.first()
+            stock = Stock.query.first()
 
             assert offer.type == product.type
             assert offer.description == product.description
@@ -118,7 +118,7 @@ class PraxielStocksTest:
             praxiel_stocks_provider.updateObjects()
 
             # Then
-            stock = StockSQLEntity.query.one()
+            stock = Stock.query.one()
             assert stock.quantity == 10
             assert Offer.query.count() == 1
 
@@ -154,7 +154,7 @@ class PraxielStocksTest:
             praxiel_stocks_local_provider.updateObjects()
 
             # Then
-            assert StockSQLEntity.query.count() == 2
+            assert Stock.query.count() == 2
             assert Offer.query.filter_by(lastProviderId=praxiel_stocks_provider.id).count() == 2
             assert praxiel_stocks_local_provider.last_processed_isbn == "1550199555555"
 
@@ -192,7 +192,7 @@ class PraxielStocksTest:
             praxiel_stocks_provider.updateObjects()
 
             # Then
-            stock = StockSQLEntity.query.one()
+            stock = Stock.query.one()
             assert stock.quantity == 67
 
     class WhenSynchronizedTwiceTest:
@@ -227,7 +227,7 @@ class PraxielStocksTest:
 
             # Then
             offers = Offer.query.all()
-            stocks = StockSQLEntity.query.all()
+            stocks = Stock.query.all()
             assert len(stocks) == 2
             assert len(offers) == 2
             assert mock_praxiel_api_response.call_args_list == [

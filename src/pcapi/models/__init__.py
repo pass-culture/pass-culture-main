@@ -1,6 +1,6 @@
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import StockSQLEntity
+from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import Token
 from pcapi.models.allocine_pivot import AllocinePivot
 from pcapi.models.allocine_venue_provider import AllocineVenueProvider
@@ -83,7 +83,7 @@ __all__ = (
     "ProvidableMixin",
     "Booking",
     "MediationSQLEntity",
-    "StockSQLEntity",
+    "Stock",
     "Offerer",
     "VenueProvider",
     "AllocineVenueProviderPriceRule",
@@ -134,7 +134,7 @@ models = (
     Recommendation,
     FavoriteSQLEntity,
     Feature,
-    StockSQLEntity,
+    Stock,
     Booking,
     VenueProvider,
     AllocineVenueProvider,

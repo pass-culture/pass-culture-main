@@ -17,7 +17,7 @@ from pcapi.model_creators.specific_creators import create_product_with_event_typ
 from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Product
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
 import pcapi.sandboxes
@@ -147,7 +147,7 @@ class AllocineStocksTest:
             assert offer_providable_info.id_at_providers == "TW92aWU6Mzc4MzI=%77567146400110-VF"
             assert offer_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
 
-            assert stock_providable_info.type == StockSQLEntity
+            assert stock_providable_info.type == Stock
             assert stock_providable_info.id_at_providers == "TW92aWU6Mzc4MzI=%77567146400110#DUBBED/2019-10-29T10:30:00"
             assert stock_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
 
@@ -1172,7 +1172,7 @@ class UpdateObjectsTest:
         # Then
         created_product = Product.query.all()
         created_offer = Offer.query.all()
-        created_stock = StockSQLEntity.query.all()
+        created_stock = Stock.query.all()
 
         first_stock = created_stock[0]
         second_stock = created_stock[1]
@@ -1312,7 +1312,7 @@ class UpdateObjectsTest:
         # Then
         created_product = Product.query.all()
         created_offer = Offer.query.all()
-        created_stock = StockSQLEntity.query.all()
+        created_stock = Stock.query.all()
 
         vo_offer = created_offer[0]
         vf_offer = created_offer[1]
@@ -1506,7 +1506,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_stock = StockSQLEntity.query.order_by(StockSQLEntity.beginningDatetime).all()
+            created_stock = Stock.query.order_by(Stock.beginningDatetime).all()
             vf_offer = Offer.query.first()
 
             first_stock = created_stock[0]
@@ -1622,7 +1622,7 @@ class UpdateObjectsTest:
             # Then
             created_product = Product.query.all()
             created_offer = Offer.query.all()
-            created_stock = StockSQLEntity.query.all()
+            created_stock = Stock.query.all()
 
             assert mock_poster_get_allocine.call_count == 2
             assert len(created_product) == 1
@@ -1790,7 +1790,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
-            created_stocks = StockSQLEntity.query.all()
+            created_stocks = Stock.query.all()
 
             first_stock = created_stocks[0]
             first_stock.fieldsUpdated = ["quantity", "price"]
@@ -2132,7 +2132,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
-            created_stock = StockSQLEntity.query.one()
+            created_stock = Stock.query.one()
             created_stock.isSoftDeleted = True
 
             # When
@@ -2140,7 +2140,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_stock = StockSQLEntity.query.one()
+            created_stock = Stock.query.one()
             assert created_stock.isSoftDeleted is True
 
     class WhenSettingDefaultValuesAtImport:
@@ -2392,7 +2392,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            stock = StockSQLEntity.query.one()
+            stock = Stock.query.one()
             assert stock.quantity == 50
 
 

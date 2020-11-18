@@ -18,7 +18,7 @@ from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
 from pcapi.models import Offer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.repository import repository
 
 
@@ -55,7 +55,7 @@ class TiteliveStocksTest:
 
             assert offer_providable_info.type == Offer
             assert offer_providable_info.id_at_providers == "0002730757438@12345678912345"
-            assert stock_providable_info.type == StockSQLEntity
+            assert stock_providable_info.type == Stock
             assert stock_providable_info.id_at_providers == "0002730757438@12345678912345"
 
     class UpdateObjectsTest:
@@ -85,7 +85,7 @@ class TiteliveStocksTest:
 
             # Then
             offer = Offer.query.first()
-            stock = StockSQLEntity.query.first()
+            stock = Stock.query.first()
 
             assert offer.type == product.type
             assert offer.description == product.description
@@ -125,7 +125,7 @@ class TiteliveStocksTest:
             titelive_stocks.updateObjects()
 
             # Then
-            stock = StockSQLEntity.query.one()
+            stock = Stock.query.one()
             assert stock.quantity == 10
             assert Offer.query.count() == 1
 
@@ -167,7 +167,7 @@ class TiteliveStocksTest:
             titelive_stocks.updateObjects()
 
             # Then
-            stock = StockSQLEntity.query.one()
+            stock = Stock.query.one()
             assert stock.dateModified == datetime.now()
 
         @pytest.mark.usefixtures("db_session")
@@ -199,7 +199,7 @@ class TiteliveStocksTest:
             titelive_stocks.updateObjects()
 
             # Then
-            assert StockSQLEntity.query.count() == 1
+            assert Stock.query.count() == 1
             assert Offer.query.count() == 1
 
         @pytest.mark.usefixtures("db_session")
@@ -234,7 +234,7 @@ class TiteliveStocksTest:
 
             # Then
             assert Offer.query.filter_by(lastProviderId=titelive_stocks_provider.id).count() == 2
-            assert StockSQLEntity.query.count() == 2
+            assert Stock.query.count() == 2
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information")
@@ -262,7 +262,7 @@ class TiteliveStocksTest:
 
             # Then
             assert Offer.query.filter_by(lastProviderId=titelive_stocks_provider.id).count() == 0
-            assert StockSQLEntity.query.count() == 0
+            assert Stock.query.count() == 0
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information")
@@ -291,7 +291,7 @@ class TiteliveStocksTest:
 
             # Then
             assert Offer.query.count() == 2
-            assert StockSQLEntity.query.count() == 2
+            assert Stock.query.count() == 2
             assert stub_get_stocks_information.call_args_list == [
                 call("77567146400110", "", None),
                 call("77567146400110", "0002730757438", None),
@@ -384,7 +384,7 @@ class TiteliveStocksTest:
 
             # Then
             assert Offer.query.count() == 0
-            assert StockSQLEntity.query.count() == 0
+            assert Stock.query.count() == 0
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information")
@@ -439,5 +439,5 @@ class TiteliveStocksTest:
             titelive_stocks.updateObjects()
 
             # Then
-            stock = StockSQLEntity.query.one()
+            stock = Stock.query.one()
             assert stock.quantity == 67

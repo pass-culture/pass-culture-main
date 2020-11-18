@@ -18,7 +18,7 @@ from pcapi.model_creators.specific_creators import create_product_with_thing_typ
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
 from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models import Offer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.repository import repository
 from pcapi.repository.offer_queries import _build_bookings_quantity_subquery
 from pcapi.repository.offer_queries import get_all_offers_id_by_filters
@@ -62,7 +62,7 @@ class QueryOfferWithRemainingStocksTest:
         repository.save(offer)
 
         # When
-        offers_count = Offer.query.join(StockSQLEntity).count()
+        offers_count = Offer.query.join(Stock).count()
 
         # Then
         assert offers_count == 0
@@ -83,12 +83,9 @@ class QueryOfferWithRemainingStocksTest:
 
         # When
         offers_count = (
-            Offer.query.join(StockSQLEntity)
-            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId)
-            .filter(
-                (StockSQLEntity.quantity == None)
-                | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
-            )
+            Offer.query.join(Stock)
+            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)
+            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0))
             .count()
         )
 
@@ -111,12 +108,9 @@ class QueryOfferWithRemainingStocksTest:
 
         # When
         offers_count = (
-            Offer.query.join(StockSQLEntity)
-            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId)
-            .filter(
-                (StockSQLEntity.quantity == None)
-                | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
-            )
+            Offer.query.join(Stock)
+            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)
+            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0))
             .count()
         )
 
@@ -138,12 +132,9 @@ class QueryOfferWithRemainingStocksTest:
 
         # When
         offers_count = (
-            Offer.query.join(StockSQLEntity)
-            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId)
-            .filter(
-                (StockSQLEntity.quantity == None)
-                | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
-            )
+            Offer.query.join(Stock)
+            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)
+            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0))
             .count()
         )
 
@@ -166,12 +157,9 @@ class QueryOfferWithRemainingStocksTest:
 
         # When
         offers_count = (
-            Offer.query.join(StockSQLEntity)
-            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId)
-            .filter(
-                (StockSQLEntity.quantity == None)
-                | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
-            )
+            Offer.query.join(Stock)
+            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)
+            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0))
             .count()
         )
 
@@ -194,12 +182,9 @@ class QueryOfferWithRemainingStocksTest:
 
         # When
         offers_count = (
-            Offer.query.join(StockSQLEntity)
-            .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId)
-            .filter(
-                (StockSQLEntity.quantity == None)
-                | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
-            )
+            Offer.query.join(Stock)
+            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)
+            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0))
             .count()
         )
 

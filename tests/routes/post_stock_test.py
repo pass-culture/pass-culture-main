@@ -6,7 +6,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
@@ -35,7 +35,7 @@ class Returns201:
         id = response.json["id"]
         assert isinstance(id, str)
 
-        stock = StockSQLEntity.query.filter_by(id=dehumanize(id)).first()
+        stock = Stock.query.filter_by(id=dehumanize(id)).first()
         assert stock.price == 1222
         assert stock.bookingLimitDatetime is None
 

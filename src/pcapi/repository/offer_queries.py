@@ -17,7 +17,7 @@ from pcapi.models import DiscoveryView
 from pcapi.models import DiscoveryViewV3
 from pcapi.models import Offer
 from pcapi.models import SeenOffer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 from pcapi.models.db import Model
@@ -119,7 +119,7 @@ def find_searchable_offer(offer_id):
 
 
 def _build_bookings_quantity_subquery():
-    stock_alias = aliased(StockSQLEntity)
+    stock_alias = aliased(Stock)
     bookings_quantity = (
         Booking.query.join(stock_alias)
         .filter(Booking.isCancelled == False)
@@ -131,17 +131,17 @@ def _build_bookings_quantity_subquery():
 
 
 def _filter_bookable_stocks_for_discovery(stocks_query):
-    beginning_date_is_in_the_future_predicate = StockSQLEntity.beginningDatetime > datetime.utcnow()
-    booking_limit_date_is_in_the_future_predicate = StockSQLEntity.bookingLimitDatetime > datetime.utcnow()
-    has_no_beginning_date_predicate = StockSQLEntity.beginningDatetime == None
-    has_no_booking_limit_date_predicate = StockSQLEntity.bookingLimitDatetime == None
-    is_not_soft_deleted_predicate = StockSQLEntity.isSoftDeleted == False
+    beginning_date_is_in_the_future_predicate = Stock.beginningDatetime > datetime.utcnow()
+    booking_limit_date_is_in_the_future_predicate = Stock.bookingLimitDatetime > datetime.utcnow()
+    has_no_beginning_date_predicate = Stock.beginningDatetime == None
+    has_no_booking_limit_date_predicate = Stock.bookingLimitDatetime == None
+    is_not_soft_deleted_predicate = Stock.isSoftDeleted == False
     bookings_quantity = _build_bookings_quantity_subquery()
-    has_remaining_stock = (StockSQLEntity.quantity == None) | (
-        (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0
+    has_remaining_stock = (Stock.quantity == None) | (
+        (Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0
     )
 
-    stocks_query = stocks_query.outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId).filter(
+    stocks_query = stocks_query.outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId).filter(
         is_not_soft_deleted_predicate
         & (beginning_date_is_in_the_future_predicate | has_no_beginning_date_predicate)
         & (booking_limit_date_is_in_the_future_predicate | has_no_booking_limit_date_predicate)
@@ -205,15 +205,15 @@ def get_paginated_offer_ids_by_venue_id_and_last_provider_id(
 def get_paginated_offer_ids_given_booking_limit_datetime_interval(
     limit: int, page: int, from_date: datetime, to_date: datetime
 ) -> List[tuple]:
-    start_limit = from_date <= func.max(StockSQLEntity.bookingLimitDatetime)
-    end_limit = func.max(StockSQLEntity.bookingLimitDatetime) <= to_date
+    start_limit = from_date <= func.max(Stock.bookingLimitDatetime)
+    end_limit = func.max(Stock.bookingLimitDatetime) <= to_date
 
     return (
-        Offer.query.join(StockSQLEntity)
+        Offer.query.join(Stock)
         .with_entities(Offer.id)
         .filter(Offer.isActive == True)
-        .filter(StockSQLEntity.isSoftDeleted == False)
-        .filter(StockSQLEntity.bookingLimitDatetime is not None)
+        .filter(Stock.isSoftDeleted == False)
+        .filter(Stock.bookingLimitDatetime is not None)
         .having(start_limit)
         .having(end_limit)
         .group_by(Offer.id)

@@ -5,7 +5,7 @@ from pcapi.domain.offers import update_is_active_status
 from pcapi.models import Booking
 from pcapi.models import Offer
 from pcapi.models import Product
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.repository import repository
 from pcapi.repository.favorite_queries import get_favorites_for_offers
@@ -20,7 +20,7 @@ class ProductWithBookingsException(Exception):
 
 def delete_unwanted_existing_product(isbn: str):
     product_has_at_least_one_booking = (
-        Product.query.filter_by(idAtProviders=isbn).join(Offer).join(StockSQLEntity).join(Booking).count() > 0
+        Product.query.filter_by(idAtProviders=isbn).join(Offer).join(Stock).join(Booking).count() > 0
     )
     product = find_active_book_product_by_isbn(isbn)
 

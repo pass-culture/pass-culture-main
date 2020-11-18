@@ -3,7 +3,7 @@ from flask import current_app as app
 from pcapi.connectors import redis
 from pcapi.core.bookings import models
 from pcapi.core.bookings import validation
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.token import random_token
@@ -14,7 +14,7 @@ from pcapi.utils.token import random_token
 # `core.bookings.api.book_offer()` and let people call it directly.
 # And properly log it because the practice seems questionable to me...
 def create_booking_for_user_on_specific_stock_bypassing_capping_limits(user_id: int, stock_id: int) -> None:
-    stock = StockSQLEntity.query.get(stock_id)
+    stock = Stock.query.get(stock_id)
     user = UserSQLEntity.query.get(user_id)
     quantity = 1
 

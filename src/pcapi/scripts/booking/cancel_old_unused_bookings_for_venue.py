@@ -6,7 +6,7 @@ from sqlalchemy.sql.sqltypes import DateTime
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import StockSQLEntity
+from pcapi.core.offers.models import Stock
 from pcapi.repository import repository
 from pcapi.repository.venue_queries import find_by_id
 from pcapi.utils.human_ids import dehumanize
@@ -37,8 +37,8 @@ def cancel_old_unused_bookings_for_venue(humanized_venue_id: str) -> None:
 
 def _get_old_unused_bookings_from_venue_id(venue_id: int, limit_date: DateTime) -> List[Booking]:
     return (
-        Booking.query.join(StockSQLEntity, StockSQLEntity.id == Booking.stockId)
-        .join(Offer, Offer.id == StockSQLEntity.offerId)
+        Booking.query.join(Stock, Stock.id == Booking.stockId)
+        .join(Offer, Offer.id == Stock.offerId)
         .filter(Offer.venueId == venue_id)
         .filter(~Booking.isCancelled)
         .filter(~Booking.isUsed)

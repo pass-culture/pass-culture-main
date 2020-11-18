@@ -17,7 +17,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
 from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import StockSQLEntity
+from pcapi.core.offers.models import Stock
 from pcapi.domain.expenses import get_expenses
 from pcapi.models.db import Model
 from pcapi.models.db import db
@@ -173,7 +173,7 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     @property
     def expenses(self):
-        bookings = self.bookings_query().options(joinedload(Booking.stock).joinedload(StockSQLEntity.offer)).all()
+        bookings = self.bookings_query().options(joinedload(Booking.stock).joinedload(Stock.offer)).all()
         return get_expenses(bookings)
 
     @property

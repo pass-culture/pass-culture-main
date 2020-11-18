@@ -18,7 +18,7 @@ from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import Booking
 from pcapi.models import Offer
 from pcapi.models import Offerer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
 from pcapi.models.email import EmailStatus
@@ -392,7 +392,7 @@ def make_offer_creation_notification_email(offer: Offer, author: UserSQLEntity, 
     }
 
 
-def get_event_datetime(stock: StockSQLEntity) -> datetime:
+def get_event_datetime(stock: Stock) -> datetime:
     if stock.offer.venue.departementCode is not None:
         date_in_utc = stock.beginningDatetime
         date_in_tz = utc_datetime_to_department_timezone(date_in_utc, stock.offer.venue.departementCode)

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from pcapi.models import Offer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models.api_errors import ApiErrors
 
 from . import exceptions
@@ -48,7 +48,7 @@ def check_required_dates_for_stock(
             raise ApiErrors({"bookingLimitDatetime": ["Ce paramètre est obligatoire"]})
 
 
-def check_stock_is_updatable(stock: StockSQLEntity) -> None:
+def check_stock_is_updatable(stock: Stock) -> None:
     check_offer_is_editable(stock.offer)
 
     if stock.isEventExpired:
@@ -57,7 +57,7 @@ def check_stock_is_updatable(stock: StockSQLEntity) -> None:
         raise api_errors
 
 
-def check_stock_is_deletable(stock: StockSQLEntity) -> None:
+def check_stock_is_deletable(stock: Stock) -> None:
     check_offer_is_editable(stock.offer)
 
     if not stock.isEventDeletable:

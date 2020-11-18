@@ -1,7 +1,7 @@
 import pcapi.core.offers.api as offers_api
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import VenueSQLEntity
 from pcapi.models.user_offerer import RightsType
 from pcapi.repository import offerer_queries
@@ -39,12 +39,7 @@ def create_stock(body: StockCreationBodyModel) -> StockResponseIdModel:
 @login_or_api_key_required
 @spectree_serialize(response_model=StockResponseIdModel)
 def edit_stock(stock_id: str, body: StockEditionBodyModel) -> StockResponseIdModel:
-    stock = (
-        StockSQLEntity.queryNotSoftDeleted()
-        .filter_by(id=dehumanize(stock_id))
-        .join(Offer, VenueSQLEntity)
-        .first_or_404()
-    )
+    stock = Stock.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id)).join(Offer, VenueSQLEntity).first_or_404()
 
     offerer_id = stock.offer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
@@ -66,7 +61,7 @@ def edit_stock(stock_id: str, body: StockEditionBodyModel) -> StockResponseIdMod
 def delete_stock(id: str) -> StockResponseIdModel:
     # fmt: off
     stock = (
-        StockSQLEntity.queryNotSoftDeleted()
+        Stock.queryNotSoftDeleted()
         .filter_by(id=dehumanize(id))
         .join(Offer, VenueSQLEntity)
         .first_or_404()

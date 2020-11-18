@@ -12,7 +12,7 @@ import qrcode.image.svg
 from pcapi.connectors import redis
 from pcapi.core.bookings import conf
 from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import StockSQLEntity
+from pcapi.core.offers.models import Stock
 from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.recommendation import Recommendation
@@ -34,7 +34,7 @@ QR_CODE_BOX_BORDER = 1
 
 def book_offer(
     beneficiary: UserSQLEntity,
-    stock: StockSQLEntity,
+    stock: Stock,
     quantity: int,
     recommendation: Recommendation = None,
 ) -> Booking:

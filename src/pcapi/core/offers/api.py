@@ -12,7 +12,7 @@ from pcapi.domain.create_offer import fill_offer_with_new_data
 from pcapi.domain.create_offer import initialize_offer_from_product_id
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.models import RightsType
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 from pcapi.models.feature import FeatureToggle
@@ -83,7 +83,7 @@ def create_stock(
     quantity: int = None,
     beginning: datetime.datetime = None,
     booking_limit_datetime: datetime.datetime = None,
-) -> StockSQLEntity:
+) -> Stock:
     """Return the new stock or raise an exception if it's not possible."""
     validation.check_required_dates_for_stock(offer, beginning, booking_limit_datetime)
     validation.check_offer_is_editable(offer)
@@ -91,7 +91,7 @@ def create_stock(
 
     # FIXME (dbaty, 2020-11-06): this is not right. PcOject's constructor
     # should allow to call it with `Stock(offer=offer, ...)`
-    stock = models.StockSQLEntity()
+    stock = models.Stock()
     stock.offer = offer
     stock.price = price
     stock.quantity = quantity
@@ -107,12 +107,12 @@ def create_stock(
 
 
 def edit_stock(
-    stock: StockSQLEntity,
+    stock: Stock,
     price: int = None,
     quantity: int = None,
     beginning: datetime.datetime = None,
     booking_limit_datetime: datetime.datetime = None,
-) -> StockSQLEntity:
+) -> Stock:
     validation.check_stock_is_updatable(stock)
     validation.check_required_dates_for_stock(stock.offer, beginning, booking_limit_datetime)
 
@@ -159,7 +159,7 @@ def edit_stock(
     return stock
 
 
-def delete_stock(stock: StockSQLEntity) -> None:
+def delete_stock(stock: Stock) -> None:
     validation.check_stock_is_deletable(stock)
 
     stock.isSoftDeleted = True

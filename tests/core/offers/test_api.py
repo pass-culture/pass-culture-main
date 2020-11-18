@@ -91,7 +91,7 @@ class EditStockTest:
             booking_limit_datetime=booking_limit_datetime,
         )
 
-        stock = models.StockSQLEntity.query.one()
+        stock = models.Stock.query.one()
         assert stock.price == 5
         assert stock.quantity == 20
         assert stock.beginningDatetime == beginning
@@ -113,7 +113,7 @@ class EditStockTest:
             booking_limit_datetime=stock.bookingLimitDatetime,
         )
 
-        stock = models.StockSQLEntity.query.one()
+        stock = models.Stock.query.one()
         assert stock.beginningDatetime == beginning
         notified_bookings = mocked_send_email.call_args_list[0][0][0]
         assert notified_bookings == [booking1]
@@ -146,7 +146,7 @@ class EditStockTest:
             beginning=stock.beginningDatetime,
             booking_limit_datetime=stock.bookingLimitDatetime,
         )
-        stock = models.StockSQLEntity.query.one()
+        stock = models.Stock.query.one()
         assert stock.quantity == 2
 
     def test_checks_booking_limit_is_after_beginning(self):
@@ -202,7 +202,7 @@ class EditStockTest:
         # Try to change everything except "beginningDatetime".
         changes["beginning"] = stock.beginningDatetime
         api.edit_stock(stock, **changes)
-        stock = models.StockSQLEntity.query.one()
+        stock = models.Stock.query.one()
         assert stock.price == 5
         assert stock.quantity == 20
         assert stock.beginningDatetime == initial_beginning
@@ -218,7 +218,7 @@ class DeleteStockTest:
 
         api.delete_stock(stock)
 
-        stock = models.StockSQLEntity.query.one()
+        stock = models.Stock.query.one()
         assert stock.isSoftDeleted
         mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
 
@@ -232,7 +232,7 @@ class DeleteStockTest:
 
         api.delete_stock(stock)
 
-        stock = models.StockSQLEntity.query.one()
+        stock = models.Stock.query.one()
         assert stock.isSoftDeleted
         booking1 = models.Booking.query.get(booking1.id)
         assert booking1.isCancelled
@@ -253,7 +253,7 @@ class DeleteStockTest:
 
         api.delete_stock(stock)
 
-        stock = models.StockSQLEntity.query.one()
+        stock = models.Stock.query.one()
         assert stock.isSoftDeleted
 
     def test_cannot_delete_if_stock_from_titelive(self):
@@ -266,7 +266,7 @@ class DeleteStockTest:
         msg = "Les offres importées ne sont pas modifiables"
         assert error.value.errors["global"][0] == msg
 
-        stock = models.StockSQLEntity.query.one()
+        stock = models.Stock.query.one()
         assert not stock.isSoftDeleted
 
     def test_can_delete_if_event_ended_recently(self):
@@ -274,7 +274,7 @@ class DeleteStockTest:
         stock = factories.EventStockFactory(beginningDatetime=recently)
 
         api.delete_stock(stock)
-        stock = models.StockSQLEntity.query.one()
+        stock = models.Stock.query.one()
         assert stock.isSoftDeleted
 
     def test_cannot_delete_if_too_late(self):
@@ -283,5 +283,5 @@ class DeleteStockTest:
 
         with pytest.raises(exceptions.TooLateToDeleteStock):
             api.delete_stock(stock)
-        stock = models.StockSQLEntity.query.one()
+        stock = models.Stock.query.one()
         assert not stock.isSoftDeleted

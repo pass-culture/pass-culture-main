@@ -15,7 +15,7 @@ from pcapi.models import MediationSQLEntity
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Recommendation
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models.offer_type import ThingType
 from pcapi.repository import repository
 from pcapi.repository.product_queries import delete_unwanted_existing_product
@@ -83,7 +83,7 @@ class DeleteUnwantedExistingProductTest:
         # Then
         assert Product.query.count() == 0
         assert Offer.query.count() == 0
-        assert StockSQLEntity.query.count() == 0
+        assert Stock.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_should_set_isGcuCompatible_at_false_in_product_and_deactivate_offer_when_bookings_related_to_offer(
@@ -131,7 +131,7 @@ class DeleteUnwantedExistingProductTest:
         # Then
         assert Product.query.count() == 0
         assert Offer.query.count() == 0
-        assert StockSQLEntity.query.count() == 0
+        assert Stock.query.count() == 0
         assert Recommendation.query.count() == 0
         assert MediationSQLEntity.query.count() == 0
 
@@ -157,7 +157,7 @@ class DeleteUnwantedExistingProductTest:
         # Then
         assert Product.query.count() == 0
         assert Offer.query.count() == 0
-        assert StockSQLEntity.query.count() == 0
+        assert Stock.query.count() == 0
         assert MediationSQLEntity.query.count() == 0
         assert Recommendation.query.count() == 0
         assert FavoriteSQLEntity.query.count() == 0

@@ -19,7 +19,7 @@ from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_co
 from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import Product
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import UserOfferer
 from pcapi.models import VenueSQLEntity
@@ -59,7 +59,7 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
 
     query = (
         query.options(joinedload(Offer.venue).joinedload(VenueSQLEntity.managingOfferer))
-        .options(joinedload(Offer.stocks).joinedload(StockSQLEntity.bookings))
+        .options(joinedload(Offer.stocks).joinedload(Stock.bookings))
         .options(joinedload(Offer.mediations))
         .options(joinedload(Offer.product))
         .order_by(Offer.id.desc())
@@ -131,41 +131,35 @@ def _filter_by_status(query: Query, datetime_now: datetime, status: str) -> Quer
     if status == ACTIVE_STATUS:
         query = (
             query.filter(Offer.isActive.is_(True))
-            .join(StockSQLEntity)
-            .filter(StockSQLEntity.isSoftDeleted.is_(False))
-            .filter(
-                or_(StockSQLEntity.beginningDatetime.is_(None), StockSQLEntity.bookingLimitDatetime >= datetime_now)
-            )
-            .outerjoin(Booking, and_(StockSQLEntity.id == Booking.stockId, Booking.isCancelled.is_(False)))
-            .group_by(Offer.id, StockSQLEntity.id)
+            .join(Stock)
+            .filter(Stock.isSoftDeleted.is_(False))
+            .filter(or_(Stock.beginningDatetime.is_(None), Stock.bookingLimitDatetime >= datetime_now))
+            .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.isCancelled.is_(False)))
+            .group_by(Offer.id, Stock.id)
             .having(
                 or_(
-                    StockSQLEntity.quantity.is_(None),
-                    StockSQLEntity.quantity != coalesce(func.sum(Booking.quantity), 0),
+                    Stock.quantity.is_(None),
+                    Stock.quantity != coalesce(func.sum(Booking.quantity), 0),
                 )
             )
         )
     elif status == SOLD_OUT_STATUS:
         query = (
             query.filter(Offer.isActive.is_(True))
-            .outerjoin(
-                StockSQLEntity, and_(Offer.id == StockSQLEntity.offerId, not_(StockSQLEntity.isSoftDeleted.is_(True)))
-            )
-            .filter(
-                or_(StockSQLEntity.beginningDatetime.is_(None), StockSQLEntity.bookingLimitDatetime >= datetime_now)
-            )
-            .filter(or_(StockSQLEntity.id.is_(None), not_(StockSQLEntity.quantity.is_(None))))
-            .outerjoin(Booking, and_(StockSQLEntity.id == Booking.stockId, Booking.isCancelled.is_(False)))
+            .outerjoin(Stock, and_(Offer.id == Stock.offerId, not_(Stock.isSoftDeleted.is_(True))))
+            .filter(or_(Stock.beginningDatetime.is_(None), Stock.bookingLimitDatetime >= datetime_now))
+            .filter(or_(Stock.id.is_(None), not_(Stock.quantity.is_(None))))
+            .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.isCancelled.is_(False)))
             .group_by(Offer.id)
-            .having(coalesce(func.sum(StockSQLEntity.quantity), 0) == coalesce(func.sum(Booking.quantity), 0))
+            .having(coalesce(func.sum(Stock.quantity), 0) == coalesce(func.sum(Booking.quantity), 0))
         )
     elif status == EXPIRED_STATUS:
         query = (
             query.filter(Offer.isActive.is_(True))
-            .join(StockSQLEntity)
-            .filter(StockSQLEntity.isSoftDeleted.is_(False))
+            .join(Stock)
+            .filter(Stock.isSoftDeleted.is_(False))
             .group_by(Offer.id)
-            .having(func.max(StockSQLEntity.bookingLimitDatetime) < datetime_now)
+            .having(func.max(Stock.bookingLimitDatetime) < datetime_now)
         )
     elif status == INACTIVE_STATUS:
         query = query.filter(Offer.isActive.is_(False))
@@ -174,7 +168,7 @@ def _filter_by_status(query: Query, datetime_now: datetime, status: str) -> Quer
 
 def find_online_activation_stock():
     return (
-        StockSQLEntity.query.join(Offer)
+        Stock.query.join(Offer)
         .join(VenueSQLEntity)
         .filter_by(isVirtual=True)
         .join(Product, Offer.productId == Product.id)
@@ -183,5 +177,5 @@ def find_online_activation_stock():
     )
 
 
-def get_stocks_for_offers(offer_ids: List[int]) -> List[StockSQLEntity]:
-    return StockSQLEntity.query.filter(StockSQLEntity.offerId.in_(offer_ids)).all()
+def get_stocks_for_offers(offer_ids: List[int]) -> List[Stock]:
+    return Stock.query.filter(Stock.offerId.in_(offer_ids)).all()

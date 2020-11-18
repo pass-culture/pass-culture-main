@@ -12,7 +12,7 @@ from pcapi.models import Offerer
 from pcapi.models import Payment
 from pcapi.models import PaymentMessage
 from pcapi.models import PaymentStatus
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import VenueSQLEntity
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.db import db
@@ -65,7 +65,7 @@ def find_not_processable_with_bank_information() -> List[Payment]:
     not_processable_payments_with_bank_information = (
         Payment.query.filter(Payment.id.in_(not_processable_payment_ids))
         .join(Booking)
-        .join(StockSQLEntity)
+        .join(Stock)
         .join(Offer)
         .join(VenueSQLEntity)
         .join(Offerer)

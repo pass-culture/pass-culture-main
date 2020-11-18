@@ -5,7 +5,7 @@ from flask_sqlalchemy import BaseQuery
 
 from pcapi.core.bookings.api import compute_confirmation_date
 from pcapi.core.bookings.models import Booking
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import db
 from pcapi.utils.logger import logger
 
@@ -48,10 +48,10 @@ def _select_all_event_bookings_without_confirmation_date() -> BaseQuery:
     Bookings qui ont une stock.beginningDatetime non null avec confirmationDate null
     """
     return (
-        Booking.query.join(StockSQLEntity)
-        .with_entities(Booking.id, StockSQLEntity.beginningDatetime, Booking.dateCreated)
+        Booking.query.join(Stock)
+        .with_entities(Booking.id, Stock.beginningDatetime, Booking.dateCreated)
         .filter(Booking.confirmationDate.is_(None))
-        .filter(StockSQLEntity.beginningDatetime.isnot(None))
+        .filter(Stock.beginningDatetime.isnot(None))
     )
 
 

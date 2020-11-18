@@ -6,7 +6,7 @@ from sqlalchemy.sql import selectable
 
 from pcapi.models import Offer
 from pcapi.models import Offerer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
@@ -138,14 +138,14 @@ def _filter_by_offer_status(query, offer_status):
 
     elif offer_status == "VALID" or offer_status == "EXPIRED":
         query = query.join(Offer)
-        is_not_soft_deleted_thing = StockSQLEntity.isSoftDeleted == False
-        can_still_be_booked_thing = (StockSQLEntity.bookingLimitDatetime == None) | (
-            StockSQLEntity.bookingLimitDatetime >= datetime.utcnow()
+        is_not_soft_deleted_thing = Stock.isSoftDeleted == False
+        can_still_be_booked_thing = (Stock.bookingLimitDatetime == None) | (
+            Stock.bookingLimitDatetime >= datetime.utcnow()
         )
-        is_available_thing = (StockSQLEntity.quantity == None) | (StockSQLEntity.quantity > 0)
+        is_available_thing = (Stock.quantity == None) | (Stock.quantity > 0)
 
-        query_1 = query.join(StockSQLEntity)
-        query_2 = query.join(StockSQLEntity)
+        query_1 = query.join(Stock)
+        query_2 = query.join(Stock)
 
     if offer_status == "VALID":
         query_with_valid_event = query_1.filter(

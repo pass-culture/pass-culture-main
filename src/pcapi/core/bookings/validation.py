@@ -3,7 +3,7 @@ import datetime
 from pcapi.core.bookings import conf
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import StockSQLEntity
+from pcapi.core.offers.models import Stock
 from pcapi.domain import user_activation
 import pcapi.domain.expenses as payments_api
 from pcapi.models import UserSQLEntity
@@ -30,8 +30,8 @@ def check_offer_already_booked(user, offer):
             user=user,
             isCancelled=False,
         )
-        .join(StockSQLEntity)
-        .filter(StockSQLEntity.offerId == offer.id)
+        .join(Stock)
+        .filter(Stock.offerId == offer.id)
         .exists()
     ).scalar():
         raise exceptions.OfferIsAlreadyBooked()

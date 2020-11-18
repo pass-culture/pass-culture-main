@@ -1,7 +1,7 @@
 from pcapi.core.bookings.repository import count_not_cancelled_bookings_quantity_by_stock_id
 from pcapi.core.offers.models import Offer
 from pcapi.local_providers.venue_provider_worker import do_sync_venue_provider
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import VenueProvider
 from pcapi.repository import repository
 
@@ -10,9 +10,7 @@ STOCK_BATCH_UPDATE = 100
 
 
 def fully_sync_library(venue_id: int) -> None:
-    stocks = (
-        StockSQLEntity.query.join(Offer).filter(Offer.venueId == venue_id).filter(Offer.idAtProviders != None).all()
-    )
+    stocks = Stock.query.join(Offer).filter(Offer.venueId == venue_id).filter(Offer.idAtProviders != None).all()
 
     stocks_to_update = []
     for stock in stocks:

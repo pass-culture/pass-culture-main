@@ -9,7 +9,7 @@ from pcapi.models import Booking
 from pcapi.models import MediationSQLEntity
 from pcapi.models import Offer
 from pcapi.models import Product
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 
@@ -84,18 +84,18 @@ def _get_mediations_information(offers_ids: List[int]) -> List[object]:
 
 def _get_stocks_information(offers_ids: List[int]) -> List[object]:
     return (
-        StockSQLEntity.query.join(Offer, Offer.id == StockSQLEntity.offerId)
-        .filter(StockSQLEntity.offerId.in_(offers_ids))
+        Stock.query.join(Offer, Offer.id == Stock.offerId)
+        .filter(Stock.offerId.in_(offers_ids))
         .with_entities(
-            StockSQLEntity.dateCreated,
-            StockSQLEntity.beginningDatetime,
-            StockSQLEntity.bookingLimitDatetime,
-            StockSQLEntity.dateModified,
-            StockSQLEntity.offerId,
-            StockSQLEntity.quantity,
-            StockSQLEntity.price,
-            StockSQLEntity.id,
-            StockSQLEntity.isSoftDeleted,
+            Stock.dateCreated,
+            Stock.beginningDatetime,
+            Stock.bookingLimitDatetime,
+            Stock.dateModified,
+            Stock.offerId,
+            Stock.quantity,
+            Stock.price,
+            Stock.id,
+            Stock.isSoftDeleted,
             Offer.isActive,
         )
         .all()
@@ -106,7 +106,7 @@ def _get_bookings_information(beneficiary_id: int) -> List[object]:
     offer_activation_types = ["ThingType.ACTIVATION", "EventType.ACTIVATION"]
     return (
         Booking.query.join(UserSQLEntity, UserSQLEntity.id == Booking.userId)
-        .join(StockSQLEntity, StockSQLEntity.id == Booking.stockId)
+        .join(Stock, Stock.id == Booking.stockId)
         .join(Offer)
         .join(Product, Offer.productId == Product.id)
         .join(VenueSQLEntity)
@@ -141,8 +141,8 @@ def _get_bookings_information(beneficiary_id: int) -> List[object]:
             Product.id.label("productId"),
             Product.thumbCount,
             UserSQLEntity.email,
-            StockSQLEntity.beginningDatetime,
-            StockSQLEntity.price,
+            Stock.beginningDatetime,
+            Stock.price,
             VenueSQLEntity.id.label("venueId"),
             VenueSQLEntity.departementCode,
             VenueSQLEntity.name.label("venueName"),

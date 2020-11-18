@@ -43,7 +43,7 @@ from pcapi.utils.logger import logger
 EVENT_AUTOMATIC_REFUND_DELAY = timedelta(hours=48)
 
 
-class StockSQLEntity(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin):
+class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin):
     __tablename__ = "stock"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -112,7 +112,7 @@ class StockSQLEntity(PcObject, Model, ProvidableMixin, SoftDeletableMixin, Versi
 
     @classmethod
     def queryNotSoftDeleted(cls):
-        return StockSQLEntity.query.filter_by(isSoftDeleted=False)
+        return Stock.query.filter_by(isSoftDeleted=False)
 
     @staticmethod
     def restize_internal_error(ie):
@@ -129,13 +129,13 @@ class StockSQLEntity(PcObject, Model, ProvidableMixin, SoftDeletableMixin, Versi
         return PcObject.restize_internal_error(ie)
 
 
-@listens_for(StockSQLEntity, "before_insert")
+@listens_for(Stock, "before_insert")
 def before_insert(mapper, configuration, self):
     if self.beginningDatetime and not self.bookingLimitDatetime:
         self.bookingLimitDatetime = self.beginningDatetime.replace(hour=23).replace(minute=59) - timedelta(days=3)
 
 
-StockSQLEntity.trig_ddl = """
+Stock.trig_ddl = """
     CREATE OR REPLACE FUNCTION check_stock()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -173,9 +173,9 @@ StockSQLEntity.trig_ddl = """
     FOR EACH ROW EXECUTE PROCEDURE check_stock()
     """
 
-event.listen(StockSQLEntity.__table__, "after_create", DDL(StockSQLEntity.trig_ddl))
+event.listen(Stock.__table__, "after_create", DDL(Stock.trig_ddl))
 
-StockSQLEntity.trig_update_date_ddl = """
+Stock.trig_update_date_ddl = """
     CREATE OR REPLACE FUNCTION save_stock_modification_date()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -194,7 +194,7 @@ StockSQLEntity.trig_update_date_ddl = """
     EXECUTE PROCEDURE save_stock_modification_date()
     """
 
-event.listen(StockSQLEntity.__table__, "after_create", DDL(StockSQLEntity.trig_update_date_ddl))
+event.listen(Stock.__table__, "after_create", DDL(Stock.trig_update_date_ddl))
 
 
 class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, VersionedMixin):
@@ -301,7 +301,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
         return False
 
     @property
-    def activeStocks(self) -> List[StockSQLEntity]:
+    def activeStocks(self) -> List[Stock]:
         return [stock for stock in self.stocks if not stock.isSoftDeleted]
 
     @property

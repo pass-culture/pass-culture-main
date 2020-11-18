@@ -1,6 +1,6 @@
 from pcapi.core.offers.models import Offer
 from pcapi.models import BankInformation
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import VenueSQLEntity
 from pcapi.models.offer_type import EventType
@@ -45,8 +45,8 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = (
         query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id)
         .join(Offer)
-        .join(StockSQLEntity)
-        .filter((StockSQLEntity.beginningDatetime != None))
+        .join(Stock)
+        .filter((Stock.beginningDatetime != None))
     )
     user = query.first()
 

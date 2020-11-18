@@ -17,7 +17,7 @@ from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models import ApiErrors
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models.pc_object import DeletedRecordException
 from pcapi.repository import repository
 
@@ -35,12 +35,12 @@ def test_date_modified_should_be_updated_if_quantity_changed(app):
     repository.save(stock)
 
     # when
-    stock = StockSQLEntity.query.first()
+    stock = Stock.query.first()
     stock.quantity = 10
     repository.save(stock)
 
     # then
-    stock = StockSQLEntity.query.first()
+    stock = Stock.query.first()
     assert stock.dateModified.timestamp() == approx(datetime.now().timestamp())
 
 
@@ -54,12 +54,12 @@ def test_date_modified_should_not_be_updated_if_price_changed(app):
     repository.save(stock)
 
     # when
-    stock = StockSQLEntity.query.first()
+    stock = Stock.query.first()
     stock.price = 5
     repository.save(stock)
 
     # then
-    stock = StockSQLEntity.query.first()
+    stock = Stock.query.first()
     assert stock.dateModified == datetime(2018, 2, 12)
 
 
@@ -73,7 +73,7 @@ def test_queryNotSoftDeleted_should_not_return_soft_deleted(app):
     repository.save(stock)
 
     # When
-    result = StockSQLEntity.queryNotSoftDeleted().all()
+    result = Stock.queryNotSoftDeleted().all()
 
     # Then
     assert not result
@@ -183,7 +183,7 @@ def test_should_update_stock_quantity_when_value_is_more_than_sum_of_bookings_qu
     repository.save(stock)
 
     # Then
-    assert StockSQLEntity.query.get(stock.id).quantity == 3
+    assert Stock.query.get(stock.id).quantity == 3
 
 
 @pytest.mark.usefixtures("db_session")

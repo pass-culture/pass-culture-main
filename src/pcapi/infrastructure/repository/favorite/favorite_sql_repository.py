@@ -9,7 +9,7 @@ from pcapi.infrastructure.repository.favorite import favorite_domain_converter
 from pcapi.models import Booking
 from pcapi.models import FavoriteSQLEntity
 from pcapi.models import Offer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import VenueSQLEntity
 
 
@@ -31,13 +31,11 @@ class FavoriteSQLRepository(FavoriteRepository):
 
         bookings = (
             Offer.query.filter(Offer.id.in_(offer_ids))
-            .join(StockSQLEntity)
+            .join(Stock)
             .join(Booking)
             .filter(Booking.userId == beneficiary_identifier)
             .filter(Booking.isCancelled == False)
-            .with_entities(
-                Booking.id.label("booking_id"), Offer.id.label("offer_id"), StockSQLEntity.id.label("stock_id")
-            )
+            .with_entities(Booking.id.label("booking_id"), Offer.id.label("offer_id"), Stock.id.label("stock_id"))
             .all()
         )
 

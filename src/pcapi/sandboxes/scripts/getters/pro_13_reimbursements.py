@@ -1,6 +1,6 @@
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import StockSQLEntity
+from pcapi.core.offers.models import Stock
 from pcapi.models import VenueSQLEntity
 from pcapi.models.offerer import Offerer
 from pcapi.models.payment import Payment
@@ -18,7 +18,7 @@ from pcapi.sandboxes.scripts.utils.helpers import get_venue_helper
 def get_existing_pro_validated_user_with_validated_offerer_with_reimbursement():
     query = (
         Payment.query.join(Booking)
-        .join(StockSQLEntity)
+        .join(Stock)
         .join(Offer)
         .join(VenueSQLEntity)
         .join(Offerer)

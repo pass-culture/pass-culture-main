@@ -7,7 +7,7 @@ from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_mo
 from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Offerer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
@@ -73,7 +73,7 @@ def _query_offerers_with_stock():
         _query_offerers_with_user_offerer()
         .join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id)
         .join(Offer)
-        .join(StockSQLEntity)
+        .join(Stock)
         .filter(Offer.type != str(ThingType.ACTIVATION))
         .filter(Offer.type != str(EventType.ACTIVATION))
     )

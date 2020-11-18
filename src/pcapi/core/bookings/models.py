@@ -35,7 +35,7 @@ class Booking(PcObject, Model, VersionedMixin):
 
     stockId = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
 
-    stock = relationship("StockSQLEntity", foreign_keys=[stockId], backref="bookings")
+    stock = relationship("Stock", foreign_keys=[stockId], backref="bookings")
 
     quantity = Column(Integer, nullable=False, default=1)
 

@@ -12,7 +12,7 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models import Offerer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.recommendations_engine import create_recommendations_for_discovery
 from pcapi.recommendations_engine import give_requested_recommendation_to_user
 from pcapi.repository import discovery_view_queries
@@ -183,9 +183,7 @@ class GiveRequestedRecommendationToUserTest:
         assert result_reco.userId == user2.id
 
 
-def _create_and_save_stock_for_offerer_in_departements(
-    offerer: Offerer, departement_codes: List[str]
-) -> List[StockSQLEntity]:
+def _create_and_save_stock_for_offerer_in_departements(offerer: Offerer, departement_codes: List[str]) -> List[Stock]:
     stock_list = []
 
     for index, departement_code in enumerate(departement_codes):

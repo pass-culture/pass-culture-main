@@ -14,7 +14,7 @@ from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import Product
 from pcapi.models import Provider
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
@@ -31,7 +31,7 @@ def create_booking_for_event(
 ) -> Booking:
     product = Product(from_dict={"type": str(type)})
     offer = Offer()
-    stock = StockSQLEntity()
+    stock = Stock()
     booking = Booking(from_dict={"amount": amount})
     offer.product = product
     stock.offer = offer
@@ -56,7 +56,7 @@ def create_booking_for_thing(
 ) -> Booking:
     product = Product(from_dict={"url": url, "type": str(product_type)})
     offer = Offer(from_dict={"url": url, "type": str(product_type)})
-    stock = StockSQLEntity()
+    stock = Stock()
     booking = Booking(from_dict={"amount": amount})
     offer.product = product
     stock.offer = offer
@@ -291,8 +291,8 @@ def create_stock_from_event_occurrence(
     soft_deleted: bool = False,
     recap_sent: bool = False,
     booking_limit_date: datetime = None,
-) -> StockSQLEntity:
-    stock = StockSQLEntity()
+) -> Stock:
+    stock = Stock()
     stock.beginningDatetime = event_occurrence["beginningDatetime"]
     stock.offerId = event_occurrence["offerId"]
     stock.offer = event_occurrence["offer"]
@@ -320,8 +320,8 @@ def create_stock_from_offer(
     beginning_datetime: datetime = None,
     idx: int = None,
     date_modified: datetime = datetime.utcnow(),
-) -> StockSQLEntity:
-    stock = StockSQLEntity()
+) -> Stock:
+    stock = Stock()
     stock.id = idx
     stock.offer = offer
     stock.price = price
@@ -350,8 +350,8 @@ def create_stock_with_event_offer(
     date_created: datetime = datetime.utcnow(),
     date_modified_at_last_provider: datetime = datetime.utcnow(),
     date_modifed: datetime = datetime.utcnow(),
-) -> StockSQLEntity:
-    stock = StockSQLEntity()
+) -> Stock:
+    stock = Stock()
     stock.offerer = offerer
     stock.price = price
     stock.quantity = quantity
@@ -386,8 +386,8 @@ def create_stock_with_thing_offer(
     url: str = None,
     booking_limit_datetime: datetime = None,
     thing_type: ThingType = ThingType.AUDIOVISUEL,
-) -> StockSQLEntity:
-    stock = StockSQLEntity()
+) -> Stock:
+    stock = Stock()
     stock.offerer = offerer
     stock.price = price
 

@@ -1,7 +1,7 @@
 from typing import Dict
 
 from pcapi.models import Booking
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.utils.mailing import DEV_EMAIL_ADDRESS
 from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS
@@ -51,5 +51,5 @@ def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: B
     }
 
 
-def _is_offer_active_for_recap(stock: StockSQLEntity) -> bool:
+def _is_offer_active_for_recap(stock: Stock) -> bool:
     return stock.isBookable and (stock.quantity is None or stock.remainingQuantity > 0)

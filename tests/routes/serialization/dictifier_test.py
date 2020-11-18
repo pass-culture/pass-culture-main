@@ -8,7 +8,7 @@ from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_product_with_event_type
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
 
@@ -145,7 +145,7 @@ class AsDictTest:
     def test_returns_humanized_ids_for_foreign_keys(self, app):
         # given
         user = create_user(idx=12, postal_code=None)
-        booking = create_booking(user=user, stock=StockSQLEntity(), idx=13)
+        booking = create_booking(user=user, stock=Stock(), idx=13)
         booking.userId = user.id
 
         # when

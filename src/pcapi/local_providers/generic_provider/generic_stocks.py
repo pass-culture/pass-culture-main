@@ -9,7 +9,7 @@ from pcapi.core.bookings.repository import count_not_cancelled_bookings_quantity
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Offer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import VenueProvider
 from pcapi.models.db import Model
 from pcapi.models.db import db
@@ -56,7 +56,7 @@ class GenericStocks(LocalProvider):
             Offer, f"{self.provider_stocks['ref']}@{self.siret}", datetime.utcnow()
         )
         providable_info_stock = self.create_providable_info(
-            StockSQLEntity, f"{self.provider_stocks['ref']}@{self.siret}", datetime.utcnow()
+            Stock, f"{self.provider_stocks['ref']}@{self.siret}", datetime.utcnow()
         )
 
         return [providable_info_offer, providable_info_stock]
@@ -64,7 +64,7 @@ class GenericStocks(LocalProvider):
     def fill_object_attributes(self, pc_object: Model) -> None:
         if isinstance(pc_object, Offer):
             self.fill_offer_attributes(pc_object)
-        if isinstance(pc_object, StockSQLEntity):
+        if isinstance(pc_object, Stock):
             self.fill_stock_attributes(pc_object)
 
     def fill_offer_attributes(self, offer: Offer) -> None:
@@ -83,7 +83,7 @@ class GenericStocks(LocalProvider):
 
         self.offer_id = offer.id
 
-    def fill_stock_attributes(self, stock: StockSQLEntity) -> None:
+    def fill_stock_attributes(self, stock: Stock) -> None:
         bookings_quantity = count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
         stock.quantity = self.provider_stocks["available"] + bookings_quantity
         stock.bookingLimitDatetime = None

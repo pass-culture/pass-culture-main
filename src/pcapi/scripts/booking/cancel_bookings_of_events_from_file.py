@@ -5,7 +5,7 @@ from typing import List
 from pcapi.models import ApiErrors
 from pcapi.models import Booking
 from pcapi.models import Offer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.repository import repository
 from pcapi.utils.logger import logger
 
@@ -82,8 +82,8 @@ def _is_not_flagged_for_cancellation(row: List[str]) -> bool:
 def _get_bookings_from_offer(offer_id: int) -> List[Booking]:
     return (
         Booking.query.filter(Booking.token.notin_(BOOKINGS_TOKEN_NOT_TO_UPDATE))
-        .join(StockSQLEntity, StockSQLEntity.id == Booking.stockId)
-        .join(Offer, Offer.id == StockSQLEntity.offerId)
+        .join(Stock, Stock.id == Booking.stockId)
+        .join(Offer, Offer.id == Stock.offerId)
         .filter(Offer.id == offer_id)
         .all()
     )

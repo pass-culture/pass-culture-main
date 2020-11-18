@@ -8,7 +8,7 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
 from pcapi.models import Offer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models.db import db
 from pcapi.repository import repository
 
@@ -53,7 +53,7 @@ class SaveChunksTest:
 
         chunk_to_insert = {
             "1|Offer": offer,
-            "1|StockSQLEntity": stock,
+            "1|Stock": stock,
         }
         db.session.expunge(offer)
         db.session.expunge(stock)
@@ -65,7 +65,7 @@ class SaveChunksTest:
 
         # Then
         assert Offer.query.count() == 1
-        assert StockSQLEntity.query.count() == 1
+        assert Stock.query.count() == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_save_chunks_update_1_offer_in_chunk(self, app):
@@ -110,7 +110,7 @@ class SaveChunksTest:
         stock.quantity = 2
         chunk_to_update = {
             "1|Offer": offer1,
-            "1|StockSQLEntity": stock,
+            "1|Stock": stock,
             "2|Offer": offer2,
         }
         db.session.expunge(offer1)
@@ -126,4 +126,4 @@ class SaveChunksTest:
         offers = Offer.query.all()
         assert len(offers) == 2
         assert any(offer.isDuo for offer in offers)
-        assert StockSQLEntity.query.count() == 1
+        assert Stock.query.count() == 1

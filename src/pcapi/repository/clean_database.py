@@ -23,7 +23,7 @@ from pcapi.models import Product
 from pcapi.models import Provider
 from pcapi.models import Recommendation
 from pcapi.models import SeenOffer
-from pcapi.models import StockSQLEntity
+from pcapi.models import Stock
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
 from pcapi.models import UserSession
@@ -53,7 +53,7 @@ def clean_all_database(*args, **kwargs):
     Payment.query.delete()
     PaymentMessage.query.delete()
     Booking.query.delete()
-    StockSQLEntity.query.delete()
+    Stock.query.delete()
     FavoriteSQLEntity.query.delete()
     Recommendation.query.delete()
     MediationSQLEntity.query.delete()
