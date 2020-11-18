@@ -8,24 +8,16 @@ from sqlalchemy import nullsfirst
 from sqlalchemy import or_
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
-from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import selectable
-from sqlalchemy.sql.elements import BinaryExpression
 
 from pcapi.core.bookings.repository import get_only_offer_ids_from_bookings
 from pcapi.core.offers.repository import get_offers_by_filters
-from pcapi.domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from pcapi.models import Booking
 from pcapi.models import DiscoveryView
 from pcapi.models import DiscoveryViewV3
-from pcapi.models import EventType
-from pcapi.models import FavoriteSQLEntity
-from pcapi.models import MediationSQLEntity
 from pcapi.models import Offer
-from pcapi.models import Offerer
 from pcapi.models import SeenOffer
 from pcapi.models import StockSQLEntity
-from pcapi.models import ThingType
 from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 from pcapi.models.db import Model
@@ -40,38 +32,6 @@ from pcapi.utils.converter import from_tuple_to_int
 
 
 ALL_DEPARTMENTS_CODE = "00"
-
-
-def department_or_national_offers(query, departement_codes):
-    if ALL_DEPARTMENTS_CODE in departement_codes:
-        return query.filter((VenueSQLEntity.departementCode != None) | (Offer.isNational == True))
-
-    query = query.filter(VenueSQLEntity.departementCode.in_(departement_codes) | (Offer.isNational == True))
-
-    return query
-
-
-def _bookable_offers(offers_query: Query) -> Query:
-    stocks_query = StockSQLEntity.query.filter(StockSQLEntity.offerId == Offer.id)
-    stocks_query = _filter_bookable_stocks_for_discovery(stocks_query)
-    offers_query = offers_query.filter(stocks_query.exists())
-    return offers_query
-
-
-def _has_active_and_validated_offerer() -> BinaryExpression:
-    return (Offerer.isActive == True) & (Offerer.validationToken == None)
-
-
-def _with_active_and_validated_offerer(query):
-    query = query.join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId).filter(
-        _has_active_and_validated_offerer()
-    )
-    return query
-
-
-def _not_activation_offers(query):
-    query = query.filter(Offer.type != str(EventType.ACTIVATION))
-    return query.filter(Offer.type != str(ThingType.ACTIVATION))
 
 
 def get_offers_for_recommendation(
@@ -152,62 +112,9 @@ def keep_only_offers_in_venues_or_national(query: BaseQuery, venue_ids: selectab
     return query.filter(or_(DiscoveryView.venueId.in_(venue_ids), DiscoveryView.isNational == True))
 
 
-def _exclude_booked_and_favorite(active_offers_query, user):
-    booked_offer_ids = (
-        Booking.query.filter_by(userId=user.id).join(StockSQLEntity).with_entities('stock."offerId"').subquery()
-    )
-    favorite_offer_ids = FavoriteSQLEntity.query.filter_by(userId=user.id).with_entities('"offerId"').subquery()
-    not_booked_predicate = ~Offer.id.in_(booked_offer_ids)
-    not_favorite_predicate = ~Offer.id.in_(favorite_offer_ids)
-
-    active_offers_query = active_offers_query.filter(not_booked_predicate & not_favorite_predicate)
-
-    return active_offers_query
-
-
-def _with_image(offer_query):
-    has_image_predicate = _build_has_active_mediation_predicate()
-    return offer_query.filter(has_image_predicate)
-
-
-def _with_validated_venue(offer_query):
-    return offer_query.join(VenueSQLEntity, Offer.venueId == VenueSQLEntity.id).filter(
-        VenueSQLEntity.validationToken == None
-    )
-
-
-def _build_has_active_mediation_predicate():
-    return MediationSQLEntity.query.filter(
-        (MediationSQLEntity.offerId == Offer.id) & MediationSQLEntity.isActive
-    ).exists()
-
-
 def find_searchable_offer(offer_id):
     return (
         Offer.query.filter_by(id=offer_id).join(VenueSQLEntity).filter(VenueSQLEntity.validationToken == None).first()
-    )
-
-
-def _offer_has_bookable_stocks():
-    now = datetime.utcnow()
-    stock_can_still_be_booked = (StockSQLEntity.bookingLimitDatetime > now) | (
-        StockSQLEntity.bookingLimitDatetime == None
-    )
-    event_has_not_began_yet = (StockSQLEntity.beginningDatetime != None) & (StockSQLEntity.beginningDatetime > now)
-    offer_is_on_a_thing = StockSQLEntity.beginningDatetime == None
-    bookings_quantity = _build_bookings_quantity_subquery()
-
-    return (
-        StockSQLEntity.query.filter(StockSQLEntity.offerId == Offer.id)
-        .filter(StockSQLEntity.isSoftDeleted == False)
-        .filter(stock_can_still_be_booked)
-        .filter(event_has_not_began_yet | offer_is_on_a_thing)
-        .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId)
-        .filter(
-            (StockSQLEntity.quantity == None)
-            | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
-        )
-        .exists()
     )
 
 
@@ -221,24 +128,6 @@ def _build_bookings_quantity_subquery():
         .subquery()
     )
     return bookings_quantity
-
-
-def find_activation_offers(departement_code: str) -> List[Offer]:
-    departement_codes = ILE_DE_FRANCE_DEPT_CODES if departement_code == "93" else [departement_code]
-    match_department_or_is_national = or_(
-        VenueSQLEntity.departementCode.in_(departement_codes), Offer.isNational == True
-    )
-
-    query = (
-        Offer.query.join(VenueSQLEntity)
-        .join(StockSQLEntity, StockSQLEntity.offerId == Offer.id)
-        .filter(Offer.type == str(EventType.ACTIVATION))
-        .filter(match_department_or_is_national)
-    )
-
-    query = _filter_bookable_stocks_for_discovery(query)
-
-    return query
 
 
 def _filter_bookable_stocks_for_discovery(stocks_query):
