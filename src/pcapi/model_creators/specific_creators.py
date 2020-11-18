@@ -200,6 +200,7 @@ def create_offer_with_thing_product(
     offer.lastProvider = last_provider
     offer.id = idx
     offer.withdrawalDetails = withdrawal_details
+    offer.isDuo = False
 
     if extra_data:
         offer.extraData = extra_data

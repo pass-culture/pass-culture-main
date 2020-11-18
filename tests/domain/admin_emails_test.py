@@ -262,7 +262,7 @@ class SendOfferCreationNotificationToAdministrationTest:
         author = create_user(email="author@email.com")
         # When
         with patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True):
-            send_offer_creation_notification_to_administration(offer, author, "http://test.url", mocked_send_email)
+            send_offer_creation_notification_to_administration(offer, author, mocked_send_email)
 
         # Then
         mocked_send_email.assert_called_once()
@@ -282,7 +282,7 @@ class SendOfferCreationNotificationToAdministrationTest:
         author = create_user(email="author@email.com")
         # When
         with patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=False):
-            send_offer_creation_notification_to_administration(offer, author, "http://test.url", mocked_send_email)
+            send_offer_creation_notification_to_administration(offer, author, mocked_send_email)
 
         # Then
         mocked_send_email.assert_called_once()

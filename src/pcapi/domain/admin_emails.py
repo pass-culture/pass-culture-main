@@ -69,8 +69,8 @@ def send_payments_report_emails(
 
 
 def send_offer_creation_notification_to_administration(
-    offer: Offer, author: UserSQLEntity, app_origin_url: str, send_email: Callable[[dict], bool]
+    offer: Offer, author: UserSQLEntity, send_email: Callable[[dict], bool]
 ) -> bool:
-    email = make_offer_creation_notification_email(offer, author, app_origin_url)
+    email = make_offer_creation_notification_email(offer, author)
     email["Html-part"], email["To"] = compute_email_html_part_and_recipients(email["Html-part"], email["To"])
     return send_email(data=email)

@@ -20,7 +20,6 @@ from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.utils import mailing
-from pcapi.utils.config import PRO_URL
 from pcapi.utils.rest import ensure_current_user_has_rights
 from pcapi.utils.rest import load_or_raise_error
 
@@ -76,7 +75,7 @@ def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> models.
     offer.venue = venue
     offer.bookingEmail = offer_data.booking_email
     repository.save(offer)
-    admin_emails.send_offer_creation_notification_to_administration(offer, user, PRO_URL, mailing.send_raw_email)
+    admin_emails.send_offer_creation_notification_to_administration(offer, user, mailing.send_raw_email)
 
     return offer
 

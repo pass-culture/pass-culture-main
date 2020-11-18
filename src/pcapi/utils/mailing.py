@@ -29,6 +29,7 @@ from pcapi.utils.config import API_URL
 from pcapi.utils.config import ENV
 from pcapi.utils.config import IS_PROD
 from pcapi.utils.config import PRO_URL
+from pcapi.utils.config import WEBAPP_URL
 from pcapi.utils.date import format_datetime
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
@@ -376,11 +377,19 @@ def parse_email_addresses(addresses: str) -> List[str]:
     return [a for a in addresses if a]
 
 
-def make_offer_creation_notification_email(offer: Offer, author: UserSQLEntity, pro_origin_url: str) -> Dict:
-    humanized_offer_id = humanize(offer.id)
-    link_to_offer = f"{pro_origin_url}/offres/{humanized_offer_id}"
+def make_offer_creation_notification_email(offer: Offer, author: UserSQLEntity) -> Dict:
+    pro_link_to_offer = f"{PRO_URL}/offres/{humanize(offer.id)}"
+    webapp_link_to_offer = f"{WEBAPP_URL}/offre/details/{humanize(offer.id)}"
+    venue = offer.venue
+    pro_venue_link = f"{PRO_URL}/lieux/{humanize(venue.id)}"
     html = render_template(
-        "mails/offer_creation_notification_email.html", offer=offer, author=author, link_to_offer=link_to_offer
+        "mails/offer_creation_notification_email.html",
+        offer=offer,
+        venue=venue,
+        author=author,
+        pro_link_to_offer=pro_link_to_offer,
+        webapp_link_to_offer=webapp_link_to_offer,
+        pro_venue_link=pro_venue_link,
     )
     location_information = offer.venue.departementCode or "numérique"
     return {

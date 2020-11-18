@@ -1,16 +1,37 @@
 <html>
     <body>
     <p id="offer">
-        Une nouvelle offre "{{ offer.product.name }}"
+        Une nouvelle offre "{{ offer.name }}"
     </p>
     <p id="offerer">
-        Vient d'être créée par {{ offer.venue.managingOfferer.name }}
+        Vient d'être créée par {{ venue.managingOfferer.name }}
     </p>
-    <p id="give_link">
-        Lien pour y accéder : <a href="{{ link_to_offer }}" id="link">{{ link_to_offer }}</a>
+    <p id="webapp_offer_link">
+        Lien vers l'offre dans la Webapp {{ webapp_link_to_offer }}
     </p>
-        <p id="author">
-        Cette offre a été créée par {{ author.email }}.
+    <p id="pro_offer_link">
+        Lien vers l'offre dans le portail PRO {{ pro_link_to_offer }}
+    </p>
+    <p id="offer_is_duo">
+        Offre duo {{ offer.isDuo }}
+    </p>
+    <p id="venue_details">
+        Lien vers le lieu {{ pro_venue_link }}
+        <br >
+        Catégorie du lieu {{ venue.venueType.label }}
+        <br >
+        Adresse du lieu {{ venue.city }} {{ venue.postalCode }}
+    </p>
+    <p id="pro_user_information">
+        Information de l'utilisateur pro ayant créé l'offre
+        <br >
+        Nom {{ author.lastName }}
+        <br >
+        Prénom {{ author.firstName }}
+        <br >
+        Téléphone {{ author.phoneNumber }}
+        <br >
+        Email {{ author.email }}
     </p>
     </body>
 </html>

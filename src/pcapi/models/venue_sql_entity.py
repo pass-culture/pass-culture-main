@@ -103,6 +103,8 @@ class VenueSQLEntity(
 
     venueTypeId = Column(Integer, ForeignKey("venue_type.id"), nullable=True)
 
+    venueType = relationship("VenueType", foreign_keys=[venueTypeId])
+
     venueLabelId = Column(Integer, ForeignKey("venue_label.id"), nullable=True)
 
     dateCreated = Column(DateTime, nullable=True, default=datetime.utcnow)
