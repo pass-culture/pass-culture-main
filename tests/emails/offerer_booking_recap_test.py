@@ -6,7 +6,6 @@ import pytest
 
 from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.domain.stock.stock import Stock
 from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_deposit

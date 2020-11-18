@@ -7,10 +7,6 @@ from pcapi.models import ThingType
 from pcapi.models import VenueSQLEntity
 
 
-def find_stock_by_id(id: int) -> StockSQLEntity:
-    return StockSQLEntity.query.get(id)
-
-
 def find_online_activation_stock():
     return (
         StockSQLEntity.query.join(Offer)

@@ -6,7 +6,6 @@ from pcapi.infrastructure.repository.favorite.favorite_sql_repository import Fav
 from pcapi.infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import (
     PaginatedOfferersSQLRepository,
 )
-from pcapi.infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
 from pcapi.infrastructure.repository.stock_provider.stock_provider_fnac import StockProviderFnacRepository
 from pcapi.infrastructure.repository.stock_provider.stock_provider_libraires import StockProviderLibrairesRepository
 from pcapi.infrastructure.repository.stock_provider.stock_provider_praxiel import StockProviderPraxielRepository
@@ -30,7 +29,6 @@ from pcapi.use_cases.list_offerers_for_pro_user import ListOfferersForProUser
 beneficiary_bookings_repository = BeneficiaryBookingsSQLRepository()
 favorite_repository = FavoriteSQLRepository()
 notification_service = MailjetNotificationService()
-stock_repository = StockSQLRepository()
 user_repository = BeneficiarySQLRepository()
 venue_label_repository = VenueLabelSQLRepository()
 venue_identifier_repository = VenueWithBasicInformationSQLRepository()

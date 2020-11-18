@@ -11,12 +11,10 @@ from pcapi.core.bookings.exceptions import PhysicalExpenseLimitHasBeenReached
 from pcapi.core.bookings.exceptions import QuantityIsInvalid
 from pcapi.core.bookings.exceptions import StockIsNotBookable
 from pcapi.core.bookings.exceptions import UserHasInsufficientFunds
-from pcapi.domain.stock.stock_exceptions import StockDoesntExist
 from pcapi.domain.users import UnauthorizedForAdminUser
 
 
 @app.errorhandler(OfferIsAlreadyBooked)
-@app.errorhandler(StockDoesntExist)
 @app.errorhandler(QuantityIsInvalid)
 @app.errorhandler(StockIsNotBookable)
 @app.errorhandler(CannotBookFreeOffers)
