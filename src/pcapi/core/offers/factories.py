@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 import factory
 
@@ -78,6 +79,13 @@ class ProductFactory(BaseFactory):
     name = factory.Sequence("Product {}".format)
     description = factory.Sequence("A passionate description of product {}".format)
 
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        # Graciously provide the required idAtProviders if lastProvider is given.
+        if kwargs.get("lastProvider") and not kwargs.get("idAtProviders"):
+            kwargs["idAtProviders"] = uuid.uuid4()
+        return super()._create(model_class, *args, **kwargs)
+
 
 class EventProductFactory(ProductFactory):
     type = str(offer_type.EventType.CINEMA)
@@ -97,6 +105,13 @@ class OfferFactory(BaseFactory):
     name = factory.SelfAttribute("product.name")
     description = factory.SelfAttribute("product.description")
     url = factory.SelfAttribute("product.url")
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        # Graciously provide the required idAtProviders if lastProvider is given.
+        if kwargs.get("lastProvider") and not kwargs.get("idAtProviders"):
+            kwargs["idAtProviders"] = uuid.uuid4()
+        return super()._create(model_class, *args, **kwargs)
 
 
 class EventOfferFactory(OfferFactory):

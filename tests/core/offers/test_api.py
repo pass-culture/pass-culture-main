@@ -66,8 +66,8 @@ class CreateStockTest:
         assert "beginningDatetime" in error.value.errors
 
     def test_fail_if_offer_is_not_editable(self):
-        offerer = offerers_factories.ProviderFactory()
-        offer = factories.ThingOfferFactory(lastProvider=offerer, idAtProviders="1")
+        provider = offerers_factories.ProviderFactory()
+        offer = factories.ThingOfferFactory(lastProvider=provider)
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_stock(offer=offer, price=10, beginning=None, booking_limit_datetime=None)
