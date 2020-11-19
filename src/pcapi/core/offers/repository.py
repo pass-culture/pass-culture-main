@@ -97,15 +97,6 @@ def get_offers_by_filters(
     datetime_now = datetime.utcnow()
     query = Offer.query
 
-    if venue_id is not None:
-        query = query.filter(Offer.venueId == venue_id)
-    if type_id is not None:
-        query = query.filter(Offer.type == type_id)
-    if creation_mode is not None:
-        query = _filter_by_creation_mode(query, creation_mode)
-    if offerer_id is not None:
-        venue_alias = aliased(VenueSQLEntity)
-        query = query.join(venue_alias).filter(venue_alias.managingOffererId == offerer_id)
     if not user_is_admin:
         query = (
             query.join(VenueSQLEntity)

@@ -99,7 +99,7 @@ class Returns200:
         assert len(offers) == 1
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def should_return_paginated_offers_with_pagination_details_in_body(self, list_offers_mock, app, db_session):
+    def should_return_paginated_offers_with_pagination_details_in_body(self, mocked_list_offers, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -108,7 +108,7 @@ class Returns200:
         offer1 = create_offer_with_thing_product(venue)
         offer2 = create_offer_with_thing_product(venue)
         repository.save(user_offerer, offer1, offer2)
-        list_offers_mock.return_value = to_domain(offers=[offer1], current_page=1, total_pages=1, total_offers=2)
+        mocked_list_offers.return_value = to_domain(offers=[offer1], current_page=1, total_pages=1, total_offers=2)
 
         # when
         response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?paginate=1")
@@ -145,7 +145,7 @@ class Returns200:
         }
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def should_filter_offers_by_given_venue_id(self, list_offers_mock, app, db_session):
+    def should_filter_offers_by_given_venue_id(self, mocked_list_offers, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -160,7 +160,7 @@ class Returns200:
 
         # then
         assert response.status_code == 200
-        list_offers_mock.assert_called_once_with(
+        mocked_list_offers.assert_called_once_with(
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offerer_id=None,
@@ -176,7 +176,7 @@ class Returns200:
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def should_filter_offers_by_given_status(self, list_offers_mock, app, db_session):
+    def should_filter_offers_by_given_status(self, mocked_list_offers, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -188,7 +188,7 @@ class Returns200:
 
         # then
         assert response.status_code == 200
-        list_offers_mock.assert_called_once_with(
+        mocked_list_offers.assert_called_once_with(
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offerer_id=None,
@@ -204,7 +204,7 @@ class Returns200:
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def should_filter_offers_by_given_offerer_id(self, list_offers_mock, app, db_session):
+    def should_filter_offers_by_given_offerer_id(self, mocked_list_offers, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -219,7 +219,7 @@ class Returns200:
 
         # then
         assert response.status_code == 200
-        list_offers_mock.assert_called_once_with(
+        mocked_list_offers.assert_called_once_with(
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offerer_id=offerer.id,
@@ -235,7 +235,7 @@ class Returns200:
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def should_filter_offers_by_given_creation_mode(self, list_offers_mock, app, db_session):
+    def should_filter_offers_by_given_creation_mode(self, mocked_list_offers, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -247,7 +247,7 @@ class Returns200:
 
         # then
         assert response.status_code == 200
-        list_offers_mock.assert_called_once_with(
+        mocked_list_offers.assert_called_once_with(
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offerer_id=None,
@@ -263,7 +263,7 @@ class Returns200:
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_period_beginning_date(self, list_offers_mock, app, db_session):
+    def test_results_are_filtered_by_given_period_beginning_date(self, mocked_list_offers, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -279,7 +279,7 @@ class Returns200:
 
         # then
         assert response.status_code == 200
-        list_offers_mock.assert_called_once_with(
+        mocked_list_offers.assert_called_once_with(
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offerer_id=None,
@@ -295,7 +295,7 @@ class Returns200:
         )
 
     @patch("pcapi.routes.offers.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_period_ending_date(self, list_offers_mock, app, db_session):
+    def test_results_are_filtered_by_given_period_ending_date(self, mocked_list_offers, app, db_session):
         # given
         user = create_user()
         offerer = create_offerer()
@@ -311,7 +311,7 @@ class Returns200:
 
         # then
         assert response.status_code == 200
-        list_offers_mock.assert_called_once_with(
+        mocked_list_offers.assert_called_once_with(
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offerer_id=None,
@@ -330,15 +330,19 @@ class Returns200:
 class Returns404:
     def when_requested_venue_does_not_exist(self, app, db_session):
         # Given
-        user = create_user(email="user@test.com")
+        user = create_user()
         repository.save(user)
 
         # when
         response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?venueId=ABC")
 
+        # then
+        assert response.status_code == 404
+        assert response.json == {"global": ["La page que vous recherchez n'existe pas"]}
+
     def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, app, db_session):
         # Given
-        user = create_user(email="user@test.com")
+        user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
         repository.save(user, venue)
@@ -357,7 +361,7 @@ class Returns404:
             "total_count": 0,
         }
 
-    def should_return_no_offerswhen_user_offerer_is_not_validated(self, app, db_session):
+    def should_return_no_offers_when_user_offerer_is_not_validated(self, app, db_session):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -379,17 +383,3 @@ class Returns404:
             "page_count": 0,
             "total_count": 0,
         }
-
-
-class Returns404:
-    def when_requested_venue_does_not_exist(self, app, db_session):
-        # Given
-        user = create_user(email="user@test.com")
-        repository.save(user)
-
-        # when
-        response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?venueId=ABC")
-
-        # then
-        assert response.status_code == 404
-        assert response.json == {"global": ["La page que vous recherchez n'existe pas"]}
