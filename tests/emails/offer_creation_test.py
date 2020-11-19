@@ -19,8 +19,6 @@ from tests.utils.mailing_test import _remove_whitespaces
 
 class MakeOfferCreationNotificationEmailTest:
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.utils.mailing.PRO_URL", "http://pro.example.com")
-    @patch("pcapi.utils.mailing.WEBAPP_URL", "http://app.example.com")
     def test_when_physical_offer_returns_subject_with_departement_information_and_dictionary_with_given_content(
         self, app
     ):
@@ -49,38 +47,36 @@ class MakeOfferCreationNotificationEmailTest:
         parsed_email = BeautifulSoup(email_html, "html.parser")
 
         offer_html = str(parsed_email.find("p", {"id": "offer"}))
-        assert 'Une nouvelle offre "Le vent se lève"' in offer_html
+        assert 'Une nouvelle offre : "Le vent se lève"' in offer_html
 
         offerer_html = str(parsed_email.find("p", {"id": "offerer"}))
-        assert "Vient d'être créée par Cinéma de Montreuil" in offerer_html
+        assert "Vient d'être créée par : Cinéma de Montreuil" in offerer_html
 
         webapp_offer_link = str(parsed_email.find("p", {"id": "webapp_offer_link"}))
         assert (
-            f"Lien vers l'offre dans la Webapp"
-            f" http://app.example.com/offre/details/{humanize(physical_offer.id)}" in webapp_offer_link
+            f"Lien vers l'offre dans la Webapp :"
+            f" http://localhost:3000/offre/details/{humanize(physical_offer.id)}" in webapp_offer_link
         )
 
         pro_offer_link = str(parsed_email.find("p", {"id": "pro_offer_link"}))
         assert (
-            f"Lien vers l'offre dans le portail PRO"
-            f" http://pro.example.com/offres/{humanize(physical_offer.id)}" in pro_offer_link
+            f"Lien vers l'offre dans le portail PRO :"
+            f" http://localhost:3001/offres/{humanize(physical_offer.id)}" in pro_offer_link
         )
 
         offer_is_duo = str(parsed_email.find("p", {"id": "offer_is_duo"}))
-        assert "Offre duo False" in offer_is_duo
+        assert "Offre duo : False" in offer_is_duo
 
         venue_details = str(parsed_email.find("p", {"id": "venue_details"}))
-        assert (
-            f"Lien vers le lieu" f" http://pro.example.com/lieux/{humanize(physical_offer.venue.id)}" in venue_details
-        )
-        assert "Catégorie du lieu Custom Label" in venue_details
-        assert "Adresse du lieu Montreuil 93100" in venue_details
+        assert f"Lien vers le lieu : http://localhost:3001/lieux/{humanize(physical_offer.venue.id)}" in venue_details
+        assert "Catégorie du lieu : Custom Label" in venue_details
+        assert "Adresse du lieu : Montreuil 93100" in venue_details
 
         pro_user_information = str(parsed_email.find("p", {"id": "pro_user_information"}))
-        assert "Nom Doe" in pro_user_information
-        assert "Prénom John" in pro_user_information
-        assert "Téléphone 0102030405" in pro_user_information
-        assert "Email user@example.com" in pro_user_information
+        assert "Nom : Doe" in pro_user_information
+        assert "Prénom : John" in pro_user_information
+        assert "Téléphone : 0102030405" in pro_user_information
+        assert "Email : user@example.com" in pro_user_information
 
     @pytest.mark.usefixtures("db_session")
     def test_when_virtual_offer_returns_subject_with_virtual_information_and_dictionary_with_given_content(self, app):
