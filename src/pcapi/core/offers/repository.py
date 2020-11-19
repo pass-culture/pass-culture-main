@@ -121,11 +121,11 @@ def get_offers_by_filters(
     if status is not None:
         query = _filter_by_status(query, datetime_now, status)
     if period_beginning_date is not None or period_ending_date is not None:
-        query = query.join(StockSQLEntity)
+        query = query.join(Stock)
         if period_beginning_date is not None:
-            query = query.filter(StockSQLEntity.beginningDatetime >= period_beginning_date)
+            query = query.filter(Stock.beginningDatetime >= period_beginning_date)
         if period_ending_date is not None:
-            query = query.filter(StockSQLEntity.beginningDatetime <= period_ending_date)
+            query = query.filter(Stock.beginningDatetime <= period_ending_date)
 
     return query.distinct(Offer.id)
 
