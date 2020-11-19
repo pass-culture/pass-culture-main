@@ -13,6 +13,11 @@ describe('src | components | pages | Offerer | OffererDetails | OffererDetailsCo
       // given
       const state = {
         data: {
+          users: [
+            {
+              id: 'TY56er',
+            },
+          ],
           userOfferers: [
             {
               id: 'AEKQ',
@@ -36,9 +41,6 @@ describe('src | components | pages | Offerer | OffererDetails | OffererDetailsCo
         },
       }
       const ownProps = {
-        currentUser: {
-          id: 'TY56er',
-        },
         match: {
           params: {
             offererId: 'AGH',
@@ -50,6 +52,9 @@ describe('src | components | pages | Offerer | OffererDetails | OffererDetailsCo
 
       // then
       expect(result).toStrictEqual({
+        currentUser: {
+          id: 'TY56er',
+        },
         offerer: expect.objectContaining({
           id: 'AGH',
           name: 'Gaumont cinéma',
@@ -74,6 +79,11 @@ describe('src | components | pages | Offerer | OffererDetails | OffererDetailsCo
       // given
       const state = {
         data: {
+          users: [
+            {
+              id: 'TY56er',
+            },
+          ],
           userOfferers: [
             {
               id: 'AEKQ',
@@ -97,9 +107,6 @@ describe('src | components | pages | Offerer | OffererDetails | OffererDetailsCo
         },
       }
       const ownProps = {
-        currentUser: {
-          id: 'TY56er',
-        },
         match: {
           params: {
             offererId: 'AGH',

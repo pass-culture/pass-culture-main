@@ -1,11 +1,12 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
+import withQueryRouter from 'with-query-router'
 
-import { withRequiredLogin } from 'components/hocs'
 import withTracking from 'components/hocs/withTracking'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { selectVenueLabels } from 'store/selectors/data/venueLabelsSelectors'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'
 import { selectVenueTypes } from 'store/selectors/data/venueTypesSelectors'
@@ -25,6 +26,7 @@ export const mapStateToProps = (
     },
   }
 ) => ({
+  currentUser: selectCurrentUser(state),
   venueTypes: selectVenueTypes(state).map(type => new VenueType(type)),
   venueLabels: selectVenueLabels(state).map(label => new VenueLabel(label)),
   venue: selectVenueById(state, venueId),
@@ -113,6 +115,6 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 
 export default compose(
   withTracking('Venue'),
-  withRequiredLogin,
+  withQueryRouter(),
   connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(VenueEdition)

@@ -4,10 +4,14 @@ import React from 'react'
 import { App } from '../App'
 import RedirectToMaintenance from '../RedirectToMaintenance'
 
+const getCurrentUser = ({ handleSuccess }) => {
+  handleSuccess()
+}
+
 describe('src | App', () => {
   it('should render App and children components when isMaintenanceActivated is false', () => {
     // Given
-    const props = { modalOpen: false, isMaintenanceActivated: false }
+    const props = { modalOpen: false, isMaintenanceActivated: false, getCurrentUser }
 
     // When
     const wrapper = mount(
@@ -26,7 +30,7 @@ describe('src | App', () => {
 
   it('should render a Redirect component when isMaintenanceActivated is true', () => {
     // Given
-    const props = { modalOpen: false, isMaintenanceActivated: true }
+    const props = { modalOpen: false, isMaintenanceActivated: true, getCurrentUser }
 
     // When
     const wrapper = shallow(

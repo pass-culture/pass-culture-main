@@ -12,6 +12,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
 
       // then
       const expected = {
+        currentUser: state.data.users[0],
         isOffererCreationAvailable: false,
         notification: null,
         offerers: [

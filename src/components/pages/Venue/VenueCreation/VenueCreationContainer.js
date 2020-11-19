@@ -1,12 +1,13 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
+import withQueryRouter from 'with-query-router'
 
-import { withRequiredLogin } from 'components/hocs'
 import { CREATION } from 'components/hocs/withFrenchQueryRouter'
 import withTracking from 'components/hocs/withTracking'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { selectVenueLabels } from 'store/selectors/data/venueLabelsSelectors'
 import { selectVenueTypes } from 'store/selectors/data/venueTypesSelectors'
 
@@ -18,23 +19,25 @@ import VenueType from '../ValueObjects/VenueType'
 
 import VenueCreation from './VenueCreation'
 
-export const mapStateToProps = (
-  state,
-  {
-    currentUser,
+export const mapStateToProps = (state, ownProps) => {
+  const {
     match: {
       params: { offererId },
     },
+  } = ownProps
+
+  const currentUser = selectCurrentUser(state)
+  return {
+    currentUser: currentUser,
+    venueTypes: selectVenueTypes(state).map(type => new VenueType(type)),
+    venueLabels: selectVenueLabels(state).map(label => new VenueLabel(label)),
+    formInitialValues: {
+      managingOffererId: offererId,
+      bookingEmail: currentUser.email,
+    },
+    offerer: selectOffererById(state, offererId),
   }
-) => ({
-  venueTypes: selectVenueTypes(state).map(type => new VenueType(type)),
-  venueLabels: selectVenueLabels(state).map(label => new VenueLabel(label)),
-  formInitialValues: {
-    managingOffererId: offererId,
-    bookingEmail: currentUser.email,
-  },
-  offerer: selectOffererById(state, offererId),
-})
+}
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   const {
@@ -141,6 +144,6 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 
 export default compose(
   withTracking('Venue'),
-  withRequiredLogin,
+  withQueryRouter(),
   connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(VenueCreation)

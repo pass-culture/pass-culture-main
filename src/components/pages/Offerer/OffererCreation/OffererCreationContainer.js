@@ -3,12 +3,17 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-
-import { withRequiredLogin } from 'components/hocs'
 import withTracking from 'components/hocs/withTracking'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import OffererCreation from './OffererCreation'
+
+export function mapStateToProps(state) {
+  return {
+    currentUser: selectCurrentUser(state),
+  }
+}
 
 export const mapDispatchToProps = (dispatch, ownProps) => ({
   createNewOfferer: (payload, onHandleFail, onHandleSuccess) => {
@@ -52,6 +57,5 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 
 export default compose(
   withTracking('Offerer'),
-  withRequiredLogin,
-  connect(null, mapDispatchToProps, mergeProps)
+  connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(OffererCreation)

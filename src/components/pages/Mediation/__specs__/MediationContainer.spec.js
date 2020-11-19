@@ -206,6 +206,7 @@ describe('src | components | pages | MediationContainer', () => {
 
       // then
       expect(result).toStrictEqual({
+        currentUser: undefined,
         mediation: undefined,
         offer: undefined,
         offerer: undefined,

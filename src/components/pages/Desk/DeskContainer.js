@@ -1,10 +1,17 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import { withRequiredLogin, withTracking } from 'components/hocs'
+import { withTracking } from 'components/hocs'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
 
 import Desk from './Desk'
+
+export function mapStateToProps(state) {
+  return {
+    currentUser: selectCurrentUser(state),
+  }
+}
 
 export const mapDispatchToProps = dispatch => ({
   getBooking: code =>
@@ -31,6 +38,5 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => ({
 
 export default compose(
   withTracking('Desk'),
-  withRequiredLogin,
-  connect(null, mapDispatchToProps, mergeProps)
+  connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(Desk)

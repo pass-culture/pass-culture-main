@@ -42,6 +42,9 @@ const routes = [
     component: SigninContainer,
     path: '/connexion',
     title: 'Connexion',
+    meta: {
+      public: true,
+    },
   },
   {
     component: DeskContainer,
@@ -52,16 +55,25 @@ const routes = [
     component: SignupContainer,
     path: '/inscription/(confirmation)?',
     title: 'Inscription',
+    meta: {
+      public: true,
+    },
   },
   {
     component: SignupValidationContainer,
     path: '/inscription/validation/:token',
     title: 'Validation de votre inscription',
+    meta: {
+      public: true,
+    },
   },
   {
     component: LostPasswordContainer,
     path: '/mot-de-passe-perdu',
     title: 'Mot de passe perdu',
+    meta: {
+      public: true,
+    },
   },
   {
     component: Offerers,
@@ -162,6 +174,9 @@ const routes = [
     component: Unavailable,
     path: UNAVAILABLE_ERROR_PAGE,
     title: 'Page indisponible',
+    meta: {
+      public: true,
+    },
   },
 ]
 

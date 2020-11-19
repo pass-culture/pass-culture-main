@@ -3,9 +3,15 @@ import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
+import { redirectLoggedUser } from 'components/router/helpers'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 class SignupValidation extends PureComponent {
+  constructor(props) {
+    super(props)
+    const { currentUser, history } = props
+    redirectLoggedUser(history, currentUser)
+  }
   componentDidMount() {
     const {
       dispatch,

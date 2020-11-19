@@ -8,11 +8,11 @@ import FieldErrors from 'components/layout/form/FieldErrors'
 import PasswordField from 'components/layout/form/fields/PasswordField'
 import Icon from 'components/layout/Icon'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import { redirectLoggedUser } from 'components/router/helpers'
 
 import bindAddressAndDesignationFromSiren from '../../Offerer/OffererCreation/decorators/bindSirenFieldToDesignation'
 
 import SirenField from './SirenField/SirenField'
-
 
 const addressAndDesignationFromSirenDecorator = createDecorator({
   field: 'siren',
@@ -22,6 +22,12 @@ const addressAndDesignationFromSirenDecorator = createDecorator({
 const required = value => (value ? undefined : 'Required')
 
 class SignupForm extends PureComponent {
+  constructor(props) {
+    super(props)
+    const { history, currentUser } = props
+    redirectLoggedUser(history, currentUser)
+  }
+
   componentDidMount() {
     const script = document.createElement('script')
 

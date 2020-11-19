@@ -28,6 +28,7 @@ describe('src | OfferCreationContainer', () => {
 
       // then
       expect(result).toStrictEqual({
+        currentUser: state.data.users[0],
         formInitialValues: {
           ageMax: undefined,
           ageMin: undefined,

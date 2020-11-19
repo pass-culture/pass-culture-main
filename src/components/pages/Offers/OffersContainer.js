@@ -1,8 +1,8 @@
 import { lastTrackerMoment } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import withQueryRouter from 'with-query-router'
 
-import { withRequiredLogin } from 'components/hocs'
 import { saveSearchFilters, setSelectedOfferIds } from 'store/offers/actions'
 import { selectOffers } from 'store/offers/selectors'
 import {
@@ -12,12 +12,14 @@ import {
 } from 'store/offers/thunks'
 import { hideActionsBar, showActionsBar } from 'store/reducers/actionsBar'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
 
 import Offers from './Offers'
 
 export const mapStateToProps = state => {
   return {
+    currentUser: selectCurrentUser(state),
     getOfferer: fetchOffererById,
     lastTrackerMoment: lastTrackerMoment(state, 'offers'),
     notification: state.notification,
@@ -63,4 +65,4 @@ export const mapDispatchToProps = dispatch => {
   }
 }
 
-export default compose(withRequiredLogin, connect(mapStateToProps, mapDispatchToProps))(Offers)
+export default compose(withQueryRouter(), connect(mapStateToProps, mapDispatchToProps))(Offers)

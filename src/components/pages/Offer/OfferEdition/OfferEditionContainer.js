@@ -2,8 +2,8 @@ import get from 'lodash.get'
 import { mergeForm } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import withQueryRouter from 'with-query-router'
 
-import { withRequiredLogin } from 'components/hocs'
 import withTracking from 'components/hocs/withTracking'
 import { selectOfferById } from 'store/offers/selectors'
 import { loadOffer } from 'store/offers/thunks'
@@ -13,6 +13,7 @@ import { selectProductById } from 'store/selectors/data/productsSelectors'
 import { selectProviders } from 'store/selectors/data/providersSelectors'
 import { selectStocksByOfferId } from 'store/selectors/data/stocksSelectors'
 import { selectTypesByIsVenueVirtual } from 'store/selectors/data/typesSelectors'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import {
   selectVenueById,
   selectVenuesByOffererIdAndOfferType,
@@ -86,6 +87,7 @@ export const mapStateToProps = (state, ownProps) => {
   const offerTypeError = get(state, 'errors.offer.type')
 
   return {
+    currentUser: selectCurrentUser(state),
     formInitialValues,
     formOffererId,
     formVenueId,
@@ -117,6 +119,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 }
 
 export const mapDispatchToProps = dispatch => ({
+  dispatch,
   loadOffer: offerId => dispatch(loadOffer(offerId)),
   updateFormSetIsDuo: isDuo => {
     dispatch(
@@ -139,6 +142,6 @@ export const mapDispatchToProps = dispatch => ({
 
 export default compose(
   withTracking('Offer'),
-  withRequiredLogin,
+  withQueryRouter(),
   connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(OfferEdition)

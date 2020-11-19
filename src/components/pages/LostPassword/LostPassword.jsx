@@ -8,10 +8,15 @@ import TextInputWithIcon from 'components/layout/inputs/TextInputWithIcon/TextIn
 import Logo from 'components/layout/Logo'
 import Main from 'components/layout/Main'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import { redirectLoggedUser } from 'components/router/helpers'
 
 class LostPassword extends PureComponent {
   constructor(props) {
     super(props)
+    const { currentUser, history } = props
+
+    redirectLoggedUser(history, currentUser)
+
     this.state = {
       emailValue: '',
       hasPasswordResetRequestErrorMessage: false,

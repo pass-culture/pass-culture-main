@@ -1,14 +1,16 @@
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import { withNotRequiredLogin } from 'components/hocs'
 import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import Signin from './Signin'
 
 export const mapStateToProps = state => {
   return {
+    currentUser: selectCurrentUser(state),
     isAccountCreationAvailable: isAPISireneAvailable(state),
   }
 }
@@ -27,4 +29,4 @@ export const mapDispatchToProps = dispatch => ({
   },
 })
 
-export default compose(withNotRequiredLogin, connect(mapStateToProps, mapDispatchToProps))(Signin)
+export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(Signin)

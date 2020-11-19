@@ -1,14 +1,13 @@
 import get from 'lodash.get'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import { withRequiredLogin } from 'components/hocs'
 import { selectOfferById } from 'store/offers/selectors'
 import { loadOffer } from 'store/offers/thunks'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 import { selectMediationById } from 'store/selectors/data/mediationsSelectors'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'
 import { mediationNormalizer } from 'utils/normalizers'
 
@@ -23,6 +22,7 @@ export const mapStateToProps = (state, ownProps) => {
   const offer = selectOfferById(state, offerId)
   const venue = selectVenueById(state, get(offer, 'venueId'))
   return {
+    currentUser: selectCurrentUser(state),
     offer,
     offerer: selectOffererById(state, get(venue, 'managingOffererId')),
     mediation: selectMediationById(state, mediationId),
@@ -76,4 +76,4 @@ export const mapDispatchToProps = dispatch => {
   }
 }
 
-export default compose(withRequiredLogin, connect(mapStateToProps, mapDispatchToProps))(Mediation)
+export default connect(mapStateToProps, mapDispatchToProps)(Mediation)

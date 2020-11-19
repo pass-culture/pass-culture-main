@@ -3,8 +3,9 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import LostPassword from './LostPassword'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
+import LostPassword from './LostPassword'
 
 export const mapStateToProps = (state, ownProps) => {
   const userErrors = state.errors.user || []
@@ -14,6 +15,7 @@ export const mapStateToProps = (state, ownProps) => {
   const { change, envoye, token } = searchSelector(state, search)
   return {
     change,
+    currentUser: selectCurrentUser(state),
     errors: userErrors,
     envoye,
     token,
@@ -46,9 +48,4 @@ export const mapDispatchToProps = dispatch => ({
   },
 })
 
-export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(LostPassword)
+export default compose(connect(mapStateToProps, mapDispatchToProps))(LostPassword)

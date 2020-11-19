@@ -53,6 +53,7 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
 
       // then
       expect(result).toStrictEqual({
+        currentUser: undefined,
         offerer: { id: 1 },
         venue: {
           id: 'WQ',

@@ -26,7 +26,6 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
     let ownProps
     beforeEach(() => {
       ownProps = {
-        currentUser: { id: 1, email: 'john.doe@email.com' },
         match: {
           params: {
             offererId: 1,
@@ -38,12 +37,13 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
 
     it('should return an object with props', () => {
       // given
+      const currentUser = { id: 1, email: 'john.doe@email.com' }
       const state = {
         data: {
           offerers: [{ id: 1 }],
           userOfferers: [{ offererId: 1, rights: 'admin', userId: 1 }],
           venues: [],
-          users: [],
+          users: [currentUser],
         },
       }
 
@@ -52,6 +52,7 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
 
       // then
       expect(result).toStrictEqual({
+        currentUser: currentUser,
         offerer: { id: 1 },
         formInitialValues: {
           bookingEmail: 'john.doe@email.com',

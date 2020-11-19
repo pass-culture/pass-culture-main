@@ -2,13 +2,14 @@ import { stringify } from 'query-string'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { assignData, requestData } from 'redux-saga-data'
+import withQueryRouter from 'with-query-router'
 
-import { withRequiredLogin } from 'components/hocs'
 import { OFFERERS_API_PATH } from 'config/apiPaths'
 import {} from 'store/selectors/data/featuresSelectors'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
 import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 import { selectOfferers } from 'store/selectors/data/offerersSelectors'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { offererNormalizer } from 'utils/normalizers'
 
 import Offerers from './Offerers'
@@ -29,6 +30,7 @@ export const createApiPath = searchKeyWords => {
 
 export const mapStateToProps = state => {
   return {
+    currentUser: selectCurrentUser(state),
     isOffererCreationAvailable: isAPISireneAvailable(state),
     notification: state.notification,
     offerers: selectOfferers(state),
@@ -83,4 +85,4 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
   },
 })
 
-export default compose(withRequiredLogin, connect(mapStateToProps, mapDispatchToProps))(Offerers)
+export default compose(withQueryRouter(), connect(mapStateToProps, mapDispatchToProps))(Offerers)

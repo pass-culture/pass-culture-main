@@ -1,13 +1,56 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { matchPath } from 'react-router'
+
+import Spinner from 'components/layout/Spinner'
+import routes from 'utils/routes_map'
 
 import RedirectToMaintenance from './RedirectToMaintenance'
 
-export const App = ({ modalOpen, isMaintenanceActivated, children }) => {
+export const App = props => {
+  const {
+    children,
+    currentUser,
+    getCurrentUser,
+    history,
+    isMaintenanceActivated,
+    location,
+    modalOpen,
+  } = props
+
+  const [isBusy, setIsBusy] = useState(false)
+  useEffect(() => {
+    const publicRouteList = routes.filter(route => route.meta && route.meta.public)
+    const isPublicRoute = !!publicRouteList.find(route =>
+      matchPath(window.location.pathname, route)
+    )
+    if (!currentUser) {
+      setIsBusy(true)
+      getCurrentUser({
+        handleSuccess: () => {
+          setIsBusy(false)
+        },
+        handleFail: () => {
+          if (!isPublicRoute) {
+            const fromUrl = encodeURIComponent(`${location.pathname}${location.search}`)
+            history.push(`/connexion?de=${fromUrl}`)
+          }
+          setIsBusy(false)
+        },
+      })
+    }
+  }, [currentUser, getCurrentUser, history, location])
+
   if (isMaintenanceActivated) {
     return <RedirectToMaintenance />
-  } else return (
+  }
+
+  if (isBusy) {
+    return <Spinner />
+  }
+
+  return (
     <div className={classnames('app', { 'modal-open': modalOpen })}>
       {children}
     </div>

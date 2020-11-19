@@ -1,5 +1,13 @@
-import { withRequiredLogin } from 'components/hocs'
+import { connect } from 'react-redux'
 
-import Styleguide from "./Styleguide"
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
-export default withRequiredLogin(Styleguide)
+import Styleguide from './Styleguide'
+
+export function mapStateToProps(state) {
+  return {
+    currentUser: selectCurrentUser(state),
+  }
+}
+
+export default connect(mapStateToProps)(Styleguide)
