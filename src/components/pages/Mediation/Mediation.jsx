@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import Main from 'components/layout/Main'
 import Titles from 'components/layout/Titles/Titles'
 import UploadThumbContainer from 'components/layout/UploadThumb/UploadThumbContainer'
+import { ASSETS_URL } from 'utils/config'
 
 import CanvasTools from '../../../utils/canvas'
 import PageTitle from '../../layout/PageTitle/PageTitle'
@@ -400,7 +401,7 @@ class Mediation extends PureComponent {
         </p>
         <p>
           {'Utilisateurs avancés : vous pouvez '}
-          <a href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip">
+          <a href={`${ASSETS_URL}/PassCulture-accroche-template-20181114.zip`}>
             {'télécharger ici les gabarits Illustrator et Photoshop.'}
           </a>
         </p>
