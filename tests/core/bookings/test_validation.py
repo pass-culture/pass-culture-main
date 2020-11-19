@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import exceptions
@@ -129,7 +130,7 @@ class CheckExpenseLimitsTest:
         with pytest.raises(exceptions.PhysicalExpenseLimitHasBeenReached) as error:
             validation.check_expenses_limits(expenses, 11, offer)
         assert error.value.errors["global"] == [
-            "Le plafond de 200 € pour les biens culturels ne vous permet pas " "de réserver cette offre."
+            "Le plafond de 200 € pour les biens culturels ne vous permet pas de réserver cette offre."
         ]
 
     def test_digital_limit(self):
@@ -150,7 +151,7 @@ class CheckExpenseLimitsTest:
         with pytest.raises(exceptions.DigitalExpenseLimitHasBeenReached) as error:
             validation.check_expenses_limits(expenses, 11, offer)
         assert error.value.errors["global"] == [
-            "Le plafond de 200 € pour les offres numériques ne vous permet pas " "de réserver cette offre."
+            "Le plafond de 200 € pour les offres numériques ne vous permet pas de réserver cette offre."
         ]
 
     def test_global_limit(self):
@@ -201,16 +202,21 @@ class CheckIsUsableTest:
         booking = factories.BookingFactory(stock__beginningDatetime=next_week, dateCreated=three_days_ago)
         validation.check_is_usable(booking)
 
-    def should_raise_when_event_booking_not_confirmed(self):
+    @freeze_time("2020-10-15 09:00:00")
+    def should_not_validate_when_event_booking_not_confirmed(self):
+        # Given
         next_week = datetime.utcnow() + timedelta(weeks=1)
-        booking = factories.BookingFactory(
-            stock__beginningDatetime=next_week,
-        )
-        with pytest.raises(api_errors.ForbiddenError) as exc:
+        one_day_before = datetime.utcnow() - timedelta(days=1)
+        booking = factories.BookingFactory(dateCreated=one_day_before, stock__beginningDatetime=next_week)
+
+        # When
+        with pytest.raises(api_errors.ForbiddenError) as exception:
             validation.check_is_usable(booking)
-        assert exc.value.errors["booking"] == [
-            "Vous ne pouvez pas valider cette contremarque moins de 48h après la réservation faite par l’utilisateur. "
-            "Rendez-vous dans la section “Réservations” pour découvrir le statut de vos réservations."
+
+        # Then
+        assert exception.value.errors["booking"] == [
+            "Cette réservation a été effectuée le 14/10/2020 à 09:00. Veuillez "
+            "attendre jusqu’au 16/10/2020 à 09:00 pour valider la contremarque."
         ]
 
 
@@ -244,7 +250,8 @@ class CheckBeneficiaryCanCancelBookingTest:
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+            "Impossible d'annuler une réservation plus de 48h après l'avoir "
+            "réservée et moins de 72h avant le début de l'événement"
         ]
 
     def test_raise_if_booked_long_ago(self):
@@ -255,7 +262,8 @@ class CheckBeneficiaryCanCancelBookingTest:
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+            "Impossible d'annuler une réservation plus de 48h après l'avoir "
+            "réservée et moins de 72h avant le début de l'événement"
         ]
 
     def test_raise_if_event_too_close_and_booked_long_ago(self):
@@ -266,7 +274,8 @@ class CheckBeneficiaryCanCancelBookingTest:
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+            "Impossible d'annuler une réservation plus de 48h après l'avoir "
+            "réservée et moins de 72h avant le début de l'événement"
         ]
 
 
@@ -313,7 +322,8 @@ class CheckBeneficiaryCanCancelBookingNoConfirmationDateTest:
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+            "Impossible d'annuler une réservation plus de 48h après l'avoir "
+            "réservée et moins de 72h avant le début de l'événement"
         ]
 
     def test_raise_if_booked_long_ago(self):
@@ -327,7 +337,8 @@ class CheckBeneficiaryCanCancelBookingNoConfirmationDateTest:
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+            "Impossible d'annuler une réservation plus de 48h après l'avoir "
+            "réservée et moins de 72h avant le début de l'événement"
         ]
 
     def test_raise_if_event_too_close_and_booked_long_ago(self):
@@ -341,7 +352,8 @@ class CheckBeneficiaryCanCancelBookingNoConfirmationDateTest:
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             validation.check_beneficiary_can_cancel_booking(booking.user, booking)
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+            "Impossible d'annuler une réservation plus de 48h après l'avoir "
+            "réservée et moins de 72h avant le début de l'événement"
         ]
 
 
