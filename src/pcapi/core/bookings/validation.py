@@ -79,8 +79,8 @@ def check_beneficiary_can_cancel_booking(user: UserSQLEntity, booking: Booking) 
         raise exceptions.BookingIsAlreadyUsed()
     if booking.isConfirmed:
         raise exceptions.CannotCancelConfirmedBooking(
-            conf.BOOKING_CONFIRMATION_ERROR_CLAUSES[conf.CONFIRM_BOOKING_AFTER_CREATION_DELAY],
-            conf.BOOKING_CONFIRMATION_ERROR_CLAUSES[conf.CONFIRM_BOOKING_BEFORE_EVENT_DELAY],
+            conf.BOOKING_CONFIRMATION_ERROR_CLAUSES["CONFIRM_BOOKING_AFTER_CREATION_DELAY"],
+            conf.BOOKING_CONFIRMATION_ERROR_CLAUSES["CONFIRM_BOOKING_BEFORE_EVENT_DELAY"],
         )
 
 

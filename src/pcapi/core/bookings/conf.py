@@ -10,6 +10,6 @@ def _get_hours_from_timedelta(td: datetime.timedelta) -> float:
 
 
 BOOKING_CONFIRMATION_ERROR_CLAUSES = {
-    CONFIRM_BOOKING_AFTER_CREATION_DELAY: f"plus de {_get_hours_from_timedelta(CONFIRM_BOOKING_AFTER_CREATION_DELAY):.0f}h après l'avoir réservée et ",
-    CONFIRM_BOOKING_BEFORE_EVENT_DELAY: f"moins de {_get_hours_from_timedelta(CONFIRM_BOOKING_BEFORE_EVENT_DELAY):.0f}h avant le début de l'événement",
+    "CONFIRM_BOOKING_AFTER_CREATION_DELAY": f"plus de {_get_hours_from_timedelta(CONFIRM_BOOKING_AFTER_CREATION_DELAY):.0f}h après l'avoir réservée et ",
+    "CONFIRM_BOOKING_BEFORE_EVENT_DELAY": f"moins de {_get_hours_from_timedelta(CONFIRM_BOOKING_BEFORE_EVENT_DELAY):.0f}h avant le début de l'événement",
 }
