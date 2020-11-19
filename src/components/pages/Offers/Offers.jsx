@@ -544,10 +544,6 @@ class Offers extends PureComponent {
   }
 
   resetFilters = () => {
-    if (!this.hasSearchFilters()) {
-      return
-    }
-
     this.setState({ offerer: null })
     this.setState({ searchFilters: { ...DEFAULT_SEARCH_FILTERS } }, () => {
       this.getPaginatedOffersWithFilters({ shouldTriggerSpinner: true })
