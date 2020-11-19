@@ -387,11 +387,11 @@ class LocalProviderTest:
             assert provider.updatedThumbs == 0
             assert provider.createdThumbs == 1
 
-        @patch("pcapi.local_providers.local_provider.save_provider_thumb")
+        @patch("pcapi.local_providers.local_provider.create_thumb")
         @patch("pcapi.utils.object_storage.build_thumb_path")
         @clean_database
         def test_create_several_thumbs_when_thumb_index_is_4_and_current_thumbCount_is_0(
-            self, mock_get_thumb_storage_id, mock_save_thumb, app
+            self, mock_get_thumb_storage_id, mock_create_thumb, app
         ):
             # Given
             provider_test = create_provider(local_class="TestLocalProviderWithThumbIndexAt4")
@@ -417,7 +417,7 @@ class LocalProviderTest:
             provider._handle_thumb(existing_product)
 
             # Then
-            assert mock_save_thumb.call_count == 4
+            assert mock_create_thumb.call_count == 4
             assert provider.checkedThumbs == 1
             assert provider.updatedThumbs == 0
             assert provider.createdThumbs == 4
@@ -479,10 +479,10 @@ class LocalProviderTest:
             # Then
             assert product.thumbCount == 4
 
-        @patch("pcapi.local_providers.local_provider._add_new_thumb")
+        @patch("pcapi.local_providers.local_provider.create_thumb")
         @clean_database
         def test_should_only_replace_image_at_specific_thumb_index_when_thumCount_is_superior_to_thumbIndex(
-            self, mock_add_new_thumb, app
+            self, mock_create_thumb, app
         ):
             # Given
             provider_test = create_provider(local_class="TestLocalProviderWithThumb")
@@ -508,5 +508,5 @@ class LocalProviderTest:
             _save_same_thumb_from_thumb_count_to_index(product, thumb_index, thumb)
 
             # Then
-            assert mock_add_new_thumb.call_count == 1
+            assert mock_create_thumb.call_count == 1
             assert product.thumbCount == 4

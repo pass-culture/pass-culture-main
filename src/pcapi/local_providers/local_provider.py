@@ -3,7 +3,7 @@ from collections.abc import Iterator
 from datetime import datetime
 
 from pcapi.connectors.redis import send_venue_provider_data_to_redis
-from pcapi.connectors.thumb_storage import save_provider_thumb
+from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.local_providers.chunk_manager import get_existing_pc_obj
 from pcapi.local_providers.chunk_manager import save_chunks
 from pcapi.local_providers.providable_info import ProvidableInfo
@@ -19,7 +19,6 @@ from pcapi.repository import repository
 from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.utils.logger import logger
-from pcapi.utils.object_storage import build_thumb_path
 from pcapi.validation.models import entity_validator
 
 
@@ -227,16 +226,10 @@ class LocalProvider(Iterator):
 
 
 def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
-    thumb_counter = pc_object.thumbCount if pc_object.thumbCount else 0
-    if thumb_index <= thumb_counter:
-        _add_new_thumb(pc_object, thumb_index, image_as_bytes)
+    if thumb_index <= pc_object.thumbCount:
+        # replace existing thumb
+        create_thumb(pc_object, image_as_bytes, thumb_index)
     else:
-        while thumb_counter < thumb_index:
-            _add_new_thumb(pc_object, thumb_counter, image_as_bytes)
-            thumb_counter += 1
-
-
-def _add_new_thumb(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
-    thumb_destination_storage_id = build_thumb_path(pc_object, thumb_index)
-    save_provider_thumb(thumb_destination_storage_id, image_as_bytes)
-    pc_object.thumbCount = pc_object.thumbCount + 1
+        # add new thumb
+        for index in range(pc_object.thumbCount, thumb_index):
+            create_thumb(pc_object, image_as_bytes, thumb_index)

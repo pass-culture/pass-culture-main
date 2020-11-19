@@ -43,7 +43,7 @@ def create_mediation(form: CreateMediationBodyModel) -> MediationResponseIdModel
     thumb = read_thumb(files=request.files, form=form)
     check_thumb_quality(thumb)
     repository.save(mediation)
-    mediation = create_thumb(mediation, thumb, 0, crop=_get_crop(form))
+    mediation = create_thumb(mediation, thumb, 0, crop_params=_get_crop(form))
     repository.save(mediation)
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=form.offer_id)

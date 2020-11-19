@@ -1,6 +1,5 @@
 from typing import Callable
 
-from pcapi.domain.mediations import DO_NOT_CROP
 from pcapi.domain.mediations import standardize_image
 from pcapi.models import ApiErrors
 from pcapi.utils import requests
@@ -36,38 +35,25 @@ def read_thumb(files=None, form=None):
 
 def create_thumb(
     model_with_thumb,
-    thumb,
+    image_as_bytes,
     image_index,
-    image_type=None,
-    convert=True,
-    crop=None,
+    crop_params=None,
     symlink_path=None,
-    need_save=True,
     store_thumb: Callable = store_public_object,
 ):
-    new_thumb = thumb
-
-    if convert:
-        crop_params = crop if crop is not None else DO_NOT_CROP
-        new_thumb = standardize_image(thumb, crop_params)
+    image_as_bytes = standardize_image(image_as_bytes, crop_params)
 
     store_thumb(
-        "thumbs",
-        model_with_thumb.get_thumb_storage_id(image_index),
-        new_thumb,
-        "image/" + (image_type or "jpeg"),
+        bucket="thumbs",
+        id=model_with_thumb.get_thumb_storage_id(image_index),
+        blob=image_as_bytes,
+        content_type="image/jpeg",
         symlink_path=symlink_path,
     )
 
     model_with_thumb.thumbCount = model_with_thumb.thumbCount + 1
 
-    if need_save:
-        return model_with_thumb
-
-
-def save_provider_thumb(thumb_storage_id, thumb, store_thumb: Callable = store_public_object):
-    resized_image = standardize_image(thumb, DO_NOT_CROP)
-    store_thumb("thumbs", thumb_storage_id, resized_image, "image/jpeg")
+    return model_with_thumb
 
 
 def _fetch_image(thumb_url: str) -> bytes:
