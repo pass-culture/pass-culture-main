@@ -1,6 +1,6 @@
+from pcapi.core.offers.models import MediationSQLEntity
 from pcapi.core.offers.models import Offer
 from pcapi.models import VenueSQLEntity
-from pcapi.models.mediation_sql_entity import MediationSQLEntity
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer
 from pcapi.sandboxes.scripts.utils.helpers import get_offer_helper

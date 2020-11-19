@@ -27,7 +27,7 @@ from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.extra_data_mixin import ExtraDataMixin
-from pcapi.models.mediation_sql_entity import MediationSQLEntity
+from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.offer_type import Category
 from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ProductType
@@ -38,6 +38,24 @@ from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.models.versioned_mixin import VersionedMixin
 from pcapi.utils.date import DateTimes
 from pcapi.utils.logger import logger
+
+
+class MediationSQLEntity(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
+    __tablename__ = "mediation"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    credit = Column(String(255), nullable=True)
+
+    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    authorId = Column(BigInteger, ForeignKey("user.id"), nullable=True)
+
+    author = relationship("UserSQLEntity", foreign_keys=[authorId], backref="mediations")
+
+    offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=False)
+
+    offer = relationship("Offer", foreign_keys=[offerId], backref="mediations")
 
 
 EVENT_AUTOMATIC_REFUND_DELAY = timedelta(hours=48)

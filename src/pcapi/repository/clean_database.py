@@ -1,3 +1,4 @@
+from pcapi.core.offers.models import MediationSQLEntity
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import AllocinePivot
 from pcapi.models import AllocineVenueProviderPriceRule
@@ -12,7 +13,6 @@ from pcapi.models import FavoriteSQLEntity
 from pcapi.models import IrisFrance
 from pcapi.models import IrisVenues
 from pcapi.models import LocalProviderEvent
-from pcapi.models import MediationSQLEntity
 from pcapi.models import Offer
 from pcapi.models import OfferCriterion
 from pcapi.models import Offerer

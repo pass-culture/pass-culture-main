@@ -11,6 +11,7 @@ from geoalchemy2.shape import from_shape
 from shapely.geometry import Polygon
 
 from pcapi.core.bookings import api as bookings_api
+from pcapi.core.offers.models import MediationSQLEntity
 from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -29,7 +30,6 @@ from pcapi.models import FavoriteSQLEntity
 from pcapi.models import ImportStatus
 from pcapi.models import IrisFrance
 from pcapi.models import IrisVenues
-from pcapi.models import MediationSQLEntity
 from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import Payment

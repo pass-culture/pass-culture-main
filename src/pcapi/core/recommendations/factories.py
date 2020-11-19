@@ -2,13 +2,14 @@ import factory
 
 from pcapi import models
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 
 
 class MediationFactory(BaseFactory):
     class Meta:
-        model = models.MediationSQLEntity
+        model = pcapi.core.offers.models.MediationSQLEntity
 
     offer = factory.SubFactory(offers_factories.OfferFactory)
     isActive = True

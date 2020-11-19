@@ -3,11 +3,11 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi.core.offers.models import MediationSQLEntity
 from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import list_favorites_of_beneficiary
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
 from pcapi.models import FavoriteSQLEntity
-from pcapi.models import MediationSQLEntity
 from pcapi.models import Offer
 from pcapi.repository import repository
 from pcapi.repository.favorite_queries import find_favorite_for_offer_and_user

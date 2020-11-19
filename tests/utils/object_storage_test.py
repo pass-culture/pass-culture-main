@@ -1,4 +1,4 @@
-from pcapi.models.mediation_sql_entity import MediationSQLEntity
+from pcapi.core.offers.models import MediationSQLEntity
 from pcapi.models.product import Product
 from pcapi.utils.object_storage import build_thumb_path
 

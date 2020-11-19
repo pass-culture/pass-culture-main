@@ -2,7 +2,6 @@ from typing import List
 from typing import Optional
 
 from flask import current_app as app
-from flask import jsonify
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
@@ -10,13 +9,12 @@ from flask_login import login_required
 from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import read_thumb
+from pcapi.core.offers.models import MediationSQLEntity
 from pcapi.flask_app import private_api
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.mediation_sql_entity import MediationSQLEntity
 from pcapi.models.user_offerer import RightsType
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
-from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.mediations_serialize import CreateMediationBodyModel
 from pcapi.routes.serialization.mediations_serialize import MediationResponseIdModel
 from pcapi.routes.serialization.mediations_serialize import UpdateMediationBodyModel

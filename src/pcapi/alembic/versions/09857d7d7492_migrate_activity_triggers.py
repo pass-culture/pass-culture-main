@@ -9,7 +9,7 @@ from alembic import op
 from postgresql_audit.base import VersioningManager
 
 # revision identifiers, used by Alembic.
-from pcapi.models import MediationSQLEntity
+from pcapi.core.offers.models import MediationSQLEntity
 
 
 revision = "09857d7d7492"

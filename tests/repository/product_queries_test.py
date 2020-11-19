@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.offers.models import MediationSQLEntity
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
@@ -11,7 +12,6 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
 from pcapi.models import FavoriteSQLEntity
-from pcapi.models import MediationSQLEntity
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Recommendation

@@ -1,6 +1,6 @@
 from typing import List
 
-from pcapi.models import MediationSQLEntity
+from pcapi.core.offers.models import MediationSQLEntity
 
 
 def find_by_id(mediation_id: str) -> MediationSQLEntity:

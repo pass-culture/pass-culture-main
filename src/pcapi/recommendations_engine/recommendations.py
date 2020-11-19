@@ -4,8 +4,8 @@ from typing import Optional
 
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.offers.models import MediationSQLEntity
 from pcapi.models import DiscoveryView
-from pcapi.models import MediationSQLEntity
 from pcapi.models import Offer
 from pcapi.models import Recommendation
 from pcapi.models import UserSQLEntity

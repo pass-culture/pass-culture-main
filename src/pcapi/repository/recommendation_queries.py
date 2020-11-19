@@ -2,7 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from typing import List
 
-from pcapi.models import MediationSQLEntity
+from pcapi.core.offers.models import MediationSQLEntity
 from pcapi.models import Offer
 from pcapi.models import Recommendation
 from pcapi.models.api_errors import ResourceNotFoundError

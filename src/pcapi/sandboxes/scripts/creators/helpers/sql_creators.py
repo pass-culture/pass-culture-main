@@ -7,10 +7,10 @@ from typing import List
 from typing import Optional
 
 from pcapi.core.bookings import api as bookings_api
+from pcapi.core.offers.models import MediationSQLEntity
 from pcapi.models import Booking
 from pcapi.models import Deposit
 from pcapi.models import EventType
-from pcapi.models import MediationSQLEntity
 from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import Payment

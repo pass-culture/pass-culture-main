@@ -1,12 +1,12 @@
 from typing import List
 
+from pcapi.core.offers.models import MediationSQLEntity
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from pcapi.infrastructure.repository.beneficiary_bookings import active_mediation_domain_converter
 from pcapi.infrastructure.repository.beneficiary_bookings import stock_domain_converter
 from pcapi.models import Booking
-from pcapi.models import MediationSQLEntity
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock

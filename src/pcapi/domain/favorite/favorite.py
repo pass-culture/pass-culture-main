@@ -1,6 +1,6 @@
 from typing import Dict
 
-from pcapi.models import MediationSQLEntity
+from pcapi.core.offers.models import MediationSQLEntity
 from pcapi.models import Offer
 
 
