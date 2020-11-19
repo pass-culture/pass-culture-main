@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
@@ -133,7 +133,7 @@ class DeleteUnwantedExistingProductTest:
         assert Offer.query.count() == 0
         assert Stock.query.count() == 0
         assert Recommendation.query.count() == 0
-        assert MediationSQLEntity.query.count() == 0
+        assert Mediation.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_should_delete_product_when_related_offer_is_on_user_favorite_list(self, app):
@@ -158,7 +158,7 @@ class DeleteUnwantedExistingProductTest:
         assert Product.query.count() == 0
         assert Offer.query.count() == 0
         assert Stock.query.count() == 0
-        assert MediationSQLEntity.query.count() == 0
+        assert Mediation.query.count() == 0
         assert Recommendation.query.count() == 0
         assert FavoriteSQLEntity.query.count() == 0
 

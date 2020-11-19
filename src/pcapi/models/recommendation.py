@@ -24,7 +24,7 @@ class Recommendation(PcObject, Model):
         BigInteger, ForeignKey("mediation.id"), index=True, nullable=True
     )  # NULL for recommendation created directly from a thing or an event
 
-    mediation = relationship("MediationSQLEntity", foreign_keys=[mediationId], backref="recommendations")
+    mediation = relationship("Mediation", foreign_keys=[mediationId], backref="recommendations")
 
     offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=True)
 

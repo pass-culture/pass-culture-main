@@ -9,7 +9,6 @@ def install_scripts():
     from pcapi.models.has_address_mixin import HasAddressMixin
     from pcapi.models.has_thumb_mixin import HasThumbMixin
     from pcapi.models.local_provider_event import LocalProviderEvent
-    from pcapi.models.mediation_sql_entity import MediationSQLEntity
     from pcapi.models.needs_validation_mixin import NeedsValidationMixin
     from pcapi.models.offerer import Offerer
     from pcapi.models.pc_object import PcObject

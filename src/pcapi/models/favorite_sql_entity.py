@@ -21,7 +21,7 @@ class FavoriteSQLEntity(PcObject, Model):
 
     mediationId = Column(BigInteger, ForeignKey("mediation.id"), index=True, nullable=True)
 
-    mediation = relationship("MediationSQLEntity", foreign_keys=[mediationId], backref="favorites")
+    mediation = relationship("Mediation", foreign_keys=[mediationId], backref="favorites")
 
     __table_args__ = (
         UniqueConstraint(

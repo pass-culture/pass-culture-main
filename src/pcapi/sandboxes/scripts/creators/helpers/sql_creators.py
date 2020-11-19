@@ -7,7 +7,7 @@ from typing import List
 from typing import Optional
 
 from pcapi.core.bookings import api as bookings_api
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.models import Booking
 from pcapi.models import Deposit
 from pcapi.models import EventType
@@ -434,7 +434,7 @@ def create_recommendation(
     idx: int = None,
     is_clicked: bool = False,
     is_first: bool = False,
-    mediation: MediationSQLEntity = None,
+    mediation: Mediation = None,
     search: str = None,
     share_medium: str = None,
 ) -> Recommendation:

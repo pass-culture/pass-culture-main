@@ -40,7 +40,7 @@ from pcapi.utils.date import DateTimes
 from pcapi.utils.logger import logger
 
 
-class MediationSQLEntity(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
+class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
     __tablename__ = "mediation"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -263,7 +263,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
             self.product.populate_from_dict(product_dict)
 
     @property
-    def activeMediation(self) -> Optional[MediationSQLEntity]:
+    def activeMediation(self) -> Optional[Mediation]:
         sorted_by_date_desc = sorted(self.mediations, key=lambda m: m.dateCreated, reverse=True)
         only_active = list(filter(lambda m: m.isActive, sorted_by_date_desc))
         return only_active[0] if only_active else None

@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
@@ -36,7 +36,7 @@ class Returns200:
         response = auth_request.patch("/mediations/%s" % humanize(mediation.id), json=data)
 
         # then
-        mediation = MediationSQLEntity.query.get(mediation_id)
+        mediation = Mediation.query.get(mediation_id)
         assert response.status_code == 200
         assert response.json["id"] == humanize(mediation.id)
         assert response.json["thumbUrl"] == mediation.thumbUrl

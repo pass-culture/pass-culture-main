@@ -1,4 +1,4 @@
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import AllocinePivot
 from pcapi.models import AllocineVenueProviderPriceRule
@@ -56,7 +56,7 @@ def clean_all_database(*args, **kwargs):
     Stock.query.delete()
     FavoriteSQLEntity.query.delete()
     Recommendation.query.delete()
-    MediationSQLEntity.query.delete()
+    Mediation.query.delete()
     OfferCriterion.query.delete()
     Criterion.query.delete()
     SeenOffer.query.delete()

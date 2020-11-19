@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -55,7 +55,7 @@ class Returns201:
 
         # then
         assert response.status_code == 201
-        mediation = MediationSQLEntity.query.one()
+        mediation = Mediation.query.one()
         assert mediation.thumbCount == 1
         assert response.json == {
             "id": humanize(mediation.id),
@@ -88,7 +88,7 @@ class Returns201:
         response = auth_request.post("/mediations", files=files)
 
         # then
-        mediation = MediationSQLEntity.query.one()
+        mediation = Mediation.query.one()
         assert mediation.thumbCount == 1
         assert response.status_code == 201
 

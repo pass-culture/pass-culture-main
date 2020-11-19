@@ -9,7 +9,7 @@ import pcapi.core.users.factories as users_factories
 
 class MediationFactory(BaseFactory):
     class Meta:
-        model = pcapi.core.offers.models.MediationSQLEntity
+        model = pcapi.core.offers.models.Mediation
 
     offer = factory.SubFactory(offers_factories.OfferFactory)
     isActive = True

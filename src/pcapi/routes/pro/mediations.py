@@ -9,7 +9,7 @@ from flask_login import login_required
 from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import read_thumb
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.flask_app import private_api
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import RightsType
@@ -33,7 +33,7 @@ from pcapi.validation.routes.mediations import check_thumb_quality
 def create_mediation(form: CreateMediationBodyModel) -> MediationResponseIdModel:
     check_thumb_in_request(files=request.files, form=form)
     ensure_current_user_has_rights(RightsType.editor, form.offerer_id)
-    mediation = MediationSQLEntity()
+    mediation = Mediation()
     mediation.author = current_user
     mediation.offerId = form.offer_id
     mediation.credit = form.credit
@@ -53,9 +53,9 @@ def create_mediation(form: CreateMediationBodyModel) -> MediationResponseIdModel
 @login_required
 @spectree_serialize(on_success_status=200, response_model=UpdateMediationResponseModel)
 def update_mediation(mediation_id: str, body: UpdateMediationBodyModel) -> UpdateMediationResponseModel:
-    mediation = load_or_404(MediationSQLEntity, mediation_id)
+    mediation = load_or_404(Mediation, mediation_id)
     ensure_current_user_has_rights(RightsType.editor, mediation.offer.venue.managingOffererId)
-    mediation = MediationSQLEntity.query.filter_by(id=dehumanize(mediation_id)).first()
+    mediation = Mediation.query.filter_by(id=dehumanize(mediation_id)).first()
     mediation.populate_from_dict(body.dict())
     repository.save(mediation)
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):

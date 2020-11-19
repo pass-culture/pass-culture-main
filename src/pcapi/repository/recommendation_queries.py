@@ -2,7 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from typing import List
 
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.models import Offer
 from pcapi.models import Recommendation
 from pcapi.models.api_errors import ResourceNotFoundError
@@ -23,7 +23,7 @@ def update_read_recommendations(read_recommendations: List) -> None:
         db.session.commit()
 
 
-def _has_no_mediation_or_mediation_does_not_match_offer(mediation: MediationSQLEntity, offer_id: str) -> bool:
+def _has_no_mediation_or_mediation_does_not_match_offer(mediation: Mediation, offer_id: str) -> bool:
     return mediation is None or (offer_id and (mediation.offerId != offer_id))
 
 

@@ -1,4 +1,4 @@
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Offerer
@@ -49,7 +49,7 @@ def get_non_free_thing_offer_with_active_mediation():
     offer = (
         query.filter(Offer.url == None)
         .filter(Stock.beginningDatetime == None)
-        .filter(Offer.mediations.any(MediationSQLEntity.isActive == True))
+        .filter(Offer.mediations.any(Mediation.isActive == True))
         .join(VenueSQLEntity, VenueSQLEntity.id == Offer.venueId)
         .join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId)
         .filter(Offerer.validationToken == None)
@@ -69,7 +69,7 @@ def get_non_free_event_offer():
     query = get_non_free_offers_query_by_type()
     offer = (
         query.filter(Offer.type.in_([str(event_type) for event_type in EventType]))
-        .filter(Offer.mediations.any(MediationSQLEntity.isActive == True))
+        .filter(Offer.mediations.any(Mediation.isActive == True))
         .join(VenueSQLEntity, VenueSQLEntity.id == Offer.venueId)
         .join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId)
         .filter(Offerer.validationToken == None)

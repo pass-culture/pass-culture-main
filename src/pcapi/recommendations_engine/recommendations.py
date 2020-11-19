@@ -4,7 +4,7 @@ from typing import Optional
 
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.models import DiscoveryView
 from pcapi.models import Offer
 from pcapi.models import Recommendation
@@ -93,7 +93,7 @@ def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
     return _create_recommendation(user, offer, mediation=mediation)
 
 
-def _create_recommendation(user: UserSQLEntity, offer: Offer, mediation: MediationSQLEntity = None) -> Recommendation:
+def _create_recommendation(user: UserSQLEntity, offer: Offer, mediation: Mediation = None) -> Recommendation:
     recommendation = Recommendation()
     recommendation.user = user
 
@@ -112,7 +112,7 @@ def _create_recommendation(user: UserSQLEntity, offer: Offer, mediation: Mediati
 # TODO: when using discovery view use this function instead of _create_recommendation
 # in create_recommendations_for_discovery
 def _create_recommendation_from_offers(
-    user: UserSQLEntity, reco_view: DiscoveryView, mediation: MediationSQLEntity = None
+    user: UserSQLEntity, reco_view: DiscoveryView, mediation: Mediation = None
 ) -> Recommendation:
     recommendation = Recommendation()
     recommendation.user = user

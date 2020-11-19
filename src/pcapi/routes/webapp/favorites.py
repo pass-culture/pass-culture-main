@@ -3,7 +3,7 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import list_favorites_of_beneficiary
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
@@ -29,7 +29,7 @@ def add_to_favorite():
 
     offer = load_or_404(Offer, offer_id)
     if mediation_id is not None:
-        mediation = load_or_404(MediationSQLEntity, mediation_id)
+        mediation = load_or_404(Mediation, mediation_id)
 
     favorite_sql_entity = FavoriteSQLEntity()
     favorite_sql_entity.mediation = mediation

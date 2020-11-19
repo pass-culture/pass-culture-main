@@ -1,4 +1,4 @@
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.models import Deposit
 from pcapi.utils.string_processing import get_model_plural_name
 from pcapi.utils.string_processing import remove_single_letters_for_search
@@ -40,7 +40,7 @@ class GetModelPluralNameTest:
 
     def test_should_return_model_plural_when_suffixed_by_sql_entity(self):
         # Given
-        model = MediationSQLEntity()
+        model = Mediation()
 
         # When
         model_plural_name = get_model_plural_name(model)

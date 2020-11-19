@@ -1,4 +1,4 @@
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
@@ -43,7 +43,7 @@ def get_existing_webapp_hbs_user():
 
 def get_existing_event_offer_with_active_mediation_already_booked_but_cancellable_and_user_hnmm_93():
     offer_with_stock_id_tuples = (
-        Offer.query.filter(Offer.mediations.any(MediationSQLEntity.isActive))
+        Offer.query.filter(Offer.mediations.any(Mediation.isActive))
         .join(Stock)
         .filter(Stock.beginningDatetime != None)
         .add_columns(Stock.id)
@@ -65,7 +65,7 @@ def get_existing_event_offer_with_active_mediation_already_booked_but_cancellabl
 def get_existing_digital_offer_with_active_mediation_already_booked_and_user_hnmm_93():
     offer_with_stock_id_tuples = (
         Offer.query.outerjoin(Product)
-        .filter(Offer.mediations.any(MediationSQLEntity.isActive))
+        .filter(Offer.mediations.any(Mediation.isActive))
         .filter(Product.url != None)
         .join(Stock, (Offer.id == Stock.offerId))
         .add_columns(Stock.id)

@@ -1,5 +1,5 @@
 from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import Token
@@ -82,7 +82,7 @@ __all__ = (
     "NeedsValidationMixin",
     "ProvidableMixin",
     "Booking",
-    "MediationSQLEntity",
+    "Mediation",
     "Stock",
     "Offerer",
     "VenueProvider",
@@ -130,7 +130,7 @@ models = (
     Email,
     Product,
     Offer,
-    MediationSQLEntity,
+    Mediation,
     Recommendation,
     FavoriteSQLEntity,
     Feature,

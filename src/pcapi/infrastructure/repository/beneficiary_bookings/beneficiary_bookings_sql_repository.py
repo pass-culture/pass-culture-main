@@ -1,6 +1,6 @@
 from typing import List
 
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
@@ -74,10 +74,10 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
 
 def _get_mediations_information(offers_ids: List[int]) -> List[object]:
     return (
-        MediationSQLEntity.query.join(Offer, Offer.id == MediationSQLEntity.offerId)
-        .filter(MediationSQLEntity.offerId.in_(offers_ids))
-        .filter(MediationSQLEntity.isActive == True)
-        .with_entities(MediationSQLEntity.id, MediationSQLEntity.dateCreated, MediationSQLEntity.offerId)
+        Mediation.query.join(Offer, Offer.id == Mediation.offerId)
+        .filter(Mediation.offerId.in_(offers_ids))
+        .filter(Mediation.isActive == True)
+        .with_entities(Mediation.id, Mediation.dateCreated, Mediation.offerId)
         .all()
     )
 

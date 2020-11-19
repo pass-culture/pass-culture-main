@@ -1,4 +1,4 @@
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.models.product import Product
 from pcapi.utils.object_storage import build_thumb_path
 
@@ -6,7 +6,7 @@ from pcapi.utils.object_storage import build_thumb_path
 class BuildThumbPathTest:
     def test_returns_path_without_sql_entity_when_given_model_is_mediation(self):
         # given
-        mediation_object = MediationSQLEntity()
+        mediation_object = Mediation()
         mediation_object.id = 123
         mediation_object.offerId = 567
 

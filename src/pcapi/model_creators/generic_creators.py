@@ -11,7 +11,7 @@ from geoalchemy2.shape import from_shape
 from shapely.geometry import Polygon
 
 from pcapi.core.bookings import api as bookings_api
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -203,7 +203,7 @@ def create_deposit(
 
 
 def create_favorite(
-    idx: int = None, mediation: MediationSQLEntity = None, offer: Offer = None, user: UserSQLEntity = None
+    idx: int = None, mediation: Mediation = None, offer: Offer = None, user: UserSQLEntity = None
 ) -> FavoriteSQLEntity:
     favorite = FavoriteSQLEntity()
     favorite.id = idx
@@ -225,8 +225,8 @@ def create_mediation(
     is_active: bool = True,
     last_provider_id: int = None,
     thumb_count: int = 0,
-) -> MediationSQLEntity:
-    mediation = MediationSQLEntity()
+) -> Mediation:
+    mediation = Mediation()
     mediation.author = author
     mediation.credit = credit
     mediation.dateCreated = date_created
@@ -405,7 +405,7 @@ def create_recommendation(
     idx: int = None,
     is_clicked: bool = False,
     is_first: bool = False,
-    mediation: MediationSQLEntity = None,
+    mediation: Mediation = None,
     search: str = None,
     share_medium: str = None,
 ) -> Recommendation:

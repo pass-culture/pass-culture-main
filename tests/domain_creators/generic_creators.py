@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from pcapi.core.bookings.api import compute_confirmation_date
-from pcapi.core.offers.models import MediationSQLEntity
+from pcapi.core.offers.models import Mediation
 from pcapi.domain.beneficiary.beneficiary import Beneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
@@ -190,5 +190,5 @@ def create_domain_event_booking_recap(
     )
 
 
-def create_domain_favorite(identifier: int, offer: Offer, mediation: MediationSQLEntity = None, booking: dict = None):
+def create_domain_favorite(identifier: int, offer: Offer, mediation: Mediation = None, booking: dict = None):
     return Favorite(identifier=identifier, offer=offer, mediation=mediation, booking=booking)
