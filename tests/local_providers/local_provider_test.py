@@ -319,10 +319,7 @@ class SaveThumbFromThumbCountToIndexTest:
         # Then
         assert product.thumbCount == 4
 
-    @patch("pcapi.local_providers.local_provider.create_thumb")
-    def test_should_only_replace_image_at_specific_thumb_index_when_thumbCount_is_superior_to_thumbIndex(
-        self, mock_create_thumb
-    ):
+    def test_should_only_replace_image_at_specific_thumb_index_when_thumbCount_is_superior_to_thumbIndex(self):
         provider = offerers_factories.ProviderFactory(localClass="TestLocalProviderWithThumb")
         providable_info = create_providable_info()
         product = offers_factories.ThingProductFactory(
@@ -339,5 +336,4 @@ class SaveThumbFromThumbCountToIndexTest:
         repository.save(product)
 
         # Then
-        assert mock_create_thumb.call_count == 1
         assert product.thumbCount == 4

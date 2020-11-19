@@ -58,6 +58,7 @@ class Returns201:
         # then
         assert response.status_code == 201
         mediation = MediationSQLEntity.query.one()
+        assert mediation.thumbCount == 1
         assert response.json == {
             "id": humanize(mediation.id),
         }
@@ -90,6 +91,8 @@ class Returns201:
         response = auth_request.post("/mediations", files=files)
 
         # then
+        mediation = MediationSQLEntity.query.one()
+        assert mediation.thumbCount == 1
         assert response.status_code == 201
 
     @patch("pcapi.routes.mediations.feature_queries.is_active", return_value=True)

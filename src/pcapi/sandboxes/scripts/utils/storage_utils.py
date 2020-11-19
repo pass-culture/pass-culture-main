@@ -6,7 +6,7 @@ from pcapi.utils.object_storage import store_public_object
 from pcapi.utils.string_processing import get_model_plural_name
 
 
-def store_public_object_from_sandbox_assets(folder, model, offer_type, index=0):
+def store_public_object_from_sandbox_assets(folder, model, offer_type):
     mimes_by_folder = {"spreadsheets": "application/CSV", "thumbs": "image/jpeg", "zips": "application/zip"}
     plural_model_name = get_model_plural_name(model)
     thumb_id = humanize(model.id)
@@ -14,7 +14,8 @@ def store_public_object_from_sandbox_assets(folder, model, offer_type, index=0):
 
     with open(thumb_path, mode="rb") as thumb_file:
         if folder == "thumbs":
-            model = create_thumb(model, thumb_file.read(), index, convert=False, symlink_path=thumb_path)
+            create_thumb(model, thumb_file.read(), 0, convert=False, symlink_path=thumb_path)
+            model.thumbCount += 1
         else:
             store_public_object(
                 folder,

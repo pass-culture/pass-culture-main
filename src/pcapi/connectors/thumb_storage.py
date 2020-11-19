@@ -51,10 +51,6 @@ def create_thumb(
         symlink_path=symlink_path,
     )
 
-    model_with_thumb.thumbCount = model_with_thumb.thumbCount + 1
-
-    return model_with_thumb
-
 
 def _fetch_image(thumb_url: str) -> bytes:
     if not thumb_url[0:4] == "http":
