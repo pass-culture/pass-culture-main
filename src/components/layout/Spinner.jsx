@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import Icon from './Icon'
@@ -30,6 +31,8 @@ class Spinner extends PureComponent {
 
   render() {
     const { nbDots } = this.state
+    const { sentence } = this.props
+
     return (
       <div className="loading-spinner">
         <Icon svg="loader-pc" />
@@ -37,11 +40,19 @@ class Spinner extends PureComponent {
           className="content"
           data-dots={Array(nbDots).fill('.').join('')}
         >
-          {'Chargement en cours'}
+          {sentence}
         </div>
       </div>
     )
   }
+}
+
+Spinner.defaultProps = {
+  sentence: 'Chargement en cours',
+}
+
+Spinner.propTypes = {
+  sentence: PropTypes.string,
 }
 
 export default Spinner

@@ -8,6 +8,10 @@
     flex-direction: row;
   }
 
+  .loading-spinner {
+    flex-grow: 1;
+  }
+
   .account-section {
     flex-direction: column;
     max-width: rem(250px);

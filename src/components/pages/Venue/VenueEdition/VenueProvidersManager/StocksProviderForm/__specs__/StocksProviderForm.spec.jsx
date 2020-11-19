@@ -5,24 +5,16 @@ import { Form } from 'react-final-form'
 import StocksProviderForm from '../StocksProviderForm'
 
 describe('src | StocksProviderForm', () => {
-  let cancelProviderSelection
-  let createVenueProvider
   let props
-  let notify
-  let history
 
   beforeEach(() => {
-    cancelProviderSelection = jest.fn()
-    createVenueProvider = jest.fn()
-    history = {
-      push: jest.fn(),
-    }
-    notify = jest.fn()
     props = {
-      cancelProviderSelection,
-      createVenueProvider,
-      history,
-      notify,
+      cancelProviderSelection: jest.fn(),
+      createVenueProvider: jest.fn(),
+      history: {
+        push: jest.fn(),
+      },
+      notify: jest.fn(),
       offererId: 'CC',
       providerId: 'CC',
       venueId: 'AA',
@@ -38,19 +30,7 @@ describe('src | StocksProviderForm', () => {
 
       // then
       const importButton = wrapper.find({ children: 'Importer' })
-      expect(importButton).toHaveLength(1)
       expect(importButton.prop('type')).toBe('submit')
-    })
-
-    it('should render the title of the section compte', () => {
-      // when
-      const wrapper = mount(<StocksProviderForm {...props} />)
-
-      // then
-      const form = wrapper.find(Form)
-      expect(form).toHaveLength(1)
-      const label = form.find({ children: 'Compte' })
-      expect(label).toHaveLength(1)
     })
 
     it('should display the venue siret as provider identifier', () => {
@@ -59,7 +39,8 @@ describe('src | StocksProviderForm', () => {
 
       // then
       const form = wrapper.find(Form)
-      expect(form).toHaveLength(1)
+      const label = form.find({ children: 'Compte' })
+      expect(label).toHaveLength(1)
       const textField = form.find({ children: '12345678901234' })
       expect(textField).toHaveLength(1)
     })
@@ -75,7 +56,9 @@ describe('src | StocksProviderForm', () => {
       wrapper.find(Form).invoke('onSubmit')()
 
       // then
-      expect(createVenueProvider).toHaveBeenCalledWith(
+      const sentence = wrapper.find({ children: 'Vérification de votre rattachement' })
+      expect(sentence).toHaveLength(1)
+      expect(props.createVenueProvider).toHaveBeenCalledWith(
         expect.any(Function),
         expect.any(Function),
         payload
@@ -87,13 +70,13 @@ describe('src | StocksProviderForm', () => {
     it('should update current url when action was handled successfully', () => {
       // given
       const wrapper = mount(<StocksProviderForm {...props} />)
-      createVenueProvider.mockImplementation((fail, success) => success())
+      props.createVenueProvider.mockImplementation((fail, success) => success())
 
       // when
       wrapper.find(Form).invoke('onSubmit')()
 
       // then
-      expect(history.push).toHaveBeenCalledWith('/structures/CC/lieux/AA')
+      expect(props.history.push).toHaveBeenCalledWith('/structures/CC/lieux/AA')
     })
   })
 
@@ -110,14 +93,14 @@ describe('src | StocksProviderForm', () => {
           ],
         },
       }
-      createVenueProvider.mockImplementation(fail => fail(null, action))
+      props.createVenueProvider.mockImplementation(fail => fail(null, action))
 
       // when
       wrapper.find(Form).invoke('onSubmit')()
 
       // then
-      expect(notify).toHaveBeenCalledWith([{ error: 'fake error' }])
-      expect(cancelProviderSelection).toHaveBeenCalledTimes(1)
+      expect(props.notify).toHaveBeenCalledWith([{ error: 'fake error' }])
+      expect(props.cancelProviderSelection).toHaveBeenCalledTimes(1)
     })
   })
 })

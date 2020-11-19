@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { Form } from 'react-final-form'
+
+import Spinner from 'components/layout/Spinner'
 
 class StocksProviderForm extends Component {
   constructor() {
@@ -43,18 +45,22 @@ class StocksProviderForm extends Component {
     const { venueSiret } = this.props
     const { isLoadingMode } = this.state
     return (
-      <form onSubmit={props.handleSubmit}>
-        <div className="provider-form">
-          <div className="account-section">
-            <div className="account-label">
-              {'Compte'}
-            </div>
-            <div className="account-value">
-              {venueSiret}
-            </div>
-          </div>
+      <Fragment>
+        {isLoadingMode && <Spinner sentence="Vérification de votre rattachement" />}
 
-          {!isLoadingMode && (
+        {!isLoadingMode && (
+          <form
+            className="provider-form"
+            onSubmit={props.handleSubmit}
+          >
+            <div className="account-section">
+              <div className="account-label">
+                {'Compte'}
+              </div>
+              <div className="account-value">
+                {venueSiret}
+              </div>
+            </div>
             <div className="provider-import-button-container">
               <button
                 className="secondary-button"
@@ -63,9 +69,9 @@ class StocksProviderForm extends Component {
                 {'Importer'}
               </button>
             </div>
-          )}
-        </div>
-      </form>
+          </form>
+        )}
+      </Fragment>
     )
   }
 
