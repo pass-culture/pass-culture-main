@@ -14,7 +14,7 @@ function computeShouldDisplayFinishedBanner(offer, userBookingsForThisOffer, off
   if (userBookingsForThisOffer) {
     return true
   } else {
-    return !offer.isBookable && !offerIsBookedByUser
+    return offer.isBookable === false && !offerIsBookedByUser
   }
 }
 
@@ -46,7 +46,4 @@ export const mapStateToProps = (state, ownProps) => {
   return { shouldDisplayFinishedBanner }
 }
 
-export default compose(
-  withRouter,
-  connect(mapStateToProps)
-)(Finishable)
+export default compose(withRouter, connect(mapStateToProps))(Finishable)

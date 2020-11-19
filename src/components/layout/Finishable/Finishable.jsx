@@ -18,7 +18,7 @@ const Finishable = ({ shouldDisplayFinishedBanner, children }) =>
   )
 
 Finishable.defaultProps = {
-  shouldDisplayFinishedBanner: true,
+  shouldDisplayFinishedBanner: false,
 }
 
 Finishable.propTypes = {
