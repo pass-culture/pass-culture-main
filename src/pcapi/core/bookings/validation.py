@@ -82,13 +82,6 @@ def check_beneficiary_can_cancel_booking(user: UserSQLEntity, booking: Booking) 
             conf.BOOKING_CONFIRMATION_ERROR_CLAUSES[conf.CONFIRM_BOOKING_AFTER_CREATION_DELAY],
             conf.BOOKING_CONFIRMATION_ERROR_CLAUSES[conf.CONFIRM_BOOKING_BEFORE_EVENT_DELAY],
         )
-    # TODO(fseguin, 2020-11-03: cleanup after next MEP
-    if booking.stock.beginningDatetime and not booking.confirmationDate:
-        if _is_confirmed(booking.stock.beginningDatetime, booking.dateCreated):
-            raise exceptions.CannotCancelConfirmedBooking(
-                conf.BOOKING_CONFIRMATION_ERROR_CLAUSES[conf.CONFIRM_BOOKING_AFTER_CREATION_DELAY],
-                conf.BOOKING_CONFIRMATION_ERROR_CLAUSES[conf.CONFIRM_BOOKING_BEFORE_EVENT_DELAY],
-            )
 
 
 # FIXME: should not raise exceptions from `api_errors` (see below for details).
@@ -161,12 +154,3 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         gone = api_errors.ResourceGoneError()
         gone.add_error("payment", "Le remboursement est en cours de traitement")
         raise gone
-
-
-# TODO(fseguin, 2020-11-03): cleanup after next MEP
-def _is_confirmed(event_beginning: datetime.datetime, booking_creation: datetime.datetime) -> bool:
-    now = datetime.datetime.utcnow()
-    before_event_limit = event_beginning - conf.CONFIRM_BOOKING_BEFORE_EVENT_DELAY
-    after_booking_limit = booking_creation + conf.CONFIRM_BOOKING_AFTER_CREATION_DELAY
-    confirmation_date = max(min(before_event_limit, after_booking_limit), now)
-    return datetime.datetime.utcnow() >= confirmation_date
