@@ -2,7 +2,7 @@ import datetime
 
 
 CONFIRM_BOOKING_AFTER_CREATION_DELAY = datetime.timedelta(hours=48)
-CONFIRM_BOOKING_BEFORE_EVENT_DELAY = datetime.timedelta(hours=72)
+CONFIRM_BOOKING_BEFORE_EVENT_DELAY = datetime.timedelta(hours=48)
 
 
 def _get_hours_from_timedelta(td: datetime.timedelta) -> float:

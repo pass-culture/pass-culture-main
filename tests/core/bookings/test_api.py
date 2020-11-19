@@ -173,7 +173,7 @@ class CancelByBeneficiaryTest:
             api.cancel_booking_by_beneficiary(booking.user, booking)
         assert not booking.isCancelled
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 48h avant le début de l'événement"
         ]
 
     def test_raise_if_booking_created_too_long_ago_to_cancel_booking(self):
@@ -187,7 +187,7 @@ class CancelByBeneficiaryTest:
             api.cancel_booking_by_beneficiary(booking.user, booking)
         assert not booking.isCancelled
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 48h avant le début de l'événement"
         ]
 
     def test_raise_if_event_too_close_and_booked_long_ago(self):
@@ -201,7 +201,7 @@ class CancelByBeneficiaryTest:
             api.cancel_booking_by_beneficiary(booking.user, booking)
         assert not booking.isCancelled
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 72h avant le début de l'événement"
+            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 48h avant le début de l'événement"
         ]
 
     def test_raise_if_trying_to_cancel_someone_else_s_booking(self):
@@ -356,19 +356,19 @@ class ComputeConfirmationDateTest:
             api.compute_confirmation_date(event_date_too_close_to_cancel_booking, booking_creation) == booking_creation
         )
 
-    def test_returns_two_days_after_booking_creation_if_event_begins_in_more_than_five_days(self, booking_date):
+    def test_returns_two_days_after_booking_creation_if_event_begins_in_more_than_four_days(self, booking_date):
         event_date_more_ten_days_from_now = booking_date + timedelta(days=6)
         booking_creation = booking_date
         assert api.compute_confirmation_date(
             event_date_more_ten_days_from_now, booking_creation
         ) == booking_creation + timedelta(days=2)
 
-    def test_returns_three_days_before_event_if_event_begins_between_three_and_five_days_from_now(self, booking_date):
+    def test_returns_two_days_before_event_if_event_begins_between_two_and_four_days_from_now(self, booking_date):
         event_date_four_days_from_now = booking_date + timedelta(days=4)
         booking_creation = booking_date
         assert api.compute_confirmation_date(
             event_date_four_days_from_now, booking_creation
-        ) == event_date_four_days_from_now - timedelta(days=3)
+        ) == event_date_four_days_from_now - timedelta(days=2)
 
 
 @freeze_time("2020-11-17 09:21:34")
