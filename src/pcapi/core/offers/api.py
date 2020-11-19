@@ -25,6 +25,7 @@ from pcapi.utils.rest import load_or_raise_error
 
 from . import models
 from . import validation
+from ..bookings.api import update_confirmation_dates
 
 
 DEFAULT_OFFERS_PER_PAGE = 20
@@ -145,6 +146,7 @@ def edit_stock(
     if beginning != previous_beginning:
         bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
         if bookings:
+            bookings = update_confirmation_dates(bookings, beginning)
             try:
                 user_emails.send_batch_stock_postponement_emails_to_users(bookings, send_email=mailing.send_raw_email)
             except mailing.MailServiceException as exc:

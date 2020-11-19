@@ -3,9 +3,8 @@ from datetime import timedelta
 from unittest import mock
 
 from flask import current_app as app
-import pytest
-import pytz
 from freezegun import freeze_time
+import pytest
 
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions

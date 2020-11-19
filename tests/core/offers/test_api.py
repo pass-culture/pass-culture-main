@@ -118,6 +118,29 @@ class EditStockTest:
         notified_bookings = mocked_send_email.call_args_list[0][0][0]
         assert notified_bookings == [booking1]
 
+    def test_update_bookings_confirmation_date_if_report_of_event(self):
+        now = datetime.datetime.now()
+        event_in_4_days = now + datetime.timedelta(days=4)
+        confirmation_date_for_event_in_4_days = now + datetime.timedelta(days=1)
+        event_reported_in_10_days = now + datetime.timedelta(days=10)
+        confirmation_date_for_event_reported_in_10_days = now + datetime.timedelta(days=2)
+
+        stock = factories.EventStockFactory(beginningDatetime=event_in_4_days)
+        booking = bookings_factories.BookingFactory(stock=stock, dateCreated=now)
+        initial_confirmation_date = booking.confirmationDate
+
+        api.edit_stock(
+            stock,
+            price=5,
+            quantity=20,
+            beginning=event_reported_in_10_days,
+            booking_limit_datetime=stock.bookingLimitDatetime,
+        )
+
+        booking_updated = models.Booking.query.one()
+        assert initial_confirmation_date == confirmation_date_for_event_in_4_days
+        assert booking_updated.confirmationDate == confirmation_date_for_event_reported_in_10_days
+
     def test_checks_number_of_reservations(self):
         stock = factories.EventStockFactory()
         bookings_factories.BookingFactory(stock=stock)
