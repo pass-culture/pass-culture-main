@@ -1,8 +1,28 @@
-import { mount } from 'enzyme'
+import '@testing-library/jest-dom'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import { Form } from 'react-final-form'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
 
-import StocksProviderForm from '../StocksProviderForm'
+import * as notification from 'store/reducers/notificationReducer'
+import * as fetch from 'utils/fetch'
+import { getStubStore } from 'utils/stubStore'
+
+import StocksProviderFormContainer from '../StocksProviderFormContainer'
+
+const renderStocksProviderForm = props => {
+  const stubbedStore = getStubStore({
+    notification: (state = {}) => state,
+  })
+
+  render(
+    <Provider store={stubbedStore}>
+      <MemoryRouter>
+        <StocksProviderFormContainer {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
+}
 
 describe('src | StocksProviderForm', () => {
   let props
@@ -10,96 +30,91 @@ describe('src | StocksProviderForm', () => {
   beforeEach(() => {
     props = {
       cancelProviderSelection: jest.fn(),
-      createVenueProvider: jest.fn(),
-      history: {
-        push: jest.fn(),
-      },
-      notify: jest.fn(),
-      offererId: 'CC',
-      providerId: 'CC',
-      venueId: 'AA',
-      venueIdAtOfferProviderIsRequired: false,
-      venueSiret: '12345678901234',
+      historyPush: jest.fn(),
+      offererId: 'O1',
+      providerId: 'P1',
+      siret: '12345678901234',
+      venueId: 'V1',
     }
   })
 
-  describe('when not in loading mode', () => {
-    it('should display an import button', () => {
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
+  describe('at first', () => {
+    it('should display an import button and the venue siret as provider identifier', () => {
       // when
-      const wrapper = mount(<StocksProviderForm {...props} />)
+      renderStocksProviderForm(props)
 
       // then
-      const importButton = wrapper.find({ children: 'Importer' })
-      expect(importButton.prop('type')).toBe('submit')
-    })
-
-    it('should display the venue siret as provider identifier', () => {
-      // when
-      const wrapper = mount(<StocksProviderForm {...props} />)
-
-      // then
-      const form = wrapper.find(Form)
-      const label = form.find({ children: 'Compte' })
-      expect(label).toHaveLength(1)
-      const textField = form.find({ children: '12345678901234' })
-      expect(textField).toHaveLength(1)
+      expect(screen.queryByRole('button', { name: 'Importer' })).toBeInTheDocument()
+      expect(screen.queryByText('Compte')).toBeInTheDocument()
+      expect(screen.queryByText('12345678901234')).toBeInTheDocument()
     })
   })
 
-  describe('handleSubmit', () => {
-    it('should update venue provider using API', () => {
+  describe('when submit the form', () => {
+    it('should display the spinner', async () => {
       // given
-      const wrapper = mount(<StocksProviderForm {...props} />)
-      const payload = { providerId: 'CC', venueId: 'AA', venueIdAtOfferProvider: '12345678901234' }
+      renderStocksProviderForm(props)
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(),
+        ok: true,
+      })
+      const submitButton = screen.getByRole('button', { name: 'Importer' })
+      jest.spyOn(fetch, 'fetchFromApiWithCredentials').mockResolvedValue()
 
       // when
-      wrapper.find(Form).invoke('onSubmit')()
+      await waitFor(() => fireEvent.click(submitButton))
 
       // then
-      const sentence = wrapper.find({ children: 'Vérification de votre rattachement' })
-      expect(sentence).toHaveLength(1)
-      expect(props.createVenueProvider).toHaveBeenCalledWith(
-        expect.any(Function),
-        expect.any(Function),
-        payload
-      )
+      expect(screen.getByText('Vérification de votre rattachement')).toBeInTheDocument()
+      expect(fetch.fetchFromApiWithCredentials).toHaveBeenCalledWith('/venueProviders', 'POST', {
+        providerId: 'P1',
+        venueId: 'V1',
+        venueIdAtOfferProvider: '12345678901234',
+      })
     })
-  })
 
-  describe('handleSuccess', () => {
-    it('should update current url when action was handled successfully', () => {
+    it('should display the venue page if the venue provider is created', async () => {
       // given
-      const wrapper = mount(<StocksProviderForm {...props} />)
-      props.createVenueProvider.mockImplementation((fail, success) => success())
+      renderStocksProviderForm(props)
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve(),
+        ok: true,
+        status: 201,
+      })
+      const submitButton = screen.getByRole('button', { name: 'Importer' })
 
       // when
-      wrapper.find(Form).invoke('onSubmit')()
+      await waitFor(() => fireEvent.click(submitButton))
 
       // then
-      expect(props.history.push).toHaveBeenCalledWith('/structures/CC/lieux/AA')
+      expect(props.historyPush).toHaveBeenCalledWith('/structures/O1/lieux/V1')
     })
-  })
 
-  describe('handleFail', () => {
-    it('should display a notification with the proper informations', () => {
+    it('should display a notification if there is something wrong with the server', async () => {
       // given
-      const wrapper = mount(<StocksProviderForm {...props} />)
-      const action = {
-        payload: {
-          errors: [
-            {
-              error: 'fake error',
-            },
-          ],
-        },
-      }
-      props.createVenueProvider.mockImplementation(fail => fail(null, action))
+      renderStocksProviderForm(props)
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: () => Promise.resolve({ errors: ['error message'] }),
+        ok: false,
+      })
+      jest.spyOn(notification, 'showNotificationV1').mockReturnValue({
+        payload: {},
+        type: 'FAKE_TYPE',
+      })
+      const submitButton = screen.getByRole('button', { name: 'Importer' })
 
       // when
-      wrapper.find(Form).invoke('onSubmit')()
+      await waitFor(() => fireEvent.click(submitButton))
 
       // then
-      expect(props.notify).toHaveBeenCalledWith([{ error: 'fake error' }])
+      expect(notification.showNotificationV1).toHaveBeenCalledWith({
+        text: 'error message',
+        type: 'danger',
+      })
       expect(props.cancelProviderSelection).toHaveBeenCalledTimes(1)
     })
   })

@@ -103,7 +103,7 @@ class VenueProvidersManager extends PureComponent {
   }
 
   render() {
-    const { providers, match, venueProviders, venueSiret } = this.props
+    const { history, providers, match, venueProviders, venueSiret } = this.props
     const {
       isCreationMode,
       providerId,
@@ -181,10 +181,11 @@ class VenueProvidersManager extends PureComponent {
                 {isStocksProvider && (
                   <StocksProviderForm
                     cancelProviderSelection={this.cancelProviderSelection}
+                    historyPush={history.push}
                     offererId={match.params.offererId}
                     providerId={providerId}
+                    siret={venueSiret}
                     venueId={match.params.venueId}
-                    venueSiret={venueSiret}
                   />
                 )}
               </div>
@@ -210,6 +211,7 @@ class VenueProvidersManager extends PureComponent {
 }
 
 VenueProvidersManager.propTypes = {
+  history: PropTypes.shape().isRequired,
   loadProvidersAndVenueProviders: PropTypes.func.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape(),

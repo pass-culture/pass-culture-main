@@ -31,7 +31,7 @@ class Spinner extends PureComponent {
 
   render() {
     const { nbDots } = this.state
-    const { sentence } = this.props
+    const { message } = this.props
 
     return (
       <div className="loading-spinner">
@@ -40,7 +40,7 @@ class Spinner extends PureComponent {
           className="content"
           data-dots={Array(nbDots).fill('.').join('')}
         >
-          {sentence}
+          {message}
         </div>
       </div>
     )
@@ -48,11 +48,11 @@ class Spinner extends PureComponent {
 }
 
 Spinner.defaultProps = {
-  sentence: 'Chargement en cours',
+  message: 'Chargement en cours',
 }
 
 Spinner.propTypes = {
-  sentence: PropTypes.string,
+  message: PropTypes.string,
 }
 
 export default Spinner

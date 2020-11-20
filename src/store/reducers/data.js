@@ -1,8 +1,10 @@
 import { createDataReducer } from 'redux-saga-data'
 
+const GET_DESK_BOOKINGS = 'GET_DESK_BOOKINGS'
 const SET_MEDIATIONS = 'SET_MEDIATIONS'
 const SET_STOCKS = 'SET_STOCKS'
 const SET_VENUES = 'SET_VENUES'
+const SET_VENUE_PROVIDERS = 'SET_VENUE_PROVIDERS'
 
 export const initialState = {
   bookings: [],
@@ -40,14 +42,16 @@ export const setVenues = venues => ({
 
 const dataAndOffersRecapReducer = (state = initialState, action) => {
   switch (action.type) {
+    case GET_DESK_BOOKINGS:
+      return { ...state, ...{ deskBookings: [action.payload] } }
     case SET_MEDIATIONS:
       return { ...state, ...{ mediations: action.mediations } }
-    case SET_VENUES:
-      return { ...state, ...{ venues: action.venues } }
     case SET_STOCKS:
       return { ...state, ...{ stocks: action.stocks } }
-    case 'GET_DESK_BOOKINGS':
-      return { ...state, ...{ deskBookings: [action.payload] } }
+    case SET_VENUES:
+      return { ...state, ...{ venues: action.venues } }
+    case SET_VENUE_PROVIDERS:
+      return { ...state, ...{ venueProviders: [action.payload] } }
     default:
       return dataReducer(state, action)
   }

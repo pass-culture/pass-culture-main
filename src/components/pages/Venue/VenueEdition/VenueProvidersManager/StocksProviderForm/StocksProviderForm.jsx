@@ -1,98 +1,88 @@
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
-import { Form } from 'react-final-form'
+import React, { Component } from 'react'
 
 import Spinner from 'components/layout/Spinner'
 
 class StocksProviderForm extends Component {
   constructor() {
     super()
+
     this.state = {
-      isLoadingMode: false,
+      isCheckingApi: false,
     }
   }
 
-  handleFormSubmit = () => {
-    this.setState({ isLoadingMode: true })
+  handleFormSubmit = event => {
+    event.preventDefault()
 
-    const { createVenueProvider } = this.props
-    const { providerId, venueId, venueSiret } = this.props
+    this.setState({ isCheckingApi: true })
 
+    const { createVenueProvider, providerId, venueId, siret } = this.props
     const payload = {
-      providerId: providerId,
-      venueIdAtOfferProvider: venueSiret,
-      venueId: venueId,
+      providerId,
+      venueIdAtOfferProvider: siret,
+      venueId,
     }
 
-    return createVenueProvider(this.handleFail, this.handleSuccess, payload)
-  }
+    createVenueProvider(payload)
+      .then(() => {
+        const { historyPush, offererId, venueId } = this.props
 
-  handleSuccess = () => {
-    const { history, offererId, venueId } = this.props
-    history.push(`/structures/${offererId}/lieux/${venueId}`)
-  }
+        historyPush(`/structures/${offererId}/lieux/${venueId}`)
+      })
+      .catch(error => {
+        error.json().then(body => {
+          const { cancelProviderSelection, notify } = this.props
 
-  handleFail = (state, action) => {
-    const { cancelProviderSelection, notify } = this.props
-    const {
-      payload: { errors },
-    } = action
-    notify(errors)
-    cancelProviderSelection()
-  }
-
-  renderForm = props => {
-    const { venueSiret } = this.props
-    const { isLoadingMode } = this.state
-    return (
-      <Fragment>
-        {isLoadingMode && <Spinner sentence="Vérification de votre rattachement" />}
-
-        {!isLoadingMode && (
-          <form
-            className="provider-form"
-            onSubmit={props.handleSubmit}
-          >
-            <div className="account-section">
-              <div className="account-label">
-                {'Compte'}
-              </div>
-              <div className="account-value">
-                {venueSiret}
-              </div>
-            </div>
-            <div className="provider-import-button-container">
-              <button
-                className="secondary-button"
-                type="submit"
-              >
-                {'Importer'}
-              </button>
-            </div>
-          </form>
-        )}
-      </Fragment>
-    )
+          notify(body)
+          cancelProviderSelection()
+        })
+      })
   }
 
   render() {
-    return (
-      <Form
-        onSubmit={this.handleFormSubmit}
-        render={this.renderForm}
-      />
-    )
+    const { siret } = this.props
+    const { isCheckingApi } = this.state
+
+    if (isCheckingApi) {
+      return <Spinner message="Vérification de votre rattachement" />
+    } else {
+      return (
+        <form
+          className="provider-form"
+          onSubmit={this.handleFormSubmit}
+        >
+          <div className="account-section">
+            <div className="account-label">
+              {'Compte'}
+            </div>
+            <div className="account-value">
+              {siret}
+            </div>
+          </div>
+          <div className="provider-import-button-container">
+            <button
+              className="secondary-button"
+              type="submit"
+            >
+              {'Importer'}
+            </button>
+          </div>
+        </form>
+      )
+    }
   }
 }
 
 StocksProviderForm.propTypes = {
   cancelProviderSelection: PropTypes.func.isRequired,
   createVenueProvider: PropTypes.func.isRequired,
-  history: PropTypes.shape().isRequired,
+  historyPush: PropTypes.func.isRequired,
   notify: PropTypes.func.isRequired,
+  offererId: PropTypes.string.isRequired,
   providerId: PropTypes.string.isRequired,
+  siret: PropTypes.string.isRequired,
   venueId: PropTypes.string.isRequired,
-  venueSiret: PropTypes.string.isRequired,
 }
 
 export default StocksProviderForm
