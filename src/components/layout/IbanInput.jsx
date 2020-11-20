@@ -1,9 +1,11 @@
 import { isValidIBAN, friendlyFormatIBAN } from 'ibantools'
-import { BasicInput, mergeErrors } from 'pass-culture-shared'
+import { BasicInput } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { removeWhitespaces } from 'react-final-form-utils'
 import { connect } from 'react-redux'
+
+import { mergeErrors } from 'store/reducers/errors'
 
 class IbanInput extends PureComponent {
   handleOnChange = event => {
