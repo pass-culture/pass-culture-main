@@ -1,8 +1,9 @@
 import { shallow } from 'enzyme'
-import { Field, Form, showModal } from 'pass-culture-shared'
+import { Field, Form } from 'pass-culture-shared'
 import React from 'react'
 
 import Titles from 'components/layout/Titles/Titles'
+import { showModal } from 'store/reducers/modal'
 
 import LocalProviderInformation from '../../LocalProviderInformation/LocalProviderInformationContainer'
 import MediationsManager from '../../MediationsManager/MediationsManagerContainer'
