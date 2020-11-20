@@ -40,10 +40,11 @@ class DeletedRecordException(Exception):
 class PcObject:
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    def __init__(self, **options):
-        from_dict = options.get("from_dict")
+    def __init__(self, **kwargs):
+        from_dict = kwargs.pop("from_dict", None)
         if from_dict:
             self.populate_from_dict(from_dict)
+        super().__init__(**kwargs)
 
     def __repr__(self):
         id = "unsaved" if self.id is None else str(self.id) + "/" + humanize(self.id)
