@@ -1,4 +1,4 @@
-import { getRequestErrorStringFromErrors } from '../string'
+import { getRequestErrorStringFromErrors, queryStringToObject } from '../string'
 
 describe('getRequestErrorStringFromErrors', () => {
   const arrayOfObject1 = [{ global: 'toto' }]
@@ -28,5 +28,20 @@ describe('getRequestErrorStringFromErrors', () => {
 
   it('parse empty error', () => {
     expect(getRequestErrorStringFromErrors(noErrror)).toBe('')
+  })
+})
+
+describe('queryStringToObject', () => {
+  it('should return an empty object when given a string with query params', () => {
+    const queryString =
+      'distance=50&latitude=48.863779099999995&longitude=2.3374663&mots-cles=conspiration&page=1'
+    const expected = {
+      distance: '50',
+      latitude: '48.863779099999995',
+      longitude: '2.3374663',
+      'mots-cles': 'conspiration',
+      page: '1',
+    }
+    expect(queryStringToObject(queryString)).toStrictEqual(expected)
   })
 })

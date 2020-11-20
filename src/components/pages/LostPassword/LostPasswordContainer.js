@@ -1,9 +1,9 @@
-import { searchSelector } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
+import { searchSelector } from 'store/selectors/search'
 
 import LostPassword from './LostPassword'
 
