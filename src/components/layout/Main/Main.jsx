@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { Modal, resetForm, Spinner } from 'pass-culture-shared'
+import { Modal, resetForm } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
@@ -87,7 +87,6 @@ class Main extends PureComponent {
       redBg,
       Tag,
       whiteHeader,
-      withLoading,
     } = this.props
     const { loading } = this.state
     const footer = [].concat(children).find(e => e && e.type === 'footer')
@@ -147,7 +146,6 @@ class Main extends PureComponent {
                   <div className="main-content">
                     {$content}
                   </div>
-                  {withLoading && loading && <Spinner />}
                 </div>
               </div>
             </div>
@@ -175,7 +173,6 @@ Main.defaultProps = {
   header: {},
   redBg: null,
   whiteHeader: null,
-  withLoading: null,
 }
 
 Main.propTypes = {
@@ -192,7 +189,6 @@ Main.propTypes = {
   name: PropTypes.string.isRequired,
   redBg: PropTypes.string,
   whiteHeader: PropTypes.string,
-  withLoading: PropTypes.bool,
 }
 
 export default Main

@@ -1,5 +1,5 @@
 import { shallow } from 'enzyme'
-import { Modal, Spinner } from 'pass-culture-shared'
+import { Modal } from 'pass-culture-shared'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
@@ -8,7 +8,6 @@ import HeaderContainer from '../../Header/HeaderContainer'
 import NotificationV1Container from '../../NotificationV1/NotificationV1Container'
 import NotificationV2Container from '../../NotificationV2/NotificationV2Container'
 import Main from '../Main'
-
 
 describe('src | components | layout | Main', () => {
   describe('render', () => {
@@ -49,6 +48,7 @@ describe('src | components | layout | Main', () => {
         // Then
         expect(wrapper.find(HeaderContainer)).toHaveLength(0)
       })
+
       it('should render a notification container with isFullscreen props', () => {
         // Given
         props.fullscreen = true
@@ -59,6 +59,7 @@ describe('src | components | layout | Main', () => {
         // Then
         expect(wrapper.find(NotificationV1Container).prop('isFullscreen')).toBe(true)
       })
+
       it('should render the new notification container', () => {
         // Given
         props.fullscreen = true
@@ -82,6 +83,7 @@ describe('src | components | layout | Main', () => {
         // Then
         expect(wrapper.find(HeaderContainer)).toHaveLength(1)
       })
+
       it('should render a navlink component if backTo is defined', () => {
         // Given
         props.fullscreen = false
@@ -93,18 +95,7 @@ describe('src | components | layout | Main', () => {
         // Then
         expect(wrapper.find(NavLink)).toHaveLength(1)
       })
-      it('should render a spinner if loading', () => {
-        // Given
-        props.fullscreen = false
-        props.withLoading = true
 
-        // When
-        const wrapper = shallow(<Main {...props} />)
-        wrapper.setState({ loading: true })
-
-        // Then
-        expect(wrapper.find(Spinner)).toHaveLength(1)
-      })
       it('should render the new notification container', () => {
         // Given
         props.fullscreen = false
