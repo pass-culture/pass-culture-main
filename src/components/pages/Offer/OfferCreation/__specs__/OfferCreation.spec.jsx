@@ -695,7 +695,7 @@ describe('src | OfferCreation', () => {
         // then
         const fieldGroups = wrapper.find('.field-group')
         const fieldGroupForUsefulInformation = fieldGroups.at(1)
-        const venueField = fieldGroupForUsefulInformation.find(Field).at(1)
+        const venueField = fieldGroupForUsefulInformation.find(Field).at(0)
         expect(fieldGroups).toHaveLength(5)
         expect(venueField.prop('options')).toStrictEqual(expectedOptions)
       })
@@ -723,7 +723,7 @@ describe('src | OfferCreation', () => {
         // then
         const fieldGroups = wrapper.find('.field-group')
         const fieldGroupForUsefulInformation = fieldGroups.at(1)
-        const venueField = fieldGroupForUsefulInformation.find(Field).at(1)
+        const venueField = fieldGroupForUsefulInformation.find(Field).at(0)
         expect(fieldGroups).toHaveLength(5)
         expect(venueField.prop('options')).toStrictEqual(expectedOptions)
       })

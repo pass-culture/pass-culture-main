@@ -30,6 +30,7 @@ import { isAllocineOffer, isOfferFromStockProvider } from '../domain/localProvid
 import offerIsRefundable from '../domain/offerIsRefundable'
 import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
+import { OffererName } from '../OfferEdition/OffererName'
 import StocksManagerContainer from '../StocksManager/StocksManagerContainer'
 import { getDurationInHours, getDurationInMinutes } from '../utils/duration'
 
@@ -554,16 +555,18 @@ class OfferCreation extends PureComponent {
                 {'Infos pratiques'}
               </h2>
               <div className="field-group">
-                <Field
-                  debug
-                  label="Structure"
-                  name="offererId"
-                  options={offerers}
-                  placeholder="Sélectionnez une structure"
-                  readOnly={isOffererSelectReadOnly}
-                  required
-                  type="select"
-                />
+                {isOffererSelectReadOnly && <OffererName name={offerer.name} />}
+                {!isOffererSelectReadOnly && (
+                  <Field
+                    debug
+                    label="Structure"
+                    name="offererId"
+                    options={offerers}
+                    placeholder="Sélectionnez une structure"
+                    required
+                    type="select"
+                  />
+                )}
                 {offererHasNoPhysicalVenues && (
                   <div className="field is-horizontal">
                     <div className="field-label" />
