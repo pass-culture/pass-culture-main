@@ -859,10 +859,6 @@ const state = {
       quantity: 10,
     },
   },
-  loading: {
-    config: {},
-    isActive: false,
-  },
   modal: {
     $modal: null,
     config: {

@@ -1,4 +1,4 @@
-import { form, loading } from 'pass-culture-shared'
+import { form } from 'pass-culture-shared'
 import { combineReducers } from 'redux'
 
 import { offersReducer } from '../offers/reducer'
@@ -18,7 +18,6 @@ const rootReducer = combineReducers({
   data,
   errors,
   form,
-  loading,
   modal,
   offers: offersReducer,
   notification: notificationReducer,
