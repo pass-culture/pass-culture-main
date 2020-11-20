@@ -46,6 +46,7 @@ python-dotenv==0.14.0
 python-json-logger==0.1.11
 python-swiftclient==3.10.1
 qrcode==6.1
+requests_mock
 rq==1.5.2
 schwifty==2020.9.0
 sentry-sdk==0.18.0

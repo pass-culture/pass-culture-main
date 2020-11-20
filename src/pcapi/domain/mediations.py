@@ -7,7 +7,7 @@ from PIL.Image import Image
 
 MAX_THUMB_WIDTH = 750
 CONVERSION_QUALITY = 90
-DO_NOT_CROP = [0, 0, 1]
+DO_NOT_CROP = (0, 0, 1)
 
 
 # FIXME (dbaty, 2020-11-19): the functions is this module are not
@@ -23,7 +23,7 @@ def standardize_image(image: bytes, crop_params: List = None) -> bytes:
 
 
 def _crop_image(crop_origin_x: int, crop_origin_y: int, crop_size: int, image: Image) -> Image:
-    if crop_origin_x == 0 and crop_origin_y == 0 and crop_size == 1:
+    if (crop_origin_x, crop_origin_y, crop_size) == DO_NOT_CROP:
         return image
 
     width = image.size[0]

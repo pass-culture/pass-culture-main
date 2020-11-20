@@ -1,21 +1,15 @@
 from typing import List
 from typing import Optional
 
-from flask import current_app as app
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
-from pcapi.connectors import redis
-from pcapi.connectors.thumb_storage import create_thumb
-from pcapi.connectors.thumb_storage import read_thumb
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Mediation
 from pcapi.flask_app import private_api
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import RightsType
-from pcapi.repository import feature_queries
-from pcapi.repository import repository
+from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.serialization.mediations_serialize import CreateMediationBodyModel
 from pcapi.routes.serialization.mediations_serialize import MediationResponseIdModel
 from pcapi.routes.serialization.mediations_serialize import UpdateMediationBodyModel
@@ -23,29 +17,25 @@ from pcapi.routes.serialization.mediations_serialize import UpdateMediationRespo
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import ensure_current_user_has_rights
-from pcapi.validation.routes.mediations import check_thumb_in_request
-from pcapi.validation.routes.mediations import check_thumb_quality
 
 
 @private_api.route("/mediations", methods=["POST"])
 @login_required
 @spectree_serialize(on_success_status=201, response_model=MediationResponseIdModel)
 def create_mediation(form: CreateMediationBodyModel) -> MediationResponseIdModel:
-    check_thumb_in_request(files=request.files, form=form)
     ensure_current_user_has_rights(RightsType.editor, form.offerer_id)
-    mediation = Mediation()
-    mediation.author = current_user
-    mediation.offerId = form.offer_id
-    mediation.credit = form.credit
-    mediation.offererId = form.offerer_id
-    thumb = read_thumb(files=request.files, form=form)
-    check_thumb_quality(thumb)
-    repository.save(mediation)
-    create_thumb(mediation, thumb, 0, crop_params=_get_crop(form))
-    mediation.thumbCount = 1
-    repository.save(mediation)
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=form.offer_id)
+
+    offer = get_offer_by_id(form.offer_id)
+    image_as_bytes = form.get_image_as_bytes(request)
+
+    mediation = offers_api.create_mediation(
+        user=current_user,
+        offer=offer,
+        credit=form.credit,
+        image_as_bytes=image_as_bytes,
+        crop_params=form.crop_params,
+    )
+
     return MediationResponseIdModel.from_orm(mediation)
 
 

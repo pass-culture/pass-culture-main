@@ -1,5 +1,8 @@
 from datetime import datetime
+from io import BytesIO
 from typing import Optional
+
+from PIL import Image
 
 from pcapi.models import Offer
 from pcapi.models import Stock
@@ -70,3 +73,9 @@ def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: se
         api_errors.status_code = 400
         api_errors.add_error("global", "Pour les offres importées, certains champs ne sont pas modifiables")
         raise api_errors
+
+
+def check_mediation_thumb_quality(image_as_bytes: bytes) -> None:
+    image = Image.open(BytesIO(image_as_bytes))
+    if image.width < 400 or image.height < 400:
+        raise ApiErrors({"thumb": ["L'image doit faire 400 * 400 px minimum"]})

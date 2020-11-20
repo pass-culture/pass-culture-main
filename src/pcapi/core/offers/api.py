@@ -4,6 +4,7 @@ from typing import Optional
 from flask import current_app as app
 
 from pcapi.connectors import redis
+from pcapi.connectors.thumb_storage import create_thumb
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.offers.repository as offers_repository
 from pcapi.domain import admin_emails
@@ -11,6 +12,9 @@ from pcapi.domain import user_emails
 from pcapi.domain.create_offer import fill_offer_with_new_data
 from pcapi.domain.create_offer import initialize_offer_from_product_id
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from pcapi.models import Mediation
+from pcapi.models import Offer
+from pcapi.models import Offerer
 from pcapi.models import RightsType
 from pcapi.models import Stock
 from pcapi.models import UserSQLEntity
@@ -191,6 +195,33 @@ def delete_stock(stock: Stock) -> None:
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
+
+
+def create_mediation(
+    user: UserSQLEntity,
+    offer: Offer,
+    credit: str,
+    image_as_bytes: bytes,
+    crop_params=None,
+) -> Mediation:
+    validation.check_mediation_thumb_quality(image_as_bytes)
+
+    mediation = Mediation(
+        author=user,
+        offer=offer,
+        credit=credit,
+    )
+    # `create_thumb()` requires the object to have an id, so we must save now.
+    repository.save(mediation)
+
+    create_thumb(mediation, image_as_bytes, image_index=0, crop_params=crop_params)
+    mediation.thumbCount = 1
+    repository.save(mediation)
+
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+
+    return mediation
 
 
 def update_mediation(mediation: Mediation, is_active: bool) -> Mediation:

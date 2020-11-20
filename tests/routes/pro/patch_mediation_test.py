@@ -90,30 +90,6 @@ class Returns200:
             "thumbUrl",
         }
 
-    @patch("pcapi.routes.pro.mediations.feature_queries.is_active", return_value=True)
-    @patch("pcapi.routes.pro.mediations.redis.add_offer_id")
-    def should_add_offer_id_to_redis_when_mediation_is_edited(self, mock_redis, mock_feature, app):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        user_offerer = create_user_offerer(user, offerer)
-        mediation = create_mediation(offer)
-        repository.save(mediation)
-        repository.save(user, venue, offerer, user_offerer)
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-        data = {"isActive": False}
-
-        # when
-        response = auth_request.patch("/mediations/%s" % humanize(mediation.id), json=data)
-
-        # then
-        assert response.status_code == 200
-        mock_redis.assert_called_once()
-        mock_kwargs = mock_redis.call_args[1]
-        assert mock_kwargs["offer_id"] == offer.id
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns403:

@@ -1,24 +1,25 @@
 from io import BytesIO
-import os
 from pathlib import Path
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
+import requests_mock
 
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.models import ApiErrors
 from pcapi.repository import repository
-from pcapi.utils.date import format_into_utc_date
+from pcapi.routes.serialization import mediations_serialize
 from pcapi.utils.human_ids import humanize
 
 import tests
 from tests.conftest import TestClient
-from tests.conftest import clean_database
 
 
 IMAGES_DIR = Path(tests.__path__[0]) / "files"
@@ -26,32 +27,30 @@ IMAGES_DIR = Path(tests.__path__[0]) / "files"
 
 @pytest.mark.usefixtures("db_session")
 class Returns201:
-    @patch("pcapi.routes.pro.mediations.feature_queries.is_active", return_value=True)
-    @patch("pcapi.routes.pro.mediations.redis.add_offer_id")
-    @patch("pcapi.routes.pro.mediations.read_thumb")
-    def when_mediation_is_created_with_thumb_url(self, read_thumb, mock_redis, mock_feature, app):
+    def when_mediation_is_created_with_thumb_url(self, app):
         # given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        user_offerer = create_user_offerer(user, offerer)
+        offer = offers_factories.ThingOfferFactory()
+        offerer = offer.venue.managingOfferer
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offerer,
+        )
 
-        repository.save(offer)
-        repository.save(user, venue, offerer, user_offerer)
-
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-
-        read_thumb.return_value = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-
+        # when
+        client = TestClient(app.test_client()).with_auth(email="user@example.com")
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
             "offerId": humanize(offer.id),
             "offererId": humanize(offerer.id),
-            "thumbUrl": "https://www.deridet.com/photo/art/grande/8682609-13705793.jpg?v=1450665370",
+            "thumbUrl": "https://example.com/image.jpg",
         }
-
-        # when
-        response = auth_request.post("/mediations", form=data)
+        with requests_mock.Mocker() as mock:
+            mock.get(
+                "https://example.com/image.jpg",
+                content=image_as_bytes,
+                headers={"Content-Type": "image/jpeg"},
+            )
+            response = client.post("/mediations", form=data)
 
         # then
         assert response.status_code == 201
@@ -61,165 +60,142 @@ class Returns201:
             "id": humanize(mediation.id),
         }
 
-    @patch("pcapi.routes.pro.mediations.feature_queries.is_active", return_value=True)
-    @patch("pcapi.routes.pro.mediations.redis.add_offer_id")
-    def when_mediation_is_created_with_thumb_file(self, mock_redis, mock_feature, app):
+    def when_mediation_is_created_with_thumb_file(self, app):
         # given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        user_offerer = create_user_offerer(user, offerer)
+        offer = offers_factories.ThingOfferFactory()
+        offerer = offer.venue.managingOfferer
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offerer,
+        )
 
-        repository.save(offer)
-        repository.save(user, venue, offerer, user_offerer)
-
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-
+        # when
+        client = TestClient(app.test_client()).with_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-
         files = {
             "offerId": humanize(offer.id),
             "offererId": humanize(offerer.id),
             "thumb": (BytesIO(thumb), "image.png"),
         }
-
-        # when
-        response = auth_request.post("/mediations", files=files)
+        response = client.post("/mediations", files=files)
 
         # then
+        assert response.status_code == 201
         mediation = Mediation.query.one()
         assert mediation.thumbCount == 1
         assert response.status_code == 201
 
-    @patch("pcapi.routes.pro.mediations.feature_queries.is_active", return_value=True)
-    @patch("pcapi.routes.pro.mediations.redis.add_offer_id")
-    def should_add_offer_id_to_redis_when_mediation_is_created_with_thumb(self, mock_redis, mock_feature, app):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        user_offerer = create_user_offerer(user, offerer)
 
-        repository.save(offer)
-        repository.save(user, venue, offerer, user_offerer)
-
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-
-        thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-
-        files = {
-            "offerId": humanize(offer.id),
-            "offererId": humanize(offerer.id),
-            "thumb": (BytesIO(thumb), "image.png"),
-        }
-
-        # when
-        response = auth_request.post("/mediations", files=files)
-
-        # then
-        assert response.status_code == 201
-        mock_redis.assert_called_once()
-        mock_kwargs = mock_redis.call_args[1]
-        assert mock_kwargs["offer_id"] == offer.id
-
-
+@pytest.mark.usefixtures("db_session")
 class Returns400:
-    @patch("pcapi.connectors.thumb_storage.requests.get")
-    def when_mediation_is_created_with_thumb_url_pointing_to_not_an_image(
-        self, mock_thumb_storage_request, app, db_session
-    ):
+    def when_mediation_is_created_with_bad_thumb_url(self, app):
         # given
-        api_response = {}
-        response_return_value = MagicMock(status_code=200, text="")
-        response_return_value.headers = MagicMock(return_value={"Content-type": "image/jpeg"})
-        response_return_value.json = MagicMock(return_value=api_response)
-        mock_thumb_storage_request.return_value = response_return_value
+        offer = offers_factories.ThingOfferFactory()
+        offerer = offer.venue.managingOfferer
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offerer,
+        )
 
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        user_offerer = create_user_offerer(user, offerer)
-        repository.save(user, venue, user_offerer)
-
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-
+        # when
+        client = TestClient(app.test_client()).with_auth(email="user@example.com")
         data = {
             "offerId": humanize(offer.id),
             "offererId": humanize(offerer.id),
-            "thumbUrl": "https://beta.gouv.fr/",
+            "thumbUrl": "https://example.com/image.jpg",
         }
-
-        # when
-        response = auth_request.post("/mediations", form=data)
+        with requests_mock.Mocker() as mock:
+            mock.get("https://example.com/image.jpg", status_code=404)
+            response = client.post("/mediations", form=data)
 
         # then
         assert response.status_code == 400
-        assert response.json == {"thumb_url": ["L'adresse saisie n'est pas valide"]}
+        assert response.json == {"thumbUrl": ["L'adresse saisie n'est pas valide"]}
 
-    def when_mediation_is_created_with_file_upload_but_without_filename(self, app, db_session):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        user_offerer = create_user_offerer(user, offerer)
-        repository.save(user, venue, user_offerer)
 
-        # when
-        with open(IMAGES_DIR / "pixel.png", "rb") as fp:
-            data = {"offerId": humanize(offer.id), "offererId": humanize(offerer.id), "thumb": (fp, "")}
-            response = TestClient(app.test_client()).with_auth(email=user.email).post("/mediations", form=data)
+class CreateMediationBodyModelTest:
+    class FakeRequest:
+        class _File(BytesIO):
+            def __init__(self, filename, *args, **kwargs):
+                self.filename = filename
+                super().__init__(*args, **kwargs)
 
-        # then
-        assert response.status_code == 400
-        assert response.json == {"thumb": ["Vous devez fournir une image d'accroche"]}
+        def __init__(self, filename="", file_as_bytes=None):
+            self.files = {}
+            if file_as_bytes:
+                self.files["thumb"] = self._File(filename, file_as_bytes)
 
-    @clean_database
-    def when_mediation_is_created_with_file_upload_but_image_is_too_small(self, app):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        user_offerer = create_user_offerer(user, offerer)
-        repository.save(user, venue, user_offerer)
-        thumb = (IMAGES_DIR / "mouette_small.jpg").read_bytes()
-        data = {
-            "offerId": humanize(offer.id),
-            "offererId": humanize(offerer.id),
-            "thumb": (BytesIO(thumb), "image.png"),
-        }
+    def test_get_image_as_bytes_requires_url_or_uploaded_file(self):
+        pass
 
-        # when
-        response = TestClient(app.test_client()).with_auth(email=user.email).post("/mediations", form=data)
+    def test_get_image_as_bytes_from_uploaded_file(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        request = self.FakeRequest(filename="image.jpg", file_as_bytes=image_as_bytes)
+        deserializer = mediations_serialize.CreateMediationBodyModel(offerId=1, offererId=1)
+        assert deserializer.get_image_as_bytes(request) == image_as_bytes
 
-        # then
-        assert response.status_code == 400
-        assert response.json == {"thumb": ["L'image doit faire 400 * 400 px minimum"]}
+    def test_get_image_as_bytes_from_uploaded_file_fails_if_wrong_extension(self):
+        image_as_bytes = b"whatever"
+        request = self.FakeRequest(filename="image.pdf", file_as_bytes=image_as_bytes)
+        deserializer = mediations_serialize.CreateMediationBodyModel(offerId=1, offererId=1)
+        with pytest.raises(ApiErrors) as error:
+            deserializer.get_image_as_bytes(request)
+        assert "ou son format n'est pas autorisé" in error.value.errors["thumb"][0]
 
-    @clean_database
-    @patch("pcapi.routes.pro.mediations.repository")
-    def expect_mediation_not_to_be_saved(self, mock_repository, app):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        user_offerer = create_user_offerer(user, offerer)
-        repository.save(user, venue, user_offerer)
-        thumb = (IMAGES_DIR / "mouette_small.jpg").read_bytes()
-        data = {
-            "offerId": humanize(offer.id),
-            "offererId": humanize(offerer.id),
-            "thumb": (BytesIO(thumb), "image.png"),
-        }
-        mock_repository.save.reset_mock()
+    def test_get_image_as_bytes_from_url(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        request = self.FakeRequest()
+        deserializer = mediations_serialize.CreateMediationBodyModel(
+            offerId=1, offererId=1, thumbUrl="https://www.example.com/image.jpg"
+        )
+        with requests_mock.Mocker() as mock:
+            mock.get(
+                "https://www.example.com/image.jpg",
+                content=image_as_bytes,
+                headers={"Content-Type": "image/jpeg"},
+            )
+            assert deserializer.get_image_as_bytes(request) == image_as_bytes
 
-        # when
-        TestClient(app.test_client()).with_auth(email=user.email).post("/mediations", form=data)
+    def test_get_image_as_bytes_from_url_fails_if_invalid_url(self):
+        request = self.FakeRequest()
+        deserializer = mediations_serialize.CreateMediationBodyModel(offerId=1, offererId=1, thumbUrl="an invalid url")
+        with pytest.raises(ApiErrors) as error:
+            deserializer.get_image_as_bytes(request)
+        assert error.value.errors["thumbUrl"] == ["L'adresse saisie n'est pas valide"]
 
-        # then
-        mock_repository.save.assert_not_called()
+    def test_get_image_as_bytes_from_url_fails_if_wrong_content_type(self):
+        request = self.FakeRequest()
+        deserializer = mediations_serialize.CreateMediationBodyModel(
+            offerId=1, offererId=1, thumbUrl="https://www.example.com/image.jpg"
+        )
+        with requests_mock.Mocker() as mock:
+            mock.get(
+                "https://www.example.com/image.jpg",
+                content=b"whatever",
+                headers={"Content-Type": "application/pdf"},
+            )
+            with pytest.raises(ApiErrors) as error:
+                deserializer.get_image_as_bytes(request)
+            assert error.value.errors["thumbUrl"] == ["L'adresse saisie n'est pas valide"]
+
+    def test_get_image_as_bytes_from_url_fails_if_wrong_status_code(self):
+        request = self.FakeRequest()
+        deserializer = mediations_serialize.CreateMediationBodyModel(
+            offerId=1, offererId=1, thumbUrl="https://www.example.com/image.jpg"
+        )
+        with requests_mock.Mocker() as mock:
+            mock.get("https://www.example.com/image.jpg", status_code=404)
+            with pytest.raises(ApiErrors) as error:
+                deserializer.get_image_as_bytes(request)
+            assert error.value.errors["thumbUrl"] == ["L'adresse saisie n'est pas valide"]
+
+    @patch("pcapi.utils.requests.get")
+    def test_get_image_as_bytes_from_url_fails_if_request_error(self, mocked_get):
+        request = self.FakeRequest()
+        deserializer = mediations_serialize.CreateMediationBodyModel(
+            offerId=1, offererId=1, thumbUrl="https://www.example.com/image.jpg"
+        )
+        mocked_get.side_effect = ValueError("Connection timeout or something like that")
+        with pytest.raises(ApiErrors) as error:
+            deserializer.get_image_as_bytes(request)
+        assert error.value.errors["thumbUrl"] == ["Impossible de télécharger l'image à cette adresse"]
