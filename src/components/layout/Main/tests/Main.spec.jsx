@@ -1,8 +1,9 @@
 import { shallow } from 'enzyme'
-import { Modal } from 'pass-culture-shared'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
+
+import Modal from 'components/layout/Modal'
 
 import HeaderContainer from '../../Header/HeaderContainer'
 import NotificationV1Container from '../../NotificationV1/NotificationV1Container'

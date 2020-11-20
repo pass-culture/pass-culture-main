@@ -1,6 +1,5 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { Modal } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
@@ -14,6 +13,7 @@ import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 import ActionsBar from '../ActionsBar/'
 import Icon from '../Icon'
+import Modal from '../Modal'
 
 class Main extends PureComponent {
   constructor() {
