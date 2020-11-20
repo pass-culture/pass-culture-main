@@ -53,29 +53,7 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
                 f"Possible arguments are: {', '.join(sorted(known_fields))}"
             )
 
-        # Factory Boy expects that a model instance can be built with this:
-        #
-        #    instance = Model(attr1='value1', attr2='value2')
-        #
-        # But PcObject's constructor does not do that, so we have to
-        # call `setattr` manually here.
-        #
-        # FIXME: PcObject.__init__ should be changed. In fact, we
-        # should not use PcObject.populate_from_dict to build model
-        # instances from JSON input. Hopefully, this will be handled
-        # by the future pydantic-based data validation system.
-        obj = model_class()
-        for attr, value in kwargs.items():
-            setattr(obj, attr, value)
-
-        # The rest of the method if the same as the original.
-        session.add(obj)
-        session_persistence = cls._meta.sqlalchemy_session_persistence
-        if session_persistence == factory.alchemy.SESSION_PERSISTENCE_FLUSH:
-            session.flush()
-        elif session_persistence == factory.alchemy.SESSION_PERSISTENCE_COMMIT:
-            session.commit()
-        return obj
+        return super()._save(model_class, session, *args, **kwargs)
 
     @classmethod
     def _get_or_create(cls, model_class, session, *args, **kwargs):
