@@ -44,9 +44,6 @@ def book_offer(
     validation.check_quantity(stock.offer, quantity)
     validation.check_stock_is_bookable(stock)
 
-    # FIXME (dbaty, 2020-11-06): this is not right. PcOject's constructor
-    # should allow to call it with `Booking(stock=stock, ...)`
-    booking = Booking()
     # FIXME (dbaty, 2020-10-20): if we directly set relations (for
     # example with `booking.user = beneficiary`) instead of foreign keys,
     # the session tries to add the object when `get_user_expenses()`
@@ -58,11 +55,13 @@ def book_offer(
     # where exceptions are caught. Since we are using flask-sqlalchemy,
     # I don't think that we should use autoflush, nor should we use
     # the `pcapi.repository.repository` module.
-    booking.userId = beneficiary.id
-    booking.stockId = stock.id
-    booking.amount = stock.price
-    booking.quantity = quantity
-    booking.token = random_token()
+    booking = Booking(
+        userId=beneficiary.id,
+        stockId=stock.id,
+        amount=stock.price,
+        quantity=quantity,
+        token=random_token(),
+    )
     if recommendation:
         booking.recommendationId = recommendation.id
 

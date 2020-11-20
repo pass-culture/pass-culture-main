@@ -93,14 +93,13 @@ def create_stock(
     validation.check_offer_is_editable(offer)
     validation.check_stocks_are_editable_for_offer(offer)
 
-    # FIXME (dbaty, 2020-11-06): this is not right. PcOject's constructor
-    # should allow to call it with `Stock(offer=offer, ...)`
-    stock = models.Stock()
-    stock.offer = offer
-    stock.price = price
-    stock.quantity = quantity
-    stock.beginningDatetime = beginning
-    stock.bookingLimitDatetime = booking_limit_datetime
+    stock = models.Stock(
+        offer=offer,
+        price=price,
+        quantity=quantity,
+        beginningDatetime=beginning,
+        bookingLimitDatetime=booking_limit_datetime,
+    )
 
     repository.save(stock)
 
