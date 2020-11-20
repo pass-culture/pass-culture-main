@@ -1,4 +1,3 @@
-import { lastTrackerMoment } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import withQueryRouter from 'with-query-router'
@@ -21,7 +20,6 @@ export const mapStateToProps = state => {
   return {
     currentUser: selectCurrentUser(state),
     getOfferer: fetchOffererById,
-    lastTrackerMoment: lastTrackerMoment(state, 'offers'),
     notification: state.notification,
     offers: selectOffers(state),
     savedSearchFilters: state.offers.searchFilters,

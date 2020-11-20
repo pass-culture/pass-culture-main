@@ -1,4 +1,4 @@
-import { form, loading, tracker } from 'pass-culture-shared'
+import { form, loading } from 'pass-culture-shared'
 import { combineReducers } from 'redux'
 
 import { offersReducer } from '../offers/reducer'
@@ -10,7 +10,7 @@ import errors from './errors'
 import maintenanceReducer from './maintenanceReducer'
 import modal from './modal'
 import { notificationReducer } from './notificationReducer'
-
+import { tracker } from './tracker'
 
 const rootReducer = combineReducers({
   actionsBar,
