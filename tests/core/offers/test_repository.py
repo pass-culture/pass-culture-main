@@ -326,6 +326,16 @@ class PaginatedOfferSQLRepositoryTest:
                     description="expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity",
                 )
             )
+            self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity = create_offer_with_event_product(
+                venue=venue,
+                description="expired_thing_offer_with_a_stock_expired_with_remaining_quantity",
+            )
+            self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity = (
+                create_offer_with_event_product(
+                    venue=venue,
+                    description="expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity",
+                )
+            )
 
         def save_data_set(self):
             five_days_ago = datetime.now() - timedelta(days=5)
@@ -424,6 +434,16 @@ class PaginatedOfferSQLRepositoryTest:
             stock_20 = create_stock_from_offer(
                 self.sold_out_event_offer_with_only_one_stock_soft_deleted, quantity=10, soft_deleted=True
             )
+            stock_21 = create_stock_from_offer(
+                self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity,
+                booking_limit_datetime=five_days_ago,
+                quantity=4,
+            )
+            stock_22 = create_stock_from_offer(
+                self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity,
+                booking_limit_datetime=five_days_ago,
+                quantity=0,
+            )
             booking = create_booking(user=beneficiary, stock=stock_14)
             booking_cancelled = create_booking(user=beneficiary, stock=stock_9, is_cancelled=True)
             stocks = [
@@ -445,6 +465,8 @@ class PaginatedOfferSQLRepositoryTest:
                 stock_18,
                 stock_19,
                 stock_20,
+                stock_21,
+                stock_22,
             ]
 
             repository.save(
@@ -487,6 +509,7 @@ class PaginatedOfferSQLRepositoryTest:
             assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
             assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) not in offer_ids
+            assert Identifier(self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id) not in offer_ids
             assert (
                 Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id)
                 not in offer_ids
@@ -528,6 +551,11 @@ class PaginatedOfferSQLRepositoryTest:
             assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
             assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) not in offer_ids
+            assert Identifier(self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id) not in offer_ids
+            assert (
+                Identifier(self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id)
+                not in offer_ids
+            )
             assert (
                 Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id)
                 not in offer_ids
@@ -569,6 +597,11 @@ class PaginatedOfferSQLRepositoryTest:
             assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) in offer_ids
             assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) not in offer_ids
+            assert Identifier(self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id) not in offer_ids
+            assert (
+                Identifier(self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id)
+                not in offer_ids
+            )
             assert (
                 Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id)
                 not in offer_ids
@@ -673,6 +706,10 @@ class PaginatedOfferSQLRepositoryTest:
             assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
             assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) in offer_ids
+            assert Identifier(self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id) in offer_ids
+            assert (
+                Identifier(self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id) in offer_ids
+            )
             assert (
                 Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id) in offer_ids
             )

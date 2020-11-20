@@ -145,7 +145,7 @@ def _filter_by_status(query: Query, datetime_now: datetime, status: str) -> Quer
             query.filter(Offer.isActive.is_(True))
             .join(Stock)
             .filter(Stock.isSoftDeleted.is_(False))
-            .filter(or_(Stock.beginningDatetime.is_(None), Stock.bookingLimitDatetime >= datetime_now))
+            .filter(or_(Stock.bookingLimitDatetime.is_(None), Stock.bookingLimitDatetime >= datetime_now))
             .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.isCancelled.is_(False)))
             .group_by(Offer.id, Stock.id)
             .having(
@@ -159,7 +159,7 @@ def _filter_by_status(query: Query, datetime_now: datetime, status: str) -> Quer
         query = (
             query.filter(Offer.isActive.is_(True))
             .outerjoin(Stock, and_(Offer.id == Stock.offerId, not_(Stock.isSoftDeleted.is_(True))))
-            .filter(or_(Stock.beginningDatetime.is_(None), Stock.bookingLimitDatetime >= datetime_now))
+            .filter(or_(Stock.bookingLimitDatetime.is_(None), Stock.bookingLimitDatetime >= datetime_now))
             .filter(or_(Stock.id.is_(None), not_(Stock.quantity.is_(None))))
             .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.isCancelled.is_(False)))
             .group_by(Offer.id)
