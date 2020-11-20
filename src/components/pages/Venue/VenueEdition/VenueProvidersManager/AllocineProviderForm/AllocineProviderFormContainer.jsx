@@ -1,10 +1,10 @@
-import { getRequestErrorStringFromErrors } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
+import { getRequestErrorStringFromErrors } from 'utils/string'
 
 import AllocineProviderForm from './AllocineProviderForm'
 
