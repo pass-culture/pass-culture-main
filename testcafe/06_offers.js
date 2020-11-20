@@ -121,10 +121,8 @@ test('je peux créer une offre avec des sous-types', async t => {
     .ok()
 })
 
-
-
 test('une offre Event est duo par défaut', async t => {
-  const { user } = await fetchSandbox(
+  const { user, offerer, venue } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
   )
@@ -142,6 +140,10 @@ test('une offre Event est duo par défaut', async t => {
     .expect(isDuo.checked) // Make sure we can uncheck
     .notOk()
     .click(isDuo)
+    .click(offererInput)
+    .click(offererOption.withText(offerer.name))
+    .click(venueInput)
+    .click(venueOption.withText(venue.name))
     .click(submitButton)
     .click(buttonClose)
     .expect(isDuo.checked)
