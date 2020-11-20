@@ -127,7 +127,7 @@ def get_offers_by_filters(
         if period_ending_date is not None:
             query = query.filter(Stock.beginningDatetime <= period_ending_date)
 
-    return query.distinct(Offer.id)
+    return query
 
 
 def _filter_by_creation_mode(query: Query, creation_mode: str) -> Query:
