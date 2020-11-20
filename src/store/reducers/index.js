@@ -1,4 +1,3 @@
-import { form } from 'pass-culture-shared'
 import { combineReducers } from 'redux'
 
 import { offersReducer } from '../offers/reducer'
@@ -7,6 +6,7 @@ import actionsBar from './actionsBar'
 import bookingSummary from './bookingSummary/bookingSummary'
 import data from './data'
 import errors from './errors'
+import { form } from './form'
 import maintenanceReducer from './maintenanceReducer'
 import modal from './modal'
 import { notificationReducer } from './notificationReducer'
