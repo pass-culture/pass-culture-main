@@ -5,6 +5,7 @@ import Verso from '../Verso'
 import VersoContentOfferContainer from '../VersoContent/VersoContentOffer/VersoContentOfferContainer'
 import VersoControlsContainer from '../VersoControls/VersoControlsContainer'
 import VersoHeaderContainer from '../VersoHeader/VersoHeaderContainer'
+import LoaderContainer from '../../Loader/LoaderContainer'
 
 describe('src | components | layout | Verso', () => {
   let props
@@ -65,5 +66,17 @@ describe('src | components | layout | Verso', () => {
     expect(versoHeaderContainer.prop('subtitle')).toBe('Offer subtitle')
     expect(versoHeaderContainer.prop('title')).toBe('Offer title')
     expect(versoHeaderContainer.prop('type')).toBe('EventType.SPECTACLE_VIVANT')
+  })
+
+  it('should render a loader while offer data are loading', () => {
+    // given
+    props.offerName = null
+
+    // when
+    const wrapper = shallow(<Verso {...props} />)
+
+    // then
+    const loaderContainer = wrapper.find(LoaderContainer)
+    expect(loaderContainer).toHaveLength(1)
   })
 })
