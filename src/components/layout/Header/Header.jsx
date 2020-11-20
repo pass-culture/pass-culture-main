@@ -1,5 +1,4 @@
 import classnames from 'classnames'
-import { SignoutButton } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { NavLink } from 'react-router-dom'
@@ -8,6 +7,8 @@ import { HELP_PAGE_URL, STYLEGUIDE_ACTIVE } from 'utils/config'
 
 import Icon from '../Icon'
 import Logo from '../Logo'
+
+import SignoutButton from './Signout/SignoutButton'
 
 class Header extends PureComponent {
   constructor() {
