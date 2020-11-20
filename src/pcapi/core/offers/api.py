@@ -26,6 +26,7 @@ from pcapi.utils.rest import load_or_raise_error
 from . import models
 from . import validation
 from ..bookings.api import update_confirmation_dates
+from .models import Mediation
 
 
 DEFAULT_OFFERS_PER_PAGE = 20
@@ -190,3 +191,13 @@ def delete_stock(stock: Stock) -> None:
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
+
+
+def update_mediation(mediation: Mediation, is_active: bool) -> Mediation:
+    mediation.isActive = is_active
+    repository.save(mediation)
+
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=mediation.offerId)
+
+    return mediation

@@ -9,6 +9,7 @@ from flask_login import login_required
 from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import read_thumb
+import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Mediation
 from pcapi.flask_app import private_api
 from pcapi.models.feature import FeatureToggle
@@ -22,7 +23,6 @@ from pcapi.routes.serialization.mediations_serialize import UpdateMediationRespo
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import ensure_current_user_has_rights
-from pcapi.utils.rest import load_or_404
 from pcapi.validation.routes.mediations import check_thumb_in_request
 from pcapi.validation.routes.mediations import check_thumb_quality
 
@@ -53,13 +53,13 @@ def create_mediation(form: CreateMediationBodyModel) -> MediationResponseIdModel
 @login_required
 @spectree_serialize(on_success_status=200, response_model=UpdateMediationResponseModel)
 def update_mediation(mediation_id: str, body: UpdateMediationBodyModel) -> UpdateMediationResponseModel:
-    mediation = load_or_404(Mediation, mediation_id)
+
+    mediation = Mediation.query.filter_by(id=dehumanize(mediation_id)).first_or_404()
+
     ensure_current_user_has_rights(RightsType.editor, mediation.offer.venue.managingOffererId)
-    mediation = Mediation.query.filter_by(id=dehumanize(mediation_id)).first()
-    mediation.populate_from_dict(body.dict())
-    repository.save(mediation)
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=mediation.offerId)
+
+    mediation = offers_api.update_mediation(mediation=mediation, is_active=body.isActive)
+
     return UpdateMediationResponseModel.from_orm(mediation)
 
 
