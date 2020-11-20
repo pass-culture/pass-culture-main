@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { Icon, Modal, resetForm, Spinner } from 'pass-culture-shared'
+import { Modal, resetForm, Spinner } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
@@ -12,6 +12,7 @@ import NotificationV2Container from 'components/layout/NotificationV2/Notificati
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 import ActionsBar from '../ActionsBar/'
+import Icon from '../Icon'
 
 class Main extends PureComponent {
   constructor() {
@@ -155,7 +156,7 @@ class Main extends PureComponent {
         </Tag>
         <NotificationV2Container />
         <Modal key="modal" />
-        { PageActionsBar && (
+        {PageActionsBar && (
           <ActionsBar>
             <PageActionsBar />
           </ActionsBar>

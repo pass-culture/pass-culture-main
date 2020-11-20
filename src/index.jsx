@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/browser'
 import { Integrations as TracingIntegrations } from '@sentry/tracing'
-import { Form, Icon } from 'pass-culture-shared'
+import { Form } from 'pass-culture-shared'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
@@ -10,14 +10,11 @@ import BicInput from 'components/layout/BicInput'
 import BlockContainer from 'components/layout/BlockContainer'
 import IbanInput from 'components/layout/IbanInput'
 import Root from 'Root'
-import { ROOT_PATH, ENVIRONMENT_NAME, SENTRY_SERVER_URL, SENTRY_SAMPLE_RATE } from 'utils/config'
+import { ENVIRONMENT_NAME, SENTRY_SERVER_URL, SENTRY_SAMPLE_RATE } from 'utils/config'
 import registerCacheWorker from 'workers/cache'
 
 import { version } from '../package.json'
 import './styles/index.scss'
-
-// Initialize shared Icon component
-Icon.rootPath = ROOT_PATH
 
 // Initialize shared Form component
 Object.assign(Form.inputsByType, {

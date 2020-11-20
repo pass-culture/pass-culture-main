@@ -1,7 +1,8 @@
-import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
+
+import Icon from 'components/layout/Icon'
 
 import { pluralize } from '../../../../utils/pluralize'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../../utils/routes'

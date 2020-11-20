@@ -1,5 +1,6 @@
-import { Icon } from 'pass-culture-shared'
 import React from 'react'
+
+import Icon from 'components/layout/Icon'
 
 const NoBookingsMessage = () => {
   return (

@@ -1,19 +1,12 @@
 import get from 'lodash.get'
-import {
-  Field,
-  Form,
-  Icon,
-  mergeForm,
-  resetForm,
-  showModal,
-  SubmitButton,
-} from 'pass-culture-shared'
+import { Field, Form, mergeForm, resetForm, showModal, SubmitButton } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 import ReactToolTip from 'react-tooltip'
 import { requestData } from 'redux-saga-data'
 
+import Icon from 'components/layout/Icon'
 import Insert from 'components/layout/Insert/Insert'
 import Main from 'components/layout/Main'
 import OfferPreviewLink from 'components/layout/OfferPreviewLink/OfferPreviewLink'
