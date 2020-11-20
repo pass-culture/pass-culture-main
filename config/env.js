@@ -80,6 +80,7 @@ function getClientEnvironment(publicUrl) {
           process.env.DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL,
         DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL:
           process.env.DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL,
+        ASSETS_URL: process.env.ASSETS_URL,
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin
