@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.users import factories as user_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.models.user_sql_entity import hash_password
@@ -19,8 +19,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def test_user_logs_in_and_refreshes_token(app):
-    data = {"identifier": "user@test.com", "password": user_factories.DEFAULT_PASSWORD}
-    user_factories.UserFactory(email=data["identifier"], password=data["password"])
+    data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
+    users_factories.UserFactory(email=data["identifier"], password=data["password"])
     test_client = TestClient(app.test_client())
 
     # Get the refresh and access token
@@ -51,8 +51,8 @@ def test_user_logs_in_and_refreshes_token(app):
 
 
 def test_user_logs_in_with_wrong_password(app):
-    data = {"identifier": "user@test.com", "password": user_factories.DEFAULT_PASSWORD}
-    user_factories.UserFactory(email=data["identifier"], password=data["password"])
+    data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
+    users_factories.UserFactory(email=data["identifier"], password=data["password"])
     test_client = TestClient(app.test_client())
 
     # signin with invalid password and ensures the result messsage is generic
@@ -63,7 +63,7 @@ def test_user_logs_in_with_wrong_password(app):
 
 
 def test_unknown_user_logs_in(app):
-    data = {"identifier": "user@test.com", "password": user_factories.DEFAULT_PASSWORD}
+    data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
     test_client = TestClient(app.test_client())
 
     # signin with invalid password and ensures the result messsage is generic
@@ -101,7 +101,7 @@ def test_request_reset_password_for_unknown_email(app):
 def test_request_reset_password_for_existing_email(mock_send_reset_password_email_to_native_app_user, app):
     email = "existing_user@example.com"
     data = {"email": email}
-    user = user_factories.UserFactory(email=email)
+    user = users_factories.UserFactory(email=email)
 
     saved_token = Token.query.filter_by(user=user).first()
     assert saved_token is None
@@ -122,7 +122,7 @@ def test_request_reset_password_for_existing_email(mock_send_reset_password_emai
 def test_request_reset_password_with_mail_service_exception(mock_send_reset_password_email_to_native_app_user, app):
     email = "existing_user@example.com"
     data = {"email": email}
-    user_factories.UserFactory(email=email)
+    users_factories.UserFactory(email=email)
 
     mock_send_reset_password_email_to_native_app_user.return_value = False
 
@@ -135,7 +135,7 @@ def test_request_reset_password_with_mail_service_exception(mock_send_reset_pass
 
 def test_reset_password_with_not_valid_token(app):
     data = {"reset_password_token": "unknwon_token", "new_password": "new_password"}
-    user = user_factories.UserFactory()
+    user = users_factories.UserFactory()
     old_password = user.password
 
     response = TestClient(app.test_client()).post("/native/v1/reset_password", json=data)
@@ -147,7 +147,7 @@ def test_reset_password_with_not_valid_token(app):
 def test_reset_password_success(app):
     new_password = "New_password1998!"
 
-    user = user_factories.UserFactory()
+    user = users_factories.UserFactory()
 
     token = Token(from_dict={"userId": user.id, "value": "secret-value", "type": TokenType.RESET_PASSWORD})
     repository.save(token)
@@ -162,7 +162,7 @@ def test_reset_password_success(app):
 
 def test_reset_password_fail_for_password_strenght(app):
     reset_token = random_token()
-    user = user_factories.UserFactory(
+    user = users_factories.UserFactory(
         resetPasswordToken=reset_token,
         resetPasswordTokenValidityLimit=(datetime.utcnow() + timedelta(hours=1)),
     )

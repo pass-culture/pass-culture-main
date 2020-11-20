@@ -3,9 +3,10 @@ from datetime import timedelta
 
 import pytest
 
-from pcapi.core.offers import factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.repository import find_online_activation_stock
 from pcapi.core.offers.repository import get_paginated_offers_for_offerer_venue_and_keywords
+from pcapi.core.users import factories as users_factories
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.model_creators.generic_creators import create_booking
@@ -54,32 +55,6 @@ class PaginatedOfferSQLRepositoryTest:
         assert paginated_offers.offers[0].identifier == Identifier(offer1.id)
 
     @pytest.mark.usefixtures("db_session")
-    def should_return_a_number_of_page_as_an_integer(self, app):
-        # Given
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        offer1 = create_offer_with_thing_product(venue)
-        offer2 = create_offer_with_thing_product(venue)
-        offer3 = create_offer_with_thing_product(venue)
-        repository.save(user_offerer, offer1, offer2, offer3)
-        requested_page = 1
-        requested_offers_per_page = 2
-
-        # When
-        paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-            user_id=user.id,
-            user_is_admin=user.isAdmin,
-            offers_per_page=requested_offers_per_page,
-            page=requested_page,
-        )
-
-        # Then
-        assert isinstance(paginated_offers, PaginatedOffersRecap)
-        assert paginated_offers.total_pages == 2
-
-    @pytest.mark.usefixtures("db_session")
     def should_return_offers_sorted_by_id_desc(self, app):
         # Given
         user = create_user()
@@ -99,32 +74,14 @@ class PaginatedOfferSQLRepositoryTest:
         assert paginated_offers.offers[0].identifier.persisted > paginated_offers.offers[1].identifier.persisted
 
     @pytest.mark.usefixtures("db_session")
-    def should_return_offers_of_given_venue(self, app):
-        user_offerer = factories.UserOffererFactory()
-        offer_for_requested_venue = factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
-        offer_for_other_venue = factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
-
-        # when
-        paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-            user_id=user_offerer.user.id,
-            user_is_admin=user_offerer.user.isAdmin,
-            venue_id=offer_for_requested_venue.venue.id,
-            page=1,
-            offers_per_page=10,
-        )
-
-        # then
-        offers_id = [offer.identifier for offer in paginated_offers.offers]
-        assert Identifier(offer_for_requested_venue.id) in offers_id
-        assert Identifier(offer_for_other_venue.id) not in offers_id
-
-    @pytest.mark.usefixtures("db_session")
     def should_return_offers_of_given_type(self, app):
-        user_offerer = factories.UserOffererFactory()
-        requested_offer = factories.OfferFactory(
+        user_offerer = offers_factories.UserOffererFactory()
+        requested_offer = offers_factories.OfferFactory(
             type=str(ThingType.AUDIOVISUEL), venue__managingOfferer=user_offerer.offerer
         )
-        other_offer = factories.OfferFactory(type=str(ThingType.JEUX), venue__managingOfferer=user_offerer.offerer)
+        other_offer = offers_factories.OfferFactory(
+            type=str(ThingType.JEUX), venue__managingOfferer=user_offerer.offerer
+        )
 
         paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
             user_id=user_offerer.user.id,
@@ -138,6 +95,7 @@ class PaginatedOfferSQLRepositoryTest:
         offers_id = [offer.identifier for offer in paginated_offers.offers]
         assert Identifier(requested_offer.id) in offers_id
         assert Identifier(other_offer.id) not in offers_id
+        assert paginated_offers.total_offers == 1
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_matching_searched_name(self, app):
@@ -180,38 +138,7 @@ class PaginatedOfferSQLRepositoryTest:
         offers_id = [offer.identifier for offer in paginated_offers.offers]
         assert Identifier(offer_matching_requested_name.id) in offers_id
         assert Identifier(offer_not_matching_requested_name.id) not in offers_id
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_offers_filtered_by_offerer_id_when_provided(self, app: object):
-        # given
-        pro_user = create_user()
-        wanted_offerer = create_offerer()
-        unwanted_offerer = create_offerer(siren="981237")
-        create_user_offerer(pro_user, wanted_offerer)
-        create_user_offerer(pro_user, unwanted_offerer)
-        venue_from_wanted_offerer = create_venue(wanted_offerer)
-        venue_from_unwanted_offerer = create_venue(unwanted_offerer, siret="12345678912387")
-        offer_from_wanted_offerer = create_offer_with_thing_product(
-            venue=venue_from_wanted_offerer, thing_name="Returned offer"
-        )
-        offer_from_unwanted_offerer = create_offer_with_thing_product(
-            venue=venue_from_unwanted_offerer, thing_name="Not returned offer"
-        )
-
-        repository.save(offer_from_wanted_offerer, offer_from_unwanted_offerer)
-
-        # When
-        paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-            user_id=pro_user.id,
-            user_is_admin=pro_user.isAdmin,
-            page=1,
-            offers_per_page=1,
-            offerer_id=wanted_offerer.id,
-        )
-
-        # then
         assert paginated_offers.total_offers == 1
-        assert paginated_offers.offers[0].name == offer_from_wanted_offerer.name
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_offers_filtered_by_manual_creation_mode_when_provided(self, app: object):
@@ -234,8 +161,8 @@ class PaginatedOfferSQLRepositoryTest:
         )
 
         # then
-        assert paginated_offers.total_offers == 1
         assert paginated_offers.offers[0].identifier.persisted == manually_created_offer.id
+        assert paginated_offers.total_offers == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_offers_filtered_by_imported_creation_mode_when_provided(self, app: object):
@@ -258,8 +185,208 @@ class PaginatedOfferSQLRepositoryTest:
         )
 
         # then
-        assert paginated_offers.total_offers == 1
         assert paginated_offers.offers[0].identifier.persisted == imported_offer.id
+        assert paginated_offers.total_offers == 1
+
+    class WhenUserIsAdmin:
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offers_of_given_venue_when_user_is_not_attached_to_its_offerer(self, app):
+            # given
+            admin = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
+            offer_for_requested_venue = offers_factories.OfferFactory()
+            offer_for_other_venue = offers_factories.OfferFactory()
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=admin.id,
+                user_is_admin=admin.isAdmin,
+                venue_id=offer_for_requested_venue.venue.id,
+                page=1,
+                offers_per_page=10,
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(offer_for_requested_venue.id) in offers_id
+            assert Identifier(offer_for_other_venue.id) not in offers_id
+            assert paginated_offers.total_offers == 1
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offers_of_given_venue_when_user_is_attached_to_its_offerer(self, app):
+            # given
+            admin = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
+            admin_attachment_to_offerer = offers_factories.UserOffererFactory(user=admin)
+            offer_for_requested_venue = offers_factories.OfferFactory(
+                venue__managingOfferer=admin_attachment_to_offerer.offerer
+            )
+            offer_for_other_venue = offers_factories.OfferFactory(
+                venue__managingOfferer=admin_attachment_to_offerer.offerer
+            )
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=admin.id,
+                user_is_admin=admin.isAdmin,
+                venue_id=offer_for_requested_venue.venue.id,
+                page=1,
+                offers_per_page=10,
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(offer_for_requested_venue.id) in offers_id
+            assert Identifier(offer_for_other_venue.id) not in offers_id
+            assert paginated_offers.total_offers == 1
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self, app: object):
+            # given
+            admin = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
+            offer_for_requested_offerer = offers_factories.OfferFactory()
+            offer_for_other_offerer = offers_factories.OfferFactory()
+
+            # When
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=admin.id,
+                user_is_admin=admin.isAdmin,
+                page=1,
+                offers_per_page=1,
+                offerer_id=offer_for_requested_offerer.venue.managingOffererId,
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(offer_for_requested_offerer.id) in offers_id
+            assert Identifier(offer_for_other_offerer.id) not in offers_id
+            assert paginated_offers.total_offers == 1
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self, app: object):
+            # given
+            admin = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
+            admin_attachment_to_requested_offerer = offers_factories.UserOffererFactory(user=admin)
+            admin_attachment_to_other_offerer = offers_factories.UserOffererFactory(user=admin)
+            offer_for_requested_offerer = offers_factories.OfferFactory(
+                venue__managingOfferer=admin_attachment_to_requested_offerer.offerer
+            )
+            offer_for_other_offerer = offers_factories.OfferFactory(
+                venue__managingOfferer=admin_attachment_to_other_offerer.offerer
+            )
+
+            # When
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=admin.id,
+                user_is_admin=admin.isAdmin,
+                page=1,
+                offers_per_page=1,
+                offerer_id=offer_for_requested_offerer.venue.managingOffererId,
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(offer_for_requested_offerer.id) in offers_id
+            assert Identifier(offer_for_other_offerer.id) not in offers_id
+            assert paginated_offers.total_offers == 1
+
+    class WhenUserIsPro:
+        @pytest.mark.usefixtures("db_session")
+        def should_not_return_offers_of_given_venue_when_user_is_not_attached_to_its_offerer(self, app):
+            # given
+            admin = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=False)
+            offer_for_requested_venue = offers_factories.OfferFactory()
+            offer_for_other_venue = offers_factories.OfferFactory()
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=admin.id,
+                user_is_admin=admin.isAdmin,
+                venue_id=offer_for_requested_venue.venue.id,
+                page=1,
+                offers_per_page=10,
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(offer_for_requested_venue.id) not in offers_id
+            assert Identifier(offer_for_other_venue.id) not in offers_id
+            assert paginated_offers.total_offers == 0
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offers_of_given_venue_when_user_is_attached_to_its_offerer(self, app):
+            # given
+            pro = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=False)
+            pro_attachment_to_offerer = offers_factories.UserOffererFactory(user=pro)
+            offer_for_requested_venue = offers_factories.OfferFactory(
+                venue__managingOfferer=pro_attachment_to_offerer.offerer
+            )
+            offer_for_other_venue = offers_factories.OfferFactory(
+                venue__managingOfferer=pro_attachment_to_offerer.offerer
+            )
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=pro.id,
+                user_is_admin=pro.isAdmin,
+                venue_id=offer_for_requested_venue.venue.id,
+                page=1,
+                offers_per_page=10,
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(offer_for_requested_venue.id) in offers_id
+            assert Identifier(offer_for_other_venue.id) not in offers_id
+            assert paginated_offers.total_offers == 1
+
+        @pytest.mark.usefixtures("db_session")
+        def should_not_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self, app: object):
+            # given
+            pro = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=False)
+            offer_for_requested_offerer = offers_factories.OfferFactory()
+            offer_for_other_offerer = offers_factories.OfferFactory()
+
+            # When
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=pro.id,
+                user_is_admin=pro.isAdmin,
+                page=1,
+                offers_per_page=1,
+                offerer_id=offer_for_requested_offerer.venue.managingOffererId,
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(offer_for_requested_offerer.id) not in offers_id
+            assert Identifier(offer_for_other_offerer.id) not in offers_id
+            assert paginated_offers.total_offers == 0
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self, app: object):
+            # given
+            pro = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=False)
+            pro_attachment_to_requested_offerer = offers_factories.UserOffererFactory(user=pro)
+            pro_attachment_to_other_offerer = offers_factories.UserOffererFactory(user=pro)
+            offer_for_requested_offerer = offers_factories.OfferFactory(
+                venue__managingOfferer=pro_attachment_to_requested_offerer.offerer
+            )
+            offer_for_other_offerer = offers_factories.OfferFactory(
+                venue__managingOfferer=pro_attachment_to_other_offerer.offerer
+            )
+
+            # When
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=pro.id,
+                user_is_admin=pro.isAdmin,
+                page=1,
+                offers_per_page=1,
+                offerer_id=offer_for_requested_offerer.venue.managingOffererId,
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(offer_for_requested_offerer.id) in offers_id
+            assert Identifier(offer_for_other_offerer.id) not in offers_id
+            assert paginated_offers.total_offers == 1
 
     class StatusFiltersTest:
         def setup_method(self):
@@ -485,7 +612,7 @@ class PaginatedOfferSQLRepositoryTest:
 
             # when
             paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=20, page=1, status="active"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="active"
             )
 
             # then
@@ -518,6 +645,7 @@ class PaginatedOfferSQLRepositoryTest:
                 Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id)
                 not in offer_ids
             )
+            assert paginated_offers.total_offers == 4
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_inactive_offers_when_requesting_inactive_status(self, app):
@@ -526,7 +654,7 @@ class PaginatedOfferSQLRepositoryTest:
 
             # when
             paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=20, page=1, status="inactive"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="inactive"
             )
 
             # then
@@ -564,6 +692,7 @@ class PaginatedOfferSQLRepositoryTest:
                 Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id)
                 not in offer_ids
             )
+            assert paginated_offers.total_offers == 4
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_sold_out_offers_when_requesting_sold_out_status(self, app):
@@ -572,7 +701,7 @@ class PaginatedOfferSQLRepositoryTest:
 
             # when
             paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=20, page=1, status="soldOut"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
             )
 
             # then
@@ -610,6 +739,7 @@ class PaginatedOfferSQLRepositoryTest:
                 Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id)
                 not in offer_ids
             )
+            assert paginated_offers.total_offers == 5
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_with_no_stocks_when_requesting_sold_out_status(self, app):
@@ -618,7 +748,7 @@ class PaginatedOfferSQLRepositoryTest:
 
             # when
             paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=20, page=1, status="soldOut"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
             )
 
             # then
@@ -633,7 +763,7 @@ class PaginatedOfferSQLRepositoryTest:
 
             # when
             paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=20, page=1, status="soldOut"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
             )
 
             # then
@@ -647,7 +777,7 @@ class PaginatedOfferSQLRepositoryTest:
 
             # when
             paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=20, page=1, status="soldOut"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
             )
 
             # then
@@ -664,7 +794,7 @@ class PaginatedOfferSQLRepositoryTest:
 
             # when
             paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=20, page=1, status="soldOut"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
             )
 
             # then
@@ -681,7 +811,7 @@ class PaginatedOfferSQLRepositoryTest:
 
             # when
             paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=20, page=1, status="expired"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="expired"
             )
 
             # then
@@ -717,6 +847,7 @@ class PaginatedOfferSQLRepositoryTest:
                 Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id)
                 in offer_ids
             )
+            assert paginated_offers.total_offers == 5
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_sold_out_offers_and_requested_venue_when_requesting_sold_out_status_and_specific_venue(
@@ -732,7 +863,7 @@ class PaginatedOfferSQLRepositoryTest:
             paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
                 user_id=self.pro.id,
                 user_is_admin=self.pro.isAdmin,
-                offers_per_page=20,
+                offers_per_page=5,
                 page=1,
                 status="soldOut",
                 venue_id=other_venue.id,
@@ -749,18 +880,19 @@ class PaginatedOfferSQLRepositoryTest:
             assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
             assert Identifier(sold_out_offer_on_other_venue.id) in offer_ids
+            assert paginated_offers.total_offers == 1
 
 
 @pytest.mark.usefixtures("db_session")
 def test_find_online_activation_stock(app):
-    factories.EventStockFactory()
-    factories.StockFactory(offer__type=str(ThingType.ACTIVATION), offer__venue__isVirtual=False)
+    offers_factories.EventStockFactory()
+    offers_factories.StockFactory(offer__type=str(ThingType.ACTIVATION), offer__venue__isVirtual=False)
 
     # assert find_online_activation_stock() is None
 
-    activation_stock = factories.StockFactory(
+    activation_stock = offers_factories.StockFactory(
         offer__type=str(ThingType.ACTIVATION),
-        offer__venue=factories.VirtualVenueFactory(),
+        offer__venue=offers_factories.VirtualVenueFactory(),
         offer__product__type=str(ThingType.ACTIVATION),
     )
 

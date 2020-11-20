@@ -5,7 +5,7 @@ from freezegun import freeze_time
 import jwt
 import pytest
 
-from pcapi.core.users import factories as user_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import get_user_with_valid_token
 from pcapi.core.users.models import ALGORITHM_HS_256
@@ -22,7 +22,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class GenerateAndSaveTokenTest:
     def test_generate_and_save_token(self, app):
-        user = user_factories.UserFactory(email="py@test.com")
+        user = users_factories.UserFactory(email="py@test.com")
         token_type = TokenType.RESET_PASSWORD
         life_time = timedelta(hours=24)
 
@@ -48,7 +48,7 @@ class GenerateAndSaveTokenTest:
         assert response.status_code == 422
 
     def test_generate_and_save_token_without_expiration_date(self):
-        user = user_factories.UserFactory(email="py@test.com")
+        user = users_factories.UserFactory(email="py@test.com")
         token_type = TokenType.RESET_PASSWORD
 
         generate_and_save_token(user, token_type)
@@ -65,7 +65,7 @@ class GenerateAndSaveTokenTest:
         assert "exp" not in decoded
 
     def test_generate_and_save_token_with_wrong_type(self):
-        user = user_factories.UserFactory(email="py@test.com")
+        user = users_factories.UserFactory(email="py@test.com")
         token_type = "not-enum-type"
 
         with pytest.raises(AttributeError):
@@ -80,7 +80,7 @@ class ValidateJwtTokenTest:
     ).decode("ascii")
 
     def test_get_user_with_valid_token(self):
-        user = user_factories.UserFactory()
+        user = users_factories.UserFactory()
         token_type = TokenType.RESET_PASSWORD
         expiration_date = datetime.now() + timedelta(hours=24)
 
@@ -99,7 +99,7 @@ class ValidateJwtTokenTest:
         assert associated_user.id == user.id
 
     def test_get_user_with_valid_token_without_expiration_date(self):
-        user = user_factories.UserFactory()
+        user = users_factories.UserFactory()
         token_type = TokenType.RESET_PASSWORD
 
         saved_token = Token(from_dict={"userId": user.id, "value": self.token_value, "type": token_type})
@@ -110,7 +110,7 @@ class ValidateJwtTokenTest:
         assert associated_user.id == user.id
 
     def test_get_user_with_valid_token_wrong_token(self):
-        user = user_factories.UserFactory()
+        user = users_factories.UserFactory()
         token_type = TokenType.RESET_PASSWORD
 
         saved_token = Token(from_dict={"userId": user.id, "value": self.token_value, "type": token_type})
@@ -121,7 +121,7 @@ class ValidateJwtTokenTest:
         assert associated_user is None
 
     def test_get_user_with_valid_token_wrong_type(self):
-        user = user_factories.UserFactory()
+        user = users_factories.UserFactory()
         token_type = TokenType.RESET_PASSWORD
 
         saved_token = Token(from_dict={"userId": user.id, "value": self.token_value, "type": token_type})
@@ -134,7 +134,7 @@ class ValidateJwtTokenTest:
         assert associated_user is None
 
     def test_get_user_with_valid_token_with_expired_date(self):
-        user = user_factories.UserFactory()
+        user = users_factories.UserFactory()
         token_type = TokenType.RESET_PASSWORD
 
         saved_token = Token(
