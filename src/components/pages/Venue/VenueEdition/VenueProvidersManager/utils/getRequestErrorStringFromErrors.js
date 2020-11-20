@@ -17,14 +17,3 @@ export const getRequestErrorStringFromErrors = errors => {
 
   return ''
 }
-
-export const queryStringToObject = (string = '') =>
-  string &&
-  string
-    .replace(/^\??/, '')
-    .split('&')
-    .filter(el => el)
-    .reduce((result, group) => {
-      const [key, value] = group.split('=')
-      return Object.assign({}, result, { [key]: value })
-    }, {})

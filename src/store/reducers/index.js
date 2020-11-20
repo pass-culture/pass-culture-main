@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux'
 
+import { tracker } from 'store/reducers/tracker'
+
 import { offersReducer } from '../offers/reducer'
 
 import actionsBar from './actionsBar'
@@ -10,7 +12,6 @@ import { form } from './form'
 import maintenanceReducer from './maintenanceReducer'
 import modal from './modal'
 import { notificationReducer } from './notificationReducer'
-import { tracker } from './tracker'
 
 const rootReducer = combineReducers({
   actionsBar,

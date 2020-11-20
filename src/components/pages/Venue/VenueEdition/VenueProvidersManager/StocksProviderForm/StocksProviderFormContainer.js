@@ -4,7 +4,8 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
-import { getRequestErrorStringFromErrors } from 'utils/string'
+
+import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
 
 import StocksProviderForm from './StocksProviderForm'
 
