@@ -31,7 +31,7 @@ MOCK_LAST_NAMES = [
     "M",
     "Pzlatevic",
     "Mou Tarde",
-    "François",
+    "Francois",
     "Mater",
     "Samantha",
     "Despacito",
