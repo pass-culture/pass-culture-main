@@ -16,17 +16,6 @@ body {
   font-size: $font-size;
 }
 
-#android-statusbar-overlay {
-  display: none;
-  width: 100%;
-  height: rem(24px);
-  opacity: 0.5;
-  background-color: $black;
-  position: fixed;
-  top: 0;
-  z-index: 100000;
-}
-
 hr {
   @include dotted($primary);
 }
