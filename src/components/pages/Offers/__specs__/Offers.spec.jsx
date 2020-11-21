@@ -1102,7 +1102,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should have venue value when user filters by venue', async () => {
       // Given
-      renderOffers(props, store)
+      await renderOffers(props, store)
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
         selector: 'select[name="lieu"]',
       })
@@ -1133,7 +1133,7 @@ describe('src | components | pages | Offers | Offers', () => {
         { value: 'test_id_2', proLabel: 'My second test value' },
       ])
 
-      renderOffers(props, store)
+      await renderOffers(props, store)
       const typeSelect = screen.getByDisplayValue(ALL_TYPES_OPTION.displayName, {
         selector: 'select[name="type"]',
       })
