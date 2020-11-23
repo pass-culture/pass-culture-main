@@ -9,6 +9,7 @@ from pcapi.repository import repository
 
 from tests.conftest import TestClient
 
+
 class Returns400:
     @patch("pcapi.validation.routes.passwords.validate_recaptcha_token", return_value=True)
     def when_email_is_empty(self, validate_recaptcha_token_mock, app, db_session):
@@ -101,8 +102,8 @@ class Returns204:
         assert (now + timedelta(hours=23)) < user.resetPasswordTokenValidityLimit < (now + timedelta(hours=25))
 
     @patch("pcapi.validation.routes.passwords.validate_recaptcha_token", return_value=True)
-    @patch("pcapi.routes.passwords.send_reset_password_email_to_user")
-    @patch("pcapi.routes.passwords.send_raw_email")
+    @patch("pcapi.routes.shared.passwords.send_reset_password_email_to_user")
+    @patch("pcapi.routes.shared.passwords.send_raw_email")
     def test_should_send_reset_password_email_when_user_is_a_beneficiary(
         self,
         send_raw_email_mock,
@@ -124,8 +125,8 @@ class Returns204:
         send_reset_password_email_to_user_mock.assert_called_once_with(user, send_raw_email_mock)
 
     @patch("pcapi.validation.routes.passwords.validate_recaptcha_token", return_value=True)
-    @patch("pcapi.routes.passwords.send_reset_password_email_to_pro")
-    @patch("pcapi.routes.passwords.send_raw_email")
+    @patch("pcapi.routes.shared.passwords.send_reset_password_email_to_pro")
+    @patch("pcapi.routes.shared.passwords.send_raw_email")
     def test_should_send_reset_password_email_when_user_is_an_offerer(
         self, send_raw_email_mock, send_reset_password_email_to_pro_mock, validate_recaptcha_token_mock, app, db_session
     ):
