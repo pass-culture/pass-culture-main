@@ -20,6 +20,7 @@ describe('bookingFormContent', () => {
       isStockDuo: false,
       isEvent: false,
       isReadOnly: false,
+      isSubscription: false,
       handleSubmit,
       onChange: jest.fn(),
       offerId: 'o1',
@@ -212,14 +213,12 @@ describe('bookingFormContent', () => {
   })
 
   describe('when booking a thing', () => {
-    beforeEach(() => {
-      props.isEvent = false
-    })
     it('should display the corresponding messages', () => {
       // given
       props.values = {
         bookables: [],
         date: '2019-01-01',
+        isEvent: false,
         price: 12,
       }
 
@@ -229,6 +228,25 @@ describe('bookingFormContent', () => {
       // then
       expect(wrapper.find({ children: 'Tu es sur le point de réserver' })).toHaveLength(1)
       expect(wrapper.find({ children: 'cette offre pour 12 €.' })).toHaveLength(1)
+    })
+
+    it('should display a message when the thing is other thing than subscription', () => {
+      // given
+      props.values = {
+        isEvent: false,
+        isSubscription: true,
+      }
+
+      // when
+      const wrapper = shallow(<BookingFormContent {...props} />)
+
+      // then
+      expect(
+        wrapper.find({
+          children:
+            'Tu as 30 jours pour faire valider ta contremarque et récupérer ton bien (si applicable). Passé ce délai, ta réservation sera automatiquement annulée.',
+        })
+      ).toHaveLength(1)
     })
   })
 })

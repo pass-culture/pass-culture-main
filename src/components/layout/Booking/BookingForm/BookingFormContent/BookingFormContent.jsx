@@ -89,7 +89,7 @@ class BookingFormContent extends PureComponent {
     }
 
     return (
-      <p className="bc-cancellation-delay">
+      <p className="bc-notification">
         {sentence}
       </p>
     )
@@ -103,6 +103,7 @@ class BookingFormContent extends PureComponent {
       isEvent,
       isReadOnly,
       isStockDuo,
+      isSubscription,
       values,
     } = this.props
     const { price, isDuo } = values
@@ -160,6 +161,14 @@ class BookingFormContent extends PureComponent {
           </p>
         )}
 
+        {!isEvent && !isSubscription && (
+          <p className="bc-notification">
+            {
+              'Tu as 30 jours pour faire valider ta contremarque et récupérer ton bien (si applicable). Passé ce délai, ta réservation sera automatiquement annulée.'
+            }
+          </p>
+        )}
+
         {this.cancellation_limit_date_sentences(bookableTimes, hasBookableTimes, isEvent)}
       </form>
     )
@@ -182,6 +191,7 @@ BookingFormContent.propTypes = {
   isEvent: PropTypes.bool,
   isReadOnly: PropTypes.bool,
   isStockDuo: PropTypes.bool,
+  isSubscription: PropTypes.bool.isRequired,
   offerId: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   values: PropTypes.shape().isRequired,

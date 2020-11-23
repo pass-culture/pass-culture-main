@@ -10,6 +10,9 @@ describe('src | components | BookingFormContentContainer', () => {
             {
               id: 'O1',
               isDuo: true,
+              offerType: {
+                value: 'FAKE_TYPE',
+              },
             },
           ],
           stocks: [
@@ -35,6 +38,7 @@ describe('src | components | BookingFormContentContainer', () => {
       // then
       expect(props).toStrictEqual({
         isStockDuo: true,
+        isSubscription: false,
       })
     })
   })
