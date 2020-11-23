@@ -91,8 +91,8 @@ def get_offers_by_filters(
     type_id: Optional[str] = None,
     name_keywords: Optional[str] = None,
     creation_mode: Optional[str] = None,
-    period_beginning_date: Optional[str] = None,
-    period_ending_date: Optional[str] = None,
+    period_beginning_date: Optional[datetime] = None,
+    period_ending_date: Optional[datetime] = None,
 ) -> Query:
     datetime_now = datetime.utcnow()
     query = Offer.query

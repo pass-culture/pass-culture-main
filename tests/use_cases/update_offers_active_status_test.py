@@ -5,7 +5,6 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models.feature import FeatureToggle
-from pcapi.use_cases.update_offers_active_status import update_all_offers_active_status
 from pcapi.use_cases.update_offers_active_status import update_offers_active_status
 
 
@@ -71,77 +70,3 @@ class UpdateOffersIsActiveStatusTest:
             # Then
             assert mocked_update.call_args[0][0] == offers_id
             assert mocked_update.call_args[0][1] == False
-
-
-class UpdateAllOffersIsActiveStatusTest:
-    @patch("pcapi.use_cases.update_offers_active_status.get_all_offers_id_by_filters")
-    @patch("pcapi.use_cases.update_offers_active_status.update_offers_is_active_status")
-    @patch("pcapi.use_cases.update_offers_active_status.feature_queries.is_active", return_value=True)
-    @patch("pcapi.use_cases.update_offers_active_status.redis.add_offer_id")
-    def test_should_get_all_offers_filtered_by_default_params_and_call_update(
-        self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, mocked_get, app
-    ):
-        # Given
-        mocked_get.return_value = [1, 2]
-
-        # When
-        update_all_offers_active_status(user_id=12, user_is_admin=True, is_active=True)
-
-        # Then
-        mocked_get.assert_called_once_with(
-            user_id=12,
-            user_is_admin=True,
-            offerer_id=None,
-            status=None,
-            venue_id=None,
-            type_id=None,
-            name_keywords=None,
-            creation_mode=None,
-            period_beginning_date=None,
-            period_ending_date=None,
-        )
-        mocked_update.assert_called_once_with([1, 2], True)
-        mocked_feature_is_active.assert_called_once_with(FeatureToggle.SYNCHRONIZE_ALGOLIA)
-        assert mocked_add_offer_to_redis.call_args_list == [
-            call(client=app.redis_client, offer_id=1),
-            call(client=app.redis_client, offer_id=2),
-        ]
-
-    @patch("pcapi.use_cases.update_offers_active_status.get_all_offers_id_by_filters")
-    @patch("pcapi.use_cases.update_offers_active_status.update_offers_is_active_status")
-    @patch("pcapi.use_cases.update_offers_active_status.feature_queries.is_active", return_value=True)
-    @patch("pcapi.use_cases.update_offers_active_status.redis.add_offer_id")
-    def test_should_get_all_offers_filtered_by_params(
-        self, mocked_add_offer_to_redis, mocked_feature_is_active, mocked_update, mocked_get, app
-    ):
-        # Given
-        mocked_get.return_value = [1, 2]
-
-        # When
-        update_all_offers_active_status(
-            user_id=12,
-            user_is_admin=True,
-            is_active=True,
-            offerer_id=123,
-            status="active",
-            venue_id=456,
-            type_id="ThingType",
-            name_keywords="search",
-            creation_mode="imported",
-            period_beginning_date="2020-10-10T00:00:00Z",
-            period_ending_date="2020-10-11T23:59:59Z",
-        )
-
-        # Then
-        mocked_get.assert_called_once_with(
-            user_id=12,
-            user_is_admin=True,
-            offerer_id=123,
-            status="active",
-            venue_id=456,
-            type_id="ThingType",
-            name_keywords="search",
-            creation_mode="imported",
-            period_beginning_date="2020-10-10T00:00:00Z",
-            period_ending_date="2020-10-11T23:59:59Z",
-        )

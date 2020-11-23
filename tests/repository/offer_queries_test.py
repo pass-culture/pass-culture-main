@@ -21,7 +21,6 @@ from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.repository import repository
 from pcapi.repository.offer_queries import _build_bookings_quantity_subquery
-from pcapi.repository.offer_queries import get_all_offers_id_by_filters
 from pcapi.repository.offer_queries import get_offers_by_ids
 from pcapi.repository.offer_queries import get_offers_by_venue_id
 from pcapi.repository.offer_queries import get_paginated_active_offer_ids
@@ -748,68 +747,3 @@ class UpdateOffersIsActiveStatusTest:
         assert Offer.query.get(offer1.id).isActive == True
         assert Offer.query.get(offer2.id).isActive == True
         assert Offer.query.get(offer3.id).isActive == False
-
-
-class GetAllOffersIdByFiltersTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_all_unique_offer_ids_filtered_by_given_params(self, app):
-        # Given
-        user = create_user()
-        offerer = create_offerer()
-        create_user_offerer(user, offerer)
-        provider = create_provider()
-        wanted_venue = create_venue(offerer=offerer)
-        unwanted_venue = create_venue(offerer=offerer, siret="12345678912344")
-        wanted_offer = create_offer_with_thing_product(
-            venue=wanted_venue,
-            thing_name="Wanted name",
-            is_active=False,
-            last_provider=provider,
-            last_provider_id=provider.id,
-        )
-        wanted_offer2 = create_offer_with_thing_product(
-            venue=wanted_venue,
-            thing_name="Wanted name 2",
-            is_active=False,
-            last_provider=provider,
-            last_provider_id=provider.id,
-        )
-        unwanted_offer2 = create_offer_with_thing_product(venue=wanted_venue, is_active=False)
-        unwanted_offer3 = create_offer_with_thing_product(venue=wanted_venue)
-        unwanted_offer4 = create_offer_with_thing_product(venue=unwanted_venue)
-        wanted_stock = create_stock_from_offer(
-            offer=wanted_offer, beginning_datetime=datetime(2020, 10, 10, 10, 00, 00, 0)
-        )
-        another_wanted_stock = create_stock_from_offer(
-            offer=wanted_offer, beginning_datetime=datetime(2020, 10, 10, 10, 00, 00, 0)
-        )
-        unwanted_stock = create_stock_from_offer(
-            offer=wanted_offer2, beginning_datetime=datetime(2020, 11, 11, 10, 00, 00, 0)
-        )
-        repository.save(
-            user,
-            wanted_offer,
-            unwanted_offer2,
-            unwanted_offer3,
-            unwanted_offer4,
-            wanted_stock,
-            unwanted_stock,
-            another_wanted_stock,
-        )
-
-        # When
-        offers_id = get_all_offers_id_by_filters(
-            user_id=user.id,
-            user_is_admin=user.isAdmin,
-            offerer_id=offerer.id,
-            status="inactive",
-            venue_id=wanted_venue.id,
-            name_keywords="Wanted",
-            creation_mode="imported",
-            period_beginning_date="2020-10-09T00:00:00Z",
-            period_ending_date="2020-10-11T00:00:00Z",
-        )
-
-        # Then
-        assert len(offers_id) == 1
-        assert wanted_offer.id in offers_id

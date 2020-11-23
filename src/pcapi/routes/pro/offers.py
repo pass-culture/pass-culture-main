@@ -1,8 +1,10 @@
 from flask_login import current_user
 from flask_login import login_required
 
+import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.api import create_offer
 from pcapi.core.offers.api import list_offers_for_pro_user
+import pcapi.core.offers.repository as offers_repository
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
 from pcapi.models import RightsType
@@ -20,7 +22,6 @@ from pcapi.routes.serialization.offers_serialize import PatchOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.update_an_offer import update_an_offer
-from pcapi.use_cases.update_offers_active_status import update_all_offers_active_status
 from pcapi.use_cases.update_offers_active_status import update_offers_active_status
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFER_INCLUDES
@@ -78,10 +79,9 @@ def patch_offers_active_status(body: PatchOfferActiveStatusBodyModel) -> None:
 @login_or_api_key_required
 @spectree_serialize(response_model=None, on_success_status=204)
 def patch_all_offers_active_status(body: PatchAllOffersActiveStatusBodyModel) -> None:
-    update_all_offers_active_status(
+    query = offers_repository.get_offers_by_filters(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
-        is_active=body.is_active,
         offerer_id=body.offerer_id,
         status=body.status,
         venue_id=body.venue_id,
@@ -91,6 +91,7 @@ def patch_all_offers_active_status(body: PatchAllOffersActiveStatusBodyModel) ->
         period_beginning_date=body.period_beginning_date,
         period_ending_date=body.period_ending_date,
     )
+    offers_api.update_offers_active_status(query, body.is_active)
 
     return "", 204
 

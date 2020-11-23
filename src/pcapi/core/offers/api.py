@@ -12,13 +12,12 @@ from pcapi.domain import user_emails
 from pcapi.domain.create_offer import fill_offer_with_new_data
 from pcapi.domain.create_offer import initialize_offer_from_product_id
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
-from pcapi.models import Mediation
 from pcapi.models import Offer
-from pcapi.models import Offerer
 from pcapi.models import RightsType
 from pcapi.models import Stock
 from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
@@ -84,6 +83,19 @@ def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> models.
     admin_emails.send_offer_creation_notification_to_administration(offer, user, mailing.send_raw_email)
 
     return offer
+
+
+def update_offers_active_status(query, is_active):
+    # We cannot just call `query.update()` because `distinct()` may
+    # already have been called on `query`.
+    query_to_update = Offer.query.filter(Offer.id.in_(query.with_entities(Offer.id)))
+    query_to_update.update({"isActive": is_active}, synchronize_session=False)
+    db.session.commit()
+
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        offer_ids = {offer_id for offer_id, in query.with_entities(Offer.id)}
+        for offer_id in offer_ids:
+            redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
 
 
 def create_stock(

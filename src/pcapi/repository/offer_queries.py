@@ -28,7 +28,6 @@ from pcapi.repository.favorite_queries import get_only_offer_ids_from_favorites
 from pcapi.repository.iris_venues_queries import find_venues_located_near_iris
 from pcapi.repository.venue_queries import get_only_venue_ids_for_department_codes
 from pcapi.use_cases.diversify_recommended_offers import order_offers_by_diversified_types
-from pcapi.utils.converter import from_tuple_to_int
 
 
 ALL_DEPARTMENTS_CODE = "00"
@@ -227,34 +226,3 @@ def get_paginated_offer_ids_given_booking_limit_datetime_interval(
 def update_offers_is_active_status(offers_id: [int], is_active: bool) -> None:
     Offer.query.filter(Offer.id.in_(offers_id)).update({"isActive": is_active}, synchronize_session=False)
     db.session.commit()
-
-
-def get_all_offers_id_by_filters(
-    user_id: int,
-    user_is_admin: bool,
-    offerer_id: Optional[int] = None,
-    status: Optional[str] = None,
-    venue_id: Optional[int] = None,
-    type_id: Optional[str] = None,
-    name_keywords: Optional[str] = None,
-    creation_mode: Optional[str] = None,
-    period_beginning_date: Optional[str] = None,
-    period_ending_date: Optional[str] = None,
-) -> List[int]:
-    query = get_offers_by_filters(
-        user_id=user_id,
-        user_is_admin=user_is_admin,
-        offerer_id=offerer_id,
-        status=status,
-        venue_id=venue_id,
-        type_id=type_id,
-        name_keywords=name_keywords,
-        creation_mode=creation_mode,
-        period_beginning_date=period_beginning_date,
-        period_ending_date=period_ending_date,
-    ).with_entities(Offer.id)
-
-    offer_ids_as_tuple = query.all()
-    offer_ids_as_int = from_tuple_to_int(offer_ids_as_tuple)
-
-    return offer_ids_as_int
