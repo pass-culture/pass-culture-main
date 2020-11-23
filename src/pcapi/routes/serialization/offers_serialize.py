@@ -104,6 +104,24 @@ class PatchOfferActiveStatusBodyModel(BaseModel):
         alias_generator = to_camel
 
 
+class PatchAllOffersActiveStatusBodyModel(BaseModel):
+    is_active: bool
+    offerer_id: Optional[int]
+    venue_id: Optional[int]
+    name: Optional[str]
+    type_id: Optional[str]
+    creation_mode: Optional[str]
+    status: Optional[str]
+    period_beginning_date: Optional[datetime]
+    period_ending_date: Optional[datetime]
+
+    _dehumanize_offerer_id = dehumanize_field("offerer_id")
+    _dehumanize_venue_id = dehumanize_field("venue_id")
+
+    class Config:
+        alias_generator = to_camel
+
+
 class ListOffersVenueResponseModel(BaseModel):
     id: str
     isVirtual: bool

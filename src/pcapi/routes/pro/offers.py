@@ -1,4 +1,3 @@
-from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
@@ -15,6 +14,7 @@ from pcapi.routes.serialization.offers_serialize import GetOfferResponseModel
 from pcapi.routes.serialization.offers_serialize import ListOffersQueryModel
 from pcapi.routes.serialization.offers_serialize import ListOffersResponseModel
 from pcapi.routes.serialization.offers_serialize import OfferResponseIdModel
+from pcapi.routes.serialization.offers_serialize import PatchAllOffersActiveStatusBodyModel
 from pcapi.routes.serialization.offers_serialize import PatchOfferActiveStatusBodyModel
 from pcapi.routes.serialization.offers_serialize import PatchOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
@@ -25,7 +25,6 @@ from pcapi.use_cases.update_offers_active_status import update_offers_active_sta
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFER_INCLUDES
 from pcapi.utils.rest import ensure_current_user_has_rights
-from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import load_or_404
 from pcapi.utils.rest import login_or_api_key_required
 
@@ -77,29 +76,20 @@ def patch_offers_active_status(body: PatchOfferActiveStatusBodyModel) -> None:
 
 @private_api.route("/offers/all-active-status", methods=["PATCH"])
 @login_or_api_key_required
-@expect_json_data
-def patch_all_offers_active_status() -> None:
-    payload = request.json
-    offerer_identifier = dehumanize(payload.get("offererId"))
-
-    venue_identifier = dehumanize(payload.get("venueId"))
-
-    name_keywords = payload.get("name")
-    offers_new_active_status = payload.get("isActive")
-    type_id = payload.get("typeId")
-
+@spectree_serialize(response_model=None, on_success_status=204)
+def patch_all_offers_active_status(body: PatchAllOffersActiveStatusBodyModel) -> None:
     update_all_offers_active_status(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
-        is_active=offers_new_active_status,
-        offerer_id=offerer_identifier,
-        status=payload.get("status"),
-        venue_id=venue_identifier,
-        type_id=type_id,
-        name_keywords=name_keywords,
-        creation_mode=payload.get("creationMode"),
-        period_beginning_date=payload.get("periodBeginningDate"),
-        period_ending_date=payload.get("periodEndingDate"),
+        is_active=body.is_active,
+        offerer_id=body.offerer_id,
+        status=body.status,
+        venue_id=body.venue_id,
+        type_id=body.type_id,
+        name_keywords=body.name,
+        creation_mode=body.creation_mode,
+        period_beginning_date=body.period_beginning_date,
+        period_ending_date=body.period_ending_date,
     )
 
     return "", 204
