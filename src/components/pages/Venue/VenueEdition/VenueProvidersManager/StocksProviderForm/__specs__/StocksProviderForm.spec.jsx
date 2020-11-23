@@ -4,16 +4,12 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import * as notification from 'store/reducers/notificationReducer'
+import StocksProviderFormContainer from 'components/pages/Venue/VenueEdition/VenueProvidersManager/StocksProviderForm/StocksProviderFormContainer'
+import { configureTestStore } from 'store/testUtils'
 import * as fetch from 'utils/fetch'
-import { getStubStore } from 'utils/stubStore'
-
-import StocksProviderFormContainer from '../StocksProviderFormContainer'
 
 const renderStocksProviderForm = props => {
-  const stubbedStore = getStubStore({
-    notification: (state = {}) => state,
-  })
+  const stubbedStore = configureTestStore({ notification: {} })
 
   render(
     <Provider store={stubbedStore}>
@@ -22,6 +18,8 @@ const renderStocksProviderForm = props => {
       </MemoryRouter>
     </Provider>
   )
+
+  return stubbedStore
 }
 
 describe('src | StocksProviderForm', () => {
@@ -96,14 +94,10 @@ describe('src | StocksProviderForm', () => {
 
     it('should display a notification if there is something wrong with the server', async () => {
       // given
-      renderStocksProviderForm(props)
+      const stubbedStore = renderStocksProviderForm(props)
       jest.spyOn(global, 'fetch').mockResolvedValue({
         json: () => Promise.resolve({ errors: ['error message'] }),
         ok: false,
-      })
-      jest.spyOn(notification, 'showNotificationV1').mockReturnValue({
-        payload: {},
-        type: 'FAKE_TYPE',
       })
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
@@ -111,11 +105,12 @@ describe('src | StocksProviderForm', () => {
       await waitFor(() => fireEvent.click(submitButton))
 
       // then
-      expect(notification.showNotificationV1).toHaveBeenCalledWith({
+      expect(props.cancelProviderSelection).toHaveBeenCalledTimes(1)
+      expect(stubbedStore.getState().notification).toStrictEqual({
         text: 'error message',
         type: 'danger',
+        version: 1,
       })
-      expect(props.cancelProviderSelection).toHaveBeenCalledTimes(1)
     })
   })
 })
