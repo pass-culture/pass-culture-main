@@ -20,7 +20,10 @@ def get_credentials():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     google_key = os.environ.get("PC_GOOGLE_KEY")
     if google_key:
-        google_key_json_payload = json.loads(google_key)
+        # FIXME(cgaunet, 2020-11-24): We need to do this because parsing env variables yml
+        # to give it to terraform, replaces double quotes with single quotes making it not json friendly
+        google_key_json = google_key.replace("'", '"')
+        google_key_json_payload = json.loads(google_key_json, strict=False)
         key_path = "/tmp/data.json"
         with open(key_path, "w") as outfile:
             json.dump(google_key_json_payload, outfile)

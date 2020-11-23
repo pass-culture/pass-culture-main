@@ -14,16 +14,11 @@ class GetCredentialsTest:
     ):
         # Given
         get_environment.return_value = (
-            '{"type": "service_account", '
-            '"project_id": "pass-culture", "private_key_id": "1234",  '
-            '"private_key": "-----BEGIN PRIVATE KEY-----12345'
-            '-----END PRIVATE KEY-----", '
-            '"client_email": "client@email.com", '
-            '"client_id": "4321", '
-            '"auth_uri": "https://url.com", '
-            '"token_uri": "https://url.com/token", '
-            '"auth_provider_x509_cert_url": "https://url.com/certs", '
-            '"client_x509_cert_url": "https://url.com/client_x509_cert_url"}'
+            "{'type': 'service_account', 'project_id': 'quickstart-1563873852000', 'private_key_id': '128899911',"
+            " 'private_key': '-----BEGIN PRIVATE KEY-----\nMIIBAQDoIMQFqZcXC+iE\nnf7NOhDx5EXgrVVnjUE\nt/engEnp\n"
+            "-----END PRIVATE KEY-----\n', 'client_email': 'dashboard@gserviceaccount.com', 'client_id': '123456789',"
+            " 'auth_uri': 'oauth2_uri', 'token_uri': 'token_uri', 'auth_provider_x509_cert_url': 'oauth2_cert_url',"
+            " 'client_x509_cert_url': 'cert_url'}"
         )
 
         # When
