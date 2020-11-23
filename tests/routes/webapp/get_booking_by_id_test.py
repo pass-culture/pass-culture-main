@@ -39,6 +39,7 @@ class Get:
             assert response.json == {
                 "amount": 0.0,
                 "cancellationDate": None,
+                "cancellationReason": None,
                 "completedUrl": completed_url,
                 "confirmationDate": None,
                 "dateCreated": format_into_utc_date(booking.dateCreated),

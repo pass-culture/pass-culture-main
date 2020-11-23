@@ -1,10 +1,12 @@
 from datetime import datetime
+import enum
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import DDL
 from sqlalchemy import DateTime
+from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import Numeric
@@ -18,6 +20,12 @@ from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.models.versioned_mixin import VersionedMixin
 from pcapi.utils.human_ids import humanize
+
+
+class BookingCancellationReasons(enum.Enum):
+    OFFERER = "OFFERER"
+    BENEFICIARY = "BENEFICIARY"
+    EXPIRED = "EXPIRED"
 
 
 class Booking(PcObject, Model, VersionedMixin):
@@ -54,6 +62,15 @@ class Booking(PcObject, Model, VersionedMixin):
     isUsed = Column(Boolean, nullable=False, default=False)
 
     confirmationDate = Column(DateTime, nullable=True)
+
+    cancellationReason = Column(
+        "cancellationReason",
+        Enum(
+            BookingCancellationReasons,
+            values_callable=lambda x: [reason.value for reason in BookingCancellationReasons],
+        ),
+        nullable=True,
+    )
 
     @property
     def total_amount(self):
