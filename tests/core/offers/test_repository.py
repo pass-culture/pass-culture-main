@@ -18,8 +18,6 @@ from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_event_type
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
 from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models import ThingType
 from pcapi.repository import repository
@@ -96,49 +94,6 @@ class PaginatedOfferSQLRepositoryTest:
         offers_id = [offer.identifier for offer in paginated_offers.offers]
         assert Identifier(requested_offer.id) in offers_id
         assert Identifier(other_offer.id) not in offers_id
-        assert paginated_offers.total_offers == 1
-
-    @pytest.mark.usefixtures("db_session")
-    def should_return_offers_matching_searched_name(self, app):
-        user = create_user()
-        offerer = create_offerer(siren="123456789")
-        user_offerer = create_user_offerer(user=user, offerer=offerer)
-
-        product_event = create_product_with_event_type(event_name="Rencontre avec Jacques Martin")
-        product_thing = create_product_with_thing_type(thing_name="Belle du Seigneur", author_name="Jacqueline Rencon")
-        requested_venue = create_venue(
-            offerer=offerer,
-            name="Bataclan",
-            city="Paris",
-            siret=offerer.siren + "12345",
-        )
-        other_venue = create_venue(
-            offerer=offerer,
-            name="Librairie la Rencontre des jachères",
-            city="Saint Denis",
-            siret=offerer.siren + "54321",
-        )
-        offer_matching_requested_name = create_offer_with_event_product(venue=requested_venue, product=product_event)
-        offer_not_matching_requested_name = create_offer_with_thing_product(venue=other_venue, product=product_thing)
-        repository.save(
-            user_offerer,
-            offer_matching_requested_name,
-            offer_not_matching_requested_name,
-        )
-
-        # when
-        paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-            user_id=user.id,
-            user_is_admin=user.isAdmin,
-            name_keywords="Jac rencon",
-            page=1,
-            offers_per_page=10,
-        )
-
-        # then
-        offers_id = [offer.identifier for offer in paginated_offers.offers]
-        assert Identifier(offer_matching_requested_name.id) in offers_id
-        assert Identifier(offer_not_matching_requested_name.id) not in offers_id
         assert paginated_offers.total_offers == 1
 
     @pytest.mark.usefixtures("db_session")
@@ -316,14 +271,14 @@ class PaginatedOfferSQLRepositoryTest:
         @pytest.mark.usefixtures("db_session")
         def should_not_return_offers_of_given_venue_when_user_is_not_attached_to_its_offerer(self, app):
             # given
-            admin = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=False)
+            pro = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=False)
             offer_for_requested_venue = offers_factories.OfferFactory()
             offer_for_other_venue = offers_factories.OfferFactory()
 
             # when
             paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
-                user_id=admin.id,
-                user_is_admin=admin.isAdmin,
+                user_id=pro.id,
+                user_is_admin=pro.isAdmin,
                 venue_id=offer_for_requested_venue.venue.id,
                 page=1,
                 offers_per_page=10,
@@ -410,6 +365,105 @@ class PaginatedOfferSQLRepositoryTest:
             offers_id = [offer.identifier for offer in paginated_offers.offers]
             assert Identifier(offer_for_requested_offerer.id) in offers_id
             assert Identifier(offer_for_other_offerer.id) not in offers_id
+            assert paginated_offers.total_offers == 1
+
+    class NameFilterTest:
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offer_which_name_equal_keyword_when_keyword_is_less_or_equal_than_3_letters(self, app):
+            # given
+            user_offerer = offers_factories.UserOffererFactory()
+            expected_offer = offers_factories.OfferFactory(name="ocs", venue__managingOfferer=user_offerer.offerer)
+            other_offer = offers_factories.OfferFactory(name="ocsir", venue__managingOfferer=user_offerer.offerer)
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=user_offerer.user.id,
+                user_is_admin=user_offerer.user.isAdmin,
+                name_keywords="ocs",
+                page=1,
+                offers_per_page=10,
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(expected_offer.id) in offers_id
+            assert Identifier(other_offer.id) not in offers_id
+            assert paginated_offers.total_offers == 1
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offer_which_name_contains_keyword_when_keyword_is_more_than_3_letters(self, app):
+            # given
+            user_offerer = offers_factories.UserOffererFactory()
+            expected_offer = offers_factories.OfferFactory(
+                name="seras-tu là", venue__managingOfferer=user_offerer.offerer
+            )
+            another_expected_offer = offers_factories.OfferFactory(
+                name="François, seras-tu là ?", venue__managingOfferer=user_offerer.offerer
+            )
+            other_offer = offers_factories.OfferFactory(name="étais-tu là", venue__managingOfferer=user_offerer.offerer)
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=user_offerer.user.id,
+                user_is_admin=user_offerer.user.isAdmin,
+                name_keywords="seras-tu",
+                page=1,
+                offers_per_page=10,
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(expected_offer.id) in offers_id
+            assert Identifier(another_expected_offer.id) in offers_id
+            assert Identifier(other_offer.id) not in offers_id
+            assert paginated_offers.total_offers == 2
+
+        @pytest.mark.usefixtures("db_session")
+        def should_be_case_insensitive(self, app):
+            # given
+            user_offerer = offers_factories.UserOffererFactory()
+            expected_offer = offers_factories.OfferFactory(
+                name="Mon océan", venue__managingOfferer=user_offerer.offerer
+            )
+            another_expected_offer = offers_factories.OfferFactory(
+                name="MON océan", venue__managingOfferer=user_offerer.offerer
+            )
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=user_offerer.user.id,
+                user_is_admin=user_offerer.user.isAdmin,
+                name_keywords="mon océan",
+                page=1,
+                offers_per_page=10,
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(expected_offer.id) in offers_id
+            assert Identifier(another_expected_offer.id) in offers_id
+            assert paginated_offers.total_offers == 2
+
+        @pytest.mark.usefixtures("db_session")
+        def should_be_accent_sensitive(self, app):
+            # given
+            user_offerer = offers_factories.UserOffererFactory()
+            expected_offer = offers_factories.OfferFactory(name="ocean", venue__managingOfferer=user_offerer.offerer)
+            other_offer = offers_factories.OfferFactory(name="océan", venue__managingOfferer=user_offerer.offerer)
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=user_offerer.user.id,
+                user_is_admin=user_offerer.user.isAdmin,
+                name_keywords="ocean",
+                page=1,
+                offers_per_page=10,
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(expected_offer.id) in offers_id
+            assert Identifier(other_offer.id) not in offers_id
             assert paginated_offers.total_offers == 1
 
     class StatusFiltersTest:

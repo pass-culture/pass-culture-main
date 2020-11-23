@@ -14,7 +14,6 @@ from sqlalchemy.sql.functions import coalesce
 
 from pcapi.core.bookings.models import Booking
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
-from pcapi.domain.ts_vector import create_filter_on_ts_vector_matching_all_keywords
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
 from pcapi.models import Offer
 from pcapi.models import Offerer
@@ -127,8 +126,10 @@ def get_offers_by_filters(
     if type_id is not None:
         query = query.filter(Offer.type == type_id)
     if name_keywords is not None:
-        name_keywords_filter = create_filter_on_ts_vector_matching_all_keywords(Offer.__name_ts_vector__, name_keywords)
-        query = query.filter(name_keywords_filter)
+        search = name_keywords
+        if len(name_keywords) > 3:
+            search = "%{}%".format(name_keywords)
+        query = query.filter(Offer.name.ilike(search))
     if status is not None:
         query = _filter_by_status(query, datetime_now, status)
     if period_beginning_date is not None or period_ending_date is not None:

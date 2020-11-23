@@ -21,8 +21,6 @@ from sqlalchemy import false
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import relationship
 
-from pcapi.domain.ts_vector import create_fts_index
-from pcapi.domain.ts_vector import create_ts_vector
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -358,7 +356,3 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
     def get_label_from_type_string(self):
         matching_type_thing = next(filter(lambda thing_type: str(thing_type) == self.type, ThingType))
         return matching_type_thing.value["proLabel"]
-
-
-Offer.__name_ts_vector__ = create_ts_vector(Offer.name)
-Offer.__table_args__ = [create_fts_index("idx_offer_fts_name", Offer.__name_ts_vector__)]

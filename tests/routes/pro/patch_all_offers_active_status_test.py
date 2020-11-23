@@ -49,35 +49,38 @@ class Returns204:
 
     def should_update_offers_by_given_filters(self, app):
         # Given
-        matching_offer1 = offers_factories.OfferFactory(name="OK 1")
-        offers_factories.StockFactory(
-            offer=matching_offer1,
-            beginningDatetime=datetime(2020, 10, 10, 12, 0, 0),
-        )
-        venue = matching_offer1.venue
-        offerer = venue.managingOfferer
-        user_offerer = offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        user_offerer = offers_factories.UserOffererFactory()
+        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        matching_offer1 = offers_factories.OfferFactory(name="OKAY 1", venue=venue)
+        offers_factories.StockFactory(offer=matching_offer1, beginningDatetime=datetime(2020, 10, 10, 12, 0, 0))
+        matching_offer2 = offers_factories.OfferFactory(name="OKAY 2", venue=venue)
+        offers_factories.StockFactory(offer=matching_offer2, beginningDatetime=datetime(2020, 10, 10, 12, 0, 0))
 
-        # This offer matches the offer-related criteria...
-        matching_offer2 = offers_factories.OfferFactory(name="OK 1")
-        # but its stock does NOT match stock-related criteria.
+        offer_out_of_date_range = offers_factories.OfferFactory(name="OKAY 3", venue=venue)
         offers_factories.StockFactory(
-            offer=matching_offer2,
-            beginningDatetime=datetime(2020, 10, 10, 12, 0, 0),
+            offer=offer_out_of_date_range,
+            beginningDatetime=datetime(2020, 10, 12, 10, 0, 0),
         )
+        offer_on_other_venue = offers_factories.OfferFactory(name="OKAY 4")
+        offer_with_not_matching_name = offers_factories.OfferFactory(name="Pas celle-ci", venue=venue)
 
-        # When
         data = {
             "isActive": False,
-            "offererId": humanize(offerer.id),
+            "offererId": humanize(user_offerer.offerer.id),
             "venueId": humanize(venue.id),
-            "name": "OK",
+            "name": "OKAY",
             "periodBeginningDate": "2020-10-09T00:00:00Z",
             "periodEndingDate": "2020-10-11T23:59:59Z",
         }
-        client = TestClient(app.test_client()).with_auth("pro@example.com")
+        client = TestClient(app.test_client()).with_auth(user_offerer.user.email)
+
+        # When
         response = client.patch("/offers/all-active-status", json=data)
 
         # Then
         assert response.status_code == 204
         assert not Offer.query.get(matching_offer1.id).isActive
+        assert not Offer.query.get(matching_offer2.id).isActive
+        assert Offer.query.get(offer_out_of_date_range.id).isActive
+        assert Offer.query.get(offer_on_other_venue.id).isActive
+        assert Offer.query.get(offer_with_not_matching_name.id).isActive
