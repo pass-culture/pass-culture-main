@@ -118,7 +118,7 @@ class EditStockTest:
         notified_bookings = mocked_send_email.call_args_list[0][0][0]
         assert notified_bookings == [booking1]
 
-    def test_update_bookings_confirmation_date_if_report_of_event(self):
+    def should_update_bookings_confirmation_date_if_report_of_event(self):
         now = datetime.datetime.now()
         event_in_4_days = now + datetime.timedelta(days=4)
         confirmation_date_for_event_in_4_days = now + datetime.timedelta(days=1)

@@ -376,18 +376,20 @@ class ComputeConfirmationDateTest:
 class UpdateConfirmationDatesTest:
     def test_should_update_bookings(self):
         #  Given
-        booking = factories.BookingFactory(
-            dateCreated=(datetime.now() - timedelta(days=1)),
-        )
-        booking2 = factories.BookingFactory(
-            dateCreated=(datetime.now() - timedelta(days=4)),
-        )
+        bookings = [
+            factories.BookingFactory(
+                dateCreated=(datetime.now() - timedelta(days=1)),
+            ),
+            factories.BookingFactory(
+                dateCreated=(datetime.now() - timedelta(days=4)),
+            ),
+        ]
 
         # When
-        new_bookings = api.update_confirmation_dates([booking, booking2], datetime.now() + timedelta(days=4))
+        new_bookings = api.update_confirmation_dates(bookings, datetime.now() + timedelta(days=4))
 
         # Then
-        assert booking in new_bookings
-        assert booking.confirmationDate == datetime(2020, 11, 18, 9, 21, 34)
-        assert booking2 in new_bookings
-        assert booking2.confirmationDate == datetime(2020, 11, 15, 9, 21, 34)
+        assert bookings[0] in new_bookings
+        assert bookings[0].confirmationDate == datetime(2020, 11, 18, 9, 21, 34)
+        assert bookings[1] in new_bookings
+        assert bookings[1].confirmationDate == datetime(2020, 11, 15, 9, 21, 34)
