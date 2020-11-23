@@ -391,75 +391,77 @@ class PaginatedOfferSQLRepositoryTest:
     class StatusFiltersTest:
         def setup_method(self):
             self.offerer = create_offerer()
-            venue = create_venue(self.offerer)
+            self.venue = create_venue(self.offerer)
             self.pro = create_user()
             self.user_offerer = create_user_offerer(self.pro, self.offerer)
 
             self.inactive_thing_offer_with_stock_with_remaining_quantity = create_offer_with_thing_product(
-                venue, is_active=False, description="inactive_thing_offer_with_stock_with_remaining_quantity"
+                self.venue, is_active=False, description="inactive_thing_offer_with_stock_with_remaining_quantity"
             )
             self.inactive_thing_offer_without_remaining_quantity = create_offer_with_thing_product(
-                venue, is_active=False, description="inactive_thing_offer_without_remaining_quantity"
+                self.venue, is_active=False, description="inactive_thing_offer_without_remaining_quantity"
             )
             self.inactive_thing_offer_without_stock = create_offer_with_thing_product(
-                venue, is_active=False, description="inactive_thing_offer_without_stock"
+                self.venue, is_active=False, description="inactive_thing_offer_without_stock"
             )
             self.inactive_expired_event_offer = create_offer_with_event_product(
-                venue, is_active=False, description="inactive_expired_event_offer"
+                self.venue, is_active=False, description="inactive_expired_event_offer"
             )
             self.active_thing_offer_with_one_stock_with_remaining_quantity = create_offer_with_thing_product(
-                venue, is_active=True, description="active_thing_offer_with_one_stock_with_remaining_quantity"
+                self.venue, is_active=True, description="active_thing_offer_with_one_stock_with_remaining_quantity"
             )
             self.active_thing_offer_with_all_stocks_without_quantity = create_offer_with_thing_product(
-                venue, is_active=True, description="active_thing_offer_with_all_stocks_without_quantity"
+                self.venue, is_active=True, description="active_thing_offer_with_all_stocks_without_quantity"
             )
             self.active_event_offer_with_stock_in_the_future_without_quantity = create_offer_with_event_product(
-                venue=venue, description="active_event_offer_with_stock_in_the_future_without_quantity"
+                venue=self.venue, description="active_event_offer_with_stock_in_the_future_without_quantity"
             )
             self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity = (
                 create_offer_with_event_product(
-                    venue=venue, description="active_event_offer_with_one_stock_in_the_future_with_remaining_quantity"
+                    venue=self.venue,
+                    description="active_event_offer_with_one_stock_in_the_future_with_remaining_quantity",
                 )
             )
             self.sold_old_thing_offer_with_all_stocks_empty = create_offer_with_thing_product(
-                venue, description="sold_old_thing_offer_with_all_stocks_empty"
+                self.venue, description="sold_old_thing_offer_with_all_stocks_empty"
             )
             self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity = (
                 create_offer_with_event_product(
-                    venue=venue,
+                    venue=self.venue,
                     description="sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity",
                 )
             )
             self.sold_out_thing_offer_without_stock = create_offer_with_thing_product(
-                venue, description="sold_out_thing_offer_without_stock"
+                self.venue, description="sold_out_thing_offer_without_stock"
             )
             self.sold_out_event_offer_without_stock = create_offer_with_event_product(
-                venue=venue, description="sold_out_event_offer_without_stock"
+                venue=self.venue, description="sold_out_event_offer_without_stock"
             )
             self.sold_out_event_offer_with_only_one_stock_soft_deleted = create_offer_with_event_product(
-                venue=venue, description="sold_out_event_offer_with_only_one_stock_soft_deleted"
+                venue=self.venue, description="sold_out_event_offer_with_only_one_stock_soft_deleted"
             )
             self.expired_event_offer_with_stock_in_the_past_without_quantity = create_offer_with_event_product(
-                venue=venue, description="expired_event_offer_with_stock_in_the_past_without_quantity"
+                venue=self.venue, description="expired_event_offer_with_stock_in_the_past_without_quantity"
             )
             self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity = (
                 create_offer_with_event_product(
-                    venue=venue, description="expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity"
+                    venue=self.venue,
+                    description="expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity",
                 )
             )
             self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity = (
                 create_offer_with_event_product(
-                    venue=venue,
+                    venue=self.venue,
                     description="expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity",
                 )
             )
             self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity = create_offer_with_event_product(
-                venue=venue,
+                venue=self.venue,
                 description="expired_thing_offer_with_a_stock_expired_with_remaining_quantity",
             )
             self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity = (
                 create_offer_with_event_product(
-                    venue=venue,
+                    venue=self.venue,
                     description="expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity",
                 )
             )
@@ -880,6 +882,45 @@ class PaginatedOfferSQLRepositoryTest:
             assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
             assert Identifier(sold_out_offer_on_other_venue.id) in offer_ids
+            assert paginated_offers.total_offers == 1
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_only_active_offer_on_specific_period_when_requesting_active_status_and_time_period(self, app):
+            # given
+            in_six_days = datetime.now() + timedelta(days=6)
+            in_six_days_beginning = in_six_days.replace(hour=0, minute=0, second=0)
+            in_six_days_ending = in_six_days.replace(hour=23, minute=59, second=59)
+            active_event_in_six_days_offer = create_offer_with_event_product(venue=self.venue)
+            stock = create_stock_from_offer(
+                offer=active_event_in_six_days_offer,
+                beginning_datetime=in_six_days,
+                booking_limit_datetime=in_six_days,
+                quantity=10,
+            )
+            self.save_data_set()
+            repository.save(stock)
+
+            # when
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=self.pro.id,
+                user_is_admin=self.pro.isAdmin,
+                offers_per_page=5,
+                page=1,
+                status="active",
+                period_beginning_date=in_six_days_beginning.isoformat(),
+                period_ending_date=in_six_days_ending.isoformat(),
+            )
+
+            # then
+            offer_ids = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(active_event_in_six_days_offer.id) in offer_ids
+            assert (
+                Identifier(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id)
+                not in offer_ids
+            )
+            assert Identifier(self.active_event_offer_with_stock_in_the_future_without_quantity.id) not in offer_ids
+            assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) not in offer_ids
+            assert Identifier(self.active_thing_offer_with_one_stock_with_remaining_quantity.id) not in offer_ids
             assert paginated_offers.total_offers == 1
 
 
