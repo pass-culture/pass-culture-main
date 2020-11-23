@@ -121,7 +121,7 @@ class EditStockTest:
     def should_update_bookings_confirmation_date_if_report_of_event(self):
         now = datetime.datetime.now()
         event_in_4_days = now + datetime.timedelta(days=4)
-        confirmation_date_for_event_in_4_days = now + datetime.timedelta(days=1)
+        confirmation_date_for_event_in_4_days = now + datetime.timedelta(days=2)
         event_reported_in_10_days = now + datetime.timedelta(days=10)
         confirmation_date_for_event_reported_in_10_days = now + datetime.timedelta(days=2)
 

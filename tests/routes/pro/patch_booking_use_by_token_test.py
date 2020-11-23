@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import Mock
 from unittest.mock import patch
 
@@ -21,7 +22,6 @@ from pcapi.models import Booking
 from pcapi.models import Deposit
 from pcapi.models import EventType
 from pcapi.models import UserSQLEntity
-from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.utils.token import random_token
 
@@ -126,7 +126,14 @@ class Returns204:
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
+            stock = create_stock_with_event_offer(
+                offerer,
+                venue,
+                price=0,
+                beginning_datetime=datetime.datetime.utcnow() + datetime.timedelta(hours=46),
+                booking_limit_datetime=datetime.datetime.utcnow() + datetime.timedelta(hours=24),
+                event_type=EventType.ACTIVATION,
+            )
             booking = create_booking(user=user, stock=stock, venue=venue)
             repository.save(booking, user_offerer)
             user_id = user.id
@@ -147,7 +154,6 @@ class Returns204:
             assert user.canBookFreeOffers is True
             assert user.deposits[0].amount == 500
             mocked_send_email.assert_called_once()
-            args = mocked_send_email.call_args
 
 
 class Returns401:
@@ -235,7 +241,7 @@ class Returns403:
             booking = create_booking(user=user, stock=stock, venue=venue)
             repository.save(booking, pro_user)
             booking_id = booking.id
-            url = "/v2/bookings/use/token/{}".format(booking.token, user.email)
+            url = f"/v2/bookings/use/token/{booking.token}"
 
             # When
             response = TestClient(app.test_client()).with_auth("pro@email.fr").patch(url)
