@@ -752,7 +752,7 @@ class UpdateOffersIsActiveStatusTest:
 
 class GetAllOffersIdByFiltersTest:
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_all_offers_ids_filtered_by_given_params(self, app):
+    def test_should_return_all_unique_offer_ids_filtered_by_given_params(self, app):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -780,11 +780,21 @@ class GetAllOffersIdByFiltersTest:
         wanted_stock = create_stock_from_offer(
             offer=wanted_offer, beginning_datetime=datetime(2020, 10, 10, 10, 00, 00, 0)
         )
+        another_wanted_stock = create_stock_from_offer(
+            offer=wanted_offer, beginning_datetime=datetime(2020, 10, 10, 10, 00, 00, 0)
+        )
         unwanted_stock = create_stock_from_offer(
             offer=wanted_offer2, beginning_datetime=datetime(2020, 11, 11, 10, 00, 00, 0)
         )
         repository.save(
-            user, wanted_offer, unwanted_offer2, unwanted_offer3, unwanted_offer4, wanted_stock, unwanted_stock
+            user,
+            wanted_offer,
+            unwanted_offer2,
+            unwanted_offer3,
+            unwanted_offer4,
+            wanted_stock,
+            unwanted_stock,
+            another_wanted_stock,
         )
 
         # When
