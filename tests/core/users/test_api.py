@@ -8,10 +8,10 @@ import pytest
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import generate_and_save_token
-from pcapi.core.users.api import get_user_with_valid_token
 from pcapi.core.users.models import ALGORITHM_HS_256
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
+from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.flask_app import jwt_secret_key
 from pcapi.repository import repository
 

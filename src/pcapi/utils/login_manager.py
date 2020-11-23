@@ -6,8 +6,8 @@ from flask import jsonify
 from flask import session
 from flask_login import login_user
 
-from pcapi.core.users import api as user_api
 from pcapi.core.users import exceptions as user_exceptions
+from pcapi.core.users import repository as user_repo
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository.user_session_queries import delete_user_session
@@ -33,7 +33,7 @@ def get_user_with_request(request):
     errors = ApiErrors()
     errors.status_code = 401
     try:
-        user = user_api.get_user_with_credentials(auth.username, auth.password)
+        user = user_repo.get_user_with_credentials(auth.username, auth.password)
     except user_exceptions.InvalidIdentifier as exc:
         errors.add_error("identifier", "Identifiant incorrect")
         raise errors from exc
