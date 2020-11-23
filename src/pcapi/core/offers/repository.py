@@ -8,6 +8,7 @@ from sqlalchemy import func
 from sqlalchemy import not_
 from sqlalchemy import or_
 from sqlalchemy.orm import Query
+from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import coalesce
 
@@ -96,23 +97,20 @@ def get_offers_by_filters(
     datetime_now = datetime.utcnow()
     query = Offer.query
 
-    if not user_is_admin or offerer_id or venue_id:
-        showed_venues_query = VenueSQLEntity.query.with_entities(VenueSQLEntity.id)
-
-        if not user_is_admin:
-            showed_venues_query = (
-                showed_venues_query.join(Offerer)
-                .join(UserOfferer)
-                .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken == None))
-            )
-        if offerer_id is not None:
-            showed_venues_query = showed_venues_query.filter(VenueSQLEntity.managingOffererId == offerer_id)
-        if venue_id is not None:
-            showed_venues_query = showed_venues_query.filter(VenueSQLEntity.id == venue_id)
-
-        showed_venues = showed_venues_query.subquery()
-        query = query.filter(Offer.venueId.in_(showed_venues))
-
+    if not user_is_admin:
+        query = (
+            query.join(VenueSQLEntity)
+            .join(Offerer)
+            .join(UserOfferer)
+            .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken == None))
+        )
+    if offerer_id is not None:
+        venue_alias = aliased(VenueSQLEntity)
+        query = query.join(venue_alias, Offer.venueId == venue_alias.id).filter(
+            venue_alias.managingOffererId == offerer_id
+        )
+    if venue_id is not None:
+        query = query.filter(Offer.venueId == venue_id)
     if creation_mode is not None:
         query = _filter_by_creation_mode(query, creation_mode)
     if type_id is not None:
