@@ -126,7 +126,7 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     hasSeenTutorials = Column(Boolean, nullable=True)
 
-    isEmailValidated = Column(Boolean, nullable=True)
+    isEmailValidated = Column(Boolean, nullable=True, server_default=expression.false())
 
     isBeneficiary = Column(Boolean, nullable=False, server_default=expression.false())
 

@@ -31,6 +31,7 @@ class Get:
                 postal_code="93020",
                 public_name="Toto",
             )
+            user.isEmailValidated = True
             repository.save(user)
 
             # When
@@ -55,7 +56,7 @@ class Get:
                 "id": humanize(user.id),
                 "isAdmin": False,
                 "isBeneficiary": True,
-                "isEmailValidated": None,
+                "isEmailValidated": True,
                 "lastConnectionDate": None,
                 "lastName": "Smisse",
                 "needsToFillCulturalSurvey": False,

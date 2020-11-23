@@ -390,19 +390,18 @@ class SendActivationEmailTest:
         mocked_get_activation_email_data.assert_called_once_with(user=beneficiary)
         mocked_send_email.assert_called_once_with(data={"Html-part": ""})
 
-    @pytest.mark.usefixtures("db_session")
     def test_send_activation_email_for_native(self):
         # given
-        beneficiary = users_factories.UserFactory()
+        beneficiary = users_factories.UserFactory.build()
+        token = users_factories.EmailValidationToken.build(user=beneficiary)
         mocked_send_email = Mock()
-        assert Token.query.count() == 0
 
         # when
-        send_activation_email(beneficiary, mocked_send_email, native_version=True)
+        send_activation_email(beneficiary, mocked_send_email, native_version=True, token=token)
 
         # then
-        mocked_send_email.assert_called_once()
-        assert Token.query.count() == 1
+        mocked_send_email.assert_called()
+        assert token.value in mocked_send_email.call_args[1]["data"]["Vars"]["native_app_link"]
 
 
 class SendAttachmentValidationEmailToProOffererTest:

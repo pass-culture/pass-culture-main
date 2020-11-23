@@ -27,7 +27,7 @@ class Post:
                 postal_code="93020",
                 public_name="Toto",
             )
-
+            user.isEmailValidated = True
             repository.save(user)
             data = {"identifier": user.email, "password": user.clearTextPassword}
 
@@ -53,7 +53,7 @@ class Post:
                 "id": humanize(user.id),
                 "isAdmin": False,
                 "isBeneficiary": True,
-                "isEmailValidated": None,
+                "isEmailValidated": True,
                 "lastConnectionDate": None,
                 "lastName": "Smisse",
                 "needsToFillCulturalSurvey": False,

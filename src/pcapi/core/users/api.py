@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from typing import Optional
@@ -5,8 +6,10 @@ from typing import Optional
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.utils import create_custom_jwt_token
+from pcapi.domain import user_emails
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
+from pcapi.utils import mailing as mailing_utils
 
 from . import constants
 
@@ -36,12 +39,40 @@ def generate_and_save_token(user: UserSQLEntity, token_type: TokenType, life_tim
     if token_with_same_value:
         return token_with_same_value
 
-    token = Token(
-        from_dict={"userId": user.id, "value": token_value, "type": token_type, "expirationDate": expiration_date}
-    )
+    token = Token(userId=user.id, value=token_value, type=token_type, expirationDate=expiration_date)
     repository.save(token)
 
     return token
+
+
+def create_account(
+    email: str,
+    password: str,
+    brithdate: date,
+    has_allowed_recommendations: bool = False,
+    is_email_validated: bool = False,
+    send_activation_mail: bool = True,
+) -> UserSQLEntity:
+    user = UserSQLEntity(
+        email=email,
+        dateOfBirth=brithdate,
+        isEmailValidated=is_email_validated,
+        departementCode="007",
+        publicName="   ",  # Required because model validation requires 3+ chars
+        hasSeenTutorials=False,
+        firstName="",
+    )
+    user.setPassword(password)
+    repository.save(user)
+
+    if not is_email_validated and send_activation_mail:
+        request_email_confirmation(user)
+    return user
+
+
+def request_email_confirmation(user: UserSQLEntity) -> None:
+    token = create_email_validation_token(user)
+    user_emails.send_activation_email(user, mailing_utils.send_raw_email, native_version=True, token=token)
 
 
 def is_user_eligible(user: UserSQLEntity) -> bool:

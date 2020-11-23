@@ -1,7 +1,10 @@
+from unittest.mock import patch
+
 from flask_jwt_extended.utils import create_access_token
 import pytest
 
 from pcapi.core.users import factories as users_factories
+from pcapi.models import UserSQLEntity
 
 from tests.conftest import TestClient
 
@@ -58,3 +61,26 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json["email"] == self.identifier
         assert response.json["first_name"] is None
+
+    @patch("pcapi.domain.beneficiary.beneficiary_licence.is_licence_token_valid", return_value=True)
+    @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
+    def test_account_creation(self, mocked_send_raw_email, mocked_is_licence_token_valid, app):
+        test_client = TestClient(app.test_client())
+        assert UserSQLEntity.query.first() is None
+        data = {
+            "email": "john.doe@example.com",
+            "password": "Aazflrifaoi6@",
+            "birthdate": "1960-12-31",
+            "notifications": True,
+            "token": "gnagna",
+            "has_allowed_recommendations": True,
+        }
+
+        response = test_client.post("/native/v1/account", json=data)
+        assert response.status_code == 204, response.json
+
+        user = UserSQLEntity.query.first()
+        assert user is not None
+        assert user.email == data["email"]
+        assert user.isEmailValidated is False
+        mocked_send_raw_email.assert_called()

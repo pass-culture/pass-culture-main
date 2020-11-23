@@ -179,10 +179,9 @@ def test_reset_password_fail_for_password_strenght(app):
     assert user.password == old_password
 
 
-@patch("pcapi.core.users.repository.get_user_with_valid_token")
+@patch("pcapi.core.users.repository.get_user_with_valid_token", return_value=None)
 def test_validate_email_with_invalid_token(mock_get_user_with_valid_token, app):
     token = "email-validation-token"
-    mock_get_user_with_valid_token.return_value = None
 
     response = TestClient(app.test_client()).post("/native/v1/validate_email", json={"email_validation_token": token})
 
