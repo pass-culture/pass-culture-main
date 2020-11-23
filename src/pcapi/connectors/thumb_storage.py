@@ -4,7 +4,7 @@ from pcapi.domain.mediations import standardize_image
 from pcapi.models import ApiErrors
 from pcapi.utils import requests
 from pcapi.utils.logger import logger
-from pcapi.utils.object_storage import store_public_object
+from pcapi.utils import object_storage
 
 
 ALLOWED_EXTENSIONS = {"jpg", "png", "jpeg", "gif"}
@@ -39,11 +39,10 @@ def create_thumb(
     image_index,
     crop_params=None,
     symlink_path=None,
-    store_thumb: Callable = store_public_object,
 ):
     image_as_bytes = standardize_image(image_as_bytes, crop_params)
 
-    store_thumb(
+    object_storage.store_public_object(
         bucket="thumbs",
         id=model_with_thumb.get_thumb_storage_id(image_index),
         blob=image_as_bytes,
