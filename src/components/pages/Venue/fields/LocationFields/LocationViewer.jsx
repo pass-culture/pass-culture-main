@@ -280,6 +280,7 @@ class LocationViewer extends PureComponent {
         <Map
           center={[latitude, longitude]}
           className="map"
+          scrollWheelZoom={false}
           zoom={zoom}
         >
           <TileLayer url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png" />
