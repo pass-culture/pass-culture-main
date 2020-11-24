@@ -20,13 +20,13 @@ export const App = props => {
   } = props
 
   const [isBusy, setIsBusy] = useState(false)
+  const currentPathname = window.location.pathname
   useEffect(() => {
     const publicRouteList = [...routes, ...routesWithMain].filter(
       route => route.meta && route.meta.public
     )
-    const isPublicRoute = !!publicRouteList.find(route =>
-      matchPath(window.location.pathname, route)
-    )
+    const isPublicRoute = !!publicRouteList.find(route => matchPath(currentPathname, route))
+
     if (!currentUser) {
       setIsBusy(true)
       getCurrentUser({
@@ -42,7 +42,11 @@ export const App = props => {
         },
       })
     }
-  }, [currentUser, getCurrentUser, history, location])
+  }, [currentUser, currentPathname, getCurrentUser, history, location])
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [currentPathname])
 
   if (isMaintenanceActivated) {
     return <RedirectToMaintenance />
