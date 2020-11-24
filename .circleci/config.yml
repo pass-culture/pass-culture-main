@@ -226,7 +226,7 @@ jobs:
 
             set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}"
 
-            yarn build
+            yarn build:${CIRCLE_BRANCH}
 
             npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
