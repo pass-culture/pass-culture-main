@@ -152,6 +152,7 @@ class ProductFields extends PureComponent {
             placeholder="Illimité"
             readOnly={readOnly}
             renderValue={this.renderNumberFieldValue(readOnly)}
+            step={1}
             title="Stock total"
           />
         </td>

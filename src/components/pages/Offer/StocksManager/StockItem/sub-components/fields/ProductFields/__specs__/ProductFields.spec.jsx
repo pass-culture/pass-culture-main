@@ -89,6 +89,7 @@ describe('src | ProductFields', () => {
       expect(numberField.prop('readOnly')).toBe(false)
       expect(numberField.prop('renderValue')).toStrictEqual(expect.any(Function))
       expect(numberField.prop('title')).toBe('Stock total')
+      expect(numberField.prop('step')).toBe(1)
     })
 
     it('should display remaining stock when given', () => {
