@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from flask import current_app as app
 from flask import jsonify
 from flask_jwt_extended import create_access_token
@@ -9,6 +7,7 @@ from flask_jwt_extended import jwt_refresh_token_required
 from flask_jwt_extended import jwt_required
 
 from pcapi.core.users import api as user_api
+from pcapi.core.users import constants as users_const
 from pcapi.core.users import exceptions as user_exceptions
 from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import get_user_with_valid_token
@@ -25,9 +24,6 @@ from pcapi.utils.mailing import send_raw_email
 
 from . import blueprint
 from .serialization import authentication
-
-
-RESET_PASSWORD_TOKEN_LIFE_TIME = timedelta(hours=24)
 
 
 @blueprint.native_v1.route("/signin", methods=["POST"])
@@ -68,7 +64,7 @@ def password_reset_request(body: PasswordResetRequestRequest) -> None:
         return
 
     reset_password_token = generate_and_save_token(
-        user, TokenType.RESET_PASSWORD, life_time=RESET_PASSWORD_TOKEN_LIFE_TIME
+        user, TokenType.RESET_PASSWORD, life_time=users_const.RESET_PASSWORD_TOKEN_LIFE_TIME
     )
 
     is_email_sent = send_reset_password_email_to_native_app_user(
