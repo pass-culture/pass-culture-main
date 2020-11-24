@@ -9,6 +9,7 @@ import pytest
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
+from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.recommendations.factories as recommendations_factories
@@ -145,6 +146,7 @@ class CancelByBeneficiaryTest:
         api.cancel_booking_by_beneficiary(booking.user, booking)
 
         assert booking.isCancelled
+        assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
         email_data1 = mocked_send_raw_email.call_args_list[0][1]["data"]
         assert email_data1["Mj-TemplateID"] == 1091464  # to beneficiary
         email_data2 = mocked_send_raw_email.call_args_list[1][1]["data"]
@@ -172,6 +174,7 @@ class CancelByBeneficiaryTest:
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             api.cancel_booking_by_beneficiary(booking.user, booking)
         assert not booking.isCancelled
+        assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
             "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 48h avant le début de l'événement"
         ]
@@ -186,6 +189,7 @@ class CancelByBeneficiaryTest:
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             api.cancel_booking_by_beneficiary(booking.user, booking)
         assert not booking.isCancelled
+        assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
             "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 48h avant le début de l'événement"
         ]
@@ -200,6 +204,7 @@ class CancelByBeneficiaryTest:
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             api.cancel_booking_by_beneficiary(booking.user, booking)
         assert not booking.isCancelled
+        assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
             "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 48h avant le début de l'événement"
         ]
@@ -210,6 +215,7 @@ class CancelByBeneficiaryTest:
         with pytest.raises(exceptions.BookingDoesntExist):
             api.cancel_booking_by_beneficiary(other_user, booking)
         assert not booking.isCancelled
+        assert not booking.cancellationReason
 
 
 @pytest.mark.usefixtures("db_session")
@@ -218,18 +224,23 @@ class CancelByOffererTest:
         booking = factories.BookingFactory()
         api.cancel_booking_by_offerer(booking)
         assert booking.isCancelled
+        assert booking.cancellationReason == BookingCancellationReasons.OFFERER
 
     def test_raise_if_already_cancelled(self):
-        booking = factories.BookingFactory(isCancelled=True)
+        booking = factories.BookingFactory(isCancelled=True, cancellationReason=BookingCancellationReasons.BENEFICIARY)
         with pytest.raises(api_errors.ResourceGoneError):
             api.cancel_booking_by_offerer(booking)
-        assert booking.isCancelled  # unchanged
+        assert booking.isCancelled
+        assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
 
     def test_raise_if_already_used(self):
         booking = factories.BookingFactory(isUsed=True)
         with pytest.raises(api_errors.ForbiddenError):
             api.cancel_booking_by_offerer(booking)
-        assert booking.isUsed  # unchanged
+        assert booking.isUsed
+        assert not booking.isCancelled
+        assert not booking.cancellationReason
+
         assert not booking.isCancelled
 
 

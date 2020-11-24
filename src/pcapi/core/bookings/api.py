@@ -12,6 +12,7 @@ import qrcode.image.svg
 from pcapi.connectors import redis
 from pcapi.core.bookings import conf
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offers.models import Stock
 from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from pcapi.models.feature import FeatureToggle
@@ -89,6 +90,7 @@ def cancel_booking_by_beneficiary(user: UserSQLEntity, booking: Booking) -> None
     validation.check_beneficiary_can_cancel_booking(user, booking)
 
     booking.isCancelled = True
+    booking.cancellationReason = BookingCancellationReasons.BENEFICIARY
     repository.save(booking)
 
     notifier = MailjetNotificationService()
@@ -111,6 +113,7 @@ def cancel_booking_by_beneficiary(user: UserSQLEntity, booking: Booking) -> None
 def cancel_booking_by_offerer(booking: Booking) -> None:
     validation.check_offerer_can_cancel_booking(booking)
     booking.isCancelled = True
+    booking.cancellationReason = BookingCancellationReasons.OFFERER
     repository.save(booking)
 
 
