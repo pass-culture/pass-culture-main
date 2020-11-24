@@ -12,7 +12,14 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
         stocks: [{ offerId: 'A1' }],
       },
       offers: {
-        list: [{ id: 'A1', isEvent: true, isThing: false, productId: 'B1' }],
+        list: [
+          {
+            id: 'A1',
+            isEvent: true,
+            isThing: false,
+            productId: 'B1',
+          },
+        ],
       },
     }
     props = {
@@ -40,6 +47,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
       // then
       expect(result).toStrictEqual({
         isEvent: true,
+        isStockCreationAllowed: true,
         offer: {
           id: 'A1',
           isEvent: true,
@@ -50,7 +58,6 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
           id: 'B1',
           lastProviderId: 'C1',
         },
-        isStockCreationAllowed: true,
         provider: undefined,
         stocks: [
           {

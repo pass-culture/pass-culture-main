@@ -180,6 +180,8 @@ class StocksManager extends PureComponent {
     const { isEvent, offer, product, provider, query, isStockCreationAllowed, stocks } = this.props
     const { editSuccess, errors, info } = this.state
     const { isCreatedEntity, readOnly } = query.context({ key: 'stock' })
+    const isPressSubscription =
+      offer && offer.offerType && offer.offerType.value === 'ThingType.PRESSE_ABO'
 
     return (
       <div className="stocks-manager">
@@ -216,6 +218,18 @@ class StocksManager extends PureComponent {
             subtitle={get(offer, 'name')}
             title={isEvent ? 'Dates, horaires et prix' : get(product, 'id') && 'Prix'}
           />
+          {!isEvent && !isPressSubscription && (
+            <div className="stocks-event-legal-warning">
+              <span className="selw-emphasis">
+                {'Les utilisateurs ont 30 jours pour faire valider leur contremarque.'}
+              </span>
+              <span>
+                {
+                  'Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
+                }
+              </span>
+            </div>
+          )}
           {isEvent && (
             <div className="stocks-event-legal-warning">
               <span className="selw-emphasis">

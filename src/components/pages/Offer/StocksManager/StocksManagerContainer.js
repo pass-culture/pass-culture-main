@@ -25,10 +25,10 @@ export const mapStateToProps = (state, ownProps) => {
 
   return {
     isEvent: offer.isEvent,
+    isStockCreationAllowed,
     offer,
     product,
     provider,
-    isStockCreationAllowed,
     stocks,
   }
 }
