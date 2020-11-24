@@ -9,20 +9,21 @@ from dateutil import tz
 TODAY = datetime.combine(datetime.utcnow(), time(hour=20))
 DATE_ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_STORED_TIMEZONE = "UTC"
-ENGLISH_TO_FRENCH_MONTH = {
-    "January": "Janvier",
-    "February": "Février",
-    "March": "Mars",
-    "April": "Avril",
-    "May": "Mai",
-    "June": "Juin",
-    "July": "Juillet",
-    "August": "Août",
-    "September": "Septembre",
-    "October": "Octobre",
-    "November": "Novembre",
-    "December": "Décembre",
-}
+MONTHS_IN_FRENCH = [
+    None,
+    "Janvier",
+    "Février",
+    "Mars",
+    "Avril",
+    "Mai",
+    "Juin",
+    "Juillet",
+    "Août",
+    "Septembre",
+    "Octobre",
+    "Novembre",
+    "Décembre",
+]
 CUSTOM_TIMEZONES = {
     "971": "America/Guadeloupe",
     "972": "America/Martinique",
@@ -41,11 +42,6 @@ CUSTOM_TIMEZONES = {
     # included because it has several timezones. Hopefully, we'll have
     # very few events, there...
 }
-
-
-def english_to_french_month(year: int, month_number: int, day: int = 1) -> str:
-    english_month = datetime(year, month_number, day).strftime("%B")
-    return ENGLISH_TO_FRENCH_MONTH[english_month]
 
 
 class DateTimes:

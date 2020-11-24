@@ -4,35 +4,9 @@ import dateutil
 import pytest
 
 from pcapi.utils.date import CUSTOM_TIMEZONES
-from pcapi.utils.date import english_to_french_month
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_time_formatted_for_email
-
-
-def test_english_to_french_month(app):
-    # Given
-    whatever_it_is_year = 2030
-    month_numbers = range(1, 13)
-
-    # When
-    french_months = [english_to_french_month(whatever_it_is_year, month_number) for month_number in month_numbers]
-
-    # Then
-    assert french_months == [
-        "Janvier",
-        "Février",
-        "Mars",
-        "Avril",
-        "Mai",
-        "Juin",
-        "Juillet",
-        "Août",
-        "Septembre",
-        "Octobre",
-        "Novembre",
-        "Décembre",
-    ]
 
 
 class GetDateFormattedForEmail:

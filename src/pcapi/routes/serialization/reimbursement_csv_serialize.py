@@ -5,7 +5,7 @@ from typing import List
 
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository.reimbursement_queries import find_all_offerer_payments
-from pcapi.utils.date import english_to_french_month
+from pcapi.utils.date import MONTHS_IN_FRENCH
 
 
 class ReimbursementDetails:
@@ -41,8 +41,8 @@ class ReimbursementDetails:
             transfer_label = " ".join(transfer_infos[:-1])
 
             date = transfer_infos[-1]
-            [month_number, year] = date.split("-")
-            french_month = english_to_french_month(int(year), int(month_number))
+            month_number, year = date.split("-")
+            month_name = MONTHS_IN_FRENCH[int(month_number)]
 
             payment_current_status = payment_info.status
             payment_current_status_details = payment_info.detail
@@ -52,7 +52,7 @@ class ReimbursementDetails:
             )
 
             self.year = year
-            self.transfer_name = "{} : {}".format(french_month, transfer_label)
+            self.transfer_name = "{} : {}".format(month_name, transfer_label)
             self.venue_name = payment_info.venue_name
             self.venue_siret = payment_info.venue_siret
             self.venue_address = payment_info.venue_address or payment_info.offerer_address
