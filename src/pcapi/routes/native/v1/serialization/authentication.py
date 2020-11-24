@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 
@@ -22,3 +24,13 @@ class PasswordResetRequestRequest(BaseModel):
 class ResetPasswordRequest(BaseModel):
     reset_password_token: str
     new_password: str
+
+
+class ValidateEmailRequest(BaseModel):
+    email_validation_token: str
+
+
+class ValidateEmailResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    id_check_token: Optional[str]

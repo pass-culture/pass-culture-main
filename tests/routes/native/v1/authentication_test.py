@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.users import factories as users_factories
@@ -176,3 +177,78 @@ def test_reset_password_fail_for_password_strenght(app):
     user = find_user_by_id(user.id)
     assert response.status_code == 400
     assert user.password == old_password
+
+
+@patch("pcapi.routes.native.v1.authentication.get_user_with_valid_token")
+def test_validate_email_with_invalid_token(mock_get_user_with_valid_token, app):
+    token = "email-validation-token"
+    mock_get_user_with_valid_token.return_value = None
+
+    response = TestClient(app.test_client()).post("/native/v1/validate_email", json={"email_validation_token": token})
+
+    mock_get_user_with_valid_token.assert_called_once_with(token, [TokenType.EMAIL_VALIDATION])
+
+    assert response.status_code == 400
+
+
+@pytest.mark.usefixtures("db_session")
+@freeze_time("2018-06-01")
+def test_validate_email_when_eligible(app):
+    user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 6, 1))
+    token = users_factories.TokenFactory(userId=user.id, type=TokenType.EMAIL_VALIDATION)
+
+    assert not user.isEmailValidated
+
+    test_client = TestClient(app.test_client())
+    response = test_client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+
+    id_check_token = response.json["id_check_token"]
+
+    assert user.isEmailValidated
+    assert response.status_code == 200
+    assert id_check_token
+
+    # Ensure the id_check_token generated is valid
+    saved_token = Token.query.filter_by(value=id_check_token).first()
+    assert saved_token.type == TokenType.ID_CHECK
+    assert saved_token.userId == user.id
+
+    # Ensure the access token is valid
+    access_token = response.json["access_token"]
+    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    protected_response = test_client.get("/native/v1/protected")
+    assert protected_response.status_code == 200
+
+    # Ensure the refresh token is valid
+    refresh_token = response.json["refresh_token"]
+    test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+    refresh_response = test_client.post("/native/v1/refresh_access_token", json={})
+    assert refresh_response.status_code == 200
+
+
+@pytest.mark.usefixtures("db_session")
+@freeze_time("2018-06-01")
+def test_validate_email_when_not_eligible(app):
+    user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1))
+    token = users_factories.TokenFactory(userId=user.id, type=TokenType.EMAIL_VALIDATION)
+
+    assert not user.isEmailValidated
+
+    test_client = TestClient(app.test_client())
+    response = test_client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+
+    assert user.isEmailValidated
+    assert response.status_code == 200
+    assert response.json["id_check_token"] is None
+
+    # Ensure the access token is valid
+    access_token = response.json["access_token"]
+    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    protected_response = test_client.get("/native/v1/protected")
+    assert protected_response.status_code == 200
+
+    # Ensure the refresh token is valid
+    refresh_token = response.json["refresh_token"]
+    test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+    refresh_response = test_client.post("/native/v1/refresh_access_token", json={})
+    assert refresh_response.status_code == 200

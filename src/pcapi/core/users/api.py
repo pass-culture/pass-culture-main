@@ -35,6 +35,13 @@ def create_reset_password_token(user: UserSQLEntity) -> Token:
     return generate_and_save_token(user, TokenType.RESET_PASSWORD, life_time=constants.RESET_PASSWORD_TOKEN_LIFE_TIME)
 
 
+def create_id_check_token(user: UserSQLEntity) -> Optional[Token]:
+    if not is_user_eligible(user):
+        return None
+
+    return generate_and_save_token(user, TokenType.ID_CHECK, constants.ID_CHECK_TOKEN_LIFE_TIME)
+
+
 def generate_and_save_token(user: UserSQLEntity, token_type: TokenType, life_time: Optional[timedelta] = None) -> Token:
     expiration_date = datetime.now() + life_time if life_time else None
     token_value = create_custom_jwt_token(user.id, token_type.value, expiration_date)
@@ -60,3 +67,8 @@ def get_user_with_valid_token(token_value: str, token_types: List[TokenType]) ->
         return None
 
     return token.user
+
+
+def is_user_eligible(user: UserSQLEntity) -> bool:
+    age = user.calculate_age()
+    return age is not None and age == constants.ELIGIBILITY_AGE

@@ -1,6 +1,8 @@
+from datetime import datetime
 from decimal import Decimal
 from unittest.mock import patch
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.model_creators.generic_creators import create_booking
@@ -376,3 +378,13 @@ class ProdEnvironmentPasswordHasherTest:
         hashed = user_sql_entity.hash_password("secret")
         assert not user_sql_entity.check_password("wrong", hashed)
         assert user_sql_entity.check_password("secret", hashed)
+
+
+class CalculateAgeTest:
+    @freeze_time("2018-06-01")
+    def test_calculate_age(self):
+        assert create_user(date_of_birth=None).calculate_age() is None
+        assert create_user(date_of_birth=datetime(2000, 6, 1)).calculate_age() == 18  # happy birthday
+        assert create_user(date_of_birth=datetime(1999, 7, 1)).calculate_age() == 18
+        assert create_user(date_of_birth=datetime(2000, 7, 1)).calculate_age() == 17
+        assert create_user(date_of_birth=datetime(1999, 5, 1)).calculate_age() == 19

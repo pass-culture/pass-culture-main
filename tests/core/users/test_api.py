@@ -6,6 +6,7 @@ import jwt
 import pytest
 
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import get_user_with_valid_token
 from pcapi.core.users.models import ALGORITHM_HS_256
@@ -152,3 +153,25 @@ class ValidateJwtTokenTest:
         associated_user = get_user_with_valid_token(self.token_value, [token_type])
 
         assert associated_user is None
+
+
+class GenerateIdCheckTokenIfEligibleTest:
+    @freeze_time("2018-06-01")
+    def test_when_elible(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
+        token = create_id_check_token(user)
+        assert token
+
+    @freeze_time("2018-06-01")
+    def test_when_not_elible_under_age(self):
+        # user is 17 years old
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 8, 1))
+        token = create_id_check_token(user)
+        assert not token
+
+    @freeze_time("2018-06-01")
+    def test_when_not_elible_above_age(self):
+        # user is 19 years old
+        user = users_factories.UserFactory(dateOfBirth=datetime(1999, 5, 1))
+        token = create_id_check_token(user)
+        assert not token

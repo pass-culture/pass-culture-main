@@ -1,8 +1,11 @@
+from datetime import date
 from datetime import datetime
 from decimal import Decimal
 from hashlib import md5
+from typing import Optional
 
 import bcrypt
+from dateutil.relativedelta import relativedelta
 from sqlalchemy import Boolean
 from sqlalchemy import CheckConstraint
 from sqlalchemy import Column
@@ -172,6 +175,12 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     def bookings_query(self):
         return db.session.query(Booking).with_parent(self)
+
+    def calculate_age(self) -> Optional[int]:
+        if self.dateOfBirth is None:
+            return None
+
+        return relativedelta(date.today(), self.dateOfBirth.date()).years
 
     @property
     def expenses(self):

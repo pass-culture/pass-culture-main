@@ -8,6 +8,7 @@ from flask_jwt_extended import jwt_required
 
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as user_exceptions
+from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import get_user_with_valid_token
 from pcapi.core.users.models import TokenType
 from pcapi.domain.password import check_password_strength
@@ -17,6 +18,8 @@ from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.v1.serialization.authentication import PasswordResetRequestRequest
 from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRequest
+from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
+from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.mailing import send_raw_email
 
@@ -95,3 +98,25 @@ def reset_password(body: ResetPasswordRequest) -> None:
 
     user.setPassword(body.new_password)
     repository.save(user)
+
+
+@blueprint.native_v1.route("/validate_email", methods=["POST"])
+@spectree_serialize(on_success_status=200, api=blueprint.api, response_model=ValidateEmailResponse)
+def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
+    user = get_user_with_valid_token(body.email_validation_token, [TokenType.EMAIL_VALIDATION])
+
+    if not user:
+        raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
+
+    user.isEmailValidated = True
+    repository.save(user)
+
+    id_check_token = create_id_check_token(user)
+
+    response = ValidateEmailResponse(
+        access_token=create_access_token(identity=user.email),
+        refresh_token=create_refresh_token(identity=user.email),
+        id_check_token=id_check_token.value if id_check_token else None,
+    )
+
+    return response
