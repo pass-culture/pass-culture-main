@@ -1,5 +1,7 @@
 import { Selector } from 'testcafe'
 
+import { parse } from '../src/utils/query-string'
+
 import { getUrlParams } from './helpers/location'
 import { navigateToOfferAs } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
@@ -25,7 +27,7 @@ test('Je peux créer un stock pour un événement', () => async t => {
 
   await t.click(manageStockAnchor).click(addStockButton)
 
-  let queryParams = Object.fromEntries(new URLSearchParams(await getUrlParams()))
+  let queryParams = parse(await getUrlParams())
 
   await t
     .expect(queryParams.stock)
@@ -34,7 +36,7 @@ test('Je peux créer un stock pour un événement', () => async t => {
     .click(datePickerLastDay)
     .click(submitButton)
 
-    queryParams = Object.fromEntries(new URLSearchParams(await getUrlParams()))
+  queryParams = parse(await getUrlParams())
   await t.expect(queryParams.stock).eql(undefined).expect(stockItem.count).eql(1)
 })
 
@@ -63,7 +65,7 @@ test('Je peux modifier un stock pour un événement', () => async t => {
 
   await t.click(manageStockAnchor).click(editAnchor)
 
-  let queryParams = Object.fromEntries(new URLSearchParams(await getUrlParams()))
+  let queryParams = parse(await getUrlParams())
   await t
     .expect(queryParams.gestion)
     .eql('')
@@ -82,8 +84,8 @@ test('Je peux modifier un stock pour un événement', () => async t => {
     .typeText(priceInput, '15')
     .click(submitButton)
 
-  queryParams = Object.fromEntries(new URLSearchParams(await getUrlParams()))
-  await t.expect(queryParams.gestion).eql(null).expect(queryParams.stock).eql(undefined)
+  queryParams = parse(await getUrlParams())
+  await t.expect(queryParams.gestion).eql('').expect(queryParams.stock).eql(undefined)
 })
 
 test('Je peux supprimer un stock pour un événement', () => async t => {
@@ -99,7 +101,7 @@ test('Je peux supprimer un stock pour un événement', () => async t => {
 
   await t.click(manageStockAnchor).click(deleteButton).click(deleteButtonConfirmation)
 
-  const queryParams = Object.fromEntries(new URLSearchParams(await getUrlParams()))
+  const queryParams = parse(await getUrlParams())
   await t
     .expect(queryParams.gestion)
     .eql('')

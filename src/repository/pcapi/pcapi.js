@@ -1,5 +1,6 @@
 import { DEFAULT_SEARCH_FILTERS, DEFAULT_PAGE } from 'components/pages/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
+import { stringify } from 'utils/query-string'
 
 //
 // offers
@@ -31,7 +32,7 @@ export const loadFilteredOffers = async ({
     periodEndingDate,
   })
 
-  const queryParams = new URLSearchParams(body).toString()
+  const queryParams = stringify(body)
   return client.get(`/offers?${queryParams}`)
 }
 

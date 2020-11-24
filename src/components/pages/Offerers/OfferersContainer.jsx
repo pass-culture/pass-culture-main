@@ -4,12 +4,12 @@ import { assignData, requestData } from 'redux-saga-data'
 import withQueryRouter from 'with-query-router'
 
 import { OFFERERS_API_PATH } from 'config/apiPaths'
-import {} from 'store/selectors/data/featuresSelectors'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
 import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 import { selectOfferers } from 'store/selectors/data/offerersSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { offererNormalizer } from 'utils/normalizers'
+import { stringify } from 'utils/query-string'
 
 import Offerers from './Offerers'
 
@@ -22,7 +22,7 @@ export const createApiPath = searchKeyWords => {
     apiQueryParams.keywords = searchKeyWords.join(' ')
   }
 
-  const queryParams = new URLSearchParams(apiQueryParams).toString()
+  const queryParams = stringify(apiQueryParams)
 
   return apiPath + queryParams
 }

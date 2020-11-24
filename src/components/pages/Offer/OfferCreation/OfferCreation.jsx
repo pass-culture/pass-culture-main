@@ -20,6 +20,7 @@ import { showModal } from 'store/reducers/modal'
 import { CGU_URL } from 'utils/config'
 import { musicOptions, showOptions } from 'utils/edd'
 import { pluralize } from 'utils/pluralize'
+import { stringify } from 'utils/query-string'
 import {
   mapApiToBrowser,
   translateApiParamsToQueryParams,
@@ -314,9 +315,7 @@ class OfferCreation extends PureComponent {
       searchFiltersParams.creationMode = mapApiToBrowser[creationMode]
     }
 
-    const queryString = new URLSearchParams(
-      translateApiParamsToQueryParams(searchFiltersParams)
-    ).toString()
+    const queryString = stringify(translateApiParamsToQueryParams(searchFiltersParams))
 
     return queryString ? `/offres?${queryString}` : '/offres'
   }
