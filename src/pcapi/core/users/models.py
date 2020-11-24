@@ -18,6 +18,7 @@ ALGORITHM_HS_256 = "HS256"
 
 class TokenType(enum.Enum):
     RESET_PASSWORD = "reset-password"
+    EMAIL_VALIDATION = "email-validation"
 
 
 class Token(PcObject, Model):

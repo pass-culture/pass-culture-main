@@ -6,6 +6,7 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
@@ -375,7 +376,7 @@ class SendUserValidationEmailTest:
 
 
 class SendActivationEmailTest:
-    @patch("pcapi.domain.user_emails.get_activation_email_data")
+    @patch("pcapi.emails.beneficiary_activation.get_activation_email_data")
     def test_send_activation_email(self, mocked_get_activation_email_data):
         # given
         beneficiary = create_domain_beneficiary()
@@ -388,6 +389,20 @@ class SendActivationEmailTest:
         # then
         mocked_get_activation_email_data.assert_called_once_with(user=beneficiary)
         mocked_send_email.assert_called_once_with(data={"Html-part": ""})
+
+    @pytest.mark.usefixtures("db_session")
+    def test_send_activation_email_for_native(self):
+        # given
+        beneficiary = users_factories.UserFactory()
+        mocked_send_email = Mock()
+        assert Token.query.count() == 0
+
+        # when
+        send_activation_email(beneficiary, mocked_send_email, native_version=True)
+
+        # then
+        mocked_send_email.assert_called_once()
+        assert Token.query.count() == 1
 
 
 class SendAttachmentValidationEmailToProOffererTest:
@@ -516,8 +531,6 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
         mocked_make_data.assert_called_once_with(beneficiary_pre_subscription)
         mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 1530996})
 
-
-class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
     @patch(
         "pcapi.domain.user_emails.make_not_eligible_beneficiary_pre_subscription_rejected_data",
         return_value={"MJ-TemplateID": 1619528},

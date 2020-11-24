@@ -25,6 +25,12 @@ def get_user_with_credentials(identifier: str, password: str) -> UserSQLEntity:
     return user
 
 
+def create_email_validation_token(user: UserSQLEntity) -> Token:
+    return generate_and_save_token(
+        user, TokenType.EMAIL_VALIDATION, life_time=constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
+    )
+
+
 def create_reset_password_token(user: UserSQLEntity) -> Token:
     return generate_and_save_token(user, TokenType.RESET_PASSWORD, life_time=constants.RESET_PASSWORD_TOKEN_LIFE_TIME)
 

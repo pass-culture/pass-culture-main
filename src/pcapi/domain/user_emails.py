@@ -4,11 +4,12 @@ from typing import List
 from typing import Union
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.users import api as users_api
 from pcapi.domain.beneficiary.beneficiary import Beneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
-from pcapi.emails.beneficiary_activation import get_activation_email_data
+from pcapi.emails import beneficiary_activation
 from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
 from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
 from pcapi.emails.beneficiary_offer_cancellation import (
@@ -163,8 +164,16 @@ def send_pro_user_waiting_for_validation_by_admin_email(
     send_email(data=data)
 
 
-def send_activation_email(user: Union[UserSQLEntity, Beneficiary], send_email: Callable[..., bool]) -> None:
-    data = get_activation_email_data(user=user)
+def send_activation_email(
+    user: Union[UserSQLEntity, Beneficiary], send_email: Callable[..., bool], native_version: bool = False
+) -> None:
+    if not native_version:
+        data = beneficiary_activation.get_activation_email_data(user=user)
+    else:
+        # TODO: this should probably be moved outside domain as we need interaction with models
+        assert isinstance(user, UserSQLEntity)
+        token = users_api.create_email_validation_token(user)
+        data = beneficiary_activation.get_activation_email_data_for_native(user=user, token=token)
     send_email(data=data)
 
 
