@@ -135,3 +135,11 @@ class EventStockFactory(StockFactory):
     offer = factory.SubFactory(EventOfferFactory)
     beginningDatetime = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=5))
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
+
+
+class MediationFactory(BaseFactory):
+    class Meta:
+        model = models.Mediation
+
+    offer = factory.SubFactory(OfferFactory)
+    isActive = True

@@ -6,7 +6,7 @@ import pytest
 
 from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
-import pcapi.core.recommendations.factories as recommendations_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
 from pcapi.utils.human_ids import humanize
 
@@ -68,7 +68,7 @@ def get_expected_base_email_data(booking, mediation, **overrides):
 @pytest.mark.usefixtures("db_session")
 def test_should_return_event_specific_data_for_email_when_offer_is_an_event(mock_format_environment_for_email):
     booking = make_booking()
-    mediation = recommendations_factories.MediationFactory(offer=booking.stock.offer)
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
 
@@ -80,7 +80,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event(mock
 @pytest.mark.usefixtures("db_session")
 def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event(mock_format_environment_for_email):
     booking = make_booking(quantity=2)
-    mediation = recommendations_factories.MediationFactory(offer=booking.stock.offer)
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
 
@@ -101,7 +101,7 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing(mock_
         stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
         stock__offer__name="Super bien culturel",
     )
-    mediation = recommendations_factories.MediationFactory(offer=booking.stock.offer)
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
 
@@ -130,7 +130,7 @@ def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_dig
         stock__offer__product__url="http://example.com",
         stock__offer__name="Super offre numérique",
     )
-    mediation = recommendations_factories.MediationFactory(offer=booking.stock.offer)
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
 

@@ -2,17 +2,8 @@ import factory
 
 from pcapi import models
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.offers.models
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
-
-
-class MediationFactory(BaseFactory):
-    class Meta:
-        model = pcapi.core.offers.models.Mediation
-
-    offer = factory.SubFactory(offers_factories.OfferFactory)
-    isActive = True
 
 
 class RecommendationFactory(BaseFactory):
@@ -20,7 +11,7 @@ class RecommendationFactory(BaseFactory):
         model = models.Recommendation
 
     user = factory.SubFactory(users_factories.UserFactory)
-    mediation = factory.SubFactory(MediationFactory)
+    mediation = factory.SubFactory(offers_factories.MediationFactory)
     offer = factory.Maybe(
         "mediation",
         factory.SelfAttribute("mediation.offer"),
