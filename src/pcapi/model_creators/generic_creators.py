@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 from decimal import Decimal
 from hashlib import sha256
 import os
@@ -481,6 +480,7 @@ def create_user(
     has_seen_tutorials: bool = None,
     idx: int = None,
     is_admin: bool = False,
+    is_beneficiary: bool = True,
     last_connection_date: datetime = None,
     last_name: str = None,
     needs_to_fill_cultural_survey: bool = False,
@@ -506,6 +506,7 @@ def create_user(
     user.hasSeenTutorials = has_seen_tutorials
     user.id = idx
     user.isAdmin = is_admin
+    user.isBeneficiary = is_beneficiary
     user.lastConnectionDate = last_connection_date
     user.lastName = last_name
     user.needsToFillCulturalSurvey = needs_to_fill_cultural_survey

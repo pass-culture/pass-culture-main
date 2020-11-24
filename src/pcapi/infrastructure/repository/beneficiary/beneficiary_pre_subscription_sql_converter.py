@@ -27,6 +27,7 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> UserSQ
     beneficiary.phoneNumber = beneficiary_pre_subscription.phone_number
     beneficiary.postalCode = beneficiary_pre_subscription.postal_code
     beneficiary.publicName = beneficiary_pre_subscription.public_name
+    beneficiary.isBeneficiary = True
 
     generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
