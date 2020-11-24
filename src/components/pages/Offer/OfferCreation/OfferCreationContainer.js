@@ -21,6 +21,7 @@ import {
 } from 'store/selectors/data/venuesSelectors'
 import { selectMusicSubOptionsByMusicType } from 'utils/selectMusicSubOptionsByMusicType'
 import selectShowSubOptionsByShowType from 'utils/selectShowSubOptionsByShowType'
+import { translateQueryParamsToApiParams } from 'utils/translate'
 
 import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from '../selectors/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
 import selectTypeByIsVenueVirtualAndOfferTypeValue from '../selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
@@ -35,7 +36,7 @@ export const mapStateToProps = (state, ownProps) => {
     query,
   } = ownProps
 
-  const translatedQueryParams = query.translate()
+  const translatedQueryParams = translateQueryParamsToApiParams(query.parse())
   const providers = selectProviders(state)
 
   const offer = selectOfferById(state, offerId)

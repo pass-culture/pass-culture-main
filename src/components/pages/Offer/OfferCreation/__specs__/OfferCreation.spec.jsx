@@ -104,7 +104,6 @@ describe('src | OfferCreation', () => {
           lieu: 'AQ',
           gestion: 'gestion',
         }),
-        translate: () => ({ venue: 'AQ ' }),
       },
       selectedOfferType: {
         value: 'ThingType.SPECTACLE_VIVANT_ABO',

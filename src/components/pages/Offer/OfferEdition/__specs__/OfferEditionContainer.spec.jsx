@@ -1,3 +1,5 @@
+import { parse as parseQueryString } from 'query-string'
+
 import state from 'components/utils/mocks/state'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
@@ -14,7 +16,7 @@ describe('components | OfferEdition | OfferEditionContainer', () => {
         },
       },
       query: {
-        translate: jest.fn(),
+        parse: queryString => parseQueryString(queryString),
       },
       trackCreateOffer: jest.fn(),
       trackModifyOffer: jest.fn(),
@@ -368,7 +370,7 @@ describe('components | OfferEdition | OfferEditionContainer', () => {
             },
           },
           query: {
-            translate: jest.fn(),
+            parse: queryString => parseQueryString(queryString),
           },
           trackCreateOffer: jest.fn(),
           trackModifyOffer: jest.fn(),

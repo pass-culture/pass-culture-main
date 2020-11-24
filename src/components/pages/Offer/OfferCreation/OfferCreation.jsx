@@ -20,7 +20,11 @@ import { showModal } from 'store/reducers/modal'
 import { CGU_URL } from 'utils/config'
 import { musicOptions, showOptions } from 'utils/edd'
 import { pluralize } from 'utils/pluralize'
-import { mapApiToBrowser, translateApiParamsToQueryParams } from 'utils/translate'
+import {
+  mapApiToBrowser,
+  translateApiParamsToQueryParams,
+  translateQueryParamsToApiParams,
+} from 'utils/translate'
 
 import { isAllocineOffer, isOfferFromStockProvider } from '../domain/localProvider'
 import offerIsRefundable from '../domain/offerIsRefundable'
@@ -126,7 +130,7 @@ class OfferCreation extends PureComponent {
       query,
       types,
     } = this.props
-    const { offererId, venueId } = query.translate()
+    const { offererId, venueId } = translateQueryParamsToApiParams(query.parse())
 
     if (offerId !== 'creation') {
       loadOffer(offerId)
