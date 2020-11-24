@@ -122,7 +122,7 @@ def get_offers_by_filters(
         query = _filter_by_status(query, datetime_now, status)
     if period_beginning_date is not None or period_ending_date is not None:
         stock_alias = aliased(Stock)
-        query = query.join(Offer.stocks.of_type(stock_alias))
+        query = query.join(Offer.stocks.of_type(stock_alias)).filter(stock_alias.isSoftDeleted.is_(False))
         if period_beginning_date is not None:
             query = query.filter(stock_alias.beginningDatetime >= period_beginning_date)
         if period_ending_date is not None:

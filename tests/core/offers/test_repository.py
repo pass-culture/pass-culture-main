@@ -288,6 +288,29 @@ class PaginatedOfferSQLRepositoryTest:
             assert Identifier(offer_for_other_offerer.id) not in offers_id
             assert paginated_offers.total_offers == 1
 
+        @pytest.mark.usefixtures("db_session")
+        def should_not_return_event_offers_with_only_deleted_stock_if_filtering_by_time_period(self, app: object):
+            # given
+            pro = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
+            offer_in_requested_time_period = offers_factories.OfferFactory()
+            offers_factories.EventStockFactory(
+                offer=offer_in_requested_time_period, beginningDatetime=datetime(2020, 1, 2), isSoftDeleted=True
+            )
+
+            # When
+            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+                user_id=pro.id,
+                user_is_admin=pro.isAdmin,
+                page=1,
+                offers_per_page=1,
+                period_beginning_date="2020-01-01T00:00:00",
+            )
+
+            # then
+            offers_id = [offer.identifier for offer in paginated_offers.offers]
+            assert Identifier(offer_in_requested_time_period.id) not in offers_id
+            assert paginated_offers.total_offers == 0
+
     class WhenUserIsPro:
         @pytest.mark.usefixtures("db_session")
         def should_not_return_offers_of_given_venue_when_user_is_not_attached_to_its_offerer(self, app):
