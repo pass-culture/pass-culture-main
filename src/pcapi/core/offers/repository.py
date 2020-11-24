@@ -22,6 +22,7 @@ from pcapi.models import Product
 from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import UserOfferer
+from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 
 
@@ -80,6 +81,16 @@ def get_paginated_offers_for_offerer_venue_and_keywords(
         total_pages=total_pages,
         total_offers=total_offers,
     )
+
+
+def get_offers_by_ids(user: UserSQLEntity, offer_ids: [int]) -> Query:
+    query = Offer.query
+    if not user.isAdmin:
+        query = query.join(VenueSQLEntity, Offerer, UserOfferer).filter(
+            and_(UserOfferer.userId == user.id, UserOfferer.validationToken == None)
+        )
+    query = query.filter(Offer.id.in_(offer_ids))
+    return query
 
 
 def get_offers_by_filters(

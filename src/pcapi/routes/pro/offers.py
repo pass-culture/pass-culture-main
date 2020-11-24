@@ -22,7 +22,6 @@ from pcapi.routes.serialization.offers_serialize import PatchOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.update_an_offer import update_an_offer
-from pcapi.use_cases.update_offers_active_status import update_offers_active_status
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFER_INCLUDES
 from pcapi.utils.rest import ensure_current_user_has_rights
@@ -72,7 +71,8 @@ def post_offer(body: PostOfferBodyModel) -> OfferResponseIdModel:
 @login_or_api_key_required
 @spectree_serialize(response_model=None, on_success_status=204)  # type: ignore
 def patch_offers_active_status(body: PatchOfferActiveStatusBodyModel) -> None:
-    update_offers_active_status(body.ids, body.is_active)
+    query = offers_repository.get_offers_by_ids(current_user, body.ids)
+    offers_api.update_offers_active_status(query, body.is_active)
 
 
 @private_api.route("/offers/all-active-status", methods=["PATCH"])
@@ -92,8 +92,6 @@ def patch_all_offers_active_status(body: PatchAllOffersActiveStatusBodyModel) ->
         period_ending_date=body.period_ending_date,
     )
     offers_api.update_offers_active_status(query, body.is_active)
-
-    return "", 204
 
 
 @private_api.route("/offers/<offer_id>", methods=["PATCH"])

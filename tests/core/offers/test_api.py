@@ -359,3 +359,38 @@ class CreateMediationTest:
 
         assert error.value.errors["thumb"] == ["L'image doit faire 400 * 400 px minimum"]
         assert models.Mediation.query.count() == 0
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateOffersActiveStatusTest:
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
+    def test_activate(self, mocked_add_offer_id):
+        offer1 = factories.OfferFactory(isActive=False)
+        offer2 = factories.OfferFactory(isActive=False)
+        offer3 = factories.OfferFactory(isActive=False)
+
+        query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id}))
+        api.update_offers_active_status(query, is_active=True)
+
+        assert models.Offer.query.get(offer1.id).isActive
+        assert models.Offer.query.get(offer2.id).isActive
+        assert not models.Offer.query.get(offer3.id).isActive
+        assert mocked_add_offer_id.call_count == 2
+        mocked_add_offer_id.assert_has_calls(
+            [
+                mock.call(client=app.redis_client, offer_id=offer1.id),
+                mock.call(client=app.redis_client, offer_id=offer2.id),
+            ]
+        )
+
+    def test_deactivate(self):
+        offer1 = factories.OfferFactory()
+        offer2 = factories.OfferFactory()
+        offer3 = factories.OfferFactory()
+
+        query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id}))
+        api.update_offers_active_status(query, is_active=False)
+
+        assert not models.Offer.query.get(offer1.id).isActive
+        assert not models.Offer.query.get(offer2.id).isActive
+        assert models.Offer.query.get(offer3.id).isActive

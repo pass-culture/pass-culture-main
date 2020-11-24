@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.repository import find_online_activation_stock
+from pcapi.core.offers.repository import get_offers_by_ids
 from pcapi.core.offers.repository import get_paginated_offers_for_offerer_venue_and_keywords
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.identifier.identifier import Identifier
@@ -961,3 +962,27 @@ def test_find_online_activation_stock(app):
     )
 
     assert find_online_activation_stock() == activation_stock
+
+
+@pytest.mark.usefixtures("db_session")
+class GetOffersByIdsTest:
+    def test_filter_on_user_offerer(self):
+        offer1 = offers_factories.OfferFactory()
+        offerer = offer1.venue.managingOfferer
+        user_offerer = offers_factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+        offer2 = offers_factories.OfferFactory()
+
+        query = get_offers_by_ids(user, [offer1.id, offer2.id])
+
+        assert query.count() == 1
+        assert query.one() == offer1
+
+    def test_return_all_for_admins(self):
+        offer1 = offers_factories.OfferFactory()
+        offer2 = offers_factories.OfferFactory()
+        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+
+        query = get_offers_by_ids(user, [offer1.id, offer2.id])
+
+        assert query.count() == 2
