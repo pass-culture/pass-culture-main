@@ -55,4 +55,27 @@ describe('initReCaptchaScript', () => {
     )
     expect(scriptTag).toBeNull()
   })
+
+  it('should not crash if element is not found', () => {
+    // Given
+    /* eslint-disable react/no-multi-comp */
+    class ExampleComponent extends PureComponent {
+      componentWillUnmount() {
+        destroyReCaptchaScript()
+      }
+
+      render() {
+        return <div />
+      }
+    }
+    // When
+    const wrapper = mount(<ExampleComponent />)
+    wrapper.unmount()
+
+    // Then
+    const scriptTag = document.querySelector(
+      'script[src="https://www.google.com/recaptcha/api.js?render=recaptcha-site-key"]'
+    )
+    expect(scriptTag).toBeNull()
+  })
 })

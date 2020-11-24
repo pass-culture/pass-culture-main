@@ -166,7 +166,7 @@ class LostPassword extends PureComponent {
                     </h2>
                     <Link
                       className="primary-link"
-                      to="/accueil"
+                      to="/"
                     >
                       {'Revenir à l’accueil'}
                     </Link>
