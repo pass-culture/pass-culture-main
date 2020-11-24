@@ -4,6 +4,7 @@ input[type="checkbox"],
   border: 2px solid $grey-dark;
   border-radius: 4px;
   cursor: pointer;
+  flex: 0 0 auto;
   font-size: inherit;
   height: 1.1875em;
   margin-right: rem(8px);
@@ -63,7 +64,16 @@ input[type="checkbox"],
 }
 
 .input-checkbox-label {
+  display: flex;
+  flex-direction: column;
+
   &.label-hidden {
     display: none;
+  }
+
+  .ic-sub-label {
+    @include caption();
+    color: $grey-dark;
+    margin-top: rem(8px);
   }
 }

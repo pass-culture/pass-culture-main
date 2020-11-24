@@ -3,7 +3,7 @@ import React from 'react'
 
 import Icon from '../../Icon'
 
-const TextInputError = ({ message }) => (
+const InputError = ({ message }) => (
   <span className="it-errors">
     <Icon
       alt="Une erreur est survenue"
@@ -15,8 +15,8 @@ const TextInputError = ({ message }) => (
   </span>
 )
 
-TextInputError.propTypes = {
+InputError.propTypes = {
   message: PropTypes.string.isRequired,
 }
 
-export default TextInputError
+export default InputError

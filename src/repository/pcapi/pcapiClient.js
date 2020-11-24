@@ -21,10 +21,10 @@ const buildUrl = path => `${API_URL}${path}`
 
 const fetchWithErrorHandler = async (path, options) => {
   const response = await fetch(buildUrl(path), options)
-  if (!response.ok) {
-    throw Error('HTTP error')
-  }
   const results = response.status !== HTTP_STATUS_NO_CONTENT ? await response.json() : null
+  if (!response.ok) {
+    return Promise.reject(results ? { errors: results } : null)
+  }
   return Promise.resolve(results)
 }
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
-import { SVGStars } from "../../../svg/SVGStars"
+import { SVGStars } from '../../../svg/SVGStars'
 
 import MediationItem from './MediationItem/MediationItem'
 

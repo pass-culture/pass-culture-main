@@ -9,6 +9,14 @@ export const loadOffer = async offerId => {
   return client.get(`/offers/${offerId}`)
 }
 
+export const createOffer = offer => {
+  return client.post(`/offers`, offer)
+}
+
+export const updateOffer = (offerId, offer) => {
+  return client.patch(`/offers/${offerId}`, offer)
+}
+
 export const loadFilteredOffers = async ({
   name = DEFAULT_SEARCH_FILTERS.name,
   offererId = DEFAULT_SEARCH_FILTERS.offererId,
@@ -102,9 +110,21 @@ export const setAllVenueOffersInactivate = async venueId => {
   return client.put(`/venues/${venueId}/offers/deactivate`)
 }
 
+export const getValidatedOfferers = () => {
+  return client.get('/offerers?validated=true')
+}
+
+export const getVenuesForOfferer = offererId => {
+  if (offererId) {
+    return client.get(`/venues?offererId=${offererId}`)
+  } else {
+    return client.get('/venues')
+  }
+}
+
 //
 // types
 //
 export const loadTypes = () => {
-  return client.get(`/types`)
+  return client.get('/types')
 }

@@ -1,0 +1,22 @@
+.offer-page-v2 {
+  .page-subtitle {
+    @include caption();
+    color: $grey-dark;
+  }
+
+  .content {
+    margin-top: rem(24px);
+    .offer-form {
+      max-width: rem(486px);
+
+      .form-row {
+        margin-top: rem(24px);
+      }
+    }
+  }
+
+  .debug {
+    position: static;
+    white-space: pre-wrap;
+  }
+}

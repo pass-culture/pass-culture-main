@@ -7,14 +7,16 @@ import MediationsManager from './MediationsManager'
 
 export const mapStateToProps = (state, ownProps) => {
   const { offerId } = ownProps
-  const mediations = selectMediationsByOfferId(state, offerId)
+  // TODO: Supprimer après la suppression des anciennes pages de détails des offres
+  const mediations = ownProps.offer?.mediations || selectMediationsByOfferId(state, offerId)
 
   return {
     mediations: mediations,
     hasMediations: mediations.length > 0,
     atLeastOneActiveMediation: mediations.some(mediation => mediation.isActive),
     notification: state.notification,
-    offer: selectOfferById(state, offerId),
+    // TODO: Supprimer après la suppression des anciennes pages de détails des offres
+    offer: ownProps.offer || selectOfferById(state, offerId),
   }
 }
 

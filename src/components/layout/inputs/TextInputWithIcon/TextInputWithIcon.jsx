@@ -3,7 +3,7 @@ import React from 'react'
 
 import { ROOT_PATH } from 'utils/config'
 
-import TextInputError from '../Errors/TextInputError'
+import InputError from '../Errors/InputError'
 
 const TextInputWithIcon = ({
   disabled,
@@ -20,10 +20,7 @@ const TextInputWithIcon = ({
   type,
   value,
 }) => (
-  <label
-    className="input-text"
-    htmlFor={name}
-  >
+  <label className="input-text">
     <div className="labels">
       {label}
       <span className="it-sub-label">
@@ -34,7 +31,6 @@ const TextInputWithIcon = ({
       <input
         className="it-input-with-icon"
         disabled={disabled}
-        id={name}
         name={name}
         onChange={onChange}
         placeholder={placeholder}
@@ -53,7 +49,7 @@ const TextInputWithIcon = ({
         />
       </button>
     </div>
-    {error && <TextInputError message={error} />}
+    {error && <InputError message={error} />}
   </label>
 )
 

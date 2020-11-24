@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import TextInputError from '../Errors/TextInputError'
+import InputError from '../Errors/InputError'
 
 const TextInput = ({
   countCharacters,
@@ -17,10 +17,7 @@ const TextInput = ({
   type,
   value,
 }) => (
-  <label
-    className="input-text"
-    htmlFor={name}
-  >
+  <label className="input-text">
     <div className="labels">
       {label}
       <span className="it-sub-label">
@@ -39,7 +36,7 @@ const TextInput = ({
       type={type}
       value={value}
     />
-    {error && <TextInputError message={error} />}
+    {error && <InputError message={error} />}
     {countCharacters && (
       <span className="it-character-count">
         {`${value ? value.length : 0}/${maxLength}`}
@@ -54,9 +51,11 @@ TextInput.defaultProps = {
   error: null,
   maxLength: null,
   onChange: null,
+  placeholder: '',
   required: false,
   sublabel: '',
   type: 'text',
+  value: '',
 }
 
 TextInput.propTypes = {
@@ -67,11 +66,11 @@ TextInput.propTypes = {
   maxLength: PropTypes.number,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func,
-  placeholder: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
   required: PropTypes.bool,
   sublabel: PropTypes.string,
   type: PropTypes.string,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.string,
 }
 
 export default TextInput

@@ -38,6 +38,14 @@ const StyleguideAgenda = () => {
       <li>
         <a
           className="tertiary-link"
+          href="#sg-textarea"
+        >
+          {'Textarea'}
+        </a>
+      </li>
+      <li>
+        <a
+          className="tertiary-link"
           href="#sg-select"
         >
           {'Select'}

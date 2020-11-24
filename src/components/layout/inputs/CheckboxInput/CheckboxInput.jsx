@@ -9,6 +9,7 @@ export const CheckboxInput = ({
   labelAttributes,
   className,
   hiddenLabel,
+  subLabel,
   ...attributes
 }) => {
   let inputClasses = className ? className.split(' ') : []
@@ -33,6 +34,11 @@ export const CheckboxInput = ({
       />
       <span className={textClasses.join(' ')}>
         {label}
+        {subLabel && (
+          <span className="ic-sub-label">
+            {subLabel}
+          </span>
+        )}
       </span>
     </label>
   )
@@ -42,6 +48,7 @@ CheckboxInput.defaultProps = {
   className: '',
   hiddenLabel: false,
   labelAttributes: {},
+  subLabel: null,
 }
 
 CheckboxInput.propTypes = {
@@ -52,4 +59,5 @@ CheckboxInput.propTypes = {
   labelAttributes: PropTypes.shape(),
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  subLabel: PropTypes.string,
 }

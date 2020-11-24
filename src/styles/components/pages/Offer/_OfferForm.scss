@@ -1,0 +1,29 @@
+.offer-form {
+  .form-section {
+    margin-top: rem(51px);
+    &:first-child {
+      margin-top: 0;
+    }
+
+    .section-title {
+      @include title3();
+    }
+
+    .section-description {
+      margin-top: rem(3px);
+      margin-bottom: rem(24px);
+    }
+  }
+  .actions-section {
+    display: flex;
+    margin-top: rem(64px);
+
+    button {
+      flex: 1 1 auto;
+      margin-left: rem(24px);
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-const doesLastProviderExists = offer => offer !== null && offer.lastProvider
+const doesLastProviderExist = offer => offer !== null && offer.lastProvider
 
 export const localProvidersNames = [
   'fnac',
@@ -8,16 +8,16 @@ export const localProvidersNames = [
   'titelive stocks (epagine / place des libraires.com)',
 ]
 
-const isOfferFromStockProvider = (offer = null) => {
-  return doesLastProviderExists(offer)
+export const isSynchronizedOffer = (offer = null) => {
+  return isOfferFromStockProvider(offer) || isAllocineOffer(offer)
+}
+
+export const isOfferFromStockProvider = (offer = null) => {
+  return doesLastProviderExist(offer)
     ? localProvidersNames.includes(offer.lastProvider.name.toLowerCase())
     : false
 }
 
-const isAllocineOffer = (offer = null) => {
-  return doesLastProviderExists(offer)
-    ? offer.lastProvider.name.toLowerCase() === 'allociné'
-    : false
+export const isAllocineOffer = (offer = null) => {
+  return doesLastProviderExist(offer) ? offer.lastProvider.name.toLowerCase() === 'allociné' : false
 }
-
-export { isAllocineOffer, isOfferFromStockProvider }

@@ -9,6 +9,7 @@ import HomeContainer from 'components/pages/Home/HomeContainer'
 import LostPasswordContainer from 'components/pages/LostPassword/LostPasswordContainer'
 import Mediation from 'components/pages/Mediation/MediationContainer'
 import OfferCreation from 'components/pages/Offer/OfferCreation/OfferCreationContainer'
+import OfferDetailsContainer from 'components/pages/Offer/OfferDetails/OfferDetailsContainer'
 import OfferEdition from 'components/pages/Offer/OfferEdition/OfferEditionContainer'
 import OffererCreationContainer from 'components/pages/Offerer/OffererCreation/OffererCreationContainer'
 import OffererDetailsContainer from 'components/pages/Offerer/OffererDetails/OffererDetailsContainer'
@@ -22,6 +23,7 @@ import SignupValidationContainer from 'components/pages/Signup/SignupValidation/
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
 import VenueCreationContainer from 'components/pages/Venue/VenueCreation/VenueCreationContainer'
 import VenueEditionContainer from 'components/pages/Venue/VenueEdition/VenueEditionContainer'
+import { IS_PROD } from 'utils/config'
 
 import { UNAVAILABLE_ERROR_PAGE } from './routes'
 
@@ -114,12 +116,6 @@ export const routesWithMain = [
     title: 'Lieu',
   },
   {
-    component: Offers,
-    exact: true,
-    path: '/structures/:offererId/lieux/:venueId/offres',
-    title: 'Offres',
-  },
-  {
     component: ReimbursementsContainer,
     exact: true,
     path: '/remboursements',
@@ -154,18 +150,6 @@ export const routesWithMain = [
     exact: true,
     path: '/offres/:offerId/accroches/:mediationId',
     title: 'Accroche',
-  },
-  {
-    component: OfferCreation,
-    exact: true,
-    path: '/structures/:offererId/offres/:offerId',
-    title: 'Offres',
-  },
-  {
-    component: OfferCreation,
-    exact: true,
-    path: '/structures/:offererId/lieux/:venueId/offres/:offerId',
-    title: 'Offres',
   },
   {
     component: ProfilContainer,
@@ -203,7 +187,7 @@ export const routesWithMain = [
 ]
 
 // Routes that does not use <Main> and are now functional components
-const routes = [
+let routes = [
   {
     component: HomeContainer,
     exact: true,
@@ -216,5 +200,23 @@ const routes = [
     },
   },
 ]
+
+if (!IS_PROD) {
+  routes = [
+    ...routes,
+    {
+      component: OfferDetailsContainer,
+      exact: true,
+      path: '/offres/v2/creation',
+      title: 'Offre',
+    },
+    {
+      component: OfferDetailsContainer,
+      exact: true,
+      path: '/offres/v2/:offerId/edition',
+      title: 'Offre',
+    },
+  ]
+}
 
 export default routes

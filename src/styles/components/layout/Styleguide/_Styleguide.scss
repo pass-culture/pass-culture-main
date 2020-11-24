@@ -7,6 +7,7 @@
 
   h3 {
     @include title3();
+    margin-bottom: rem(10px);
   }
 
   input {
@@ -53,9 +54,14 @@
   }
 }
 
+.it-content {
+  flex: 2;
+}
+
 .it-description {
   text-align: center;
-  width: 60%;
+  flex: 3;
+  margin-left: rem(10px);
 }
 
 .it-icon-snippet {

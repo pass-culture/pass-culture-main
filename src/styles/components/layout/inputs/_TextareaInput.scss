@@ -1,0 +1,13 @@
+.input-textarea {
+  @include input-text();
+
+  resize: none;
+  width: 100%;
+
+  .it-input {
+    height: auto; // we need to override .input-text default height
+    overflow: hidden;
+    overflow-wrap: break-word;
+    resize: none;
+  }
+}

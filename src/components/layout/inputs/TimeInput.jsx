@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ReactTimeInput from 'react-time-input'
 
-import TextInputError from 'components/layout/inputs/Errors/TextInputError'
+import InputError from 'components/layout/inputs/Errors/InputError'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 
 const TimeInput = props => {
@@ -19,10 +19,7 @@ const TimeInput = props => {
   } = props
 
   return (
-    <label
-      className="input-time"
-      htmlFor={name}
-    >
+    <label className="input-time">
       <div className="labels">
         {label}
         {subLabel && (
@@ -43,11 +40,12 @@ const TimeInput = props => {
         <ReactTimeInput
           className={`itime-input ${error ? 'error' : ''}`}
           initTime={value}
+          name={name}
           {...ReactTimeInputProps}
           onTimeChange={onChange}
         />
       )}
-      {error && <TextInputError message={error} />}
+      {error && <InputError message={error} />}
     </label>
   )
 }
