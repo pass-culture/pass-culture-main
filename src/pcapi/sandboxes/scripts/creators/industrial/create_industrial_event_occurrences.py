@@ -1,13 +1,17 @@
-from datetime import timedelta
+import datetime
 
 from pcapi.model_creators.specific_creators import create_event_occurrence
 from pcapi.sandboxes.scripts.utils.select import remove_every
-from pcapi.utils.date import TODAY
 from pcapi.utils.date import strftime
 from pcapi.utils.logger import logger
 
 
-EVENT_OCCURRENCE_BEGINNING_DATETIMES = [TODAY, TODAY + timedelta(days=2), TODAY + timedelta(days=15)]
+TODAY = datetime.datetime.combine(datetime.datetime.utcnow(), datetime.time(hour=20))
+EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
+    TODAY,
+    TODAY + datetime.timedelta(days=2),
+    TODAY + datetime.timedelta(days=15),
+]
 
 EVENT_OFFERS_WITH_OCCURRENCES_REMOVE_MODULO = 3
 
