@@ -7,23 +7,22 @@ from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
 
 def get_existing_pro_not_validated_user():
     query = UserSQLEntity.query.join(UserOfferer)
-    query = query.filter(UserSQLEntity.validationToken != None)  # pylint: disable=singleton-comparison
-    user = query.first()
+    user = query.filter(UserSQLEntity.validationToken != None).first()  # pylint: disable=singleton-comparison
 
     return {"user": get_pro_helper(user)}
 
 
 def get_existing_pro_validated_user():
     query = UserSQLEntity.query.join(UserOfferer)
-    query = query.filter(UserSQLEntity.validationToken == None)  # pylint: disable=singleton-comparison
-    user = query.first()
+    user = query.filter(UserSQLEntity.validationToken == None).first()  # pylint: disable=singleton-comparison
 
     return {"user": get_pro_helper(user)}
 
 
 def get_existing_pro_validated_user_without_offer() -> Optional[dict]:
-    query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)  # pylint: disable=singleton-comparison
-    users = query.all()
+    users = UserSQLEntity.query.filter(
+        UserSQLEntity.validationToken == None  # pylint: disable=singleton-comparison
+    ).all()
 
     for user in users:
         if not user.hasOffers:
