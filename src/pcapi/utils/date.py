@@ -23,6 +23,24 @@ ENGLISH_TO_FRENCH_MONTH = {
     "November": "Novembre",
     "December": "Décembre",
 }
+CUSTOM_TIMEZONES = {
+    "971": "America/Guadeloupe",
+    "972": "America/Martinique",
+    "973": "America/Cayenne",
+    "974": "Indian/Reunion",
+    "975": "America/Miquelon",
+    "976": "Indian/Mayotte",
+    "977": "America/St_Barthelemy",
+    "978": "America/Guadeloupe",  # Saint-Martin
+    "986": "Pacific/Wallis",
+    # Polynésie (987) actually spans multiple timezones. Use Papeete's timezone.
+    "987": "Pacific/Tahiti",
+    "988": "Pacific/Noumea",
+    "989": "Pacific/Pitcairn",  # Clipperton
+    # 984 (Terres australes et antarctiques françaises) is not
+    # included because it has several timezones. Hopefully, we'll have
+    # very few events, there...
+}
 
 
 def english_to_french_month(year: int, month_number: int, day: int = 1) -> str:
@@ -58,12 +76,7 @@ def format_datetime(date_time: datetime) -> str:
 def get_department_timezone(departement_code: str) -> str:
     assert isinstance(departement_code, str)
 
-    if departement_code == "973":
-        return "America/Cayenne"
-    if departement_code == "974":
-        return "Indian/Reunion"
-
-    return "Europe/Paris"
+    return CUSTOM_TIMEZONES.get(departement_code, "Europe/Paris")
 
 
 def utc_datetime_to_department_timezone(date_time: datetime, departement_code: str) -> datetime:
