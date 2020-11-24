@@ -10,6 +10,7 @@ from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 
+from . import constants
 from . import exceptions
 
 
@@ -22,6 +23,10 @@ def get_user_with_credentials(identifier: str, password: str) -> UserSQLEntity:
     if not user.checkPassword(password):
         raise exceptions.InvalidPassword()
     return user
+
+
+def create_reset_password_token(user: UserSQLEntity) -> Token:
+    return generate_and_save_token(user, TokenType.RESET_PASSWORD, life_time=constants.RESET_PASSWORD_TOKEN_LIFE_TIME)
 
 
 def generate_and_save_token(user: UserSQLEntity, token_type: TokenType, life_time: Optional[timedelta] = None) -> Token:

@@ -6,10 +6,8 @@ from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_refresh_token_required
 from flask_jwt_extended import jwt_required
 
-from pcapi.core.users import api as user_api
-from pcapi.core.users import constants as users_const
+from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as user_exceptions
-from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import get_user_with_valid_token
 from pcapi.core.users.models import TokenType
 from pcapi.domain.password import check_password_strength
@@ -34,7 +32,7 @@ from .serialization import authentication
 )  # type: ignore
 def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     try:
-        user_api.get_user_with_credentials(body.identifier, body.password)
+        users_api.get_user_with_credentials(body.identifier, body.password)
     except user_exceptions.CredentialsException as exc:
         raise ApiErrors(
             {"general": ["Identifiant ou Mot de passe incorrect"]},
@@ -63,9 +61,7 @@ def password_reset_request(body: PasswordResetRequestRequest) -> None:
     if not user:
         return
 
-    reset_password_token = generate_and_save_token(
-        user, TokenType.RESET_PASSWORD, life_time=users_const.RESET_PASSWORD_TOKEN_LIFE_TIME
-    )
+    reset_password_token = users_api.create_reset_password_token(user)
 
     is_email_sent = send_reset_password_email_to_native_app_user(
         user.email, reset_password_token.value, reset_password_token.expirationDate, send_raw_email
