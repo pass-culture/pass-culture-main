@@ -5,6 +5,10 @@
   "homepage": "/",
   "scripts": {
     "build": "node scripts/build.js && ./scripts/build_redirects.sh",
+    "build:integration": "env-cmd -f .env.integration yarn build",
+    "build:production": "yarn build",
+    "build:staging": "env-cmd -f .env.staging yarn build",
+    "build:testing": "env-cmd -f .env.testing yarn build",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
     "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx}'",
@@ -35,6 +39,7 @@
     "@sentry/tracing": "^5.27.3",
     "bulma": "0.7.4",
     "classnames": "^2.2.6",
+    "env-cmd": "^10.1.0",
     "final-form": "^4.20.1",
     "final-form-calculate": "^1.3.2",
     "full-icu": "^1.3.1",

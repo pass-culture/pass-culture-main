@@ -93,7 +93,7 @@ jobs:
 
             set -a; source ~/pass-culture-main/config/run_envs/testing
 
-            yarn build
+            yarn build:testing
             npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
 
