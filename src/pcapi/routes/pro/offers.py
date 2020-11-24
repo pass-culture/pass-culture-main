@@ -8,8 +8,6 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
 from pcapi.models import RightsType
-from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.repository import offer_queries
 from pcapi.routes.serialization.dictifier import as_dict
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from pcapi.routes.serialization.offers_serialize import GetOfferResponseModel
@@ -21,8 +19,6 @@ from pcapi.routes.serialization.offers_serialize import PatchOfferActiveStatusBo
 from pcapi.routes.serialization.offers_serialize import PatchOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.use_cases.update_an_offer import update_an_offer
-from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFER_INCLUDES
 from pcapi.utils.rest import ensure_current_user_has_rights
 from pcapi.utils.rest import load_or_404
@@ -98,12 +94,9 @@ def patch_all_offers_active_status(body: PatchAllOffersActiveStatusBodyModel) ->
 @login_or_api_key_required
 @spectree_serialize(response_model=OfferResponseIdModel)  # type: ignore
 def patch_offer(offer_id: str, body: PatchOfferBodyModel) -> OfferResponseIdModel:
-    offer = offer_queries.get_offer_by_id(dehumanize(offer_id))
-
-    if not offer:
-        raise ResourceNotFoundError
-
+    offer = load_or_404(Offer, human_id=offer_id)
     ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
-    offer = update_an_offer(offer, modifications=body.dict(exclude_unset=True))
+
+    offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
 
     return OfferResponseIdModel.from_orm(offer)

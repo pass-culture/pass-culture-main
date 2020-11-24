@@ -1,5 +1,3 @@
-from pcapi.domain.allocine import get_editable_fields_for_allocine_offers
-from pcapi.models import Offer
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_type import ProductType
 
@@ -26,18 +24,3 @@ def check_offer_id_is_present_in_request(offer_id: str):
         errors.add_error("global", "Le paramètre offerId est obligatoire")
         errors.maybe_raise()
         raise errors
-
-
-def check_edition_for_allocine_offer_is_valid(payload: dict):
-    editable_fields_for_offer = get_editable_fields_for_allocine_offers()
-
-    all_payload_fields_are_editable = set(payload).issubset(editable_fields_for_offer)
-
-    if not all_payload_fields_are_editable:
-        list_of_non_editable_fields = set(payload).difference(editable_fields_for_offer)
-
-        api_error = ApiErrors()
-        for non_editable_field in list_of_non_editable_fields:
-            api_error.add_error(non_editable_field, "Vous ne pouvez pas modifier ce champ")
-
-        raise api_error

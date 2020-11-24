@@ -257,11 +257,6 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
 
     criteria = relationship("Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion")
 
-    def update_with_product_data(self, product_dict: dict) -> None:
-        owning_offerer = self.product.owningOfferer
-        if owning_offerer and owning_offerer == self.venue.managingOfferer:
-            self.product.populate_from_dict(product_dict)
-
     @property
     def activeMediation(self) -> Optional[Mediation]:
         sorted_by_date_desc = sorted(self.mediations, key=lambda m: m.dateCreated, reverse=True)

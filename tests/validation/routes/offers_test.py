@@ -3,7 +3,6 @@ import pytest
 from pcapi.models import ApiErrors
 from pcapi.models import EventType
 from pcapi.models import ThingType
-from pcapi.validation.routes.offers import check_edition_for_allocine_offer_is_valid
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 from pcapi.validation.routes.offers import check_offer_type_is_valid
 
@@ -55,28 +54,3 @@ class CheckOfferNameIsValidTest:
             check_offer_name_length_is_valid(offer_title_less_than_90_characters)
         except:
             assert False
-
-
-class CheckEditionForAllocineOfferIsValidTest:
-    def test_pass_when_fields_edited(self):
-        # Given
-        payload = {}
-
-        # Then
-        try:
-            check_edition_for_allocine_offer_is_valid(payload)
-        except:
-            assert False
-
-    def test_raises_exception_when_fields_are_not_editable(self):
-        # Given
-        payload = {"bookingEmail": "offer@example.com", "isNational": True, "name": "Nouvelle offre"}
-
-        # When
-        with pytest.raises(ApiErrors) as error:
-            check_edition_for_allocine_offer_is_valid(payload)
-
-        # Then
-        assert error.value.errors["bookingEmail"] == ["Vous ne pouvez pas modifier ce champ"]
-        assert error.value.errors["isNational"] == ["Vous ne pouvez pas modifier ce champ"]
-        assert error.value.errors["name"] == ["Vous ne pouvez pas modifier ce champ"]

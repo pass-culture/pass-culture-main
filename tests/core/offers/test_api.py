@@ -362,6 +362,79 @@ class CreateMediationTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class UpdateOfferTest:
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
+    def test_basics(self, mocked_add_offer_id):
+        offer = factories.OfferFactory(isDuo=False, bookingEmail="old@example.com")
+
+        offer = api.update_offer(offer, isDuo=True, bookingEmail="new@example.com")
+
+        assert offer.isDuo
+        assert offer.bookingEmail == "new@example.com"
+        mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
+
+    def test_update_product_if_owning_offerer_is_the_venue_managing_offerer(self):
+        offerer = factories.OffererFactory()
+        product = factories.ProductFactory(owningOfferer=offerer)
+        offer = factories.OfferFactory(product=product, venue__managingOfferer=offerer)
+
+        offer = api.update_offer(offer, name="New name")
+
+        assert offer.name == "New name"
+        assert product.name == "New name"
+
+    def test_do_not_update_product_if_owning_offerer_is_not_the_venue_managing_offerer(self):
+        product = factories.ProductFactory(name="Old name")
+        offer = factories.OfferFactory(product=product, name="Old name")
+
+        offer = api.update_offer(offer, name="New name")
+
+        assert offer.name == "New name"
+        assert product.name == "Old name"
+
+    def test_cannot_update_with_name_too_long(self):
+        offer = factories.OfferFactory(name="Old name")
+
+        with pytest.raises(models.ApiErrors) as error:
+            offer = api.update_offer(offer, name="Luftballons" * 99)
+
+        assert error.value.errors == {"name": ["Vous devez saisir moins de 140 caractères"]}
+        models.Offer.query.one().name == "Old name"
+
+    def test_success_on_allocine_offer(self):
+        provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
+        offer = factories.OfferFactory(lastProvider=provider, name="Old name")
+
+        offer = api.update_offer(offer, name="Old name", isDuo=True)
+
+        offer = models.Offer.query.one()
+        assert offer.name == "Old name"
+        assert offer.isDuo
+
+    def test_forbidden_on_allocine_offer_on_certain_fields(self):
+        provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
+        offer = factories.OfferFactory(lastProvider=provider, name="Old name")
+
+        with pytest.raises(models.ApiErrors) as error:
+            offer = api.update_offer(offer, name="New name", isDuo=True)
+
+        assert error.value.errors == {"name": ["Vous ne pouvez pas modifier ce champ"]}
+        offer = models.Offer.query.one()
+        assert offer.name == "Old name"
+        assert not offer.isDuo
+
+    def test_forbidden_on_imported_offer_if_not_allocine(self):
+        provider = offerers_factories.ProviderFactory()
+        offer = factories.OfferFactory(lastProvider=provider, name="Old name")
+
+        with pytest.raises(models.ApiErrors) as error:
+            offer = api.update_offer(offer, name="New name")
+
+        assert error.value.errors == {"global": ["Les offres importées ne sont pas modifiables"]}
+        models.Offer.query.one().name == "Old name"
+
+
+@pytest.mark.usefixtures("db_session")
 class UpdateOffersActiveStatusTest:
     @mock.patch("pcapi.connectors.redis.add_offer_id")
     def test_activate(self, mocked_add_offer_id):

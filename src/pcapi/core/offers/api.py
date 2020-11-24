@@ -1,4 +1,5 @@
 import datetime
+from typing import List
 from typing import Optional
 
 from flask import current_app as app
@@ -34,6 +35,7 @@ from .models import Mediation
 
 DEFAULT_OFFERS_PER_PAGE = 20
 DEFAULT_PAGE = 1
+UNCHANGED = object()
 
 
 def list_offers_for_pro_user(
@@ -81,6 +83,63 @@ def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> models.
     offer.bookingEmail = offer_data.booking_email
     repository.save(offer)
     admin_emails.send_offer_creation_notification_to_administration(offer, user, mailing.send_raw_email)
+
+    return offer
+
+
+def update_offer(
+    offer: Offer,
+    bookingEmail: str = UNCHANGED,
+    description: str = UNCHANGED,
+    isNational: bool = UNCHANGED,
+    name: str = UNCHANGED,
+    extraData: dict = UNCHANGED,
+    type: str = UNCHANGED,
+    url: str = UNCHANGED,
+    withdrawalDetails: str = UNCHANGED,
+    isActive: bool = UNCHANGED,
+    isDuo: bool = UNCHANGED,
+    durationMinutes: int = UNCHANGED,
+    mediaUrls: List[str] = UNCHANGED,
+    ageMin: int = UNCHANGED,
+    ageMax: int = UNCHANGED,
+    conditions: str = UNCHANGED,
+    venueId: str = UNCHANGED,
+    productId: str = UNCHANGED,
+) -> Offer:
+    # fmt: off
+    modifications = {
+        field: new_value
+        for field, new_value in locals().items()
+        if field != 'offer'
+        and new_value is not UNCHANGED  # has the user provided a value for this field
+        and getattr(offer, field) != new_value  # is the value different from what we have on database?
+    }
+    # fmt: on
+    if not modifications:
+        return offer
+
+    validation.check_offer_is_editable(offer)
+
+    if offer.isFromAllocine:
+        validation.check_update_only_allowed_offer_fields_for_allocine_offer(set(modifications))
+
+    offer.populate_from_dict(modifications)
+    if offer.product.owningOfferer and offer.product.owningOfferer == offer.venue.managingOfferer:
+        offer.product.populate_from_dict(modifications)
+        product_has_been_updated = True
+    else:
+        product_has_been_updated = False
+
+    if offer.isFromAllocine:
+        offer.fieldsUpdated = list(set(offer.fieldsUpdated) | set(modifications))
+
+    repository.save(offer)
+    if product_has_been_updated:
+        repository.save(offer.product)
+
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
     return offer
 

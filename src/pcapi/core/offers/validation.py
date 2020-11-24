@@ -11,6 +11,7 @@ from pcapi.models.api_errors import ApiErrors
 from . import exceptions
 
 
+EDITABLE_FIELDS_FOR_ALLOCINE_OFFER = {"isDuo"}
 EDITABLE_FIELDS_FOR_ALLOCINE_STOCK = {"bookingLimitDatetime", "price", "quantity"}
 
 
@@ -20,6 +21,16 @@ def check_offer_is_editable(offer: Offer):
         error.status_code = 400
         error.add_error("global", "Les offres importées ne sont pas modifiables")
         raise error
+
+
+def check_update_only_allowed_offer_fields_for_allocine_offer(updated_fields: set) -> None:
+    rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_ALLOCINE_OFFER
+    if rejected_fields:
+        api_error = ApiErrors()
+        for field in rejected_fields:
+            api_error.add_error(field, "Vous ne pouvez pas modifier ce champ")
+
+        raise api_error
 
 
 def check_stocks_are_editable_for_offer(offer: Offer) -> None:
