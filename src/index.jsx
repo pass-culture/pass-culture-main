@@ -10,7 +10,6 @@ import BlockContainer from 'components/layout/BlockContainer'
 import IbanInput from 'components/layout/IbanInput'
 import Root from 'Root'
 import { ENVIRONMENT_NAME, SENTRY_SERVER_URL, SENTRY_SAMPLE_RATE } from 'utils/config'
-import registerCacheWorker from 'workers/cache'
 
 import { version } from '../package.json'
 import './styles/index.scss'
@@ -50,8 +49,6 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root')
 )
-
-registerCacheWorker()
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
