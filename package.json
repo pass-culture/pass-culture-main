@@ -53,7 +53,6 @@
     "moment-timezone": "^0.5.21",
     "pass-culture-shared": "0.1.7",
     "prop-types": "^15.6.0",
-    "query-string": "5.1.1",
     "re-reselect": "3.4.0",
     "react": "^16.10.2",
     "react-autocomplete": "^1.8.1",

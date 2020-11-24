@@ -1,4 +1,3 @@
-import { parse } from 'query-string'
 import { Selector } from 'testcafe'
 
 import { getUrlParams } from './helpers/location'
@@ -26,7 +25,7 @@ test('Je peux créer un stock pour un événement', () => async t => {
 
   await t.click(manageStockAnchor).click(addStockButton)
 
-  let queryParams = parse(await getUrlParams())
+  let queryParams = Object.fromEntries(new URLSearchParams(await getUrlParams()))
 
   await t
     .expect(queryParams.stock)
@@ -35,7 +34,7 @@ test('Je peux créer un stock pour un événement', () => async t => {
     .click(datePickerLastDay)
     .click(submitButton)
 
-  queryParams = parse(await getUrlParams())
+    queryParams = Object.fromEntries(new URLSearchParams(await getUrlParams()))
   await t.expect(queryParams.stock).eql(undefined).expect(stockItem.count).eql(1)
 })
 
@@ -64,10 +63,10 @@ test('Je peux modifier un stock pour un événement', () => async t => {
 
   await t.click(manageStockAnchor).click(editAnchor)
 
-  let queryParams = parse(await getUrlParams())
+  let queryParams = Object.fromEntries(new URLSearchParams(await getUrlParams()))
   await t
     .expect(queryParams.gestion)
-    .eql(null)
+    .eql('')
     .expect(queryParams[`stock${stock.id}`])
     .eql('modification')
     .expect(beginInput.exists)
@@ -83,7 +82,7 @@ test('Je peux modifier un stock pour un événement', () => async t => {
     .typeText(priceInput, '15')
     .click(submitButton)
 
-  queryParams = parse(await getUrlParams())
+  queryParams = Object.fromEntries(new URLSearchParams(await getUrlParams()))
   await t.expect(queryParams.gestion).eql(null).expect(queryParams.stock).eql(undefined)
 })
 
@@ -100,10 +99,10 @@ test('Je peux supprimer un stock pour un événement', () => async t => {
 
   await t.click(manageStockAnchor).click(deleteButton).click(deleteButtonConfirmation)
 
-  const queryParams = parse(await getUrlParams())
+  const queryParams = Object.fromEntries(new URLSearchParams(await getUrlParams()))
   await t
     .expect(queryParams.gestion)
-    .eql(null)
+    .eql('')
     .expect(beginInput.exists)
     .notOk()
     .expect(datePicker.exists)

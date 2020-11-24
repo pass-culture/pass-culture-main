@@ -178,7 +178,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
           // then
           expect(dispatch).toHaveBeenCalledWith({
             config: {
-              apiPath: '/offerers?keywords=Honor%C3%A9%20Justice&page=0',
+              apiPath: '/offerers?keywords=Honor%C3%A9+Justice&page=0',
               handleFail,
               handleSuccess,
               method: 'GET',
@@ -191,7 +191,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
                 },
               },
             },
-            type: 'REQUEST_DATA_GET_/OFFERERS?KEYWORDS=HONOR%C3%A9%20JUSTICE&PAGE=0',
+            type: 'REQUEST_DATA_GET_/OFFERERS?KEYWORDS=HONOR%C3%A9+JUSTICE&PAGE=0',
           })
         })
       })
@@ -211,7 +211,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
           // then
           expect(dispatch).toHaveBeenCalledWith({
             config: {
-              apiPath: '/offerers?keywords=Club%20Dorothy&page=0',
+              apiPath: '/offerers?keywords=Club+Dorothy&page=0',
               handleFail,
               handleSuccess,
               method: 'GET',
@@ -224,7 +224,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
                 },
               },
             },
-            type: 'REQUEST_DATA_GET_/OFFERERS?KEYWORDS=CLUB%20DOROTHY&PAGE=0',
+            type: 'REQUEST_DATA_GET_/OFFERERS?KEYWORDS=CLUB+DOROTHY&PAGE=0',
           })
         })
       })
@@ -262,7 +262,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
             const result = createApiPath(loadOffererParameters)
 
             // then
-            expect(result).toStrictEqual('/offerers?keywords=example%20keyword')
+            expect(result).toStrictEqual('/offerers?keywords=example+keyword')
           })
         })
       })

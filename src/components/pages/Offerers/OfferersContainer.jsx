@@ -1,4 +1,3 @@
-import { stringify } from 'query-string'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { assignData, requestData } from 'redux-saga-data'
@@ -23,7 +22,7 @@ export const createApiPath = searchKeyWords => {
     apiQueryParams.keywords = searchKeyWords.join(' ')
   }
 
-  const queryParams = stringify(apiQueryParams)
+  const queryParams = new URLSearchParams(apiQueryParams).toString()
 
   return apiPath + queryParams
 }
