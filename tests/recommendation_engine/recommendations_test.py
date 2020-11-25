@@ -107,13 +107,13 @@ class CreateRecommendationsForDiscoveryTest:
         repository.save(*(expected_stocks_recommended + expected_stocks_not_recommended))
         discovery_view_queries.refresh(concurrently=False)
 
-        offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
+        offer_ids_in_adjacent_department = {stock.offerId for stock in expected_stocks_recommended}
 
         #  when
         recommendations = create_recommendations_for_discovery(sent_offers_ids=sent_offers_ids, limit=10, user=user)
 
         # then
-        recommended_offer_ids = set([recommendation.offerId for recommendation in recommendations])
+        recommended_offer_ids = {recommendation.offerId for recommendation in recommendations}
         assert len(recommendations) == 8
         assert recommended_offer_ids == offer_ids_in_adjacent_department
 
@@ -130,13 +130,13 @@ class CreateRecommendationsForDiscoveryTest:
         repository.save(*expected_stocks_recommended)
         discovery_view_queries.refresh(concurrently=False)
 
-        offer_ids_in_all_department = set([stock.offerId for stock in expected_stocks_recommended])
+        offer_ids_in_all_department = {stock.offerId for stock in expected_stocks_recommended}
 
         #  when
         recommendations = create_recommendations_for_discovery(limit=10, sent_offers_ids=sent_offers_ids, user=user)
 
         # then
-        recommended_offer_ids = set([recommendation.offerId for recommendation in recommendations])
+        recommended_offer_ids = {recommendation.offerId for recommendation in recommendations}
         assert len(recommendations) == 5
         assert recommended_offer_ids == offer_ids_in_all_department
 
