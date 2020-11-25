@@ -41,7 +41,7 @@ class GetApplicationBearerTokenTest:
 
 class RunProcessInOneOffContainerTest:
     @patch.dict("os.environ", {"SCALINGO_APP_TOKEN": "token123"})
-    @patch("pcapi.connectors.scalingo_api.API_APPLICATION_NAME", "pass-culture-api-app")
+    @patch("pcapi.settings.API_APPLICATION_NAME", "pass-culture-api-app")
     @patch("pcapi.connectors.scalingo_api.requests.post")
     @patch("pcapi.connectors.scalingo_api._get_application_bearer_token")
     def test_should_call_scalingo_api_with_expected_payload(self, mock_get_app_token, mock_post):
@@ -64,7 +64,7 @@ class RunProcessInOneOffContainerTest:
         assert container_id == "12345678987654ERTY"
 
     @patch.dict("os.environ", {"SCALINGO_APP_TOKEN": "token123"})
-    @patch("pcapi.connectors.scalingo_api.API_APPLICATION_NAME", "pass-culture-api-app")
+    @patch("pcapi.settings.API_APPLICATION_NAME", "pass-culture-api-app")
     @patch("pcapi.connectors.scalingo_api.requests.post")
     @patch("pcapi.connectors.scalingo_api._get_application_bearer_token")
     def test_should_raise_errors_when_error_during_api_call(self, mock_get_app_token, mock_post):

@@ -3,6 +3,7 @@ import os
 
 from werkzeug.middleware.profiler import ProfilerMiddleware
 
+from pcapi import settings
 from pcapi.admin.install import install_admin_views
 from pcapi.documentation import install_documentation
 from pcapi.flask_app import admin
@@ -16,7 +17,6 @@ from pcapi.models.install import install_materialized_views
 from pcapi.repository.feature_queries import feature_request_profiling_enabled
 from pcapi.routes import install_routes
 from pcapi.routes.native.v1.blueprint import native_v1
-from pcapi.utils.config import IS_DEV
 from pcapi.utils.logger import configure_json_logger
 from pcapi.utils.logger import disable_werkzeug_request_logs
 
@@ -38,7 +38,7 @@ def install_login_manager() -> None:
 with app.app_context():
     load_environment_variables()
 
-    if IS_DEV:
+    if settings.IS_DEV:
         install_activity()
         install_materialized_views()
         install_local_providers()
@@ -53,4 +53,4 @@ with app.app_context():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=IS_DEV, use_reloader=True)
+    app.run(host="0.0.0.0", port=port, debug=settings.IS_DEV, use_reloader=True)

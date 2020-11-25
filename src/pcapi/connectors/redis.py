@@ -8,7 +8,7 @@ import redis
 from redis import Redis
 from redis.client import Pipeline
 
-from pcapi.utils.config import REDIS_URL
+from pcapi import settings
 from pcapi.utils.logger import logger
 
 
@@ -42,7 +42,7 @@ def add_venue_id(client: Redis, venue_id: int) -> None:
 
 
 def send_venue_provider_data_to_redis(venue_provider) -> None:
-    redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)
+    redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)
     _add_venue_provider(client=redis_client, venue_provider=venue_provider)
 
 

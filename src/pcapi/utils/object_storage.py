@@ -5,8 +5,8 @@ from pathlib import PurePath
 
 import swiftclient
 
+from pcapi import settings
 from pcapi.models.db import Model
-from pcapi.utils.config import IS_DEV
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.inflect_engine import inflect_engine
 
@@ -45,7 +45,7 @@ def local_path(bucket, id):
 
 
 def store_public_object(bucket, id, blob, content_type, symlink_path=None):
-    if IS_DEV:
+    if settings.IS_DEV:
         os.makedirs(local_dir(bucket, id), exist_ok=True)
 
         file_local_path = local_path(bucket, id)

@@ -211,7 +211,7 @@ class GetUsersInformationFromStockBookingsTest:
 
 
 class BuildPcProOfferLinkTest:
-    @patch("pcapi.utils.mailing.PRO_URL", "http://pcpro.com")
+    @patch("pcapi.settings.PRO_URL", "http://pcpro.com")
     @pytest.mark.usefixtures("db_session")
     def test_should_return_pc_pro_offer_link(self, app):
         # Given

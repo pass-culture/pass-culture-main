@@ -2,7 +2,7 @@ import os
 
 import requests
 
-from pcapi.utils.config import API_APPLICATION_NAME
+from pcapi import settings
 
 
 SCALINGO_AUTH_URL = "https://auth.scalingo.com/v1"
@@ -17,7 +17,7 @@ class ScalingoApiException(Exception):
 
 def run_process_in_one_off_container(command: str) -> str:
     app_bearer_token = _get_application_bearer_token()
-    run_one_off_endpoint = f"/apps/{API_APPLICATION_NAME}/run"
+    run_one_off_endpoint = f"/apps/{settings.API_APPLICATION_NAME}/run"
     command_parameters = {
         "command": command,
         "region": SCALINGO_API_REGION,

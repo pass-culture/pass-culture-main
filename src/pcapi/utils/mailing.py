@@ -12,6 +12,7 @@ from flask import current_app as app
 from flask import render_template
 from requests import Response
 
+from pcapi import settings
 from pcapi.connectors import api_entreprises
 from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
 from pcapi.domain.postal_code.postal_code import PostalCode
@@ -25,11 +26,6 @@ from pcapi.models.email import EmailStatus
 from pcapi.repository.email_queries import save
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.utils import logger
-from pcapi.utils.config import API_URL
-from pcapi.utils.config import ENV
-from pcapi.utils.config import IS_PROD
-from pcapi.utils.config import PRO_URL
-from pcapi.utils.config import WEBAPP_URL
 from pcapi.utils.date import format_datetime
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
@@ -90,7 +86,7 @@ def add_contact_to_list(email: str, list_id: str) -> Response:
 
 def build_pc_pro_offer_link(offer: Offer) -> str:
     return (
-        f"{PRO_URL}/offres/{humanize(offer.id)}?lieu={humanize(offer.venueId)}"
+        f"{settings.PRO_URL}/offres/{humanize(offer.id)}?lieu={humanize(offer.venueId)}"
         f"&structure={humanize(offer.venue.managingOffererId)}"
     )
 
@@ -112,7 +108,7 @@ def create_email_recipients(recipients: List[str]) -> str:
 
 
 def format_environment_for_email() -> str:
-    return "" if IS_PROD else f"-{ENV}"
+    return "" if settings.IS_PROD else f"-{settings.ENV}"
 
 
 def format_booking_date_for_email(booking: Booking) -> str:
@@ -149,7 +145,7 @@ def make_validation_email_object(
         offerer_vars_user_offerer=pformat(vars(user_offerer.offerer)),
         offerer_vars=pformat(vars(offerer)),
         api_entreprise=pformat(api_entreprise),
-        api_url=API_URL,
+        api_url=settings.API_URL,
     )
 
     return {
@@ -357,7 +353,7 @@ def compute_email_html_part_and_recipients(email_html_part, recipients: Union[Li
         email_html_part = (
             "<p>This is a test (ENV={environment})."
             " In production, email would have been sent to : {recipients}</p>{html_part}".format(
-                environment=ENV, recipients=recipients_string, html_part=email_html_part
+                environment=settings.ENV, recipients=recipients_string, html_part=email_html_part
             )
         )
         email_to = DEV_EMAIL_ADDRESS
@@ -378,10 +374,10 @@ def parse_email_addresses(addresses: str) -> List[str]:
 
 
 def make_offer_creation_notification_email(offer: Offer, author: UserSQLEntity) -> Dict:
-    pro_link_to_offer = f"{PRO_URL}/offres/{humanize(offer.id)}"
-    webapp_link_to_offer = f"{WEBAPP_URL}/offre/details/{humanize(offer.id)}"
+    pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}"
+    webapp_link_to_offer = f"{settings.WEBAPP_URL}/offre/details/{humanize(offer.id)}"
     venue = offer.venue
-    pro_venue_link = f"{PRO_URL}/lieux/{humanize(venue.id)}"
+    pro_venue_link = f"{settings.PRO_URL}/lieux/{humanize(venue.id)}"
     html = render_template(
         "mails/offer_creation_notification_email.html",
         offer=offer,
@@ -413,7 +409,7 @@ def get_event_datetime(stock: Stock) -> datetime:
 
 def make_webapp_user_validation_email(user: UserSQLEntity, app_origin_url: str) -> Dict:
     template = "mails/webapp_user_validation_email.html"
-    email_html = render_template(template, user=user, api_url=API_URL, app_origin_url=app_origin_url)
+    email_html = render_template(template, user=user, api_url=settings.API_URL, app_origin_url=app_origin_url)
     return {
         "Html-part": email_html,
         "To": user.email,

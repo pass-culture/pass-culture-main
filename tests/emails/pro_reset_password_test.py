@@ -12,7 +12,7 @@ from pcapi.repository import repository
 class MakeProResetPasswordEmailDataTest:
     @patch("pcapi.emails.pro_reset_password.format_environment_for_email", return_value="-testing")
     @patch("pcapi.emails.pro_reset_password.feature_send_mail_to_users_enabled", return_value=False)
-    @patch("pcapi.emails.pro_reset_password.PRO_URL", "http://example.net")
+    @patch("pcapi.settings.PRO_URL", "http://example.net")
     @pytest.mark.usefixtures("db_session")
     def test_email_is_sent_to_dev_at_passculture_when_not_production_environment(
         self, mock_send_mail_enabled, mock_format_env, app
@@ -38,7 +38,7 @@ class MakeProResetPasswordEmailDataTest:
 
     @patch("pcapi.emails.pro_reset_password.format_environment_for_email", return_value="")
     @patch("pcapi.emails.pro_reset_password.feature_send_mail_to_users_enabled", return_value=True)
-    @patch("pcapi.emails.pro_reset_password.PRO_URL", "http://example.net")
+    @patch("pcapi.settings.PRO_URL", "http://example.net")
     @pytest.mark.usefixtures("db_session")
     def test_email_is_sent_to_pro_offerer_when_production_environment(
         self, mock_send_mail_enabled, mock_format_env, app

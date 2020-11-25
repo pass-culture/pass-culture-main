@@ -1,17 +1,8 @@
-import os
-from pathlib import Path
-
-from dotenv import load_dotenv
-
-from pcapi.utils.config import ENV
-from pcapi.utils.config import IS_DEV
+from pcapi import settings  # pylint: disable=unused-import
 
 
+# TODO: eventually this file will be removed once all the
+# settings will be migrated to pcapi.settings and we have
+# NO `os.environ` outside pcapi.settings
 def load_environment_variables() -> None:
-    env_path = Path(f"./.env.{ENV}")
-    load_dotenv(dotenv_path=env_path)
-
-    if IS_DEV:
-        load_dotenv(dotenv_path=".env.local.secret", override=True)
-    if os.environ.get("RUN_ENV") == "tests":
-        load_dotenv(dotenv_path=".env.testauto", override=True)
+    pass

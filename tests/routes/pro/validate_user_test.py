@@ -87,7 +87,7 @@ class Patch:
             )
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.routes.pro.validate.IS_INTEGRATION", False)
+        @patch("pcapi.settings.IS_INTEGRATION", False)
         @patch("pcapi.routes.pro.validate.maybe_send_offerer_validation_email", return_value=True)
         @patch("pcapi.routes.pro.validate.send_raw_email", return_value=True)
         def test_maybe_send_offerer_validation_email_when_not_in_integration_env(
@@ -112,7 +112,7 @@ class Patch:
             mock_maybe_send_offerer_validation_email.assert_called_once_with(offerer, user_offerer, mock_send_raw_email)
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.routes.pro.validate.IS_INTEGRATION", True)
+        @patch("pcapi.settings.IS_INTEGRATION", True)
         @patch("pcapi.routes.pro.validate.maybe_send_offerer_validation_email", return_value=True)
         def test_validate_offerer_and_user_offerer_when_in_integration_env(
             self, mock_maybe_send_offerer_validation_email, app

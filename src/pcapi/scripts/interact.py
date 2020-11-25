@@ -11,8 +11,8 @@ import sys
 from flask import Flask
 from mailjet_rest import Client
 
+from pcapi import settings
 from pcapi.models.db import db
-from pcapi.utils import config
 from pcapi.utils.mailing import MAILJET_API_KEY
 from pcapi.utils.mailing import MAILJET_API_SECRET
 
@@ -39,7 +39,7 @@ from pcapi.sandboxes import *
 from pcapi.scripts.beneficiary import old_remote_import
 from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.booking import *
-from pcapi.utils.config import *
+from pcapi.settings import *
 from pcapi.utils.human_ids import *
 from pcapi.utils.import_module import *
 from pcapi.utils.includes import *
@@ -51,7 +51,7 @@ from pcapi.utils.token import *
 
 
 def set_python_prompt():
-    env = config.ENV
+    env = settings.ENV
     if env == "production":
         color = "\x1b[1;49;31m"  # red
     elif env == "staging":

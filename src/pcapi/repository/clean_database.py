@@ -1,3 +1,4 @@
+from pcapi import settings
 from pcapi.core.offers.models import Mediation
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import AllocinePivot
@@ -37,13 +38,12 @@ from pcapi.models.email import Email
 from pcapi.models.install import install_features
 from pcapi.models.install import install_materialized_views
 from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity
-from pcapi.utils.config import ENV
 
 
 def clean_all_database(*args, **kwargs):
     """ Order of deletions matters because of foreign key constraints """
-    if ENV not in ("development", "testing"):
-        raise ValueError(f"You cannot do this on this environment: '{ENV}'")
+    if settings.ENV not in ("development", "testing"):
+        raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
     Activity = load_activity()
     LocalProviderEvent.query.delete()
     AllocineVenueProviderPriceRule.query.delete()

@@ -6,11 +6,10 @@ import os
 from alembic import context
 from sqlalchemy import create_engine
 
-from pcapi.models.db import db
-
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
-from pcapi.utils.config import IS_DEV
+from pcapi import settings
+from pcapi.models.db import db
 
 
 config = context.config
@@ -53,11 +52,11 @@ def run_migrations_online() -> None:
             include_schemas=True,
             transaction_per_migration=False,
         )
-        if not IS_DEV:
+        if not settings.IS_DEV:
             connection.execute("UPDATE feature SET \"isActive\" = FALSE WHERE name = 'UPDATE_DISCOVERY_VIEW'")
         with context.begin_transaction():
             context.run_migrations()
-        if not IS_DEV:
+        if not settings.IS_DEV:
             connection.execute("UPDATE feature SET \"isActive\" = TRUE WHERE name = 'UPDATE_DISCOVERY_VIEW'")
 
 

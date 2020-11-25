@@ -19,6 +19,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
+from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Stock
 from pcapi.domain.expenses import get_expenses
@@ -30,7 +31,6 @@ from pcapi.models.pc_object import PcObject
 from pcapi.models.user_offerer import RightsType
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.versioned_mixin import VersionedMixin
-from pcapi.utils.config import IS_DEV
 
 
 def _hash_password_with_bcrypt(clear_text: str) -> bytes:
@@ -42,25 +42,25 @@ def _check_password_with_bcrypt(clear_text: str, hashed: str) -> bool:
 
 
 def _hash_password_with_md5(clear_text: str) -> bytes:
-    if not IS_DEV:
+    if not settings.IS_DEV:
         raise RuntimeError("This password hasher should not be used outside tests.")
     return md5(clear_text.encode("utf-8")).hexdigest().encode("utf-8")
 
 
 def _check_password_with_md5(clear_text: str, hashed: str) -> bool:
-    if not IS_DEV:
+    if not settings.IS_DEV:
         raise RuntimeError("This password hasher should not be used outside tests.")
     # non constant-time comparison because it's test-only
     return _hash_password_with_md5(clear_text) == hashed
 
 
 def hash_password(clear_text: str) -> bytes:
-    hasher = _hash_password_with_md5 if IS_DEV else _hash_password_with_bcrypt
+    hasher = _hash_password_with_md5 if settings.IS_DEV else _hash_password_with_bcrypt
     return hasher(clear_text)
 
 
 def check_password(clear_text: str, hashed: str) -> bool:
-    checker = _check_password_with_md5 if IS_DEV else _check_password_with_bcrypt
+    checker = _check_password_with_md5 if settings.IS_DEV else _check_password_with_bcrypt
     return checker(clear_text, hashed)
 
 

@@ -1,10 +1,9 @@
 import os
 
+from pcapi import settings
 from pcapi.models import Feature
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.feature import FeatureToggle
-from pcapi.utils.config import IS_INTEGRATION
-from pcapi.utils.config import IS_PROD
 
 
 def find_all():
@@ -18,7 +17,7 @@ def is_active(feature_toggle: FeatureToggle) -> bool:
 
 
 def feature_send_mail_to_users_enabled() -> bool:
-    return IS_PROD or IS_INTEGRATION
+    return settings.IS_PROD or settings.IS_INTEGRATION
 
 
 def feature_request_profiling_enabled() -> bool:

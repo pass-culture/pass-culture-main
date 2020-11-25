@@ -150,7 +150,7 @@ def test_should_not_truncate_price():
     assert email_data == expected
 
 
-@patch("pcapi.repository.feature_queries.IS_PROD", True)
+@patch("pcapi.settings.IS_PROD", True)
 @pytest.mark.usefixtures("db_session")
 def test_recipients_on_production():
     booking = make_booking()

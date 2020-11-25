@@ -1,12 +1,12 @@
 from flask import Flask
 
-from pcapi.utils.config import IS_DEV
+from pcapi import settings
 
 
 def install_routes(app: Flask) -> None:
     # pylint: disable=unused-import
     from . import health_check
 
-    if IS_DEV:
+    if settings.IS_DEV:
         from . import sandboxes
         from . import storage

@@ -1,6 +1,9 @@
 """ config """
 from logging import INFO as LOG_LEVEL_INFO
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 
 ENV = os.environ.get("ENV", "development")
@@ -9,9 +12,21 @@ IS_INTEGRATION = ENV == "integration"
 IS_STAGING = ENV == "staging"
 IS_PROD = ENV == "production"
 IS_TESTING = ENV == "testing"
-LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
-REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379")
 
+
+# Load configuration files
+env_path = Path(f"./.env.{ENV}")
+load_dotenv(dotenv_path=env_path)
+
+if IS_DEV:
+    load_dotenv(dotenv_path=".env.local.secret", override=True)
+if os.environ.get("RUN_ENV") == "tests":
+    load_dotenv(dotenv_path=".env.testauto", override=True)
+
+LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
+
+
+# TODO: move those to .env.{ENV}
 if IS_DEV:
     API_URL = "http://localhost"
     API_APPLICATION_NAME = None
@@ -38,3 +53,7 @@ else:
     NATIVE_APP_URL = f"passculture://app.passculture.{ENV}"
 
 BLOB_SIZE = 30
+
+
+# REDIS
+REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379")

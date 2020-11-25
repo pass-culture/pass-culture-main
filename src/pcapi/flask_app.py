@@ -27,12 +27,10 @@ from spectree import SpecTree
 from sqlalchemy import orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
 
+from pcapi import settings
 from pcapi.models.db import db
 from pcapi.repository.feature_queries import feature_request_profiling_enabled
 from pcapi.serialization.utils import before_handler
-from pcapi.utils.config import ENV
-from pcapi.utils.config import IS_DEV
-from pcapi.utils.config import REDIS_URL
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.logger import json_logger
@@ -40,12 +38,12 @@ from pcapi.utils.mailing import MAILJET_API_KEY
 from pcapi.utils.mailing import MAILJET_API_SECRET
 
 
-if IS_DEV is False:
+if settings.IS_DEV is False:
     sentry_sdk.init(
         dsn="https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5",
         integrations=[FlaskIntegration(), RqIntegration()],
         release=read_version_from_file(),
-        environment=ENV,
+        environment=settings.ENV,
         traces_sample_rate=float(os.environ.get("SENTRY_SAMPLE_RATE", 0)),
     )
 
@@ -76,9 +74,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False
 app.config["SESSION_COOKIE_HTTPONLY"] = True
-app.config["SESSION_COOKIE_SECURE"] = not IS_DEV
+app.config["SESSION_COOKIE_SECURE"] = not settings.IS_DEV
 app.config["REMEMBER_COOKIE_HTTPONLY"] = True
-app.config["REMEMBER_COOKIE_SECURE"] = not IS_DEV
+app.config["REMEMBER_COOKIE_SECURE"] = not settings.IS_DEV
 app.config["REMEMBER_COOKIE_DURATION"] = 90 * 24 * 3600
 app.config["PERMANENT_SESSION_LIFETIME"] = 90 * 24 * 3600
 app.config["FLASK_ADMIN_SWATCH"] = "flatly"
@@ -146,4 +144,4 @@ app.url_map.strict_slashes = False
 
 with app.app_context():
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version="v3")
-    app.redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)
+    app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)

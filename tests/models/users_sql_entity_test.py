@@ -351,7 +351,7 @@ class DevEnvironmentPasswordHasherTest:
         assert user_sql_entity.check_password("secret", hashed)
 
 
-@patch("pcapi.models.user_sql_entity.IS_DEV", False)
+@patch("pcapi.settings.IS_DEV", False)
 class ProdEnvironmentPasswordHasherTest:
     def test_hash_password_uses_bcrypt(self):
         hashed = user_sql_entity.hash_password("secret")

@@ -1,5 +1,6 @@
 from flask import current_app as app
 
+from pcapi import settings
 from pcapi.connectors import redis
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.iris import link_valid_venue_to_irises
@@ -17,7 +18,6 @@ from pcapi.repository import repository
 from pcapi.repository import user_offerer_queries
 from pcapi.repository import user_queries
 from pcapi.repository.user_offerer_queries import count_pro_attached_to_offerer
-from pcapi.utils.config import IS_INTEGRATION
 from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.mailing import send_raw_email
 from pcapi.validation.routes.users import check_validation_token_has_been_already_used
@@ -81,7 +81,7 @@ def validate_user(token):
         number_of_pro_attached_to_offerer = count_pro_attached_to_offerer(user_offerer.offererId)
         offerer = user_offerer.offerer
 
-        if IS_INTEGRATION:
+        if settings.IS_INTEGRATION:
             _validate_offerer(offerer, user_offerer)
         else:
             _ask_for_validation(offerer, user_offerer)

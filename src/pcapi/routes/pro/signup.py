@@ -1,6 +1,7 @@
 from flask import jsonify
 from flask import request
 
+from pcapi import settings
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.user_emails import send_user_validation_email
 from pcapi.flask_app import private_api
@@ -10,7 +11,6 @@ from pcapi.models.user_offerer import RightsType
 from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
-from pcapi.utils.config import IS_INTEGRATION
 from pcapi.utils.includes import USER_INCLUDES
 from pcapi.utils.logger import logger
 from pcapi.utils.mailing import MailServiceException
@@ -59,7 +59,7 @@ def signup_pro():
 
 def _generate_user_offerer_when_existing_offerer(new_user, offerer):
     user_offerer = offerer.give_rights(new_user, RightsType.editor)
-    if not IS_INTEGRATION:
+    if not settings.IS_INTEGRATION:
         user_offerer.generate_validation_token()
     return user_offerer
 
@@ -68,13 +68,13 @@ def _generate_offerer(data):
     offerer = Offerer()
     offerer.populate_from_dict(data)
 
-    if not IS_INTEGRATION:
+    if not settings.IS_INTEGRATION:
         offerer.generate_validation_token()
     return offerer
 
 
 def _set_offerer_departement_code(new_user: UserSQLEntity, offerer: Offerer) -> UserSQLEntity:
-    if IS_INTEGRATION:
+    if settings.IS_INTEGRATION:
         new_user.departementCode = "00"
     elif offerer.postalCode is not None:
         new_user.departementCode = PostalCode(offerer.postalCode).get_departement_code()

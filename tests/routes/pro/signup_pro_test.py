@@ -476,7 +476,7 @@ class Post:
 
 
 class SetOffererDepartementCodeTest:
-    @patch("pcapi.routes.pro.signup.IS_INTEGRATION", True)
+    @patch("pcapi.settings.IS_INTEGRATION", True)
     def should_set_user_department_to_all_departments_in_integration(self):
         # Given
         new_user = create_user()

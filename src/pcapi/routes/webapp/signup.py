@@ -2,6 +2,7 @@ from flask import current_app as app
 from flask import jsonify
 from flask import request
 
+from pcapi import settings
 from pcapi.connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from pcapi.flask_app import private_api
 from pcapi.models import ApiErrors
@@ -10,7 +11,6 @@ from pcapi.models import UserSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
-from pcapi.utils.config import IS_INTEGRATION
 from pcapi.utils.feature import feature_required
 from pcapi.utils.includes import BENEFICIARY_INCLUDES
 from pcapi.utils.logger import logger
@@ -27,7 +27,7 @@ def signup_webapp():
 
     new_user = UserSQLEntity(from_dict=request.json)
 
-    if IS_INTEGRATION:
+    if settings.IS_INTEGRATION:
         new_user.departementCode = "00"
         objects_to_save.append(_create_initial_deposit(new_user))
     else:

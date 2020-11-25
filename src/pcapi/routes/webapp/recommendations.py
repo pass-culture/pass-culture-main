@@ -6,6 +6,7 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi import settings
 from pcapi.domain.build_recommendations import move_requested_recommendation_first
 from pcapi.flask_app import private_api
 from pcapi.models import Recommendation
@@ -19,7 +20,6 @@ from pcapi.repository.iris_venues_queries import get_iris_containing_user_locati
 from pcapi.repository.recommendation_queries import update_read_recommendations
 from pcapi.routes.serialization.recommendation_serialize import serialize_recommendation
 from pcapi.routes.serialization.recommendation_serialize import serialize_recommendations
-from pcapi.utils.config import BLOB_SIZE
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import dehumanize_ids_list
 from pcapi.utils.rest import expect_json_data
@@ -85,7 +85,7 @@ def _put_geolocated_recommendations(request: Request) -> (Dict, int):
         user_iris_id=user_iris_id,
         user_is_geolocated=user_is_geolocated,
         sent_offers_ids=sent_offers_ids,
-        limit=BLOB_SIZE,
+        limit=settings.BLOB_SIZE,
     )
 
     return jsonify(serialize_recommendations(recommendations, user_id=current_user.id)), 200
@@ -101,7 +101,7 @@ def _put_non_geolocated_recommendations(request: Request) -> (Dict, int):
     requested_recommendation = give_requested_recommendation_to_user(current_user, offer_id, mediation_id)
 
     recommendations = create_recommendations_for_discovery(
-        limit=BLOB_SIZE, user=current_user, sent_offers_ids=sent_offers_ids
+        limit=settings.BLOB_SIZE, user=current_user, sent_offers_ids=sent_offers_ids
     )
 
     if requested_recommendation:

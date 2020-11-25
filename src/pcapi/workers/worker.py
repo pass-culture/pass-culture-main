@@ -14,14 +14,14 @@ from rq import Queue
 from rq import Worker
 from rq.job import Job
 
-from pcapi.utils.config import REDIS_URL
+from pcapi import settings
 from pcapi.utils.logger import logger
 from pcapi.workers.logger import JobStatus
 from pcapi.workers.logger import build_job_log_message
 
 
 listen = ["default"]
-conn = redis.from_url(REDIS_URL)
+conn = redis.from_url(settings.REDIS_URL)
 redis_queue = Queue(connection=conn)
 logging.getLogger("rq.worker").setLevel(logging.CRITICAL)
 
