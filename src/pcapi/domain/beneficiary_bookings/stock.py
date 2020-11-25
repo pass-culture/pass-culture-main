@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 
-class Stock(object):
+class Stock:
     def __init__(
         self,
         id: int,

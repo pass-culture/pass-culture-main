@@ -24,7 +24,7 @@ FIELD_FOR_VENUE_WITH_SIRET = (
 FIELD_FOR_VENUE_WITHOUT_SIRET = "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu sans SIRET, merci de saisir le \"Nom du lieu\", \u00e0 l'identique de celui dans le pass Culture Pro :"
 
 
-class ApplicationDetail(object):
+class ApplicationDetail:
     def __init__(
         self,
         siren: str,

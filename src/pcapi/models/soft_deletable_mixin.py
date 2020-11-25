@@ -2,5 +2,5 @@ from sqlalchemy import Boolean
 from sqlalchemy import Column
 
 
-class SoftDeletableMixin(object):
+class SoftDeletableMixin:
     isSoftDeleted = Column(Boolean, nullable=False, default=False)

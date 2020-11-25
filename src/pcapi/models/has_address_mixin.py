@@ -4,7 +4,7 @@ from sqlalchemy import Column
 from sqlalchemy import String
 
 
-class HasAddressMixin(object):
+class HasAddressMixin:
     address = Column(String(200), nullable=True)
 
     postalCode = Column(String(6), nullable=False)

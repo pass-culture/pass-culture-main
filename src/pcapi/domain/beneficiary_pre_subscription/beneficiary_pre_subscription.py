@@ -4,7 +4,7 @@ from typing import Optional
 from pcapi.domain.postal_code.postal_code import PostalCode
 
 
-class BeneficiaryPreSubscription(object):
+class BeneficiaryPreSubscription:
     def __init__(
         self,
         activity: str,

@@ -4,7 +4,7 @@ from pcapi.models.db import db
 from pcapi.models.db import versioning_manager
 
 
-class VersionedMixin(object):
+class VersionedMixin:
     __versioned__ = {}
 
     def activity(self):

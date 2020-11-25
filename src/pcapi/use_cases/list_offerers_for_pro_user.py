@@ -4,7 +4,7 @@ from pcapi.domain.pro_offerers.paginated_offerers import PaginatedOfferers
 from pcapi.domain.pro_offerers.paginated_offerers_repository import PaginatedOfferersRepository
 
 
-class OfferersRequestParameters(object):
+class OfferersRequestParameters:
     def __init__(
         self,
         user_id: int,

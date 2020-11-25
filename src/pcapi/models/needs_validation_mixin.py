@@ -5,7 +5,7 @@ from sqlalchemy import Column
 from sqlalchemy import String
 
 
-class NeedsValidationMixin(object):
+class NeedsValidationMixin:
     validationToken = Column(String(27), unique=True, nullable=True)
 
     def generate_validation_token(self):

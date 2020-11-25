@@ -7,7 +7,7 @@ from pcapi.utils.object_storage import get_storage_base_url
 from pcapi.utils.string_processing import get_model_plural_name
 
 
-class HasThumbMixin(object):
+class HasThumbMixin:
     thumbCount = Column(Integer(), nullable=False, default=0)
 
     def get_thumb_storage_id(self, index: int) -> str:

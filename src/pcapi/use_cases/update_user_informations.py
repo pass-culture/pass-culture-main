@@ -4,7 +4,7 @@ from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_id
 
 
-class AlterableUserInformations(object):
+class AlterableUserInformations:
     def __init__(
         self,
         id: int,

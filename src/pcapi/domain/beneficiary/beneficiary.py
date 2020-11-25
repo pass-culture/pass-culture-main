@@ -1,4 +1,4 @@
-class Beneficiary(object):
+class Beneficiary:
     def __init__(
         self,
         identifier: int,

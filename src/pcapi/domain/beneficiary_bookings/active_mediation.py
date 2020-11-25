@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-class ActiveMediation(object):
+class ActiveMediation:
     def __init__(self, identifier: int, date_created: datetime, offer_id: int):
         self.identifier = identifier
         self.date_created = date_created

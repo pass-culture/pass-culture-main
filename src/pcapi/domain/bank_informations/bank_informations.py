@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-class BankInformations(object):
+class BankInformations:
     def __init__(
         self,
         application_id: str = None,
