@@ -34,7 +34,7 @@ SOLD_OUT_STATUS = "soldOut"
 ACTIVE_STATUS = "active"
 
 
-def get_paginated_offers_for_offerer_venue_and_keywords(
+def get_paginated_offers_for_filters(
     user_id: int,
     user_is_admin: bool,
     page: Optional[int],

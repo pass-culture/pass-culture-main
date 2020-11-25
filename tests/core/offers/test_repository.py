@@ -6,7 +6,7 @@ import pytest
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.repository import find_online_activation_stock
 from pcapi.core.offers.repository import get_offers_by_ids
-from pcapi.core.offers.repository import get_paginated_offers_for_offerer_venue_and_keywords
+from pcapi.core.offers.repository import get_paginated_offers_for_filters
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
@@ -23,7 +23,7 @@ from pcapi.models import ThingType
 from pcapi.repository import repository
 
 
-class PaginatedOfferSQLRepositoryTest:
+class PaginatedOfferForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_paginated_offers_with_details_of_pagination_and_offers_of_requested_page(self, app):
         # Given
@@ -38,7 +38,7 @@ class PaginatedOfferSQLRepositoryTest:
         requested_offers_per_page = 1
 
         # When
-        paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+        paginated_offers = get_paginated_offers_for_filters(
             user_id=user.id,
             user_is_admin=user.isAdmin,
             offers_per_page=requested_offers_per_page,
@@ -65,7 +65,7 @@ class PaginatedOfferSQLRepositoryTest:
         repository.save(user_offerer, offer1, offer2)
 
         # When
-        paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+        paginated_offers = get_paginated_offers_for_filters(
             user_id=user.id, user_is_admin=user.isAdmin, page=1, offers_per_page=10
         )
 
@@ -82,7 +82,7 @@ class PaginatedOfferSQLRepositoryTest:
             type=str(ThingType.JEUX), venue__managingOfferer=user_offerer.offerer
         )
 
-        paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+        paginated_offers = get_paginated_offers_for_filters(
             user_id=user_offerer.user.id,
             user_is_admin=user_offerer.user.isAdmin,
             type_id=str(ThingType.AUDIOVISUEL),
@@ -112,7 +112,7 @@ class PaginatedOfferSQLRepositoryTest:
         repository.save(manually_created_offer, imported_offer, pro_user)
 
         # When
-        paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+        paginated_offers = get_paginated_offers_for_filters(
             user_id=pro_user.id, user_is_admin=pro_user.isAdmin, page=1, offers_per_page=1, creation_mode="manual"
         )
 
@@ -136,7 +136,7 @@ class PaginatedOfferSQLRepositoryTest:
         repository.save(manually_created_offer, imported_offer, pro_user)
 
         # When
-        paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+        paginated_offers = get_paginated_offers_for_filters(
             user_id=pro_user.id, user_is_admin=pro_user.isAdmin, page=1, offers_per_page=1, creation_mode="imported"
         )
 
@@ -153,7 +153,7 @@ class PaginatedOfferSQLRepositoryTest:
             offer_for_other_venue = offers_factories.OfferFactory()
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=admin.id,
                 user_is_admin=admin.isAdmin,
                 venue_id=offer_for_requested_venue.venue.id,
@@ -180,7 +180,7 @@ class PaginatedOfferSQLRepositoryTest:
             )
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=admin.id,
                 user_is_admin=admin.isAdmin,
                 venue_id=offer_for_requested_venue.venue.id,
@@ -202,7 +202,7 @@ class PaginatedOfferSQLRepositoryTest:
             offer_for_other_offerer = offers_factories.OfferFactory()
 
             # When
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=admin.id,
                 user_is_admin=admin.isAdmin,
                 page=1,
@@ -230,7 +230,7 @@ class PaginatedOfferSQLRepositoryTest:
             )
 
             # When
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=admin.id,
                 user_is_admin=admin.isAdmin,
                 page=1,
@@ -254,7 +254,7 @@ class PaginatedOfferSQLRepositoryTest:
             )
 
             # When
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=pro.id,
                 user_is_admin=pro.isAdmin,
                 page=1,
@@ -276,7 +276,7 @@ class PaginatedOfferSQLRepositoryTest:
             offer_for_other_venue = offers_factories.OfferFactory()
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=pro.id,
                 user_is_admin=pro.isAdmin,
                 venue_id=offer_for_requested_venue.venue.id,
@@ -303,7 +303,7 @@ class PaginatedOfferSQLRepositoryTest:
             )
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=pro.id,
                 user_is_admin=pro.isAdmin,
                 venue_id=offer_for_requested_venue.venue.id,
@@ -325,7 +325,7 @@ class PaginatedOfferSQLRepositoryTest:
             offer_for_other_offerer = offers_factories.OfferFactory()
 
             # When
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=pro.id,
                 user_is_admin=pro.isAdmin,
                 page=1,
@@ -353,7 +353,7 @@ class PaginatedOfferSQLRepositoryTest:
             )
 
             # When
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=pro.id,
                 user_is_admin=pro.isAdmin,
                 page=1,
@@ -376,7 +376,7 @@ class PaginatedOfferSQLRepositoryTest:
             other_offer = offers_factories.OfferFactory(name="ocsir", venue__managingOfferer=user_offerer.offerer)
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.isAdmin,
                 name_keywords="ocs",
@@ -403,7 +403,7 @@ class PaginatedOfferSQLRepositoryTest:
             other_offer = offers_factories.OfferFactory(name="étais-tu là", venue__managingOfferer=user_offerer.offerer)
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.isAdmin,
                 name_keywords="seras-tu",
@@ -430,7 +430,7 @@ class PaginatedOfferSQLRepositoryTest:
             )
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.isAdmin,
                 name_keywords="mon océan",
@@ -452,7 +452,7 @@ class PaginatedOfferSQLRepositoryTest:
             other_offer = offers_factories.OfferFactory(name="océan", venue__managingOfferer=user_offerer.offerer)
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.isAdmin,
                 name_keywords="ocean",
@@ -691,7 +691,7 @@ class PaginatedOfferSQLRepositoryTest:
             self.save_data_set()
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="active"
             )
 
@@ -733,7 +733,7 @@ class PaginatedOfferSQLRepositoryTest:
             self.save_data_set()
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="inactive"
             )
 
@@ -780,7 +780,7 @@ class PaginatedOfferSQLRepositoryTest:
             self.save_data_set()
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
             )
 
@@ -827,7 +827,7 @@ class PaginatedOfferSQLRepositoryTest:
             self.save_data_set()
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
             )
 
@@ -842,7 +842,7 @@ class PaginatedOfferSQLRepositoryTest:
             self.save_data_set()
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
             )
 
@@ -856,7 +856,7 @@ class PaginatedOfferSQLRepositoryTest:
             self.save_data_set()
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
             )
 
@@ -873,7 +873,7 @@ class PaginatedOfferSQLRepositoryTest:
             self.save_data_set()
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
             )
 
@@ -890,7 +890,7 @@ class PaginatedOfferSQLRepositoryTest:
             self.save_data_set()
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="expired"
             )
 
@@ -940,7 +940,7 @@ class PaginatedOfferSQLRepositoryTest:
             repository.save(sold_out_offer_on_other_venue)
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=self.pro.id,
                 user_is_admin=self.pro.isAdmin,
                 offers_per_page=5,
@@ -979,7 +979,7 @@ class PaginatedOfferSQLRepositoryTest:
             repository.save(stock)
 
             # when
-            paginated_offers = get_paginated_offers_for_offerer_venue_and_keywords(
+            paginated_offers = get_paginated_offers_for_filters(
                 user_id=self.pro.id,
                 user_is_admin=self.pro.isAdmin,
                 offers_per_page=5,

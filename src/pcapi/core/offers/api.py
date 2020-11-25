@@ -52,7 +52,7 @@ def list_offers_for_pro_user(
     period_beginning_date: Optional[str] = None,
     period_ending_date: Optional[str] = None,
 ) -> PaginatedOffersRecap:
-    return offers_repository.get_paginated_offers_for_offerer_venue_and_keywords(
+    return offers_repository.get_paginated_offers_for_filters(
         user_id=user_id,
         user_is_admin=user_is_admin,
         offerer_id=offerer_id,
