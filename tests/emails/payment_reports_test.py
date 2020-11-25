@@ -1,7 +1,6 @@
 import base64
 import io
 from unittest.mock import Mock
-from unittest.mock import patch
 import zipfile
 
 from bs4 import BeautifulSoup

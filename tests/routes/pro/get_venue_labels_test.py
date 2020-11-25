@@ -1,9 +1,7 @@
 import pytest
 
-from pcapi.domain.venue.venue_label.venue_label import VenueLabel
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue_label
-from pcapi.model_creators.generic_creators import create_venue_type
 from pcapi.repository import repository
 
 from tests.conftest import TestClient

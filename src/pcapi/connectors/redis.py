@@ -9,7 +9,6 @@ from redis import Redis
 from redis.client import Pipeline
 
 from pcapi.utils.config import REDIS_URL
-from pcapi.utils.human_ids import humanize
 from pcapi.utils.logger import logger
 
 

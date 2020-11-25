@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import pytest
 
 from pcapi.model_creators.generic_creators import create_offerer

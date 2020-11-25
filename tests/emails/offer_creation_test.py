@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from bs4 import BeautifulSoup
 import pytest
 
@@ -9,7 +7,6 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.generic_creators import create_venue_type
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import ThingType
-from pcapi.models import VenueType
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.mailing import make_offer_creation_notification_email

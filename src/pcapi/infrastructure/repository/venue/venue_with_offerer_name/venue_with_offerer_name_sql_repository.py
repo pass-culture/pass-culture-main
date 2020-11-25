@@ -7,7 +7,6 @@ from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name_reposito
 from pcapi.infrastructure.repository.venue.venue_with_offerer_name import venue_with_offerer_name_domain_converter
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 
 

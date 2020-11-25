@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from pcapi.emails.beneficiary_pre_subscription_rejected import (
     make_not_eligible_beneficiary_pre_subscription_rejected_data,
 )

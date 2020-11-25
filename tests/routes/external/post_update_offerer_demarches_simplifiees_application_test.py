@@ -1,9 +1,6 @@
-from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
-
-from pcapi.workers.bank_information_job import bank_information_job
 
 from tests.conftest import TestClient
 

@@ -1,6 +1,5 @@
 from flask import request
 
-from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.utils.rest import expect_json_data
 from pcapi.validation.routes.mailing_contacts import validate_save_mailing_contact_request

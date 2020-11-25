@@ -1,9 +1,5 @@
-from unittest.mock import MagicMock
-from unittest.mock import patch
-
 import pytest
 
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import Deposit
 from pcapi.models import UserSQLEntity

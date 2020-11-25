@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from freezegun import freeze_time
 
 from pcapi.utils.mailing import make_wallet_balances_email

@@ -2,9 +2,7 @@ from typing import Dict
 from typing import List
 
 from pcapi.domain.favorite.favorite import Favorite
-from pcapi.models import UserSQLEntity
 from pcapi.routes.serialization.serializer import serialize
-from pcapi.utils.date import DateTimes
 from pcapi.utils.human_ids import humanize
 
 

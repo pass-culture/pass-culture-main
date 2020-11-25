@@ -1,4 +1,5 @@
 def install_scripts():
+    # pylint: disable=unused-import
     import pcapi.scripts.algolia_indexing.commands
     import pcapi.scripts.clean_database
     import pcapi.scripts.install_data

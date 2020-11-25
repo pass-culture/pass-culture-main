@@ -6,7 +6,6 @@ from unittest.mock import Mock
 
 from alembic import command
 from alembic.config import Config
-from flask import Blueprint
 from flask import Flask
 from flask import jsonify
 from flask.testing import FlaskClient

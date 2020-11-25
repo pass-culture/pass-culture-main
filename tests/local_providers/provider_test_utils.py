@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from pcapi.local_providers.local_provider import LocalProvider

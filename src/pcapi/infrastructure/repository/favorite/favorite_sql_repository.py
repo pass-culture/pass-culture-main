@@ -1,4 +1,3 @@
-from typing import Dict
 from typing import List
 
 from sqlalchemy.orm import joinedload

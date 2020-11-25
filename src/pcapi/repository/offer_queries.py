@@ -11,7 +11,6 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import selectable
 
 from pcapi.core.bookings.repository import get_only_offer_ids_from_bookings
-from pcapi.core.offers.repository import get_offers_by_filters
 from pcapi.models import Booking
 from pcapi.models import DiscoveryView
 from pcapi.models import DiscoveryViewV3

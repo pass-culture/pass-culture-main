@@ -1,4 +1,3 @@
-# pylint: disable=unused-import
 from flask import Flask
 
 from pcapi.flask_app import private_api

@@ -2,7 +2,6 @@ from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
 from pytest import approx
 

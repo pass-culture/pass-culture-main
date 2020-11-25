@@ -2,7 +2,6 @@ import os
 from typing import List
 from typing import Tuple
 
-from pcapi.models import Feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
 from pcapi.repository import feature_queries

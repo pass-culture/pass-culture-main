@@ -2,7 +2,6 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.domain.password import validate_change_password_request
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import ApiErrors
 from pcapi.models import UserSQLEntity

@@ -3,8 +3,6 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from sqlalchemy import select
-
 from pcapi import models
 from pcapi.models.db import Model
 from pcapi.models.db import db

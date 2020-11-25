@@ -1,6 +1,4 @@
-from datetime import datetime
 from functools import wraps
-import os
 
 from pcapi.models import ApiErrors
 from pcapi.models.feature import FeatureToggle

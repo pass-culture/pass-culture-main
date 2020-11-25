@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories

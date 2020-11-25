@@ -25,10 +25,10 @@ app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version=
 db.init_app(app)
 db.app = app
 
+# pylint: disable=unused-import, wildcard-import, unused-wildcard-import
+# Import various functions so that they are directly available in the Python shell.
 from sqlalchemy import *
 
-# IMPORT A LOT OF TOOLS TO MAKE THEM AVAILABLE
-# IN THE PYTHON SHELL
 from pcapi.domain import *
 from pcapi.local_providers import *
 from pcapi.models import *
@@ -45,6 +45,9 @@ from pcapi.utils.import_module import *
 from pcapi.utils.includes import *
 from pcapi.utils.logger import *
 from pcapi.utils.token import *
+
+
+# pylint: enable=unused-import, wildcard-import, unused-wildcard-import
 
 
 def set_python_prompt():

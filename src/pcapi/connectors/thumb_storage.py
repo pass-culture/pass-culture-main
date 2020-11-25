@@ -1,5 +1,3 @@
-from typing import Callable
-
 from pcapi.domain.mediations import standardize_image
 from pcapi.utils import object_storage
 

@@ -1,6 +1,5 @@
 from io import BytesIO
 from pathlib import Path
-from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
@@ -8,13 +7,7 @@ import requests_mock
 
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Mediation
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.models import ApiErrors
-from pcapi.repository import repository
 from pcapi.routes.serialization import mediations_serialize
 from pcapi.utils.human_ids import humanize
 

@@ -2,7 +2,6 @@ from typing import Dict
 
 from flask import Request
 from flask import jsonify
-from flask import redirect
 from flask import request
 from flask_login import current_user
 from flask_login import login_required

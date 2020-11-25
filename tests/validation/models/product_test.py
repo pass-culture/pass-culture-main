@@ -1,6 +1,5 @@
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
 from pcapi.models import ApiErrors
-from pcapi.models import ThingType
 from pcapi.validation.models.product import validate
 
 

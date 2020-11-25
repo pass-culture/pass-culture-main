@@ -1,4 +1,3 @@
-from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.utils.health_checker import check_database_connection
 from pcapi.utils.health_checker import read_version_from_file

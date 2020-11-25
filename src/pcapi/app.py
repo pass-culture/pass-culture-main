@@ -17,7 +17,6 @@ from pcapi.repository.feature_queries import feature_request_profiling_enabled
 from pcapi.routes import install_routes
 from pcapi.routes.native.v1.blueprint import native_v1
 from pcapi.utils.config import IS_DEV
-from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.logger import configure_json_logger
 from pcapi.utils.logger import disable_werkzeug_request_logs
 
@@ -32,6 +31,7 @@ if feature_request_profiling_enabled():
 
 
 def install_login_manager() -> None:
+    # pylint: disable=unused-import
     import pcapi.utils.login_manager
 
 
