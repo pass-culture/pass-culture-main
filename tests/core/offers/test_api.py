@@ -6,6 +6,7 @@ from unittest import mock
 import PIL.Image
 from flask import current_app as app
 import pytest
+import pytz
 
 from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
@@ -210,13 +211,39 @@ class EditStockTest:
         msg = "Les offres importées ne sont pas modifiables"
         assert error.value.errors["global"][0] == msg
 
-    def test_can_edit_only_some_fields_if_provider_is_allocine(self):
+    def test_can_edit_non_restricted_fields_if_provider_is_allocine(self):
         provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
         stock = factories.EventStockFactory(
             offer__lastProvider=provider,
             offer__idAtProviders="1",
         )
         initial_beginning = stock.beginningDatetime
+
+        # Change various attributes, but keep the same beginning
+        # (which we are not allowed to change).
+        new_booking_limit = datetime.datetime.now() + datetime.timedelta(days=1)
+        changes = {
+            "price": 5,
+            "quantity": 20,
+            # FIXME (dbaty, 2020-11-25): see comment in edit_stock,
+            # this is to match what the frontend sends.
+            "beginning": stock.beginningDatetime.replace(tzinfo=pytz.UTC),
+            "booking_limit_datetime": new_booking_limit,
+        }
+        api.edit_stock(stock, **changes)
+        stock = models.Stock.query.one()
+        assert stock.price == 5
+        assert stock.quantity == 20
+        assert stock.beginningDatetime == initial_beginning
+        assert stock.bookingLimitDatetime == new_booking_limit
+        assert set(stock.fieldsUpdated) == {"price", "quantity", "bookingLimitDatetime"}
+
+    def test_cannot_edit_restricted_fields_if_provider_is_allocine(self):
+        provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
+        stock = factories.EventStockFactory(
+            offer__lastProvider=provider,
+            offer__idAtProviders="1",
+        )
 
         # Try to change everything, including "beginningDatetime" which is forbidden.
         new_booking_limit = datetime.datetime.now() + datetime.timedelta(days=1)
@@ -230,16 +257,6 @@ class EditStockTest:
             api.edit_stock(stock, **changes)
         msg = "Pour les offres importées, certains champs ne sont pas modifiables"
         assert error.value.errors["global"][0] == msg
-
-        # Try to change everything except "beginningDatetime".
-        changes["beginning"] = stock.beginningDatetime
-        api.edit_stock(stock, **changes)
-        stock = models.Stock.query.one()
-        assert stock.price == 5
-        assert stock.quantity == 20
-        assert stock.beginningDatetime == initial_beginning
-        assert stock.bookingLimitDatetime == new_booking_limit
-        assert set(stock.fieldsUpdated) == {"price", "quantity", "bookingLimitDatetime"}
 
 
 @pytest.mark.usefixtures("db_session")

@@ -3,6 +3,7 @@ from typing import List
 from typing import Optional
 
 from flask import current_app as app
+import pytz
 
 from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
@@ -195,12 +196,29 @@ def edit_stock(
     validation.check_stock_is_updatable(stock)
     validation.check_required_dates_for_stock(stock.offer, beginning, booking_limit_datetime)
 
+    # FIXME (dbaty, 2020-11-25): We need this ugly workaround because
+    # the frontend sends us datetimes like "2020-12-03T14:00:00Z"
+    # (note the "Z" suffix). Pydantic deserializes it as a datetime
+    # *with* a timezone. However, datetimes are stored in the database
+    # as UTC datetimes *without* any timezone. Thus, we wrongly detect
+    # a change for the "beginningDatetime" field for Allocine stocks:
+    # because we do not allow it to be changed, we raise an error when
+    # we should not.
+    def as_utc_without_timezone(d: datetime.datetime) -> datetime.datetime:
+        return d.astimezone(pytz.utc).replace(tzinfo=None)
+
+    if beginning:
+        beginning = as_utc_without_timezone(beginning)
+    if booking_limit_datetime:
+        booking_limit_datetime = as_utc_without_timezone(booking_limit_datetime)
+
     updates = {
         "price": price,
         "quantity": quantity,
         "beginningDatetime": beginning,
         "bookingLimitDatetime": booking_limit_datetime,
     }
+
     if stock.offer.isFromAllocine:
         # fmt: off
         updated_fields = {
