@@ -13,7 +13,7 @@ from sqlalchemy.sql import expression
 
 
 class FeatureToggle(Enum):
-    FAVORITE_OFFER = "Permettre aux bénéficiaires d" "ajouter des offres en favoris"
+    FAVORITE_OFFER = "Permettre aux bénéficiaires dajouter des offres en favoris"
 
 
 # revision identifiers, used by Alembic.
@@ -34,10 +34,10 @@ def upgrade():
     op.drop_column("recommendation", "isFavorite")
 
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle" " USING name::text::tmp_featuretoggle")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle USING name::text::tmp_featuretoggle")
     previous_enum.drop(op.get_bind(), checkfirst=False)
     new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle" " USING name::text::featuretoggle")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle USING name::text::featuretoggle")
     op.execute(
         """
         INSERT INTO feature (name, description, "isActive")
@@ -60,11 +60,11 @@ def downgrade():
     op.drop_table("favorite")
 
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle" " USING name::text::tmp_featuretoggle")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle USING name::text::tmp_featuretoggle")
     new_enum.drop(op.get_bind(), checkfirst=False)
     previous_enum.create(op.get_bind(), checkfirst=False)
     op.execute("DELETE FROM feature WHERE name = 'FAVORITE_OFFER'")
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle" " USING name::text::featuretoggle")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle USING name::text::featuretoggle")
     temporary_enum.drop(op.get_bind(), checkfirst=False)
 
     op.add_column(

@@ -19,7 +19,7 @@ depends_on = None
 
 
 class FeatureToggle(enum.Enum):
-    RECOMMENDATIONS_WITH_GEOLOCATION = "Permettre aux utilisateurs d" "avoir accès aux offres à 100km de leur position"
+    RECOMMENDATIONS_WITH_GEOLOCATION = "Permettre aux utilisateurs davoir accès aux offres à 100km de leur position"
 
 
 def upgrade():
@@ -73,10 +73,10 @@ def upgrade():
     temporary_enum = sa.Enum(*new_values, name="tmp_featuretoggle")
 
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE TMP_FEATURETOGGLE" " USING name::TEXT::TMP_FEATURETOGGLE")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE TMP_FEATURETOGGLE USING name::TEXT::TMP_FEATURETOGGLE")
     previous_enum.drop(op.get_bind(), checkfirst=False)
     new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE FEATURETOGGLE" " USING name::TEXT::FEATURETOGGLE")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE FEATURETOGGLE USING name::TEXT::FEATURETOGGLE")
     op.execute(
         """
         INSERT INTO feature (name, description, "isActive")
@@ -139,8 +139,8 @@ def downgrade():
 
     op.execute("DELETE FROM feature WHERE name = 'RECOMMENDATIONS_WITH_GEOLOCATION'")
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE TMP_FEATURETOGGLE" " USING name::TEXT::TMP_FEATURETOGGLE")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE TMP_FEATURETOGGLE USING name::TEXT::TMP_FEATURETOGGLE")
     previous_enum.drop(op.get_bind(), checkfirst=False)
     new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE FEATURETOGGLE" " USING name::TEXT::FEATURETOGGLE")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE FEATURETOGGLE USING name::TEXT::FEATURETOGGLE")
     temporary_enum.drop(op.get_bind(), checkfirst=False)

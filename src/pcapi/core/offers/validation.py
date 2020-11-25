@@ -50,7 +50,7 @@ def check_required_dates_for_stock(
             raise ApiErrors(
                 {
                     "global": [
-                        "Impossible de mettre une date de début si l'offre " "ne porte pas sur un événement",
+                        "Impossible de mettre une date de début si l'offre ne porte pas sur un événement",
                     ]
                 }
             )

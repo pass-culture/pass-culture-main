@@ -161,7 +161,7 @@ class WhenProviderIsTiteLive:
 
         # then
         assert error.value.errors["provider"] == [
-            "L’importation d’offres avec TiteLive" " n’est pas disponible pour le SIRET 12345678912345"
+            "L’importation d’offres avec TiteLive n’est pas disponible pour le SIRET 12345678912345"
         ]
 
     @pytest.mark.usefixtures("db_session")

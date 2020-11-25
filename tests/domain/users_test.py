@@ -16,7 +16,7 @@ class CheckUserIsNotAdminTest:
 
         # Then
         assert exception.value.errors["global"] == [
-            "Le statut d'administrateur ne permet" " pas d'accéder au suivi des réservations"
+            "Le statut d'administrateur ne permet pas d'accéder au suivi des réservations"
         ]
 
     def test_when_user_is_not_admin_should_allow_accessing_bookings_list(self):

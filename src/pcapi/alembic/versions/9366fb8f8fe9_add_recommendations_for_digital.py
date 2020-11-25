@@ -20,7 +20,7 @@ depends_on = None
 
 class FeatureToggle(enum.Enum):
     RECOMMENDATIONS_WITH_DIGITAL_FIRST = (
-        "Permettre aux bénéficiaires d" "avoir des recommendations" " concernant des offres numériques en priorité"
+        "Permettre aux bénéficiaires davoir des recommendations concernant des offres numériques en priorité"
     )
 
 
@@ -72,10 +72,10 @@ def upgrade():
     temporary_enum = sa.Enum(*new_values, name="tmp_featuretoggle")
 
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle" " USING name::text::tmp_featuretoggle")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle USING name::text::tmp_featuretoggle")
     previous_enum.drop(op.get_bind(), checkfirst=False)
     new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle" " USING name::text::featuretoggle")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle USING name::text::featuretoggle")
     op.execute(
         """
             INSERT INTO feature (name, description, "isActive")
@@ -138,8 +138,8 @@ def downgrade():
 
     op.execute("DELETE FROM feature WHERE name = 'RECOMMENDATIONS_WITH_DIGITAL_FIRST'")
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle" " USING name::text::tmp_featuretoggle")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle USING name::text::tmp_featuretoggle")
     previous_enum.drop(op.get_bind(), checkfirst=False)
     new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle" " USING name::text::featuretoggle")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle USING name::text::featuretoggle")
     temporary_enum.drop(op.get_bind(), checkfirst=False)

@@ -19,7 +19,7 @@ depends_on = None
 
 
 class FeatureToggle(enum.Enum):
-    BOOKINGS_V2 = "Permettre d" "afficher la nouvelle visualisation des réservations d" "un offreur"
+    BOOKINGS_V2 = "Permettre dafficher la nouvelle visualisation des réservations dun offreur"
 
 
 def upgrade():
@@ -78,10 +78,10 @@ def upgrade():
     temporary_enum = sa.Enum(*new_values, name="tmp_featuretoggle")
 
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle" " USING name::text::tmp_featuretoggle")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle USING name::text::tmp_featuretoggle")
     previous_enum.drop(op.get_bind(), checkfirst=False)
     new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle" " USING name::text::featuretoggle")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle USING name::text::featuretoggle")
     op.execute(
         """
             INSERT INTO feature (name, description, "isActive")
@@ -149,8 +149,8 @@ def downgrade():
 
     op.execute("DELETE FROM feature WHERE name = 'BOOKINGS_V2'")
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle" " USING name::text::tmp_featuretoggle")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle USING name::text::tmp_featuretoggle")
     previous_enum.drop(op.get_bind(), checkfirst=False)
     new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle" " USING name::text::featuretoggle")
+    op.execute("ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle USING name::text::featuretoggle")
     temporary_enum.drop(op.get_bind(), checkfirst=False)

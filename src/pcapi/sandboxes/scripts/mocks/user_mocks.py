@@ -17,7 +17,7 @@ MOCK_FIRST_NAMES = [
     "Cassidy",
     "Napoleon",
     "Lilou",
-    "Gege" "X",
+    "GegeX",
 ]
 
 MOCK_LAST_NAMES = [
