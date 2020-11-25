@@ -17,9 +17,12 @@
     "fixture": "readonly"
   },
   "parser": "babel-eslint",
+  "plugins": [
+    "only-warn"
+  ],
   "rules": {
-    "indent": ["error", 2, {"ignoredNodes": ["JSXElement"],  "offsetTernaryExpressions": true, "SwitchCase": 1 }],
-    "import/order": ["error", {
+    "indent": ["warn", 2, {"ignoredNodes": ["JSXElement"],  "offsetTernaryExpressions": true, "SwitchCase": 1 }],
+    "import/order": ["warn", {
       "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
       "newlines-between": "always",
       "alphabetize": { "order": "asc", "caseInsensitive": true }
@@ -28,7 +31,7 @@
     "jest/prefer-expect-assertions": "off",
     "jest/prefer-inline-snapshots": "off",
     "jsx-a11y/label-has-for": "off",
-    "no-var": "error",
+    "no-var": "warn",
     "react/forbid-component-props": "off",
     "react/function-component-definition":  [
       2,
@@ -45,7 +48,7 @@
     "react/jsx-max-depth": "off",
     "react/jsx-props-no-spreading": "off",
     "react/jsx-wrap-multilines": [
-      "error",
+      "warn",
       {
         "declaration": "parens-new-line",
         "assignment": "parens-new-line",
@@ -62,7 +65,7 @@
     "react/require-optimization": "off",
     "react/static-property-placement": "off",
     "semi": [
-      "error",
+      "warn",
       "never"
     ]
   },
