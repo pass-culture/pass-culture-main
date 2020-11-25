@@ -229,6 +229,27 @@ class Returns403:
             assert response.status_code == 403
             assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
+        @pytest.mark.usefixtures("db_session")
+        def when_api_key_is_provided_and_booking_has_been_cancelled_already(self, app):
+            # Given
+            user = create_user()
+            pro_user = create_user(email="pro@example.com")
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(pro_user, offerer)
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue, price=0)
+            booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
+            repository.save(booking, user_offerer)
+            url = f"/v2/bookings/use/token/{booking.token}"
+
+            # When
+            response = TestClient(app.test_client()).with_auth(pro_user.email).patch(url)
+
+            # Then
+            assert response.status_code == 403
+            assert response.json["booking"] == ["Cette réservation a été annulée"]
+            assert Booking.query.get(booking.id).isUsed is False
+
     class WithBasicAuthTest:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_not_attached_to_linked_offerer(self, app):
@@ -270,6 +291,27 @@ class Returns403:
             # Then
             assert response.status_code == 403
             assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
+
+        @pytest.mark.usefixtures("db_session")
+        def when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
+            # Given
+            user = create_user()
+            pro_user = create_user(email="pro@example.com")
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(pro_user, offerer)
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue, price=0)
+            booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
+            repository.save(booking, user_offerer)
+            url = f"/v2/bookings/use/token/{booking.token}"
+
+            # When
+            response = TestClient(app.test_client()).with_auth(pro_user.email).patch(url)
+
+            # Then
+            assert response.status_code == 403
+            assert response.json["booking"] == ["Cette réservation a été annulée"]
+            assert Booking.query.get(booking.id).isUsed is False
 
 
 class Returns404:
@@ -377,29 +419,6 @@ class Returns405:
 class Returns410:
     class WithBasicAuthTest:
         @pytest.mark.usefixtures("db_session")
-        def when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
-            # Given
-            user = create_user()
-            pro_user = create_user(email="pro@email.fr")
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(pro_user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock, venue=venue)
-            booking.isCancelled = True
-            repository.save(booking, user_offerer)
-            booking_id = booking.id
-
-            # When
-            url = "/v2/bookings/use/token/{}".format(booking.token)
-            response = TestClient(app.test_client()).with_auth("pro@email.fr").patch(url)
-
-            # Then
-            assert response.status_code == 410
-            assert response.json["booking"] == ["Cette réservation a été annulée"]
-            assert Booking.query.get(booking_id).isUsed is False
-
-        @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_booking_has_been_validated_already(self, app):
             # Given
             user = create_user()
@@ -423,29 +442,6 @@ class Returns410:
             assert Booking.query.get(booking_id).isUsed is True
 
     class WithApiKeyAuthTest:
-        @pytest.mark.usefixtures("db_session")
-        def when_api_key_is_provided_and_booking_has_been_cancelled_already(self, app):
-            # Given
-            user = create_user()
-            pro_user = create_user(email="pro@email.fr")
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(pro_user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock, venue=venue)
-            booking.isCancelled = True
-            repository.save(booking, user_offerer)
-            booking_id = booking.id
-
-            # When
-            url = "/v2/bookings/use/token/{}".format(booking.token)
-            response = TestClient(app.test_client()).with_auth("pro@email.fr").patch(url)
-
-            # Then
-            assert response.status_code == 410
-            assert response.json["booking"] == ["Cette réservation a été annulée"]
-            assert Booking.query.get(booking_id).isUsed is False
-
         @pytest.mark.usefixtures("db_session")
         def when_api_key_is_provided_and_booking_has_been_validated_already(self, app):
             # Given

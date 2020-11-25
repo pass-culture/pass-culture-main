@@ -264,7 +264,7 @@ class MarkAsUsedTest:
 
     def test_raise_if_cancelled(self):
         booking = factories.BookingFactory(isCancelled=True)
-        with pytest.raises(api_errors.ResourceGoneError):
+        with pytest.raises(api_errors.ForbiddenError):
             api.mark_as_used(booking)
         assert not booking.isUsed
 
@@ -299,7 +299,7 @@ class MarkAsUnusedTest:
 
     def test_raise_if_cancelled(self):
         booking = factories.BookingFactory(isUsed=True, isCancelled=True)
-        with pytest.raises(api_errors.ResourceGoneError):
+        with pytest.raises(api_errors.ForbiddenError):
             api.mark_as_unused(booking)
         assert booking.isUsed  # unchanged
 
@@ -333,11 +333,11 @@ class GenerateQrCodeTest:
     @mock.patch("qrcode.QRCode.add_data")
     def test_include_product_isbn_if_provided(self, build_qr_code_booking_info):
         api.generate_qr_code("ABCDE", offer_extra_data={})
-        build_qr_code_booking_info.assert_called_once_with("PASSCULTURE:v2;" "TOKEN:ABCDE")
+        build_qr_code_booking_info.assert_called_once_with("PASSCULTURE:v2;TOKEN:ABCDE")
 
         build_qr_code_booking_info.reset_mock()
         api.generate_qr_code("ABCDE", offer_extra_data={"isbn": "123456789"})
-        build_qr_code_booking_info.assert_called_once_with("PASSCULTURE:v2;" "EAN13:123456789;" "TOKEN:ABCDE")
+        build_qr_code_booking_info.assert_called_once_with("PASSCULTURE:v2;EAN13:123456789;TOKEN:ABCDE")
 
     def test_generated_qr_code(self):
         qr_code = api.generate_qr_code("ABCDE", offer_extra_data={})

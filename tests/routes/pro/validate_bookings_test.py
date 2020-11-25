@@ -216,6 +216,29 @@ class Returns403:
         # Then
         assert response.status_code == 403
 
+    @pytest.mark.usefixtures("db_session")
+    def when_booking_is_cancelled(self, app):
+        # Given
+        user = create_user()
+        admin_user = create_user(email="admin@example.com")
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(admin_user, offerer)
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(
+            offerer, venue, price=0, beginning_datetime=tomorrow, booking_limit_datetime=tomorrow_minus_one_hour
+        )
+        booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
+        repository.save(booking, user_offerer)
+        url = f"/bookings/token/{booking.token}"
+
+        # When
+        response = TestClient(app.test_client()).with_auth(admin_user.email).patch(url)
+
+        # Then
+        assert response.status_code == 403
+        assert response.json["booking"] == ["Cette réservation a été annulée"]
+        assert not Booking.query.get(booking.id).isUsed
+
 
 class Returns404:
     @pytest.mark.usefixtures("db_session")
@@ -318,31 +341,6 @@ class Returns405:  # Method Not Allowed
 
 
 class Returns410:  # Gone
-    @pytest.mark.usefixtures("db_session")
-    def when_booking_is_cancelled(self, app):
-        # Given
-        user = create_user()
-        admin_user = create_user(email="admin@email.fr")
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(admin_user, offerer)
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(
-            offerer, venue, price=0, beginning_datetime=tomorrow, booking_limit_datetime=tomorrow_minus_one_hour
-        )
-        booking = create_booking(user=user, stock=stock, venue=venue)
-        booking.isCancelled = True
-        repository.save(booking, user_offerer)
-        booking_id = booking.id
-        url = "/bookings/token/{}".format(booking.token)
-
-        # When
-        response = TestClient(app.test_client()).with_auth("admin@email.fr").patch(url)
-
-        # Then
-        assert response.status_code == 410
-        assert response.json["booking"] == ["Cette réservation a été annulée"]
-        assert not Booking.query.get(booking_id).isUsed
-
     @pytest.mark.usefixtures("db_session")
     def when_booking_already_validated(self, app):
         # Given

@@ -292,6 +292,31 @@ class Get:
             assert response.status_code == 403
             assert response.json["booking"] == ["Not confirmed"]
 
+        @pytest.mark.usefixtures("db_session")
+        def when_booking_is_cancelled(self, app):
+            # Given
+            user = create_user(email="user@example.com")
+            admin_user = create_user(email="admin@example.com")
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(admin_user, offerer)
+            venue = create_venue(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
+            booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
+            repository.save(admin_user, booking, user_offerer)
+            offererApiKey = create_api_key(offerer_id=offerer.id)
+            repository.save(offererApiKey)
+            user2ApiKey = f"Bearer {offererApiKey.value}"
+            url = f"/v2/bookings/token/{booking.token}"
+
+            # When
+            response = TestClient(app.test_client()).get(
+                url, headers={"Authorization": user2ApiKey, "Origin": "http://localhost"}
+            )
+
+            # Then
+            assert response.status_code == 403
+            assert response.json["booking"] == ["Cette réservation a été annulée"]
+
     class Returns404:
         @pytest.mark.usefixtures("db_session")
         def when_booking_is_not_provided_at_all(self, app):
@@ -378,28 +403,3 @@ class Get:
             # Then
             assert response.status_code == 410
             assert response.json["booking"] == ["Cette réservation a déjà été validée"]
-
-        @pytest.mark.usefixtures("db_session")
-        def when_booking_is_cancelled(self, app):
-            # Given
-            user = create_user(email="user@example.com")
-            admin_user = create_user(email="admin@example.com")
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(admin_user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
-            booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
-            repository.save(admin_user, booking, user_offerer)
-            offererApiKey = create_api_key(offerer_id=offerer.id)
-            repository.save(offererApiKey)
-            user2ApiKey = f"Bearer {offererApiKey.value}"
-            url = f"/v2/bookings/token/{booking.token}"
-
-            # When
-            response = TestClient(app.test_client()).get(
-                url, headers={"Authorization": user2ApiKey, "Origin": "http://localhost"}
-            )
-
-            # Then
-            assert response.status_code == 410
-            assert response.json["booking"] == ["Cette réservation a été annulée"]

@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+from typing import Dict
 
 from pcapi.core.bookings import api
 from pcapi.core.bookings import conf
@@ -54,7 +55,7 @@ def check_stock_is_bookable(stock: Stock) -> None:
         raise exceptions.StockIsNotBookable()
 
 
-def check_expenses_limits(expenses, requested_amount: Decimal, offer: Offer) -> None:
+def check_expenses_limits(expenses: Dict, requested_amount: Decimal, offer: Offer) -> None:
     """Raise an error if the requested amount would exceed the user's
     expense limits.
     """
@@ -109,9 +110,9 @@ def check_is_usable(booking: Booking) -> None:
         raise gone
 
     if booking.isCancelled:
-        gone = api_errors.ResourceGoneError()
-        gone.add_error("booking", "Cette réservation a été annulée")
-        raise gone
+        forbidden = api_errors.ForbiddenError()
+        forbidden.add_error("booking", "Cette réservation a été annulée")
+        raise forbidden
 
     is_booking_for_event_and_not_confirmed = booking.stock.beginningDatetime and not booking.isConfirmed
     if is_booking_for_event_and_not_confirmed:
@@ -145,9 +146,9 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         raise gone
 
     if booking.isCancelled:
-        gone = api_errors.ResourceGoneError()
-        gone.add_error("booking", "Cette réservation a été annulée")
-        raise gone
+        forbidden = api_errors.ForbiddenError()
+        forbidden.add_error("booking", "Cette réservation a été annulée")
+        raise forbidden
 
     booking_payment = payment_queries.find_by_booking_id(booking.id)
     if booking_payment is not None:

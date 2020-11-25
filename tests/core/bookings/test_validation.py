@@ -182,7 +182,7 @@ class CheckIsUsableTest:
 
     def should_raise_if_cancelled(self):
         booking = factories.BookingFactory(isCancelled=True)
-        with pytest.raises(api_errors.ResourceGoneError) as exc:
+        with pytest.raises(api_errors.ForbiddenError) as exc:
             validation.check_is_usable(booking)
         assert exc.value.errors["booking"] == ["Cette réservation a été annulée"]
 
@@ -326,7 +326,7 @@ class CheckCanBeMarkAsUnused:
 
     def test_raises_resource_gone_error_if_validated_and_cancelled(self, app):
         booking = factories.BookingFactory(isUsed=True, isCancelled=True)
-        with pytest.raises(api_errors.ResourceGoneError) as exc:
+        with pytest.raises(api_errors.ForbiddenError) as exc:
             validation.check_can_be_mark_as_unused(booking)
         assert exc.value.errors["booking"] == ["Cette réservation a été annulée"]
 
