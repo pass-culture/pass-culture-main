@@ -109,7 +109,7 @@ TextField.defaultProps = {
     return null
   },
   required: false,
-  step: 0.01,
+  step: 1,
   title: '',
   type: 'text',
   validate: null,

@@ -59,6 +59,7 @@ describe('src | ProductFields', () => {
       expect(numberField.prop('placeholder')).toBe('Gratuit')
       expect(numberField.prop('readOnly')).toBe(false)
       expect(numberField.prop('title')).toBe('Prix')
+      expect(numberField.prop('step')).toBe(0.01)
     })
 
     it('should render a DateField component for booking limit date time', () => {

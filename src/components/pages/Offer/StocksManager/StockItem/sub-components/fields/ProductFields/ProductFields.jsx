@@ -128,6 +128,7 @@ class ProductFields extends PureComponent {
             onBlur={this.handleOnPriceBlur}
             placeholder="Gratuit"
             readOnly={readOnly}
+            step={0.01}
             title="Prix"
           />
         </td>

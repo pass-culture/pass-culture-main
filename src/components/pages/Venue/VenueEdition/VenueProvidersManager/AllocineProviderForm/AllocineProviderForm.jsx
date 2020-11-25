@@ -84,6 +84,7 @@ class AllocineProviderForm extends PureComponent {
                 min="0"
                 name="price"
                 placeholder="Ex : 12€"
+                step={0.01}
                 validate={this.required}
               />
             </div>
@@ -99,6 +100,7 @@ class AllocineProviderForm extends PureComponent {
                 min="0"
                 name="quantity"
                 placeholder="Illimité"
+                step={1}
               />
             </div>
             <div className="apf-is-duo-section">

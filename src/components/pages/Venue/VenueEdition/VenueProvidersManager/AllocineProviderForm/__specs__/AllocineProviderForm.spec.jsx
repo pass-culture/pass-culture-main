@@ -56,6 +56,7 @@ describe('components | AllocineProviderForm', () => {
     expect(priceFieldLabel).toHaveLength(1)
     expect(priceFieldInput).toHaveLength(1)
     expect(priceFieldInput.prop('min')).toBe('0')
+    expect(priceFieldInput.prop('step')).toBe(0.01)
   })
 
   it('should display the quantity field with default value set to Illimité', () => {
