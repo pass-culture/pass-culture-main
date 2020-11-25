@@ -29,7 +29,7 @@ def upgrade():
         $$ LANGUAGE plpgsql;
 
         DROP TRIGGER IF EXISTS stock_update_modification_date ON stock;
-        
+
         CREATE TRIGGER stock_update_modification_date
         BEFORE UPDATE ON stock
         FOR EACH ROW
@@ -51,7 +51,7 @@ def downgrade():
         $$ LANGUAGE plpgsql;
 
         DROP TRIGGER IF EXISTS stock_update_modification_date ON stock;
-        
+
         CREATE TRIGGER stock_update_modification_date
         BEFORE UPDATE ON stock
         FOR EACH ROW

@@ -83,15 +83,15 @@ def downgrade():
         CONSTRAINT check_end_datetime_is_after_beginning_datetime CHECK (("endDatetime" > "beginningDatetime")),
         CONSTRAINT check_providable_with_provider_has_idatproviders CHECK ((("lastProviderId" IS NULL) OR ("idAtProviders" IS NOT NULL)))
     );
-    
+
     INSERT INTO
-        event_occurrence ("id", "beginningDatetime", "endDatetime", "offerId", "idAtProviders", "lastProviderId", "isSoftDeleted") 
+        event_occurrence ("id", "beginningDatetime", "endDatetime", "offerId", "idAtProviders", "lastProviderId", "isSoftDeleted")
     SELECT
         id, "beginningDatetime", "endDatetime", "offerId", "idAtProviders", "lastProviderId", "isSoftDeleted"
     FROM
         stock
     WHERE "beginningDatetime" IS NOT NULL;
-    
+
     CREATE SEQUENCE event_occurrence_id_seq
     START WITH 1
     INCREMENT BY 1
@@ -116,7 +116,7 @@ def downgrade():
             ((("eventOccurrenceId" IS NOT NULL) AND ("offerId" IS NULL))
             OR (("eventOccurrenceId" IS NULL) AND ("offerId" IS NOT NULL)))
         );
-        
+
         SELECT pg_catalog.setval('event_occurrence_id_seq', (SELECT MAX(id) FROM event_occurrence), true);
     """
     )

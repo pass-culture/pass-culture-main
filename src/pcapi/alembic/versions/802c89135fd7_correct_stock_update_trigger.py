@@ -21,17 +21,17 @@ def upgrade():
     CREATE OR REPLACE FUNCTION check_stock()
     RETURNS TRIGGER AS $$
     BEGIN
-      IF 
-       NOT NEW.available IS NULL 
+      IF
+       NOT NEW.available IS NULL
        AND
         (
          (
-          SELECT SUM(booking.quantity) 
-          FROM booking 
+          SELECT SUM(booking.quantity)
+          FROM booking
           WHERE "stockId"=NEW.id
           AND NOT booking."isCancelled"
          ) > NEW.available
-        ) 
+        )
       THEN
        RAISE EXCEPTION 'available_too_low'
        USING HINT = 'stock.available cannot be lower than number of bookings';
@@ -67,18 +67,18 @@ def downgrade():
                 RAISE EXCEPTION 'available_too_low'
                       USING HINT = 'stock.available cannot be lower than number of bookings';
               END IF;
-    
+
               IF NOT NEW."bookingLimitDatetime" IS NULL AND
               (NEW."bookingLimitDatetime" > (SELECT "beginningDatetime" FROM event_occurrence WHERE id=NEW."eventOccurrenceId")) THEN
-    
+
               RAISE EXCEPTION 'bookingLimitDatetime_too_late'
               USING HINT = 'stock.bookingLimitDatetime after event_occurrence.beginningDatetime';
               END IF;
-    
+
               RETURN NEW;
             END;
             $$ LANGUAGE plpgsql;
-    
+
             DROP TRIGGER IF EXISTS stock_update ON stock;
             CREATE CONSTRAINT TRIGGER stock_update AFTER INSERT OR UPDATE
             ON stock

@@ -23,8 +23,8 @@ def upgrade():
     versioning_manager.create_audit_table(UserSQLEntity.__table__, op.get_bind())
     op.execute(
         """
-    SELECT public.audit_table(oid, ARRAY['password', 'resetPasswordToken', 'validationToken']) 
-    FROM pg_class 
+    SELECT public.audit_table(oid, ARRAY['password', 'resetPasswordToken', 'validationToken'])
+    FROM pg_class
     WHERE oid = 'user'::regclass;
     """
     )

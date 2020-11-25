@@ -35,9 +35,9 @@ def upgrade():
     op.execute("ALTER SEQUENCE venue_provider_price_rule_id_seq" " RENAME TO allocine_venue_provider_price_rule_id_seq")
 
     op.execute(
-        """ 
-        INSERT INTO allocine_venue_provider (id, available, "isDuo") 
-            (SELECT venue_provider.id, NULL, FALSE FROM venue_provider 
+        """
+        INSERT INTO allocine_venue_provider (id, available, "isDuo")
+            (SELECT venue_provider.id, NULL, FALSE FROM venue_provider
             JOIN provider ON venue_provider."providerId" = provider.id AND provider."localClass" = 'AllocineStocks');
      """
     )

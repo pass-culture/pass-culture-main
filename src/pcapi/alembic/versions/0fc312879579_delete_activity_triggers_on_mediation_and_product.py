@@ -39,34 +39,34 @@ def upgrade():
 def downgrade():
     op.execute(
         """
-        CREATE TRIGGER audit_trigger_delete 
-        AFTER DELETE ON mediation REFERENCING OLD TABLE AS old_table 
-        FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text) 
+        CREATE TRIGGER audit_trigger_delete
+        AFTER DELETE ON mediation REFERENCING OLD TABLE AS old_table
+        FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text)
         EXECUTE PROCEDURE create_activity();
-        
-        CREATE TRIGGER audit_trigger_insert 
-        AFTER INSERT ON mediation REFERENCING NEW TABLE AS new_table 
-        FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text) 
+
+        CREATE TRIGGER audit_trigger_insert
+        AFTER INSERT ON mediation REFERENCING NEW TABLE AS new_table
+        FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text)
         EXECUTE PROCEDURE create_activity();
-        
-        CREATE TRIGGER audit_trigger_update 
-        AFTER UPDATE ON mediation REFERENCING OLD TABLE AS old_table NEW TABLE AS new_table 
-        FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text) 
+
+        CREATE TRIGGER audit_trigger_update
+        AFTER UPDATE ON mediation REFERENCING OLD TABLE AS old_table NEW TABLE AS new_table
+        FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text)
         EXECUTE PROCEDURE create_activity();
-        
-        CREATE TRIGGER audit_trigger_delete 
-        AFTER DELETE ON product REFERENCING OLD TABLE AS old_table 
-        FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text) 
+
+        CREATE TRIGGER audit_trigger_delete
+        AFTER DELETE ON product REFERENCING OLD TABLE AS old_table
+        FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text)
         EXECUTE PROCEDURE create_activity();
-        
-        CREATE TRIGGER audit_trigger_insert 
-        AFTER INSERT ON product REFERENCING NEW TABLE AS new_table 
-        FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text) 
+
+        CREATE TRIGGER audit_trigger_insert
+        AFTER INSERT ON product REFERENCING NEW TABLE AS new_table
+        FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text)
         EXECUTE PROCEDURE create_activity();
-        
-        CREATE TRIGGER audit_trigger_update 
-        AFTER UPDATE ON product REFERENCING OLD TABLE AS old_table NEW TABLE AS new_table 
-        FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text) 
+
+        CREATE TRIGGER audit_trigger_update
+        AFTER UPDATE ON product REFERENCING OLD TABLE AS old_table NEW TABLE AS new_table
+        FOR EACH STATEMENT WHEN (current_setting('session_replication_role'::text) <> 'local'::text)
         EXECUTE PROCEDURE create_activity();
     """
     )

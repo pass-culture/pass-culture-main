@@ -41,7 +41,7 @@ def upgrade():
     op.execute(
         """
     UPDATE offer
-    SET "eventId" = event.id 
+    SET "eventId" = event.id
     FROM event
     WHERE event."thingId" = offer."thingId";
     """

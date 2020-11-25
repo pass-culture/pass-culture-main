@@ -139,7 +139,7 @@ def downgrade():
     JOIN
         beneficiary_import as bi
     ON
-        bis."beneficiaryImportId" = bi.id     
+        bis."beneficiaryImportId" = bi.id
     ;
     """
     )

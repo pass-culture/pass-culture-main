@@ -44,7 +44,7 @@ def upgrade():
      thing
     WHERE
      thing.id = offer."thingId";
-     
+
     UPDATE offer
     SET type = event.type,
      name = event.name,

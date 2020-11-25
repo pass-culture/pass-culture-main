@@ -39,8 +39,8 @@ def upgrade():
     for table_name in versioned_tables_to_migrate:
         op.execute(
             f"""
-            SELECT public.audit_table(oid) 
-            FROM pg_class 
+            SELECT public.audit_table(oid)
+            FROM pg_class
             WHERE oid = '{table_name}'::regclass;
         """
         )

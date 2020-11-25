@@ -27,7 +27,7 @@ def delete_venue_from_iris_venues(venue_id: int) -> None:
 
 
 def get_iris_containing_user_location(latitude: float, longitude: float) -> int:
-    query = f"""SELECT id FROM iris_france 
+    query = f"""SELECT id FROM iris_france
     WHERE ST_CONTAINS(shape, ST_SetSRID(ST_MakePoint({longitude}, {latitude}), 4326))
     ORDER BY id;"""
 

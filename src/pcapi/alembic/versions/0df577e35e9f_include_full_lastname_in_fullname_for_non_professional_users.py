@@ -23,7 +23,7 @@ def upgrade():
 
     op.execute(
         """
-        UPDATE "user" 
+        UPDATE "user"
         SET "publicName" = concat("firstName", ' ', "lastName")
         WHERE "dateOfBirth" IS NOT NULL;
     """

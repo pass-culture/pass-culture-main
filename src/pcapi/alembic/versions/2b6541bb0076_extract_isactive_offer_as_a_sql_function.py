@@ -30,7 +30,7 @@ def upgrade():
             WHERE offer."isActive" = TRUE
                 AND venue."validationToken" IS NULL
                 AND (
-                    NOT with_mediation 
+                    NOT with_mediation
                     OR (with_mediation AND EXISTS (SELECT * FROM offer_has_at_least_one_active_mediation(offer.id)))
                 )
                 AND (EXISTS (SELECT * FROM offer_has_at_least_one_bookable_stock(offer.id)))

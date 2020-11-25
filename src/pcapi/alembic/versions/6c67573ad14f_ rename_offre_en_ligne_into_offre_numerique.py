@@ -18,9 +18,9 @@ depends_on = None
 def upgrade():
     op.execute(
         """
-            UPDATE venue 
+            UPDATE venue
             SET "name"=REPLACE("name", 'Offre en ligne', 'Offre numérique')
-            WHERE "name" LIKE '%Offre en ligne%'; 
+            WHERE "name" LIKE '%Offre en ligne%';
             """
     )
 
@@ -28,8 +28,8 @@ def upgrade():
 def downgrade():
     op.execute(
         """
-            UPDATE venue 
-            SET "name"=REPLACE("name", 'Offre numérique', 'Offre en ligne') 
-            WHERE "name" LIKE '%Offre numérique%'; 
+            UPDATE venue
+            SET "name"=REPLACE("name", 'Offre numérique', 'Offre en ligne')
+            WHERE "name" LIKE '%Offre numérique%';
             """
     )
