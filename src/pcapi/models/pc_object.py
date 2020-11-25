@@ -105,7 +105,7 @@ class PcObject:
             and data_error.args[0].startswith("(psycopg2.DataError) value too long for type")
         ):
             max_length = re.search(
-                "\(psycopg2.DataError\) value too long for type (.*?) varying\((.*?)\)",
+                r"\(psycopg2.DataError\) value too long for type (.*?) varying\((.*?)\)",
                 data_error.args[0],
                 re.IGNORECASE,
             ).group(2)
@@ -120,7 +120,7 @@ class PcObject:
             and hasattr(integrity_error.orig, "pgcode")
             and integrity_error.orig.pgcode == DUPLICATE_KEY_ERROR_CODE
         ):
-            field = re.search("Key \((.*?)\)=", str(integrity_error._message), re.IGNORECASE).group(1)
+            field = re.search(r"Key \((.*?)\)=", str(integrity_error._message), re.IGNORECASE).group(1)
             if "," in field:
                 field = "global"
             return [field, "Une entrée avec cet identifiant existe déjà dans notre base de données"]
@@ -129,7 +129,7 @@ class PcObject:
             and hasattr(integrity_error.orig, "pgcode")
             and integrity_error.orig.pgcode == NOT_FOUND_KEY_ERROR_CODE
         ):
-            field = re.search("Key \((.*?)\)=", str(integrity_error._message), re.IGNORECASE).group(1)
+            field = re.search(r"Key \((.*?)\)=", str(integrity_error._message), re.IGNORECASE).group(1)
             return [field, "Aucun objet ne correspond à cet identifiant dans notre base de données"]
         elif (
             hasattr(integrity_error, "orig")

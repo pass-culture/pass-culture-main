@@ -28,7 +28,7 @@ def upgrade():
     op.execute(
         """
         INSERT INTO criterion (name, description, "scoreDelta")
-        VALUES ('Bonne offre d\’appel', 'Offre déjà beaucoup réservée par les autres jeunes', 1);
+        VALUES ('Bonne offre d’appel', 'Offre déjà beaucoup réservée par les autres jeunes', 1);
         INSERT INTO criterion (name, description, "scoreDelta")
         VALUES ('Mauvaise accroche', 'Offre ne possèdant pas une accroche de qualité suffisante', -1);
         INSERT INTO criterion (name, description, "scoreDelta")
