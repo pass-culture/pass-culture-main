@@ -34,14 +34,14 @@ def validate_generic(model: Model) -> ApiErrors:
             continue
 
         if (
-            (isinstance(column.type, String) or isinstance(column.type, CHAR))
+            isinstance(column.type, (String, CHAR))
             and not isinstance(column.type, sqlalchemy.Enum)
             and not isinstance(value, str)
         ):
             api_errors.add_error(key, "doit être une chaîne de caractères")
 
         if (
-            (isinstance(column.type, String) or isinstance(column.type, CHAR))
+            isinstance(column.type, (String, CHAR))
             and isinstance(value, str)
             and column.type.length
             and len(value) > column.type.length

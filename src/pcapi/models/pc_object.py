@@ -73,7 +73,7 @@ class PcObject:
             if isinstance(value, str):
                 if isinstance(column.type, Integer):
                     self._try_to_set_attribute_with_decimal_value(column, key, value, "integer")
-                elif isinstance(column.type, Float) or isinstance(column.type, Numeric):
+                elif isinstance(column.type, (Float, Numeric)):
                     self._try_to_set_attribute_with_decimal_value(column, key, value, "float")
                 elif isinstance(column.type, String):
                     setattr(self, key, value.strip() if value else value)
@@ -232,5 +232,5 @@ def _is_human_id_column(column: Column) -> bool:
     if column is not None:
         column_name = column.key
         is_column_primary_key_or_foreign_key = column_name == "id" or column_name.endswith("Id")
-        is_column_a_number = isinstance(column.type, BigInteger) or isinstance(column.type, Integer)
+        is_column_a_number = isinstance(column.type, (Integer, BigInteger))
         return is_column_primary_key_or_foreign_key and is_column_a_number

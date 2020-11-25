@@ -67,11 +67,7 @@ def check_single_order_by_string(order_by_string):
 
 
 def order_by_is_native_sqlalchemy_clause(order_by):
-    return (
-        isinstance(order_by, UnaryExpression)
-        or isinstance(order_by, InstrumentedAttribute)
-        or isinstance(order_by, random)
-    )
+    return isinstance(order_by, (UnaryExpression, InstrumentedAttribute, random))
 
 
 def check_order_by(order_by):
