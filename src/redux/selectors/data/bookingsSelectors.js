@@ -76,16 +76,19 @@ export const selectUpComingBookings = createSelector(
   state => state.data.offers,
   state => state.data.stocks,
   (bookings, offers, stocks) => {
-    const sevenDaysFromNow = moment()
-      .clone()
-      .add(SLIDING_DAYS, 'days')
+    const sevenDaysFromNow = moment().clone().add(SLIDING_DAYS, 'days')
 
     const filteredBookings = bookings.filter(booking => {
-      if (booking.isCancelled || booking.isUsed) return false
+      const filteredStock = selectStockById({ data: { stocks } }, booking.stockId)
+      const filteredOffer = selectOfferById({ data: { offers } }, filteredStock.offerId)
 
-      const stock = selectStockById({ data: { stocks } }, booking.stockId)
-      const isPermanent = stock.beginningDatetime === null
-      const isAfterSevenDaysFromNow = moment(stock.beginningDatetime).isAfter(sevenDaysFromNow)
+      const isUsedThingBoooking = booking.isUsed && filteredOffer.isThing
+      if (booking.isCancelled || isUsedThingBoooking) return false
+
+      const isPermanent = filteredStock.beginningDatetime === null
+      const isAfterSevenDaysFromNow = moment(filteredStock.beginningDatetime).isAfter(
+        sevenDaysFromNow
+      )
 
       return isPermanent || isAfterSevenDaysFromNow
     })
@@ -110,9 +113,8 @@ export const selectFinishedEventBookings = createSelector(
     })
 )
 
-export const selectCancelledBookings = createSelector(
-  selectBookings,
-  bookings => bookings.filter(booking => booking.isCancelled)
+export const selectCancelledBookings = createSelector(selectBookings, bookings =>
+  bookings.filter(booking => booking.isCancelled)
 )
 
 export const selectUsedThingBookings = createSelector(

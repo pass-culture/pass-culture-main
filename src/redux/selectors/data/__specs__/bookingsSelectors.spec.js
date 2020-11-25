@@ -1,5 +1,3 @@
-import moment from 'moment'
-
 import {
   selectBookingById,
   selectBookingByRouterMatch,
@@ -15,31 +13,40 @@ import {
 
 jest.spyOn(Date, 'now').mockImplementation(() => '2000-01-01T20:00:00+02:00')
 
+const yesterday = new Date('1999-12-31T20:00:00.00Z').toISOString()
+const oneDayBeforeNow = new Date('1999-12-31T20:00:00.00Z').toISOString()
+const today = new Date('2000-01-01T21:00:00Z').toISOString()
+const oneDayAfterNow = new Date('2000-01-02T20:00:00.00Z').toISOString()
+const fourDaysAfterNow = new Date('2000-01-04T20:00:00.00Z').toISOString()
+const sevenDaysAfterNow = new Date('2000-01-08T18:00:00.00Z').toISOString()
+const nineDaysAfterNow = new Date('2000-01-09T20:00:00.01Z').toISOString()
+const nineDaysAfterNowButEarlier = new Date('2000-01-09T10:00:00.01Z').toISOString()
+
 describe('selectEventBookingsOfTheWeek', () => {
   it('should return bookings of the week', () => {
     // given
     const stockYesterday = {
-      beginningDatetime: new Date('1999-12-31T20:00:00.00Z').toISOString(),
+      beginningDatetime: yesterday,
       id: 's1',
       offerId: 'o1',
     }
     const stockToday = {
-      beginningDatetime: new Date('2000-01-01T21:00:00Z').toISOString(),
+      beginningDatetime: today,
       id: 's7',
       offerId: 'o1',
     }
     const stockInTwoDays = {
-      beginningDatetime: new Date('2000-01-02T20:00:00.00Z').toISOString(),
+      beginningDatetime: oneDayAfterNow,
       id: 's2',
       offerId: 'o1',
     }
     const stockInSevenDays = {
-      beginningDatetime: new Date('2000-01-08T18:00:00.00Z').toISOString(),
+      beginningDatetime: sevenDaysAfterNow,
       id: 's6',
       offerId: 'o1',
     }
     const stockInNineDays = {
-      beginningDatetime: new Date('2000-01-09T20:00:00.00Z').toISOString(),
+      beginningDatetime: nineDaysAfterNow,
       id: 's3',
       offerId: 'o1',
     }
@@ -161,9 +168,6 @@ describe('selectEventBookingsOfTheWeek', () => {
 describe('selectUpComingBookings', () => {
   it('should return up coming bookings', () => {
     // given
-    const oneDayBeforeNow = new Date('1999-12-31T20:00:00.00Z').toISOString()
-    const fourDaysAfterNow = new Date('2000-01-04T20:00:00.00Z').toISOString()
-    const nineDaysAfterNow = new Date('2000-01-09T20:00:00.01Z').toISOString()
     const permanent = null
     const state = {
       data: {
@@ -290,12 +294,98 @@ describe('selectUpComingBookings', () => {
         stockId: 's3',
       },
       {
+        id: 'b6',
+        isCancelled: false,
+        isUsed: true,
+        stockId: 's6',
+      },
+      {
         id: 'b4',
         isCancelled: false,
         isUsed: false,
         stockId: 's4',
       },
     ])
+  })
+
+  it('should return booking in upcoming bookings when it is used but an event', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'usedBookingForEvent',
+            isUsed: true,
+            isCancelled: false,
+            stockId: 'eventStock',
+          },
+        ],
+        offers: [
+          {
+            id: 'eventOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: true,
+            isThing: false,
+          },
+        ],
+        stocks: [
+          {
+            beginningDatetime: nineDaysAfterNow,
+            id: 'eventStock',
+            offerId: 'eventOffer',
+          },
+        ],
+      },
+    }
+
+    // when
+    const bookings = selectUpComingBookings(state)
+
+    // then
+    expect(bookings).toStrictEqual([
+      {
+        id: 'usedBookingForEvent',
+        isCancelled: false,
+        isUsed: true,
+        stockId: 'eventStock',
+      },
+    ])
+  })
+
+  it('should not return booking in upcoming bookings when it is used but a thing', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'usedBookingForThing',
+            isUsed: true,
+            isCancelled: false,
+            stockId: 'thingStock',
+          },
+        ],
+        offers: [
+          {
+            id: 'thingOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: false,
+            isThing: true,
+          },
+        ],
+        stocks: [
+          {
+            id: 'thingStock',
+            offerId: 'thingOffer',
+          },
+        ],
+      },
+    }
+
+    // when
+    const bookings = selectUpComingBookings(state)
+
+    // then
+    expect(bookings).toStrictEqual([])
   })
 })
 
@@ -589,7 +679,7 @@ describe('selectUsedThingBookings', () => {
         ],
         stocks: [
           {
-            beginningDatetime: new Date('1999-12-31T20:00:00.00Z').toISOString(),
+            beginningDatetime: fourDaysAfterNow,
             id: 's1',
           },
         ],
@@ -667,10 +757,6 @@ describe('selectUsedThingBookings', () => {
 describe('selectBookingsOrderedByBeginningDateTimeAsc', () => {
   it('should return bookings ordered by beginning date time', () => {
     // given
-    const oneDayBeforeNow = new Date('1999-12-31T20:00:00.00Z').toISOString()
-    const fourDaysAfterNow = new Date('2000-01-04T20:00:00.00Z').toISOString()
-    const nineDaysAfterNow = new Date('2000-01-09T20:00:00.01Z').toISOString()
-    const nineDaysAfterNowBis = new Date('2000-01-09T10:00:00.01Z').toISOString()
     const permanent = null
     const bookings = [
       {
@@ -780,7 +866,7 @@ describe('selectBookingsOrderedByBeginningDateTimeAsc', () => {
             offerId: 'o6',
           },
           {
-            beginningDatetime: nineDaysAfterNowBis,
+            beginningDatetime: nineDaysAfterNowButEarlier,
             id: 's7',
             offerId: 'o7',
           },
@@ -860,15 +946,11 @@ describe('selectFirstMatchingBookingByOfferId', () => {
 
   it('should return first not cancelled booking in the future', () => {
     // given
-    const now = moment()
-    const oneDayBeforeNow = now.subtract(1, 'days').format()
-    const twoDaysAfterNow = now.add(2, 'days').format()
-    const threeDaysAfterNow = now.add(3, 'days').format()
 
     const stocks = [
       { id: 'past stock', beginningDatetime: oneDayBeforeNow },
-      { id: 'future stock 1', beginningDatetime: twoDaysAfterNow },
-      { id: 'future stock 2', beginningDatetime: threeDaysAfterNow },
+      { id: 'future stock 1', beginningDatetime: fourDaysAfterNow },
+      { id: 'future stock 2', beginningDatetime: sevenDaysAfterNow },
     ]
     const nextBooking = { id: 'AA', isCancelled: false, stockId: 'future stock 1' }
     const futureBooking = { id: 'BB', isCancelled: false, stockId: 'future stock 2' }
@@ -948,13 +1030,11 @@ describe('selectBookingByRouterMatch', () => {
 
   it('should return booking when found offer in match resolves first matching booking', () => {
     // given
-    const now = moment()
-    const twoDaysAfterNow = now.add(2, 'days').format()
     const state = {
       data: {
         bookings: [{ id: 'AE', stockId: 'CG' }],
         offers: [{ id: 'BF' }],
-        stocks: [{ id: 'CG', offerId: 'BF', beginningDatetime: twoDaysAfterNow }],
+        stocks: [{ id: 'CG', offerId: 'BF', beginningDatetime: fourDaysAfterNow }],
       },
     }
     const match = {
@@ -994,7 +1074,10 @@ describe('selectPastEventBookingByOfferId', () => {
     const state = {
       data: {
         offer: [{ id: 'A1' }],
-        stocks: [{ id: 'B1', offerId: 'A1' }, { id: 'B2', offerId: 'A1' }],
+        stocks: [
+          { id: 'B1', offerId: 'A1' },
+          { id: 'B2', offerId: 'A1' },
+        ],
         bookings: [{ id: 'C1', stockId: 'E1' }],
       },
     }
@@ -1008,8 +1091,6 @@ describe('selectPastEventBookingByOfferId', () => {
 
   it('should return not cancelled booking in the passed', () => {
     // given
-    const now = moment()
-    const oneDayBeforeNow = now.subtract(1, 'days').format()
     const state = {
       data: {
         offer: [{ id: 'A1' }],
@@ -1050,8 +1131,6 @@ describe('selectPastEventBookingByOfferId', () => {
 
   it('should not return cancelled booking', () => {
     // given
-    const now = moment()
-    const oneDayBeforeNow = now.subtract(1, 'days').format()
     const state = {
       data: {
         offer: [{ id: 'A1' }],
@@ -1069,8 +1148,6 @@ describe('selectPastEventBookingByOfferId', () => {
 
   it('should not return valid booking in the future', () => {
     // given
-    const now = moment()
-    const oneDayAfterNow = now.add(1, 'days').format()
     const state = {
       data: {
         offer: [{ id: 'A1' }],
