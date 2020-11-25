@@ -469,7 +469,8 @@ class UpdateOffersActiveStatusTest:
             [
                 mock.call(client=app.redis_client, offer_id=offer1.id),
                 mock.call(client=app.redis_client, offer_id=offer2.id),
-            ]
+            ],
+            any_order=True,
         )
 
     def test_deactivate(self):
