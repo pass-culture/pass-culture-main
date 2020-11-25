@@ -277,22 +277,6 @@ class HasPhysicalVenuesTest:
         # then
         assert user.hasPhysicalVenues is True
 
-    @pytest.mark.usefixtures("db_session")
-    def test_pro_user_has_one_digital_venue_and_a_physical_venue(self, app):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        offerer2 = create_offerer(siren="123456788")
-        user_offerer = create_user_offerer(user, offerer)
-        user_offerer2 = create_user_offerer(user, offerer2)
-        offerer_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        offerer2_physical_venue = create_venue(offerer2, siret="12345678856734")
-        offerer2_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        repository.save(offerer_virtual_venue, offerer2_physical_venue, user_offerer, user_offerer2)
-
-        # then
-        assert user.hasPhysicalVenues is True
-
 
 class nOffersTest:
     @pytest.mark.usefixtures("db_session")

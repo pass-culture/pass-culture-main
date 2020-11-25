@@ -441,7 +441,7 @@ class GenerateMessageFileTest:
         assert find_all_nodes("//ns:PmtInf/ns:CdtTrfTxInf/ns:CdtrAgt/ns:FinInstnId/ns:BIC", xml)[0] == "QSDFGH8Z555"
         assert find_all_nodes("//ns:PmtInf/ns:CdtTrfTxInf/ns:CdtrAgt/ns:FinInstnId/ns:BIC", xml)[1] == "WXCVBN7B444"
 
-    def test_file_has_bic_in_credit_transfer_transaction_info(self, app):
+    def test_file_has_transaction_label_in_credit_transfer_transaction_info(self, app):
         # Given
         offerer1 = create_offerer(name="first offerer")
         offerer2 = create_offerer(name="second offerer")

@@ -109,26 +109,6 @@ class Post:
             created_user = UserSQLEntity.query.filter_by(email="pctest.isAdmin.canBook@btmx.fr").one()
             assert not created_user.isAdmin
 
-        @patch("pcapi.routes.webapp.signup.get_authorized_emails_and_dept_codes")
-        @pytest.mark.usefixtures("db_session")
-        def test_created_user_does_not_have_validation_token_and_cannot_book_free_offers(
-            self, get_authorized_emails_and_dept_codes, app
-        ):
-            # Given
-            data = BASE_DATA.copy()
-            get_authorized_emails_and_dept_codes.return_value = (["toto@btmx.fr"], ["93"])
-
-            # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/webapp", json=data, headers={"origin": "http://localhost:3000"}
-            )
-
-            # Then
-            assert response.status_code == 201
-            assert "validationToken" not in response.json
-            created_user = UserSQLEntity.query.filter_by(email="toto@btmx.fr").first()
-            assert created_user.needsToFillCulturalSurvey == True
-
     class Returns400:
         @pytest.mark.usefixtures("db_session")
         def when_email_missing(self, app):
