@@ -30,7 +30,7 @@ elif IS_TESTING:
     API_URL = f"https://backend.passculture-{ENV}.beta.gouv.fr"
     API_APPLICATION_NAME = "pass-culture-api-dev"
     WEBAPP_URL = f"https://app.passculture-{ENV}.beta.gouv.fr"
-    PRO_URL = "https://pro.testing.passculture.app"
+    PRO_URL = f"https://pro.passculture-{ENV}.beta.gouv.fr"
     NATIVE_APP_URL = f"passculture://app.passculture.{ENV}"
 else:
     API_URL = f"https://backend.passculture-{ENV}.beta.gouv.fr"
