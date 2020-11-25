@@ -555,7 +555,7 @@ class OfferCreation extends PureComponent {
                 {'Infos pratiques'}
               </h2>
               <div className="field-group">
-                {isOffererSelectReadOnly && <OffererName name={offerer.name} />}
+                {isOffererSelectReadOnly && offerer && <OffererName name={offerer.name} />}
                 {!isOffererSelectReadOnly && (
                   <Field
                     debug
