@@ -196,7 +196,7 @@ class GetOffererBankInformation_applicationDetailsByApplicationId:
         application_details = get_offerer_bank_information_application_details_by_application_id(8)
 
         # Then
-        assert type(application_details) is ApplicationDetail
+        assert isinstance(application_details, ApplicationDetail)
         assert application_details.siren == "123456789"
         assert application_details.status == BankInformationStatus.ACCEPTED
         assert application_details.application_id == 8
@@ -245,7 +245,7 @@ class GetVenueBankInformation_applicationDetailsByApplicationId:
         application_details = get_venue_bank_information_application_details_by_application_id(8)
 
         # Then
-        assert type(application_details) is ApplicationDetail
+        assert isinstance(application_details, ApplicationDetail)
         assert application_details.siren == "123456789"
         assert application_details.status == BankInformationStatus.ACCEPTED
         assert application_details.application_id == 8
@@ -271,7 +271,7 @@ class GetVenueBankInformation_applicationDetailsByApplicationId:
         application_details = get_venue_bank_information_application_details_by_application_id(8)
 
         # Then
-        assert type(application_details) is ApplicationDetail
+        assert isinstance(application_details, ApplicationDetail)
         assert application_details.siren == "123456789"
         assert application_details.status == BankInformationStatus.ACCEPTED
         assert application_details.application_id == 8

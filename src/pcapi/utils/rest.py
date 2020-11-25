@@ -37,7 +37,7 @@ def expect_json_data(f):
 
 def query_with_order_by(query, order_by):
     if order_by:
-        if type(order_by) == str:
+        if isinstance(order_by, str):
             order_by = text(order_by)
         try:
             order_by = [order_by] if not isinstance(order_by, list) else order_by

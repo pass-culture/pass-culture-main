@@ -23,10 +23,10 @@ def get_object_from_current_chunks(
 ) -> Optional[Model]:
     chunk_key = f"{providable_info.id_at_providers}|{providable_info.type.__name__}"
     pc_object = chunk_to_insert.get(chunk_key)
-    if type(pc_object) == providable_info.type:
+    if isinstance(pc_object, providable_info.type):
         return pc_object
     pc_object = chunk_to_update.get(chunk_key)
-    if type(pc_object) == providable_info.type:
+    if isinstance(pc_object, providable_info.type):
         return pc_object
     return None
 

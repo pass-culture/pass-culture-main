@@ -46,7 +46,7 @@ def test_find_one_or_none_by_user_id_should_return_one_user_offerer_with_same_us
     first_user_offerer = find_one_or_none_by_user_id(user.id)
 
     # Then
-    assert type(first_user_offerer) == UserOfferer
+    assert isinstance(first_user_offerer, UserOfferer)
     assert first_user_offerer.id == user_offerer.id
 
 

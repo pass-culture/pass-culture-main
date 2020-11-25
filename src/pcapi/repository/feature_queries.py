@@ -12,7 +12,7 @@ def find_all():
 
 
 def is_active(feature_toggle: FeatureToggle) -> bool:
-    if type(feature_toggle) != FeatureToggle:
+    if not isinstance(feature_toggle, FeatureToggle):
         raise ResourceNotFoundError
     return Feature.query.filter_by(name=feature_toggle).first().isActive
 

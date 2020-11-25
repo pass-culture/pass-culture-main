@@ -269,7 +269,7 @@ class Returns201:
         # then
         assert response.status_code == 201
         offer_id = response.json["id"]
-        assert type(offer_id) == str
+        assert isinstance(offer_id, str)
         assert offer_id != "" and not offer_id.isspace()
         assert response.json == {"id": offer_id}
 
