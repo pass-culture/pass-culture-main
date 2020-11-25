@@ -13,7 +13,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
-import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 from pcapi.models.feature import override_features
@@ -325,7 +324,7 @@ class CreateMediationTest:
     @mock.patch("pcapi.connectors.redis.add_offer_id")
     def test_create_mediation_basics(self, mocked_add_offer_id):
         user = users_factories.UserFactory()
-        offer = offers_factories.ThingOfferFactory()
+        offer = factories.ThingOfferFactory()
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
 
         mediation = api.create_mediation(user, offer, "credits", image_as_bytes)
@@ -339,7 +338,7 @@ class CreateMediationTest:
     @mock.patch("pcapi.utils.object_storage.store_public_object")
     def test_crop_params(self, mocked_store_public_object):
         user = users_factories.UserFactory()
-        offer = offers_factories.ThingOfferFactory()
+        offer = factories.ThingOfferFactory()
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         crop_params = (0.8, 0.8, 1)
 
@@ -351,7 +350,7 @@ class CreateMediationTest:
 
     def test_check_image_quality(self):
         user = users_factories.UserFactory()
-        offer = offers_factories.ThingOfferFactory()
+        offer = factories.ThingOfferFactory()
         image_as_bytes = (IMAGES_DIR / "mouette_small.jpg").read_bytes()
 
         with pytest.raises(models.ApiErrors) as error:
