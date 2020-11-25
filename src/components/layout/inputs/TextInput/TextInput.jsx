@@ -4,6 +4,7 @@ import React from 'react'
 import TextInputError from '../Errors/TextInputError'
 
 const TextInput = ({
+  countCharacters,
   disabled,
   error,
   label,
@@ -39,10 +40,16 @@ const TextInput = ({
       value={value}
     />
     {error && <TextInputError message={error} />}
+    {countCharacters && (
+      <span className="it-character-count">
+        {`${value ? value.length : 0}/${maxLength}`}
+      </span>
+    )}
   </label>
 )
 
 TextInput.defaultProps = {
+  countCharacters: false,
   disabled: false,
   error: null,
   maxLength: null,
@@ -53,6 +60,7 @@ TextInput.defaultProps = {
 }
 
 TextInput.propTypes = {
+  countCharacters: PropTypes.bool,
   disabled: PropTypes.bool,
   error: PropTypes.string,
   label: PropTypes.string.isRequired,

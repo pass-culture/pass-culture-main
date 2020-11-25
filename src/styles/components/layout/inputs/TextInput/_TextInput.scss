@@ -6,6 +6,12 @@
     justify-content: space-between;
   }
 
+  .it-character-count {
+    @include caption();
+
+    align-self: flex-end;
+  }
+
   .it-sub-label {
     @include caption();
 

@@ -4,7 +4,7 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from 'components/layout/inputs/TextInputWithIcon/TextInputWithIcon'
 
 const StyleguideInputText = () => {
-  const inputTextEnabled = String.raw`
+  const inputTextEnabled = `
     <TextInput
       label="Intitulé"
       name="input-text-default"
@@ -17,7 +17,7 @@ const StyleguideInputText = () => {
     />
   `
 
-  const inputTextWithError = String.raw`
+  const inputTextWithError = `
     <TextInput
       error="Ce champs comporte une erreur"
       label="Intitulé"
@@ -29,7 +29,7 @@ const StyleguideInputText = () => {
       type="text"
     />
   `
-  const inputTextDisabled = String.raw`
+  const inputTextDisabled = `
     <TextInput
       disabled
       label="Intitulé"
@@ -41,7 +41,7 @@ const StyleguideInputText = () => {
     />
   `
 
-  const inputWithIconEnabled = String.raw`
+  const inputWithIconEnabled = `
     <TextInputWithIcon
       icon="ico-search"
       iconAlt="alt-for-icon"
@@ -55,7 +55,7 @@ const StyleguideInputText = () => {
     />
    `
 
-  const inputWithIconDisabled = String.raw`
+  const inputWithIconDisabled = `
     <TextInputWithIcon
       disabled
       icon="ico-search"
@@ -68,7 +68,7 @@ const StyleguideInputText = () => {
     />
   `
 
-  const inputWithErrorMessage = String.raw`
+  const inputWithErrorMessage = `
     <TextInputWithIcon
       error="La saisie du champs n'est pas correcte"
       icon="ico-search"
@@ -78,6 +78,20 @@ const StyleguideInputText = () => {
       placeholder="placeholder with icon"
       sublabel="Intitulé secondaire"
       type="text"
+    />
+  `
+  const inputTextWithCaracterCount = `
+    <TextInput
+      countCharacters
+      label="Intitulé"
+      maxLength={20}
+      name="input-text-with-character-count"
+      onChange={onChange}
+      placeholder="placeholder"
+      required
+      sublabel="Intitulé secondaire"
+      type="text"
+      value="Valeur"
     />
   `
 
@@ -221,6 +235,30 @@ const StyleguideInputText = () => {
           <pre className="it-icon-snippet">
             <code>
               {inputWithErrorMessage}
+            </code>
+          </pre>
+        </div>
+      </div>
+      <hr />
+      <h3>
+        {'Champs avec compte de caractères'}
+      </h3>
+      <div className="flex-block">
+        <TextInput
+          countCharacters
+          label="Intitulé"
+          maxLength={20}
+          name="input-text-with-character-count"
+          onChange={onChange}
+          placeholder="placeholder"
+          required
+          sublabel="Intitulé secondaire"
+          type="text"
+        />
+        <div className="it-description">
+          <pre className="it-icon-snippet">
+            <code>
+              {inputTextWithCaracterCount}
             </code>
           </pre>
         </div>
