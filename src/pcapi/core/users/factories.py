@@ -33,7 +33,7 @@ class UserFactory(BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
     @factory.post_generation
-    def deposit(obj, create, extracted, **kwargs):
+    def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
         from pcapi.core.payments.factories import DepositFactory
 
         if not create:

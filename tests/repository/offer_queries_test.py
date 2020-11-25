@@ -140,7 +140,7 @@ class QueryOfferWithRemainingStocksTest:
         assert offers_count == 1
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_0_offer_when_there_is_no_remaining_stock(app):
+    def test_should_return_0_offer_when_there_is_no_remaining_stock(self):
         # Given
         product = create_product_with_thing_type(thing_name="Lire un livre", is_national=True)
         offerer = create_offerer()
@@ -165,7 +165,7 @@ class QueryOfferWithRemainingStocksTest:
         assert offers_count == 0
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_1_offer_when_there_are_one_full_stock_and_one_empty_stock(app):
+    def test_should_return_1_offer_when_there_are_one_full_stock_and_one_empty_stock(self):
         # Given
         product = create_product_with_thing_type(thing_name="Lire un livre", is_national=True)
         offerer = create_offerer()

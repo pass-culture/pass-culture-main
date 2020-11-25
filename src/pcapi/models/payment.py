@@ -75,7 +75,7 @@ class Payment(PcObject, Model):
         return statuses_by_date_desc[0]
 
     @currentStatus.expression
-    def currentStatus(cls):
+    def currentStatus(cls):  # pylint: disable=no-self-argument
         return (
             db.session.query(PaymentStatus.status)
             .filter(PaymentStatus.paymentId == cls.id)
@@ -91,7 +91,7 @@ class Payment(PcObject, Model):
         return sorted_sent_dates[0] if len(sorted_sent_dates) > 0 else None
 
     @lastProcessedDate.expression
-    def lastProcessedDate(cls):
+    def lastProcessedDate(cls):  # pylint: disable=no-self-argument
         return (
             db.session.query(PaymentStatus.date)
             .filter(PaymentStatus.paymentId == cls.id)

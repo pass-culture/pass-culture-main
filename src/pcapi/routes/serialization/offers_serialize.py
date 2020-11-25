@@ -244,7 +244,7 @@ class GetOfferStockResponseModel(BaseModel):
     remainingQuantity: Optional[Union[int, str]]
 
     @validator("cancellationLimitDate", pre=True, always=True)
-    def validate_cancellation_limit_date(cls, cancellation_limit_date, values):
+    def validate_cancellation_limit_date(cls, cancellation_limit_date, values):  # pylint: disable=no-self-argument
         return get_cancellation_limit_date(values.get("beginningDatetime"), cancellation_limit_date)
 
 
