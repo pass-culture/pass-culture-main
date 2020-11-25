@@ -5,7 +5,8 @@ from urllib.parse import urlencode
 
 import pytest
 
-import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.payments.factories import PaymentFactory
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
@@ -332,7 +333,7 @@ class Get:
         def when_booking_not_confirmed(self, mocked_check_is_usable, app):
             # Given
             next_week = datetime.utcnow() + timedelta(weeks=1)
-            unconfirmed_booking = bookings_factories.BookingFactory(stock__beginningDatetime=next_week)
+            unconfirmed_booking = BookingFactory(stock__beginningDatetime=next_week)
             url = (
                 f"/bookings/token/{unconfirmed_booking.token}?email={unconfirmed_booking.user.email}"
                 f"&offer_id={humanize(unconfirmed_booking.stock.offerId)}"
@@ -364,6 +365,23 @@ class Get:
             # Then
             assert response.status_code == 403
             assert response.json["booking"] == ["Cette réservation a été annulée"]
+
+        @pytest.mark.usefixtures("db_session")
+        def when_booking_is_refunded(self, app):
+            # Given
+            booking = BookingFactory()
+            PaymentFactory(booking=booking)
+            url = (
+                f"/bookings/token/{booking.token}?"
+                f"email={booking.user.email}&offer_id={humanize(booking.stock.offerId)}"
+            )
+
+            # When
+            response = TestClient(app.test_client()).get(url)
+
+            # Then
+            assert response.status_code == 403
+            assert response.json["payment"] == ["Cette réservation a été remboursée"]
 
     class Returns410:
         @pytest.mark.usefixtures("db_session")

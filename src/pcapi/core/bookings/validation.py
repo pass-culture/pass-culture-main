@@ -104,6 +104,12 @@ def check_offerer_can_cancel_booking(booking: Booking) -> None:
 # desired HTTP-related exception (such as ResourceGone and Forbidden)
 # See also functions below.
 def check_is_usable(booking: Booking) -> None:
+    booking_payment = payment_queries.find_by_booking_id(booking.id)
+    if booking_payment is not None:
+        forbidden = api_errors.ForbiddenError()
+        forbidden.add_error("payment", "Cette réservation a été remboursée")
+        raise forbidden
+
     if booking.isUsed:
         gone = api_errors.ResourceGoneError()
         gone.add_error("booking", "Cette réservation a déjà été validée")

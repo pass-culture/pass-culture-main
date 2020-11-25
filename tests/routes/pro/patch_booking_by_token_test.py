@@ -2,9 +2,10 @@ import urllib.parse
 
 import pytest
 
-import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.users.factories as users_factories
+from pcapi.core.payments.factories import PaymentFactory
+from pcapi.core.users.factories import UserFactory
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
@@ -30,7 +31,7 @@ from tests.conftest import TestClient
 class Returns204:
     class WhenUserIsAnonymous:
         def expect_booking_to_be_used(self, app):
-            booking = bookings_factories.BookingFactory(token="ABCDEF")
+            booking = BookingFactory(token="ABCDEF")
 
             url = (
                 f"/bookings/token/{booking.token}?"
@@ -44,8 +45,8 @@ class Returns204:
 
     class WhenUserIsLoggedIn:
         def expect_booking_to_be_used(self, app):
-            booking = bookings_factories.BookingFactory(token="ABCDEF")
-            pro_user = users_factories.UserFactory(email="pro@example.com")
+            booking = BookingFactory(token="ABCDEF")
+            pro_user = UserFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -57,8 +58,8 @@ class Returns204:
             assert booking.isUsed
 
         def expect_booking_with_token_in_lower_case_to_be_used(self, app):
-            booking = bookings_factories.BookingFactory(token="ABCDEF")
-            pro_user = users_factories.UserFactory(email="pro@example.com")
+            booking = BookingFactory(token="ABCDEF")
+            pro_user = UserFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -70,8 +71,8 @@ class Returns204:
             assert booking.isUsed
 
         def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
-            booking = bookings_factories.BookingFactory(token="ABCDEF")
-            pro_user = users_factories.UserFactory(email="pro@example.com")
+            booking = BookingFactory(token="ABCDEF")
+            pro_user = UserFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -86,11 +87,11 @@ class Returns204:
         # FIXME: what is the purpose of this test? Are we testing that
         # Flask knows how to URL-decode parameters?
         def expect_booking_to_be_used_with_special_char_in_url(self, app):
-            booking = bookings_factories.BookingFactory(
+            booking = BookingFactory(
                 token="ABCDEF",
                 user__email="user+plus@example.com",
             )
-            pro_user = users_factories.UserFactory(email="pro@example.com")
+            pro_user = UserFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -235,25 +236,31 @@ class Returns403:  # Forbidden
 
     def when_booking_has_been_cancelled_already(self, app):
         # Given
-        user = create_user()
-        admin_user = create_user(email="admin@example.com")
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(admin_user, offerer)
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue)
-        booking.isCancelled = True
-        repository.save(booking, user_offerer)
-        booking_id = booking.id
+        admin = UserFactory(isAdmin=True, canBookFreeOffers=False)
+        booking = BookingFactory(isCancelled=True)
         url = f"/bookings/token/{booking.token}"
 
         # When
-        response = TestClient(app.test_client()).with_auth(admin_user.email).patch(url)
+        response = TestClient(app.test_client()).with_auth(admin.email).patch(url)
 
         # Then
         assert response.status_code == 403
         assert response.json["booking"] == ["Cette réservation a été annulée"]
-        assert Booking.query.get(booking_id).isUsed is False
+        assert Booking.query.get(booking.id).isUsed is False
+
+    def when_booking_has_been_refunded(self, app):
+        # Given
+        admin = UserFactory(isAdmin=True, canBookFreeOffers=False)
+        booking = BookingFactory(isUsed=True)
+        PaymentFactory(booking=booking)
+        url = f"/bookings/token/{booking.token}"
+
+        # When
+        response = TestClient(app.test_client()).with_auth(admin.email).patch(url)
+
+        # Then
+        assert response.status_code == 403
+        assert response.json["payment"] == ["Cette réservation a été remboursée"]
 
 
 @pytest.mark.usefixtures("db_session")

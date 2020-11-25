@@ -268,6 +268,13 @@ class MarkAsUsedTest:
             api.mark_as_used(booking)
         assert not booking.isUsed
 
+    def test_raise_if_refunded(self):
+        booking = factories.BookingFactory(isUsed=True)
+        payments_factories.PaymentFactory(booking=booking)
+        with pytest.raises(api_errors.ForbiddenError):
+            api.mark_as_used(booking)
+        assert booking.isUsed
+
     def test_raise_if_too_soon_to_mark_as_used(self):
         booking = factories.BookingFactory(stock__beginningDatetime=datetime.now() + timedelta(days=4))
         with pytest.raises(api_errors.ForbiddenError):

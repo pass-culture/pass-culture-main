@@ -2,9 +2,9 @@ from decimal import Decimal
 
 import pytest
 
-import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.users.factories as users_factories
+from pcapi.core.users.factories import UserFactory
 from pcapi.model_creators.generic_creators import create_api_key
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -31,7 +31,7 @@ API_KEY_VALUE = random_token(64)
 class Returns204:
     class WithApiKeyAuthTest:
         def when_api_key_provided_is_related_to_regular_offer_with_rights(self, app):
-            booking = bookings_factories.BookingFactory(isUsed=True, token="ABCDEF")
+            booking = BookingFactory(isUsed=True, token="ABCDEF")
             offerer = booking.stock.offer.venue.managingOfferer
             api_key = offers_factories.ApiKeyFactory(offerer=offerer)
 
@@ -50,7 +50,7 @@ class Returns204:
             assert booking.dateUsed is None
 
         def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
-            booking = bookings_factories.BookingFactory(isUsed=True, token="ABCDEF")
+            booking = BookingFactory(isUsed=True, token="ABCDEF")
             offerer = booking.stock.offer.venue.managingOfferer
             api_key = offers_factories.ApiKeyFactory(offerer=offerer)
 
@@ -70,8 +70,8 @@ class Returns204:
 
     class WithBasicAuthTest:
         def when_user_is_logged_in_and_regular_offer(self, app):
-            booking = bookings_factories.BookingFactory(isUsed=True, token="ABCDEF")
-            pro_user = users_factories.UserFactory(email="pro@example.com")
+            booking = BookingFactory(isUsed=True, token="ABCDEF")
+            pro_user = UserFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -84,8 +84,8 @@ class Returns204:
             assert booking.dateUsed is None
 
         def when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, app):
-            booking = bookings_factories.BookingFactory(isUsed=True, token="ABCDEF")
-            pro_user = users_factories.UserFactory(email="pro@example.com")
+            booking = BookingFactory(isUsed=True, token="ABCDEF")
+            pro_user = UserFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -99,12 +99,12 @@ class Returns204:
 
         # FIXME: I don't understand what we're trying to test, here.
         def when_there_is_no_remaining_quantity_after_validating(self, app):
-            booking = bookings_factories.BookingFactory(
+            booking = BookingFactory(
                 isUsed=True,
                 token="ABCDEF",
                 stock__quantity=1,
             )
-            pro_user = users_factories.UserFactory(email="pro@example.com")
+            pro_user = UserFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -272,18 +272,12 @@ class Returns403:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
             # Given
-            user = create_user()
-            pro_user = create_user(email="pro@example.net")
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(pro_user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock, is_used=True, venue=venue, is_cancelled=True)
-            repository.save(booking, user_offerer)
+            admin = UserFactory(isAdmin=True, canBookFreeOffers=False)
+            booking = BookingFactory(isCancelled=True, isUsed=True)
             url = f"/v2/bookings/keep/token/{booking.token}"
 
             # When
-            response = TestClient(app.test_client()).with_auth(pro_user.email).patch(url)
+            response = TestClient(app.test_client()).with_auth(admin.email).patch(url)
 
             # Then
             assert response.status_code == 403

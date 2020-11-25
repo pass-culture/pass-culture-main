@@ -186,6 +186,13 @@ class CheckIsUsableTest:
             validation.check_is_usable(booking)
         assert exc.value.errors["booking"] == ["Cette réservation a été annulée"]
 
+    def should_raises_forbidden_error_if_payement_exists(self, app):
+        booking = factories.BookingFactory(isUsed=True)
+        payments_factories.PaymentFactory(booking=booking)
+        with pytest.raises(api_errors.ForbiddenError) as exc:
+            validation.check_is_usable(booking)
+        assert exc.value.errors["payment"] == ["Cette réservation a été remboursée"]
+
     def should_pass_if_no_beginning_datetime(self):
         booking = factories.BookingFactory(stock__beginningDatetime=None)
         validation.check_is_usable(booking)
@@ -318,40 +325,40 @@ class CheckActivationBookingCanBeKeptTest:
 
 @pytest.mark.usefixtures("db_session")
 class CheckCanBeMarkAsUnused:
-    def test_raises_resource_gone_error_if_not_used(self, app):
+    def should_raises_resource_gone_error_if_not_used(self, app):
         booking = factories.BookingFactory(isUsed=False)
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
         assert exc.value.errors["booking"] == ["Cette réservation n'a pas encore été validée"]
 
-    def test_raises_resource_gone_error_if_validated_and_cancelled(self, app):
+    def should_raises_forbidden_error_if_validated_and_cancelled(self, app):
         booking = factories.BookingFactory(isUsed=True, isCancelled=True)
         with pytest.raises(api_errors.ForbiddenError) as exc:
             validation.check_can_be_mark_as_unused(booking)
         assert exc.value.errors["booking"] == ["Cette réservation a été annulée"]
 
-    def test_raises_resource_gone_error_if_payement_exists(self, app):
+    def should_raises_resource_gone_error_if_payement_exists(self, app):
         booking = factories.BookingFactory(isUsed=True)
         payments_factories.PaymentFactory(booking=booking)
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
         assert exc.value.errors["payment"] == ["Le remboursement est en cours de traitement"]
 
-    def test_dont_raise_if_stock_beginning_datetime_in_more_than_72_hours(self):
+    def should_dont_raise_if_stock_beginning_datetime_in_more_than_72_hours(self):
         booking = factories.BookingFactory(
             isUsed=True,
             stock__beginningDatetime=datetime.utcnow() + timedelta(days=4),
         )
         validation.check_booking_token_is_keepable(booking)  # should not raise
 
-    def test_dont_raise_if_stock_beginning_datetime_in_less_than_72_hours(self):
+    def should_dont_raise_if_stock_beginning_datetime_in_less_than_72_hours(self):
         booking = factories.BookingFactory(
             isUsed=True,
             stock__beginningDatetime=datetime.utcnow() + timedelta(days=2),
         )
         validation.check_booking_token_is_keepable(booking)  # should not raise
 
-    def test_does_not_raise_error_if_not_cancelled_but_used_and_no_beginning_datetime(self):
+    def should_does_not_raise_error_if_not_cancelled_but_used_and_no_beginning_datetime(self):
         booking = factories.BookingFactory(
             isUsed=True,
             stock__beginningDatetime=None,

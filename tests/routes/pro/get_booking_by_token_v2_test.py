@@ -12,6 +12,7 @@ from pcapi.model_creators.generic_creators import create_api_key
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
@@ -316,6 +317,32 @@ class Get:
             # Then
             assert response.status_code == 403
             assert response.json["booking"] == ["Cette réservation a été annulée"]
+
+        @pytest.mark.usefixtures("db_session")
+        def when_booking_is_refunded(self, app):
+            # Given
+            user = create_user(email="user@example.com")
+            admin_user = create_user(email="admin@example.com")
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(admin_user, offerer)
+            venue = create_venue(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
+            booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
+            payment = create_payment(booking=booking, offerer=offerer)
+            repository.save(admin_user, payment, user_offerer)
+            offererApiKey = create_api_key(offerer_id=offerer.id)
+            repository.save(offererApiKey)
+            user2ApiKey = f"Bearer {offererApiKey.value}"
+            url = f"/v2/bookings/token/{booking.token}"
+
+            # When
+            response = TestClient(app.test_client()).get(
+                url, headers={"Authorization": user2ApiKey, "Origin": "http://localhost"}
+            )
+
+            # Then
+            assert response.status_code == 403
+            assert response.json["payment"] == ["Cette réservation a été remboursée"]
 
     class Returns404:
         @pytest.mark.usefixtures("db_session")

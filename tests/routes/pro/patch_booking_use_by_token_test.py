@@ -4,14 +4,16 @@ from unittest.mock import patch
 
 import pytest
 
-import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.users.factories as users_factories
+from pcapi.core.payments.factories import PaymentFactory
+from pcapi.core.users.factories import UserFactory
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.model_creators.generic_creators import create_api_key
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -35,7 +37,7 @@ API_KEY_VALUE = random_token(64)
 class Returns204:
     class WithApiKeyAuthTest:
         def when_api_key_is_provided_and_rights_and_regular_offer(self, app):
-            booking = bookings_factories.BookingFactory(token="ABCDEF")
+            booking = BookingFactory(token="ABCDEF")
             offerer = booking.stock.offer.venue.managingOfferer
             api_key = offers_factories.ApiKeyFactory(offerer=offerer)
 
@@ -53,7 +55,7 @@ class Returns204:
             assert booking.isUsed
 
         def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
-            booking = bookings_factories.BookingFactory(token="ABCDEF")
+            booking = BookingFactory(token="ABCDEF")
             offerer = booking.stock.offer.venue.managingOfferer
             api_key = offers_factories.ApiKeyFactory(offerer=offerer)
 
@@ -72,8 +74,8 @@ class Returns204:
 
     class WithBasicAuthTest:
         def when_user_is_logged_in_and_regular_offer(self, app):
-            booking = bookings_factories.BookingFactory(token="ABCDEF")
-            pro_user = users_factories.UserFactory(email="pro@example.com")
+            booking = BookingFactory(token="ABCDEF")
+            pro_user = UserFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -85,8 +87,8 @@ class Returns204:
             assert booking.isUsed
 
         def when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, app):
-            booking = bookings_factories.BookingFactory(token="ABCDEF")
-            pro_user = users_factories.UserFactory(email="pro@example.com")
+            booking = BookingFactory(token="ABCDEF")
+            pro_user = UserFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -100,13 +102,13 @@ class Returns204:
         def when_admin_user_is_logged_in_expect_activation_booking_to_be_used_and_linked_user_to_be_able_to_book(
             self, app
         ):
-            booking = bookings_factories.BookingFactory(
+            booking = BookingFactory(
                 token="ABCDEF",
                 stock__price=0,
                 stock__offer__product__type=str(EventType.ACTIVATION),
                 user__canBookFreeOffers=False,
             )
-            pro_user = users_factories.UserFactory(email="pro@example.com", canBookFreeOffers=False, isAdmin=True)
+            pro_user = UserFactory(email="pro@example.com", canBookFreeOffers=False, isAdmin=True)
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -250,6 +252,27 @@ class Returns403:
             assert response.json["booking"] == ["Cette réservation a été annulée"]
             assert Booking.query.get(booking.id).isUsed is False
 
+        @pytest.mark.usefixtures("db_session")
+        def when_api_key_is_provided_and_booking_has_been_refunded(self, app):
+            # Given
+            user = create_user()
+            pro_user = create_user(email="pro@email.fr")
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(pro_user, offerer)
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue, price=0)
+            booking = create_booking(user=user, stock=stock, venue=venue, is_used=True)
+            payment = create_payment(booking=booking, offerer=offerer)
+            repository.save(payment, user_offerer)
+
+            # When
+            url = f"/v2/bookings/use/token/{booking.token}"
+            response = TestClient(app.test_client()).with_auth(pro_user.email).patch(url)
+
+            # Then
+            assert response.status_code == 403
+            assert response.json["payment"] == ["Cette réservation a été remboursée"]
+
     class WithBasicAuthTest:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_not_attached_to_linked_offerer(self, app):
@@ -295,23 +318,32 @@ class Returns403:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
             # Given
-            user = create_user()
-            pro_user = create_user(email="pro@example.com")
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(pro_user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
-            repository.save(booking, user_offerer)
+            admin = UserFactory(isAdmin=True, canBookFreeOffers=False)
+            booking = BookingFactory(isCancelled=True)
             url = f"/v2/bookings/use/token/{booking.token}"
 
             # When
-            response = TestClient(app.test_client()).with_auth(pro_user.email).patch(url)
+            response = TestClient(app.test_client()).with_auth(admin.email).patch(url)
 
             # Then
             assert response.status_code == 403
             assert response.json["booking"] == ["Cette réservation a été annulée"]
             assert Booking.query.get(booking.id).isUsed is False
+
+        @pytest.mark.usefixtures("db_session")
+        def when_user_is_logged_in_and_booking_has_been_refunded(self, app):
+            # Given
+            admin = UserFactory(isAdmin=True, canBookFreeOffers=False)
+            booking = BookingFactory(isUsed=True)
+            PaymentFactory(booking=booking)
+            url = f"/v2/bookings/use/token/{booking.token}"
+
+            # When
+            response = TestClient(app.test_client()).with_auth(admin.email).patch(url)
+
+            # Then
+            assert response.status_code == 403
+            assert response.json["payment"] == ["Cette réservation a été remboursée"]
 
 
 class Returns404:
