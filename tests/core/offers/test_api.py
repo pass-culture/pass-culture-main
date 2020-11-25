@@ -399,7 +399,7 @@ class UpdateOfferTest:
             offer = api.update_offer(offer, name="Luftballons" * 99)
 
         assert error.value.errors == {"name": ["Vous devez saisir moins de 140 caractères"]}
-        models.Offer.query.one().name == "Old name"
+        assert models.Offer.query.one().name == "Old name"
 
     def test_success_on_allocine_offer(self):
         provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
@@ -431,7 +431,7 @@ class UpdateOfferTest:
             offer = api.update_offer(offer, name="New name")
 
         assert error.value.errors == {"global": ["Les offres importées ne sont pas modifiables"]}
-        models.Offer.query.one().name == "Old name"
+        assert models.Offer.query.one().name == "Old name"
 
 
 @pytest.mark.usefixtures("db_session")
