@@ -166,7 +166,7 @@ class EnsureNewPasswordIsStrongEnoughTest:
         _ensure_new_password_is_strong_enough("newPassword", newPassword, api_errors)
 
         # then
-        assert len(api_errors.errors) is 0
+        assert not api_errors.errors
 
     @pytest.mark.parametrize(
         "newPassword",
@@ -216,7 +216,7 @@ class EnsureConfirmationPasswordIsSameAsNewPasswordTest:
         _ensure_confirmation_password_is_same_as_new_password("goodNewPassword", "goodNewPassword", api_errors)
 
         # then
-        assert len(api_errors.errors) is 0
+        assert not api_errors.errors
 
 
 class EnsureGivenOldPasswordIsCorrectTest:
