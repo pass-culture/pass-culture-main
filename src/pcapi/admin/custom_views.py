@@ -4,6 +4,7 @@ from wtforms import Form
 from wtforms import SelectField
 from wtforms import StringField
 from wtforms import TextAreaField
+from wtforms import validators
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.connectors import redis
@@ -82,7 +83,23 @@ class UserAdminView(BaseAdminView):
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = ["postalCode", "canBookFreeOffers"]
-    form_columns = ["email", "firstName", "lastName", "publicName", "dateOfBirth", "departementCode", "postalCode"]
+    form_columns = [
+        "email",
+        "firstName",
+        "lastName",
+        "publicName",
+        "dateOfBirth",
+        "departementCode",
+        "postalCode",
+        "canBookFreeOffers",
+    ]
+
+    def on_model_change(self, form, model, is_created):
+        # If a user is a pro or an admin, he shouldn't be able to book offers
+        if form.canBookFreeOffers.data and (model.isAdmin or len(model.offerers) > 0):
+            raise validators.ValidationError("Seul un jeune peut réserver des offres")
+
+        super().on_model_change(form, model, is_created)
 
 
 class VenueAdminView(BaseAdminView):
