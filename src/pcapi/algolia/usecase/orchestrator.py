@@ -89,7 +89,6 @@ def _process_adding(pipeline: Pipeline, client: Redis, offer_ids: List[int], add
         logger.exception(f"[ALGOLIA] error when adding objects {error}")
         add_offer_ids_in_error(client=client, offer_ids=offer_ids)
         pipeline.reset()
-        pass
 
 
 def _process_deleting(client: Redis, offer_ids_to_delete: List[int]) -> None:

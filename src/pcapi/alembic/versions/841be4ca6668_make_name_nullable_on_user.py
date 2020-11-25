@@ -19,10 +19,8 @@ depends_on = None
 def upgrade():
     op.alter_column("user", "firstName", existing_type=sa.VARCHAR(length=35), nullable=True)
     op.alter_column("user", "lastName", existing_type=sa.VARCHAR(length=35), nullable=True)
-    pass
 
 
 def downgrade():
     op.alter_column("user", "firstName", existing_type=sa.VARCHAR(length=35), nullable=False)
     op.alter_column("user", "lastName", existing_type=sa.VARCHAR(length=35), nullable=False)
-    pass

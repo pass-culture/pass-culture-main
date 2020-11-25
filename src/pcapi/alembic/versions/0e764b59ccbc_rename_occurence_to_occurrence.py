@@ -62,7 +62,6 @@ def upgrade():
         + ";"
         "COMMIT;"
     )
-    pass
 
 
 def downgrade():

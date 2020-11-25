@@ -21,7 +21,6 @@ def upgrade():
         SET "hasFilledCulturalSurvey" = True
         """
     )
-    pass
 
 
 def downgrade():
@@ -31,4 +30,3 @@ def downgrade():
             SET "hasFilledCulturalSurvey" = False
             """
     )
-    pass

@@ -28,7 +28,6 @@ def upgrade():
           CREATE INDEX IF NOT EXISTS "ix_recommendationinviteforEventOccurrenceId" ON recommendation USING btree ("inviteforEventOccurrenceId");
         """
     )
-    pass
 
 
 def downgrade():
@@ -44,4 +43,3 @@ def downgrade():
           DROP INDEX "ix_recommendationinviteforEventOccurrenceId";
         """
     )
-    pass

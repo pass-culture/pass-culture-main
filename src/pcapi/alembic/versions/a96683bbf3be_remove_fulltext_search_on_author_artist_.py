@@ -20,7 +20,6 @@ def upgrade():
     op.execute("""DROP INDEX CONCURRENTLY IF EXISTS "idx_offer_fts_author";""")
     op.execute("""DROP INDEX CONCURRENTLY IF EXISTS "idx_offer_fts_byArtist";""")
     op.execute("""DROP INDEX CONCURRENTLY IF EXISTS "idx_offer_fts_description";""")
-    pass
 
 
 def downgrade():
@@ -34,4 +33,3 @@ def downgrade():
     op.execute(
         """CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_offer_fts_description" ON offer USING gin (to_tsvector('french_unaccent'::regconfig, description));"""
     )
-    pass

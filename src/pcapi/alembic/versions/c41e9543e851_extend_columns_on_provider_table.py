@@ -19,10 +19,8 @@ depends_on = None
 def upgrade():
     op.alter_column("provider", "name", existing_type=sa.VARCHAR(length=60), type_=sa.VARCHAR(length=90))
     op.alter_column("provider", "localClass", existing_type=sa.VARCHAR(length=30), type_=sa.VARCHAR(length=60))
-    pass
 
 
 def downgrade():
     op.alter_column("provider", "localClass", existing_type=sa.VARCHAR(length=90), type_=sa.VARCHAR(length=60))
     op.alter_column("provider", "localClass", existing_type=sa.VARCHAR(length=60), type_=sa.VARCHAR(length=30))
-    pass
