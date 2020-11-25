@@ -51,7 +51,7 @@ def _(value, column=None):
 
 @serialize.register(list)
 def _(value, column=None):
-    return list(map(lambda d: serialize(d), value))
+    return [serialize(d) for d in value]
 
 
 @serialize.register(DateTimes)

@@ -8,7 +8,7 @@ from pcapi.utils.logger import logger
 
 
 def parse_raw_payments_ids(raw_ids: str) -> List[int]:
-    return list(map(lambda id: int(id), raw_ids.split(",")))
+    return [int(id_) for id_ in raw_ids.split(",")]
 
 
 def do_ban_payments(message_id: str, payment_ids_to_ban: List[int]):

@@ -129,7 +129,7 @@ def split_rows_in_chunks_with_no_duplicated_emails(csv_reader: Iterable, chunk_s
 
 
 def export_created_data(bookings: List[Booking]):
-    users = map(lambda b: ActivationUser(b), bookings)
+    users = [ActivationUser(b) for b in bookings]
     csv = generate_activation_users_csv(users)
 
     try:

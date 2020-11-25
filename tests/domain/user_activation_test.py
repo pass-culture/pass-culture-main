@@ -39,7 +39,7 @@ class GenerateActivationUsersCsvTest:
         booking1 = create_booking(user=user1, stock=stock, token="abc")
         booking2 = create_booking(user=user2, stock=stock, token="def")
         bookings = [booking1, booking2]
-        activation_users = map(lambda b: ActivationUser(b), bookings)
+        activation_users = [ActivationUser(b) for b in bookings]
 
         # When
         csv = generate_activation_users_csv(activation_users)
