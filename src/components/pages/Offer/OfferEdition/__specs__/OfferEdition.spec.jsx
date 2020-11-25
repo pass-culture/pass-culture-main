@@ -82,7 +82,7 @@ describe('components | OfferEdition', () => {
         wrapper.instance().onHandleFormSuccess({})
 
         // then
-        expect(props.loadOffer).toHaveBeenCalledWith(props.offer.id)
+        expect(history.push).toHaveBeenCalledWith('/offres/26B')
       })
 
       it('should display a validation modification notification', () => {

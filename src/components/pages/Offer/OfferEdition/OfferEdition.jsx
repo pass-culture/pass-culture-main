@@ -77,6 +77,7 @@ class OfferEdition extends PureComponent {
     } = this.props
 
     const { search } = location
+
     if (prevProps.location.search !== search) {
       this.handleShowStocksManager()
       return
@@ -194,15 +195,15 @@ class OfferEdition extends PureComponent {
 
   onHandleFormSuccess = () => {
     const {
-      loadOffer,
       offer,
       trackModifyOffer,
+      history,
       showOfferModificationValidationNotification,
     } = this.props
 
     trackModifyOffer(offer.id)
     showOfferModificationValidationNotification()
-    loadOffer(offer.id)
+    history.push(`/offres/${offer.id}`)
   }
 
   handleShowStocksManager = () => {
