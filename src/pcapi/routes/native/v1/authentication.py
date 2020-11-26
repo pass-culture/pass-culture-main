@@ -7,8 +7,8 @@ from flask_jwt_extended import jwt_refresh_token_required
 from flask_jwt_extended import jwt_required
 
 from pcapi.core.users import api as users_api
-from pcapi.core.users import exceptions as user_exceptions
-from pcapi.core.users import repository as user_repo
+from pcapi.core.users import exceptions as users_exceptions
+from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import TokenType
 from pcapi.domain.password import check_password_strength
 from pcapi.domain.user_emails import send_reset_password_email_to_native_app_user
@@ -34,8 +34,8 @@ from .serialization import authentication
 )  # type: ignore
 def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     try:
-        user_repo.get_user_with_credentials(body.identifier, body.password)
-    except user_exceptions.CredentialsException as exc:
+        users_repo.get_user_with_credentials(body.identifier, body.password)
+    except users_exceptions.CredentialsException as exc:
         raise ApiErrors(
             {"general": ["Identifiant ou Mot de passe incorrect"]},
             status_code=400,
@@ -88,7 +88,7 @@ def protected() -> any:  # type: ignore
 @blueprint.native_v1.route("/reset_password", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def reset_password(body: ResetPasswordRequest) -> None:
-    user = user_repo.get_user_with_valid_token(body.reset_password_token, [TokenType.RESET_PASSWORD])
+    user = users_repo.get_user_with_valid_token(body.reset_password_token, [TokenType.RESET_PASSWORD])
 
     if not user:
         raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
@@ -102,7 +102,7 @@ def reset_password(body: ResetPasswordRequest) -> None:
 @blueprint.native_v1.route("/validate_email", methods=["POST"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=ValidateEmailResponse)
 def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
-    user = user_repo.get_user_with_valid_token(body.email_validation_token, [TokenType.EMAIL_VALIDATION])
+    user = users_repo.get_user_with_valid_token(body.email_validation_token, [TokenType.EMAIL_VALIDATION])
 
     if not user:
         raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
