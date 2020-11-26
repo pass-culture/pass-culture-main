@@ -4,8 +4,6 @@ import re
 
 from flask import request
 from flask_login import current_user
-from sqlalchemy import text
-from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.elements import UnaryExpression
 from sqlalchemy.sql.functions import random
@@ -33,24 +31,6 @@ def expect_json_data(f):
         return f(*args, **kwds)
 
     return wrapper
-
-
-def query_with_order_by(query, order_by):
-    if order_by:
-        if isinstance(order_by, str):
-            order_by = text(order_by)
-        try:
-            order_by = [order_by] if not isinstance(order_by, list) else order_by
-            query = query.order_by(*order_by)
-        except ProgrammingError as e:
-            field = re.search('column "?(.*?)"? does not exist', e._message, re.IGNORECASE)
-            if field:
-                errors = ApiErrors()
-                errors.add_error("order_by", "order_by value references an unknown field : " + field.group(1))
-                raise errors
-            else:
-                raise e
-    return query
 
 
 def check_single_order_by_string(order_by_string):
