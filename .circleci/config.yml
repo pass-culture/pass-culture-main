@@ -1,5 +1,10 @@
 version: 2.0
 
+references:
+
+  working_directory: &working_directory
+    ~/pass-culture-main/pro
+
 jobs:
   build:
     machine:
@@ -14,14 +19,14 @@ jobs:
             git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-api.git api || git clone https://github.com/betagouv/pass-culture-api.git api
             ./install_lib_ci.sh
       - checkout:
-          path: ~/pass-culture-main/pro
+          path: *working_directory
       - restore_cache:
           name: Restore Yarn Package Cache
           keys:
             - yarn-packages-{{ checksum "~/pass-culture-main/pro/yarn.lock" }}
       - run:
           name: Install dependencies
-          working_directory: ~/pass-culture-main/pro
+          working_directory: *working_directory
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -34,7 +39,7 @@ jobs:
             - ~/.cache/yarn
       - run:
           name: Running linter
-          working_directory: ~/pass-culture-main/pro
+          working_directory: *working_directory
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -42,7 +47,7 @@ jobs:
             yarn lint:js
       - run:
           name: Running Unit Tests
-          working_directory: ~/pass-culture-main/pro
+          working_directory: *working_directory
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -59,14 +64,13 @@ jobs:
             DOCKERIZE_VERSION: v0.6.1
       - run:
           name: Running API server
-          working_directory: ~/pass-culture-main/pro
           command: |
            cd ~/pass-culture-main
            ./pc start-backend
           background: true
       - run:
           name: Running Frontend
-          working_directory: ~/pass-culture-main/pro
+          working_directory: *working_directory
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -82,7 +86,7 @@ jobs:
             ./pc sandbox --name=industrial
       - run:
           name: Running end2end tests
-          working_directory: ~/pass-culture-main/pro
+          working_directory: *working_directory
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
