@@ -8,6 +8,7 @@ const Thumb = ({ url, alt = '' }) => {
     <img
       alt={alt}
       className="offer-thumb"
+      loading="lazy"
       src={url}
     />
   ) : (
