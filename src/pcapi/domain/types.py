@@ -12,15 +12,3 @@ def get_formatted_active_product_types() -> List:
     all_active_types = filter(lambda t: "ACTIVATION" not in t["value"], all_active_types)
 
     return list(all_active_types)
-
-
-def get_active_product_type_values_from_sublabels(sublabels):
-    active_event_type_values = [
-        str(et) for et in EventType if et.value["sublabel"] in sublabels and et.value["isActive"]
-    ]
-    active_thing_type_values = [
-        str(tt) for tt in ThingType if tt.value["sublabel"] in sublabels and tt.value["isActive"]
-    ]
-    all_active_type_values = active_event_type_values + active_thing_type_values
-
-    return list(all_active_type_values)

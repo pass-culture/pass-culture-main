@@ -1,4 +1,3 @@
-from pcapi.domain.types import get_active_product_type_values_from_sublabels
 from pcapi.domain.types import get_formatted_active_product_types
 
 
@@ -45,11 +44,3 @@ class GetFormattedEventOrThingTypesTest:
         assert (
             jeux not in types
         ), 'Les offres avec le type "ThingType.JEUX" ne peuvent plus être créées pour être en phase avec les CGU'
-
-
-def test_get_active_product_type_values_from_sublabels():
-    # given
-    type_values = get_active_product_type_values_from_sublabels("Rencontrer")
-
-    # then
-    assert type_values[0] == "EventType.CONFERENCE_DEBAT_DEDICACE"
