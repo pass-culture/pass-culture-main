@@ -15,6 +15,10 @@ jobs:
             ./install_lib_ci.sh
       - checkout:
           path: ~/pass-culture-main/pro
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "~/pass-culture-main/pro/yarn.lock" }}
       - run:
           name: Install dependencies
           command: |
@@ -23,6 +27,11 @@ jobs:
             cd ~/pass-culture-main/pro
             nvm install
             yarn install
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "~/pass-culture-main/pro/yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
       - run:
           name: Running linter
           command: |
