@@ -23,7 +23,6 @@ def get_offer_helper(offer):
     return dict(
         as_dict(offer),
         **{
-            "keywordsString": offer.name,
             "venueCity": offer.venue.city,
             "venueName": offer.venue.name,
             "thingName": offer.product.name,
@@ -35,7 +34,6 @@ def get_offerer_helper(offerer):
     return dict(
         as_dict(offerer),
         **{
-            "keywordsString": offerer.name,
             "latitude": "48.9281995",
             "longitude": "2.4579903",
         },
