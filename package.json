@@ -11,7 +11,7 @@
     "build:testing": "env-cmd -f .env.testing yarn build",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
-    "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx}'",
+    "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx}' --max-warnings=0",
     "lint:js:fix": "yarn lint:js --fix",
     "lint:scss": "yarn stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",

@@ -16,13 +16,28 @@ jobs:
       - checkout:
           path: ~/pass-culture-main/pro
       - run:
-          name: Running Unit Tests
+          name: Install dependencies
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd ~/pass-culture-main/pro
             nvm install
             yarn install
+      - run:
+          name: Running linter
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            cd ~/pass-culture-main/pro
+            nvm install
+            yarn lint:js
+      - run:
+          name: Running Unit Tests
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            cd ~/pass-culture-main/pro
+            nvm install
             yarn test:unit --coverage
             yarn coveralls
       - run:
