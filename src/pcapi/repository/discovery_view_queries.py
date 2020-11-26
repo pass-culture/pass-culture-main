@@ -178,28 +178,6 @@ def _create_function_offer_has_at_least_one_active_mediation(session) -> str:
     return function_name
 
 
-def _create_function_event_is_in_less_than_10_days(session) -> str:
-    function_name = "event_is_in_less_than_10_days"
-    session.execute(
-        f"""
-        CREATE OR REPLACE FUNCTION {function_name}(offer_id BIGINT)
-        RETURNS SETOF INTEGER AS $body$
-        BEGIN
-            RETURN QUERY
-            SELECT 1
-            FROM stock
-            WHERE stock."offerId" = offer_id
-                AND (stock."beginningDatetime" IS NULL
-                    OR stock."beginningDatetime" > NOW()
-                AND stock."beginningDatetime" < NOW() + INTERVAL '10 DAY');
-        END
-        $body$
-        LANGUAGE plpgsql;
-    """
-    )
-    return function_name
-
-
 def _create_function_get_active_offers_ids(session) -> str:
     function_name = "get_active_offers_ids"
     offer_has_at_least_one_active_mediation = _create_function_offer_has_at_least_one_active_mediation(session)
