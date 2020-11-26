@@ -16,7 +16,6 @@
     "lint:scss": "yarn stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
     "start": "node scripts/start.js",
-    "symlink-shared": "if [ -d \"../shared\" ]; then cd node_modules && rm -rf pass-culture-shared && ln -sf ../../shared pass-culture-shared && cd ../../shared && yarn run compile; fi",
     "test:cafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chrome:headless' testcafe",
     "test:unit": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest"
   },
