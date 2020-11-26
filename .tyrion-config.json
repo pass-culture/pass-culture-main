@@ -1,0 +1,10 @@
+{
+  "standard": 0,
+  "ignorePath": [
+    "node_modules",
+    "README.md"
+  ],
+  "debtTags": [
+    "@debt"
+  ]
+}
