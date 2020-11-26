@@ -12,10 +12,6 @@ def trim_with_elipsis(string, length):
     return string[:length_wo_elipsis] + (string[length_wo_elipsis:] and "…")
 
 
-def get_camel_string(string):
-    return "".join(word.capitalize() for word in string.split("_"))
-
-
 def tokenize_for_search(string):
     return re.split("[^0-9a-zÀ-ÿ]+", string.lower())
 
