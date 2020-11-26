@@ -165,24 +165,10 @@ def count_not_cancelled_bookings_quantity_by_stock_id(stock_id: int) -> int:
     return sum([booking.quantity for booking in bookings])
 
 
-def find_first_matching_from_offer_by_user(offer_id: int, user_id: int) -> Optional[Booking]:
-    return (
-        Booking.query.filter_by(userId=user_id)
-        .join(Stock)
-        .filter(Stock.offerId == offer_id)
-        .order_by(desc(Booking.dateCreated))
-        .first()
-    )
-
-
 def _query_keep_on_non_activation_offers() -> Query:
     offer_types = ["ThingType.ACTIVATION", "EventType.ACTIVATION"]
 
     return Booking.query.join(Stock).join(Offer).filter(~Offer.type.in_(offer_types))
-
-
-def _query_cancelled_bookings_on_non_activation_offers() -> Query:
-    return _query_keep_on_non_activation_offers().filter(Booking.isCancelled.is_(True))
 
 
 def _duplicate_booking_when_quantity_is_two(bookings_recap_query: Query) -> Query:
@@ -364,10 +350,6 @@ def _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_thing_or_
     return _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers().filter(
         ~(cast(Stock.beginningDatetime, Date) >= date.today()) | (Stock.beginningDatetime.is_(None))
     )
-
-
-def _query_non_cancelled_non_activation_bookings() -> Query:
-    return _query_keep_on_non_activation_offers().filter(Booking.isCancelled.is_(False))
 
 
 def _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers() -> Query:
