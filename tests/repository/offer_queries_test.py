@@ -26,7 +26,6 @@ from pcapi.repository.offer_queries import get_paginated_active_offer_ids
 from pcapi.repository.offer_queries import get_paginated_offer_ids_by_venue_id
 from pcapi.repository.offer_queries import get_paginated_offer_ids_by_venue_id_and_last_provider_id
 from pcapi.repository.offer_queries import get_paginated_offer_ids_given_booking_limit_datetime_interval
-from pcapi.repository.offer_queries import update_offers_is_active_status
 from pcapi.utils.converter import from_tuple_to_int
 
 
@@ -725,24 +724,3 @@ class GetPaginatedOfferIdsGivenBookingLimitDatetimeIntervalTest:
         # Then
         expired_offer_ids = from_tuple_to_int(expired_offer_ids)
         assert expired_offer_ids == [offer.id]
-
-
-class UpdateOffersIsActiveStatusTest:
-    @pytest.mark.usefixtures("db_session")
-    def should_update_is_active_status_for_given_offers_id_and_status(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_thing_product(venue=venue, is_active=False)
-        offer2 = create_offer_with_thing_product(venue=venue, is_active=False)
-        offer3 = create_offer_with_thing_product(venue=venue, is_active=False)
-        repository.save(offer1, offer2, offer3)
-        offers_id = [offer1.id, offer2.id]
-
-        # When
-        update_offers_is_active_status(offers_id=offers_id, is_active=True)
-
-        # Then
-        assert Offer.query.get(offer1.id).isActive == True
-        assert Offer.query.get(offer2.id).isActive == True
-        assert Offer.query.get(offer3.id).isActive == False

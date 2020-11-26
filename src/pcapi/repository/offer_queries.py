@@ -220,8 +220,3 @@ def get_paginated_offer_ids_given_booking_limit_datetime_interval(
         .limit(limit)
         .all()
     )
-
-
-def update_offers_is_active_status(offers_id: [int], is_active: bool) -> None:
-    Offer.query.filter(Offer.id.in_(offers_id)).update({"isActive": is_active}, synchronize_session=False)
-    db.session.commit()
