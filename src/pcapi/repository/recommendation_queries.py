@@ -1,5 +1,3 @@
-from datetime import datetime
-from datetime import timedelta
 from typing import List
 
 from pcapi.core.offers.models import Mediation
@@ -10,9 +8,6 @@ from pcapi.models.db import db
 from pcapi.repository import mediation_queries
 from pcapi.repository.offer_queries import find_searchable_offer
 from pcapi.utils.human_ids import dehumanize
-
-
-EIGHT_DAYS_AGO = datetime.utcnow() - timedelta(days=8)
 
 
 def update_read_recommendations(read_recommendations: List) -> None:
