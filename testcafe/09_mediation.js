@@ -1,13 +1,13 @@
 import { Selector } from 'testcafe'
 
-import { fetchSandbox } from './helpers/sandboxes'
+import { getPathname } from './helpers/location'
 import { navigateToNewMediationAs } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
-import { getPathname } from './helpers/location'
+import { fetchSandbox } from './helpers/sandboxes'
 
 fixture('Médiations,')
 
-test('en étant sur la page de gestion des médiations', async t => {
+test('en étant sur la page de gestion des médiations', () => async t => {
   const dataFromSandbox = await fetchSandbox(
     'pro_09_mediation',
     'get_existing_pro_validated_user_with_at_least_one_visible_offer_with_no_mediation'

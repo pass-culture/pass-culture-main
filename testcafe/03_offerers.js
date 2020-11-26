@@ -6,7 +6,7 @@ import { fetchSandbox } from './helpers/sandboxes'
 
 fixture('Lorsque je clique sur le menu, je clique sur le lien pour atteindre mes "structures",')
 
-test('si j’ai une structure validée, je clique sur celle-ci afin d’accéder au détail', async t => {
+test('si j’ai une structure validée, je clique sur celle-ci afin d’accéder au détail', () => async t => {
   const { user, offerer } = await fetchSandbox(
     'pro_03_offerers',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer'
