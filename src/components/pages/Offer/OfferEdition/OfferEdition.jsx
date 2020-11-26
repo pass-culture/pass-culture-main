@@ -195,6 +195,7 @@ class OfferEdition extends PureComponent {
 
   onHandleFormSuccess = () => {
     const {
+      dispatch,
       offer,
       trackModifyOffer,
       history,
@@ -203,6 +204,8 @@ class OfferEdition extends PureComponent {
 
     trackModifyOffer(offer.id)
     showOfferModificationValidationNotification()
+
+    dispatch(resetForm())
     history.push(`/offres/${offer.id}`)
   }
 
