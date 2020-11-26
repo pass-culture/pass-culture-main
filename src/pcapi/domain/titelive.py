@@ -5,7 +5,6 @@ from zipfile import ZipFile
 
 TITELIVE_THINGS_DATE_FORMAT = "%d/%m/%Y"
 TITELIVE_DESCRIPTION_DATE_FORMAT = "%y%m%d"
-TITELIVE_STOCK_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def read_description_date(date):
