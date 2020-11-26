@@ -22,7 +22,8 @@ class Returns200:
         # Given
         admin = create_user(is_admin=True, can_book_free_offers=False)
         offerer = create_offerer()
-        requested_venue = create_venue(offerer, siret="12345678912345")
+        departement_code = "12"
+        requested_venue = create_venue(offerer, siret="12345678912345", postal_code=departement_code + "000")
         other_venue = create_venue(offerer, siret="54321987654321")
         offer_on_requested_venue = create_offer_with_thing_product(requested_venue)
         offer_on_other_venue = create_offer_with_thing_product(other_venue)
@@ -58,6 +59,7 @@ class Returns200:
                     "thumbUrl": None,
                     "type": "ThingType.AUDIOVISUEL",
                     "venue": {
+                        "departementCode": departement_code,
                         "id": humanize(requested_venue.id),
                         "isVirtual": False,
                         "managingOffererId": humanize(offerer.id),
@@ -135,6 +137,7 @@ class Returns200:
                         "name": "La petite librairie",
                         "offererName": "Test Offerer",
                         "publicName": None,
+                        "departementCode": "93",
                     },
                     "venueId": humanize(venue.id),
                 }

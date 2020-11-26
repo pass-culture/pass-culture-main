@@ -11,6 +11,7 @@ def should_return_serialized_offers_with_relevant_informations():
     venue_id = 3
     offerer_id = 4
     stock = {"identifier": Identifier(stock_id), "is_event_expired": False, "remaining_quantity": 10}
+    departement_code = 12
     offer = OfferRecap(
         identifier=Identifier(offer_id),
         has_booking_limit_datetimes_passed=False,
@@ -27,6 +28,7 @@ def should_return_serialized_offers_with_relevant_informations():
         venue_name="La petite librairie",
         venue_public_name="Petite librairie",
         venue_offerer_name="Gérant de petites librairies",
+        venue_departement_code=departement_code,
         stocks=[stock],
     )
     paginated_offers_recap = PaginatedOffersRecap(offers_recap=[offer], current_page=1, total_pages=2, total_offers=3)
@@ -56,6 +58,7 @@ def should_return_serialized_offers_with_relevant_informations():
             "venue": {
                 "id": offer.venue.identifier.scrambled,
                 "isVirtual": False,
+                "departementCode": departement_code,
                 "managingOffererId": offer.venue.managing_offerer_id.scrambled,
                 "name": "La petite librairie",
                 "offererName": "Gérant de petites librairies",
@@ -90,6 +93,7 @@ def should_return_pagination_details():
         venue_name="La petite librairie",
         venue_public_name="Petite librairie",
         venue_offerer_name="Gérant de petites librairies",
+        venue_departement_code=None,
         stocks=[stock],
     )
     current_page = 1

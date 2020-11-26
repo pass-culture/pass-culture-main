@@ -1,5 +1,6 @@
 from typing import Dict
 from typing import List
+from typing import Optional
 
 from pcapi.domain.identifier.identifier import Identifier
 
@@ -19,6 +20,7 @@ class OfferRecapVenue:
         name: str,
         public_name: str,
         offerer_name: str,
+        venue_departement_code: Optional[str],
     ):
         self.identifier = identifier
         self.is_virtual = is_virtual
@@ -26,6 +28,7 @@ class OfferRecapVenue:
         self.name = name
         self.offerer_name = offerer_name
         self.public_name = public_name
+        self.departement_code = venue_departement_code
 
 
 class OfferRecap:
@@ -46,6 +49,7 @@ class OfferRecap:
         venue_name: str,
         venue_offerer_name: str,
         venue_public_name: str,
+        venue_departement_code: Optional[str],
         stocks: List[Dict],
     ):
         self.identifier = identifier
@@ -64,6 +68,7 @@ class OfferRecap:
             venue_name,
             venue_public_name,
             venue_offerer_name,
+            venue_departement_code,
         )
         self.stocks = [OfferRecapStock(stock["identifier"], stock["remaining_quantity"]) for stock in stocks]
 

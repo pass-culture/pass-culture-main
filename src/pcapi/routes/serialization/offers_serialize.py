@@ -129,6 +129,7 @@ class ListOffersVenueResponseModel(BaseModel):
     name: str
     offererName: str
     publicName: Optional[str]
+    departementCode: Optional[str]
 
 
 class ListOffersStockResponseModel(BaseModel):

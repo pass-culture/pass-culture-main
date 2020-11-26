@@ -52,4 +52,5 @@ def _serialize_venue(venue: OfferRecapVenue) -> Dict:
         "name": venue.name,
         "offererName": venue.offerer_name,
         "publicName": venue.public_name,
+        "departementCode": venue.departement_code,
     }
