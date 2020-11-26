@@ -108,7 +108,7 @@ export const navigateToOfferAs = (user, offer, userRole) => async t => {
 
   await t.navigateTo('/offres')
 
-  await t.typeText(searchInput, offer.keywordsString).click(submitButton).click(offerAnchor)
+  await t.typeText(searchInput, offer.name).click(submitButton).click(offerAnchor)
 }
 
 export const navigateToNewMediationAs = (user, offer, userRole) => async t => {
