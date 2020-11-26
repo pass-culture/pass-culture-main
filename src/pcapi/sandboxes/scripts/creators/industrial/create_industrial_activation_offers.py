@@ -12,7 +12,7 @@ from pcapi.utils.logger import logger
 def create_industrial_activation_offers():
     logger.info("create_industrial_activation_offers")
 
-    activated_user = UserSQLEntity.query.filter_by(canBookFreeOffers=True).first()
+    activated_user = UserSQLEntity.query.filter_by(isBeneficiary=True).first()
     offerer = create_offerer()
     venue = create_venue(offerer, is_virtual=True, siret=None)
     offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)

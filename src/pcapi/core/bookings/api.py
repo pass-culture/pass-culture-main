@@ -94,7 +94,7 @@ def generate_booking_token():
 
 
 def cancel_booking_by_beneficiary(user: UserSQLEntity, booking: Booking) -> None:
-    if not user.canBookFreeOffers:
+    if not user.isBeneficiary:
         raise RuntimeError("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user)
     validation.check_beneficiary_can_cancel_booking(user, booking)
 

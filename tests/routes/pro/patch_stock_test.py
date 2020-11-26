@@ -72,7 +72,7 @@ class Returns200:
 
     def when_user_is_admin(self, app):
         # given
-        user = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
+        user = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
         offer = offers_factories.ThingOfferFactory()
         stock = offers_factories.StockFactory(offer=offer, price=100, quantity=10)
 
@@ -131,7 +131,7 @@ class Returns200:
 class Returns400:
     def when_wrong_type_for_quantity(self, app):
         # given
-        user = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
+        user = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
         stock = offers_factories.StockFactory()
 
         # when
@@ -144,7 +144,7 @@ class Returns400:
 
     def when_booking_limit_datetime_is_none_for_event(self, app, db_session):
         # Given
-        user = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
+        user = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
         stock = offers_factories.EventStockFactory()
 
         # When

@@ -36,7 +36,7 @@ def signup_webapp():
         departement_code = _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes)
         new_user.departementCode = departement_code
 
-    new_user.canBookFreeOffers = False
+    new_user.isBeneficiary = False
     new_user.isAdmin = False
     objects_to_save.append(new_user)
 

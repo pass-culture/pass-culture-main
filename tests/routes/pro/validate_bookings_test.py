@@ -89,8 +89,8 @@ class Returns204:  # No Content
 
     def when_user_patching_is_global_admin_is_activation_event_and_no_deposit_for_booking_user(self, app):
         # Given
-        user = create_user(can_book_free_offers=False, is_admin=False, first_name="John")
-        pro_user = create_user(can_book_free_offers=False, email="pro@email.fr", is_admin=True)
+        user = create_user(is_beneficiary=False, is_admin=False, first_name="John")
+        pro_user = create_user(is_beneficiary=False, email="pro@email.fr", is_admin=True)
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -110,16 +110,16 @@ class Returns204:  # No Content
         # Then
         user = UserSQLEntity.query.get(user_id)
         assert response.status_code == 204
-        assert user.canBookFreeOffers
+        assert user.isBeneficiary
         deposits_for_user = Deposit.query.filter_by(userId=user.id).all()
         assert len(deposits_for_user) == 1
         assert deposits_for_user[0].amount == 500
-        assert user.canBookFreeOffers
+        assert user.isBeneficiary
 
     def when_user_patching_is_global_admin_is_activation_thing_and_no_deposit_for_booking_user(self, app):
         # Given
-        user = create_user(can_book_free_offers=False, is_admin=False, first_name="John")
-        pro_user = create_user(can_book_free_offers=False, email="pro@email.fr", is_admin=True)
+        user = create_user(is_beneficiary=False, is_admin=False, first_name="John")
+        pro_user = create_user(is_beneficiary=False, email="pro@email.fr", is_admin=True)
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -139,11 +139,11 @@ class Returns204:  # No Content
         # Then
         user = UserSQLEntity.query.get(user_id)
         assert response.status_code == 204
-        assert user.canBookFreeOffers
+        assert user.isBeneficiary
         deposits_for_user = Deposit.query.filter_by(userId=user.id).all()
         assert len(deposits_for_user) == 1
         assert deposits_for_user[0].amount == 500
-        assert user.canBookFreeOffers
+        assert user.isBeneficiary
 
 
 class Returns403:
@@ -220,7 +220,7 @@ class Returns403:
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_cancelled(self, app):
         # Given
-        admin = UserFactory(isAdmin=True, canBookFreeOffers=False)
+        admin = UserFactory(isAdmin=True, isBeneficiary=False)
         booking = BookingFactory(isCancelled=True)
         url = f"/bookings/token/{booking.token}"
 
@@ -235,7 +235,7 @@ class Returns403:
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_refunded(self, app):
         # Given
-        admin = UserFactory(isAdmin=True, canBookFreeOffers=False)
+        admin = UserFactory(isAdmin=True, isBeneficiary=False)
         booking = BookingFactory(isUsed=True)
         PaymentFactory(booking=booking)
         url = f"/bookings/token/{booking.token}"
@@ -322,8 +322,8 @@ class Returns405:  # Method Not Allowed
     @pytest.mark.usefixtures("db_session")
     def when_user_patching_is_global_admin_is_activation_offer_and_existing_deposit_for_booking_user(self, app):
         # Given
-        user = create_user(can_book_free_offers=False, is_admin=False)
-        pro_user = create_user(can_book_free_offers=False, email="pro@email.fr", is_admin=True)
+        user = create_user(is_beneficiary=False, is_admin=False)
+        pro_user = create_user(is_beneficiary=False, email="pro@email.fr", is_admin=True)
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)

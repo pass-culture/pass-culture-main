@@ -82,7 +82,7 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(can_book_free_offers=False, is_admin=True)
+            user = create_user(is_beneficiary=False, is_admin=True)
             digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
             repository.save(user, digital_venue_type)
             body = {
@@ -107,7 +107,7 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(can_book_free_offers=False, is_admin=False)
+            user = create_user(is_beneficiary=False, is_admin=False)
             digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
             repository.save(user, digital_venue_type)
             body = {
@@ -138,7 +138,7 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(can_book_free_offers=False, is_admin=False)
+            user = create_user(is_beneficiary=False, is_admin=False)
             user_2 = create_user(email="other_offerer@mail.com", is_admin=False)
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_2, offerer, validation_token=None)
@@ -175,7 +175,7 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(can_book_free_offers=False, is_admin=False)
+            user = create_user(is_beneficiary=False, is_admin=False)
             digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
             repository.save(user, digital_venue_type)
             body = {
@@ -207,7 +207,7 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(can_book_free_offers=False, is_admin=False)
+            user = create_user(is_beneficiary=False, is_admin=False)
             offerer = create_offerer(siren="123456789")
             repository.save(user, offerer)
             body = {
@@ -239,7 +239,7 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(can_book_free_offers=False, is_admin=False)
+            user = create_user(is_beneficiary=False, is_admin=False)
             offerer = create_offerer(siren="123456789", validation_token="not_validated")
             repository.save(user, offerer)
             body = {
@@ -273,7 +273,7 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(can_book_free_offers=False, is_admin=False)
+            user = create_user(is_beneficiary=False, is_admin=False)
             offerer = create_offerer(siren="123456789", validation_token="not_validated")
             repository.save(user, offerer)
             body = {
@@ -313,7 +313,7 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(can_book_free_offers=False, is_admin=False)
+            user = create_user(is_beneficiary=False, is_admin=False)
             offerer = create_offerer(siren="123456789", validation_token="not_validated")
             repository.save(user, offerer)
             body = {
@@ -347,7 +347,7 @@ class Post:
             status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
         )
 
-        user = create_user(can_book_free_offers=False, is_admin=False)
+        user = create_user(is_beneficiary=False, is_admin=False)
         digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
         repository.save(user, digital_venue_type)
         body = {

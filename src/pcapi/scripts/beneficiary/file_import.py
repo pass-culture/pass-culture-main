@@ -90,7 +90,7 @@ def fill_user_from(csv_row: List[str], user: UserSQLEntity) -> UserSQLEntity:
     user.phoneNumber = "".join(filter(lambda d: d in "+1234567890", csv_row[PHONE_COLUMN_INDEX]))
     user.departementCode = _extract_departement_code(csv_row[DEPARTMENT_COLUMN_INDEX])
     user.postalCode = csv_row[POSTAL_CODE_COLUMN_INDEX]
-    user.canBookFreeOffers = False
+    user.isBeneficiary = False
     user.password = _get_password(csv_row)
     generate_reset_token(user, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
     return user

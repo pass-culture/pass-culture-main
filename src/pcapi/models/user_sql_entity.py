@@ -71,8 +71,6 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     address = Column(Text, nullable=True)
 
-    canBookFreeOffers = Column(Boolean, nullable=False, server_default=expression.true(), default=True)
-
     city = Column(String(100), nullable=True)
 
     clearTextPassword = None
@@ -92,7 +90,7 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     isAdmin = Column(
         Boolean,
         CheckConstraint(
-            '("canBookFreeOffers" IS FALSE AND "isAdmin" IS TRUE)' + 'OR ("isAdmin" IS FALSE)',
+            '("isBeneficiary" IS FALSE AND "isAdmin" IS TRUE)' + 'OR ("isAdmin" IS FALSE)',
             name="check_admin_cannot_book_free_offers",
         ),
         nullable=False,
@@ -218,7 +216,7 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     @property
     def needsToSeeTutorials(self):
-        return self.canBookFreeOffers and not self.hasSeenTutorials
+        return self.isBeneficiary and not self.hasSeenTutorials
 
     @property
     def hasOffers(self):

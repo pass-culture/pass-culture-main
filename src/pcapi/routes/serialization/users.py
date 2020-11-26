@@ -35,7 +35,7 @@ class PatchUserResponseModel(BaseModel):
     departementCode: str
     activity: Optional[str]
     address: Optional[str]
-    canBookFreeOffers: bool
+    isBeneficiary: bool
     city: Optional[str]
     civility: Optional[str]
     dateCreated: datetime

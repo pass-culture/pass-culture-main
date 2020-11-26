@@ -468,7 +468,6 @@ def create_stock(
 
 def create_user(
     activity: str = None,
-    can_book_free_offers: bool = True,
     civility: str = None,
     cultural_survey_id: str = None,
     cultural_survey_filled_date: datetime = None,
@@ -494,7 +493,6 @@ def create_user(
 ) -> UserSQLEntity:
     user = UserSQLEntity()
     user.activity = activity
-    user.canBookFreeOffers = can_book_free_offers
     user.civility = civility
     user.culturalSurveyId = cultural_survey_id
     user.culturalSurveyFilledDate = cultural_survey_filled_date

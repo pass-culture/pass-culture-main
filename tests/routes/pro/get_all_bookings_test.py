@@ -109,7 +109,7 @@ class GetTest:
 
     class Returns401Test:
         def when_user_is_admin(self, app):
-            user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+            user = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
 
             client = TestClient(app.test_client()).with_auth(user.email)
             response = client.get("/bookings/pro")

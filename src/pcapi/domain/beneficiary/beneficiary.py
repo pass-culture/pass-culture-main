@@ -2,7 +2,7 @@ class Beneficiary:
     def __init__(
         self,
         identifier: int,
-        can_book_free_offers: bool,
+        is_beneficiary: bool,
         email: str,
         first_name: str,
         last_name: str,
@@ -11,7 +11,7 @@ class Beneficiary:
         wallet_balance: float,
     ):
         self.identifier = identifier
-        self.can_book_free_offers = can_book_free_offers
+        self.is_beneficiary = is_beneficiary
         self.departmentCode = department_code
         self.email = email
         self.firstName = first_name

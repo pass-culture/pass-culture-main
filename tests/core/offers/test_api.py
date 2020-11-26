@@ -422,7 +422,7 @@ class CreateOfferTest:
         assert offer.product == product
 
     def test_create_activation_offer(self):
-        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        user = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
         venue = factories.VenueFactory()
 
         data = offers_serialize.PostOfferBodyModel(

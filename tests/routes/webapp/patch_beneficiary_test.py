@@ -49,13 +49,13 @@ class Patch:
         @pytest.mark.usefixtures("db_session")
         def when_changes_are_forbidden(self, app):
             # given
-            user = create_user(can_book_free_offers=True, is_admin=False)
+            user = create_user(is_beneficiary=True, is_admin=False)
             repository.save(user)
             user_id = user.id
 
             data = {
                 "isAdmin": True,
-                "canBookFreeOffers": False,
+                "isBeneficiary": False,
                 "firstName": "Jean",
                 "lastName": "Martin",
                 "dateCreated": "2018-08-01 12:00:00",

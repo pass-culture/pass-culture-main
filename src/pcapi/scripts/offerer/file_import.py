@@ -104,7 +104,7 @@ def fill_user_from(csv_row: List[str], user: UserSQLEntity) -> UserSQLEntity:
     user.publicName = "%s %s" % (user.firstName, user.lastName)
     user.email = csv_row[USER_EMAIL_COLUMN_INDEX]
     user.departementCode = csv_row[USER_DEPARTMENT_CODE_COLUMN_INDEX]
-    user.canBookFreeOffers = False
+    user.isBeneficiary = False
     user.password = random_password()
     generate_reset_token(user, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
     return user

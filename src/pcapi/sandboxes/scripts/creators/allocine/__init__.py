@@ -30,7 +30,7 @@ def save_allocine_sandbox() -> None:
         last_name="Champion",
         public_name="Didier Champion",
         email="pro.exploitant-cinema@example.net",
-        can_book_free_offers=False,
+        is_beneficiary=False,
     )
 
     offerer = create_offerer(

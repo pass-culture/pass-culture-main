@@ -148,7 +148,7 @@ class PaginatedOfferForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_venue_when_user_is_not_attached_to_its_offerer(self, app):
             # given
-            admin = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
+            admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
             offer_for_requested_venue = offers_factories.OfferFactory()
             offer_for_other_venue = offers_factories.OfferFactory()
 
@@ -170,7 +170,7 @@ class PaginatedOfferForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_venue_when_user_is_attached_to_its_offerer(self, app):
             # given
-            admin = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
+            admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
             admin_attachment_to_offerer = offers_factories.UserOffererFactory(user=admin)
             offer_for_requested_venue = offers_factories.OfferFactory(
                 venue__managingOfferer=admin_attachment_to_offerer.offerer
@@ -197,7 +197,7 @@ class PaginatedOfferForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self, app: object):
             # given
-            admin = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
+            admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
             offer_for_requested_offerer = offers_factories.OfferFactory()
             offer_for_other_offerer = offers_factories.OfferFactory()
 
@@ -219,7 +219,7 @@ class PaginatedOfferForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self, app: object):
             # given
-            admin = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
+            admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
             admin_attachment_to_requested_offerer = offers_factories.UserOffererFactory(user=admin)
             admin_attachment_to_other_offerer = offers_factories.UserOffererFactory(user=admin)
             offer_for_requested_offerer = offers_factories.OfferFactory(
@@ -247,7 +247,7 @@ class PaginatedOfferForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_not_return_event_offers_with_only_deleted_stock_if_filtering_by_time_period(self, app: object):
             # given
-            pro = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=True)
+            pro = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
             offer_in_requested_time_period = offers_factories.OfferFactory()
             offers_factories.EventStockFactory(
                 offer=offer_in_requested_time_period, beginningDatetime=datetime(2020, 1, 2), isSoftDeleted=True
@@ -271,7 +271,7 @@ class PaginatedOfferForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_not_return_offers_of_given_venue_when_user_is_not_attached_to_its_offerer(self, app):
             # given
-            pro = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=False)
+            pro = users_factories.UserFactory(isBeneficiary=False, isAdmin=False)
             offer_for_requested_venue = offers_factories.OfferFactory()
             offer_for_other_venue = offers_factories.OfferFactory()
 
@@ -293,7 +293,7 @@ class PaginatedOfferForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_venue_when_user_is_attached_to_its_offerer(self, app):
             # given
-            pro = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=False)
+            pro = users_factories.UserFactory(isBeneficiary=False, isAdmin=False)
             pro_attachment_to_offerer = offers_factories.UserOffererFactory(user=pro)
             offer_for_requested_venue = offers_factories.OfferFactory(
                 venue__managingOfferer=pro_attachment_to_offerer.offerer
@@ -320,7 +320,7 @@ class PaginatedOfferForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_not_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self, app: object):
             # given
-            pro = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=False)
+            pro = users_factories.UserFactory(isBeneficiary=False, isAdmin=False)
             offer_for_requested_offerer = offers_factories.OfferFactory()
             offer_for_other_offerer = offers_factories.OfferFactory()
 
@@ -342,7 +342,7 @@ class PaginatedOfferForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self, app: object):
             # given
-            pro = users_factories.UserFactory(canBookFreeOffers=False, isAdmin=False)
+            pro = users_factories.UserFactory(isBeneficiary=False, isAdmin=False)
             pro_attachment_to_requested_offerer = offers_factories.UserOffererFactory(user=pro)
             pro_attachment_to_other_offerer = offers_factories.UserOffererFactory(user=pro)
             offer_for_requested_offerer = offers_factories.OfferFactory(
@@ -1035,7 +1035,7 @@ class GetOffersByIdsTest:
     def test_return_all_for_admins(self):
         offer1 = offers_factories.OfferFactory()
         offer2 = offers_factories.OfferFactory()
-        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        user = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
 
         query = get_offers_by_ids(user, [offer1.id, offer2.id])
 

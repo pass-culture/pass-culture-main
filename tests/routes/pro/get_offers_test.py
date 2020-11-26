@@ -20,7 +20,7 @@ class Returns200:
         self, app, db_session, assert_num_queries
     ):
         # Given
-        admin = create_user(is_admin=True, can_book_free_offers=False)
+        admin = create_user(is_admin=True, is_beneficiary=False)
         offerer = create_offerer()
         departement_code = "12"
         requested_venue = create_venue(offerer, siret="12345678912345", postal_code=departement_code + "000")
@@ -79,7 +79,7 @@ class Returns200:
         self, app, db_session
     ):
         # Given
-        pro = create_user(is_admin=False, can_book_free_offers=False)
+        pro = create_user(is_admin=False, is_beneficiary=False)
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro, offerer)
         requested_venue = create_venue(offerer, siret="12345678912345")

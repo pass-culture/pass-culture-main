@@ -79,7 +79,7 @@ class FillUserFromTest:
         user = fill_user_from(self.csv_row, UserSQLEntity())
 
         # then
-        assert user.canBookFreeOffers == False
+        assert user.isBeneficiary == False
         assert user.password
 
     def test_has_a_reset_password_token_and_validity_limit(self):
@@ -106,7 +106,7 @@ class FillUserFromTest:
         assert user.phoneNumber == "0123456789"
         assert user.departementCode == "22"
         assert user.postalCode == "22850"
-        assert user.canBookFreeOffers == False
+        assert user.isBeneficiary == False
         assert user.password != ""
         assert user.resetPasswordToken is not None
         assert user.resetPasswordTokenValidityLimit is not None

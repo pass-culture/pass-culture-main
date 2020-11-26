@@ -35,7 +35,7 @@ class Post:
             # Given
             data = BASE_DATA.copy()
             expected_response_json = {
-                "canBookFreeOffers": False,
+                "isBeneficiary": False,
                 "departementCode": "93",
                 "email": "toto@btmx.fr",
                 "firstName": "Toto",
@@ -80,7 +80,7 @@ class Post:
             assert "validationToken" not in response.json
             created_user = UserSQLEntity.query.filter_by(email="toto@btmx.fr").first()
             assert created_user.validationToken is None
-            assert not created_user.canBookFreeOffers
+            assert not created_user.isBeneficiary
 
         @patch("pcapi.routes.webapp.signup.get_authorized_emails_and_dept_codes")
         @pytest.mark.usefixtures("db_session")
@@ -95,7 +95,7 @@ class Post:
                 "password": "__v4l1d_P455sw0rd__",
                 "contact_ok": "true",
                 "isAdmin": True,
-                "canBookFreeOffers": True,
+                "isBeneficiary": True,
             }
             get_authorized_emails_and_dept_codes.return_value = (["pctest.isAdmin.canBook@btmx.fr"], ["93"])
 

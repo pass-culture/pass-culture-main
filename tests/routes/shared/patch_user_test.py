@@ -44,7 +44,7 @@ class Patch:
             assert response.json == {
                 "activity": None,
                 "address": None,
-                "canBookFreeOffers": True,
+                "isBeneficiary": True,
                 "city": None,
                 "civility": None,
                 "dateCreated": format_into_utc_date(user.dateCreated),
@@ -68,7 +68,7 @@ class Patch:
         @pytest.mark.usefixtures("db_session")
         def when_changes_are_forbidden(self, app):
             # given
-            user = create_user(can_book_free_offers=True, is_admin=False)
+            user = create_user(is_beneficiary=True, is_admin=False)
             repository.save(user)
             user_id = user.id
 
@@ -77,7 +77,7 @@ class Patch:
                 "publicName": "plop",
                 # ... but none of the following fields.
                 "isAdmin": True,
-                "canBookFreeOffers": False,
+                "isBeneficiary": False,
                 "firstName": "Jean",
                 "lastName": "Martin",
                 "dateCreated": "2018-08-01 12:00:00",

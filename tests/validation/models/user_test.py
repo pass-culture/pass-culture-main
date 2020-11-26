@@ -133,16 +133,16 @@ class EmailTest:
 
 
 class AdminTest:
-    def test_should_return_error_message_when_admin_user_can_book_free_offers(self, app):
+    def test_should_return_error_message_when_admin_user_is_beneficiary(self, app):
         # Given
-        user = create_user(is_admin=True, can_book_free_offers=True)
+        user = create_user(is_admin=True, is_beneficiary=True)
         api_errors = ApiErrors()
 
         # When
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors["canBookFreeOffers"] == ["Admin ne peut pas réserver"]
+        assert api_error.errors["isBeneficiary"] == ["Admin ne peut pas être bénéficiaire"]
 
 
 class PasswordTest:

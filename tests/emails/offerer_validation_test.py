@@ -27,7 +27,7 @@ def test_write_object_validation_email(app):
     )
 
     user = create_user(
-        can_book_free_offers=False,
+        is_beneficiary=False,
         departement_code="75",
         email="user@accenture.com",
         public_name="Test",

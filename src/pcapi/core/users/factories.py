@@ -39,7 +39,7 @@ class UserFactory(BaseFactory):
 
         if not create:
             return None
-        if obj.isAdmin or not obj.canBookFreeOffers:
+        if obj.isAdmin or not obj.isBeneficiary:
             return None
         deposit_kwargs = {"user": obj}
         if extracted:

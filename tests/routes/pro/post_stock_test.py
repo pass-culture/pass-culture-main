@@ -54,7 +54,7 @@ class Returns400:
 
     def when_booking_limit_datetime_after_beginning_datetime(self, app, db_session):
         # Given
-        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        user = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
         offer = offers_factories.EventOfferFactory()
 
         beginningDatetime = datetime(2019, 2, 14)
@@ -79,7 +79,7 @@ class Returns400:
 
     def when_invalid_format_for_booking_limit_datetime(self, app, db_session):
         # Given
-        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        user = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
         offer = offers_factories.EventOfferFactory()
 
         data = {
@@ -98,7 +98,7 @@ class Returns400:
 
     def when_booking_limit_datetime_is_none_for_event(self, app, db_session):
         # Given
-        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        user = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
         offer = offers_factories.EventOfferFactory()
 
         beginningDatetime = datetime(2019, 2, 14)
@@ -118,7 +118,7 @@ class Returns400:
 
     def when_setting_beginning_datetime_on_offer_with_thing(self, app, db_session):
         # Given
-        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        user = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
         offer = offers_factories.ThingOfferFactory()
 
         beginningDatetime = datetime(2019, 2, 14)

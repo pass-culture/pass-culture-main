@@ -18,13 +18,13 @@ def create_domain_beneficiary(
     first_name: str = None,
     last_name: str = None,
     department_code: str = "93",
-    can_book_free_offers: bool = True,
+    is_beneficiary: bool = True,
     wallet_balance: int = None,
     reset_password_token: str = "",
 ) -> Beneficiary:
     user = Beneficiary(
         identifier=identifier,
-        can_book_free_offers=can_book_free_offers,
+        is_beneficiary=is_beneficiary,
         email=email,
         first_name=first_name,
         last_name=last_name,

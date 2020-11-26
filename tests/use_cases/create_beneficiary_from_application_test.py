@@ -61,7 +61,7 @@ def test_saved_a_beneficiary_from_application(
     beneficiary = UserSQLEntity.query.one()
     assert beneficiary.activity == "Apprenti"
     assert beneficiary.address == "3 rue de Valois"
-    assert beneficiary.canBookFreeOffers is True
+    assert beneficiary.isBeneficiary is True
     assert beneficiary.city == "Paris"
     assert beneficiary.civility == "Mme"
     assert beneficiary.dateOfBirth == datetime(1995, 2, 5)

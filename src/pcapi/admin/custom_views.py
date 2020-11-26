@@ -56,7 +56,7 @@ class UserAdminView(BaseAdminView):
     can_edit = True
     column_list = [
         "id",
-        "canBookFreeOffers",
+        "isBeneficiary",
         "email",
         "firstName",
         "lastName",
@@ -70,7 +70,7 @@ class UserAdminView(BaseAdminView):
     ]
     column_labels = dict(
         email="Email",
-        canBookFreeOffers="Peut réserver",
+        isBeneficiary="Est bénéficiaire",
         firstName="Prénom",
         lastName="Nom",
         publicName="Nom d'utilisateur",
@@ -82,7 +82,7 @@ class UserAdminView(BaseAdminView):
         validationToken="Jeton de validation d'adresse email",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
-    column_filters = ["postalCode", "canBookFreeOffers"]
+    column_filters = ["postalCode", "isBeneficiary"]
     form_columns = [
         "email",
         "firstName",
@@ -91,12 +91,12 @@ class UserAdminView(BaseAdminView):
         "dateOfBirth",
         "departementCode",
         "postalCode",
-        "canBookFreeOffers",
+        "isBeneficiary",
     ]
 
     def on_model_change(self, form, model, is_created):
         # If a user is a pro or an admin, he shouldn't be able to book offers
-        if form.canBookFreeOffers.data and (model.isAdmin or len(model.offerers) > 0):
+        if form.isBeneficiary.data and (model.isAdmin or len(model.offerers) > 0):
             raise validators.ValidationError("Seul un jeune peut réserver des offres")
 
         super().on_model_change(form, model, is_created)

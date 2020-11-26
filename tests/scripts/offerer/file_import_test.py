@@ -169,7 +169,7 @@ class FillUserFromTest:
         assert user.publicName == "Philip Mortimer"
         assert user.email == "pmortimer@bletchley.co.uk"
         assert user.departementCode == "29"
-        assert user.canBookFreeOffers == False
+        assert user.isBeneficiary == False
 
     @patch("pcapi.scripts.offerer.file_import.random_password")
     def test_returns_an_user_with_computed_password(self, random_password):
@@ -199,7 +199,7 @@ class FillUserFromTest:
         user = fill_user_from(self.csv_row, UserSQLEntity())
 
         # then
-        assert user.canBookFreeOffers == False
+        assert user.isBeneficiary == False
         assert user.password
 
     def test_has_a_reset_password_token_and_validity_limit(self):
@@ -224,7 +224,7 @@ class FillUserFromTest:
         assert user.firstName == "Philip"
         assert user.email == "pmortimer@bletchley.co.uk"
         assert user.departementCode == "29"
-        assert user.canBookFreeOffers == False
+        assert user.isBeneficiary == False
         assert user.password != ""
         assert user.resetPasswordToken is not None
         assert user.resetPasswordTokenValidityLimit is not None

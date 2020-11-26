@@ -5,7 +5,7 @@ from pcapi.models import UserSQLEntity
 def to_domain(user_sql_entity: UserSQLEntity) -> Beneficiary:
     return Beneficiary(
         identifier=user_sql_entity.id,
-        can_book_free_offers=user_sql_entity.canBookFreeOffers,
+        is_beneficiary=user_sql_entity.isBeneficiary,
         email=user_sql_entity.email,
         first_name=user_sql_entity.firstName,
         last_name=user_sql_entity.lastName,

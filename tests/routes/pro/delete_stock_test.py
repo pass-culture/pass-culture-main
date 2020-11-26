@@ -33,7 +33,7 @@ class Returns400:
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProviders="1")
         stock = offers_factories.StockFactory(offer=offer)
 
-        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        user = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
 
         # when
         client = TestClient(app.test_client()).with_auth(user.email)

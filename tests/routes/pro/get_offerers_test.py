@@ -88,7 +88,7 @@ class Get:
             offerer3 = create_offerer(siren="123456783", name="offreur B")
             repository.save(offerer1, offerer3, offerer2)
 
-            user = create_user(can_book_free_offers=True, is_admin=False)
+            user = create_user(is_beneficiary=True, is_admin=False)
             user.offerers = [offerer1, offerer2]
             repository.save(user)
 
@@ -107,7 +107,7 @@ class Get:
             offerer3 = create_offerer(siren="123456783", name="offreur B")
             repository.save(offerer1, offerer3, offerer2)
 
-            user = create_user(can_book_free_offers=False, is_admin=True)
+            user = create_user(is_beneficiary=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
             repository.save(user)
 
@@ -126,7 +126,7 @@ class Get:
             bank_information1 = create_bank_information(application_id=1, offerer=offerer1)
             bank_information2 = create_bank_information(application_id=2, offerer=offerer2)
 
-            user = create_user(can_book_free_offers=False, is_admin=True)
+            user = create_user(is_beneficiary=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
             repository.save(user, bank_information1, bank_information2)
 
@@ -169,7 +169,7 @@ class Get:
             bank_information1 = create_bank_information(application_id=1, offerer=offerer1)
             bank_information2 = create_bank_information(application_id=2, offerer=offerer2)
 
-            user = create_user(can_book_free_offers=False, is_admin=True)
+            user = create_user(is_beneficiary=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
             repository.save(user, bank_information1, bank_information2)
 
@@ -330,7 +330,7 @@ class Get:
             offerer3 = create_offerer(siren="123456783", name="offreur B")
             repository.save(offerer1, offerer3, offerer2)
 
-            user = create_user(can_book_free_offers=False, is_admin=True)
+            user = create_user(is_beneficiary=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
             repository.save(user)
 

@@ -114,7 +114,7 @@ class Returns204:
     ):
         # given
         data = {"token": "dumbToken", "email": "bobby@example.com"}
-        user = create_user(can_book_free_offers=True, email="bobby@example.com")
+        user = create_user(is_beneficiary=True, email="bobby@example.com")
         app_origin_header = "http://localhost:3000"
         repository.save(user)
 
@@ -132,7 +132,7 @@ class Returns204:
     ):
         # given
         data = {"token": "dumbToken", "email": "bobby@example.com"}
-        user = create_user(can_book_free_offers=False, email="bobby@example.com")
+        user = create_user(is_beneficiary=False, email="bobby@example.com")
         app_origin_header = "http://localhost:3000"
         repository.save(user)
 

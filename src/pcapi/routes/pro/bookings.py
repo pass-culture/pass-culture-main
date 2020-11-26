@@ -190,7 +190,7 @@ def patch_booking_keep_by_token(token: str):
 
 def _activate_user(user_to_activate: UserSQLEntity) -> None:
     check_user_can_validate_activation_offer(current_user)
-    user_to_activate.canBookFreeOffers = True
+    user_to_activate.isBeneficiary = True
     deposit = create_initial_deposit(user_to_activate)
     repository.save(deposit)
 

@@ -94,7 +94,7 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     )
 
     user = create_user(
-        can_book_free_offers=False,
+        is_beneficiary=False,
         departement_code="75",
         email="user@accenture.com",
         public_name="Test",

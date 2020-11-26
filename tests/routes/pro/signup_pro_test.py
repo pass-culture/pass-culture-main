@@ -39,7 +39,7 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             expected_response_json = {
-                "canBookFreeOffers": False,
+                "isBeneficiary": False,
                 "departementCode": "92",
                 "email": "toto_pro@btmx.fr",
                 "firstName": "Toto",

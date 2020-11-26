@@ -28,7 +28,7 @@ class Post:
         @patch("pcapi.routes.pro.venue_providers.find_by_id")
         def when_venue_provider_is_successfully_created(self, stubbed_find_by_id, stubbed_check, mock_subprocess, app):
             # Given
-            user = create_user(is_admin=True, can_book_free_offers=False)
+            user = create_user(is_admin=True, is_beneficiary=False)
             offerer = create_offerer()
             venue = create_venue(offerer, siret="12345678912345")
             repository.save(venue, user)
@@ -75,7 +75,7 @@ class Post:
             # Given
             offerer = create_offerer(siren="775671464")
             venue = create_venue(offerer)
-            user = create_user(is_admin=True, can_book_free_offers=False)
+            user = create_user(is_admin=True, is_beneficiary=False)
             allocine_pivot = create_allocine_pivot(siret=venue.siret)
             repository.save(venue, user, allocine_pivot)
             stubbed_find_by_id.return_value = venue
@@ -103,7 +103,7 @@ class Post:
             # Given
             offerer = create_offerer(siren="775671464")
             venue = create_venue(offerer)
-            user = create_user(is_admin=True, can_book_free_offers=False)
+            user = create_user(is_admin=True, is_beneficiary=False)
             repository.save(venue, user)
             stubbed_find_by_id.return_value = venue
 
@@ -136,7 +136,7 @@ class Post:
 
             mock_check_new_venue_provider_information.side_effect = api_errors
 
-            user = create_user(can_book_free_offers=False, is_admin=True)
+            user = create_user(is_beneficiary=False, is_admin=True)
             repository.save(user)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             venue_provider_data = {
@@ -156,7 +156,7 @@ class Post:
         @patch("pcapi.routes.pro.venue_providers.find_by_id")
         def when_trying_to_add_existing_provider(self, stubbed_find_by_id, stubbed_check, app):
             # Given
-            user = create_user(is_admin=True, can_book_free_offers=False)
+            user = create_user(is_admin=True, is_beneficiary=False)
             offerer = create_offerer()
             venue = create_venue(offerer, siret="12345678912345")
             provider = activate_provider("LibrairesStocks")
@@ -184,7 +184,7 @@ class Post:
             # Given
             offerer = create_offerer(siren="775671464")
             venue = create_venue(offerer)
-            user = create_user(is_admin=True, can_book_free_offers=False)
+            user = create_user(is_admin=True, is_beneficiary=False)
             repository.save(venue, user)
             stubbed_find_by_id.return_value = venue
 
@@ -212,7 +212,7 @@ class Post:
             # Given
             offerer = create_offerer(siren="775671464")
             venue = create_venue(offerer)
-            user = create_user(is_admin=True, can_book_free_offers=False)
+            user = create_user(is_admin=True, is_beneficiary=False)
             repository.save(venue, user)
             stubbed_find_by_id.return_value = venue
 
@@ -247,7 +247,7 @@ class Post:
         @patch("pcapi.routes.pro.venue_providers.find_by_id")
         def when_venue_does_not_exist(self, stubbed_find_by_id, app):
             # Given
-            user = create_user(is_admin=True, can_book_free_offers=False)
+            user = create_user(is_admin=True, is_beneficiary=False)
             offerer = create_offerer(siren="775671464")
             repository.save(user, offerer)
             stubbed_find_by_id.return_value = None
@@ -273,7 +273,7 @@ class Post:
         @patch("pcapi.routes.pro.venue_providers.find_by_id")
         def when_provider_api_not_available(self, stubbed_find_by_id, stubbed_check, app):
             # Given
-            user = create_user(is_admin=True, can_book_free_offers=False)
+            user = create_user(is_admin=True, is_beneficiary=False)
             offerer = create_offerer()
             venue = create_venue(offerer, siret="12345678912345")
             repository.save(venue, user)
@@ -315,7 +315,7 @@ class Post:
             self, mocked_connect_venue_to_provider, stubbed_find_by_id, stubbed_check, app
         ):
             # Given
-            user = create_user(is_admin=True, can_book_free_offers=False)
+            user = create_user(is_admin=True, is_beneficiary=False)
             offerer = create_offerer()
             venue = create_venue(offerer, siret="12345678912345")
             repository.save(venue, user)
@@ -356,7 +356,7 @@ class Post:
             app,
         ):
             # Given
-            user = create_user(is_admin=True, can_book_free_offers=False)
+            user = create_user(is_admin=True, is_beneficiary=False)
             offerer = create_offerer()
             venue = create_venue(offerer, siret="12345678912345")
             allocine_pivot = create_allocine_pivot(siret=venue.siret)

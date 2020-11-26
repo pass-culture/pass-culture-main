@@ -106,9 +106,9 @@ class Returns204:
                 token="ABCDEF",
                 stock__price=0,
                 stock__offer__product__type=str(EventType.ACTIVATION),
-                user__canBookFreeOffers=False,
+                user__isBeneficiary=False,
             )
-            pro_user = UserFactory(email="pro@example.com", canBookFreeOffers=False, isAdmin=True)
+            pro_user = UserFactory(email="pro@example.com", isBeneficiary=False, isAdmin=True)
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -118,13 +118,13 @@ class Returns204:
             # Then
             assert response.status_code == 204
             user = booking.user
-            assert user.canBookFreeOffers
+            assert user.isBeneficiary
             assert user.deposits[0].amount == 500
 
         def when_admin_user_is_logged_in_expect_to_send_notification_email(self, app):
             # Given
             user = create_user(email="user@email.fr", first_name="John")
-            admin_user = create_user(can_book_free_offers=False, email="pro@email.fr", is_admin=True)
+            admin_user = create_user(is_beneficiary=False, email="pro@email.fr", is_admin=True)
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
@@ -153,7 +153,7 @@ class Returns204:
             # Then
             user = UserSQLEntity.query.get(user_id)
             assert response.status_code == 204
-            assert user.canBookFreeOffers is True
+            assert user.isBeneficiary is True
             assert user.deposits[0].amount == 500
             mocked_send_email.assert_called_once()
 
@@ -318,7 +318,7 @@ class Returns403:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
             # Given
-            admin = UserFactory(isAdmin=True, canBookFreeOffers=False)
+            admin = UserFactory(isAdmin=True, isBeneficiary=False)
             booking = BookingFactory(isCancelled=True)
             url = f"/v2/bookings/use/token/{booking.token}"
 
@@ -333,7 +333,7 @@ class Returns403:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_booking_has_been_refunded(self, app):
             # Given
-            admin = UserFactory(isAdmin=True, canBookFreeOffers=False)
+            admin = UserFactory(isAdmin=True, isBeneficiary=False)
             booking = BookingFactory(isUsed=True)
             PaymentFactory(booking=booking)
             url = f"/v2/bookings/use/token/{booking.token}"
@@ -418,10 +418,10 @@ class Returns405:
         @pytest.mark.usefixtures("db_session")
         def expect_no_new_deposits_when_the_linked_user_has_been_already_activated(self, app):
             # Given
-            user = create_user(can_book_free_offers=False, email="user@email.fr")
+            user = create_user(is_beneficiary=False, email="user@email.fr")
             deposit = create_deposit(user, amount=0)
 
-            admin_user = create_user(can_book_free_offers=False, email="admin@email.fr", is_admin=True)
+            admin_user = create_user(is_beneficiary=False, email="admin@email.fr", is_admin=True)
 
             offerer = create_offerer()
             admin_user_offerer = create_user_offerer(admin_user, offerer)

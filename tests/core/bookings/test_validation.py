@@ -19,13 +19,13 @@ from pcapi.models import api_errors
 @pytest.mark.usefixtures("db_session")
 class CheckCanBookFreeOfferTest:
     def test_dont_raise(self):
-        user = users_factories.UserFactory(canBookFreeOffers=True)
+        user = users_factories.UserFactory(isBeneficiary=True)
         stock = offers_factories.StockFactory()
         validation.check_can_book_free_offer(user, stock)  # should not raise
 
     @pytest.mark.usefixtures("db_session")
     def test_should_raise_exception_when_user_cannot_book_a_free_offer(self, app):
-        user = users_factories.UserFactory(canBookFreeOffers=False)
+        user = users_factories.UserFactory(isBeneficiary=False)
         stock = offers_factories.StockFactory(price=0)
 
         with pytest.raises(exceptions.CannotBookFreeOffers) as error:

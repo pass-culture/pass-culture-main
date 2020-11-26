@@ -163,7 +163,7 @@ class GetUsersInformationFromStockBookingsTest:
     def test_returns_correct_users_information_from_bookings_stock(self):
         # Given
         user_1 = create_user(
-            can_book_free_offers=True,
+            is_beneficiary=True,
             departement_code="93",
             email="test@example.com",
             first_name="Jean",
@@ -171,7 +171,7 @@ class GetUsersInformationFromStockBookingsTest:
             public_name="Test",
         )
         user_2 = create_user(
-            can_book_free_offers=True,
+            is_beneficiary=True,
             departement_code="93",
             email="mail@example.com",
             first_name="Jaja",
@@ -179,7 +179,7 @@ class GetUsersInformationFromStockBookingsTest:
             public_name="Test",
         )
         user_3 = create_user(
-            can_book_free_offers=True,
+            is_beneficiary=True,
             departement_code="93",
             email="mail@example.com",
             first_name="Toto",

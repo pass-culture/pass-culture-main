@@ -55,7 +55,7 @@ def post_for_password_token(body: ResetPasswordBodyModel) -> None:
     generate_reset_token(user)
     repository.save(user)
 
-    is_not_pro_user = user.canBookFreeOffers
+    is_not_pro_user = user.isBeneficiary
 
     if is_not_pro_user:
         try:

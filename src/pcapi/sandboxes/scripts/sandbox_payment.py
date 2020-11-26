@@ -26,27 +26,27 @@ three_days = timedelta(days=3)
 
 def save_users_with_deposits():
     user1 = create_user(
-        can_book_free_offers=True,
+        is_beneficiary=True,
         email="user1@test.com",
         reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
     )
     user2 = create_user(
-        can_book_free_offers=True,
+        is_beneficiary=True,
         email="user2@test.com",
         reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
     )
     user3 = create_user(
-        can_book_free_offers=True,
+        is_beneficiary=True,
         email="user3@test.com",
         reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
     )
     user4 = create_user(
-        can_book_free_offers=True,
+        is_beneficiary=True,
         email="user4@test.com",
         reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
     )
     user5 = create_user(
-        can_book_free_offers=True,
+        is_beneficiary=True,
         email="user5@test.com",
         reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
     )

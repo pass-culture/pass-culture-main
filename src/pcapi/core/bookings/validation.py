@@ -23,7 +23,7 @@ def check_can_book_free_offer(user: UserSQLEntity, stock: Stock) -> None:
     # user". Here we seem to allow pro/admin users to book non-free
     # offers, but in fact we'll check later whether the user has
     # money; since pro/admin users don't, an exception will be raised.
-    if not user.canBookFreeOffers and stock.price == 0:
+    if not user.isBeneficiary and stock.price == 0:
         raise exceptions.CannotBookFreeOffers()
 
 

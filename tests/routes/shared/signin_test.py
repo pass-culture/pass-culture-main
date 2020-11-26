@@ -40,7 +40,6 @@ class Post:
             assert response.json == {
                 "activity": None,
                 "address": None,
-                "canBookFreeOffers": True,
                 "city": None,
                 "civility": "M.",
                 "dateCreated": format_into_utc_date(user.dateCreated),

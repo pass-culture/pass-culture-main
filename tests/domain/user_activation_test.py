@@ -119,7 +119,7 @@ class CreateBeneficiaryFromApplicationTest:
         assert beneficiary.departementCode == "67"
         assert beneficiary.postalCode == "67200"
         assert beneficiary.dateOfBirth == datetime(2000, 5, 1)
-        assert beneficiary.canBookFreeOffers == True
+        assert beneficiary.isBeneficiary == True
         assert beneficiary.isAdmin == False
         assert beneficiary.password is not None
         assert beneficiary.resetPasswordToken is not None

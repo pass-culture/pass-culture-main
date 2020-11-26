@@ -20,7 +20,7 @@ def create_beneficiary_user() -> UserSQLEntity:
 
 
 def create_admin_user():
-    admin_user = create_user(can_book_free_offers=False, is_admin=True, email="pctest.admin93.0@btmx.fr")
+    admin_user = create_user(is_beneficiary=False, is_admin=True, email="pctest.admin93.0@btmx.fr")
     repository.save(admin_user)
     logger.info("created 1 admin user")
 

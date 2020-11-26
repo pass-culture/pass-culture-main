@@ -221,7 +221,7 @@ class Put:
             @pytest.mark.usefixtures("db_session")
             def when_user_has_no_offer_in_his_department(self, mock_geolocation_feature, app):
                 # given
-                user = create_user(can_book_free_offers=True, departement_code="973", is_admin=False)
+                user = create_user(is_beneficiary=True, departement_code="973", is_admin=False)
                 offerer = create_offerer()
                 venue29 = create_venue(
                     offerer, siret=offerer.siren + "98765", postal_code="29000", departement_code="29"
@@ -268,7 +268,7 @@ class Put:
             @pytest.mark.usefixtures("db_session")
             def when_user_has_one_offer_in_his_department(self, mock_geolocation_feature, app):
                 # given
-                user = create_user(can_book_free_offers=True, departement_code="93", is_admin=False)
+                user = create_user(is_beneficiary=True, departement_code="93", is_admin=False)
                 offerer = create_offerer()
                 venue93 = create_venue(
                     offerer, siret=offerer.siren + "54321", postal_code="93000", departement_code="93"
@@ -912,7 +912,7 @@ class Put:
             @pytest.mark.usefixtures("db_session")
             def when_user_has_bookings_on_recommended_offers(self, mock_geolocation_feature, app):
                 # given
-                user = create_user(can_book_free_offers=True, departement_code="93", is_admin=False)
+                user = create_user(is_beneficiary=True, departement_code="93", is_admin=False)
                 offerer = create_offerer()
                 venue = create_venue(offerer, siret=offerer.siren + "54321", postal_code="93000", departement_code="93")
                 offer = create_offer_with_thing_product(venue, thing_name="thing 93", url=None, is_national=False)

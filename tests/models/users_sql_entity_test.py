@@ -23,7 +23,7 @@ from pcapi.repository import repository
 @pytest.mark.usefixtures("db_session")
 def test_cannot_create_admin_that_can_book(app):
     # Given
-    user = create_user(can_book_free_offers=True, is_admin=True)
+    user = create_user(is_beneficiary=True, is_admin=True)
 
     # When
     with pytest.raises(ApiErrors):
@@ -76,7 +76,7 @@ class HasRightsTest:
     def test_user_has_editor_right_on_offerer_if_he_is_not_attached_but_is_admin(self, app):
         # given
         offerer = create_offerer()
-        user = create_user(can_book_free_offers=False, is_admin=True)
+        user = create_user(is_beneficiary=False, is_admin=True)
         repository.save(offerer, user)
 
         # when
@@ -315,7 +315,7 @@ class needsToSeeTutorialsTest:
     @pytest.mark.usefixtures("db_session")
     def test_beneficiary_has_to_see_tutorials_when_not_already_seen(self, app):
         # given
-        user = create_user(can_book_free_offers=True, has_seen_tutorials=False)
+        user = create_user(is_beneficiary=True, has_seen_tutorials=False)
         # when
         repository.save(user)
         # then
@@ -324,7 +324,7 @@ class needsToSeeTutorialsTest:
     @pytest.mark.usefixtures("db_session")
     def test_beneficiary_has_not_to_see_tutorials_when_already_seen(self, app):
         # given
-        user = create_user(can_book_free_offers=True, has_seen_tutorials=True)
+        user = create_user(is_beneficiary=True, has_seen_tutorials=True)
         # when
         repository.save(user)
         # then
@@ -333,7 +333,7 @@ class needsToSeeTutorialsTest:
     @pytest.mark.usefixtures("db_session")
     def test_pro_user_has_not_to_see_tutorials_when_already_seen(self, app):
         # given
-        user = create_user(can_book_free_offers=False)
+        user = create_user(is_beneficiary=False)
         # when
         repository.save(user)
         # then

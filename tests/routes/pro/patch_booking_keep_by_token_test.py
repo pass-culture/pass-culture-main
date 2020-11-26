@@ -272,7 +272,7 @@ class Returns403:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
             # Given
-            admin = UserFactory(isAdmin=True, canBookFreeOffers=False)
+            admin = UserFactory(isAdmin=True, isBeneficiary=False)
             booking = BookingFactory(isCancelled=True, isUsed=True)
             url = f"/v2/bookings/keep/token/{booking.token}"
 

@@ -39,7 +39,7 @@ def signup_pro():
         digital_venue = create_digital_venue(offerer)
         objects_to_save.extend([digital_venue, offerer])
     objects_to_save.append(user_offerer)
-    new_user.canBookFreeOffers = False
+    new_user.isBeneficiary = False
     new_user.isAdmin = False
     new_user.needsToFillCulturalSurvey = False
     new_user = _set_offerer_departement_code(new_user, offerer)

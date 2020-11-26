@@ -94,7 +94,7 @@ class Get:
         def when_user_has_rights_and_activation_event(self, app):
             # Given
             user = create_user(date_of_birth=datetime(2001, 2, 1), email="user@example.com", phone_number="0698765432")
-            admin_user = create_user(can_book_free_offers=False, email="admin@example.com", is_admin=True)
+            admin_user = create_user(is_beneficiary=False, email="admin@example.com", is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(

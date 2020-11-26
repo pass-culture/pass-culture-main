@@ -49,7 +49,7 @@ def save_bookings_recap_sandbox():
         first_name="Balthazar",
         last_name="Picsou",
         email="balthazar.picsou@example.com",
-        can_book_free_offers=False,
+        is_beneficiary=False,
     )
     offerer = create_offerer(
         siren="645389012",
