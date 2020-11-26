@@ -135,8 +135,6 @@ VENUE_INCLUDES = [
 
 VENUE_PROVIDER_INCLUDES = ["provider", "nOffers", "-_sa_polymorphic_on"]
 
-MEDIATION_INCLUDES = ["thumbUrl"]
-
 FEATURE_INCLUDES = ["nameKey"]
 
 USER_OFFERER_INCLUDES = ["-validationToken"]
