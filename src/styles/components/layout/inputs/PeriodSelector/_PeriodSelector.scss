@@ -67,9 +67,11 @@
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
       height: rem(40px);
+      padding: 0 1px;
 
       &:focus-within {
         border-color: $primary;
+        padding: 0;
       }
     }
 
@@ -78,9 +80,11 @@
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
       height: rem(40px);
+      padding: 0 1px;
 
       &:focus-within {
         border-color: $primary;
+        padding: 0;
       }
     }
 
