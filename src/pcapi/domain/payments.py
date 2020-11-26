@@ -26,9 +26,6 @@ from pcapi.models.user_sql_entity import WalletBalance
 from pcapi.utils.human_ids import humanize
 
 
-XML_NAMESPACE = {"ns": "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"}
-
-
 class UnmatchedPayments(Exception):
     def __init__(self, payment_ids: Set[int]):
         self.payment_ids = payment_ids
