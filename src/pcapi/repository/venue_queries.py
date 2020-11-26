@@ -26,20 +26,6 @@ def find_by_managing_offerer_id(offerer_id: int) -> VenueSQLEntity:
     return VenueSQLEntity.query.filter_by(managingOffererId=offerer_id).first()
 
 
-def find_by_managing_offerer_id_and_siret(offerer_id: int, siret: str) -> VenueSQLEntity:
-    return VenueSQLEntity.query.filter_by(managingOffererId=offerer_id).filter_by(siret=siret).one_or_none()
-
-
-def find_by_managing_user(user: UserSQLEntity) -> List[VenueSQLEntity]:
-    return (
-        VenueSQLEntity.query.join(Offerer)
-        .join(UserOfferer)
-        .join(UserSQLEntity)
-        .filter(UserSQLEntity.id == user.id)
-        .all()
-    )
-
-
 def _filter_by_is_virtual(query, is_virtual):
     if is_virtual:
         query = query.filter(VenueSQLEntity.isVirtual == True)
