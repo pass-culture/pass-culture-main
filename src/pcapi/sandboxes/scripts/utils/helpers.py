@@ -23,12 +23,7 @@ def get_offer_helper(offer):
     return dict(
         as_dict(offer),
         **{
-            "keywordsString": "{}".format(offer.product.name)
-            .replace("?", " ")
-            .replace("!", " ")
-            .replace("(", "")
-            .replace(")", "")
-            .replace("ù", "u"),
+            "keywordsString": offer.name,
             "venueCity": offer.venue.city,
             "venueName": offer.venue.name,
             "thingName": offer.product.name,
