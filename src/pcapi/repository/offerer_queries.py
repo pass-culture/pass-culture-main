@@ -57,18 +57,3 @@ def keep_offerers_with_at_least_one_physical_venue(query):
 def keep_offerers_with_no_physical_venue(query):
     is_not_virtual = VenueSQLEntity.isVirtual == False
     return query.filter(~Offerer.managedVenues.any(is_not_virtual))
-
-
-def _query_offerers_with_user_offerer():
-    return Offerer.query.join(UserOfferer).distinct(Offerer.id)
-
-
-def _query_offerers_with_stock():
-    return (
-        _query_offerers_with_user_offerer()
-        .join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id)
-        .join(Offer)
-        .join(Stock)
-        .filter(Offer.type != str(ThingType.ACTIVATION))
-        .filter(Offer.type != str(EventType.ACTIVATION))
-    )
