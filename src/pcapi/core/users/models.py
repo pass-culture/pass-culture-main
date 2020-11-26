@@ -15,6 +15,8 @@ from pcapi.models.pc_object import PcObject
 
 ALGORITHM_HS_256 = "HS256"
 
+VOID_FIRST_NAME = ""
+
 
 class TokenType(enum.Enum):
     RESET_PASSWORD = "reset-password"
