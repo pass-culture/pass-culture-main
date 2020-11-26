@@ -21,10 +21,10 @@ jobs:
             - yarn-packages-{{ checksum "~/pass-culture-main/pro/yarn.lock" }}
       - run:
           name: Install dependencies
+          working_directory: ~/pass-culture-main/pro
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd ~/pass-culture-main/pro
             nvm install
             yarn install
       - save_cache:
@@ -34,18 +34,18 @@ jobs:
             - ~/.cache/yarn
       - run:
           name: Running linter
+          working_directory: ~/pass-culture-main/pro
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd ~/pass-culture-main/pro
             nvm install
             yarn lint:js
       - run:
           name: Running Unit Tests
+          working_directory: ~/pass-culture-main/pro
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd ~/pass-culture-main/pro
             nvm install
             yarn test:unit --coverage
             yarn coveralls
@@ -59,16 +59,17 @@ jobs:
             DOCKERIZE_VERSION: v0.6.1
       - run:
           name: Running API server
+          working_directory: ~/pass-culture-main/pro
           command: |
            cd ~/pass-culture-main
            ./pc start-backend
           background: true
       - run:
           name: Running Frontend
+          working_directory: ~/pass-culture-main/pro
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd ~/pass-culture-main/pro
             nvm install
             yarn start
           background: true
@@ -81,10 +82,10 @@ jobs:
             ./pc sandbox --name=industrial
       - run:
           name: Running end2end tests
+          working_directory: ~/pass-culture-main/pro
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd ~/pass-culture-main/pro
             nvm install
             yarn test:cafe
       - store_artifacts:
