@@ -31,6 +31,7 @@ from pcapi.validation.routes.venue_providers import check_existing_provider
 from pcapi.validation.routes.venue_providers import check_new_venue_provider_information
 
 
+# @debt api-migration
 @private_api.route("/venueProviders", methods=["GET"])
 @login_required
 def list_venue_providers():
@@ -44,6 +45,7 @@ def list_venue_providers():
     return jsonify([as_dict(venue_provider, includes=VENUE_PROVIDER_INCLUDES) for venue_provider in vp_query.all()])
 
 
+# @debt api-migration
 @private_api.route("/venueProviders", methods=["POST"])
 @login_required
 @expect_json_data

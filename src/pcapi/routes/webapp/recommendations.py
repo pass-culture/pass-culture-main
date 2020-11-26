@@ -27,7 +27,7 @@ from pcapi.utils.rest import expect_json_data
 
 DEFAULT_PAGE = 1
 
-
+# @debt api-migration
 @private_api.route("/recommendations/offers/<offer_id>", methods=["GET"])
 @login_required
 def get_recommendation(offer_id):
@@ -38,6 +38,7 @@ def get_recommendation(offer_id):
     return jsonify(serialize_recommendation(recommendation, user_id=current_user.id)), 200
 
 
+# @debt api-migration
 @private_api.route("/recommendations/<recommendation_id>", methods=["PATCH"])
 @login_required
 @expect_json_data
@@ -49,6 +50,7 @@ def patch_recommendation(recommendation_id):
     return jsonify(serialize_recommendation(recommendation, user_id=current_user.id)), 200
 
 
+# @debt api-migration
 @private_api.route("/recommendations/read", methods=["PUT"])
 @login_required
 @expect_json_data
@@ -61,6 +63,7 @@ def put_read_recommendations():
     return jsonify(serialize_recommendations(read_recommendations, user_id=current_user.id)), 200
 
 
+# @debt api-migration
 @private_api.route("/recommendations", methods=["PUT"])
 @login_required
 @expect_json_data

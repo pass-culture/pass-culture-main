@@ -10,6 +10,7 @@ from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offe
 from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
 
 
+# @debt api-migration
 @private_api.route("/reimbursements/csv", methods=["GET"])
 @login_required
 def get_reimbursements_csv():

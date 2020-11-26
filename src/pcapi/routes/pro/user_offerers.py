@@ -9,6 +9,7 @@ from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import USER_OFFERER_INCLUDES
 
 
+# @debt api-migration
 @private_api.route("/userOfferers/<offerer_id>", methods=["GET"])
 @login_required
 def get_user_offerer(offerer_id):

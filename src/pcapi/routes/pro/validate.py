@@ -25,6 +25,7 @@ from pcapi.validation.routes.validate import check_valid_token_for_user_validati
 from pcapi.validation.routes.validate import check_validation_request
 
 
+# @debt api-migration
 @public_api.route("/validate/user-offerer/<token>", methods=["GET"])
 def validate_offerer_attachment(token):
     check_validation_request(token)
@@ -42,6 +43,7 @@ def validate_offerer_attachment(token):
     return "Validation du rattachement de la structure effectuée", 202
 
 
+# @debt api-migration
 @public_api.route("/validate/offerer/<token>", methods=["GET"])
 def validate_new_offerer(token):
     check_validation_request(token)
@@ -67,6 +69,7 @@ def validate_new_offerer(token):
     return "Validation effectuée", 202
 
 
+# @debt api-migration
 @private_api.route("/validate/user/<token>", methods=["PATCH"])
 def validate_user(token):
     user_to_validate = user_queries.find_by_validation_token(token)

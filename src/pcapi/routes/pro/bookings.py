@@ -40,6 +40,7 @@ from pcapi.validation.routes.users_authorizations import check_user_can_validate
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
 
 
+# @debt api-migration
 @public_api.route("/bookings/token/<token>", methods=["GET"])
 def get_booking_by_token(token: str):
     email = request.args.get("email", None)
@@ -58,6 +59,7 @@ def get_booking_by_token(token: str):
     return "", 204
 
 
+# @debt api-migration
 @public_api.route("/bookings/token/<token>", methods=["PATCH"])
 def patch_booking_by_token(token: str):
     email = request.args.get("email", None)
@@ -79,6 +81,7 @@ def patch_booking_by_token(token: str):
     return "", 204
 
 
+# @debt api-migration
 @private_api.route("/bookings/pro", methods=["GET"])
 @login_required
 def get_all_bookings():
@@ -96,6 +99,7 @@ def get_all_bookings():
     return serialize_bookings_recap_paginated(bookings_recap_paginated), 200
 
 
+# @debt api-migration
 @public_api.route("/v2/bookings/token/<token>", methods=["GET"])
 @login_or_api_key_required_v2
 def get_booking_by_token_v2(token: str):
@@ -118,6 +122,7 @@ def get_booking_by_token_v2(token: str):
     return jsonify(response), 200
 
 
+# @debt api-migration
 @public_api.route("/v2/bookings/use/token/<token>", methods=["PATCH"])
 @login_or_api_key_required_v2
 def patch_booking_use_by_token(token: str):
@@ -142,6 +147,7 @@ def patch_booking_use_by_token(token: str):
     return "", 204
 
 
+# @debt api-migration
 @private_api.route("/v2/bookings/cancel/token/<token>", methods=["PATCH"])
 @login_or_api_key_required_v2
 def patch_cancel_booking_by_token(token: str):
@@ -162,6 +168,7 @@ def patch_cancel_booking_by_token(token: str):
     return "", 204
 
 
+# @debt api-migration
 @public_api.route("/v2/bookings/keep/token/<token>", methods=["PATCH"])
 @login_or_api_key_required_v2
 def patch_booking_keep_by_token(token: str):

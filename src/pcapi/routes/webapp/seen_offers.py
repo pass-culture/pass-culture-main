@@ -11,6 +11,7 @@ from pcapi.utils.rest import expect_json_data
 from pcapi.validation.routes.seen_offers import check_payload_is_valid
 
 
+# @debt api-migration
 @private_api.route("/seen_offers", methods=["PUT"])
 @feature_required(FeatureToggle.SAVE_SEEN_OFFERS)
 @login_required

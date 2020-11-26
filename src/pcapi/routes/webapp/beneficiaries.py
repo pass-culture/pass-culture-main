@@ -25,6 +25,7 @@ from pcapi.validation.routes.users import check_valid_signin
 from pcapi.workers.beneficiary_job import beneficiary_job
 
 
+# @debt api-migration
 @private_api.route("/beneficiaries/current", methods=["GET"])
 @login_required
 def get_beneficiary_profile():
@@ -32,6 +33,7 @@ def get_beneficiary_profile():
     return jsonify(as_dict(user, includes=BENEFICIARY_INCLUDES)), 200
 
 
+# @debt api-migration
 @private_api.route("/beneficiaries/current", methods=["PATCH"])
 @login_or_api_key_required
 @expect_json_data
@@ -58,6 +60,7 @@ def patch_beneficiary():
     return jsonify(formattedUser), 200
 
 
+# @debt api-migration
 @private_api.route("/beneficiaries/signin", methods=["POST"])
 def signin_beneficiary():
     json = request.get_json()
@@ -82,6 +85,7 @@ def signin_beneficiary():
     return jsonify(), 200
 
 
+# @debt api-migration
 @public_api.route("/beneficiaries/licence_verify", methods=["POST"])
 def verify_id_check_licence_token():
     check_verify_licence_token_payload(request)
@@ -95,6 +99,7 @@ def verify_id_check_licence_token():
     return "", 200
 
 
+# @debt api-migration
 @public_api.route("/beneficiaries/application_update", methods=["POST"])
 def id_check_application_update():
     check_application_update_payload(request)

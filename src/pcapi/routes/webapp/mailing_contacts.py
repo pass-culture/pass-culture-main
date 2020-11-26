@@ -6,6 +6,7 @@ from pcapi.validation.routes.mailing_contacts import validate_save_mailing_conta
 from pcapi.workers.mailing_contacts_job import mailing_contacts_job
 
 
+# @debt api-migration
 @public_api.route("/mailing-contacts", methods=["POST"])
 @expect_json_data
 def save_mailing_contact():

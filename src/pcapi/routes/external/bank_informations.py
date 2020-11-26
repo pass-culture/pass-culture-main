@@ -6,6 +6,7 @@ from pcapi.validation.routes.bank_informations import check_demarches_simplifiee
 from pcapi.workers.bank_information_job import bank_information_job
 
 
+# @debt api-migration
 @public_api.route("/bank_informations/venue/application_update", methods=["POST"])
 def update_venue_demarches_simplifiees_application():
     check_demarches_simplifiees_webhook_token(request.args.get("token"))
@@ -15,6 +16,7 @@ def update_venue_demarches_simplifiees_application():
     return "", 202
 
 
+# @debt api-migration
 @public_api.route("/bank_informations/offerer/application_update", methods=["POST"])
 def update_offerer_demarches_simplifiees_application():
     check_demarches_simplifiees_webhook_token(request.args.get("token"))

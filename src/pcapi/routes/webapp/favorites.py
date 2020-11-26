@@ -19,6 +19,7 @@ from pcapi.utils.rest import load_or_404
 from pcapi.validation.routes.offers import check_offer_id_is_present_in_request
 
 
+# @debt api-migration
 @private_api.route("/favorites", methods=["POST"])
 @login_required
 def add_to_favorite():
@@ -42,6 +43,7 @@ def add_to_favorite():
     return jsonify(serialize_favorite(favorite)), 201
 
 
+# @debt api-migration
 @private_api.route("/favorites/<offer_id>", methods=["DELETE"])
 @login_required
 def delete_favorite(offer_id):

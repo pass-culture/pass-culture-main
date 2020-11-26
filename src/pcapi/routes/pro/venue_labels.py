@@ -6,6 +6,7 @@ from pcapi.infrastructure.container import get_venue_labels
 from pcapi.routes.serialization.venue_labels_serialize import serialize_venue_label
 
 
+# @debt api-migration
 @private_api.route("/venue-labels", methods=["GET"])
 @login_required
 def fetch_venue_labels():

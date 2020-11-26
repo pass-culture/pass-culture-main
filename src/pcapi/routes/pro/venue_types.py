@@ -7,6 +7,7 @@ from pcapi.routes.serialization import as_dict
 from pcapi.use_cases.get_types_of_venues import get_types_of_venues
 
 
+# @debt api-migration
 @private_api.route("/venue-types", methods=["GET"])
 @login_required
 def get_venue_types():

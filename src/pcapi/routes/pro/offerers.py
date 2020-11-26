@@ -41,6 +41,7 @@ def get_dict_offerers(offerers: List[Offerer]) -> list:
     return [as_dict(offerer, includes=OFFERER_INCLUDES) for offerer in offerers]
 
 
+# @debt api-migration
 @private_api.route("/offerers", methods=["GET"])
 @login_required
 def list_offerers():
@@ -76,6 +77,7 @@ def list_offerers():
     return response, 200
 
 
+# @debt api-migration
 @private_api.route("/offerers/<id>", methods=["GET"])
 @login_required
 def get_offerer(id):
@@ -85,6 +87,7 @@ def get_offerer(id):
     return jsonify(get_dict_offerer(offerer)), 200
 
 
+# @debt api-migration
 @private_api.route("/offerers", methods=["POST"])
 @login_or_api_key_required
 @expect_json_data

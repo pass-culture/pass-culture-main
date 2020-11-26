@@ -24,6 +24,7 @@ from pcapi.utils.rest import expect_json_data
 from pcapi.validation.routes.passwords import validate_reset_password_token
 
 
+# @debt api-migration
 @private_api.route("/users/current/change-password", methods=["POST"])
 @login_required
 @expect_json_data
@@ -40,6 +41,7 @@ def post_change_password():
     return "", 204
 
 
+# @debt api-migration
 @private_api.route("/users/reset-password", methods=["POST"])
 @spectree_serialize(on_success_status=204)
 def post_for_password_token(body: ResetPasswordBodyModel) -> None:
@@ -67,6 +69,7 @@ def post_for_password_token(body: ResetPasswordBodyModel) -> None:
             app.logger.exception("[send_reset_password_email_to_pro] " "Mail service failure", mail_service_exception)
 
 
+# @debt api-migration
 @private_api.route("/users/new-password", methods=["POST"])
 @expect_json_data
 def post_new_password():

@@ -32,6 +32,7 @@ from pcapi.validation.routes.venues import check_valid_edition
 from pcapi.validation.routes.venues import validate_coordinates
 
 
+# @debt api-migration
 @private_api.route("/venues/<venue_id>", methods=["GET"])
 @login_required
 def get_venue(venue_id):
@@ -40,6 +41,7 @@ def get_venue(venue_id):
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 
 
+# @debt api-migration
 @private_api.route("/venues", methods=["GET"])
 @login_required
 def get_venues():
@@ -51,6 +53,7 @@ def get_venues():
     return jsonify(serialize_venues_with_offerer_name(venues)), 200
 
 
+# @debt api-migration
 @private_api.route("/venues", methods=["POST"])
 @login_required
 @expect_json_data
@@ -62,6 +65,7 @@ def post_create_venue():
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 201
 
 
+# @debt api-migration
 @private_api.route("/venues/<venue_id>", methods=["PATCH"])
 @login_required
 @expect_json_data
@@ -86,6 +90,7 @@ def edit_venue(venue_id):
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 
 
+# @debt api-migration
 @private_api.route("/venues/<venue_id>/offers/activate", methods=["PUT"])
 @login_required
 def activate_venue_offers(venue_id):
@@ -99,6 +104,7 @@ def activate_venue_offers(venue_id):
     return jsonify([as_dict(offer, includes=OFFER_INCLUDES) for offer in activated_offers]), 200
 
 
+# @debt api-migration
 @private_api.route("/venues/<venue_id>/offers/deactivate", methods=["PUT"])
 @login_required
 def deactivate_venue_offers(venue_id):

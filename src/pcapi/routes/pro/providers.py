@@ -11,6 +11,7 @@ from pcapi.routes.serialization import as_dict
 from pcapi.utils.rest import load_or_404
 
 
+# @debt api-migration
 @private_api.route("/providers", methods=["GET"])
 @login_required
 def list_providers():
@@ -24,6 +25,7 @@ def list_providers():
     return jsonify(result)
 
 
+# @debt api-migration
 @private_api.route("/providers/<venue_id>", methods=["GET"])
 @login_required
 def get_providers_by_venue(venue_id: str):

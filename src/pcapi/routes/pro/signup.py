@@ -19,6 +19,7 @@ from pcapi.utils.mailing import subscribe_newsletter
 from pcapi.validation.routes.users import check_valid_signup_pro
 
 
+# @debt api-migration
 @private_api.route("/users/signup/pro", methods=["POST"])
 def signup_pro():
     objects_to_save = []

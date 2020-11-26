@@ -19,6 +19,7 @@ from pcapi.utils.mailing import subscribe_newsletter
 from pcapi.validation.routes.users import check_valid_signup_webapp
 
 
+# @debt api-migration
 @private_api.route("/users/signup/webapp", methods=["POST"])
 @feature_required(FeatureToggle.WEBAPP_SIGNUP)
 def signup_webapp():

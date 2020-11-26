@@ -25,6 +25,7 @@ from pcapi.utils.rest import login_or_api_key_required
 from pcapi.validation.routes.users import check_valid_signin
 
 
+# @debt api-migration
 @private_api.route("/users/current", methods=["GET"])
 @login_required
 def get_profile():
@@ -32,6 +33,7 @@ def get_profile():
     return jsonify(as_dict(user, includes=USER_INCLUDES)), 200
 
 
+# @debt api-migration
 @private_api.route("/users/token/<token>", methods=["GET"])
 def check_activation_token_exists(token):
     user = find_user_by_reset_password_token(token)
@@ -54,6 +56,7 @@ def patch_profile(body: PatchUserBodyModel) -> PatchUserResponseModel:
     return response_user_model
 
 
+# @debt api-migration
 @private_api.route("/users/signin", methods=["POST"])
 def signin():
     json = request.get_json()
