@@ -6615,7 +6615,7 @@ find-cache-dir@^2.1.0:
     make-dir "^2.0.0"
     pkg-dir "^3.0.0"
 
-find-cache-dir@^3.3.1:
+find-cache-dir@^3.0.0, find-cache-dir@^3.3.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/find-cache-dir/-/find-cache-dir-3.3.1.tgz#89b33fad4a4670daa94f855f7fbe31d6d84fe880"
   integrity sha512-t2GDMt3oGC/v+BMwzmllWDuJF/xcDtE5j/fCGbqDD7OLuJkj0cfh1YSA5VKPvwMeLFLNDBkwOKZ2X85jGLVftQ==
@@ -9770,6 +9770,14 @@ moment-locale-fr@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/moment-locale-fr/-/moment-locale-fr-1.0.0.tgz#cfbad79ac29cbe6d5bb022ea4cfd483bfb3ae2bd"
   integrity sha1-z7rXmsKcvm1bsCLqTP1IO/s64r0=
+
+moment-timezone-data-webpack-plugin@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/moment-timezone-data-webpack-plugin/-/moment-timezone-data-webpack-plugin-1.3.0.tgz#8d5b7ffe42f0506933195779063a74cfff11aab1"
+  integrity sha512-0V0xnHZpdHLsSerIQ2yNEPBC3uJWfU/zNT3nB0PO+tjmGHuNeUWqNDiw7ZpLo54uER6/OAE75EJ7ThmlwkGuZw==
+  dependencies:
+    find-cache-dir "^3.0.0"
+    make-dir "^3.0.0"
 
 moment-timezone@^0.5.21:
   version "0.5.32"

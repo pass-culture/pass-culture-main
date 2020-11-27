@@ -8,6 +8,7 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const ESLintPlugin = require('eslint-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const MomentTimezoneDataPlugin = require('moment-timezone-data-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const PnpWebpackPlugin = require('pnp-webpack-plugin')
 const postcssNormalize = require('postcss-normalize')
@@ -680,6 +681,9 @@ module.exports = function (webpackEnv) {
             }),
           },
         },
+      }),
+      new MomentTimezoneDataPlugin({
+        matchZones: ['America/Cayenne', 'Europe/Paris', 'Indian/Reunion'],
       }),
     ].filter(Boolean),
     // Some libraries import Node modules but don't use them in the browser.
