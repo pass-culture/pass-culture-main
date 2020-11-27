@@ -51,6 +51,7 @@ class Get:
                 "departementCode": "93",
                 "email": "toto@btmx.fr",
                 "firstName": "Jean",
+                "hasAllowedRecommendations": False,
                 "hasOffers": False,
                 "hasPhysicalVenues": False,
                 "id": humanize(user.id),

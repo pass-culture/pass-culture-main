@@ -61,6 +61,7 @@ def create_account(
         publicName="   ",  # Required because model validation requires 3+ chars
         hasSeenTutorials=False,
         firstName="",
+        hasAllowedRecommendations=has_allowed_recommendations,
     )
     user.setPassword(password)
     repository.save(user)

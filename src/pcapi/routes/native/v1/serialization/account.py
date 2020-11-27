@@ -8,7 +8,7 @@ class AccountRequest(BaseModel):
     email: str
     password: str
     birthdate: date
-    notifications: bool
+    hasAllowedRecommendations: bool
     token: str
 
 

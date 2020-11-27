@@ -73,7 +73,7 @@ class AccountTest:
             "birthdate": "1960-12-31",
             "notifications": True,
             "token": "gnagna",
-            "has_allowed_recommendations": True,
+            "hasAllowedRecommendations": True,
         }
 
         response = test_client.post("/native/v1/account", json=data)

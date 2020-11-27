@@ -130,6 +130,8 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     isBeneficiary = Column(Boolean, nullable=False, server_default=expression.false())
 
+    hasAllowedRecommendations = Column(Boolean, nullable=False, server_default=expression.false())
+
     def checkPassword(self, passwordToCheck):
         return check_password(passwordToCheck, self.password)
 

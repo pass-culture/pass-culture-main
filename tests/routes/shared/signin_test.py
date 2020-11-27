@@ -48,6 +48,7 @@ class Post:
                 "departementCode": "93",
                 "email": "user@example.com",
                 "firstName": "Jean",
+                "hasAllowedRecommendations": False,
                 "hasOffers": False,
                 "hasPhysicalVenues": False,
                 "id": humanize(user.id),
