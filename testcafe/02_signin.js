@@ -11,7 +11,7 @@ const signInButton = Selector('button').withText('Se connecter')
 
 fixture('Suite à la création de mon compte,')
 
-test('je me connecte avec un compte valide, sans offres, et je suis redirigé·e vers la page "structures"', () => async t => {
+test('je me connecte avec un compte valide, sans offres, et je suis redirigé·e vers la page "structures"', async t => {
   const { user } = await fetchSandbox(
     'pro_02_signin',
     'get_existing_pro_validated_user_without_offer'
@@ -26,7 +26,7 @@ test('je me connecte avec un compte valide, sans offres, et je suis redirigé·e
     .eql('/structures')
 })
 
-test('je me connecte avec un compte valide, avec des offres existantes, et je suis redirigé·e vers la page "offres"', () => async t => {
+test('je me connecte avec un compte valide, avec des offres existantes, et je suis redirigé·e vers la page "offres"', async t => {
   const { user } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'

@@ -20,7 +20,7 @@ const submitButton = Selector('button').withText('Enregistrer')
 
 fixture('En étant sur la page des offres,')
 
-test('j’ai accès à l’ensemble de mes offres', () => async t => {
+test('j’ai accès à l’ensemble de mes offres', async t => {
   const { user } = await fetchSandbox(
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_visible_activated_offer'
@@ -31,7 +31,7 @@ test('j’ai accès à l’ensemble de mes offres', () => async t => {
   await t.expect(getPathname()).eql('/offres').expect(offerItem.count).gt(0)
 })
 
-test('je recherche une offre et je clique sur celle-ci pour accéder au détail', () => async t => {
+test('je recherche une offre et je clique sur celle-ci pour accéder au détail', async t => {
   const { offer, user } = await fetchSandbox(
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_visible_activated_offer'
@@ -41,7 +41,7 @@ test('je recherche une offre et je clique sur celle-ci pour accéder au détail'
   await t.expect(getPathname()).match(/\/offres\/([A-Z0-9]*)/)
 })
 
-test('je peux créer une offre de type événement', () => async t => {
+test('je peux créer une offre de type événement', async t => {
   const { offerer, user, venue } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
@@ -76,7 +76,7 @@ test('je peux créer une offre de type événement', () => async t => {
     .eql('?gestion')
 })
 
-test('je peux créer une offre avec des sous-types', () => async t => {
+test('je peux créer une offre avec des sous-types', async t => {
   const { offerer, user, venue } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
@@ -117,7 +117,7 @@ test('je peux créer une offre avec des sous-types', () => async t => {
     .ok()
 })
 
-test('une offre Event est duo par défaut', () => async t => {
+test('une offre Event est duo par défaut', async t => {
   const { user, offerer, venue } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'

@@ -8,7 +8,7 @@ import { getSirenRequestMockAs, getSirenRequestMockWithNoResult } from './helper
 
 fixture('Structure,')
 
-test('en étant sur la page de création d’une structure', () => async t => {
+test('en étant sur la page de création d’une structure', async t => {
   const dataFromSandbox = await fetchSandbox(
     'pro_04_offerer',
     'get_existing_pro_validated_user_with_first_offerer'

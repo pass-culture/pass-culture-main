@@ -79,7 +79,8 @@
         "jest/lowercase-name": "off",
         "jest/no-test-callback": "off",
         "jest/prefer-expect-assertions": "off",
-        "jest/require-top-level-describe": "off"
+        "jest/require-top-level-describe": "off",
+        "jest/no-done-callback": "off"
       }
     }
   ],

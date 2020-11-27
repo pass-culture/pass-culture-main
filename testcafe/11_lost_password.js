@@ -14,7 +14,7 @@ const userNewPasswordInput = Selector('input[name="password"]')
 
 fixture('En étant déconnecté de l’application').page(`${ROOT_PATH}connexion`)
 
-test('je clique sur "mot de passe égaré", je remplis le formulaire avec une adresse e-mail et je suis redirigé·e vers la page de confirmation', () => async t => {
+test('je clique sur "mot de passe égaré", je remplis le formulaire avec une adresse e-mail et je suis redirigé·e vers la page de confirmation', async t => {
   // given
   const {
     user: { email },
@@ -39,7 +39,7 @@ test('je clique sur "mot de passe égaré", je remplis le formulaire avec une ad
     .eql('Merci !')
 })
 
-test('je clique sur le lien reçu par e-mail, je saisis mon nouveau mot de passe, et je suis redirigé·e vers la page de confirmation', () => async t => {
+test('je clique sur le lien reçu par e-mail, je saisis mon nouveau mot de passe, et je suis redirigé·e vers la page de confirmation', async t => {
   // given
   const {
     user: { resetPasswordToken },

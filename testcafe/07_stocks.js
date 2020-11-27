@@ -16,7 +16,7 @@ const stockItem = Selector('.stock-item')
 
 fixture('En étant sur la page de détail d’une offre,')
 
-test('Je peux créer un stock pour un événement', () => async t => {
+test('Je peux créer un stock pour un événement', async t => {
   const { offer, user } = await fetchSandbox(
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock'
@@ -40,7 +40,7 @@ test('Je peux créer un stock pour un événement', () => async t => {
   await t.expect(queryParams.stock).eql(undefined).expect(stockItem.count).eql(1)
 })
 
-test('Je ne peux pas créer un nouveau stock pour un objet ayant déjà un stock', () => async t => {
+test('Je ne peux pas créer un nouveau stock pour un objet ayant déjà un stock', async t => {
   const { offer, user } = await fetchSandbox(
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock'
@@ -50,7 +50,7 @@ test('Je ne peux pas créer un nouveau stock pour un objet ayant déjà un stock
   await t.click(manageStockAnchor).expect(addAnchor.visible).notOk()
 })
 
-test('Je peux modifier un stock pour un événement', () => async t => {
+test('Je peux modifier un stock pour un événement', async t => {
   const { offer, stock, user } = await fetchSandbox(
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'
@@ -88,7 +88,7 @@ test('Je peux modifier un stock pour un événement', () => async t => {
   await t.expect(queryParams.gestion).eql('').expect(queryParams.stock).eql(undefined)
 })
 
-test('Je peux supprimer un stock pour un événement', () => async t => {
+test('Je peux supprimer un stock pour un événement', async t => {
   const { offer, user } = await fetchSandbox(
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'
