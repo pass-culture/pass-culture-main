@@ -1,34 +1,35 @@
-import { shallow } from 'enzyme/build'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import BookingTokenCell from '../BookingTokenCell'
 
-describe('components | pages | bookings-v2 | CellsFormatter | BookingsTokenCell', () => {
-  it('should render a booking token when value is provided', () => {
+const renderBookingTokenCell = props => render(<BookingTokenCell {...props} />)
+
+describe('bookings token cell', () => {
+  it('should display a booking token when value is provided', () => {
     // Given
     const props = {
       bookingToken: 'ABCDEF',
     }
 
     // When
-    const wrapper = shallow(<BookingTokenCell {...props} />)
+    renderBookingTokenCell(props)
 
     // Then
-    const token = wrapper.find({ children: props.bookingToken })
-    expect(token).toHaveLength(1)
+    expect(screen.getByText('ABCDEF')).toBeInTheDocument()
   })
 
-  it('should render a hyphen when value is not provided', () => {
+  it('should display a hyphen when value is not provided', () => {
     // Given
     const props = {
       bookingToken: null,
     }
 
     // When
-    const wrapper = shallow(<BookingTokenCell {...props} />)
+    renderBookingTokenCell(props)
 
     // Then
-    const token = wrapper.find({ children: '-' })
-    expect(token).toHaveLength(1)
+    expect(screen.getByText('-')).toBeInTheDocument()
   })
 })

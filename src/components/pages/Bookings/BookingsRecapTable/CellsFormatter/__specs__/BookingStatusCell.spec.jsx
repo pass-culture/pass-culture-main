@@ -21,7 +21,7 @@ const renderBookingStatusCell = props => {
   )
 }
 
-describe('bookingsStatusCell', () => {
+describe('bookings | bookingsStatusCell', () => {
   it('should display the status label', () => {
     // Given
     const props = {

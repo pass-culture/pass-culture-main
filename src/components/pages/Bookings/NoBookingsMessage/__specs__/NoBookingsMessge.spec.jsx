@@ -1,15 +1,15 @@
-import { mount } from 'enzyme/build'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import NoBookingsMessage from '../NoBookingsMessage'
 
-describe('components | pages | bookings-v2 | NoBookingsMessage', () => {
-  it('should render no bookings message', () => {
+describe('noBookingsMessage', () => {
+  it('should render a message indicating that there is no bookings', () => {
     // When
-    const wrapper = mount(<NoBookingsMessage />)
+    render(<NoBookingsMessage />)
 
     // Then
-    const noBookingsMessage = wrapper.find({ children: 'Aucune réservation pour le moment' })
-    expect(noBookingsMessage).toHaveLength(1)
+    expect(screen.queryByText('Aucune réservation pour le moment')).toBeInTheDocument()
   })
 })

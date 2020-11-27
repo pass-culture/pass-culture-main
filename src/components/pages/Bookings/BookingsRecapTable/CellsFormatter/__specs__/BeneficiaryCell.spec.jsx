@@ -1,28 +1,27 @@
-import { shallow } from 'enzyme/build'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import BeneficiaryCell from '../BeneficiaryCell'
 
-describe('components | BeneficiaryCell', () => {
-  it('should render a div with two span, one with firstname and lastname and the other the email address', () => {
+const renderBeneficiaryCell = props => render(<BeneficiaryCell {...props} />)
+
+describe('bookings beneficiary cell', () => {
+  it('should display an user firstname, lastname and email address', () => {
     // Given
     const props = {
       beneficiaryInfos: {
         firstname: 'Laurent',
         lastname: 'Durond',
-        email: 'email@example.com',
+        email: 'laurentdurond@example.com',
       },
     }
 
     // When
-    const wrapper = shallow(<BeneficiaryCell {...props} />)
-    const spans = wrapper.find('span')
-    const nameSpan = spans.find('span').at(0)
-    const emailAddressSpan = spans.find('span').at(1)
+    renderBeneficiaryCell(props)
 
     // Then
-    expect(spans).toHaveLength(2)
-    expect(nameSpan.text()).toBe('Durond Laurent')
-    expect(emailAddressSpan.text()).toBe('email@example.com')
+    expect(screen.getByText('Durond Laurent')).toBeInTheDocument()
+    expect(screen.getByText('laurentdurond@example.com')).toBeInTheDocument()
   })
 })

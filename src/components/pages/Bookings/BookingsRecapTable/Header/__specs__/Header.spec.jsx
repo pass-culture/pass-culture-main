@@ -1,9 +1,12 @@
-import { mount } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import Header from '../Header'
 
-describe('components | Header', () => {
+const renderHeader = props => render(<Header {...props} />)
+
+describe("bookings recap table's header", () => {
   const oneBookingRecap = {
     stock: {
       offer_name: 'Avez-vous déjà vu',
@@ -20,11 +23,11 @@ describe('components | Header', () => {
     booking_is_duo: false,
     venue: {
       identifier: 'AE',
-      name: 'Librairie Kléber'
+      name: 'Librairie Kléber',
     },
   }
 
-  it('should render "1 réservation" when one booking', () => {
+  it('should display the appropriate message when there is one booking', () => {
     // Given
     const bookingsRecapFiltered = [oneBookingRecap]
     const props = {
@@ -33,14 +36,13 @@ describe('components | Header', () => {
     }
 
     // When
-    const wrapper = mount(<Header {...props} />)
+    renderHeader(props)
 
     // Then
-    const numberOfBookings = wrapper.find({ children: '1 réservation' })
-    expect(numberOfBookings).toHaveLength(1)
+    expect(screen.queryByText('1 réservation')).toBeInTheDocument()
   })
 
-  it('should render "2 réservations" when two bookings', () => {
+  it('should display the appropriate message when there is several booking', () => {
     // Given
     const bookingsRecapFiltered = [oneBookingRecap, oneBookingRecap]
     const props = {
@@ -49,14 +51,13 @@ describe('components | Header', () => {
     }
 
     // When
-    const wrapper = mount(<Header {...props} />)
+    renderHeader(props)
 
     // Then
-    const numberOfBookings = wrapper.find({ children: '2 réservations' })
-    expect(numberOfBookings).toHaveLength(1)
+    expect(screen.queryByText('2 réservations')).toBeInTheDocument()
   })
 
-  it('should render "Télécharger le CSV" link when not loading', () => {
+  it('should display a link to specific csv when not loading', () => {
     // Given
     const bookingsRecapFiltered = [oneBookingRecap]
     const props = {
@@ -65,16 +66,14 @@ describe('components | Header', () => {
     }
 
     // When
-    const wrapper = mount(<Header {...props} />)
+    renderHeader(props)
 
     // Then
-    const downloadCsvLink = wrapper.find('a')
-    expect(downloadCsvLink).toHaveLength(1)
-    expect(downloadCsvLink.text()).toBe('Télécharger le CSV')
-    expect(downloadCsvLink.prop('download')).toBe('Réservations Pass Culture.csv')
+    const csv_download_link = screen.getByText('Télécharger le CSV')
+    expect(csv_download_link.download).toBe('Réservations Pass Culture.csv')
   })
 
-  it('should render "Chargement des réservations en cours" when data are still loading and nothing else', () => {
+  it('should only display a specific message when data are still loading', () => {
     // Given
     const props = {
       bookingsRecapFiltered: [],
@@ -82,14 +81,9 @@ describe('components | Header', () => {
     }
 
     // When
-    const wrapper = mount(<Header {...props} />)
+    renderHeader(props)
 
     // Then
-    const header = wrapper.find({ children: 'Chargement des réservations...' })
-    expect(header).toHaveLength(1)
-    const numberOfBookings = wrapper.find("[children^='réservation']")
-    expect(numberOfBookings).toHaveLength(0)
-    const downloadCsvLink = wrapper.find('a')
-    expect(downloadCsvLink).toHaveLength(0)
+    expect(screen.getByText('Chargement des réservations...')).toBeInTheDocument()
   })
 })

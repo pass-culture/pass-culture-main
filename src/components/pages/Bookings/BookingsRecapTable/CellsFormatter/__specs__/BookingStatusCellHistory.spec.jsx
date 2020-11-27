@@ -1,100 +1,120 @@
-import { mount } from 'enzyme/build'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import BookingStatusCellHistory from '../BookingStatusCellHistory'
 
-describe('cellsFormatter | BookingsStatusCellHistory', () => {
-  it('should render a div with the corresponding status and date for the given status', () => {
+const renderBookingStatusCellHistory = props => render(<BookingStatusCellHistory {...props} />)
+
+describe('bookings status history cell', () => {
+  it('should display the corresponding status and date when the offer is booked', () => {
     // Given
     const props = {
-      bookingStatusHistory: [
-        {
-          status: 'booked',
-          date: '2020-01-04T20:31:12+01:00',
-        },
-      ],
+      bookingStatusHistory: [{
+        status: 'booked',
+        date: '2020-01-04T20:31:12+01:00',
+      }],
     }
 
     // When
-    const wrapper = mount(<BookingStatusCellHistory {...props} />)
+    renderBookingStatusCellHistory(props)
 
     // Then
-    const status = wrapper.find('li')
-    const disc = status.find('span')
-    expect(disc.hasClass('bs-history-booked')).toBe(true)
-    expect(status.text()).toBe('Réservé : 04/01/2020 20:31')
+    expect(screen.getByText('Réservé : 04/01/2020 20:31')).toBeInTheDocument()
   })
 
-  it('should render a list with as many elements as statuses', () => {
-    // Given
-    const props = {
-      bookingStatusHistory: [
-        {
+  describe('should display proper infos', () => {
+    it('for booked status', () => {
+      // Given
+      const props = {
+        bookingStatusHistory: [{
           status: 'booked',
           date: '2020-01-04T20:31:12+01:00',
-        },
-        {
+        }],
+      }
+
+      // When
+      renderBookingStatusCellHistory(props)
+
+      // Then
+      expect(screen.getByText('Réservé : 04/01/2020 20:31')).toBeInTheDocument()
+    })
+    it('for validated status', () => {
+      // Given
+      const props = {
+        bookingStatusHistory: [{
           status: 'validated',
           date: '2020-01-05T20:31:12+01:00',
-        },
-        {
+        }],
+      }
+
+      // When
+      renderBookingStatusCellHistory(props)
+
+      // Then
+      expect(screen.getByText('Réservation validée : 05/01/2020 20:31')).toBeInTheDocument()
+    })
+    it('for reimbursed status', () => {
+      // Given
+      const props = {
+        bookingStatusHistory: [{
           status: 'reimbursed',
           date: '2020-01-06T20:31:12+01:00',
-        },
-        {
+        }],
+      }
+
+      // When
+      renderBookingStatusCellHistory(props)
+
+      // Then
+      expect(screen.getByText('Remboursée : 06/01/2020')).toBeInTheDocument()
+    })
+    it('for confirmed status', () => {
+      // Given
+      const props = {
+        bookingStatusHistory: [{
           status: 'confirmed',
           date: '2020-01-06T20:31:12+01:00',
-        },
-      ],
-    }
+        }],
+      }
 
-    // When
-    const wrapper = mount(<BookingStatusCellHistory {...props} />)
+      // When
+      renderBookingStatusCellHistory(props)
 
-    // Then
-    const bookingStatusesElements = wrapper.find('li')
-    expect(bookingStatusesElements).toHaveLength(4)
+      // Then
+      expect(screen.getByText('Réservation confirmée : 06/01/2020 20:31')).toBeInTheDocument()
+    })
   })
 
-  it('should render only date and not time for reimbursed status history', () => {
+  it('should display only the date without the time for reimbursed status history', () => {
     // Given
     const props = {
-      bookingStatusHistory: [
-        {
-          status: 'reimbursed',
-          date: '2020-01-06T20:31:12+01:00',
-        },
-      ],
+      bookingStatusHistory: [{
+        status: 'reimbursed',
+        date: '2020-01-06T20:31:12+01:00',
+      }],
     }
 
     // When
-    const wrapper = mount(<BookingStatusCellHistory {...props} />)
+    renderBookingStatusCellHistory(props)
 
     // Then
-    const status = wrapper.find('li')
-    const disc = status.find('span')
-    expect(disc.hasClass('bs-history-reimbursed')).toStrictEqual(true)
-    expect(status.text()).toBe('Remboursée : 06/01/2020')
+    expect(screen.getByText('Remboursée : 06/01/2020')).toBeInTheDocument()
   })
 
-  it('should render a "-" when the date is not available', () => {
+  it('should display a "-" when the date is not available', () => {
     // Given
     const props = {
-      bookingStatusHistory: [
-        {
-          status: 'reimbursed',
-          date: null,
-        },
-      ],
+      bookingStatusHistory: [{
+        status: 'reimbursed',
+        date: null,
+      }],
     }
 
     // When
-    const wrapper = mount(<BookingStatusCellHistory {...props} />)
+    renderBookingStatusCellHistory(props)
 
     // Then
-    const status = wrapper.find('li')
-    const disc = status.find('span')
-    expect(disc.hasClass('bs-history-reimbursed')).toStrictEqual(true)
-    expect(status.text()).toBe('Remboursée : -')
+    expect(screen.getByText('Remboursée : -')).toBeInTheDocument()
   })
 })
