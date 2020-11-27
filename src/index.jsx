@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/browser'
+import { init as SentryInit } from '@sentry/browser'
 import { Integrations as TracingIntegrations } from '@sentry/tracing'
 import { Form } from 'pass-culture-shared'
 import React from 'react'
@@ -35,7 +35,7 @@ Object.assign(Form.defaultProps, {
 
 // Initialize sentry
 if (SENTRY_SERVER_URL) {
-  Sentry.init({
+  SentryInit({
     dsn: SENTRY_SERVER_URL,
     environment: ENVIRONMENT_NAME,
     release: version,
