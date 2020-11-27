@@ -35,7 +35,7 @@ class BankInformation(PcObject, Model, VersionedMixin):
 
     bic = Column(String(11), nullable=True)
 
-    applicationId = Column(Integer, nullable=False, unique=True)
+    applicationId = Column(Integer, nullable=False, index=True, unique=True)
 
     status = Column(Enum(BankInformationStatus), nullable=False)
 
