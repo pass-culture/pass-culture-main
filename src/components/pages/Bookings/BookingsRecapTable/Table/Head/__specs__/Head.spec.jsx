@@ -3,10 +3,9 @@ import React from 'react'
 
 import Icon from 'components/layout/Icon'
 
-import Head from '../Head'
+import TableHead from '../TableHead'
 
-
-describe('components | pages | Table | Head', () => {
+describe('components | pages | TableWrapper | TableHead', () => {
   it('should render one line with all columns', () => {
     // Given
     const props = {
@@ -42,22 +41,12 @@ describe('components | pages | Table | Head', () => {
     }
 
     // When
-    const wrapper = shallow(<Head {...props} />)
+    const wrapper = shallow(<TableHead {...props} />)
 
     // Then
     expect(wrapper.find('th')).toHaveLength(2)
-    expect(
-      wrapper
-        .find('th')
-        .at(0)
-        .text()
-    ).toBe('Offres')
-    expect(
-      wrapper
-        .find('th')
-        .at(1)
-        .text()
-    ).toBe('Beneficiaires')
+    expect(wrapper.find('th').at(0).text()).toBe('Offres')
+    expect(wrapper.find('th').at(1).text()).toBe('Beneficiaires')
   })
 
   it('should return no line when there is no headers', () => {
@@ -67,7 +56,7 @@ describe('components | pages | Table | Head', () => {
     }
 
     // When
-    const wrapper = shallow(<Head {...props} />)
+    const wrapper = shallow(<TableHead {...props} />)
 
     // Then
     expect(wrapper.find('tr')).toHaveLength(0)
@@ -90,7 +79,7 @@ describe('components | pages | Table | Head', () => {
               )),
               getHeaderProps: jest.fn(),
               getSortByToggleProps: jest.fn(),
-              canSort: true
+              canSort: true,
             },
           ],
         },
@@ -98,7 +87,7 @@ describe('components | pages | Table | Head', () => {
     }
 
     // When
-    const wrapper = shallow(<Head {...props} />)
+    const wrapper = shallow(<TableHead {...props} />)
 
     // Then
     const firstColumn = wrapper.find('th')
@@ -126,7 +115,7 @@ describe('components | pages | Table | Head', () => {
               )),
               getHeaderProps: jest.fn(),
               getSortByToggleProps: jest.fn(),
-              canSort: false
+              canSort: false,
             },
           ],
         },
@@ -134,7 +123,7 @@ describe('components | pages | Table | Head', () => {
     }
 
     // When
-    const wrapper = shallow(<Head {...props} />)
+    const wrapper = shallow(<TableHead {...props} />)
 
     // Then
     const firstColumn = wrapper.find('th')
@@ -162,7 +151,7 @@ describe('components | pages | Table | Head', () => {
               getHeaderProps: jest.fn(),
               getSortByToggleProps: jest.fn(),
               canSort: true,
-              isSorted: true
+              isSorted: true,
             },
           ],
         },
@@ -170,7 +159,7 @@ describe('components | pages | Table | Head', () => {
     }
 
     // When
-    const wrapper = shallow(<Head {...props} />)
+    const wrapper = shallow(<TableHead {...props} />)
 
     // Then
     const firstColumn = wrapper.find('th')
@@ -200,7 +189,7 @@ describe('components | pages | Table | Head', () => {
               getSortByToggleProps: jest.fn(),
               canSort: true,
               isSorted: true,
-              isSortedDesc: true
+              isSortedDesc: true,
             },
           ],
         },
@@ -208,7 +197,7 @@ describe('components | pages | Table | Head', () => {
     }
 
     // When
-    const wrapper = shallow(<Head {...props} />)
+    const wrapper = shallow(<TableHead {...props} />)
 
     // Then
     const firstColumn = wrapper.find('th')

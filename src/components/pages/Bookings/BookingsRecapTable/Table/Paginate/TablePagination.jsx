@@ -3,41 +3,42 @@ import React from 'react'
 
 import Icon from 'components/layout/Icon'
 
-const Paginate = ({ canNextPage,
+const TablePagination = ({
+  canNextPage,
   canPreviousPage,
   currentPage,
   previousPage,
   nbPages,
-  nextPage
+  nextPage,
 }) => (
-  <div className='paginate-wrapper'>
+  <div className="paginate-wrapper">
     <button
       disabled={!canPreviousPage}
       onClick={previousPage}
-      type='button'
+      type="button"
     >
-      <Icon svg='ico-left-arrow' />
+      <Icon svg="ico-left-arrow" />
     </button>
     <span>
-      { `Page ${currentPage}/${nbPages}` }
+      {`Page ${currentPage}/${nbPages}`}
     </span>
     <button
       disabled={!canNextPage}
       onClick={nextPage}
-      type='button'
+      type="button"
     >
-      <Icon svg='ico-right-arrow' />
+      <Icon svg="ico-right-arrow" />
     </button>
   </div>
 )
 
-Paginate.propTypes = {
+TablePagination.propTypes = {
   canNextPage: PropTypes.bool.isRequired,
   canPreviousPage: PropTypes.bool.isRequired,
   currentPage: PropTypes.number.isRequired,
   nbPages: PropTypes.number.isRequired,
   nextPage: PropTypes.func.isRequired,
-  previousPage: PropTypes.func.isRequired
+  previousPage: PropTypes.func.isRequired,
 }
 
-export default Paginate
+export default TablePagination

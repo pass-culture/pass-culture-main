@@ -15,10 +15,9 @@ import Filters from '../Filters/Filters'
 import Header from '../Header/Header'
 import { NB_BOOKINGS_PER_PAGE } from '../NB_BOOKINGS_PER_PAGE'
 import NoFilteredBookings from '../NoFilteredBookings/NoFilteredBookings'
-import Paginate from '../Table/Paginate/Paginate'
+import TablePagination from '../Table/Paginate/TablePagination'
 import TableFrame from '../Table/TableFrame'
 import filterBookingsRecap from '../utils/filterBookingsRecap'
-
 
 jest.mock('../NB_BOOKINGS_PER_PAGE', () => ({
   NB_BOOKINGS_PER_PAGE: 1,
@@ -125,7 +124,7 @@ describe('components | BookingsRecapTable', () => {
           booking_is_duo: true,
           venue: {
             identifier: 'AE',
-            name: 'Librairie Kléber'
+            name: 'Librairie Kléber',
           },
           booking_status_history: [
             {
@@ -181,7 +180,7 @@ describe('components | BookingsRecapTable', () => {
           booking_is_duo: true,
           venue: {
             identifier: 'AE',
-            name: 'Librairie Kléber'
+            name: 'Librairie Kléber',
           },
           booking_status_history: [
             {
@@ -225,7 +224,7 @@ describe('components | BookingsRecapTable', () => {
         booking_is_duo: true,
         venue: {
           identifier: 'AE',
-          name: 'Librairie Kléber'
+          name: 'Librairie Kléber',
         },
         booking_status_history: [
           {
@@ -293,7 +292,7 @@ describe('components | BookingsRecapTable', () => {
         booking_status: 'validated',
         venue: {
           identifier: 'AE',
-          name: 'Librairie Kléber'
+          name: 'Librairie Kléber',
         },
         booking_status_history: [
           {
@@ -410,7 +409,7 @@ describe('components | BookingsRecapTable', () => {
         booking_is_duo: true,
         venue: {
           identifier: 'AE',
-          name: 'Librairie Kléber'
+          name: 'Librairie Kléber',
         },
         booking_status_history: [
           {
@@ -439,7 +438,7 @@ describe('components | BookingsRecapTable', () => {
         booking_is_duo: true,
         venue: {
           identifier: 'AE',
-          name: 'Librairie Kléber'
+          name: 'Librairie Kléber',
         },
         booking_status_history: [
           {
@@ -461,7 +460,7 @@ describe('components | BookingsRecapTable', () => {
 
     // When
     const wrapper = mount(<BookingsRecapTable {...props} />)
-    const paginate = wrapper.find(Paginate)
+    const paginate = wrapper.find(TablePagination)
     const nextPageButton = paginate.find('button').at(1)
     nextPageButton.simulate('click')
 
@@ -658,7 +657,7 @@ describe('components | BookingsRecapTable', () => {
       booking_is_duo: false,
       venue: {
         identifier: 'AE',
-        name: 'Librairie Kléber'
+        name: 'Librairie Kléber',
       },
       booking_status_history: [
         {
@@ -711,7 +710,7 @@ describe('components | BookingsRecapTable', () => {
           booking_is_duo: false,
           venue: {
             identifier: 'AE',
-            name: 'Librairie Kléber'
+            name: 'Librairie Kléber',
           },
           booking_status_history: [
             {
@@ -734,10 +733,7 @@ describe('components | BookingsRecapTable', () => {
     await offerNameInput.simulate('change', { target: { value: 'not findable' } })
 
     const selectedDate = moment('2020-05-20')
-    const offerDatePicker = wrapper
-      .find(Filters)
-      .find(DatePicker)
-      .at(0)
+    const offerDatePicker = wrapper.find(Filters).find(DatePicker).at(0)
     await offerDatePicker.simulate('change', selectedDate)
 
     const noFilteredBookings = wrapper.find(NoFilteredBookings)
@@ -751,10 +747,7 @@ describe('components | BookingsRecapTable', () => {
     // Then
     const offerName = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
     expect(offerName.text()).toBe('')
-    const offerDate = wrapper
-      .find(Filters)
-      .find(DatePicker)
-      .at(0)
+    const offerDate = wrapper.find(Filters).find(DatePicker).at(0)
     expect(offerDate.prop('selected')).toBe(EMPTY_FILTER_VALUE)
   })
 
@@ -860,7 +853,7 @@ describe('components | BookingsRecapTable', () => {
       booking_is_duo: true,
       venue: {
         identifier: 'AE',
-        name: 'Librairie Kléber'
+        name: 'Librairie Kléber',
       },
       booking_status_history: [
         {
@@ -905,7 +898,7 @@ describe('components | BookingsRecapTable', () => {
         },
       ],
     }
-    const paginate = wrapper.find(Paginate)
+    const paginate = wrapper.find(TablePagination)
     const nextPageButton = paginate.find('button').at(1)
     nextPageButton.simulate('click')
 

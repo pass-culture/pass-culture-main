@@ -2,10 +2,9 @@ import { mount } from 'enzyme'
 import React from 'react'
 import * as reactTable from 'react-table'
 
-import Head from '../Head/Head'
-import Paginate from '../Paginate/Paginate'
+import TableHead from '../Head/TableHead'
+import TablePagination from '../Paginate/TablePagination'
 import TableFrame from '../TableFrame'
-
 
 const CellMock = ({ offer: { offer_name: offerName } }) => (
   <span>
@@ -14,7 +13,7 @@ const CellMock = ({ offer: { offer_name: offerName } }) => (
 )
 
 describe('components | TableFrame', () => {
-  it('should render a Head component with the right props', () => {
+  it('should render a TableHead component with the right props', () => {
     // Given
     const mockedValues = {
       canPreviousPage: true,
@@ -91,7 +90,7 @@ describe('components | TableFrame', () => {
     const table = mount(<TableFrame {...props} />)
 
     // Then
-    const tableHead = table.find(Head)
+    const tableHead = table.find(TableHead)
     expect(tableHead).toHaveLength(1)
     expect(tableHead.props()).toStrictEqual({
       headerGroups: mockedValues.headerGroups,
@@ -108,7 +107,7 @@ describe('components | TableFrame', () => {
           headerTitle: 'Stock',
           accessor: 'stock',
           // eslint-disable-next-line react/display-name, react/no-multi-comp
-          Cell: function({ value }) {
+          Cell: function ({ value }) {
             return <CellMock offer={value} />
           },
           getHeaderProps: jest.fn(),
@@ -119,7 +118,7 @@ describe('components | TableFrame', () => {
           headerTitle: 'Beneficiaire',
           accessor: 'beneficiary',
           // eslint-disable-next-line react/display-name, react/no-multi-comp
-          Cell: function({ value }) {
+          Cell: function ({ value }) {
             return <CellMock offer={value} />
           },
           getHeaderProps: jest.fn(),
@@ -167,7 +166,7 @@ describe('components | TableFrame', () => {
   })
 
   describe('pagination', () => {
-    it('should render a Paginate component with the right props', () => {
+    it('should render a TablePagination component with the right props', () => {
       // Given
       const props = {
         columns: [
@@ -176,7 +175,7 @@ describe('components | TableFrame', () => {
             headerTitle: 'Stock',
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
-            Cell: function({ value }) {
+            Cell: function ({ value }) {
               return <CellMock offer={value} />
             },
             getHeaderProps: jest.fn(),
@@ -201,7 +200,7 @@ describe('components | TableFrame', () => {
       const wrapper = mount(<TableFrame {...props} />)
 
       // Then
-      const paginate = wrapper.find(Paginate)
+      const paginate = wrapper.find(TablePagination)
       expect(paginate).toHaveLength(1)
       expect(paginate.props()).toStrictEqual({
         canNextPage: true,
@@ -222,7 +221,7 @@ describe('components | TableFrame', () => {
             headerTitle: 'Stock',
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
-            Cell: function({ value }) {
+            Cell: function ({ value }) {
               return <CellMock offer={value} />
             },
             getHeaderProps: jest.fn(),
@@ -265,7 +264,7 @@ describe('components | TableFrame', () => {
             headerTitle: 'Stock',
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
-            Cell: function({ value }) {
+            Cell: function ({ value }) {
               return <CellMock offer={value} />
             },
             getHeaderProps: jest.fn(),
@@ -286,7 +285,7 @@ describe('components | TableFrame', () => {
         updateCurrentPage: jest.fn(),
       }
       const wrapper = mount(<TableFrame {...props} />)
-      const paginate = wrapper.find(Paginate)
+      const paginate = wrapper.find(TablePagination)
       const nextPageButton = paginate.find('button').at(1)
 
       // When
@@ -309,7 +308,7 @@ describe('components | TableFrame', () => {
             headerTitle: 'Stock',
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
-            Cell: function({ value }) {
+            Cell: function ({ value }) {
               return <CellMock offer={value} />
             },
             getHeaderProps: jest.fn(),
@@ -330,7 +329,7 @@ describe('components | TableFrame', () => {
         updateCurrentPage: jest.fn(),
       }
       const wrapper = mount(<TableFrame {...props} />)
-      const paginate = wrapper.find(Paginate)
+      const paginate = wrapper.find(TablePagination)
 
       // When
       const previousPageButton = paginate.find('button').at(0)

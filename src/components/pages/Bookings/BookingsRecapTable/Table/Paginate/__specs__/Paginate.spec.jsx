@@ -3,9 +3,9 @@ import React from 'react'
 
 import Icon from 'components/layout/Icon'
 
-import Paginate from '../Paginate'
+import TablePagination from '../TablePagination'
 
-describe('components | Paginate', () => {
+describe('components | TablePagination', () => {
   let props
 
   beforeEach(() => {
@@ -25,7 +25,7 @@ describe('components | Paginate', () => {
       props.canPreviousPage = true
 
       // when
-      const wrapper = shallow(<Paginate {...props} />)
+      const wrapper = shallow(<TablePagination {...props} />)
 
       // then
       const buttons = wrapper.find('button').find(Icon)
@@ -40,7 +40,7 @@ describe('components | Paginate', () => {
       props.nbPages = 2
 
       // when
-      const wrapper = shallow(<Paginate {...props} />)
+      const wrapper = shallow(<TablePagination {...props} />)
 
       // then
       const currentPage = wrapper.find({ children: 'Page 1/2' })
@@ -52,7 +52,7 @@ describe('components | Paginate', () => {
       props.canNextPage = true
 
       // when
-      const wrapper = shallow(<Paginate {...props} />)
+      const wrapper = shallow(<TablePagination {...props} />)
 
       // then
       const buttons = wrapper.find('button').find(Icon)
@@ -66,7 +66,7 @@ describe('components | Paginate', () => {
     it('should go back to previous page when click on previous button', () => {
       // given
       props.canPreviousPage = true
-      const wrapper = shallow(<Paginate {...props} />)
+      const wrapper = shallow(<TablePagination {...props} />)
       const buttons = wrapper.find('button')
       const previousButton = buttons.at(0)
 
@@ -80,7 +80,7 @@ describe('components | Paginate', () => {
     it('should go to next page when click on next button', () => {
       // given
       props.canNextPage = true
-      const wrapper = shallow(<Paginate {...props} />)
+      const wrapper = shallow(<TablePagination {...props} />)
       const buttons = wrapper.find('button')
       const nextButton = buttons.at(1)
 

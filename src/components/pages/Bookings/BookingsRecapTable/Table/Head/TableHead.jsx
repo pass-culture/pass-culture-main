@@ -12,7 +12,7 @@ const handleOnKeyDown = (column, selector) => event => {
   }
 }
 
-const Head = ({ headerGroups }) => {
+const TableHead = ({ headerGroups }) => {
   return (
     <thead className="bookings-head">
       {headerGroups.map(headerGroup => (
@@ -63,7 +63,7 @@ const Head = ({ headerGroups }) => {
   )
 }
 
-Head.propTypes = {
+TableHead.propTypes = {
   headerGroups: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number,
@@ -78,4 +78,4 @@ Head.propTypes = {
   ).isRequired,
 }
 
-export default Head
+export default TableHead

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-const Body = ({ page, prepareRow, tableBodyProps }) => {
+const TableBody = ({ page, prepareRow, tableBodyProps }) => {
   return (
     <tbody
       className="bookings-body"
@@ -31,10 +31,10 @@ const Body = ({ page, prepareRow, tableBodyProps }) => {
   )
 }
 
-Body.propTypes = {
+TableBody.propTypes = {
   page: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   prepareRow: PropTypes.func.isRequired,
-  tableBodyProps: PropTypes.shape().isRequired
+  tableBodyProps: PropTypes.shape().isRequired,
 }
 
-export default Body
+export default TableBody

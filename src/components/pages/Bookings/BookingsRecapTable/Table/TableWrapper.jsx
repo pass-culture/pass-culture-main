@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Body from './Body/Body'
-import Head from './Head/Head'
-import Paginate from './Paginate/Paginate'
+import TableBody from './Body/TableBody'
+import TableHead from './Head/TableHead'
+import TablePagination from './Paginate/TablePagination'
 
-class Table extends React.Component {
+class TableWrapper extends React.Component {
   goToNextPage = () => {
     const { pageIndex, nextPage, updateCurrentPage } = this.props
     nextPage()
@@ -36,14 +36,14 @@ class Table extends React.Component {
           className="bookings-table"
           {...getTableProps()}
         >
-          <Head headerGroups={headerGroups} />
-          <Body
+          <TableHead headerGroups={headerGroups} />
+          <TableBody
             page={page}
             prepareRow={prepareRow}
             tableBodyProps={getTableBodyProps()}
           />
         </table>
-        <Paginate
+        <TablePagination
           canNextPage={canNextPage}
           canPreviousPage={canPreviousPage}
           currentPage={pageIndex + 1}
@@ -56,7 +56,7 @@ class Table extends React.Component {
   }
 }
 
-Table.propTypes = {
+TableWrapper.propTypes = {
   canNextPage: PropTypes.bool.isRequired,
   canPreviousPage: PropTypes.bool.isRequired,
   getTableBodyProps: PropTypes.func.isRequired,
@@ -71,4 +71,4 @@ Table.propTypes = {
   updateCurrentPage: PropTypes.func.isRequired,
 }
 
-export default Table
+export default TableWrapper

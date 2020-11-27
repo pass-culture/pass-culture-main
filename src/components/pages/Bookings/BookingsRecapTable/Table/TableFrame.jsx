@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { usePagination, useSortBy, useTable } from 'react-table'
 
-import Table from './Table'
+import TableWrapper from './TableWrapper'
 
 const TableFrame = ({
   columns,
@@ -38,7 +38,7 @@ const TableFrame = ({
   const pageCount = Math.ceil(nbBookings / nbBookingsPerPage)
 
   return (
-    <Table
+    <TableWrapper
       canNextPage={canNextPage}
       canPreviousPage={canPreviousPage}
       getTableBodyProps={getTableBodyProps}
