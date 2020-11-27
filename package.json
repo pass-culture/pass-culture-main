@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "/",
   "scripts": {
-    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "analyze": "source-map-explorer 'build/static/js/*.js' --html build/stats.html",
     "build": "node scripts/build.js && ./scripts/build_redirects.sh",
     "build:integration": "env-cmd -f .env.integration yarn build",
     "build:production": "yarn build",
