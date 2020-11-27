@@ -683,7 +683,20 @@ module.exports = function (webpackEnv) {
         },
       }),
       new MomentTimezoneDataPlugin({
-        matchZones: ['America/Cayenne', 'Europe/Paris', 'Indian/Reunion'],
+        matchZones: [
+          'America/Cayenne',
+          'America/Guadeloupe',
+          'America/Martinique',
+          'America/Miquelon',
+          'America/St_Barthelemy',
+          'Europe/Paris',
+          'Indian/Mayotte',
+          'Indian/Reunion',
+          'Pacific/Noumea',
+          'Pacific/Pitcairn',
+          'Pacific/Tahiti',
+          'Pacific/Wallis',
+        ],
       }),
     ].filter(Boolean),
     // Some libraries import Node modules but don't use them in the browser.
