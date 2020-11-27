@@ -1,18 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="24px" height="17px" viewBox="0 0 24 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: sketchtool 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
-    <title>2E028A04-B4E1-4667-947E-E8DE616654CB</title>
-    <desc>Created with sketchtool.</desc>
-    <defs></defs>
-    <g id="Portail-pro" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Passculture-Pro-structure" transform="translate(-324.000000, -67.000000)">
-            <g id="Group-6" transform="translate(325.000000, 66.000000)">
-                <g id="ICONS/ico-back">
-                    <rect id="Background" x="0" y="0" width="22" height="22"></rect>
-                    <polyline id="Stroke-1" stroke="#E60039" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="4.79227857 2.5 0.499921429 7.90178571 4.79227857 13.3035714"></polyline>
-                    <path d="M21.5,7.99427001 L21.5,7.99427001 C21.5,12.8523004 17.5617882,16.7905122 12.7037579,16.7905122 L0.5,16.7905122" id="Stroke-3" stroke="#E60039" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="translate(11.000000, 12.392391) scale(1, -1) translate(-11.000000, -12.392391) "></path>
-                </g>
-            </g>
-        </g>
-    </g>
-</svg>
+<svg width="24" height="17" viewBox="0 0 24 17" xmlns="http://www.w3.org/2000/svg"><g fill="none"><path d="M1-1h22v22H1z"/><path stroke="#E60039" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5.792 1.5L1.5 6.902l4.292 5.402"/><path d="M22.5 15.79h0a8.796 8.796 0 00-8.796-8.796H1.5" stroke="#E60039" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
