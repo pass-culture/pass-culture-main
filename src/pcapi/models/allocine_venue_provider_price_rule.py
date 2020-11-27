@@ -24,8 +24,8 @@ class AllocineVenueProviderPriceRule(PcObject, Model):
     price = Column(Numeric(10, 2), CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False)
 
     UniqueConstraint(
-        "allocineVenueProviderId",
-        "priceRule",
+        allocineVenueProviderId,
+        priceRule,
         name="unique_allocine_venue_provider_price_rule",
     )
 
