@@ -29,7 +29,6 @@ class ProvidableMixin:
         ),
         nullable=True,
         unique=True,
-        index=True,
     )
 
     dateModifiedAtLastProvider = Column(DateTime, nullable=True, default=datetime.utcnow)
