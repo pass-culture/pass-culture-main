@@ -10,7 +10,6 @@ class CheckboxField extends PureComponent {
       <div>
         <input
           {...input}
-          className="input-checkbox"
           defaultChecked={checked}
           id={id}
           type="checkbox"

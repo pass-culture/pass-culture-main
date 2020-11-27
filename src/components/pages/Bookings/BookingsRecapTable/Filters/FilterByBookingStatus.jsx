@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 
 import Icon from 'components/layout/Icon'
-import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
 
 import { getBookingStatusDisplayInformations } from '../CellsFormatter/utils/bookingStatusConverter'
 
@@ -140,15 +139,17 @@ class FilterByBookingStatus extends Component {
               </div>
               {bookingStatuses.map(bookingStatus => (
                 <Fragment key={bookingStatus.value}>
-                  <CheckboxInput
-                    checked={!bookingStatusFilters.includes(bookingStatus.value)}
-                    data-status-filter-tooltip
-                    id={`bs-${bookingStatus.value}`}
-                    label={bookingStatus.title}
-                    labelAttributes={{ 'data-status-filter-tooltip': true }}
-                    name={bookingStatus.value}
-                    onChange={this.handleCheckboxChange}
-                  />
+                  <label data-status-filter-tooltip>
+                    <input
+                      checked={!bookingStatusFilters.includes(bookingStatus.value)}
+                      data-status-filter-tooltip
+                      id={`bs-${bookingStatus.value}`}
+                      name={bookingStatus.value}
+                      onChange={this.handleCheckboxChange}
+                      type="checkbox"
+                    />
+                    {bookingStatus.title}
+                  </label>
                 </Fragment>
               ))}
             </div>
