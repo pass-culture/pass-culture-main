@@ -5,9 +5,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import 'typeface-barlow'
 
-import BicInput from 'components/layout/BicInput'
 import BlockContainer from 'components/layout/BlockContainer'
-import IbanInput from 'components/layout/IbanInput'
 import Root from 'Root'
 import { ENVIRONMENT_NAME, SENTRY_SERVER_URL, SENTRY_SAMPLE_RATE } from 'utils/config'
 
@@ -15,12 +13,6 @@ import { version } from '../package.json'
 import './styles/index.scss'
 
 import { unregister } from './registerServiceWorker'
-
-// Initialize shared Form component
-Object.assign(Form.inputsByType, {
-  bic: BicInput,
-  iban: IbanInput,
-})
 
 Object.assign(Form.defaultProps, {
   blockComponent: BlockContainer,
