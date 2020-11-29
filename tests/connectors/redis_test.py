@@ -1,10 +1,10 @@
-import os
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
 import redis
 
+from pcapi import settings
 from pcapi.connectors.redis import _add_venue_provider
 from pcapi.connectors.redis import add_offer_id
 from pcapi.connectors.redis import add_offer_ids_in_error
@@ -41,8 +41,7 @@ class RedisTest:
         # Given
         key_to_insert = "foo"
         value_to_insert = "bar"
-        redis_url = os.environ.get("REDIS_URL")
-        redis_connection = redis.from_url(redis_url)
+        redis_connection = redis.from_url(settings.REDIS_URL)
 
         # When
         redis_connection.set(key_to_insert, value_to_insert)
@@ -65,7 +64,7 @@ class AddOfferIdTest:
 
 
 class GetOfferIdsTest:
-    @patch("pcapi.connectors.redis.REDIS_OFFER_IDS_CHUNK_SIZE", return_value=1000)
+    @patch("pcapi.settings.REDIS_OFFER_IDS_CHUNK_SIZE", return_value=1000)
     def test_should_return_offer_ids_from_list(self, mock_redis_lrange_end):
         # Given
         client = MagicMock()
@@ -199,7 +198,7 @@ class AddVenueProviderTest:
 
 
 class GetVenueProvidersTest:
-    @patch("pcapi.connectors.redis.REDIS_VENUE_PROVIDERS_CHUNK_SIZE", 2)
+    @patch("pcapi.settings.REDIS_VENUE_PROVIDERS_CHUNK_SIZE", 2)
     def test_should_return_venue_providers(self):
         # Given
         client = MagicMock()
