@@ -31,15 +31,15 @@ def cancel_banned_bookings() -> None:
             repository.save(booking)
             updated_bookings.append(booking.id)
         except ApiErrors as error:
-            logger.exception(f"{error.errors} for booking {booking.id}")
+            logger.exception("%s for booking %s", error.errors, booking.id)
             bookings_in_error.append(booking.id)
 
-    logger.info(f"{len(updated_bookings)} BOOKINGS UPDATED")
-    logger.info(f"LIST OF UPDATED BOOKINGS")
+    logger.info("%i BOOKINGS UPDATED", len(updated_bookings))
+    logger.info("LIST OF UPDATED BOOKINGS")
     logger.info(updated_bookings)
 
     if len(bookings_in_error) > 0:
-        logger.error(f"LIST OF BOOKINGS IN ERROR")
+        logger.error("LIST OF BOOKINGS IN ERROR")
         logger.error(bookings_in_error)
 
     logger.info("[CANCEL BANNED BOOKINGS] END")

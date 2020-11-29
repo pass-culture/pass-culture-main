@@ -44,7 +44,9 @@ def _cancel_bookings_of_offers_from_rows(csv_rows: Iterable) -> None:
         bookings_to_cancel = _get_bookings_from_offer(int(offer_id))
 
         logger.info(
-            f"[CANCEL BOOKINGS OF EVENTS FROM FILE] Annulation des réservations de l'offre '{offer_name}' d'id {offer_id} lancée"
+            "[CANCEL BOOKINGS OF EVENTS FROM FILE] Annulation des réservations de l'offre '%s' d'id %s lancée",
+            offer_name,
+            offer_id,
         )
 
         for booking in bookings_to_cancel:
@@ -55,19 +57,21 @@ def _cancel_bookings_of_offers_from_rows(csv_rows: Iterable) -> None:
         try:
             repository.save(*bookings_to_cancel)
             logger.info(
-                f"[CANCEL BOOKINGS OF EVENTS FROM FILE] Annulation des réservations de l'offre '{offer_name}' d'id {offer_id} réussie"
+                "[CANCEL BOOKINGS OF EVENTS FROM FILE] Annulation des réservations de l'offre '%s' d'id %s réussie",
+                offer_name,
+                offer_id,
             )
             offers_successful.append(offer_id)
         except ApiErrors as error:
-            logger.exception(f"[CANCEL BOOKINGS OF EVENTS FROM FILE] {error.errors} pour l'offre d'id {offer_id}")
+            logger.exception("[CANCEL BOOKINGS OF EVENTS FROM FILE] %s pour l'offre d'id %s", error.errors, offer_id)
             offers_in_error.append(offer_id)
 
-    logger.info(f"[CANCEL BOOKINGS OF EVENTS FROM FILE] {len(offers_successful)} OFFRES ANNULÉES")
-    logger.info(f"[CANCEL BOOKINGS OF EVENTS FROM FILE] LISTE DES OFFRES MISES À JOUR")
+    logger.info("[CANCEL BOOKINGS OF EVENTS FROM FILE] %i OFFRES ANNULÉES", len(offers_successful))
+    logger.info("[CANCEL BOOKINGS OF EVENTS FROM FILE] LISTE DES OFFRES MISES À JOUR")
     logger.info(offers_successful)
 
     if len(offers_in_error) > 0:
-        logger.error(f"[CANCEL BOOKINGS OF EVENTS FROM FILE] LISTE DES OFFRES EN ERREUR")
+        logger.error("[CANCEL BOOKINGS OF EVENTS FROM FILE] LISTE DES OFFRES EN ERREUR")
         logger.error(offers_in_error)
 
 

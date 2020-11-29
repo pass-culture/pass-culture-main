@@ -36,11 +36,13 @@ def do_sync_venue_provider(venue_provider: VenueProvider):
         venue_provider.syncWorkerId = container_id
         repository.save(venue_provider)
         logger.info(
-            f"[VenueProviderWorker] VenueProvider {venue_provider.venueIdAtOfferProvider}"
-            f" synchro in container {container_id}"
+            "[VenueProviderWorker] VenueProvider %s synchro in container %s",
+            venue_provider.venueIdAtOfferProvider,
+            container_id,
         )
     except ScalingoApiException as error:
         logger.exception(
-            f"[VenueProviderWorker] Error synchronizing VenueProvider {venue_provider.venueIdAtOfferProvider}"
-            f" with errors: {error}"
+            "[VenueProviderWorker] Error synchronizing VenueProvider %s with errors: %s",
+            venue_provider.venueIdAtOfferProvider,
+            error,
         )

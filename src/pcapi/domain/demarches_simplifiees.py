@@ -59,19 +59,19 @@ def get_all_application_ids_for_demarche_simplifiee(
     while current_page <= number_of_pages:
         api_response = get_all_applications_for_procedure(procedure_id, token, page=current_page, results_per_page=100)
         number_of_pages = api_response["pagination"]["nombre_de_page"]
-        logger.info(f"[IMPORT DEMARCHES SIMPLIFIEES] page {current_page} of {number_of_pages}")
+        logger.info("[IMPORT DEMARCHES SIMPLIFIEES] page %i of %i", current_page, number_of_pages)
 
         applications_to_process = [
             application
             for application in api_response["dossiers"]
             if _has_requested_state(application, accepted_states) and _was_last_updated_after(application, last_update)
         ]
-        logger.info(f"[IMPORT DEMARCHES SIMPLIFIEES] {len(applications_to_process)} applications to process")
+        logger.info("[IMPORT DEMARCHES SIMPLIFIEES] %i applications to process", len(applications_to_process))
         applications += applications_to_process
 
         current_page += 1
 
-    logger.info(f"[IMPORT DEMARCHES SIMPLIFIEES] Total : {len(applications)} applications")
+    logger.info("[IMPORT DEMARCHES SIMPLIFIEES] Total : %i applications", len(applications))
 
     return [application["id"] for application in _sort_applications_by_date(applications)]
 

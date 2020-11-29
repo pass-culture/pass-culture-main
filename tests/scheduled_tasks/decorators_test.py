@@ -53,7 +53,7 @@ class CronRequireFeatureTest:
 
         # Then
         assert result is None
-        mock_logger.assert_called_once_with("feature is not active")
+        mock_logger.assert_called_once_with("%s is not active", "feature")
 
 
 class LogCronTest:

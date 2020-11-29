@@ -44,22 +44,31 @@ def _delete_user_offerers_from_rows(csv_rows: Iterable) -> None:
         user_offerer_id = user_offerer.id
 
         logger.info(
-            f"[DELETE USER_OFFERERS FROM FILE] Suppression du rattachement pour le user d'id {user_id} et l'offerer d'id {offerer_id} est lancée"
+            "[DELETE USER_OFFERERS FROM FILE] Suppression du rattachement pour le user d'id %s et l'offerer "
+            "d'id %s est lancée",
+            user_id,
+            offerer_id,
         )
 
         try:
             repository.delete(user_offerer)
             logger.info(
-                f"[DELETE USER_OFFERERS FROM FILE] Suppression du rattachement pour le user d'id {user_id} et l'offerer d'id {offerer_id} réussie"
+                "[DELETE USER_OFFERERS FROM FILE] Suppression du rattachement pour le user d'id %s et l'offerer "
+                "d'id %s réussie",
+                user_id,
+                offerer_id,
             )
             user_offerers_successful.append(user_offerer_id)
         except ApiErrors as error:
             logger.exception(
-                f"[DELETE USER_OFFERERS FROM FILE] {error.errors} pour le rattachement avec le user d'id {user_id} et l'offerer d'id {offerer_id}"
+                "[DELETE USER_OFFERERS FROM FILE] %s pour le rattachement avec le user d'id %s et l'offerer d'id %s",
+                error.errors,
+                user_id,
+                offerer_id,
             )
             user_offerers_in_error.append(user_offerer_id)
 
-    logger.info(f"[DELETE USER_OFFERERS FROM FILE] {len(user_offerers_successful)} RATTACHEMENT SUPPRIMES")
+    logger.info("[DELETE USER_OFFERERS FROM FILE] %i RATTACHEMENT SUPPRIMES", len(user_offerers_successful))
     logger.info("[DELETE USER_OFFERERS FROM FILE] LISTE DES RATTACHEMENT SUPPRIMES")
     logger.info(user_offerers_successful)
 

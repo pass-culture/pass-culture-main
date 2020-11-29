@@ -27,7 +27,7 @@ CSV_HEADER = [
 def generate_non_editable_venues_csv():
     logger.info(" START : FIND NON EDITABLE VENUES ")
     offerer_venues = _get_non_editable_venues()
-    logger.info(f" CREATING CSV FOR {len(offerer_venues)} NON EDITABLE VENUES")
+    logger.info(" CREATING CSV FOR %i NON EDITABLE VENUES", len(offerer_venues))
 
     csv_lines = [_as_csv_row(offerer_venue) for offerer_venue in offerer_venues]
     output = StringIO()

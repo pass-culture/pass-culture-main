@@ -8,7 +8,7 @@ from pcapi.utils.logger import logger
 
 
 def modify_allocine_price_rule_for_venue_by_id(venue_id: int, new_price: Decimal) -> None:
-    logger.info(f"Venue {venue_id} priceRule to be updated, new price: {new_price}")
+    logger.info("Venue %s priceRule to be updated, new price: %s", venue_id, new_price)
     allocine_venue_provider = AllocineVenueProvider.query.filter_by(venueId=venue_id).one_or_none()
     if allocine_venue_provider is not None:
         _modify_allocine_price_rule_for_venue(allocine_venue_provider, new_price)
@@ -17,7 +17,7 @@ def modify_allocine_price_rule_for_venue_by_id(venue_id: int, new_price: Decimal
 
 
 def modify_allocine_price_rule_for_venue_by_siret(venue_siret: str, new_price: Decimal) -> None:
-    logger.info(f"Venue {venue_siret} priceRule to be updated, new price: {new_price}")
+    logger.info("Venue %s priceRule to be updated, new price: %s", venue_siret, new_price)
     allocine_venue_provider = (
         AllocineVenueProvider.query.join(VenueSQLEntity).filter_by(siret=venue_siret).one_or_none()
     )

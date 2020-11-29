@@ -29,10 +29,10 @@ def batch_indexing_offers_in_algolia_by_offer(client: Redis) -> None:
     offer_ids = get_offer_ids(client=client)
 
     if len(offer_ids) > 0:
-        logger.info(f"[ALGOLIA] processing {len(offer_ids)} offers...")
+        logger.info("[ALGOLIA] processing %i offers...", len(offer_ids))
         process_eligible_offers(client=client, offer_ids=offer_ids, from_provider_update=False)
         delete_offer_ids(client=client)
-        logger.info(f"[ALGOLIA] {len(offer_ids)} offers processed!")
+        logger.info("[ALGOLIA] %i offers processed!", len(offer_ids))
 
 
 def batch_indexing_offers_in_algolia_by_venue_provider(client: Redis) -> None:
@@ -64,12 +64,12 @@ def batch_indexing_offers_in_algolia_by_venue(client: Redis) -> None:
                 offer_ids_as_int = from_tuple_to_int(offer_ids_as_tuple)
 
                 if len(offer_ids_as_int) > 0:
-                    logger.info(f"[ALGOLIA] processing offers for venue {venue_id} from page {page}...")
+                    logger.info("[ALGOLIA] processing offers for venue %s from page %s...", venue_id, page)
                     process_eligible_offers(client=client, offer_ids=offer_ids_as_int, from_provider_update=False)
-                    logger.info(f"[ALGOLIA] offers for venue {venue_id} from page {page} processed!")
+                    logger.info("[ALGOLIA] offers for venue %s from page %s processed!", venue_id, page)
                 else:
                     has_still_offers = False
-                    logger.info(f"[ALGOLIA] processing of offers for venue {venue_id} finished!")
+                    logger.info("[ALGOLIA] processing of offers for venue %s finished!", venue_id)
                 page += 1
         delete_venue_ids(client=client)
 
@@ -89,9 +89,9 @@ def batch_indexing_offers_in_algolia_from_database(
         offer_ids_as_int = from_tuple_to_int(offer_ids=offer_ids_as_tuple)
 
         if len(offer_ids_as_int) > 0:
-            logger.info(f"[ALGOLIA] processing offers of database from page {page_number}...")
+            logger.info("[ALGOLIA] processing offers of database from page %s...", page_number)
             process_eligible_offers(client=client, offer_ids=offer_ids_as_int, from_provider_update=False)
-            logger.info(f"[ALGOLIA] offers of database from page {page_number} processed!")
+            logger.info("[ALGOLIA] offers of database from page %s processed!", page_number)
         else:
             has_still_offers = False
             logger.info("[ALGOLIA] processing of offers from database finished!")
@@ -113,9 +113,9 @@ def batch_deleting_expired_offers_in_algolia(client: Redis, process_all_expired:
         expired_offer_ids_as_int = from_tuple_to_int(offer_ids=expired_offer_ids_as_tuple)
 
         if len(expired_offer_ids_as_int) > 0:
-            logger.info(f"[ALGOLIA] processing deletion of expired offers from page {page}...")
+            logger.info("[ALGOLIA] processing deletion of expired offers from page %s...", page)
             delete_expired_offers(client=client, offer_ids=expired_offer_ids_as_int)
-            logger.info(f"[ALGOLIA] expired offers from page {page} processed!")
+            logger.info("[ALGOLIA] expired offers from page %s processed!", page)
         else:
             has_still_offers = False
             logger.info("[ALGOLIA] deleting expired offers finished!")
@@ -144,19 +144,30 @@ def _process_venue_provider(client: Redis, provider_id: str, venue_provider_id: 
 
             if len(offer_ids_as_tuple) > 0:
                 logger.info(
-                    f"[ALGOLIA] processing offers for (venue {venue_id} / provider {provider_id}) from page {page}..."
+                    "[ALGOLIA] processing offers for (venue %s / provider %s) from page %s...",
+                    venue_id,
+                    provider_id,
+                    page,
                 )
                 process_eligible_offers(client=client, offer_ids=offer_ids_as_int, from_provider_update=True)
                 logger.info(
-                    f"[ALGOLIA] offers for (venue {venue_id} / provider {provider_id}) from page {page} processed"
+                    "[ALGOLIA] offers for (venue %s / provider %s) from page %s processed",
+                    venue_id,
+                    provider_id,
+                    page,
                 )
                 page += 1
             else:
                 has_still_offers = False
-                logger.info(f"[ALGOLIA] processing of offers for (venue {venue_id} / provider {provider_id}) finished!")
+                logger.info(
+                    "[ALGOLIA] processing of offers for (venue %s / provider %s) finished!", venue_id, provider_id
+                )
     except Exception as error:
         logger.exception(
-            f"[ALGOLIA] processing of offers for (venue {venue_id} / provider {provider_id}) failed! {error}"
+            "[ALGOLIA] processing of offers for (venue %s / provider %s) failed! %s",
+            venue_id,
+            provider_id,
+            error,
         )
     finally:
         delete_venue_provider_currently_in_sync(client=client, venue_provider_id=venue_provider_id)

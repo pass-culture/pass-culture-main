@@ -37,7 +37,10 @@ def run(
 ) -> None:
     procedure_id = int(os.environ.get("DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2"))
     logger.info(
-        f"[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées for procedure = {procedure_id} - Procedure {procedure_id}"
+        "[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées for "
+        "procedure = %s - Procedure %s",
+        procedure_id,
+        procedure_id,
     )
     error_messages: List[str] = []
     new_beneficiaries: List[UserSQLEntity] = []
@@ -45,10 +48,14 @@ def run(
     retry_ids = get_applications_ids_to_retry()
 
     logger.info(
-        f"[BATCH][REMOTE IMPORT BENEFICIARIES] {len(applications_ids)} new applications to process - Procedure {procedure_id}"
+        "[BATCH][REMOTE IMPORT BENEFICIARIES] %i new applications to process - Procedure %s",
+        len(applications_ids),
+        procedure_id,
     )
     logger.info(
-        f"[BATCH][REMOTE IMPORT BENEFICIARIES] {len(retry_ids)} previous applications to retry - Procedure {procedure_id}"
+        "[BATCH][REMOTE IMPORT BENEFICIARIES] %i previous applications to retry - Procedure %s",
+        len(retry_ids),
+        procedure_id,
     )
 
     for application_id in retry_ids + applications_ids:
@@ -73,7 +80,7 @@ def run(
             )
 
     logger.info(
-        f"[BATCH][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées - Procedure {procedure_id}"
+        "[BATCH][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées - Procedure %s", procedure_id
     )
 
 
@@ -134,14 +141,17 @@ def _process_creation(
         repository.save(new_beneficiary)
     except ApiErrors as api_errors:
         logger.warning(
-            f"[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application "
-            f"{information['application_id']}, because of error: {str(api_errors)} - Procedure {procedure_id}"
+            "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application %s, because of error: %s - Procedure %s",
+            information["application_id"],
+            api_errors,
+            procedure_id,
         )
         error_messages.append(str(api_errors))
     else:
         logger.info(
-            f"[BATCH][REMOTE IMPORT BENEFICIARIES] Successfully created user for application "
-            f"{information['application_id']} - Procedure {procedure_id}"
+            "[BATCH][REMOTE IMPORT BENEFICIARIES] Successfully created user for application %s - Procedure %s",
+            information["application_id"],
+            procedure_id,
         )
         save_beneficiary_import_with_status(
             ImportStatus.CREATED,
@@ -155,7 +165,9 @@ def _process_creation(
             send_activation_email(new_beneficiary, send_raw_email)
         except MailServiceException as mail_service_exception:
             logger.exception(
-                f"Email send_activation_email failure for application {information['application_id']} - Procedure {procedure_id}",
+                "Email send_activation_email failure for application %s - Procedure %s : %s",
+                information["application_id"],
+                procedure_id,
                 mail_service_exception,
             )
 
@@ -166,7 +178,7 @@ def _process_duplication(
     number_of_beneficiaries = len(duplicate_users)
     duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])
     message = f"{number_of_beneficiaries} utilisateur(s) en doublon {duplicate_ids} pour le dossier {information['application_id']} - Procedure {procedure_id}"
-    logger.warning(f"[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : {message}")
+    logger.warning("[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : %s", message)
     error_messages.append(message)
     save_beneficiary_import_with_status(
         ImportStatus.DUPLICATE,
@@ -186,13 +198,15 @@ def _process_rejection(information: Dict, procedure_id: int) -> None:
         detail="Compte existant avec cet email",
     )
     logger.warning(
-        f"[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application {information['application_id']} because of already existing email - Procedure {procedure_id}"
+        "[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of already existing email - Procedure %s",
+        information["application_id"],
+        procedure_id,
     )
 
 
 def _process_error(error_messages: List[str], application_id: int, procedure_id: int) -> None:
     error = f"Le dossier {application_id} contient des erreurs et a été ignoré - Procedure {procedure_id}"
-    logger.error(f"[BATCH][REMOTE IMPORT BENEFICIARIES] {error}")
+    logger.error("[BATCH][REMOTE IMPORT BENEFICIARIES] %s", error)
     error_messages.append(error)
     save_beneficiary_import_with_status(
         ImportStatus.ERROR,

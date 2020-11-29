@@ -14,7 +14,7 @@ def create_beneficiary_user() -> UserSQLEntity:
     beneficiary_user = create_user(email=f"{str(import_status)}@email.com")
 
     repository.save(beneficiary_user)
-    logger.info(f"created 1 beneficiary user")
+    logger.info("created 1 beneficiary user")
 
     return beneficiary_user
 
@@ -40,7 +40,7 @@ def create_beneficiary_imports(beneficiary_user: UserSQLEntity) -> List[Benefici
         index_of_beneficiary_imports += 1
 
     repository.save(*beneficiary_imports)
-    logger.info(f"created {len(beneficiary_imports)} beneficiary imports and status")
+    logger.info("created %i beneficiary imports and status", len(beneficiary_imports))
 
     return beneficiary_imports
 

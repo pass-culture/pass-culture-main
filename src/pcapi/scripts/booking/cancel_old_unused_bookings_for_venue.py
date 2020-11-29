@@ -32,7 +32,7 @@ def cancel_old_unused_bookings_for_venue(humanized_venue_id: str) -> None:
 
     if len(old_unused_bookings) > 0:
         repository.save(*old_unused_bookings)
-        logger.info(f"'{len(old_unused_bookings)}' bookings cancelled for venue '{venue.name}'")
+        logger.info("'%i' bookings cancelled for venue '%s'", len(old_unused_bookings), venue.name)
 
 
 def _get_old_unused_bookings_from_venue_id(venue_id: int, limit_date: DateTime) -> List[Booking]:

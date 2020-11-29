@@ -53,7 +53,7 @@ def process_eligible_offers(client: Redis, offer_ids: List[int], from_provider_u
         _process_deleting(client=client, offer_ids_to_delete=offers_to_delete)
 
     if len(offers_to_add) == 0 and len(offers_to_delete):
-        logger.info(f"[ALGOLIA] no objects were added nor deleted!")
+        logger.info("[ALGOLIA] no objects were added nor deleted!")
 
 
 def delete_expired_offers(client: Redis, offer_ids: List[int]) -> None:
@@ -82,11 +82,11 @@ def _build_offer_details_to_be_indexed(offer: Offer) -> dict:
 def _process_adding(pipeline: Pipeline, client: Redis, offer_ids: List[int], adding_objects: List[dict]) -> None:
     try:
         add_objects(objects=adding_objects)
-        logger.info(f"[ALGOLIA] {len(adding_objects)} objects were indexed!")
+        logger.info("[ALGOLIA] %i objects were indexed!", len(adding_objects))
         pipeline.execute()
         pipeline.reset()
     except AlgoliaException as error:
-        logger.exception(f"[ALGOLIA] error when adding objects {error}")
+        logger.exception("[ALGOLIA] error when adding objects %s", error)
         add_offer_ids_in_error(client=client, offer_ids=offer_ids)
         pipeline.reset()
 
@@ -96,7 +96,7 @@ def _process_deleting(client: Redis, offer_ids_to_delete: List[int]) -> None:
     try:
         delete_objects(object_ids=humanized_offer_ids_to_delete)
         delete_indexed_offers(client=client, offer_ids=offer_ids_to_delete)
-        logger.info(f"[ALGOLIA] {len(offer_ids_to_delete)} objects were deleted from index!")
+        logger.info("[ALGOLIA] %i objects were deleted from index!", len(offer_ids_to_delete))
     except AlgoliaException as error:
-        logger.exception(f"[ALGOLIA] error when deleting objects {error}")
+        logger.exception("[ALGOLIA] error when deleting objects %s", error)
         add_offer_ids_in_error(client=client, offer_ids=offer_ids_to_delete)

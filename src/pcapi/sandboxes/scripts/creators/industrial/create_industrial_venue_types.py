@@ -33,6 +33,6 @@ def create_industrial_venue_types() -> List[VenueType]:
 
     repository.save(*venue_types)
 
-    logger.info(f"created {len(venue_types)} venue types")
+    logger.info("created %i venue types", len(venue_types))
 
     return venue_types
