@@ -22,7 +22,7 @@ from pcapi.validation.routes.offers import check_offer_type_is_valid
 
 class PostOfferBodyModel(InputBaseModel):
     venue_id: str
-    product_id: Optional[int]
+    product_id: Optional[str]
     type: Optional[str]
     name: Optional[str]
     booking_email: Optional[str]
@@ -41,8 +41,6 @@ class PostOfferBodyModel(InputBaseModel):
     # unused for the offer creation. But the webapp does send it so
     # we must list them here.
     offererId: Optional[str]
-
-    _dehumanize_product_id = dehumanize_field("product_id")
 
     @validator("name", pre=True)
     def validate_name(cls, name, values):  # pylint: disable=no-self-argument

@@ -16,7 +16,10 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
+from pcapi.models import offer_type
 from pcapi.models.feature import override_features
+from pcapi.routes.serialization import offers_serialize
+from pcapi.utils.human_ids import humanize
 
 import tests
 
@@ -375,6 +378,100 @@ class CreateMediationTest:
 
         assert error.value.errors["thumb"] == ["L'image doit faire 400 * 400 px minimum"]
         assert models.Mediation.query.count() == 0
+
+
+@pytest.mark.usefixtures("db_session")
+class CreateOfferTest:
+    def test_create_offer_from_scratch(self):
+        venue = factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user_offerer = factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            name="A pretty good offer",
+            type=str(offer_type.EventType.CINEMA),
+        )
+        offer = api.create_offer(data, user)
+
+        assert offer.name == "A pretty good offer"
+        assert offer.venue == venue
+        assert offer.type == str(offer_type.EventType.CINEMA)
+        assert offer.product.owningOfferer == offerer
+        assert not offer.bookingEmail
+
+    def test_create_offer_from_existing_product(self):
+        product = factories.ProductFactory(
+            name="An excellent offer",
+            type=str(offer_type.EventType.CINEMA),
+        )
+        venue = factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user_offerer = factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            productId=humanize(product.id),
+        )
+        offer = api.create_offer(data, user)
+
+        assert offer.name == "An excellent offer"
+        assert offer.type == str(offer_type.EventType.CINEMA)
+        assert offer.product == product
+
+    def test_create_activation_offer(self):
+        user = users_factories.UserFactory(isAdmin=True, canBookFreeOffers=False)
+        venue = factories.VenueFactory()
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            name="An offer he can't refuse",
+            type=str(offer_type.EventType.ACTIVATION),
+        )
+        offer = api.create_offer(data, user)
+
+        assert offer.type == str(offer_type.EventType.ACTIVATION)
+
+    def test_fail_if_unknown_venue(self):
+        user = users_factories.UserFactory()
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(1),
+            name="An awful offer",
+            type=str(offer_type.EventType.ACTIVATION),
+        )
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_offer(data, user)
+        err = "Aucun objet ne correspond à cet identifiant dans notre base de données"
+        assert error.value.errors["global"] == [err]
+
+    def test_fail_if_user_not_related_to_offerer(self):
+        venue = factories.VenueFactory()
+        user = users_factories.UserFactory()
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+        )
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_offer(data, user)
+        err = "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
+        assert error.value.errors["global"] == [err]
+
+    def test_fail_to_create_activation_offer_if_no_admin(self):
+        venue = factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user_offerer = factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            name="A pathetic offer",
+            type=str(offer_type.EventType.ACTIVATION),
+        )
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_offer(data, user)
+        err = "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"
+        assert error.value.errors["type"] == [err]
 
 
 @pytest.mark.usefixtures("db_session")

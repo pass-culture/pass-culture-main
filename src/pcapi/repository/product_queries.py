@@ -50,10 +50,6 @@ def delete_unwanted_existing_product(isbn: str):
     repository.delete(*objects_to_delete)
 
 
-def find_by_id(product_id: int) -> Product:
-    return Product.query.get(product_id)
-
-
 def find_active_book_product_by_isbn(isbn: str) -> Optional[Product]:
     return (
         Product.query.filter(Product.isGcuCompatible)

@@ -11,10 +11,10 @@ import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.offers.repository as offers_repository
 from pcapi.domain import admin_emails
 from pcapi.domain import user_emails
-from pcapi.domain.create_offer import fill_offer_with_new_data
-from pcapi.domain.create_offer import initialize_offer_from_product_id
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from pcapi.models import EventType
 from pcapi.models import Offer
+from pcapi.models import Product
 from pcapi.models import RightsType
 from pcapi.models import Stock
 from pcapi.models import UserSQLEntity
@@ -75,9 +75,32 @@ def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> models.
     ensure_current_user_has_rights(rights=RightsType.editor, offerer_id=venue.managingOffererId, user=user)
 
     if offer_data.product_id:
-        offer = initialize_offer_from_product_id(offer_data.product_id)
+        product = load_or_raise_error(Product, offer_data.product_id)
+        offer = models.Offer(
+            product=product,
+            type=product.type,
+            name=product.name,
+            description=product.description,
+            url=product.url,
+            mediaUrls=product.mediaUrls,
+            conditions=product.conditions,
+            ageMin=product.ageMin,
+            ageMax=product.ageMax,
+            durationMinutes=product.durationMinutes,
+            isNational=product.isNational,
+            extraData=product.extraData,
+        )
     else:
-        offer = fill_offer_with_new_data(offer_data.dict(by_alias=True), user)
+        if offer_data.type == str(EventType.ACTIVATION):
+            validation.check_user_can_create_activation_event(user)
+        data = offer_data.dict(by_alias=True)
+        product = Product()
+        if data.get("url"):
+            data["isNational"] = True
+        product.populate_from_dict(data)
+        offer = Offer()
+        offer.populate_from_dict(data)
+        offer.product = product
         offer.product.owningOfferer = venue.managingOfferer
 
     offer.venue = venue

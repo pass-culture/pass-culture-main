@@ -7,12 +7,20 @@ from PIL import Image
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ForbiddenError
 
 from . import exceptions
 
 
 EDITABLE_FIELDS_FOR_ALLOCINE_OFFER = {"isDuo"}
 EDITABLE_FIELDS_FOR_ALLOCINE_STOCK = {"bookingLimitDatetime", "price", "quantity"}
+
+
+def check_user_can_create_activation_event(user):
+    if not user.isAdmin:
+        error = ForbiddenError()
+        error.add_error("type", "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation")
+        raise error
 
 
 def check_offer_is_editable(offer: Offer):
