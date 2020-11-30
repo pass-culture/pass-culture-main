@@ -44,15 +44,21 @@ class Mediation extends PureComponent {
   onHandleDataRequest = (handleSuccess, handleFail) => {
     const {
       getMediation,
+      getOfferer,
       loadOffer,
       match: {
         params: { mediationId, offerId },
       },
       offer,
+      offerer,
+      venue,
     } = this.props
     const { isNew } = this.state
     if (!offer) {
       loadOffer(offerId)
+    }
+    if (!offerer) {
+      getOfferer(venue.managingOffererId, handleSuccess, handleFail)
     }
     if (!isNew) {
       getMediation(mediationId, handleSuccess, handleFail)

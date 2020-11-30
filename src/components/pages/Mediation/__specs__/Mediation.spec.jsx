@@ -7,21 +7,24 @@ describe('src | components | pages | Mediation', () => {
   let props
   let createOrUpdateMediation
   let getMediation
-  let getOffer
+  let loadOffer
+  let getOfferer
   let showOfferModificationErrorNotification
   let showOfferModificationValidationNotification
 
   beforeEach(() => {
     createOrUpdateMediation = jest.fn()
     getMediation = jest.fn()
-    getOffer = jest.fn()
+    loadOffer = jest.fn()
+    getOfferer = jest.fn()
     showOfferModificationErrorNotification = jest.fn()
     showOfferModificationValidationNotification = jest.fn()
 
     props = {
       createOrUpdateMediation,
       getMediation,
-      getOffer,
+      loadOffer,
+      getOfferer,
       history: { push: jest.fn() },
       match: {
         params: {
@@ -31,6 +34,7 @@ describe('src | components | pages | Mediation', () => {
       mediation: {},
       offer: {},
       offerer: {},
+      venue: {},
       showOfferModificationErrorNotification,
       showOfferModificationValidationNotification,
     }
@@ -123,6 +127,63 @@ describe('src | components | pages | Mediation', () => {
       handleFail = jest.fn()
     })
 
+    it('should retrieve offer when none provided', () => {
+      // given
+      props.offer = null
+      props.match.params = {
+        offerId: 'ABCD',
+      }
+      const wrapper = shallow(<Mediation {...props} />)
+
+      // when
+      wrapper.instance().onHandleDataRequest(handleSuccess, handleFail)
+
+      // then
+      expect(loadOffer).toHaveBeenCalledWith('ABCD')
+    })
+
+    it('should not retrieve offer when it is provided', () => {
+      // given
+      props.match.params = {
+        offerId: 'ABCD',
+      }
+      const wrapper = shallow(<Mediation {...props} />)
+
+      // when
+      wrapper.instance().onHandleDataRequest(handleSuccess, handleFail)
+
+      // then
+      expect(loadOffer).toHaveBeenCalledTimes(0)
+    })
+
+    it('should retrieve offerer of given venue when none provided', () => {
+      // given
+      props.offerer = null
+      props.venue = { managingOffererId: 'TERC' }
+      const wrapper = shallow(<Mediation {...props} />)
+
+      // when
+      wrapper.instance().onHandleDataRequest(handleSuccess, handleFail)
+
+      // then
+      expect(getOfferer).toHaveBeenCalledWith(
+        props.venue.managingOffererId,
+        handleSuccess,
+        handleFail
+      )
+    })
+
+    it('should not retrieve offerer when it is provided', () => {
+      // given
+      const wrapper = shallow(<Mediation {...props} />)
+
+      // when
+      wrapper.instance().onHandleDataRequest(handleSuccess, handleFail)
+
+      // then
+      expect(getOfferer).toHaveBeenCalledTimes(0)
+    })
+
     it('should retrieve mediation when not in creation mode', () => {
       // given
       props.match.params = {
@@ -134,7 +195,7 @@ describe('src | components | pages | Mediation', () => {
       wrapper.instance().onHandleDataRequest(handleSuccess, handleFail)
 
       // then
-      expect(getMediation).toHaveBeenCalledWith('ABCD', expect.any(Function), expect.any(Function))
+      expect(getMediation).toHaveBeenCalledWith('ABCD', handleSuccess, handleFail)
     })
 
     it('should not retrieve mediation when in creation mode', () => {

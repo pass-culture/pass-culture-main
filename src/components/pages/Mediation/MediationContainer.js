@@ -9,7 +9,8 @@ import { selectMediationById } from 'store/selectors/data/mediationsSelectors'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'
-import { mediationNormalizer } from 'utils/normalizers'
+import { mediationNormalizer, offererNormalizer } from 'utils/normalizers'
+
 
 import Mediation from './Mediation'
 
@@ -24,7 +25,8 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     currentUser: selectCurrentUser(state),
     offer,
-    offerer: selectOffererById(state, get(venue, 'managingOffererId')),
+    offerer: selectOffererById(state, venue.managingOffererId),
+    venue,
     mediation: selectMediationById(state, mediationId),
   }
 }
@@ -38,6 +40,16 @@ export const mapDispatchToProps = dispatch => {
           handleSuccess,
           handleFail,
           normalizer: mediationNormalizer,
+        })
+      )
+    },
+    getOfferer: (offererId, handleSuccess, handleFail) => {
+      dispatch(
+        requestData({
+          apiPath: `/offerers/${offererId}`,
+          handleSuccess,
+          handleFail,
+          normalizer: offererNormalizer,
         })
       )
     },

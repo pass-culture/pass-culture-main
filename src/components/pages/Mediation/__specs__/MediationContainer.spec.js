@@ -1,5 +1,6 @@
 import * as offersThunks from 'store/offers/thunks'
 
+import { configureTestStore } from '../../../../store/testUtils'
 import { mapDispatchToProps } from '../MediationContainer'
 import { mapStateToProps } from '../MediationContainer'
 
@@ -21,6 +22,7 @@ describe('src | components | pages | MediationContainer', () => {
       expect(result).toStrictEqual({
         loadOffer: expect.any(Function),
         getMediation: expect.any(Function),
+        getOfferer: expect.any(Function),
         showOfferModificationErrorNotification: expect.any(Function),
         showOfferModificationValidationNotification: expect.any(Function),
         createOrUpdateMediation: expect.any(Function),
@@ -175,28 +177,22 @@ describe('src | components | pages | MediationContainer', () => {
   describe('mapStateToProps', () => {
     it('should return an object of props', () => {
       // given
-      const state = {
+      const overrideState = {
         data: {
-          venues: {
-            find: jest.fn(),
-          },
-          offerers: {
-            find: jest.fn(),
-          },
-          mediations: {
-            find: jest.fn(),
-          },
+          venues: [{ id: 'B', managingOffererId: 'C' }],
+          offerers: [{ id: 'C' }],
+          mediations: [{ id: 'D' }],
         },
         offers: {
-          list: [],
+          list: [{ id: 'A', venueId: 'B' }],
         },
       }
-
+      const state = configureTestStore(overrideState).getState()
       const ownProps = {
         match: {
           params: {
-            mediationId: 'mediationId',
-            offerId: 'offerId',
+            mediationId: state.data.mediations[0].id,
+            offerId: state.offers.list[0].id,
           },
         },
       }
@@ -207,9 +203,10 @@ describe('src | components | pages | MediationContainer', () => {
       // then
       expect(result).toStrictEqual({
         currentUser: undefined,
-        mediation: undefined,
-        offer: undefined,
-        offerer: undefined,
+        mediation: overrideState.data.mediations[0],
+        offer: overrideState.offers.list[0],
+        offerer: overrideState.data.offerers[0],
+        venue: overrideState.data.venues[0],
       })
     })
   })
