@@ -51,7 +51,7 @@ def run_migrations_online() -> None:
             target_metadata=target_metadata,
             include_object=include_object,
             include_schemas=True,
-            transaction_per_migration=False,
+            transaction_per_migration=True,
         )
         if not settings.IS_DEV:
             connection.execute("UPDATE feature SET \"isActive\" = FALSE WHERE name = 'UPDATE_DISCOVERY_VIEW'")
