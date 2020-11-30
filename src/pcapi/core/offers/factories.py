@@ -95,6 +95,11 @@ class ThingProductFactory(ProductFactory):
     type = str(offer_type.ThingType.AUDIOVISUEL)
 
 
+class DigitalProductFactory(ThingProductFactory):
+    url = factory.Sequence("http://example.com/product/{}".format)
+    isNational = True
+
+
 class OfferFactory(BaseFactory):
     class Meta:
         model = models.Offer

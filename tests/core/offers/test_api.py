@@ -475,6 +475,59 @@ class CreateOfferTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class CreateOfferBusinessLogicChecksTest:
+    def test_success_if_physical_product_and_physical_venue(self):
+        venue = factories.VenueFactory()
+        user_offerer = factories.UserOffererFactory(offerer=venue.managingOfferer)
+        product = factories.ProductFactory()
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            productId=humanize(product.id),
+        )
+        api.create_offer(data, user_offerer.user)  # should not fail
+
+    def test_success_if_digital_product_and_virtual_venue(self):
+        venue = factories.VirtualVenueFactory()
+        user_offerer = factories.UserOffererFactory(offerer=venue.managingOfferer)
+        product = factories.DigitalProductFactory()
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            productId=humanize(product.id),
+        )
+        api.create_offer(data, user_offerer.user)  # should not fail
+
+    def test_fail_if_digital_product_and_physical_venue(self):
+        venue = factories.VenueFactory()
+        user_offerer = factories.UserOffererFactory(offerer=venue.managingOfferer)
+        product = factories.DigitalProductFactory()
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            productId=humanize(product.id),
+        )
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_offer(data, user_offerer.user)
+        err = 'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"'
+        assert error.value.errors["venue"] == [err]
+
+    def test_fail_if_physical_product_and_virtual_venue(self):
+        venue = factories.VirtualVenueFactory()
+        user_offerer = factories.UserOffererFactory(offerer=venue.managingOfferer)
+        product = factories.ProductFactory()
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            productId=humanize(product.id),
+        )
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_offer(data, user_offerer.user)
+        err = 'Une offre physique ne peut être associée au lieu "Offre numérique"'
+        assert error.value.errors["venue"] == [err]
+
+
+@pytest.mark.usefixtures("db_session")
 class UpdateOfferTest:
     @mock.patch("pcapi.connectors.redis.add_offer_id")
     def test_basics(self, mocked_add_offer_id):
