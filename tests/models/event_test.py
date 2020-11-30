@@ -7,43 +7,6 @@ def test_an_event_is_always_physical_and_cannot_be_digital():
     assert Product().isDigital is False
 
 
-def test_event_type_find_from_sub_labels_returns_nothing_if_no_sub_labels():
-    # given
-    sub_labels = []
-
-    # when
-    types = EventType.find_from_sub_labels(sub_labels)
-
-    # then
-    assert types == []
-
-
-def test_event_type_find_from_sub_labels_returns_nothing_if_label_is_unknown():
-    # given
-    sub_labels = ["randomlabel"]
-
-    # when
-    types = EventType.find_from_sub_labels(sub_labels)
-
-    # then
-    assert types == []
-
-
-def test_event_type_find_from_sub_labels_returns_several_types_given_several_sub_labels_ignoring_case():
-    # given
-    sub_labels = ["Activation", "Regarder", "appLAuDIr", "PRATIQUER"]
-
-    # when
-    types = EventType.find_from_sub_labels(sub_labels)
-
-    # then
-    assert len(types) == 5
-    assert EventType.ACTIVATION in types
-    assert EventType.CINEMA in types
-    assert EventType.MUSEES_PATRIMOINE in types
-    assert EventType.SPECTACLE_VIVANT in types
-
-
 def test_event_offerType_returns_dict_matching_EventType_enum():
     # given
     event_product = create_product_with_event_type(event_type=EventType.SPECTACLE_VIVANT)

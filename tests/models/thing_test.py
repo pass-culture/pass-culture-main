@@ -6,48 +6,6 @@ from pcapi.models import ThingType
 from pcapi.repository import repository
 
 
-def test_thing_type_find_from_sub_labels_returns_nothing_if_no_sub_labels():
-    # given
-    sub_labels = []
-
-    # when
-    types = ThingType.find_from_sub_labels(sub_labels)
-
-    # then
-    assert types == []
-
-
-def test_thing_type_find_from_sub_labels_returns_nothing_if_label_is_unknown():
-    # given
-    sub_labels = ["randomlabel"]
-
-    # when
-    types = ThingType.find_from_sub_labels(sub_labels)
-
-    # then
-    assert types == []
-
-
-def test_thing_type_find_from_sub_labels_returns_several_types_given_several_sub_labels_ignoring_case():
-    # given
-    sub_labels = ["Regarder", "LIRE", "Pratiquer"]
-
-    # when
-    types = ThingType.find_from_sub_labels(sub_labels)
-
-    # then
-    assert len(types) == 10
-    assert ThingType.CINEMA_CARD in types
-    assert ThingType.AUDIOVISUEL in types
-    assert ThingType.CINEMA_ABO in types
-    assert ThingType.MUSEES_PATRIMOINE_ABO in types
-    assert ThingType.LIVRE_EDITION in types
-    assert ThingType.PRESSE_ABO in types
-    assert ThingType.PRATIQUE_ARTISTIQUE_ABO in types
-    assert ThingType.OEUVRE_ART in types
-    assert ThingType.INSTRUMENT in types
-
-
 @pytest.mark.usefixtures("db_session")
 def test_thing_error_when_thing_type_is_offlineOnly_but_has_url(app):
     # Given

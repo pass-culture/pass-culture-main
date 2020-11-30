@@ -1,22 +1,8 @@
 import enum
 from enum import Enum
-from typing import List
 
 
-class SearchableType(Enum):
-    @classmethod
-    def find_from_sub_labels(cls, sub_labels: List[str]) -> List[Enum]:
-        matching_types = []
-        comparable_sub_labels = [label.lower() for label in sub_labels]
-
-        for type in cls:
-            if type.value["sublabel"].lower() in comparable_sub_labels:
-                matching_types.append(type)
-
-        return matching_types
-
-
-class EventType(SearchableType):
+class EventType(Enum):
     def as_dict(self) -> dict:
         dict_value = {
             "type": "Event",
@@ -107,7 +93,7 @@ class EventType(SearchableType):
     }
 
 
-class ThingType(SearchableType):
+class ThingType(Enum):
     def as_dict(self):
         dict_value = {
             "type": "Thing",
