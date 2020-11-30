@@ -5,6 +5,7 @@ from typing import Optional
 from typing import Union
 
 from pydantic import BaseModel
+from pydantic import HttpUrl
 from pydantic import validator
 
 from pcapi.serialization.utils import InputBaseModel
@@ -25,7 +26,7 @@ class PostOfferBodyModel(InputBaseModel):
     type: Optional[str]
     name: Optional[str]
     booking_email: Optional[str]
-    url: Optional[str]
+    url: Optional[HttpUrl]
     media_urls: Optional[List[str]]
     description: Optional[str]
     withdrawal_details: Optional[str]

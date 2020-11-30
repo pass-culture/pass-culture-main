@@ -34,6 +34,7 @@ def before_handler(
         "value_error.datetime": "Format de date invalide",
         "value_error.extra": "Vous ne pouvez pas changer cette information",
         "value_error.missing": "Ce champ est obligatoire",
+        "value_error.url.scheme": 'L\'URL doit commencer par "http://" ou "https://"',
     }
 
     if pydantic_error and pydantic_error.errors():

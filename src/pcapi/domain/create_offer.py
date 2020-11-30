@@ -6,7 +6,6 @@ from pcapi.models import Product
 from pcapi.models import UserSQLEntity
 from pcapi.repository import product_queries
 from pcapi.validation.routes.events import check_user_can_create_activation_event
-from pcapi.validation.routes.url import is_url_safe
 
 
 def initialize_offer_from_product_id(product_id: int) -> Offer:
@@ -19,7 +18,6 @@ def fill_offer_with_new_data(product_dict: Dict[str, Any], user: UserSQLEntity) 
     product = Product()
     url = product_dict.get("url")
     if url:
-        is_url_safe(url)
         product_dict["isNational"] = True
     product.populate_from_dict(product_dict)
     check_user_can_create_activation_event(user, product)
