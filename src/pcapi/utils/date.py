@@ -22,6 +22,8 @@ MONTHS_IN_FRENCH = [
     "Novembre",
     "Décembre",
 ]
+# This mapping is also defined in webapp and pro. Make sure that all
+# are synchronized.
 CUSTOM_TIMEZONES = {
     "971": "America/Guadeloupe",
     "972": "America/Martinique",
