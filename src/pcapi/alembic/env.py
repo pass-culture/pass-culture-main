@@ -1,5 +1,3 @@
-from __future__ import with_statement
-
 from logging.config import fileConfig
 import os
 
@@ -43,7 +41,10 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
     """
     database_url = os.environ.get("DATABASE_URL")
-    connectable = create_engine(database_url)
+    db_options = []
+    if settings.DB_MIGRATION_STATEMENT_TIMEOUT:
+        db_options.append("-c statement_timeout=%i" % settings.DB_MIGRATION_STATEMENT_TIMEOUT)
+    connectable = create_engine(database_url, connect_args={"options": " ".join(db_options)})
     with connectable.connect() as connection:
         context.configure(
             connection=connection,

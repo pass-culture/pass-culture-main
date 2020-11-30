@@ -55,6 +55,10 @@ else:
 BLOB_SIZE = 30
 
 
+# DATABASE
+DB_MIGRATION_STATEMENT_TIMEOUT = int(os.environ.get("DB_MIGRATION_STATEMENT_TIMEOUT", 60000))
+
+
 # REDIS
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379")
 REDIS_OFFER_IDS_CHUNK_SIZE = int(os.environ.get("REDIS_OFFER_IDS_CHUNK_SIZE", 1000))
