@@ -42,7 +42,7 @@ test('en étant sur la page de gestion des médiations', async t => {
   // Je peux charger une image same origin
   await navigateToNewMediationAs(user, offer, userRole)(t)
   await t
-    .typeText(imageUrlInput, '/images/mediation-test.jpg')
+    .typeText(imageUrlInput, '/testcafe/mediation-test.jpg')
     .click(imageUrlButton)
     .expect(editorZoneDiv.exists)
     .ok()
@@ -60,7 +60,7 @@ test('en étant sur la page de gestion des médiations', async t => {
 
   // Je peux changer d'image chargée
   await t
-    .typeText(urlInput, '/images/mediation-test.jpg')
+    .typeText(urlInput, '/testcafe/mediation-test.jpg')
     .click(urlButton)
     .typeText(
       urlInput,
