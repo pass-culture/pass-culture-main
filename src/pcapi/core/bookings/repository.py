@@ -1,14 +1,13 @@
 from datetime import date
 from datetime import datetime
+from datetime import time
 import math
 from typing import List
-from typing import Optional
 from typing import Set
 
 from dateutil import tz
 from sqlalchemy import Date
 from sqlalchemy import cast
-from sqlalchemy import desc
 from sqlalchemy import func
 from sqlalchemy import text
 from sqlalchemy.orm import Query
@@ -16,6 +15,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import selectinload
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
+from pcapi.core.bookings import conf
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
@@ -163,6 +163,19 @@ def count_not_cancelled_bookings_quantity_by_stock_id(stock_id: int) -> int:
     )
 
     return sum([booking.quantity for booking in bookings])
+
+
+def find_expiring_bookings() -> Query:
+    booking_types_names_that_can_expire = [str(t) for t in ThingType if t.value.get("canExpire", False)]
+    today_at_midnight = datetime.combine(date.today(), time(0, 0))
+    return (
+        Booking.query.join(Stock)
+        .join(Offer)
+        .filter(Offer.type.in_(booking_types_names_that_can_expire))
+        .filter(Booking.isCancelled.is_(False))
+        .filter(Booking.isUsed.is_(False))
+        .filter(Booking.dateCreated <= today_at_midnight - conf.BOOKINGS_AUTO_EXPIRY_DELAY)
+    )
 
 
 def _query_keep_on_non_activation_offers() -> Query:

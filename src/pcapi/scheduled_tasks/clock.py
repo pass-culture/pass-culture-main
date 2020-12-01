@@ -8,6 +8,7 @@ import os
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
+from pcapi.core.bookings.conf import CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE
 from pcapi.flask_app import app
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -25,6 +26,7 @@ from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron
 from pcapi.scripts.beneficiary import old_remote_import
 from pcapi.scripts.beneficiary import remote_import
+from pcapi.scripts.booking.cancel_expired_bookings import cancel_expired_bookings
 from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
 
 
@@ -127,6 +129,12 @@ def pc_clean_discovery_views(app) -> None:
         discovery_view_queries.clean(app)
 
 
+@log_cron
+@cron_context
+def pc_cancel_expired_bookings(app) -> None:
+    cancel_expired_bookings()
+
+
 if __name__ == "__main__":
     discovery_view_refresh_frequency = os.environ.get("RECO_VIEW_REFRESH_FREQUENCY", "*")
     old_seen_offers_delete_frequency = os.environ.get("SEEN_OFFERS_DELETE_FREQUENCY", "*")
@@ -159,5 +167,14 @@ if __name__ == "__main__":
     )
 
     scheduler.add_job(pc_clean_discovery_views, "cron", [app], hour=clean_discovery_frequency)
+
+    scheduler.add_job(
+        pc_cancel_expired_bookings,
+        "cron",
+        [app],
+        day="*",
+        hour="2",
+        start_date=CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE.strftime("%Y-%m-%d"),
+    )
 
     scheduler.start()
