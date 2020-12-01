@@ -27,9 +27,9 @@ def correct_booking_status() -> None:
             users_with_not_updated_bookings.append(booking.userId)
 
     print(f"{len(bookings_to_update) - len(users_with_not_updated_bookings)} BOOKINGS UPDATED")
-    print(f"LIST OF USERS WITH UPDATED BOOKINGS")
+    print("LIST OF USERS WITH UPDATED BOOKINGS")
     print(users_with_updated_bookings)
-    print(f"LIST OF USERS WITH NON UPDATED BOOKINGS")
+    print("LIST OF USERS WITH NON UPDATED BOOKINGS")
     print(users_with_not_updated_bookings)
     print("[BOOKINGS UPDATE] END")
 

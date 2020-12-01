@@ -18,13 +18,13 @@ class GetAllBookingsTest:
     @pytest.mark.usefixtures("db_session")
     def test_call_repository_with_user_and_page(self, find_by_pro_user_id, app):
         user = users_factories.UserFactory()
-        TestClient(app.test_client()).with_auth(user.email).get(f"/bookings/pro?page=3")
+        TestClient(app.test_client()).with_auth(user.email).get("/bookings/pro?page=3")
         find_by_pro_user_id.assert_called_once_with(user_id=user.id, page=3)
 
     @pytest.mark.usefixtures("db_session")
     def test_call_repository_with_page_1(self, find_by_pro_user_id, app):
         user = users_factories.UserFactory()
-        TestClient(app.test_client()).with_auth(user.email).get(f"/bookings/pro")
+        TestClient(app.test_client()).with_auth(user.email).get("/bookings/pro")
         find_by_pro_user_id.assert_called_once_with(user_id=user.id, page=1)
 
 
@@ -102,7 +102,7 @@ class GetTest:
             user = users_factories.UserFactory()
 
             client = TestClient(app.test_client()).with_auth(user.email)
-            response = client.get(f"/bookings/pro?page=not-a-number")
+            response = client.get("/bookings/pro?page=not-a-number")
 
             assert response.status_code == 400
             assert response.json["global"] == ["L'argument 'page' not-a-number n'est pas valide"]

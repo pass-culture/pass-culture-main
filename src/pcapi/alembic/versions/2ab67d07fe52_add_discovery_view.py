@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade():
     op.execute(
-        f"""
+        """
                 CREATE OR REPLACE FUNCTION get_offer_score(offer_id BIGINT)
                 RETURNS SETOF BIGINT AS
                 $body$
@@ -35,7 +35,7 @@ def upgrade():
     )
 
     op.execute(
-        f"""
+        """
                 CREATE OR REPLACE FUNCTION event_is_in_less_than_10_days(offer_id BIGINT)
                 RETURNS SETOF INTEGER AS
                 $body$
@@ -156,7 +156,7 @@ def upgrade():
     )
 
     op.execute(
-        f"""
+        """
             CREATE MATERIALIZED VIEW IF NOT EXISTS discovery_view
                 AS SELECT
                    row_number() OVER () AS "offerDiscoveryOrder",
@@ -175,13 +175,13 @@ def upgrade():
     )
 
     op.execute(
-        f""" CREATE UNIQUE INDEX IF NOT EXISTS "discovery_view_offerDiscoveryOrder_idx" ON discovery_view ("offerDiscoveryOrder"); """
+        """ CREATE UNIQUE INDEX IF NOT EXISTS "discovery_view_offerDiscoveryOrder_idx" ON discovery_view ("offerDiscoveryOrder"); """
     )
 
 
 def downgrade():
     op.execute(
-        f"""
+        """
         DROP MATERIALIZED VIEW discovery_view;
         DROP FUNCTION get_offer_score;
         DROP FUNCTION event_is_in_less_than_10_days;

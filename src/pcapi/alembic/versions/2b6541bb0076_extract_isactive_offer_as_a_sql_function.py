@@ -17,7 +17,7 @@ depends_on = None
 
 def upgrade():
     op.execute(
-        f"""
+        """
         CREATE OR REPLACE FUNCTION get_active_offers_ids(with_mediation bool)
         RETURNS SETOF BIGINT AS
         $body$

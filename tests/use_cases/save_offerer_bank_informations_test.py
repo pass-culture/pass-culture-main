@@ -165,7 +165,7 @@ class SaveOffererBankInformationsTest:
             # Then
             bank_information_count = BankInformation.query.count()
             assert bank_information_count == 0
-            assert error.value.args == (f"Offerer not found",)
+            assert error.value.args == ("Offerer not found",)
 
         @pytest.mark.usefixtures("db_session")
         def test_when_no_offerer_is_found_and_state_is_not_closed_should_not_create_bank_information_and_not_raise(
@@ -401,9 +401,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.iban == "NL36INGB2682297498"
             assert bank_information.status == BankInformationStatus.ACCEPTED
             assert bank_information.applicationId == 79
-            assert error.value.args == (
-                f"Received application details state does not allow to change bank information",
-            )
+            assert error.value.args == ("Received application details state does not allow to change bank information",)
 
         @pytest.mark.usefixtures("db_session")
         def test_when_receive_older_application_should_reject(self, mock_application_details, app):
@@ -434,4 +432,4 @@ class SaveOffererBankInformationsTest:
             assert bank_information.iban == "NL36INGB2682297498"
             assert bank_information.status == BankInformationStatus.ACCEPTED
             assert bank_information.applicationId == 79
-            assert error.value.args == (f"Received application details are older than saved one",)
+            assert error.value.args == ("Received application details are older than saved one",)

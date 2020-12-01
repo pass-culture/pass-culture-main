@@ -11,7 +11,7 @@ from pcapi.models.db import db
 
 
 def order_by_digital_offers_v3() -> str:
-    return f"""
+    return """
         ROW_NUMBER() OVER (
             ORDER BY
                 (

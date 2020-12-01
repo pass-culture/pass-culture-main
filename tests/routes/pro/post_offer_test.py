@@ -58,7 +58,7 @@ class Returns200:
             "type": "ThingType.JEUX_VIDEO",
             "url": "http://example.com/offer",
         }
-        response = client.post(f"/offers", json=data)
+        response = client.post("/offers", json=data)
 
         # Then
         assert response.status_code == 201
