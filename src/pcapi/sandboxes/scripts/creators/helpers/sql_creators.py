@@ -3,7 +3,7 @@ from hashlib import sha256
 import random
 import string
 from typing import Dict
-from typing import List
+from typing import Iterable
 from typing import Optional
 
 from pcapi.core.bookings import api as bookings_api
@@ -313,7 +313,7 @@ def create_product_with_thing_type(
     is_offline_only: bool = False,
     date_modified_at_last_provider: datetime = None,
     last_provider_id: int = None,
-    media_urls: List[str] = ["test/urls"],
+    media_urls: Iterable[str] = ("test/urls",),
     description: str = None,
     thumb_count: int = 1,
     url: str = None,
@@ -360,7 +360,7 @@ def create_offer_with_thing_product(
     is_digital: bool = False,
     is_national: bool = False,
     is_offline_only: bool = False,
-    media_urls: List[str] = ["test/urls"],
+    media_urls: Iterable[str] = ("test/urls",),
     product: Product = None,
     thing_name: str = "Test Book",
     thing_type: ThingType = ThingType.AUDIOVISUEL,

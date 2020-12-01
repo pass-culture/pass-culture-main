@@ -154,7 +154,7 @@ def assert_num_queries():
 class TestClient:
     WITH_DOC = False
     USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@btmx.fr"
-    LOCAL_ORIGIN_HEADER = {"origin": "http://localhost:3000"}
+    LOCAL_ORIGIN_HEADERS = {"origin": "http://localhost:3000"}
 
     def __init__(self, client: FlaskClient):
         self.client = client
@@ -173,17 +173,20 @@ class TestClient:
 
         return self
 
-    def delete(self, route: str, headers=LOCAL_ORIGIN_HEADER):
+    def delete(self, route: str, headers: dict = None):
+        headers = headers or self.LOCAL_ORIGIN_HEADERS
         result = self.client.delete(route, headers={**self.auth_header, **headers})
         self._print_spec("DELETE", route, None, result)
         return result
 
-    def get(self, route: str, headers=LOCAL_ORIGIN_HEADER):
+    def get(self, route: str, headers=None):
+        headers = headers or self.LOCAL_ORIGIN_HEADERS
         result = self.client.get(route, headers={**self.auth_header, **headers})
         self._print_spec("GET", route, None, result)
         return result
 
-    def post(self, route: str, json: dict = None, form: dict = None, files: dict = None, headers=LOCAL_ORIGIN_HEADER):
+    def post(self, route: str, json: dict = None, form: dict = None, files: dict = None, headers: dict = None):
+        headers = headers or self.LOCAL_ORIGIN_HEADERS
         if form or files:
             result = self.client.post(route, data=form if form else files, headers={**self.auth_header, **headers})
         else:
@@ -192,12 +195,14 @@ class TestClient:
         self._print_spec("POST", route, json, result)
         return result
 
-    def patch(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
+    def patch(self, route: str, json: dict = None, headers: dict = None):
+        headers = headers or self.LOCAL_ORIGIN_HEADERS
         result = self.client.patch(route, json=json, headers={**self.auth_header, **headers})
         self._print_spec("PATCH", route, json, result)
         return result
 
-    def put(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
+    def put(self, route: str, json: dict = None, headers: dict = None):
+        headers = headers or self.LOCAL_ORIGIN_HEADERS
         result = self.client.put(route, json=json, headers={**self.auth_header, **headers})
         self._print_spec("PUT", route, json, result)
         return result

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Iterable
 from typing import List
 from typing import Optional
 
@@ -20,7 +21,6 @@ from pcapi.models import Stock
 from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 from pcapi.models.db import Model
-from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository.favorite_queries import get_only_offer_ids_from_favorites
@@ -33,7 +33,7 @@ ALL_DEPARTMENTS_CODE = "00"
 
 
 def get_offers_for_recommendation(
-    user: UserSQLEntity, departement_codes: List[str] = None, limit: int = None, sent_offers_ids: List[int] = []
+    user: UserSQLEntity, departement_codes: List[str] = None, limit: int = None, sent_offers_ids: Iterable[int] = ()
 ) -> List[DiscoveryView]:
     favorite_ids = get_only_offer_ids_from_favorites(user)
 
@@ -65,7 +65,7 @@ def get_offers_for_recommendation_v3(
     user_iris_id: Optional[int] = None,
     user_is_geolocated: bool = False,
     limit: Optional[int] = None,
-    sent_offers_ids: List[int] = [],
+    sent_offers_ids: Iterable[int] = (),
 ) -> List[DiscoveryViewV3]:
     favorite_offers_ids = get_only_offer_ids_from_favorites(user)
 
@@ -101,7 +101,7 @@ def order_offers_by_unseen_offers_first(query: BaseQuery, discovery_view_model: 
 
 
 def keep_only_offers_from_venues_located_near_to_user_or_national(
-    query: BaseQuery, venue_ids: List[int] = []
+    query: BaseQuery, venue_ids: Iterable[int] = ()
 ) -> BaseQuery:
     return query.filter(or_(DiscoveryViewV3.venueId.in_(venue_ids), DiscoveryViewV3.isNational == True))
 

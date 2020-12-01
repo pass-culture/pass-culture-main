@@ -1,4 +1,5 @@
 import random
+from typing import Iterable
 from typing import List
 from typing import Optional
 
@@ -34,7 +35,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
 
 
 def create_recommendations_for_discovery(
-    user: UserSQLEntity, sent_offers_ids: List[int] = [], limit: int = 3
+    user: UserSQLEntity, sent_offers_ids: Iterable[int] = (), limit: int = 3
 ) -> List[Recommendation]:
     recommendations = []
 
@@ -50,7 +51,7 @@ def create_recommendations_for_discovery_v3(
     user: UserSQLEntity,
     user_iris_id: Optional[int] = None,
     user_is_geolocated: bool = False,
-    sent_offers_ids: List[int] = [],
+    sent_offers_ids: Iterable[int] = (),
     limit: int = 3,
 ) -> List[Recommendation]:
     recommendations = []

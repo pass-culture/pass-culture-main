@@ -1,3 +1,4 @@
+from typing import Iterable
 from typing import List
 
 from pcapi.domain.departments import get_departement_codes_from_user
@@ -7,7 +8,7 @@ from pcapi.repository.offer_queries import get_offers_for_recommendation
 
 
 def get_offers_for_recommendations_discovery(
-    user: UserSQLEntity, sent_offers_ids: List[int] = [], limit: int = 3
+    user: UserSQLEntity, sent_offers_ids: Iterable[int] = (), limit: int = 3
 ) -> List[Offer]:
     departement_codes = get_departement_codes_from_user(user)
 

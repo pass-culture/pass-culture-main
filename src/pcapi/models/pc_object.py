@@ -62,7 +62,7 @@ class PcObject:
     def dump(self):
         pprint(vars(self))
 
-    def populate_from_dict(self, data: dict, skipped_keys: List[str] = []):
+    def populate_from_dict(self, data: dict, skipped_keys: Iterable[str] = ()):
         self._check_not_soft_deleted()
         columns = self.__class__.__table__.columns._data
         keys_to_populate = self._get_keys_to_populate(columns, data, skipped_keys)
