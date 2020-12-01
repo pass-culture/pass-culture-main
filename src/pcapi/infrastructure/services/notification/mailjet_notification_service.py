@@ -3,6 +3,7 @@ import os
 from typing import Callable
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.domain.beneficiary_contact.beneficiary_contact import BeneficiaryContact
 from pcapi.domain.beneficiary_contact.beneficiary_contact_exceptions import AddNewBeneficiaryContactException
 from pcapi.domain.services.notification.notification_service import NotificationService
@@ -33,14 +34,11 @@ class MailjetNotificationService(NotificationService):
     def send_booking_cancellation_emails_to_user_and_offerer(
         self,
         booking: Booking,
-        is_offerer_cancellation: bool,
-        is_user_cancellation: bool,
+        reason: BookingCancellationReasons,
         send_email: Callable[..., bool],
     ):
         try:
-            send_booking_cancellation_emails_to_user_and_offerer(
-                booking, is_offerer_cancellation, is_user_cancellation, send_raw_email
-            )
+            send_booking_cancellation_emails_to_user_and_offerer(booking, reason, send_raw_email)
         except MailServiceException as error:
             logger.exception("Mail service failure", error)
 

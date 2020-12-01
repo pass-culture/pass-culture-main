@@ -105,8 +105,7 @@ def cancel_booking_by_beneficiary(user: UserSQLEntity, booking: Booking) -> None
     notifier = MailjetNotificationService()
     notifier.send_booking_cancellation_emails_to_user_and_offerer(
         booking=booking,
-        is_offerer_cancellation=False,
-        is_user_cancellation=True,
+        reason=booking.cancellationReason,
         # FIXME: we should not have to pass this argument.
         # Notification-related code should be reorganized.
         send_email=send_raw_email,

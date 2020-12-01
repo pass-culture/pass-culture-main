@@ -4,6 +4,8 @@ from typing import List
 from typing import Union
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.domain.beneficiary.beneficiary import Beneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
@@ -140,12 +142,12 @@ def send_offerer_bookings_recap_email_after_offerer_cancellation(
 
 
 def send_booking_cancellation_emails_to_user_and_offerer(
-    booking: Booking, is_offerer_cancellation: bool, is_user_cancellation: bool, send_email: Callable[..., bool]
+    booking: Booking, reason: BookingCancellationReasons, send_email: Callable[..., bool]
 ) -> None:
-    if is_user_cancellation:
+    if reason == BookingCancellationReasons.BENEFICIARY:
         send_beneficiary_booking_cancellation_email(booking, send_email)
         send_user_driven_cancellation_email_to_offerer(booking, send_email)
-    if is_offerer_cancellation:
+    if reason == BookingCancellationReasons.OFFERER:
         send_warning_to_beneficiary_after_pro_booking_cancellation(booking, send_email)
         send_offerer_driven_cancellation_email_to_offerer(booking, send_email)
 
