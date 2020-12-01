@@ -87,8 +87,8 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         # Then
         make_offerer_driven_cancellation_email_for_offerer.assert_called_once_with(booking)
         mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]["data"]["To"] == "offer@example.com, administration@example.com"
+        args = mocked_send_email.call_args_list
+        assert args[0][1]["data"]["To"] == "offer@example.com, administration@example.com"
 
     @patch(
         "pcapi.domain.user_emails.make_offerer_driven_cancellation_email_for_offerer", return_value={"Html-part": ""}
@@ -112,8 +112,8 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         # Then
         make_offerer_driven_cancellation_email_for_offerer.assert_called_once_with(booking)
         mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]["data"]["To"] == "administration@example.com"
+        args = mocked_send_email.call_args_list
+        assert args[0][1]["data"]["To"] == "administration@example.com"
 
 
 class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
@@ -139,8 +139,8 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 
         # Then
         mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]["data"]["To"] == "booking@example.com, administration@example.com"
+        args = mocked_send_email.call_args_list
+        assert args[0][1]["data"]["To"] == "booking@example.com, administration@example.com"
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.emails.beneficiary_offer_cancellation.feature_send_mail_to_users_enabled", return_value=True)
@@ -164,8 +164,8 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 
         # Then
         mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]["data"]["To"] == "administration@example.com"
+        args = mocked_send_email.call_args_list
+        assert args[0][1]["data"]["To"] == "administration@example.com"
 
 
 class SendWarningToBeneficiaryAfterProBookingCancellationTest:
@@ -240,7 +240,7 @@ class SendBookingRecapEmailsTest:
         send_booking_recap_emails(booking, mocked_send_email)
 
         mocked_send_email.assert_called_once()
-        data = mocked_send_email.call_args[1]["data"]
+        data = mocked_send_email.call_args_list[0][1]["data"]
         assert data["To"] == "dev@example.com"
 
     @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
@@ -253,7 +253,7 @@ class SendBookingRecapEmailsTest:
         send_booking_recap_emails(booking, mocked_send_email)
 
         mocked_send_email.assert_called_once()
-        data = mocked_send_email.call_args[1]["data"]
+        data = mocked_send_email.call_args_list[0][1]["data"]
         assert data["To"] == "administration@example.com, booking.email@example.com"
 
     @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
@@ -264,7 +264,7 @@ class SendBookingRecapEmailsTest:
         send_booking_recap_emails(booking, mocked_send_email)
 
         mocked_send_email.assert_called_once()
-        data = mocked_send_email.call_args[1]["data"]
+        data = mocked_send_email.call_args_list[0][1]["data"]
         assert data["To"] == "administration@example.com"
 
 
@@ -372,7 +372,7 @@ class SendUserValidationEmailTest:
         # Then
         mocked_send_email.assert_called_once()
         make_user_validation_email.assert_called_once()
-        mocked_send_email.call_args[1]["To"] = user.email
+        mocked_send_email.call_args_list[0][1]["To"] = user.email
 
 
 class SendActivationEmailTest:
@@ -401,7 +401,8 @@ class SendActivationEmailTest:
 
         # then
         mocked_send_email.assert_called()
-        assert token.value in mocked_send_email.call_args[1]["data"]["Vars"]["native_app_link"]
+        native_app_link = mocked_send_email.call_args_list[0][1]["data"]["Vars"]["native_app_link"]
+        assert token.value in native_app_link
 
 
 class SendAttachmentValidationEmailToProOffererTest:

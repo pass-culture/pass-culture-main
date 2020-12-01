@@ -42,7 +42,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
 
     # Then
     mocked_send_email.assert_called_once()
-    args = mocked_send_email.call_args
+    args = mocked_send_email.call_args_list[0]
     email = args[1]["data"]
     assert email["To"] == "administration@example.com"
     assert "This is a test" not in email["Html-part"]
@@ -76,7 +76,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_whe
 
     # Then
     mocked_send_email.assert_called_once()
-    args = mocked_send_email.call_args
+    args = mocked_send_email.call_args_list[0]
     email = args[1]["data"]
     assert email["To"] == "dev@example.com"
     assert "This is a test" in email["Html-part"]
@@ -134,7 +134,7 @@ def test_send_payment_details_email_when_mailjet_status_code_200_sends_email_to_
 
     # Then
     mocked_send_email.assert_called_once()
-    args = mocked_send_email.call_args
+    args = mocked_send_email.call_args_list[0]
     email = args[1]["data"]
     assert email["To"] == "comptable1@culture.fr, comptable2@culture.fr"
 
@@ -155,7 +155,7 @@ def test_send_payment_details_email_has_pass_culture_dev_as_recipient_when_send_
 
     # Then
     mocked_send_email.assert_called_once()
-    args = mocked_send_email.call_args
+    args = mocked_send_email.call_args_list[0]
     email = args[1]["data"]
     assert email["To"] == "dev@example.com"
 
@@ -176,7 +176,7 @@ def test_send_wallet_balances_email_when_mailjet_status_code_200_sends_email_to_
 
     # Then
     mocked_send_email.assert_called_once()
-    args = mocked_send_email.call_args
+    args = mocked_send_email.call_args_list[0]
     email = args[1]["data"]
     assert email["To"] == "comptable1@culture.fr, comptable2@culture.fr"
 
@@ -197,7 +197,7 @@ def test_send_wallet_balances_email_has_pass_culture_dev_as_recipient_when_send_
 
     # Then
     mocked_send_email.assert_called_once()
-    args = mocked_send_email.call_args
+    args = mocked_send_email.call_args_list[0]
     email = args[1]["data"]
     assert email["To"] == "dev@example.com"
 
@@ -221,7 +221,7 @@ def test_send_payments_report_emails_when_mailjet_status_code_200_sends_email_to
 
     # Then
     mocked_send_email.assert_called_once()
-    args = mocked_send_email.call_args
+    args = mocked_send_email.call_args_list[0]
     email = args[1]["data"]
     assert email["To"] == "dev.team@test.com"
 
@@ -245,7 +245,7 @@ def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_whe
 
     # Then
     mocked_send_email.assert_called_once()
-    args = mocked_send_email.call_args
+    args = mocked_send_email.call_args_list[0]
     email = args[1]["data"]
     assert email["To"] == "dev@example.com"
 
@@ -266,7 +266,7 @@ class SendOfferCreationNotificationToAdministrationTest:
 
         # Then
         mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
+        args = mocked_send_email.call_args_list[0]
         email = args[1]["data"]
         assert email["To"] == "administration@example.com"
 
@@ -286,7 +286,7 @@ class SendOfferCreationNotificationToAdministrationTest:
 
         # Then
         mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
+        args = mocked_send_email.call_args_list[0]
         email = args[1]["data"]
         assert email["To"] == "dev@example.com"
 
