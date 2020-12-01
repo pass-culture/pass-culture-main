@@ -3,6 +3,8 @@ from datetime import timedelta
 from unittest.mock import Mock
 from unittest.mock import patch
 
+import pytest
+
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_user
@@ -17,6 +19,7 @@ from pcapi.scripts.beneficiary.file_import import split_rows_in_chunks_with_no_d
 from pcapi.utils.token import random_token
 
 
+@pytest.mark.usefixtures("db_session")
 class FillUserFromTest:
     def setup_method(self):
         self.csv_row = [
@@ -122,6 +125,7 @@ class FillUserFromTest:
         assert user.password == "random_string"
 
 
+@pytest.mark.usefixtures("db_session")
 class CreateBookingForTest:
     def test_returns_a_booking_for_given_user_and_stock(self):
         # given
@@ -158,6 +162,7 @@ class CreateBookingForTest:
         assert len(booking.token) == 6
 
 
+@pytest.mark.usefixtures("db_session")
 class CreateUsersWithActivationBookingsTest:
     def setup_method(self):
         self.csv_rows = [
@@ -202,13 +207,11 @@ class CreateUsersWithActivationBookingsTest:
         stock = create_stock(offer=offer)
         self.find_user_query.side_effect = [None, None, None]
         self.find_activation_booking.side_effect = [None, None, None]
-        existing_tokens = set()
 
         # when
         bookings = create_users_with_activation_bookings(
             self.csv_rows,
             stock,
-            existing_tokens,
             find_user=self.find_user_query,
             find_activation_booking=self.find_activation_booking,
         )
@@ -223,13 +226,11 @@ class CreateUsersWithActivationBookingsTest:
         stock = create_stock(offer=offer)
         self.find_user_query.side_effect = [None, None, None]
         self.find_activation_booking.side_effect = [None, None, Booking()]
-        existing_tokens = set()
 
         # when
         bookings = create_users_with_activation_bookings(
             self.csv_rows,
             stock,
-            existing_tokens,
             find_user=self.find_user_query,
             find_activation_booking=self.find_activation_booking,
         )
@@ -245,13 +246,11 @@ class CreateUsersWithActivationBookingsTest:
         blake = create_user(email="fblake@bletchley.co.uk", idx=123)
         self.find_user_query.side_effect = [None, blake, None]
         self.find_activation_booking.side_effect = [None, None, None]
-        existing_tokens = set()
 
         # when
         bookings = create_users_with_activation_bookings(
             self.csv_rows,
             stock,
-            existing_tokens,
             find_user=self.find_user_query,
             find_activation_booking=self.find_activation_booking,
         )
@@ -261,6 +260,7 @@ class CreateUsersWithActivationBookingsTest:
         assert bookings[1].user.email == "fblake@bletchley.co.uk"
 
 
+@pytest.mark.usefixtures("db_session")
 class SplitRowsInChunkWithNoDuplicatedEmailsTest:
     def test_returns_a_list_of_list_of_given_chunk_sizes(self):
         # given

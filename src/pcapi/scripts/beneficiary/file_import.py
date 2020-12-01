@@ -5,8 +5,8 @@ import re
 from typing import Callable
 from typing import Iterable
 from typing import List
-from typing import Set
 
+import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.offers.repository as offers_repository
 from pcapi.domain.admin_emails import send_users_activation_report
@@ -45,7 +45,6 @@ ACTIVATION_USER_RECIPIENTS = parse_email_addresses(os.environ.get("ACTIVATION_US
 def create_users_with_activation_bookings(
     csv_rows: List[List[str]],
     stock: Stock,
-    existing_tokens: Set[str],
     find_user: Callable = find_user_by_email,
     find_activation_booking: Callable = booking_repository.find_user_activation_booking,
 ) -> List[Booking]:
@@ -58,14 +57,12 @@ def create_users_with_activation_bookings(
         filled_user = fill_user_from(row, user)
 
         token = random_token()
-        while token in existing_tokens:
-            token = random_token()
+        token = bookings_api.generate_booking_token()
 
         booking = find_activation_booking(user)
         if not booking:
             booking = create_booking_for(filled_user, stock, token)
 
-        existing_tokens.add(token)
         bookings.append(booking)
 
     return bookings
@@ -159,11 +156,10 @@ def run(csv_file_path: str) -> None:
     chunked_file = split_rows_in_chunks_with_no_duplicated_emails(csv_reader, CHUNK_SIZE)
 
     logger.info("[STEP 2] Enregistrement des comptes et contremarques d'activation")
-    existing_tokens = booking_repository.find_existing_tokens()
     all_bookings = []
     total = 0
     for chunk in chunked_file:
-        bookings = create_users_with_activation_bookings(chunk, stock, existing_tokens)
+        bookings = create_users_with_activation_bookings(chunk, stock)
         if bookings:
             repository.save(*bookings)
         all_bookings.extend(bookings)
@@ -175,7 +171,6 @@ def run(csv_file_path: str) -> None:
     logger.info("Users en BDD -> %s" % UserSQLEntity.query.count())
     logger.info("Users créés ou mis à jour -> %s" % total)
     logger.info("Bookings en BDD -> %s\n" % Booking.query.count())
-    logger.info("Bookings créés ou existants -> %s" % len(existing_tokens))
 
     logger.info("[STEP 4] Envoi des comptes créés par mail")
     export_created_data(all_bookings)

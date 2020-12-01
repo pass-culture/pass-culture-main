@@ -424,35 +424,6 @@ class FindUserActivationBookingTest:
         assert booking is None
 
 
-class GetExistingTokensTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_a_set_of_tokens(self, app: fixture):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        book_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.LIVRE_EDITION)
-        book_stock = create_stock_from_offer(book_offer, price=0, quantity=200)
-        booking1 = create_booking(user=user, stock=book_stock, venue=venue_online)
-        booking2 = create_booking(user=user, stock=book_stock, venue=venue_online)
-        booking3 = create_booking(user=user, stock=book_stock, venue=venue_online)
-        repository.save(booking1, booking2, booking3)
-
-        # when
-        tokens = booking_repository.find_existing_tokens()
-
-        # then
-        assert tokens == {booking1.token, booking2.token, booking3.token}
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_an_empty_set_if_no_bookings(self, app: fixture):
-        # when
-        tokens = booking_repository.find_existing_tokens()
-
-        # then
-        assert tokens == set()
-
-
 class FindByTest:
     class ByTokenTest:
         @pytest.mark.usefixtures("db_session")
