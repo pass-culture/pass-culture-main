@@ -10,7 +10,7 @@ from pcapi.infrastructure.repository.stock_provider.provider_api import Provider
 class StockProviderFnacRepository(StockProviderRepository):
     def __init__(self) -> None:
         self.fnac_api = ProviderAPI(
-            api_url="https://passculture-fr.ws.fnac.com/api/v1/pass-culture/stocks",
+            api_url=settings.FNAC_API_URL,
             name="Fnac",
             authentication_token=settings.FNAC_API_TOKEN,
         )

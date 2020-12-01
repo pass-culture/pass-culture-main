@@ -1,5 +1,6 @@
 from datetime import datetime
 import math
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -18,9 +19,12 @@ from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
 from pcapi.models import Offer
 from pcapi.models import Offerer
+from pcapi.models import Product
 from pcapi.models import Stock
 from pcapi.models import UserOfferer
 from pcapi.models import VenueSQLEntity
+from pcapi.models import db
+from pcapi.models.offer_type import ThingType
 
 
 IMPORTED_CREATION_MODE = "imported"
@@ -80,7 +84,7 @@ def get_paginated_offers_for_filters(
     )
 
 
-def get_offers_by_ids(user: User, offer_ids: [int]) -> Query:
+def get_offers_by_ids(user: User, offer_ids: List[int]) -> Query:
     query = Offer.query
     if not user.isAdmin:
         query = query.join(VenueSQLEntity, Offerer, UserOfferer).filter(
@@ -200,3 +204,37 @@ def get_stocks_for_offer(offer_id: int) -> List[Stock]:
         .filter(Stock.isSoftDeleted.is_(False))
         .all()
     )
+
+
+def get_products_map_by_id_at_providers(id_at_providers: List[str]) -> Dict[str, Product]:
+    products = (
+        Product.query.filter(Product.isGcuCompatible)
+        .filter(Product.type == str(ThingType.LIVRE_EDITION))
+        .filter(Product.idAtProviders.in_(id_at_providers))
+        .all()
+    )
+    return {product.idAtProviders: product for product in products}
+
+
+def get_offers_map_by_id_at_providers(id_at_providers: List[str]) -> Dict[str, int]:
+    offers_map = {}
+    for offer_id, offer_id_at_providers in (
+        db.session.query(Offer.id, Offer.idAtProviders).filter(Offer.idAtProviders.in_(id_at_providers)).all()
+    ):
+        offers_map[offer_id_at_providers] = offer_id
+
+    return offers_map
+
+
+def get_stocks_by_id_at_providers(id_at_providers: List[str]) -> Dict:
+    stocks = (
+        Stock.query.filter(Stock.idAtProviders.in_(id_at_providers))
+        .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.isCancelled.is_(False)))
+        .group_by(Stock.id)
+        .with_entities(Stock.id, Stock.idAtProviders, coalesce(func.sum(Booking.quantity), 0))
+        .all()
+    )
+    return {
+        id_at_providers: {"id": id, "booking_quantity": booking_quantity}
+        for (id, id_at_providers, booking_quantity) in stocks
+    }

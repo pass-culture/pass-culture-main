@@ -1,6 +1,7 @@
 from typing import Dict
 
 from pcapi.utils import requests
+from pcapi.utils.logger import logger
 
 
 class ProviderAPIException(Exception):
@@ -39,6 +40,55 @@ class ProviderAPI:
             return response.json()
         except ValueError:
             return {}
+
+    def validated_stocks(
+        self,
+        siret: str,
+        last_processed_reference: str = "",
+        modified_since: str = "",
+        limit: int = 1000,
+    ) -> Dict:
+        api_responses = self.stocks(siret, last_processed_reference, modified_since, limit)
+        stock_responses = api_responses.get("stocks", [])
+        validated_stock_responses = []
+        for stock_response in stock_responses:
+            if "ref" not in stock_response:
+                logger.exception("[%s SYNC] missing ref key in response", self.name)
+                continue
+
+            stock_response_ref = stock_response["ref"]
+            if "available" not in stock_response:
+                logger.exception(
+                    "[%s SYNC] missing available key in response with ref %s", self.name, stock_response_ref
+                )
+                continue
+
+            if stock_response["available"] < 0:
+                logger.exception(
+                    "[%s SYNC] invalid available value %s in response with ref %s",
+                    self.name,
+                    stock_response["available"],
+                    stock_response_ref,
+                )
+                continue
+
+            if "price" not in stock_response:
+                logger.exception("[%s SYNC] missing price key in response with ref %s", self.name, stock_response_ref)
+                continue
+
+            if stock_response["price"] < 0:
+                logger.exception(
+                    "[%s SYNC] invalid price value %s in response with ref %s",
+                    self.name,
+                    stock_response["price"],
+                    stock_response_ref,
+                )
+                continue
+
+            validated_stock_responses.append(stock_response)
+
+        api_responses["stocks"] = validated_stock_responses
+        return api_responses
 
     def is_siret_registered(self, siret: str) -> bool:
         api_url = self._build_local_provider_url(siret)
