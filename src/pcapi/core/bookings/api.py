@@ -86,10 +86,11 @@ def book_offer(
 
 
 def generate_booking_token():
-    while 1:
+    for i in range(100):
         token = random_token()
         if not booking_repository.token_exists(token):
             return token
+    raise ValueError("Could not generate new booking token")
 
 
 def cancel_booking_by_beneficiary(user: UserSQLEntity, booking: Booking) -> None:
