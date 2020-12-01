@@ -100,6 +100,7 @@ class BookingFormContent extends PureComponent {
       extraClassName,
       formId,
       handleSubmit,
+      isDigital,
       isEvent,
       isReadOnly,
       isStockDuo,
@@ -114,6 +115,9 @@ class BookingFormContent extends PureComponent {
     const displayPriceWarning = !isEvent || (bookableTimes && hasBookableTimes)
     const computedPrice = isDuo ? price * 2 : price
     const formattedComputedPrice = formatDecimals(computedPrice)
+    const isADigitalOffer = isDigital
+    const isAPhysicalOffer = !isDigital
+
     return (
       <form
         className={`${extraClassName} ${isReadOnly ? 'is-read-only' : ''}`}
@@ -161,10 +165,18 @@ class BookingFormContent extends PureComponent {
           </p>
         )}
 
-        {!isEvent && !isPressSubscription && (
+        {!isEvent && !isPressSubscription && isADigitalOffer && (
           <p className="bc-notification">
             {
-              'Tu as 30 jours pour faire valider ta contremarque et récupérer ton bien (si applicable). Passé ce délai, ta réservation sera automatiquement annulée.'
+              'Tu as 30 jours pour faire valider ta contremarque. Passé ce délai, ta réservation sera automatiquement annulée.'
+            }
+          </p>
+        )}
+
+        {!isEvent && !isPressSubscription && isAPhysicalOffer && (
+          <p className="bc-notification">
+            {
+              'Tu as 30 jours pour récupérer ton bien et faire valider ta contremarque. Passé ce délai, ta réservation sera automatiquement annulée.'
             }
           </p>
         )}
@@ -188,6 +200,7 @@ BookingFormContent.propTypes = {
   formId: PropTypes.string.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   invalid: PropTypes.bool.isRequired,
+  isDigital: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool,
   isPressSubscription: PropTypes.bool.isRequired,
   isReadOnly: PropTypes.bool,

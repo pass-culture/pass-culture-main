@@ -16,14 +16,15 @@ describe('bookingFormContent', () => {
     props = {
       extraClassName: 'fake className',
       formId: 'fake formId',
-      invalid: false,
-      isStockDuo: false,
-      isEvent: false,
-      isReadOnly: false,
-      isPressSubscription: true,
       handleSubmit,
-      onChange: jest.fn(),
+      invalid: false,
+      isDigital: false,
+      isEvent: false,
+      isPressSubscription: true,
+      isReadOnly: false,
+      isStockDuo: false,
       offerId: 'o1',
+      onChange: jest.fn(),
       values: {
         bookables: [],
         date: null,
@@ -230,10 +231,11 @@ describe('bookingFormContent', () => {
       expect(wrapper.find({ children: 'cette offre pour 12 €.' })).toHaveLength(1)
     })
 
-    it('should display a booking modalities message when the thing is not a press subscription', () => {
+    it('should display a booking modalities message when it is a digital offer but is not a press subscription', () => {
       // given
       props.isEvent = false
       props.isPressSubscription = false
+      props.isDigital = true
 
       // when
       const wrapper = shallow(<BookingFormContent {...props} />)
@@ -242,7 +244,25 @@ describe('bookingFormContent', () => {
       expect(
         wrapper.find({
           children:
-            'Tu as 30 jours pour faire valider ta contremarque et récupérer ton bien (si applicable). Passé ce délai, ta réservation sera automatiquement annulée.',
+            'Tu as 30 jours pour faire valider ta contremarque. Passé ce délai, ta réservation sera automatiquement annulée.',
+        })
+      ).toHaveLength(1)
+    })
+
+    it('should display a booking modalities message when it is a physical offer but is not a press subscription', () => {
+      // given
+      props.isEvent = false
+      props.isPressSubscription = false
+      props.isDigital = false
+
+      // when
+      const wrapper = shallow(<BookingFormContent {...props} />)
+
+      // then
+      expect(
+        wrapper.find({
+          children:
+            'Tu as 30 jours pour récupérer ton bien et faire valider ta contremarque. Passé ce délai, ta réservation sera automatiquement annulée.',
         })
       ).toHaveLength(1)
     })

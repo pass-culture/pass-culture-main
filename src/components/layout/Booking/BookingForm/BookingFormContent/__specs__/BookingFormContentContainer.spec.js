@@ -13,6 +13,7 @@ describe('src | components | BookingFormContentContainer', () => {
               offerType: {
                 value: 'FAKE_TYPE',
               },
+              url: 'http://fake-url.com',
             },
           ],
           stocks: [
@@ -37,8 +38,9 @@ describe('src | components | BookingFormContentContainer', () => {
 
       // then
       expect(props).toStrictEqual({
+        isDigital: true,
+        isPressSubscription: false,
         isStockDuo: true,
-        isSubscription: false,
       })
     })
   })

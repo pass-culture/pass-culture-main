@@ -10,8 +10,10 @@ export const mapStateToProps = (state, ownProps) => {
   const isStockDuo = selectIsStockDuo(state, stockId, offerId)
   const offer = selectOfferById(state, offerId)
   const isPressSubscription = offer.offerType.value === 'ThingType.PRESSE_ABO'
+  const isDigital = offer.url !== null
 
   return {
+    isDigital,
     isStockDuo,
     isPressSubscription,
   }
