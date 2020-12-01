@@ -97,6 +97,17 @@ def check_offerer_can_cancel_booking(booking: Booking) -> None:
         raise forbidden
 
 
+def check_system_can_cancel_expired_booking(booking: Booking) -> None:
+    if not booking.stock.offer.offerType["canExpire"]:
+        raise exceptions.DoesNotExpire(
+            "Booking %s is of type %s, which does not expire" % (booking, booking.stock.offer.type)
+        )
+    if booking.isCancelled:
+        raise exceptions.AlreadyCancelled("Booking %s is already cancelled" % booking)
+    if booking.isUsed:
+        raise exceptions.AlreadyUsed("Booking %s has been used" % booking)
+
+
 # FIXME (dbaty, 2020-10-19): I moved this function from validation/routes/bookings.py. It
 # should not raise HTTP-related exceptions. It should rather raise
 # generic exceptions such as `BookingIsAlreadyUsed` and the calling

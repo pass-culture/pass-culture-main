@@ -11,6 +11,7 @@ import qrcode.image.svg
 
 from pcapi.connectors import redis
 from pcapi.core.bookings import conf
+import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offers.models import Stock
@@ -189,3 +190,23 @@ def update_confirmation_dates(
         booking.confirmationDate = compute_confirmation_date(beginning_datetime, booking.dateCreated)
     repository.save(*bookings)
     return bookings
+
+
+def cancel_expired_bookings(
+    expired_bookings: typing.List[Booking],
+) -> typing.Tuple[typing.List[Booking], typing.List[bookings_exceptions.BookingCancellationError]]:
+    cancelled_bookings = []
+    errors = []
+
+    for booking in expired_bookings:
+        try:
+            validation.check_system_can_cancel_expired_booking(booking)
+            booking.isCancelled = True
+            booking.cancellationReason = BookingCancellationReasons.EXPIRED
+            cancelled_bookings.append(booking)
+        except bookings_exceptions.BookingCancellationError as exc:
+            errors.append(exc)
+
+    repository.save(*cancelled_bookings)
+
+    return cancelled_bookings, errors
