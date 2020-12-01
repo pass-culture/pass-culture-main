@@ -9,11 +9,11 @@ export const mapStateToProps = (state, ownProps) => {
   const { stockId } = values
   const isStockDuo = selectIsStockDuo(state, stockId, offerId)
   const offer = selectOfferById(state, offerId)
-  const isSubscription = offer.offerType.value === 'ThingType.PRESSE_ABO'
+  const isPressSubscription = offer.offerType.value === 'ThingType.PRESSE_ABO'
 
   return {
     isStockDuo,
-    isSubscription,
+    isPressSubscription,
   }
 }
 

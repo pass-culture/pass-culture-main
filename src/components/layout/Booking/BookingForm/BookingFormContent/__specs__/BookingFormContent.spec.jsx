@@ -20,7 +20,7 @@ describe('bookingFormContent', () => {
       isStockDuo: false,
       isEvent: false,
       isReadOnly: false,
-      isSubscription: false,
+      isPressSubscription: true,
       handleSubmit,
       onChange: jest.fn(),
       offerId: 'o1',
@@ -230,12 +230,10 @@ describe('bookingFormContent', () => {
       expect(wrapper.find({ children: 'cette offre pour 12 €.' })).toHaveLength(1)
     })
 
-    it('should display a message when the thing is other thing than subscription', () => {
+    it('should display a booking modalities message when the thing is not a press subscription', () => {
       // given
-      props.values = {
-        isEvent: false,
-        isSubscription: true,
-      }
+      props.isEvent = false
+      props.isPressSubscription = false
 
       // when
       const wrapper = shallow(<BookingFormContent {...props} />)

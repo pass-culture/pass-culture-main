@@ -103,7 +103,7 @@ class BookingFormContent extends PureComponent {
       isEvent,
       isReadOnly,
       isStockDuo,
-      isSubscription,
+      isPressSubscription,
       values,
     } = this.props
     const { price, isDuo } = values
@@ -161,7 +161,7 @@ class BookingFormContent extends PureComponent {
           </p>
         )}
 
-        {!isEvent && !isSubscription && (
+        {!isEvent && !isPressSubscription && (
           <p className="bc-notification">
             {
               'Tu as 30 jours pour faire valider ta contremarque et récupérer ton bien (si applicable). Passé ce délai, ta réservation sera automatiquement annulée.'
@@ -189,9 +189,9 @@ BookingFormContent.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   invalid: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool,
+  isPressSubscription: PropTypes.bool.isRequired,
   isReadOnly: PropTypes.bool,
   isStockDuo: PropTypes.bool,
-  isSubscription: PropTypes.bool.isRequired,
   offerId: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   values: PropTypes.shape().isRequired,
