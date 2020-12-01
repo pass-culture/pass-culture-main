@@ -97,7 +97,7 @@ class Booking(PcObject, Model, VersionedMixin):
     def restize_internal_error(ie):
         if "tooManyBookings" in str(ie.orig):
             return ["global", "La quantité disponible pour cette offre est atteinte."]
-        elif "insufficientFunds" in str(ie.orig):
+        if "insufficientFunds" in str(ie.orig):
             return ["insufficientFunds", "Le solde de votre pass est insuffisant pour réserver cette offre."]
         return PcObject.restize_integrity_error(ie)
 
@@ -109,10 +109,9 @@ class Booking(PcObject, Model, VersionedMixin):
     def thumbUrl(self):
         if self.recommendation:
             return self.recommendation.thumbUrl
-        elif self.stock.offer.activeMediation:
+        if self.stock.offer.activeMediation:
             return self.stock.offer.activeMediation.thumbUrl
-        else:
-            return self.stock.offer.product.thumbUrl
+        return self.stock.offer.product.thumbUrl
 
     @property
     def mediation(self):

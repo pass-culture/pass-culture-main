@@ -5,15 +5,15 @@ from pcapi.models.api_errors import ForbiddenError
 
 
 def check_user_can_validate_bookings(self, offerer_id: int):
-    if self.is_authenticated:
-        if self.hasRights(RightsType.editor, offerer_id):
-            return True
-        else:
-            api_errors = ApiErrors()
-            api_errors.add_error("global", "Cette contremarque n'a pas été trouvée")
-            raise api_errors
-    else:
+    if not self.is_authenticated:
         return False
+
+    if not self.hasRights(RightsType.editor, offerer_id):
+        api_errors = ApiErrors()
+        api_errors.add_error("global", "Cette contremarque n'a pas été trouvée")
+        raise api_errors
+
+    return True
 
 
 def check_user_can_validate_bookings_v2(self, offerer_id: int):

@@ -79,9 +79,8 @@ class TiteLiveThingThumbs(LocalProvider):
 
         if latest_sync_part_end_event is None:
             return iter(all_zips)
-        else:
-            payload = int(latest_sync_part_end_event.payload)
-            return iter(filter(lambda z: get_date_from_filename(z, DATE_REGEXP) > payload, all_zips))
+        payload = int(latest_sync_part_end_event.payload)
+        return iter(filter(lambda z: get_date_from_filename(z, DATE_REGEXP) > payload, all_zips))
 
     def fill_object_attributes(self, obj):
         pass

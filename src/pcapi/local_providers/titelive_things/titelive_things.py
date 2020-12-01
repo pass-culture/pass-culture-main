@@ -164,10 +164,9 @@ class TiteLiveThings(LocalProvider):
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.provider)
         if latest_sync_part_end_event is None:
             return iter(ordered_thing_files)
-        else:
-            for index, filename in enumerate(ordered_thing_files):
-                if get_date_from_filename(filename, DATE_REGEXP) == int(latest_sync_part_end_event.payload):
-                    return iter(ordered_thing_files[index + 1 :])
+        for index, filename in enumerate(ordered_thing_files):
+            if get_date_from_filename(filename, DATE_REGEXP) == int(latest_sync_part_end_event.payload):
+                return iter(ordered_thing_files[index + 1 :])
 
 
 def get_lines_from_thing_file(thing_file: str):
@@ -186,58 +185,57 @@ def get_lines_from_thing_file(thing_file: str):
 def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
     if titelive_type == "A":
         return None, None
-    elif titelive_type == "BD":
+    if titelive_type == "BD":
         return str(ThingType.LIVRE_EDITION), BookFormat.BANDE_DESSINEE.value
-    elif titelive_type == "BL":
+    if titelive_type == "BL":
         return str(ThingType.LIVRE_EDITION), BookFormat.BEAUX_LIVRES.value
-    elif titelive_type == "C":
+    if titelive_type == "C":
         return None, None
-    elif titelive_type == "CA":
+    if titelive_type == "CA":
         return None, None
-    elif titelive_type == "CB":
+    if titelive_type == "CB":
         return None, None
-    elif titelive_type == "CD":
+    if titelive_type == "CD":
         return None, None
-    elif titelive_type == "CL":
+    if titelive_type == "CL":
         return None, None
-    elif titelive_type == "DV":
+    if titelive_type == "DV":
         return None, None
-    elif titelive_type == "EB":
+    if titelive_type == "EB":
         return None, None
-    elif titelive_type == "K7":
+    if titelive_type == "K7":
         return None, None
-    elif titelive_type == "LA":
+    if titelive_type == "LA":
         return None, None
-    elif titelive_type == "LC":
+    if titelive_type == "LC":
         return str(ThingType.LIVRE_EDITION), BookFormat.LIVRE_CASSETTE.value
-    elif titelive_type == "LD":
+    if titelive_type == "LD":
         return str(ThingType.LIVRE_EDITION), BookFormat.LIVRE_AUDIO.value
-    elif titelive_type == "LE":
+    if titelive_type == "LE":
         return None, None
-    elif titelive_type == "LR":
+    if titelive_type == "LR":
         return None, None
-    elif titelive_type == "LT":
+    if titelive_type == "LT":
         return None, None
-    elif titelive_type == "LV":
+    if titelive_type == "LV":
         return None, None
-    elif titelive_type == "M":
+    if titelive_type == "M":
         return str(ThingType.LIVRE_EDITION), BookFormat.MOYEN_FORMAT.value
-    elif titelive_type == "O":
+    if titelive_type == "O":
         return None, None
-    elif titelive_type == "P":
+    if titelive_type == "P":
         return str(ThingType.LIVRE_EDITION), BookFormat.POCHE.value
-    elif titelive_type == "PC":
+    if titelive_type == "PC":
         return None, None
-    elif titelive_type == "PS":
+    if titelive_type == "PS":
         return None, None
-    elif titelive_type == "R":
+    if titelive_type == "R":
         return str(ThingType.LIVRE_EDITION), BookFormat.REVUE.value
-    elif titelive_type == "T" or titelive_type == "TL":
+    if titelive_type == "T" or titelive_type == "TL":
         return str(ThingType.LIVRE_EDITION), None
-    elif titelive_type == "TR":
+    if titelive_type == "TR":
         return None, None
-    else:
-        return None, None
+    return None, None
 
 
 def get_infos_from_data_line(elts: []) -> Dict:

@@ -101,9 +101,9 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
 
     @property
     def hasBookingLimitDatetimePassed(self):
-        if self.bookingLimitDatetime and self.bookingLimitDatetime < datetime.utcnow():
-            return True
-        return False
+        if not self.bookingLimitDatetime:
+            return False
+        return self.bookingLimitDatetime < datetime.utcnow()
 
     @property
     def bookingsQuantity(self):
@@ -115,15 +115,16 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
 
     @property
     def isEventExpired(self):
-        return False if self.beginningDatetime is None else self.beginningDatetime <= datetime.utcnow()
+        if not self.beginningDatetime:
+            return False
+        return self.beginningDatetime <= datetime.utcnow()
 
     @property
     def isEventDeletable(self):
-        if self.beginningDatetime:
-            limit_date_for_stock_deletion = self.beginningDatetime + EVENT_AUTOMATIC_REFUND_DELAY
-            return limit_date_for_stock_deletion >= datetime.utcnow()
-        else:
+        if not self.beginningDatetime:
             return True
+        limit_date_for_stock_deletion = self.beginningDatetime + EVENT_AUTOMATIC_REFUND_DELAY
+        return limit_date_for_stock_deletion >= datetime.utcnow()
 
     @classmethod
     def queryNotSoftDeleted(cls):
@@ -134,13 +135,12 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
         if "check_stock" in str(ie.orig):
             if "quantity_too_low" in str(ie.orig):
                 return ["quantity", "Le stock total ne peut être inférieur au nombre de réservations"]
-            elif "bookingLimitDatetime_too_late" in str(ie.orig):
+            if "bookingLimitDatetime_too_late" in str(ie.orig):
                 return [
                     "bookingLimitDatetime",
                     "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement",
                 ]
-            else:
-                logger.error("Unexpected error in patch stocks: %s", ie)
+            logger.error("Unexpected error in patch stocks: %s", ie)
         return PcObject.restize_internal_error(ie)
 
 

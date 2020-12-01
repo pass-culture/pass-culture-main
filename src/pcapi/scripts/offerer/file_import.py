@@ -80,8 +80,7 @@ def create_activated_user_offerer(
         filled_user_offerer = fill_user_offerer_from(UserOfferer(), filled_user, filled_offerer)
         repository.save(filled_user_offerer)
         return filled_user_offerer
-    else:
-        return None
+    return None
 
 
 def fill_user_offerer_from(

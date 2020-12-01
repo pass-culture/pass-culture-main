@@ -146,9 +146,9 @@ def _get_status_from_demarches_simplifiees_application_state(state: str) -> Unio
     draft_states = [DmsApplicationStates.received, DmsApplicationStates.initiated]
     if state in rejected_states:
         return BankInformationStatus.REJECTED
-    elif state in accepted_states:
+    if state in accepted_states:
         return BankInformationStatus.ACCEPTED
-    elif state in draft_states:
+    if state in draft_states:
         return BankInformationStatus.DRAFT
 
 

@@ -70,12 +70,9 @@ class TiteLiveThingDescriptions(LocalProvider):
 
         if latest_sync_part_end_event is None:
             return iter(all_zips)
-        else:
-            return iter(
-                filter(
-                    lambda z: get_date_from_filename(z, DATE_REGEXP) > int(latest_sync_part_end_event.payload), all_zips
-                )
-            )
+        return iter(
+            filter(lambda z: get_date_from_filename(z, DATE_REGEXP) > int(latest_sync_part_end_event.payload), all_zips)
+        )
 
     def get_description_files_from_zip_info(self) -> iter:
         sorted_files = sorted(self.zip_file.infolist(), key=lambda f: f.filename)

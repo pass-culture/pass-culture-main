@@ -34,17 +34,17 @@ def connect_venue_to_provider(
     venue_id = dehumanize(venue_provider_payload["venueId"])
     venue = find_venue_by_id(venue_id)
     check_existing_venue(venue)
-    if provider_class in STANDARD_STOCK_PROVIDERS:
-        _check_venue_can_be_synchronized_with_provider(
-            venue.siret, stock_provider_repository.can_be_synchronized, STANDARD_STOCK_PROVIDERS[provider_class]
-        )
-        new_venue_provider = _connect_stock_providers_to_venue(venue, venue_provider_payload)
-        return new_venue_provider
-    else:
+    if provider_class not in STANDARD_STOCK_PROVIDERS:
         api_errors = ApiErrors()
         api_errors.status_code = ERROR_CODE_PROVIDER_NOT_SUPPORTED
         api_errors.add_error("provider", "Provider non pris en charge")
         raise api_errors
+
+    _check_venue_can_be_synchronized_with_provider(
+        venue.siret, stock_provider_repository.can_be_synchronized, STANDARD_STOCK_PROVIDERS[provider_class]
+    )
+    new_venue_provider = _connect_stock_providers_to_venue(venue, venue_provider_payload)
+    return new_venue_provider
 
 
 def _connect_stock_providers_to_venue(venue: VenueSQLEntity, venue_provider_payload: Dict) -> VenueProvider:
@@ -70,5 +70,4 @@ def _check_venue_can_be_synchronized_with_provider(
 def _get_synchronization_error_message(provider_name: str, siret: Optional[str]) -> str:
     if siret:
         return f"L’importation d’offres avec {provider_name} n’est pas disponible pour le SIRET {siret}"
-    else:
-        return f"L’importation d’offres avec {provider_name} n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres."
+    return f"L’importation d’offres avec {provider_name} n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres."

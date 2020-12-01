@@ -25,5 +25,4 @@ DEPARTEMENT_CODE_VISIBILITY = {
 def get_departement_codes_from_user(user: UserSQLEntity) -> List[str]:
     if user.departementCode[:2] in DEPARTEMENT_CODE_VISIBILITY:
         return DEPARTEMENT_CODE_VISIBILITY[user.departementCode[:2]]
-    else:
-        return [user.departementCode]
+    return [user.departementCode]

@@ -50,19 +50,17 @@ class SaveVenueBankInformations:
             new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
             return self.bank_informations_repository.update_by_application_id(new_bank_informations)
 
-        else:
-            bank_information_by_venue_id = self.bank_informations_repository.find_by_venue(venue.identifier)
+        bank_information_by_venue_id = self.bank_informations_repository.find_by_venue(venue.identifier)
 
-            if bank_information_by_venue_id:
-                check_new_bank_information_older_than_saved_one(bank_information_by_venue_id, application_details)
-                check_new_bank_information_has_a_more_advanced_status(bank_information_by_venue_id, application_details)
+        if bank_information_by_venue_id:
+            check_new_bank_information_older_than_saved_one(bank_information_by_venue_id, application_details)
+            check_new_bank_information_has_a_more_advanced_status(bank_information_by_venue_id, application_details)
 
-                new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
-                return self.bank_informations_repository.update_by_venue_id(new_bank_informations)
+            new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
+            return self.bank_informations_repository.update_by_venue_id(new_bank_informations)
 
-            else:
-                new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
-                return self.bank_informations_repository.save(new_bank_informations)
+        new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
+        return self.bank_informations_repository.save(new_bank_informations)
 
     def get_referent_venue(self, application_details: ApplicationDetail, offerer: Offerer) -> VenueWithBasicInformation:
         siret = application_details.siret

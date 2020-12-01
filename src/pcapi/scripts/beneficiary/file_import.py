@@ -192,5 +192,4 @@ def _get_password(csv_row: List[List[str]]) -> str:
     has_password_in_csv = len(csv_row) - 1 == PASSWORD_INDEX
     if has_password_in_csv:
         return hash_password(csv_row[PASSWORD_INDEX])
-    else:
-        return random_password()
+    return random_password()

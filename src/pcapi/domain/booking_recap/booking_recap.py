@@ -90,8 +90,7 @@ class BookingRecap:
             return BookingRecapStatus.validated
         if self.booking_is_confirmed:
             return BookingRecapStatus.confirmed
-        else:
-            return BookingRecapStatus.booked
+        return BookingRecapStatus.booked
 
     def build_status_history(
         self,
@@ -119,8 +118,7 @@ class BookingRecap:
                 booking_date=booking_date,
                 confirmation_date=confirmation_date,
             )
-        else:
-            return BookingRecapHistory(booking_date)
+        return BookingRecapHistory(booking_date)
 
 
 class ThingBookingRecap(BookingRecap):
@@ -131,8 +129,7 @@ class ThingBookingRecap(BookingRecap):
     def booking_token(self) -> Optional[str]:
         if not self.booking_is_used and not self.booking_is_cancelled:
             return None
-        else:
-            return self._booking_token
+        return self._booking_token
 
 
 class EventBookingRecap(BookingRecap):

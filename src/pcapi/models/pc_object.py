@@ -110,8 +110,7 @@ class PcObject:
                 re.IGNORECASE,
             ).group(2)
             return ["global", "La valeur d'une entrée est trop longue (max " + max_length + ")"]
-        else:
-            return PcObject.restize_global_error(data_error)
+        return PcObject.restize_global_error(data_error)
 
     @staticmethod
     def restize_integrity_error(integrity_error):
@@ -124,22 +123,21 @@ class PcObject:
             if "," in field:
                 field = "global"
             return [field, "Une entrée avec cet identifiant existe déjà dans notre base de données"]
-        elif (
+        if (
             hasattr(integrity_error, "orig")
             and hasattr(integrity_error.orig, "pgcode")
             and integrity_error.orig.pgcode == NOT_FOUND_KEY_ERROR_CODE
         ):
             field = re.search(r"Key \((.*?)\)=", str(integrity_error._message), re.IGNORECASE).group(1)
             return [field, "Aucun objet ne correspond à cet identifiant dans notre base de données"]
-        elif (
+        if (
             hasattr(integrity_error, "orig")
             and hasattr(integrity_error.orig, "pgcode")
             and integrity_error.orig.pgcode == OBLIGATORY_FIELD_ERROR_CODE
         ):
             field = re.search('column "(.*?)"', integrity_error.orig.pgerror, re.IGNORECASE).group(1)
             return [field, "Ce champ est obligatoire"]
-        else:
-            return PcObject.restize_global_error(integrity_error)
+        return PcObject.restize_global_error(integrity_error)
 
     @staticmethod
     def restize_internal_error(internal_error):
@@ -149,12 +147,11 @@ class PcObject:
     def restize_type_error(type_error):
         if type_error.args and len(type_error.args) > 1 and type_error.args[1] == "geography":
             return [type_error.args[2], "doit etre une liste de nombre décimaux comme par exemple : [2.22, 3.22]"]
-        elif type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == "decimal":
+        if type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == "decimal":
             return [type_error.args[2], "doit être un nombre décimal"]
-        elif type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == "integer":
+        if type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == "integer":
             return [type_error.args[2], "doit être un entier"]
-        else:
-            return PcObject.restize_global_error(type_error)
+        return PcObject.restize_global_error(type_error)
 
     @staticmethod
     def restize_value_error(value_error):
@@ -163,8 +160,7 @@ class PcObject:
                 value_error.args[2],
                 " doit etre dans cette liste : " + ",".join(map(lambda x: '"' + x + '"', value_error.args[3])),
             ]
-        else:
-            return PcObject.restize_global_error(value_error)
+        return PcObject.restize_global_error(value_error)
 
     @staticmethod
     def _get_keys_to_populate(columns: Iterable[str], data: dict, skipped_keys: Iterable[str]) -> Set[str]:

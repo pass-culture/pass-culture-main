@@ -70,8 +70,7 @@ def put_read_recommendations():
 def put_recommendations():
     if feature_queries.is_active(FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION):
         return _put_geolocated_recommendations(request)
-    else:
-        return _put_non_geolocated_recommendations(request)
+    return _put_non_geolocated_recommendations(request)
 
 
 def _put_geolocated_recommendations(request: Request) -> (Dict, int):

@@ -84,8 +84,7 @@ class MaxReimbursementByOfferer(ReimbursementRule):
     def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         if booking.stock.offer.product.isDigital:
             return False
-        else:
-            return kwargs["cumulative_value"] > 20000
+        return kwargs["cumulative_value"] > 20000
 
 
 class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
@@ -97,8 +96,7 @@ class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
     def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         if booking.stock.offer.product.isDigital:
             return False
-        else:
-            return 20000 < kwargs["cumulative_value"] <= 40000
+        return 20000 < kwargs["cumulative_value"] <= 40000
 
 
 class ReimbursementRateByVenueBetween40000And150000(ReimbursementRule):
@@ -110,8 +108,7 @@ class ReimbursementRateByVenueBetween40000And150000(ReimbursementRule):
     def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         if booking.stock.offer.product.isDigital:
             return False
-        else:
-            return 40000 < kwargs["cumulative_value"] <= 150000
+        return 40000 < kwargs["cumulative_value"] <= 150000
 
 
 class ReimbursementRateByVenueAbove150000(ReimbursementRule):
@@ -123,8 +120,7 @@ class ReimbursementRateByVenueAbove150000(ReimbursementRule):
     def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         if booking.stock.offer.product.isDigital:
             return False
-        else:
-            return kwargs["cumulative_value"] > 150000
+        return kwargs["cumulative_value"] > 150000
 
 
 class ReimbursementRateForBookAbove20000(ReimbursementRule):
@@ -134,10 +130,9 @@ class ReimbursementRateForBookAbove20000(ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
-        if booking.stock.offer.type == str(ThingType.LIVRE_EDITION) and kwargs["cumulative_value"] > 20000:
-            return True
-        else:
+        if not booking.stock.offer.type == str(ThingType.LIVRE_EDITION):
             return False
+        return kwargs["cumulative_value"] > 20000
 
 
 class ReimbursementRules(Enum):

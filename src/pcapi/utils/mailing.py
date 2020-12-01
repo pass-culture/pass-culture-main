@@ -106,8 +106,7 @@ def extract_users_information_from_bookings(bookings: List[Booking]) -> List[dic
 def create_email_recipients(recipients: List[str]) -> str:
     if feature_send_mail_to_users_enabled():
         return ", ".join(recipients)
-    else:
-        return DEV_EMAIL_ADDRESS
+    return DEV_EMAIL_ADDRESS
 
 
 def format_environment_for_email() -> str:
