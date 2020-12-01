@@ -1,13 +1,12 @@
-""" token """
 import random
+import string
 
-from pcapi.utils.human_ids import humanize
+
+# For historical reasons, use the alphabet of Base 32 (A-Z, 2-7), and
+# remove letters O and I to avoid misreadings.
+ALPHABET = string.ascii_uppercase + string.digits
+ALPHABET = ALPHABET.translate(str.maketrans("", "", "0189IO"))
 
 
 def random_token(length=6):
-    token = random.SystemRandom()
-    return _tokenify([token.randint(1, 255) for index in range(length // 2)])
-
-
-def _tokenify(indexes):
-    return "".join([humanize(index) for index in indexes])
+    return "".join(random.choices(ALPHABET, k=length))
