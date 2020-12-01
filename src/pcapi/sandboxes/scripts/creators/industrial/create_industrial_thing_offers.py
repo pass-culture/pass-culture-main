@@ -60,6 +60,6 @@ def create_industrial_thing_offers(things_by_name, offerers_by_name, venues_by_n
 
     repository.save(*thing_offers_by_name.values())
 
-    logger.info("created {} thing_offers".format(len(thing_offers_by_name)))
+    logger.info("created %d thing_offers", len(thing_offers_by_name))
 
     return thing_offers_by_name

@@ -45,4 +45,4 @@ def create_industrial_event_stocks(event_occurrences_by_name):
 
     repository.save(*event_stocks_by_name.values())
 
-    logger.info("created {} event_stocks".format(len(event_stocks_by_name)))
+    logger.info("created %d event_stocks", len(event_stocks_by_name))

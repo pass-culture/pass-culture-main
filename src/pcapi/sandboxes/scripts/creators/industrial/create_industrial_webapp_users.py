@@ -67,6 +67,6 @@ def create_industrial_webapp_users():
 
     repository.save(*users_by_name.values())
 
-    logger.info("created {} users".format(len(users_by_name)))
+    logger.info("created %d users", len(users_by_name))
 
     return users_by_name

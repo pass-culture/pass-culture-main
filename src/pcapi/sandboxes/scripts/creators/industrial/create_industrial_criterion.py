@@ -29,7 +29,7 @@ def create_industrial_criteria() -> dict:
 
     repository.save(*criteria_by_name.values())
 
-    logger.info("created {} criteria".format(len(criteria_by_name)))
+    logger.info("created %d criteria", len(criteria_by_name))
 
     return criteria_by_name
 

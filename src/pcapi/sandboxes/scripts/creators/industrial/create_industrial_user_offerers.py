@@ -33,6 +33,6 @@ def create_industrial_user_offerers(users_by_name, offerers_by_name):
 
     repository.save(*user_offerers_by_name.values())
 
-    logger.info("created {} user_offerers".format(len(user_offerers_by_name)))
+    logger.info("created %d user_offerers", len(user_offerers_by_name))
 
     return user_offerers_by_name

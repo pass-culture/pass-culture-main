@@ -94,4 +94,4 @@ def create_industrial_bookings(recommendations_by_name):
 
     repository.save(*bookings_by_name.values())
 
-    logger.info("created {} bookings".format(len(bookings_by_name)))
+    logger.info("created %d bookings", len(bookings_by_name))

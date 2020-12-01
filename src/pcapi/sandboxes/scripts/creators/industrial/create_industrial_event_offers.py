@@ -50,6 +50,6 @@ def create_industrial_event_offers(events_by_name, offerers_by_name):
 
     repository.save(*event_offers_by_name.values())
 
-    logger.info("created {} event_offers".format(len(event_offers_by_name)))
+    logger.info("created %d event_offers", len(event_offers_by_name))
 
     return event_offers_by_name

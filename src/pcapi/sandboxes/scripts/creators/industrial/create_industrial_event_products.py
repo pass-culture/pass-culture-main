@@ -85,6 +85,6 @@ def create_industrial_event_products():
 
     repository.save(*event_products_by_name.values())
 
-    logger.info("created {} event products".format(len(event_products_by_name)))
+    logger.info("created %d event products", len(event_products_by_name))
 
     return event_products_by_name

@@ -90,6 +90,6 @@ def create_industrial_venues(offerers_by_name: Dict, venue_types: List[VenueType
 
     repository.save(*venue_by_name.values())
 
-    logger.info("created {} venues".format(len(venue_by_name)))
+    logger.info("created %d venues", len(venue_by_name))
 
     return venue_by_name

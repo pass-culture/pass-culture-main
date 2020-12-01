@@ -28,4 +28,4 @@ def create_industrial_mediations(offers_by_name):
 
     repository.save(*mediations_with_asset.values())
 
-    logger.info("created {} mediations".format(len(mediations_by_name)))
+    logger.info("created %d mediations", len(mediations_by_name))

@@ -76,6 +76,6 @@ def create_industrial_recommendations(offers_by_name, users_by_name):
 
     repository.save(*recommendations_with_asset.values())
 
-    logger.info("created {} recommendations".format(len(recommendations_by_name)))
+    logger.info("created %d recommendations", len(recommendations_by_name))
 
     return recommendations_by_name

@@ -221,6 +221,6 @@ def create_industrial_offerers_with_pro_users():
 
     repository.save(*objects_to_save)
 
-    logger.info("created {} offerers with pro users".format(len(offerers_by_name)))
+    logger.info("created %d offerers with pro users", len(offerers_by_name))
 
     return (offerers_by_name, users_by_name)

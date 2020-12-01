@@ -31,4 +31,4 @@ def create_industrial_pro_users_api_keys(offerers_by_name):
         counter += 1
 
     repository.save(*api_key.values())
-    logger.info("created {} offerers with api key".format(len(offerers_by_name)))
+    logger.info("created %d offerers with api key", len(offerers_by_name))

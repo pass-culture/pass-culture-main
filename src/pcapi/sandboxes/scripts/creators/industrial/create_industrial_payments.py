@@ -7,4 +7,4 @@ def create_industrial_payments():
 
     pending_payments, not_processable_payments = generate_new_payments()
 
-    logger.info("created {} payments".format(len(pending_payments + not_processable_payments)))
+    logger.info("created %d payments", len(pending_payments + not_processable_payments))

@@ -21,6 +21,6 @@ def create_industrial_deposits(users_by_name):
 
     repository.save(*deposits_by_name.values())
 
-    logger.info("created {} deposits".format(len(deposits_by_name)))
+    logger.info("created %d deposits", len(deposits_by_name))
 
     return deposits_by_name

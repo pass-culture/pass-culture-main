@@ -36,4 +36,4 @@ def create_industrial_thing_stocks(thing_offers_by_name):
 
     repository.save(*thing_stocks_by_name.values())
 
-    logger.info("created {} thing_stocks".format(len(thing_stocks_by_name)))
+    logger.info("created %d thing_stocks", len(thing_stocks_by_name))
