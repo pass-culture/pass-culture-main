@@ -16,7 +16,7 @@ def get_movies_showtimes(
     movies_number = api_response["movieShowtimeList"]["totalCount"]
     filtered_movies_showtimes = _exclude_movie_showtimes_with_special_event_type(movies_showtimes)
 
-    logger.info("[ALLOCINE] Total : %s movies" % movies_number)
+    logger.info("[ALLOCINE] Total : %s movies", movies_number)
 
     return iter(filtered_movies_showtimes)
 

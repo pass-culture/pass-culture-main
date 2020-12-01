@@ -465,5 +465,5 @@ def save_sandbox():
         ),
     ]
 
-    logger.info("created %s bookings" % len(bookings))
+    logger.info("created %s bookings", len(bookings))
     repository.save(*bookings)

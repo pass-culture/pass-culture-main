@@ -47,7 +47,7 @@ def iterate_rows_for_user_offerers(csv_rows: List[List[str]]) -> List:
         user_offerer = create_activated_user_offerer(row)
         if user_offerer:
             user_offerers.append(user_offerer)
-            logger.info("Enregistrement de %s comptes pro" % (len(user_offerers)))
+            logger.info("Enregistrement de %s comptes pro", len(user_offerers))
     return user_offerers
 
 
@@ -134,11 +134,11 @@ def run(csv_file_path: str) -> None:
     logger.info("Enregistrement des comptes pro terminé\n")
 
     logger.info("[STEP 3] Décompte des objets")
-    logger.info("Users offerers en BDD -> %s" % UserOfferer.query.count())
-    logger.info("Users offerers créés ou mis à jour -> %s" % len(user_offerers))
+    logger.info("Users offerers en BDD -> %s", UserOfferer.query.count())
+    logger.info("Users offerers créés ou mis à jour -> %s", len(user_offerers))
 
     logger.info("-------------------------------------------------------------------------------")
-    logger.info("[END] Création des structures avec leur lieu : %s" % len(user_offerers))
+    logger.info("[END] Création des structures avec leur lieu : %s", len(user_offerers))
     logger.info("-------------------------------------------------------------------------------")
 
 

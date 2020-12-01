@@ -18,12 +18,13 @@ def do_ban_payments(message_id: str, payment_ids_to_ban: List[int]):
         banned_payments, retry_payments = apply_banishment(matching_payments, payment_ids_to_ban)
     except UnmatchedPayments as e:
         logger.exception(
-            'Le message "%s" ne contient pas les paiements : %s.'
-            "\nAucun paiement n'a été mis à jour." % (message_id, e.payment_ids)
+            "Le message %s ne contient pas les paiements : %s. Aucun paiement n'a été mis à jour.",
+            message_id,
+            e.payment_ids,
         )
     else:
         if banned_payments:
             repository.save(*(banned_payments + retry_payments))
 
-        logger.info("Paiements bannis : %s " % list(map(lambda p: p.id, banned_payments)))
-        logger.info("Paiements à réessayer : %s " % list(map(lambda p: p.id, retry_payments)))
+        logger.info("Paiements bannis : %s ", [p.id for p in banned_payments])
+        logger.info("Paiements à réessayer : %s ", [p.id for p in retry_payments])

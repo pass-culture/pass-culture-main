@@ -17,9 +17,9 @@ class BaseAdminView(ModelView):
         authorized = current_user.is_authenticated and current_user.isAdmin
 
         if authorized:
-            logger.info("[ADMIN] Accès autorisé à l'interface d'administation pour %s" % current_user)
+            logger.info("[ADMIN] Accès autorisé à l'interface d'administation pour %s", current_user)
         else:
-            logger.warning("[ADMIN] Tentative d'accès non autorisé à l'interface d'administation par %s" % current_user)
+            logger.warning("[ADMIN] Tentative d'accès non autorisé à l'interface d'administation par %s", current_user)
 
         return authorized
 
@@ -29,4 +29,4 @@ class BaseAdminView(ModelView):
     def after_model_change(self, form, model, is_created):
         action = "Création" if is_created else "Modification"
         model_name = str(model)
-        logger.info("[ADMIN] %s du modèle %s par l'utilisateur %s" % (action, model_name, current_user))
+        logger.info("[ADMIN] %s du modèle %s par l'utilisateur %s", action, model_name, current_user)

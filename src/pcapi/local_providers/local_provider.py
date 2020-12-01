@@ -122,24 +122,24 @@ class LocalProvider(Iterator):
         db.session.commit()
 
     def _print_objects_summary(self):
-        logger.info("  Checked " + str(self.checkedObjects) + " objects")
-        logger.info("  Created " + str(self.createdObjects) + " objects")
-        logger.info("  Updated " + str(self.updatedObjects) + " objects")
-        logger.info("  " + str(self.erroredObjects) + " errors in creations/updates")
+        logger.info("  Checked %d objects", self.checkedObjects)
+        logger.info("  Created %d objects", self.createdObjects)
+        logger.info("  Updated %d objects", self.updatedObjects)
+        logger.info("  %d errors in creations/updates", self.erroredObjects)
 
-        logger.info("  Checked " + str(self.checkedThumbs) + " thumbs")
-        logger.info("  Created " + str(self.createdThumbs) + " thumbs")
-        logger.info("  Updated " + str(self.updatedThumbs) + " thumbs")
-        logger.info("  " + str(self.erroredThumbs) + " errors in thumb creations/updates")
+        logger.info("  Checked %d thumbs", self.checkedThumbs)
+        logger.info("  Created %d thumbs", self.createdThumbs)
+        logger.info("  Updated %d thumbs", self.updatedThumbs)
+        logger.info("  %d errors in thumb creations/updates", self.erroredThumbs)
 
     def updateObjects(self, limit=None):
         if self.venue_provider and not self.venue_provider.isActive:
-            logger.info("Venue provider is inactive")
+            logger.info("Venue provider %s is inactive", self.venue_provider)
             return
 
         if not self.provider.isActive:
             provider_name = self.__class__.__name__
-            logger.info("Provider " + provider_name + " is inactive")
+            logger.info("Provider %s is inactive", provider_name)
             return
 
         self.log_provider_event(LocalProviderEventType.SyncStart)

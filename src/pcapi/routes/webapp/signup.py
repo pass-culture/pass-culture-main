@@ -63,7 +63,7 @@ def _get_departement_code_when_authorized_or_error(authorized_emails, departemen
     email_index = _get_email_index_in_spreadsheet_or_error(authorized_emails)
     departement_code = departement_codes[email_index]
     if departement_code.strip() == "":
-        logger.exception("[ERROR] Missing departement code in users spreadsheet for " + request.json["email"])
+        logger.exception("[ERROR] Missing departement code in users spreadsheet for %s", request.json["email"])
 
         e = ApiErrors()
         e.add_error("email", "Adresse non autorisée pour l'expérimentation")

@@ -121,7 +121,7 @@ def split_rows_in_chunks_with_no_duplicated_emails(csv_reader: Iterable, chunk_s
         total += len(chunk)
         chunked_rows.append(chunk)
 
-    logger.info("Lecture des lignes CSV (%s) terminée\n" % total)
+    logger.info("Lecture des lignes CSV (%s) terminée", total)
     return chunked_rows
 
 
@@ -164,19 +164,19 @@ def run(csv_file_path: str) -> None:
             repository.save(*bookings)
         all_bookings.extend(bookings)
         total += len(chunk)
-        logger.info("Enregistrement de %s comptes utilisateur | %s" % (CHUNK_SIZE, total))
-    logger.info("Enregistrement des comptes utilisateur terminé\n")
+        logger.info("Enregistrement de %s comptes utilisateur | %s", CHUNK_SIZE, total)
+    logger.info("Enregistrement des comptes utilisateur terminé")
 
     logger.info("[STEP 3] Décompte des objets")
-    logger.info("Users en BDD -> %s" % UserSQLEntity.query.count())
-    logger.info("Users créés ou mis à jour -> %s" % total)
-    logger.info("Bookings en BDD -> %s\n" % Booking.query.count())
+    logger.info("Users en BDD -> %s", UserSQLEntity.query.count())
+    logger.info("Users créés ou mis à jour -> %s", total)
+    logger.info("Bookings en BDD -> %s", Booking.query.count())
 
     logger.info("[STEP 4] Envoi des comptes créés par mail")
     export_created_data(all_bookings)
 
     logger.info("-------------------------------------------------------------------------------")
-    logger.info("[END] Création des utilisateurs avec contremarques d'activation : %s" % total)
+    logger.info("[END] Création des utilisateurs avec contremarques d'activation : %s", total)
     logger.info("-------------------------------------------------------------------------------")
 
 

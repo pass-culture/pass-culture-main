@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-from pprint import pformat
 from typing import List
 from typing import Optional
 
@@ -141,7 +140,7 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
                     "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement",
                 ]
             else:
-                logger.error("Unexpected error in patch stocks: " + pformat(ie))
+                logger.error("Unexpected error in patch stocks: %s", ie)
         return PcObject.restize_internal_error(ie)
 
 
