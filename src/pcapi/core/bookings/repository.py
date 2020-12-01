@@ -140,6 +140,10 @@ def find_existing_tokens() -> Set[str]:
     return set(map(lambda t: t[0], db.session.query(Booking.token).all()))
 
 
+def token_exists(token) -> bool:
+    return db.session.query(Booking.query.filter_by(token=token).exists()).scalar()
+
+
 def find_not_used_and_not_cancelled() -> List[Booking]:
     return Booking.query.filter(Booking.isUsed.is_(False)).filter(Booking.isCancelled.is_(False)).all()
 

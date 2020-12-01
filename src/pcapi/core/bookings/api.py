@@ -62,7 +62,7 @@ def book_offer(
         stockId=stock.id,
         amount=stock.price,
         quantity=quantity,
-        token=random_token(),
+        token=generate_booking_token(),
     )
     if recommendation:
         booking.recommendationId = recommendation.id
@@ -83,6 +83,13 @@ def book_offer(
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     return booking
+
+
+def generate_booking_token():
+    while 1:
+        token = random_token()
+        if not booking_repository.token_exists(token):
+            return token
 
 
 def cancel_booking_by_beneficiary(user: UserSQLEntity, booking: Booking) -> None:
