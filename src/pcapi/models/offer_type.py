@@ -126,6 +126,7 @@ class ThingType(SearchableType):
         "description": "Activez votre pass Culture grâce à cette offre",
         "conditionalFields": [],
         "isActive": True,
+        "canExpire": True,
     }
     AUDIOVISUEL = {
         "proLabel": "Audiovisuel - films sur supports physiques et VOD",
@@ -136,6 +137,7 @@ class ThingType(SearchableType):
         "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
         "conditionalFields": [],
         "isActive": True,
+        "canExpire": True,
     }
     CINEMA_ABO = {
         "proLabel": "Cinéma - cartes d'abonnement",
@@ -146,6 +148,7 @@ class ThingType(SearchableType):
         "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
         "conditionalFields": [],
         "isActive": True,
+        "canExpire": True,
     }
     CINEMA_CARD = {
         "proLabel": "Cinéma - vente à distance",
@@ -156,6 +159,7 @@ class ThingType(SearchableType):
         "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
         "conditionalFields": [],
         "isActive": True,
+        "canExpire": True,
     }
     JEUX = {
         "proLabel": "Jeux (support physique)",
@@ -166,6 +170,7 @@ class ThingType(SearchableType):
         "description": "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?",
         "conditionalFields": [],
         "isActive": False,
+        "canExpire": True,
     }
     JEUX_VIDEO_ABO = {
         "proLabel": "Jeux - abonnements",
@@ -176,6 +181,7 @@ class ThingType(SearchableType):
         "description": "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?",
         "conditionalFields": [],
         "isActive": True,
+        "canExpire": True,
     }
     JEUX_VIDEO = {
         "proLabel": "Jeux vidéo en ligne",
@@ -186,6 +192,7 @@ class ThingType(SearchableType):
         "description": "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?",
         "conditionalFields": [],
         "isActive": True,
+        "canExpire": True,
     }
     LIVRE_AUDIO = {
         "proLabel": "Livres audio numériques",
@@ -196,6 +203,7 @@ class ThingType(SearchableType):
         "description": "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
         "conditionalFields": ["author"],
         "isActive": True,
+        "canExpire": False,
     }
     LIVRE_EDITION = {
         "proLabel": "Livres papier ou numérique, abonnements lecture",
@@ -206,6 +214,7 @@ class ThingType(SearchableType):
         "description": "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
         "conditionalFields": ["author", "isbn"],
         "isActive": True,
+        "canExpire": True,
     }
     MUSEES_PATRIMOINE_ABO = {
         "proLabel": "Musées, galeries, patrimoine - entrées libres, abonnements",
@@ -216,6 +225,7 @@ class ThingType(SearchableType):
         "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
         "conditionalFields": [],
         "isActive": True,
+        "canExpire": True,
     }
     MUSIQUE_ABO = {
         "proLabel": "Musique - cartes d'abonnement concerts",
@@ -226,6 +236,7 @@ class ThingType(SearchableType):
         "description": "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?",
         "conditionalFields": ["musicType"],
         "isActive": True,
+        "canExpire": True,
     }
     MUSIQUE = {
         "proLabel": "Musique - supports physique ou en ligne",
@@ -236,6 +247,7 @@ class ThingType(SearchableType):
         "description": "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?",
         "conditionalFields": ["author", "musicType", "performer"],
         "isActive": True,
+        "canExpire": True,
     }
     OEUVRE_ART = {
         "proLabel": "Vente d'œuvres d'art",
@@ -246,6 +258,7 @@ class ThingType(SearchableType):
         "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
         "conditionalFields": [],
         "isActive": True,
+        "canExpire": True,
     }
     PRATIQUE_ARTISTIQUE_ABO = {
         "proLabel": "Pratique artistique - abonnements, cours",
@@ -256,6 +269,7 @@ class ThingType(SearchableType):
         "description": "Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?",
         "conditionalFields": ["speaker"],
         "isActive": True,
+        "canExpire": True,
     }
     PRESSE_ABO = {
         "proLabel": "Presse en ligne - abonnements",
@@ -266,6 +280,7 @@ class ThingType(SearchableType):
         "description": "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
         "conditionalFields": [],
         "isActive": True,
+        "canExpire": False,
     }
     INSTRUMENT = {
         "proLabel": "Vente et location d’instruments de musique",
@@ -276,6 +291,7 @@ class ThingType(SearchableType):
         "description": "Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?",
         "conditionalFields": [],
         "isActive": True,
+        "canExpire": True,
     }
     SPECTACLE_VIVANT_ABO = {
         "proLabel": "Spectacle vivant - cartes d'abonnement",
@@ -286,6 +302,7 @@ class ThingType(SearchableType):
         "description": "Suivre un géant de 12 mètres dans la ville ? Rire aux éclats devant un stand up ? Rêver le temps d’un opéra ou d’un spectacle de danse ? Assister à une pièce de théâtre, ou se laisser conter une histoire ?",
         "conditionalFields": ["showType"],
         "isActive": True,
+        "canExpire": True,
     }
 
 

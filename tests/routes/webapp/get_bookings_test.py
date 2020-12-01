@@ -78,6 +78,7 @@ class Get:
                         "name": "Test Book",
                         "offerType": {
                             "appLabel": "Film",
+                            "canExpire": True,
                             "conditionalFields": [],
                             "description": (
                                 "Action, science-fiction, documentaire ou comédie "

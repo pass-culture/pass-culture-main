@@ -76,6 +76,7 @@ class SerializeTest:
             "Jouer en ligne entre amis ? "
             "Découvrir cet univers étrange avec une manette ?",
             "isActive": False,
+            "canExpire": True,
         }
 
     def _assert_is_in_ISO_8601_format(self, date_text):

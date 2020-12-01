@@ -79,6 +79,7 @@ def test_thing_offerType_returns_dict_matching_ThingType_enum():
         "value": "ThingType.LIVRE_EDITION",
         "type": "Thing",
         "isActive": True,
+        "canExpire": True,
     }
 
     # when
