@@ -32,10 +32,10 @@ class Returns201:
 
         # This are variables we do not have control over with but we still want to check
         # the response body has the right format
-        id = response.json["id"]
-        assert isinstance(id, str)
+        stock_id = response.json["id"]
+        assert isinstance(stock_id, str)
 
-        stock = Stock.query.filter_by(id=dehumanize(id)).first()
+        stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
         assert stock.price == 1222
         assert stock.bookingLimitDatetime is None
 

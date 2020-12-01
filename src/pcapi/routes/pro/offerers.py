@@ -78,11 +78,11 @@ def list_offerers():
 
 
 # @debt api-migration
-@private_api.route("/offerers/<id>", methods=["GET"])
+@private_api.route("/offerers/<offerer_id>", methods=["GET"])
 @login_required
-def get_offerer(id):
-    ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
-    offerer = load_or_404(Offerer, id)
+def get_offerer(offerer_id):
+    ensure_current_user_has_rights(RightsType.editor, dehumanize(offerer_id))
+    offerer = load_or_404(Offerer, offerer_id)
 
     return jsonify(get_dict_offerer(offerer)), 200
 

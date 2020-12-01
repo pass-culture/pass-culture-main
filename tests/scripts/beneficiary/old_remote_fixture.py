@@ -291,7 +291,7 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
 
 
 def make_old_application_detail(
-    id: int,
+    application_id: int,
     state: str,
     postal_code: str = "67200",
     department_code: str = "67 - Bas-Rhin",
@@ -299,7 +299,7 @@ def make_old_application_detail(
     activity: str = "Étudiant",
 ) -> Dict:
     application = copy.deepcopy(APPLICATION_DETAIL_STANDARD_RESPONSE)
-    application["dossier"]["id"] = id
+    application["dossier"]["id"] = application_id
     application["dossier"]["state"] = state
     application["dossier"]["individual"]["civilite"] = civility
     for field in application["dossier"]["champs"]:

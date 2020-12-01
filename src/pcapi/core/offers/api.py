@@ -111,7 +111,7 @@ def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> models.
     return offer
 
 
-def update_offer(
+def update_offer(  # pylint: disable=redefined-builtin
     offer: Offer,
     bookingEmail: str = UNCHANGED,
     description: str = UNCHANGED,

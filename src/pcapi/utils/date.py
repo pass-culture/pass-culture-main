@@ -56,9 +56,9 @@ def strftime(date) -> str:
     return date.strftime(DATE_ISO_FORMAT)
 
 
-def match_format(value: str, format: str) -> str:
+def match_format(value: str, fmt: str) -> str:
     try:
-        datetime.strptime(value, format)
+        datetime.strptime(value, fmt)
     except ValueError:
         return False
     else:

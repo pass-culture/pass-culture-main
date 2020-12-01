@@ -16,7 +16,7 @@ class UpdateUserInformationsTest:
         repository.save(user)
 
         user_informations = AlterableUserInformations(
-            id=user.id,
+            user_id=user.id,
             has_seen_tutorials=True,
             cultural_survey_id=None,
             cultural_survey_filled_date=datetime(2020, 4, 22),
@@ -49,7 +49,7 @@ class UpdateUserInformationsTest:
         repository.save(user)
 
         user_informations = AlterableUserInformations(
-            id=user.id,
+            user_id=user.id,
             has_seen_tutorials=True,
         )
 

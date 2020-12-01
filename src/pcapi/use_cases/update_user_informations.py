@@ -7,7 +7,7 @@ from pcapi.repository.user_queries import find_user_by_id
 class AlterableUserInformations:
     def __init__(
         self,
-        id: int,
+        user_id: int,
         cultural_survey_id: str = None,
         cultural_survey_filled_date: datetime = None,
         department_code: str = None,
@@ -19,7 +19,7 @@ class AlterableUserInformations:
         public_name: str = None,
         has_seen_tutorials: bool = None,
     ):
-        self.id = id
+        self.id = user_id
         self.cultural_survey_id = cultural_survey_id
         self.cultural_survey_filled_date = cultural_survey_filled_date
         self.department_code = department_code

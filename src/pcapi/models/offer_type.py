@@ -302,8 +302,8 @@ class ProductType:
         return False
 
     @classmethod
-    def is_book(cls, type: str) -> bool:
-        return type == str(ThingType.LIVRE_EDITION)
+    def is_book(cls, typ: str) -> bool:
+        return typ == str(ThingType.LIVRE_EDITION)
 
     @classmethod
     def is_event(cls, name: str) -> bool:

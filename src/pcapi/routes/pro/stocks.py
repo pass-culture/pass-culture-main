@@ -55,14 +55,14 @@ def edit_stock(stock_id: str, body: StockEditionBodyModel) -> StockResponseIdMod
     return StockResponseIdModel.from_orm(stock)
 
 
-@private_api.route("/stocks/<id>", methods=["DELETE"])
+@private_api.route("/stocks/<stock_id>", methods=["DELETE"])
 @login_or_api_key_required
 @spectree_serialize(response_model=StockResponseIdModel)
-def delete_stock(id: str) -> StockResponseIdModel:
+def delete_stock(stock_id: str) -> StockResponseIdModel:
     # fmt: off
     stock = (
         Stock.queryNotSoftDeleted()
-        .filter_by(id=dehumanize(id))
+        .filter_by(id=dehumanize(stock_id))
         .join(Offer, VenueSQLEntity)
         .first_or_404()
     )

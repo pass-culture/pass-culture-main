@@ -19,13 +19,13 @@ class OffererQueriesTest:
     @pytest.mark.usefixtures("db_session")
     def test_find_by_id_returns_the_right_offerer(self, app):
         # Given
-        id = 52325
-        searched_offerer = create_offerer(idx=id, name="My sweet offerer", siren="123456789")
+        offerer_id = 52325
+        searched_offerer = create_offerer(idx=offerer_id, name="My sweet offerer", siren="123456789")
         other_offerer = create_offerer(siren="987654321")
         repository.save(searched_offerer, other_offerer)
 
         # When
-        offerer = find_by_id(id)
+        offerer = find_by_id(offerer_id)
 
         # Then
         assert offerer.name == "My sweet offerer"

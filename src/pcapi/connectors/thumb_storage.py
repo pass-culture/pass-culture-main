@@ -13,7 +13,7 @@ def create_thumb(
 
     object_storage.store_public_object(
         bucket="thumbs",
-        id=model_with_thumb.get_thumb_storage_id(image_index),
+        object_id=model_with_thumb.get_thumb_storage_id(image_index),
         blob=image_as_bytes,
         content_type="image/jpeg",
         symlink_path=symlink_path,

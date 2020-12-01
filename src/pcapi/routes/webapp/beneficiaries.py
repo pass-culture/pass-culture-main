@@ -44,7 +44,7 @@ def patch_beneficiary() -> Tuple[str, int]:
     check_allowed_changes_for_user(data)
 
     user_informations = AlterableUserInformations(
-        id=current_user.id,
+        user_id=current_user.id,
         cultural_survey_id=request.json.get("culturalSurveyId"),
         cultural_survey_filled_date=request.json.get("culturalSurveyFilledDate"),
         department_code=request.json.get("departementCode"),

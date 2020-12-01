@@ -17,9 +17,9 @@ def order_offers_by_diversified_types(offers: List[DiscoveryViewV3]) -> List[Dis
     diversified_offers = []
 
     while len(diversified_offers) != len(offers):
-        for type in offers_by_type_ordered_by_frequency.keys():
-            if offers_by_type_ordered_by_frequency[type]:
-                diversified_offers.append(offers_by_type_ordered_by_frequency[type].pop())
+        for offer_type in offers_by_type_ordered_by_frequency.keys():
+            if offers_by_type_ordered_by_frequency[offer_type]:
+                diversified_offers.append(offers_by_type_ordered_by_frequency[offer_type].pop())
 
     return diversified_offers
 

@@ -3,7 +3,7 @@ from typing import Optional
 
 
 class Stock:
-    def __init__(
+    def __init__(  # pylint: disable=redefined-builtin
         self,
         id: int,
         quantity: Optional[int],

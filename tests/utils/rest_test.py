@@ -15,12 +15,9 @@ from pcapi.utils.rest import load_or_raise_error
 class TestLoadOrRaiseErrorTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_object_if_found(self, app):
-        # Given
-        id = humanize(1)
-
         # When
         with pytest.raises(ApiErrors) as error:
-            load_or_raise_error(VenueSQLEntity, id)
+            load_or_raise_error(VenueSQLEntity, humanize(1))
 
         assert error.value.errors["global"] == [
             "Aucun objet ne correspond à cet identifiant dans notre base de données"

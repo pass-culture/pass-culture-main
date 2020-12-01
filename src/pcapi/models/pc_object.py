@@ -47,8 +47,11 @@ class PcObject:
         super().__init__(**kwargs)
 
     def __repr__(self):
-        id = "unsaved" if self.id is None else str(self.id) + "/" + humanize(self.id)
-        return "<%s #%s>" % (self.__class__.__name__, id)
+        if self.id is None:
+            object_id = "unsaved"
+        else:
+            object_id = f"{self.id}/{humanize(self.id)}"
+        return "<%s #%s>" % (self.__class__.__name__, object_id)
 
     def __eq__(self, other):
         return other and self.id == other.id

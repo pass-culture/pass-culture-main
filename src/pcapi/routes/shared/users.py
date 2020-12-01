@@ -49,7 +49,7 @@ def check_activation_token_exists(token):
 @expect_json_data
 @spectree_serialize(response_model=PatchUserResponseModel)  # type: ignore
 def patch_profile(body: PatchUserBodyModel) -> PatchUserResponseModel:
-    user_informations = AlterableUserInformations(id=current_user.id, **body.dict())
+    user_informations = AlterableUserInformations(user_id=current_user.id, **body.dict())
     user = update_user_informations(user_informations)
     response_user_model = PatchUserResponseModel.from_orm(user)
 

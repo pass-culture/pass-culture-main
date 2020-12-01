@@ -22,7 +22,7 @@ from pcapi.models import VenueSQLEntity
 from pcapi.utils.token import random_token
 
 
-def create_booking_for_event(
+def create_booking_for_event(  # pylint: disable=redefined-builtin
     amount: int = 50,
     date_created: datetime = datetime.utcnow(),
     is_cancelled: bool = False,

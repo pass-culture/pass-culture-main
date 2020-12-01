@@ -1,10 +1,7 @@
 from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
 from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_model
-from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Offerer
-from pcapi.models import Stock
-from pcapi.models import ThingType
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
@@ -13,7 +10,7 @@ from pcapi.models import VenueSQLEntity
 get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(Offerer, VenueSQLEntity)
 
 
-def find_by_id(id):
+def find_by_id(id):  # pylint: disable=redefined-builtin
     return Offerer.query.filter_by(id=id).first()
 
 

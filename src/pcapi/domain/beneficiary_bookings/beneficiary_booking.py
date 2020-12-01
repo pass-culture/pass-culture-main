@@ -15,7 +15,7 @@ from pcapi.utils.human_ids import humanize
 # FIXME: This class reimplements (with minor variations) methods of
 # the `Booking` model. We should get rid of it.
 class BeneficiaryBooking:
-    def __init__(
+    def __init__(  # pylint: disable=redefined-builtin
         self,
         amount: int,
         cancellationDate: Optional[datetime],
