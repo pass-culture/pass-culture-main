@@ -30,9 +30,25 @@ const StyleguideAgenda = () => {
       <li>
         <a
           className="tertiary-link"
+          href="#sg-inputtime"
+        >
+          {'Inputs de durée'}
+        </a>
+      </li>
+      <li>
+        <a
+          className="tertiary-link"
           href="#sg-select"
         >
           {'Select'}
+        </a>
+      </li>
+      <li>
+        <a
+          className="tertiary-link"
+          href="#sg-checkbox"
+        >
+          {'Checkboxes'}
         </a>
       </li>
       <li>

@@ -1,4 +1,4 @@
-@mixin input-text() {
+.input-time {
   display: flex;
   flex-direction: column;
 
@@ -6,13 +6,7 @@
     justify-content: space-between;
   }
 
-  .it-character-count {
-    @include caption();
-
-    align-self: flex-end;
-  }
-
-  .it-sub-label {
+  .itime-sub-label {
     @include caption();
 
     color: $grey-dark;
@@ -20,7 +14,7 @@
     margin-left: rem(5px);
   }
 
-  .it-input {
+  .itime-input {
     @include body();
 
     border: 1px solid $grey-medium;
@@ -31,7 +25,8 @@
     height: rem(40px);
     margin-top: rem(8px);
     padding: rem(10px) rem(16px);
-    width: 100%;
+    text-align: center;
+    width: rem(150px);
 
     &:focus {
       box-shadow: 0 0 0 1px $primary inset;
@@ -51,8 +46,4 @@
       border: 2px solid $red-error;
     }
   }
-}
-
-.input-text {
-  @include input-text();
 }

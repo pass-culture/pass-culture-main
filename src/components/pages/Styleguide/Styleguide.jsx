@@ -9,6 +9,7 @@ import StyleguideBanners from './StyleguideElements/StyleguideBanners'
 import StyleguideButtons from './StyleguideElements/StyleguideButtons'
 import StyleguideCheckboxes from './StyleguideElements/StyleguideCheckboxes'
 import StyleguideInputText from './StyleguideElements/StyleguideInputText'
+import StyleguideInputTime from './StyleguideElements/StyleguideInputTime'
 import StyleguideSelect from './StyleguideElements/StyleguideSelect'
 import StyleguideTitles from './StyleguideElements/StyleguideTitles'
 import StyleguideTitle from './StyleguideTitles'
@@ -38,14 +39,20 @@ const Styleguide = () => (
     <StyleguideInputText />
 
     <StyleguideTitle
+      className="sg-inputtime"
+      componentName="InputTime"
+    />
+    <StyleguideInputTime />
+
+    <StyleguideTitle
       className="sg-select"
       componentName="Select"
     />
     <StyleguideSelect />
 
     <StyleguideTitle
-      className="sg-select"
-      componentName="StyleguideCheckboxes"
+      className="sg-checkbox"
+      componentName="InputCheckbox"
     />
     <StyleguideCheckboxes />
 
