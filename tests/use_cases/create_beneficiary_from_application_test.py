@@ -5,7 +5,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImport
@@ -222,7 +222,7 @@ def test_calls_send_rejection_mail_with_validation_error(
         beneficiary_pre_subscription_repository=beneficiary_pre_subscription_repository,
         beneficiary_repository=BeneficiarySQLRepository(),
     )
-    error = CantRegisterBeneficiary("Some reason")
+    error = BeneficiaryIsADuplicate("Some reason")
     stubed_validate.side_effect = error
 
     # When
@@ -230,5 +230,7 @@ def test_calls_send_rejection_mail_with_validation_error(
 
     # Then
     mocked_send_rejection_email_to_beneficiary_pre_subscription.assert_called_once_with(
-        beneficiary_pre_subscription=beneficiary_pre_subscription, error=error, send_email=stubed_send_raw_email
+        beneficiary_pre_subscription=beneficiary_pre_subscription,
+        beneficiary_is_eligible=True,
+        send_email=stubed_send_raw_email,
     )

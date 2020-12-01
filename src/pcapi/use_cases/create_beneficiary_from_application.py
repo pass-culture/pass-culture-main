@@ -1,4 +1,5 @@
 from pcapi.domain.beneficiary.beneficiary_repository import BeneficiaryRepository
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_repository import (
     BeneficiaryPreSubscriptionRepository,
@@ -30,7 +31,7 @@ class CreateBeneficiaryFromApplication:
             )
             send_rejection_email_to_beneficiary_pre_subscription(
                 beneficiary_pre_subscription=beneficiary_pre_subscription,
-                error=cant_register_beneficiary_exception,
+                beneficiary_is_eligible=isinstance(cant_register_beneficiary_exception, BeneficiaryIsADuplicate),
                 send_email=send_raw_email,
             )
 

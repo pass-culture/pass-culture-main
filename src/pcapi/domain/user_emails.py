@@ -8,8 +8,6 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.users import models as users_models
 from pcapi.domain.beneficiary.beneficiary import Beneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
 from pcapi.emails import beneficiary_activation
 from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
 from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
@@ -190,14 +188,13 @@ def send_booking_postponement_emails_to_users(booking: Booking, send_email: Call
 
 def send_rejection_email_to_beneficiary_pre_subscription(
     beneficiary_pre_subscription: BeneficiaryPreSubscription,
-    error: CantRegisterBeneficiary,
+    beneficiary_is_eligible: bool,
     send_email: Callable[..., bool],
 ) -> None:
-    if isinstance(error, BeneficiaryIsNotEligible):
+    if not beneficiary_is_eligible:
         data = make_not_eligible_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription.email)
     else:
         data = make_duplicate_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription.email)
-
     send_email(data=data)
 
 

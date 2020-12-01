@@ -8,8 +8,6 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Token
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
 from pcapi.domain.user_emails import send_batch_cancellation_emails_to_users
@@ -518,14 +516,13 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
         "pcapi.domain.user_emails.make_duplicate_beneficiary_pre_subscription_rejected_data",
         return_value={"MJ-TemplateID": 1530996},
     )
-    def when_beneficiary_is_a_dupplicate_sends_correct_template(self, mocked_make_data, app):
+    def when_beneficiary_is_a_duplicate_sends_correct_template(self, mocked_make_data, app):
         # given
         beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription()
         mocked_send_email = Mock()
-        error = BeneficiaryIsADuplicate("Dupplicate")
 
         # when
-        send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, error, mocked_send_email)
+        send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, True, mocked_send_email)
 
         # then
         mocked_make_data.assert_called_once_with(beneficiary_pre_subscription.email)
@@ -539,10 +536,9 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
         # given
         beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription()
         mocked_send_email = Mock()
-        error = BeneficiaryIsNotEligible("Dupplicate")
 
         # when
-        send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, error, mocked_send_email)
+        send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, False, mocked_send_email)
 
         # then
         mocked_make_data.assert_called_once_with(beneficiary_pre_subscription.email)
