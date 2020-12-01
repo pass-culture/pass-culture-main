@@ -52,6 +52,7 @@ disable=
     no-self-use,
     old-style-class,
     protected-access,
+    raise-missing-from,
     redefined-variable-type,
     superfluous-parens,
     too-few-public-methods,
