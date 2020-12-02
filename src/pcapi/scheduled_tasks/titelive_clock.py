@@ -6,7 +6,6 @@ load_environment_variables()
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from pcapi.flask_app import app
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.venue_provider_worker import update_venues_for_specific_provider
 from pcapi.models.feature import FeatureToggle
@@ -46,7 +45,9 @@ def synchronize_titelive_stocks(app):
     update_venues_for_specific_provider(titelive_stocks_provider_id)
 
 
-if __name__ == "__main__":
+def main():
+    from pcapi.flask_app import app
+
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
 
@@ -59,3 +60,7 @@ if __name__ == "__main__":
     scheduler.add_job(synchronize_titelive_stocks, "cron", [app], day="*", hour="2", minute="30")
 
     scheduler.start()
+
+
+if __name__ == "__main__":
+    main()

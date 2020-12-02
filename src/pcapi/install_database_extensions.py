@@ -30,7 +30,11 @@ def _create_postgis_extension():
     db.engine.execute("CREATE EXTENSION IF NOT EXISTS postgis;")
 
 
-if __name__ == "__main__":
+def main():
     from pcapi.flask_app import app
 
     install_database_extensions(app)
+
+
+if __name__ == "__main__":
+    main()

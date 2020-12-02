@@ -25,7 +25,7 @@ from pcapi.utils.token import random_token
 
 class IterateRowForUserOfferersTest:
     @patch("pcapi.scripts.offerer.file_import.create_activated_user_offerer")
-    def test_ignores_the_first_line_with_csv_headers(self, create_activated_user_offerer):
+    def test_ignores_the_first_line_with_csv_headers(self, mocked_create_activated_user_offerer):
         # given
         create_activated_user_offerer.return_value = UserOfferer()
         csv_reader = [
@@ -42,7 +42,7 @@ class IterateRowForUserOfferersTest:
         assert len(user_offerers) == 3
 
     @patch("pcapi.scripts.offerer.file_import.create_activated_user_offerer")
-    def test_ignores_empty_lines(self, create_activated_user_offerer):
+    def test_ignores_empty_lines(self, mocked_create_activated_user_offerer):
         # given
         create_activated_user_offerer.return_value = UserOfferer()
         csv_reader = [

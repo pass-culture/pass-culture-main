@@ -127,11 +127,11 @@ def split_rows_in_chunks_with_no_duplicated_emails(csv_reader: Iterable, chunk_s
 
 def export_created_data(bookings: List[Booking]):
     users = [ActivationUser(b) for b in bookings]
-    csv = generate_activation_users_csv(users)
+    csv_content = generate_activation_users_csv(users)
 
     try:
         with app.app_context():
-            send_users_activation_report(csv, ACTIVATION_USER_RECIPIENTS, send_raw_email)
+            send_users_activation_report(csv_content, ACTIVATION_USER_RECIPIENTS, send_raw_email)
     except MailServiceException as e:
         logger.exception("Error while sending activation users report email to Mailjet: %s", e)
 

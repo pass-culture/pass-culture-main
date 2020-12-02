@@ -54,7 +54,7 @@ def pytest_configure(config):
 
 @pytest.fixture(scope="session")
 def app():
-    app = Flask(
+    app = Flask(  # pylint: disable=redefined-outer-name
         __name__,
         template_folder=Path(pcapi.__path__[0]) / "templates",
     )
@@ -101,7 +101,7 @@ def app():
 
 def mocked_mail(f):
     @wraps(f)
-    def decorated_function(app, *args, **kwargs):
+    def decorated_function(app, *args, **kwargs):  # pylint: disable=redefined-outer-name
         app.mailjet_client = Mock(spec=Client)
         app.mailjet_client.send = Mock()
         app.mailjet_client.contact = Mock()
@@ -124,7 +124,7 @@ def clean_database(f: object) -> object:
 
 
 @pytest.fixture(scope="session")
-def _db(app):
+def _db(app):  # pylint: disable=redefined-outer-name
     """
     Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
     database connection.

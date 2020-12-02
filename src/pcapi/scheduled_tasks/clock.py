@@ -9,7 +9,6 @@ import os
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from pcapi.core.bookings.conf import CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE
-from pcapi.flask_app import app
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
@@ -135,7 +134,9 @@ def pc_cancel_expired_bookings(app) -> None:
     cancel_expired_bookings()
 
 
-if __name__ == "__main__":
+def main():
+    from pcapi.flask_app import app
+
     discovery_view_refresh_frequency = os.environ.get("RECO_VIEW_REFRESH_FREQUENCY", "*")
     old_seen_offers_delete_frequency = os.environ.get("SEEN_OFFERS_DELETE_FREQUENCY", "*")
     clean_discovery_frequency = os.environ.get("CLEAN_DISCOVERY_FREQUENCY", "*")
@@ -178,3 +179,7 @@ if __name__ == "__main__":
     )
 
     scheduler.start()
+
+
+if __name__ == "__main__":
+    main()

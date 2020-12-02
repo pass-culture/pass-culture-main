@@ -1,8 +1,8 @@
 from typing import Dict
 
+import flask
 from flask import Request
 from flask import jsonify
-from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
@@ -32,7 +32,7 @@ DEFAULT_PAGE = 1
 @login_required
 def get_recommendation(offer_id):
     recommendation = give_requested_recommendation_to_user(
-        current_user, dehumanize(offer_id), dehumanize(request.args.get("mediationId"))
+        current_user, dehumanize(offer_id), dehumanize(flask.request.args.get("mediationId"))
     )
 
     return jsonify(serialize_recommendation(recommendation, user_id=current_user.id)), 200
@@ -45,7 +45,7 @@ def get_recommendation(offer_id):
 def patch_recommendation(recommendation_id):
     query = Recommendation.query.filter_by(id=dehumanize(recommendation_id))
     recommendation = query.first_or_404()
-    recommendation.populate_from_dict(request.json)
+    recommendation.populate_from_dict(flask.request.json)
     repository.save(recommendation)
     return jsonify(serialize_recommendation(recommendation, user_id=current_user.id)), 200
 
@@ -55,9 +55,9 @@ def patch_recommendation(recommendation_id):
 @login_required
 @expect_json_data
 def put_read_recommendations():
-    update_read_recommendations(request.json)
+    update_read_recommendations(flask.request.json)
 
-    read_recommendation_ids = [dehumanize(reco["id"]) for reco in request.json]
+    read_recommendation_ids = [dehumanize(reco["id"]) for reco in flask.request.json]
     read_recommendations = Recommendation.query.filter(Recommendation.id.in_(read_recommendation_ids)).all()
 
     return jsonify(serialize_recommendations(read_recommendations, user_id=current_user.id)), 200
@@ -69,8 +69,8 @@ def put_read_recommendations():
 @expect_json_data
 def put_recommendations():
     if feature_queries.is_active(FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION):
-        return _put_geolocated_recommendations(request)
-    return _put_non_geolocated_recommendations(request)
+        return _put_geolocated_recommendations(flask.request)
+    return _put_non_geolocated_recommendations(flask.request)
 
 
 def _put_geolocated_recommendations(request: Request) -> (Dict, int):

@@ -11,16 +11,6 @@ def disable_werkzeug_request_logs() -> None:
     werkzeug_logger.setLevel(logging.ERROR)
 
 
-def configure_json_logger() -> None:
-    json_logger = logging.getLogger(__name__)
-
-    log_handler = logging.StreamHandler()
-    formatter = CustomJsonFormatter("%(timestamp) %(level) %(message)")
-    log_handler.setFormatter(formatter)
-    json_logger.addHandler(log_handler)
-    json_logger.propagate = False
-
-
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
     def add_fields(self, log_record: dict, record: logging.LogRecord, message_dict: dict) -> None:
         super().add_fields(log_record, record, message_dict)
@@ -38,3 +28,11 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 json_logger = logging.getLogger(__name__)
+
+
+def configure_json_logger() -> None:
+    log_handler = logging.StreamHandler()
+    formatter = CustomJsonFormatter("%(timestamp) %(level) %(message)")
+    log_handler.setFormatter(formatter)
+    json_logger.addHandler(log_handler)
+    json_logger.propagate = False

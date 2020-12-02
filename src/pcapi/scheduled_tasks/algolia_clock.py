@@ -2,7 +2,6 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 from pcapi import settings
 from pcapi.algolia.infrastructure.worker import process_multi_indexing
-from pcapi.flask_app import app
 from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context
@@ -49,7 +48,9 @@ def index_offers_in_error_in_algolia_by_offer(app):
     batch_processing_offer_ids_in_error(client=app.redis_client)
 
 
-if __name__ == "__main__":
+def main():
+    from pcapi.flask_app import app
+
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
 
@@ -81,3 +82,7 @@ if __name__ == "__main__":
     )
 
     scheduler.start()
+
+
+if __name__ == "__main__":
+    main()
