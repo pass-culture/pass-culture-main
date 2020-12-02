@@ -59,7 +59,7 @@ def run(
         details = get_details(application_id, procedure_id, TOKEN)
         try:
             information = parse_beneficiary_information(details)
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             _process_error(error_messages, application_id, procedure_id)
             continue
 

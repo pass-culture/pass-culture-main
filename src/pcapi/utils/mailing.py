@@ -54,7 +54,7 @@ def send_raw_email(data: Dict) -> bool:
         save(data, status)
         if not successfully_sent_email:
             logger.logger.warning("[EMAIL] Trying to send email failed with status code %s", response.status_code)
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=broad-except
         logger.logger.exception("[EMAIL] Trying to send email failed with unexpected error %s", exc)
 
     return successfully_sent_email

@@ -160,7 +160,7 @@ def _process_venue_provider(client: Redis, provider_id: str, venue_provider_id: 
                 logger.info(
                     "[ALGOLIA] processing of offers for (venue %s / provider %s) finished!", venue_id, provider_id
                 )
-    except Exception as error:
+    except Exception as error:  # pylint: disable=broad-except
         logger.exception(
             "[ALGOLIA] processing of offers for (venue %s / provider %s) failed! %s",
             venue_id,

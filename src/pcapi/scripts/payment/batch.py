@@ -39,25 +39,25 @@ def generate_and_send_payments(payment_message_id: str = None):
         send_transactions(
             payments_to_send, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE, TRANSACTIONS_RECIPIENTS
         )
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         logger.exception("[BATCH][PAYMENTS] STEP 3: %s", e)
 
     try:
         logger.info("[BATCH][PAYMENTS] STEP 4 : send payments report")
         send_payments_report(payments_to_send + not_processable_payments, PAYMENTS_REPORT_RECIPIENTS)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         logger.exception("[BATCH][PAYMENTS] STEP 4: %s", e)
 
     try:
         logger.info("[BATCH][PAYMENTS] STEP 5 : send payments details")
         send_payments_details(payments_to_send, PAYMENTS_DETAILS_RECIPIENTS)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         logger.exception("[BATCH][PAYMENTS] STEP 5: %s", e)
 
     try:
         logger.info("[BATCH][PAYMENTS] STEP 6 : send wallet balances")
         send_wallet_balances(WALLET_BALANCES_RECIPIENTS)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         logger.exception("[BATCH][PAYMENTS] STEP 6: %s", e)
 
     logger.info("[BATCH][PAYMENTS] generate_and_send_payments is done")

@@ -16,7 +16,7 @@ def sandbox(name, clean):
     try:
         with_clean = clean == "true"
         save_sandbox(name, with_clean)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         print("ERROR: " + str(e))
         traceback.print_tb(e.__traceback__)
         pprint(vars(e))
@@ -32,7 +32,7 @@ def sandbox_to_testcafe(name, getter):
             print_testcafe_helpers(name)
         else:
             print_testcafe_helper(name, getter)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         print("ERROR: " + str(e))
         traceback.print_tb(e.__traceback__)
         pprint(vars(e))

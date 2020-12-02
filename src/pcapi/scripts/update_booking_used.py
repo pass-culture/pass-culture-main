@@ -16,7 +16,7 @@ def update_booking_used_after_stock_occurrence():
                 booking.dateUsed = now
                 try:
                     repository.save(booking)
-                except Exception:
+                except Exception:  # pylint: disable=broad-except
                     bookings_id_errors.append(booking.id)
 
     print("Bookings id in error %s" % bookings_id_errors)

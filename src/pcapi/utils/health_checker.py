@@ -7,8 +7,8 @@ def check_database_connection() -> bool:
     try:
         UserSQLEntity.query.limit(1).all()
         database_working = True
-    except Exception as e:
-        logger.critical(str(e))
+    except Exception as exc:  # pylint: disable=broad-except
+        logger.critical("Could not query database: %s", exc)
 
     return database_working
 

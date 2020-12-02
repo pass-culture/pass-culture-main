@@ -191,7 +191,7 @@ class LocalProvider(Iterator):
                     initial_thumb_count = pc_object.thumbCount
                     try:
                         self._handle_thumb(pc_object)
-                    except Exception as e:
+                    except Exception as e:  # pylint: disable=broad-except
                         self.log_provider_event(LocalProviderEventType.SyncError, e.__class__.__name__)
                         self.erroredThumbs += 1
                         logger.info("ERROR during handle thumb: %s", e, exc_info=True)

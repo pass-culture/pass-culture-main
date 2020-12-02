@@ -21,7 +21,7 @@ from pcapi.utils.storage_utils import do_local_backup_prod_container
 def backup_prod_object_storage(folder):
     try:
         do_local_backup_prod_container(folder)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         print("ERROR: " + str(e))
         traceback.print_tb(e.__traceback__)
         pprint(vars(e))
@@ -31,7 +31,7 @@ def backup_prod_object_storage(folder):
 def list_content(container):
     try:
         do_list_content(container)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         print("ERROR: " + str(e))
         traceback.print_tb(e.__traceback__)
         pprint(vars(e))
@@ -42,7 +42,7 @@ def list_content(container):
 def does_file_exist(container, file):
     try:
         do_does_file_exist(container, file)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         print("ERROR: " + str(e))
         traceback.print_tb(e.__traceback__)
         pprint(vars(e))
@@ -53,7 +53,7 @@ def does_file_exist(container, file):
 def delete_file(container, file):
     try:
         do_delete_file(container, file)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         print("ERROR: " + str(e))
         traceback.print_tb(e.__traceback__)
         pprint(vars(e))
@@ -63,7 +63,7 @@ def delete_file(container, file):
 def copy_prod_container_content_to_dest_container(container):
     try:
         do_copy_prod_container_content_to_dest_container(container)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         print("ERROR: " + str(e))
         traceback.print_tb(e.__traceback__)
         pprint(vars(e))
