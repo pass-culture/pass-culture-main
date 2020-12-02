@@ -4,6 +4,7 @@ from typing import Union
 
 from flask import Request
 from flask import Response
+from pydantic import BaseModel
 from pydantic import ValidationError
 from pydantic import validator
 
@@ -88,3 +89,9 @@ def dehumanize_list_field(field_name: str) -> classmethod:
 
 def cast_optional_field_str_to_int(field_name: str) -> classmethod:
     return validator(field_name, pre=True, allow_reuse=True)(cast_optional_str_to_int)
+
+
+class InputBaseModel(BaseModel):
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
