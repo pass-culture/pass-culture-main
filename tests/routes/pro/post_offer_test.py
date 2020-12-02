@@ -163,6 +163,7 @@ class Returns201:
             "name": "La pièce de théâtre",
             "durationMinutes": 60,
             "type": str(EventType.SPECTACLE_VIVANT),
+            "extraData": {"toto": "text"},
         }
 
         # When
@@ -181,6 +182,7 @@ class Returns201:
         assert event_product.durationMinutes == 60
         assert event_product.name == "La pièce de théâtre"
         assert offer.type == str(EventType.SPECTACLE_VIVANT)
+        assert offer.extraData == {"toto": "text"}
         assert offer.product.owningOfferer == Offerer.query.get(offerer_id)
 
     def when_creating_a_new_event_offer_without_booking_email(self, app, db_session):

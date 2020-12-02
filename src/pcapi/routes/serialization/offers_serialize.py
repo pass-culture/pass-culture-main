@@ -34,6 +34,7 @@ class PostOfferBodyModel(BaseModel):
     duration_minutes: Optional[int]
     is_national: Optional[bool]
     is_duo: Optional[bool]
+    extra_data: Any
 
     _dehumanize_product_id = dehumanize_field("product_id")
 
@@ -51,6 +52,7 @@ class PostOfferBodyModel(BaseModel):
 
     class Config:
         alias_generator = to_camel
+        extra = "forbid"
 
 
 class PatchOfferBodyModel(BaseModel):
