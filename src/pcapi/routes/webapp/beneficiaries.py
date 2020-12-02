@@ -19,7 +19,6 @@ from pcapi.utils.includes import BENEFICIARY_INCLUDES
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import login_or_api_key_required
-from pcapi.validation.routes.beneficiaries import check_verify_licence_token_payload
 from pcapi.validation.routes.users import check_allowed_changes_for_user
 from pcapi.validation.routes.users import check_valid_signin
 from pcapi.workers.beneficiary_job import beneficiary_job
@@ -85,18 +84,21 @@ def signin_beneficiary():
     return jsonify(), 200
 
 
-# @debt api-migration
 @public_api.route("/beneficiaries/licence_verify", methods=["POST"])
-def verify_id_check_licence_token():
-    check_verify_licence_token_payload(request)
-
-    licence_token = request.json.get("token")
-    licence_token_is_valid = is_licence_token_valid(licence_token)
+@spectree_serialize(
+    response_model=serialization_beneficiaries.VerifyIdCheckLicenceResponse,
+    on_success_status=200,
+    on_error_statuses=[400, 422],
+)
+def verify_id_check_licence_token(
+    body: serialization_beneficiaries.VerifyIdCheckLicenceRequest,
+) -> serialization_beneficiaries.VerifyIdCheckLicenceResponse:
+    licence_token_is_valid = is_licence_token_valid(body.token)
 
     if not licence_token_is_valid:
-        return "", 422
+        raise ApiErrors({}, status_code=422)
 
-    return "", 200
+    return serialization_beneficiaries.VerifyIdCheckLicenceResponse()
 
 
 @public_api.route("/beneficiaries/application_update", methods=["POST"])
