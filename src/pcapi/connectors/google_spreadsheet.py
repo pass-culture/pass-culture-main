@@ -18,11 +18,13 @@ def get_credentials():
     google_key = os.environ.get("PC_GOOGLE_KEY")
     if not google_key:
         raise MissingGoogleKeyException()
-    scopes = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    # Newline characters must be escaped in JSON.
+    google_key = google_key.replace("\n", "\\n")
     # FIXME(cgaunet, 2020-11-24): We need to do this because parsing env variables yml
     # to give it to terraform, replaces double quotes with single quotes making it not json friendly
     google_key = google_key.replace("'", '"')
     account_info = json.loads(google_key)
+    scopes = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     return Credentials.from_service_account_info(account_info, scopes=scopes)
 
 
