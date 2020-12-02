@@ -33,11 +33,8 @@ else
   echo -e "\033[0;92mCode correctly formatted\033[0m\n"
 fi
 
-echo -e "\n\033[0;96mRunning mypy for type checking\033[0m\n"
+echo -e "\n\033[0;96mRunning mypy for type checking (non-blocking step)\033[0m\n"
 mypy $LINTED_FILES --pretty
-if [[ "$?" != 0 ]]; then
-  counter=$((counter + 1))
-fi
 
 echo -e "\n\033[0;96mRunning pylint for code linting\033[0m\n"
 pylint $LINTED_FILES --output-format="colorized" --score=no
