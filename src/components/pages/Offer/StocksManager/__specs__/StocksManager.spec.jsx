@@ -62,7 +62,7 @@ describe('offer | StocksManager', () => {
       },
       offer: {
         name: 'OfferName',
-        offerType: { value: 'ThingType.PRESSE_ABO' },
+        offerType: { canExpire: true },
       },
       product: {
         id: 'ABDD',
@@ -113,22 +113,14 @@ describe('offer | StocksManager', () => {
       const legalTextSecondSentence = screen.queryByText(
         "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente."
       )
-      const messageFirstLine = screen.queryByText(
-        'Les utilisateurs ont 30 jours pour faire valider leur contremarque.'
-      )
-      const messageSecondLine = screen.queryByText(
-        'Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
-      )
       expect(legalTextFirstSentence).not.toBeInTheDocument()
       expect(legalTextSecondSentence).not.toBeInTheDocument()
-      expect(messageFirstLine).not.toBeInTheDocument()
-      expect(messageSecondLine).not.toBeInTheDocument()
     })
 
-    it('should display a booking modalities message when the thing is not a press subscription', () => {
+    it('should display a booking modalities message when the thing is not a press subscription nor audio book', () => {
       // given
       props.isEvent = false
-      props.offer.offerType.value = 'ThingType.FAKE'
+      props.offer.offerType.canExpire = true
 
       // when
       renderStocksManager(props)
@@ -142,6 +134,25 @@ describe('offer | StocksManager', () => {
       )
       expect(messageFirstLine).toBeInTheDocument()
       expect(messageSecondLine).toBeInTheDocument()
+    })
+
+    it('should not display a booking modalities message when the thing is a press subscription or an audio book', () => {
+      // given
+      props.isEvent = false
+      props.offer.offerType.canExpire = false
+
+      // when
+      renderStocksManager(props)
+
+      // then
+      const messageFirstLine = screen.queryByText(
+        'Les utilisateurs ont 30 jours pour faire valider leur contremarque.'
+      )
+      const messageSecondLine = screen.queryByText(
+        'Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
+      )
+      expect(messageFirstLine).not.toBeInTheDocument()
+      expect(messageSecondLine).not.toBeInTheDocument()
     })
   })
 
