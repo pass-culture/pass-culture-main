@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from flask import jsonify
 from flask import request
 from flask_login import current_user
@@ -27,7 +29,7 @@ from pcapi.workers.beneficiary_job import beneficiary_job
 # @debt api-migration
 @private_api.route("/beneficiaries/current", methods=["GET"])
 @login_required
-def get_beneficiary_profile():
+def get_beneficiary_profile() -> Tuple[str, int]:
     user = current_user._get_current_object()
     return jsonify(as_dict(user, includes=BENEFICIARY_INCLUDES)), 200
 
@@ -36,7 +38,7 @@ def get_beneficiary_profile():
 @private_api.route("/beneficiaries/current", methods=["PATCH"])
 @login_or_api_key_required
 @expect_json_data
-def patch_beneficiary():
+def patch_beneficiary() -> Tuple[str, int]:
     data = request.json.keys()
     check_allowed_changes_for_user(data)
 
@@ -61,7 +63,7 @@ def patch_beneficiary():
 
 # @debt api-migration
 @private_api.route("/beneficiaries/signin", methods=["POST"])
-def signin_beneficiary():
+def signin_beneficiary() -> Tuple[str, int]:
     json = request.get_json()
     identifier = json.get("identifier")
     password = json.get("password")
@@ -93,6 +95,10 @@ def signin_beneficiary():
 def verify_id_check_licence_token(
     body: serialization_beneficiaries.VerifyIdCheckLicenceRequest,
 ) -> serialization_beneficiaries.VerifyIdCheckLicenceResponse:
+    if users_repo.get_id_check_token(body.token):
+        return serialization_beneficiaries.VerifyIdCheckLicenceResponse()
+
+    # Let's try with the legacy webapp tokens
     licence_token_is_valid = is_licence_token_valid(body.token)
 
     if not licence_token_is_valid:

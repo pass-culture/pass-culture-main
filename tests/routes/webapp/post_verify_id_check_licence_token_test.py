@@ -17,7 +17,19 @@ def check_token_failed_mock(token: typing.Optional[str]):
 class Post:
     class Returns200:
         @patch("pcapi.routes.webapp.beneficiaries.is_licence_token_valid", check_token_mock)
+        @patch("pcapi.core.users.repository.get_id_check_token", lambda x: None)
         def when_has_the_exact_payload(self, app):
+            # Given
+            data = {"token": "authorized-token"}
+
+            # When
+            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
+
+            # Then
+            assert response.status_code == 200
+
+        @patch("pcapi.core.users.repository.get_id_check_token", lambda x: "authorized-token")
+        def when_has_an_existing_JWT_token(self, app):
             # Given
             data = {"token": "authorized-token"}
 
@@ -34,7 +46,7 @@ class Post:
             data = {"token": "wrong-token"}
 
             # When
-            response = TestClient(app.test_client()).post(f"/beneficiaries/licence_verify", json=data)
+            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
 
             # Then
             assert response.status_code == 422
@@ -54,7 +66,7 @@ class Post:
             data = {"token": None}
 
             # When
-            response = TestClient(app.test_client()).post(f"/beneficiaries/licence_verify", json=data)
+            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
 
             # Then
             assert response.status_code == 400
@@ -65,7 +77,7 @@ class Post:
             data = {"token": "null"}
 
             # When
-            response = TestClient(app.test_client()).post(f"/beneficiaries/licence_verify", json=data)
+            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
 
             # Then
             assert response.status_code == 400
