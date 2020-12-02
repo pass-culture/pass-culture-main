@@ -36,6 +36,10 @@ class PostOfferBodyModel(InputBaseModel):
     is_national: Optional[bool]
     is_duo: Optional[bool]
     extra_data: Any
+    # FIXME (viconnex, 2020-12-02): this field is actually
+    # unused for the offer creation. But the webapp does send it so
+    # we must list them here.
+    offererId: Optional[str]
 
     _dehumanize_product_id = dehumanize_field("product_id")
 
