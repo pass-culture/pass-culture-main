@@ -1,6 +1,6 @@
 import os
 
-from pcapi.connectors.api_recaptcha import validate_recaptcha_token
+from pcapi.connectors.api_recaptcha import check_recaptcha_token_is_valid
 from pcapi.models.api_errors import ApiErrors
 
 
@@ -9,8 +9,4 @@ RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE = float(os.environ.get("RECAPTCHA_RESET_P
 
 
 def validate_reset_password_token(token: str):
-    token_is_valid = validate_recaptcha_token(token, "resetPassword", RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE)
-    if not token_is_valid:
-        errors = ApiErrors()
-        errors.add_error("token", "Le token renseigné n'est pas valide")
-        raise errors
+    check_recaptcha_token_is_valid(token, "resetPassword", RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE)

@@ -1,4 +1,3 @@
-import datetime
 from unittest.mock import MagicMock
 from unittest.mock import patch
 import uuid
@@ -6,122 +5,126 @@ import uuid
 import pytest
 
 from pcapi.connectors.api_recaptcha import RECAPTCHA_API_URL
+from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
 from pcapi.connectors.api_recaptcha import ReCaptchaException
-from pcapi.connectors.api_recaptcha import validate_recaptcha_token
+from pcapi.connectors.api_recaptcha import check_recaptcha_token_is_valid
 
 
 ORIGINAL_ACTION = "submit"
-high_score_return_value = MagicMock(status_code=200, text="")
-high_score_return_value.json = MagicMock(
-    return_value={
-        "success": True,
-        "score": 0.5,
-        "action": "submit",
-        "challenge_ts": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S%Z"),
-        "hostname": "url",
-    }
-)
-low_score_return_value = MagicMock(status_code=200, text="")
-low_score_return_value.json = MagicMock(
-    return_value={
-        "success": True,
-        "score": 0.4,
-        "action": "submit",
-        "challenge_ts": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S%Z"),
-        "hostname": "url",
-    }
-)
-bad_request_return_value = MagicMock(status_code=400, text="")
-invalid_recaptcha_without_specific_error_return_value = MagicMock(status_code=200, text="")
-invalid_recaptcha_without_specific_error_return_value.json = MagicMock(
-    return_value={
-        "success": False,
-    }
-)
-wrong_action_return_value = MagicMock(status_code=200, text="")
-wrong_action_return_value.json = MagicMock(
-    return_value={
-        "success": True,
-        "score": 0.9,
-        "action": "send",
-        "challenge_ts": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S%Z"),
-        "hostname": "url",
-    }
-)
-errors_return_value = MagicMock(status_code=200, text="")
-errors_return_value.json = MagicMock(
-    return_value={
-        "success": False,
-        "error-codes": ["timeout-or-duplicate", "unknown-error"],
-    }
-)
-test_api_recaptcha_exceptions_data = {
-    "bad_request": (bad_request_return_value, "Couldn't reach recaptcha api: 400 "),
-    "invalid_request": (invalid_recaptcha_without_specific_error_return_value, "This is not a valid reCAPTCHA token"),
-    "wrong_action": (wrong_action_return_value, "The action 'send' does not match 'submit' from the form"),
-    "errors": (
-        errors_return_value,
-        "Encountered the following error(s): ['The response is no longer valid: either is too old or has been used previously.', 'unknown-error']",
-    ),
-}
-test_valid_response_from_api_data = {
-    "high_score": (high_score_return_value, True),
-    "low_score": (low_score_return_value, False),
-}
 
 
 def generate_fake_token() -> str:
     return str(uuid.uuid4())
 
 
-@pytest.mark.parametrize(
-    "response_return_value,expected_result",
-    test_valid_response_from_api_data.values(),
-    ids=test_valid_response_from_api_data.keys(),
-)
-@patch("pcapi.connectors.api_recaptcha.RECAPTCHA_SECRET", "recaptcha-secret")
-@patch("pcapi.connectors.api_recaptcha.requests.post")
-def test_valid_response_from_api(request_post, response_return_value, expected_result):
-    # Given
-    token = generate_fake_token()
-    request_post.return_value = response_return_value
-
-    # When
-    api_response = validate_recaptcha_token(token, ORIGINAL_ACTION, 0.5)
-
-    # Then
-    request_post.assert_called_once_with(RECAPTCHA_API_URL, data={"secret": "recaptcha-secret", "response": token})
-    assert api_response == expected_result
+def _build_mocked_request_response(response: dict):
+    answer_with_weak_score = MagicMock(status_code=200, text="")
+    answer_with_weak_score.json = MagicMock(return_value=response)
+    return answer_with_weak_score
 
 
-@patch("pcapi.connectors.api_recaptcha.requests.post")
-def test_with_empty_token(request_post):
-    # Given
-    request_post.return_value = errors_return_value
+class CheckRecaptchaTokenIsValidTest:
+    @patch("pcapi.connectors.api_recaptcha.RECAPTCHA_SECRET", "recaptcha-secret")
+    @patch("pcapi.connectors.api_recaptcha.requests.post")
+    def test_should_call_captcha_api_using_secret(self, request_post):
+        # Given
+        token = generate_fake_token()
+        request_post.return_value = _build_mocked_request_response(
+            {"success": True, "score": 0.9, "action": ORIGINAL_ACTION}
+        )
 
-    # When
-    api_response = validate_recaptcha_token(None, ORIGINAL_ACTION, 0.5)
+        # When
+        check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
 
-    # Then
-    request_post.assert_not_called()
-    assert api_response is False
+        # Then
+        request_post.assert_called_once_with(RECAPTCHA_API_URL, data={"secret": "recaptcha-secret", "response": token})
 
+    @patch("pcapi.connectors.api_recaptcha.RECAPTCHA_SECRET", "recaptcha-secret")
+    @patch("pcapi.connectors.api_recaptcha.requests.post")
+    def test_should_raise_when_score_is_too_low(self, request_post):
+        # Given
+        token = generate_fake_token()
+        request_post.return_value = _build_mocked_request_response({"success": True, "score": 0.2})
 
-@pytest.mark.parametrize(
-    "response_return_value,exception_value",
-    test_api_recaptcha_exceptions_data.values(),
-    ids=test_api_recaptcha_exceptions_data.keys(),
-)
-@patch("pcapi.connectors.api_recaptcha.RECAPTCHA_SECRET", "recaptcha-secret")
-@patch("pcapi.connectors.api_recaptcha.requests.post")
-def test_api_recaptcha_exceptions(request_post, response_return_value, exception_value):
-    # Given
-    token = generate_fake_token()
-    request_post.return_value = response_return_value
+        # When
+        with pytest.raises(ReCaptchaException) as exception:
+            check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
 
-    # When
-    with pytest.raises(ReCaptchaException) as exception:
-        validate_recaptcha_token(token, ORIGINAL_ACTION, 0.5)
+        # Then
+        assert str(exception.value) == "Token score is too low (0.2) to match minimum score (0.5)"
 
-    # Then
-    assert str(exception.value) == exception_value
+    @patch("pcapi.connectors.api_recaptcha.RECAPTCHA_SECRET", "recaptcha-secret")
+    @patch("pcapi.connectors.api_recaptcha.requests.post")
+    def test_should_raise_when_action_is_not_matching_the_original_action(self, request_post):
+        # Given
+        token = generate_fake_token()
+        request_post.return_value = _build_mocked_request_response(
+            {"success": True, "score": 0.9, "action": "fake-action"}
+        )
+
+        # When
+        with pytest.raises(ReCaptchaException) as exception:
+            check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
+
+        # Then
+        assert str(exception.value) == "The action 'fake-action' does not match 'submit' from the form"
+
+    @patch("pcapi.connectors.api_recaptcha.RECAPTCHA_SECRET", "recaptcha-secret")
+    @patch("pcapi.connectors.api_recaptcha.requests.post")
+    def test_should_raise_when_token_is_too_old_or_already_used(self, request_post):
+        # Given
+        token = generate_fake_token()
+        request_post.return_value = _build_mocked_request_response(
+            {
+                "success": False,
+                "error-codes": ["timeout-or-duplicate"],
+            }
+        )
+
+        # When
+        with pytest.raises(InvalidRecaptchaTokenException):
+            check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
+
+    @pytest.mark.parametrize(
+        "error_code",
+        [
+            "missing-input-secret",
+            "invalid-input-secret",
+            "missing-input-response",
+            "invalid-input-response",
+            "bad-request",
+        ],
+    )
+    @patch("pcapi.connectors.api_recaptcha.RECAPTCHA_SECRET", "recaptcha-secret")
+    @patch("pcapi.connectors.api_recaptcha.requests.post")
+    def test_should_raise_exception_for_any_other_error_code(self, request_post, error_code):
+        # Given
+        token = generate_fake_token()
+        request_post.return_value = _build_mocked_request_response(
+            {
+                "success": False,
+                "error-codes": [error_code],
+            }
+        )
+
+        # When
+        with pytest.raises(ReCaptchaException):
+            check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
+
+    @patch("pcapi.connectors.api_recaptcha.RECAPTCHA_SECRET", "recaptcha-secret")
+    @patch("pcapi.connectors.api_recaptcha.requests.post")
+    def test_should_raise_exception_with_details(self, request_post):
+        # Given
+        token = generate_fake_token()
+        request_post.return_value = _build_mocked_request_response(
+            {
+                "success": False,
+                "error-codes": ["first-error", "second-error"],
+            }
+        )
+
+        # When
+        with pytest.raises(ReCaptchaException) as exception:
+            check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
+
+        assert str(exception.value) == "Encountered the following error(s): ['first-error', 'second-error']"
