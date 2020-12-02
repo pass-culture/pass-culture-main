@@ -42,6 +42,8 @@ def run_migrations_online() -> None:
     """
     database_url = os.environ.get("DATABASE_URL")
     db_options = []
+    if settings.DB_MIGRATION_LOCK_TIMEOUT:
+        db_options.append("-c lock_timeout=%i" % settings.DB_MIGRATION_LOCK_TIMEOUT)
     if settings.DB_MIGRATION_STATEMENT_TIMEOUT:
         db_options.append("-c statement_timeout=%i" % settings.DB_MIGRATION_STATEMENT_TIMEOUT)
     connectable = create_engine(database_url, connect_args={"options": " ".join(db_options)})
