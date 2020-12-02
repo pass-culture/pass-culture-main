@@ -39,9 +39,9 @@ def cancel_expired_bookings(batch_size: int = 100) -> None:
 
     else:
         logger.info(
-            "%d Bookings would have been cancelled: %s",
+            "%d Bookings would have been selected for cancellation: %s",
             len(bookings_to_expire),
-            cancelled_bookings,
+            bookings_to_expire,
         )
 
     logger.info("[cancel_expired_bookings] End")
