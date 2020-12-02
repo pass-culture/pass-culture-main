@@ -159,7 +159,7 @@ def _process_creation(
         new_beneficiaries.append(new_beneficiary)
         try:
             send_activation_email(new_beneficiary, send_raw_email)
-        except MailServiceException as mail_service_exception:
+        except MailServiceException:
             logger.exception(
                 "Email send_activation_email failure for application %s - Procedure %s",
                 information["application_id"],

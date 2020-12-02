@@ -17,7 +17,7 @@ class Returns204:
         venue = offer1.venue
         offer2 = offers_factories.OfferFactory(venue=venue, isActive=False)
         offerer = venue.managingOfferer
-        user_offerer = offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
         client = TestClient(app.test_client()).with_auth("pro@example.com")
@@ -35,7 +35,7 @@ class Returns204:
         venue = offer1.venue
         offer2 = offers_factories.OfferFactory(venue=venue)
         offerer = venue.managingOfferer
-        user_offerer = offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
         client = TestClient(app.test_client()).with_auth("pro@example.com")

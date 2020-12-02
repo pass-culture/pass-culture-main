@@ -61,8 +61,8 @@ def test_find_one_or_none_by_user_id_raises_exception_when_several_are_found(app
     repository.save(user_offerer1, user_offerer2)
 
     # When
-    with pytest.raises(MultipleResultsFound) as error:
-        first_user_offerer = find_one_or_none_by_user_id(user.id)
+    with pytest.raises(MultipleResultsFound):
+        find_one_or_none_by_user_id(user.id)
 
 
 @pytest.mark.usefixtures("db_session")

@@ -674,9 +674,6 @@ class FindAllBookingsReimbursementsTest:
             booking2 = create_booking_for_thing(url="http://truc", amount=50, quantity=3)
             booking3 = create_booking_for_thing(amount=10, quantity=1)
             bookings = [booking1, booking2, booking3]
-            cumulative_value_for_bookings_1_and_3 = (
-                booking1.amount * booking1.quantity + booking3.amount * booking3.quantity
-            )
 
             # when
             booking_reimbursements = find_all_booking_reimbursements(bookings, NEW_RULES)

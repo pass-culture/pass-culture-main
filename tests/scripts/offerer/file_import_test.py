@@ -132,7 +132,7 @@ class FillUserOffererFromTest:
         blakes_company = create_offerer(siren="362521879", name="MyBletcheyCompany", idx=234)
 
         # when
-        with pytest.raises(UserNotCreatedException) as e:
+        with pytest.raises(UserNotCreatedException):
             fill_user_offerer_from(UserOfferer(), blake, blakes_company)
 
     def test_raise_error_when_offerer_relative_to_csv_not_created(self):
@@ -141,7 +141,7 @@ class FillUserOffererFromTest:
         blakes_company = create_offerer(siren="362521879", name="MyBletcheyCompany")
 
         # when
-        with pytest.raises(OffererNotCreatedException) as e:
+        with pytest.raises(OffererNotCreatedException):
             fill_user_offerer_from(UserOfferer(), blake, blakes_company)
 
 

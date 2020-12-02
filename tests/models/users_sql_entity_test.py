@@ -299,7 +299,7 @@ class nOffersTest:
         user_offerer2 = create_user_offerer(user, offerer2)
         offerer_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         offerer2_physical_venue = create_venue(offerer2, siret="12345678856734")
-        offerer2_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        create_venue(offerer, is_virtual=True, siret=None)
         offer = create_offer_with_thing_product(
             offerer_virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO, url="http://fake.url"
         )

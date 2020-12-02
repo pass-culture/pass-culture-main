@@ -184,7 +184,7 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
 
         # Then
         mocked_send_email.assert_called_once()
-        args, kwargs = mocked_send_email.call_args
+        kwargs = mocked_send_email.call_args_list[0][1]
         assert kwargs["data"] == {
             "FromEmail": "support@example.com",
             "MJ-TemplateID": 1116690,

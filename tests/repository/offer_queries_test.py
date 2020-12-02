@@ -52,7 +52,6 @@ class QueryOfferWithRemainingStocksTest:
     def test_should_return_0_offer_when_there_is_no_stock(self, app):
         # Given
         thing = create_product_with_thing_type()
-        user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue=venue, product=thing)

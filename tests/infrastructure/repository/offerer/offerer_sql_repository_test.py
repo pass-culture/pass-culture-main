@@ -33,8 +33,6 @@ class OffererSQLRepositoryTest:
         offerer = create_offerer(siren=siren)
         repository.save(offerer)
 
-        expected_offerer = offerer_domain_converter.to_domain(offerer)
-
         # when
         offerer = self.offerer_sql_repository.find_by_siren(siren="987654321")
 

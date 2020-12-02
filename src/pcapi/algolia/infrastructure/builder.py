@@ -15,7 +15,6 @@ def build_object(offer: Offer) -> Dict:
     offerer = venue.managingOfferer
     humanize_offer_id = humanize(offer.id)
     has_coordinates = venue.latitude is not None and venue.longitude is not None
-    is_numeric = venue.latitude is None and venue.longitude is None
     author = offer.extraData and offer.extraData.get("author")
     stage_director = offer.extraData and offer.extraData.get("stageDirector")
     visa = offer.extraData and offer.extraData.get("visa")

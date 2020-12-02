@@ -699,13 +699,13 @@ class GetValidBookingsByUserId:
     def test_should_return_bookings_by_user_id(self, app: fixture):
         # Given
         user1 = create_user(email="me@example.net")
-        deposit1 = create_deposit(user1)
+        create_deposit(user1)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
         user2 = create_user(email="fa@example.net")
-        deposit2 = create_deposit(user2)
+        create_deposit(user2)
         booking1 = create_booking(user=user1, stock=stock)
         booking2 = create_booking(user=user2, stock=stock)
         repository.save(booking1, booking2)

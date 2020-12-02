@@ -159,7 +159,7 @@ def save_sandbox():
         venue_without_siret_of_offerer_with_iban,
     ) = save_offerer_with_iban()
     (
-        venue_online_of_offerer_without_iban,
+        _venue_online_of_offerer_without_iban,
         venue_of_offerer_without_iban_with_siret_with_iban,
         venue_of_offerer_without_iban_with_siret_without_iban,
     ) = save_offerer_without_iban()

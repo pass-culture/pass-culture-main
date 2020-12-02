@@ -19,7 +19,6 @@ class AddContactInEligibilityListTest:
         contact_email = "beneficiary@example.com"
         contact_date_of_birth = "2003-03-05"
         contact_department_code = "98"
-        beneficiary_contact = BeneficiaryContact(contact_email, contact_date_of_birth, contact_department_code)
 
         # When
         self.add_contact_in_eligibility_list.execute(
@@ -41,7 +40,6 @@ class AddContactInEligibilityListTest:
         contact_email = "beneficiary@example.com"
         contact_date_of_birth = "2003-03-05"
         contact_department_code = "98"
-        beneficiary_contact = BeneficiaryContact(contact_email, contact_date_of_birth, contact_department_code)
 
         # When
         self.add_contact_in_eligibility_list.execute(

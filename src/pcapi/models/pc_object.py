@@ -184,7 +184,7 @@ class PcObject:
 
     def _try_to_set_attribute_with_uuid(self, col, key, value):
         try:
-            uuid_obj = uuid.UUID(value)
+            uuid.UUID(value)
             setattr(self, key, value)
         except ValueError:
             error = UuidCastError()

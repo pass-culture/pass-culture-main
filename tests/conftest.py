@@ -85,7 +85,7 @@ def app():
     app.redis_client = Mock()
     app.register_blueprint(native_v1, url_prefix="/native/v1")
 
-    jwt = JWTManager(app)
+    JWTManager(app)
 
     @app.route("/test/signin", methods=["POST"])
     def test_signin():

@@ -23,7 +23,7 @@ class CheckRecaptchaTokenIsValidTest:
         recaptcha_response.return_value = {"success": True, "score": 0.2}
 
         # When
-        with pytest.raises(InvalidRecaptchaTokenException) as exception:
+        with pytest.raises(InvalidRecaptchaTokenException):
             check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
 
     @patch("pcapi.validation.routes.captcha.get_token_validation_and_score")

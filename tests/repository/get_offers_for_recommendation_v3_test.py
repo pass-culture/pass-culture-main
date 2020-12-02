@@ -367,7 +367,7 @@ class GetOffersForRecommendationV3Test:
                 discovery_view_v3_queries.refresh(concurrently=False)
 
                 # When
-                offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
+                get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
 
                 # Then
                 mock_order_offers_by_unseen_offers_first.assert_not_called()

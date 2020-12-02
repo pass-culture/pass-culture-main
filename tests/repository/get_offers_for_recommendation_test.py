@@ -356,6 +356,6 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(user=user, departement_codes=["00"])
+            get_offers_for_recommendation(user=user, departement_codes=["00"])
             # Then
             mock_order_offers_by_unseen_offers_first.assert_not_called()

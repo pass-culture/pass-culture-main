@@ -165,9 +165,7 @@ class Returns403:
         # Given
         user = users_factories.UserFactory(email="wrong@example.com")
         offer = offers_factories.ThingOfferFactory()
-        user_offerer = offers_factories.UserOffererFactory(
-            user__email="right@example.com", offerer=offer.venue.managingOfferer
-        )
+        offers_factories.UserOffererFactory(user__email="right@example.com", offerer=offer.venue.managingOfferer)
 
         data = {"price": 1222, "offerId": humanize(offer.id)}
 

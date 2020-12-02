@@ -41,7 +41,7 @@ def create_recommendations_for_discovery(
 
     offers = get_offers_for_recommendations_discovery(limit=limit, user=user, sent_offers_ids=sent_offers_ids)
 
-    for (index, offer) in enumerate(offers):
+    for offer in offers:
         recommendations.append(_create_recommendation_from_offers(user, offer))
     repository.save(*recommendations)
     return recommendations
@@ -64,7 +64,7 @@ def create_recommendations_for_discovery_v3(
         sent_offers_ids=sent_offers_ids,
     )
 
-    for (index, offer) in enumerate(offers):
+    for offer in offers:
         recommendations.append(_create_recommendation_from_offers(user, offer))
     repository.save(*recommendations)
 

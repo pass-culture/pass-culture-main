@@ -152,7 +152,7 @@ def create_industrial_offerers_with_pro_users():
         )
 
         # create also users that are attached to this offerer
-        for attached_user_index in range(ATTACHED_PRO_USERS_COUNT):
+        for _i in range(ATTACHED_PRO_USERS_COUNT):
             # special user that signed up with this offerer
             domain = MOCK_DOMAINS[user_index % len(MOCK_DOMAINS)]
             first_name = MOCK_FIRST_NAMES[user_index % len(MOCK_FIRST_NAMES)]

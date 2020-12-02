@@ -162,7 +162,6 @@ class UpdateObjectsTest:
         self, mock_call_allocine_api, mock_api_poster, mock_redis, mock_feature, app
     ):
         # Given
-        theater_token = "test"
         mock_call_allocine_api.return_value = iter(
             [
                 {
@@ -275,7 +274,6 @@ class UpdateObjectsTest:
         self, mock_call_allocine_api, mock_api_poster, mock_redis, mock_feature, app
     ):
         # Given
-        theater_token = "test"
         mock_call_allocine_api.return_value = iter(
             [
                 {
@@ -414,7 +412,6 @@ class UpdateObjectsTest:
         self, mock_call_allocine_api, mock_api_poster, mock_redis, mock_feature, app
     ):
         # Given
-        theater_token = "test"
         mock_call_allocine_api.return_value = iter(
             [
                 {
@@ -514,7 +511,6 @@ class UpdateObjectsTest:
         self, mock_call_allocine_api, mock_api_poster, mock_redis, mock_feature, app
     ):
         # Given
-        theater_token = "test"
         mock_call_allocine_api.return_value = iter(
             [
                 {
@@ -639,7 +635,6 @@ class UpdateObjectsTest:
         self, mock_call_allocine_api, mock_api_poster, mock_redis, mock_feature, app
     ):
         # Given
-        theater_token = "test"
         mock_call_allocine_api.return_value = iter(
             [
                 {
@@ -740,7 +735,6 @@ class UpdateObjectsTest:
         self, mock_call_allocine_api, mock_api_poster, mock_redis, mock_feature, app
     ):
         # Given
-        theater_token = "test"
         mock_call_allocine_api.return_value = iter(
             [
                 {
@@ -978,7 +972,6 @@ class UpdateObjectsTest:
         self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster, mock_redis, mock_feature, app
     ):
         # Given
-        theater_token = "test"
         mock_call_allocine_api.return_value = iter(
             [
                 {
@@ -1079,7 +1072,6 @@ class UpdateObjectsTest:
         self, mock_api_poster, mock_call_allocine_api, mock_redis, mock_feature, app
     ):
         # Given
-        theater_token = "test"
         mock_call_allocine_api.return_value = iter(
             [
                 {
@@ -1207,7 +1199,6 @@ class UpdateObjectsTest:
         self, mock_poster_get_allocine, mock_call_allocine_api, mock_redis, mock_feature, app
     ):
         # Given
-        theater_token = "test"
         mock_call_allocine_api.return_value = iter(
             [
                 {
@@ -1354,7 +1345,6 @@ class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
         def test_should_update_stocks_based_on_stock_date(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
-            theater_token = "test"
             mock_poster_get_allocine.return_value = bytes()
             mock_call_allocine_api.side_effect = [
                 iter(
@@ -1638,7 +1628,6 @@ class UpdateObjectsTest:
             self, mock_poster_get_allocine, mock_call_allocine_api, app
         ):
             # Given
-            theater_token = "test"
             mock_poster_get_allocine.return_value = bytes()
             mock_call_allocine_api.side_effect = [
                 iter(
@@ -1823,7 +1812,6 @@ class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
         def test_should_preserve_manual_modification(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
-            theater_token = "test"
             mock_poster_get_allocine.return_value = bytes()
             mock_call_allocine_api.side_effect = [
                 iter(
@@ -1994,7 +1982,6 @@ class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
         def test_should_preserve_deletion(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
-            theater_token = "test"
             mock_poster_get_allocine.return_value = bytes()
             mock_call_allocine_api.side_effect = [
                 iter(
@@ -2149,7 +2136,6 @@ class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
         def test_should_preserve_is_duo_default_value(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
-            theater_token = "test"
             mock_poster_get_allocine.return_value = bytes()
             mock_call_allocine_api.side_effect = [
                 iter(
@@ -2310,7 +2296,6 @@ class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
         def test_should_preserve_quantity_default_value(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
-            theater_token = "test"
             mock_poster_get_allocine.return_value = bytes()
             mock_call_allocine_api.side_effect = [
                 iter(

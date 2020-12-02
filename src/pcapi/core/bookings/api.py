@@ -86,7 +86,7 @@ def book_offer(
 
 
 def generate_booking_token():
-    for i in range(100):
+    for _i in range(100):
         token = random_token()
         if not booking_repository.token_exists(token):
             return token

@@ -45,7 +45,7 @@ def test_create_payment_for_booking_with_common_information(app):
     booking.stock.offer = Offer()
     booking.stock.offer.venue = VenueSQLEntity()
     offerer = create_offerer()
-    offerer_bank_information = create_bank_information(bic="QSDFGH8Z555", iban="CF13QSDFGH456789", offerer=offerer)
+    create_bank_information(bic="QSDFGH8Z555", iban="CF13QSDFGH456789", offerer=offerer)
     booking.stock.offer.venue.managingOfferer = offerer
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
@@ -73,8 +73,8 @@ def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_in
     )
     booking = create_booking(user=user, quantity=1, stock=stock)
 
-    offerer_bank_information = create_bank_information(bic="Lajr93", iban="B135TGGEG532TG", offerer=offerer)
-    venue_bank_information = create_bank_information(bic="LokiJU76", iban="KD98765RFGHZ788", venue=venue)
+    create_bank_information(bic="Lajr93", iban="B135TGGEG532TG", offerer=offerer)
+    create_bank_information(bic="LokiJU76", iban="KD98765RFGHZ788", venue=venue)
 
     booking.stock.offer = Offer()
     booking.stock.offer.venue = venue
@@ -96,8 +96,8 @@ def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_in
     offerer = create_offerer(name="Test Offerer")
     venue = create_venue(offerer, name="Test Venue")
 
-    offerer_bank_information = create_bank_information(bic="QsdFGH8Z555", iban="cf13QSDFGH456789", offerer=offerer)
-    venue_bank_information = create_bank_information(bic=None, iban=None, venue=venue)
+    create_bank_information(bic="QsdFGH8Z555", iban="cf13QSDFGH456789", offerer=offerer)
+    create_bank_information(bic=None, iban=None, venue=venue)
 
     booking = create_booking(user=user, quantity=1, stock=stock)
     booking.stock.offer = Offer()
@@ -122,8 +122,8 @@ def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer(
     offerer = create_offerer(name="Test Offerer", siren="123456789")
     venue = create_venue(offerer, name="Test Venue")
 
-    offerer_bank_information = create_bank_information(bic="QSDFGH8Z555", iban="CF13QSDFGH456789", offerer=offerer)
-    venue_bank_information = create_bank_information(bic=None, iban=None, venue=venue)
+    create_bank_information(bic="QSDFGH8Z555", iban="CF13QSDFGH456789", offerer=offerer)
+    create_bank_information(bic=None, iban=None, venue=venue)
 
     booking.stock.offer.venue = venue
     booking.stock.offer.venue.managingOfferer = offerer
@@ -166,7 +166,7 @@ def test_create_payment_for_booking_with_pending_status(app):
     booking.stock.offer.venue = VenueSQLEntity()
     offerer = create_offerer()
     booking.stock.offer.venue.managingOfferer = offerer
-    offerer_bank_information = create_bank_information(bic="QSDFGH8Z555", iban="CF13QSDFGH456789", offerer=offerer)
+    create_bank_information(bic="QSDFGH8Z555", iban="CF13QSDFGH456789", offerer=offerer)
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
     # when
@@ -533,7 +533,7 @@ class ApplyBanishmentTest:
         ids_to_ban = [222, 333]
 
         # when
-        banned_payments, retry_payments = apply_banishment(payments, ids_to_ban)
+        banned_payments, _retry_payments = apply_banishment(payments, ids_to_ban)
 
         # then
         assert len(banned_payments) == 2
@@ -552,7 +552,7 @@ class ApplyBanishmentTest:
         ids_to_ban = [222, 333]
 
         # when
-        banned_payments, retry_payments = apply_banishment(payments, ids_to_ban)
+        _banned_payments, retry_payments = apply_banishment(payments, ids_to_ban)
 
         # then
         assert len(retry_payments) == 2
