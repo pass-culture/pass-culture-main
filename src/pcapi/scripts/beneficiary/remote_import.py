@@ -62,8 +62,23 @@ def run(
         details = get_details(application_id, procedure_id, TOKEN)
         try:
             information = parse_beneficiary_information(details)
-        except Exception:  # pylint: disable=broad-except
-            _process_error(error_messages, application_id, procedure_id=procedure_id)
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.info(
+                "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s had errors and was ignored: %s",
+                application_id,
+                procedure_id,
+                exc,
+                exc_info=True,
+            )
+            error = f"Le dossier {application_id} contient des erreurs et a été ignoré - Procedure {procedure_id}"
+            error_messages.append(error)
+            save_beneficiary_import_with_status(
+                ImportStatus.ERROR,
+                application_id,
+                source=BeneficiaryImportSources.demarches_simplifiees,
+                source_id=procedure_id,
+                detail=error,
+            )
             continue
 
         if already_existing_user(information["email"]):
@@ -201,17 +216,4 @@ def _process_rejection(information: Dict, procedure_id: int) -> None:
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of already existing email - Procedure %s",
         information["application_id"],
         procedure_id,
-    )
-
-
-def _process_error(error_messages: List[str], application_id: int, procedure_id: int) -> None:
-    error = f"Le dossier {application_id} contient des erreurs et a été ignoré - Procedure {procedure_id}"
-    logger.error("[BATCH][REMOTE IMPORT BENEFICIARIES] %s", error)
-    error_messages.append(error)
-    save_beneficiary_import_with_status(
-        ImportStatus.ERROR,
-        application_id,
-        source=BeneficiaryImportSources.demarches_simplifiees,
-        source_id=procedure_id,
-        detail=error,
     )
