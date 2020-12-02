@@ -115,13 +115,15 @@ class Booking(PcObject, Model, VersionedMixin):
 
     @property
     def mediation(self):
-        if self.recommendation:
-            return self.recommendation.mediation
+        if not self.recommendation:
+            return None
+        return self.recommendation.mediation
 
     @property
     def mediationId(self):
-        if self.recommendation:
-            return self.recommendation.mediationId
+        if not self.recommendation:
+            return None
+        return self.recommendation.mediationId
 
     @property
     def qrCode(self):

@@ -207,7 +207,7 @@ def get_contact(user: UserSQLEntity) -> Union[str, None]:
 def subscribe_newsletter(user: UserSQLEntity):
     if not feature_send_mail_to_users_enabled():
         logger.logger.info("Subscription in DEV or STAGING mode is disabled")
-        return
+        return None
 
     try:
         contact = get_contact(user)

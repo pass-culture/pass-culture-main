@@ -36,6 +36,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                             "user": get_pro_helper(user),
                             "venue": get_venue_helper(venue),
                         }
+    return None
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock():
@@ -64,6 +65,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                                     "user": get_pro_helper(user),
                                     "venue": get_venue_helper(venue),
                                 }
+    return None
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock():
@@ -85,6 +87,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                             "user": get_pro_helper(user),
                             "venue": get_venue_helper(venue),
                         }
+    return None
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_thing_offer_with_no_stock():
@@ -109,6 +112,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
                             "user": get_pro_helper(user),
                             "venue": get_venue_helper(venue),
                         }
+    return None
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_event_offer():
@@ -131,3 +135,4 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
                                 "user": get_pro_helper(user),
                                 "venue": get_venue_helper(venue),
                             }
+    return None

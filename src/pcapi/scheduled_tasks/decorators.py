@@ -25,6 +25,7 @@ def cron_require_feature(feature_toggle: FeatureToggle):
             if feature_queries.is_active(feature_toggle):
                 return func(*args, **kwargs)
             logger.info("%s is not active", feature_toggle)
+            return None
 
         return wrapper
 

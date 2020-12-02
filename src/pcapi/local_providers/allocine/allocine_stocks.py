@@ -193,12 +193,10 @@ class AllocineStocks(LocalProvider):
             allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
 
     def apply_allocine_price_rule(self, allocine_stock: Stock) -> int:
-        price = None
         for price_rule in self.venue_provider.priceRules:
             if price_rule.priceRule(allocine_stock):
                 return price_rule.price
-        if not price:
-            raise AllocineStocksPriceRule("Aucun prix par défaut n'a été trouvé")
+        raise AllocineStocksPriceRule("Aucun prix par défaut n'a été trouvé")
 
     def get_object_thumb(self) -> bytes:
         if "poster_url" in self.movie_information:

@@ -24,6 +24,7 @@ def get_existing_pro_validated_user_with_at_least_one_visible_offer():
                 if venue.offers:
                     offer = venue.offers[0]
                     return {"offer": get_offer_helper(offer), "user": get_pro_helper(user)}
+    return None
 
 
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue():
@@ -41,6 +42,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
                         "user": get_pro_helper(user),
                         "venue": get_venue_helper(venue),
                     }
+    return None
 
 
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_virtual_venue():
@@ -57,6 +59,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
                         "user": get_pro_helper(user),
                         "venue": get_venue_helper(venue),
                     }
+    return None
 
 
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_thing_offer():
@@ -76,6 +79,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
                             "user": get_pro_helper(user),
                             "venue": get_venue_helper(venue),
                         }
+    return None
 
 
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_event_offer():
@@ -95,3 +99,4 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
                             "user": get_pro_helper(user),
                             "venue": get_venue_helper(venue),
                         }
+    return None

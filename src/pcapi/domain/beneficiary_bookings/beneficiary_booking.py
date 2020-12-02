@@ -139,6 +139,7 @@ class BeneficiaryBooking:
         for possible_type in all_types:
             if str(possible_type) == self.type:
                 return possible_type.as_dict()
+        raise ValueError(f"Unexpected offer type '{self.type}'")
 
     @property
     def qr_code(self) -> Optional[str]:

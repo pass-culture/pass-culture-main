@@ -24,7 +24,7 @@ class SaveOffererBankInformations:
         except CannotRegisterBankInformation as error:
             if application_details.status == BankInformationStatus.ACCEPTED:
                 raise error
-            return
+            return None
 
         bank_information_by_application_id = self.bank_informations_repository.get_by_application(
             application_details.application_id

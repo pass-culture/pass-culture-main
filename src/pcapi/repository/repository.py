@@ -59,3 +59,5 @@ def save(*models: Model) -> None:
 
     if api_errors.errors.keys():
         raise api_errors
+
+    return None

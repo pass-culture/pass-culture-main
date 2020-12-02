@@ -320,12 +320,21 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
         for possible_type in all_types:
             if str(possible_type) == self.type:
                 return possible_type.as_dict()
+        # FIXME (dbaty, 2020-12-03): shouldn't we raise an error such as
+        #     raise ValueError(f"Unexpected offer type '{self.type}'")
+        # instead of returning None?
+        return None
 
     @property
     def offer_category(self) -> str:
+        label = self.offerType["appLabel"]
         for category in Category:
-            if self.offerType["appLabel"] in category.value:
+            if label in category.value:
                 return category.name
+        # FIXME (dbaty, 2020-12-03): shouldn't we raise an error such as
+        #     raise ValueError(f"Unexpected category for offer type '{label}'")
+        # instead of returning None?
+        return None
 
     @property
     def thumbUrl(self) -> str:

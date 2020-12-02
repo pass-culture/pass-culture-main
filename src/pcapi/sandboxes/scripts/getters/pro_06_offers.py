@@ -18,3 +18,4 @@ def get_existing_pro_validated_user_with_at_least_one_visible_activated_offer():
                 for offer in venue.offers:
                     if offer.isActive:
                         return {"offer": get_offer_helper(offer), "user": get_pro_helper(user)}
+    return None

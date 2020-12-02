@@ -150,9 +150,11 @@ def _get_status_from_demarches_simplifiees_application_state(state: str) -> Unio
         return BankInformationStatus.ACCEPTED
     if state in draft_states:
         return BankInformationStatus.DRAFT
+    raise ValueError(f"Unexpected DMS status: '{state}'")
 
 
 def _find_value_in_fields(fields: List[Dict], value_name: str) -> dict:
     for field in fields:
         if field["type_de_champ"]["libelle"] == value_name:
             return field["value"]
+    return None

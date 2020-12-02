@@ -19,3 +19,4 @@ def get_existing_pro_not_validated_user_with_real_offerer():
     for user in users:
         if len(user.UserOfferers) == 1:
             return {"user": get_pro_helper(user)}
+    return None

@@ -60,6 +60,7 @@ def get_existing_event_offer_with_active_mediation_already_booked_but_cancellabl
                 "offer": get_offer_helper(offer),
                 "user": get_beneficiary_helper(user),
             }
+    return None
 
 
 def get_existing_digital_offer_with_active_mediation_already_booked_and_user_hnmm_93():
@@ -82,3 +83,4 @@ def get_existing_digital_offer_with_active_mediation_already_booked_and_user_hnm
                 "offer": get_offer_helper(offer),
                 "user": get_beneficiary_helper(user),
             }
+    return None

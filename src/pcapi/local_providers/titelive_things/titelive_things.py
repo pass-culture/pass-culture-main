@@ -167,6 +167,7 @@ class TiteLiveThings(LocalProvider):
         for index, filename in enumerate(ordered_thing_files):
             if get_date_from_filename(filename, DATE_REGEXP) == int(latest_sync_part_end_event.payload):
                 return iter(ordered_thing_files[index + 1 :])
+        return iter([])
 
 
 def get_lines_from_thing_file(thing_file: str):

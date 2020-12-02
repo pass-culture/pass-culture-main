@@ -119,14 +119,16 @@ def do_delete_file(container_name, file_name):
     elif container_name == "storage-pc":
         conn = swift_con_prod()
     else:
+        conn = None
         print("Ce conteneur ne semble pas exister")
-        return 1
-    try:
-        conn.delete_object(container_name, file_name)
-        print("File deleted with success !")
-    except swiftclient.ClientException as err:
-        print("File deletion failed.")
-        print(err)
+
+    if conn:
+        try:
+            conn.delete_object(container_name, file_name)
+            print("File deleted with success !")
+        except swiftclient.ClientException as err:
+            print("File deletion failed.")
+            print(err)
 
 
 def do_list_content(container_name):

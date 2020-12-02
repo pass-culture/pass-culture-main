@@ -43,12 +43,13 @@ class Offerer(
     )  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
 
     def give_rights(self, user, rights):
-        if user:
-            user_offerer = UserOfferer()
-            user_offerer.offerer = self
-            user_offerer.user = user
-            user_offerer.rights = rights
-            return user_offerer
+        if not user:
+            return None
+        user_offerer = UserOfferer()
+        user_offerer.offerer = self
+        user_offerer.user = user
+        user_offerer.rights = rights
+        return user_offerer
 
     @property
     def bic(self):

@@ -34,3 +34,4 @@ def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_o
                                             "user": get_pro_helper(user),
                                             "venue": get_venue_helper(venue),
                                         }
+    return None

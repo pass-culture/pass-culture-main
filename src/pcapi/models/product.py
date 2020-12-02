@@ -65,6 +65,10 @@ class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
         for possible_type in all_types:
             if str(possible_type) == self.type:
                 return possible_type.as_dict()
+        # FIXME (dbaty, 2020-12-03): shouldn't we raise an error such as
+        #     raise ValueError(f"Unexpected offer type '{self.type}'")
+        # instead of returning None?
+        return None
 
     @property
     def isDigital(self):

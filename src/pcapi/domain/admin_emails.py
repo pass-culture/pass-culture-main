@@ -21,7 +21,7 @@ def maybe_send_offerer_validation_email(
     offerer: Offerer, user_offerer: UserOfferer, send_email: Callable[[dict], bool]
 ) -> bool:
     if offerer.isValidated and user_offerer.isValidated:
-        return
+        return None
     email = make_validation_email_object(offerer, user_offerer)
     recipients = [ADMINISTRATION_EMAIL_ADDRESS]
     email["Html-part"], email["To"] = compute_email_html_part_and_recipients(email["Html-part"], recipients)
