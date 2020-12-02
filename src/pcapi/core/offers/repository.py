@@ -145,9 +145,9 @@ def get_offers_by_filters(
 
 def _filter_by_creation_mode(query: Query, creation_mode: str) -> Query:
     if creation_mode == MANUAL_CREATION_MODE:
-        query = query.filter(Offer.lastProviderId == None)
+        query = query.filter(Offer.lastProviderId.is_(None))
     if creation_mode == IMPORTED_CREATION_MODE:
-        query = query.filter(Offer.lastProviderId != None)
+        query = query.filter(~Offer.lastProviderId.is_(None))
 
     return query
 

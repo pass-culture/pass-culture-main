@@ -64,7 +64,7 @@ class PaymentDateTest:
 
             # When/Then
             payment_sent_date = payment.lastProcessedDate
-            assert payment_sent_date == payment_date
+            assert payment_sent_date == payment_date  # pylint: disable=comparison-with-callable
 
         def test_payment_date_should_return_oldest_payment_date_for_status_sent_if_several(self, app):
             # Given
@@ -81,7 +81,7 @@ class PaymentDateTest:
 
             # When/Then
             payment_sent_date = payment.lastProcessedDate
-            assert payment_sent_date == older_payment_date
+            assert payment_sent_date == older_payment_date  # pylint: disable=comparison-with-callable
 
         def test_payment_date_should_return_no_payment_date_for_status_pending(self):
             # Given

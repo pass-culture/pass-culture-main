@@ -18,7 +18,7 @@ class SetStatusTest:
 
         # then
         assert len(beneficiary_import.statuses) == 1
-        assert beneficiary_import.currentStatus == ImportStatus.CREATED
+        assert beneficiary_import.currentStatus == ImportStatus.CREATED  # pylint: disable=comparison-with-callable
         assert beneficiary_import.detail is None
         assert now - one_second < beneficiary_import.statuses[0].date < now + one_second
 
@@ -37,6 +37,6 @@ class SetStatusTest:
 
         # then
         assert len(beneficiary_import.statuses) == 2
-        assert beneficiary_import.currentStatus == ImportStatus.REJECTED
+        assert beneficiary_import.currentStatus == ImportStatus.REJECTED  # pylint: disable=comparison-with-callable
         assert beneficiary_import.detail is None
         assert now - one_second < beneficiary_import.statuses[1].date < now + one_second
