@@ -1,5 +1,4 @@
 import classnames from 'classnames'
-import { Modal } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
@@ -8,6 +7,7 @@ import ReactTooltip from 'react-tooltip'
 import ActionsBar from 'components/layout/ActionsBar'
 import HeaderContainer from 'components/layout/Header/HeaderContainer'
 import Icon from 'components/layout/Icon'
+import Modal from 'components/layout/Modal'
 import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
 import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 
