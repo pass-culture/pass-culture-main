@@ -154,6 +154,28 @@ class EditStockTest:
         assert initial_confirmation_date == confirmation_date_for_event_in_4_days
         assert booking_updated.confirmationDate == confirmation_date_for_event_reported_in_10_days
 
+    @mock.patch("pcapi.core.offers.api.update_validation")
+    def should_invalidate_booking_token_when_event_is_reported(self, mock_update_validation):
+        # Given
+        now = datetime.datetime.now()
+        booking_made_3_days_ago = now - datetime.timedelta(days=3)
+        event_in_4_days = now + datetime.timedelta(days=4)
+        event_reported_in_10_days = now + datetime.timedelta(days=10)
+        stock = factories.EventStockFactory(beginningDatetime=event_in_4_days)
+        booking = bookings_factories.BookingFactory(stock=stock, dateCreated=booking_made_3_days_ago, isUsed=True)
+
+        # When
+        api.edit_stock(
+            stock,
+            price=5,
+            quantity=20,
+            beginning=event_reported_in_10_days,
+            booking_limit_datetime=stock.bookingLimitDatetime,
+        )
+
+        # Then
+        mock_update_validation.assert_called_once_with([booking])
+
     def test_checks_number_of_reservations(self):
         stock = factories.EventStockFactory()
         bookings_factories.BookingFactory(stock=stock)

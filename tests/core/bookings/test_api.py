@@ -6,6 +6,7 @@ from flask import current_app as app
 from freezegun import freeze_time
 import pytest
 
+from pcapi import models
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
@@ -417,3 +418,48 @@ class UpdateConfirmationDatesTest:
         assert bookings[0].confirmationDate == datetime(2020, 11, 18, 9, 21, 34)
         assert bookings[1] in new_bookings
         assert bookings[1].confirmationDate == datetime(2020, 11, 15, 9, 21, 34)
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateValidationTest:
+    def should_unvalidate_validated_bookings(self):
+        #  Given
+        now = datetime.utcnow()
+        bookings = [
+            factories.BookingFactory(
+                stock__beginningDatetime=now + timedelta(days=4),
+                dateCreated=now - timedelta(days=3),
+                dateUsed=now,
+                isUsed=True,
+            )
+        ]
+
+        # When
+        api.unvalidate_bookings(bookings)
+
+        # Then
+        booking = models.Booking.query.one()
+        assert booking.isUsed is False
+        assert booking.dateUsed is None
+        assert booking.confirmationDate == bookings[0].confirmationDate
+
+    def should_return_an_updated_bookings_list(self):
+        #  Given
+        now = datetime.utcnow()
+        bookings = [
+            factories.BookingFactory(
+                stock__beginningDatetime=now + timedelta(days=4),
+                dateCreated=now - timedelta(days=3),
+                dateUsed=now,
+                isUsed=True,
+            )
+        ]
+
+        # When
+        updated_bookings = api.unvalidate_bookings(bookings)
+
+        # Then
+        assert updated_bookings[0].isUsed is False
+        assert updated_bookings[0].dateUsed is None
+        assert updated_bookings[0].dateUsed is None
+        assert updated_bookings[0].confirmationDate == bookings[0].confirmationDate
