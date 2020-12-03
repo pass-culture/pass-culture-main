@@ -55,7 +55,7 @@ class BatchIndexingOffersInAlgoliaByOfferTest:
 
 
 class BatchIndexingOffersInAlgoliaByVenueProviderTest:
-    @patch("pcapi.scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 3)
+    @patch("pcapi.settings.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 3)
     @patch(
         "pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id"
     )
@@ -92,7 +92,7 @@ class BatchIndexingOffersInAlgoliaByVenueProviderTest:
             call(client=client, from_provider_update=True, offer_ids=[8]),
         ]
 
-    @patch("pcapi.scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 3)
+    @patch("pcapi.settings.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 3)
     @patch(
         "pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id"
     )
@@ -121,7 +121,7 @@ class BatchIndexingOffersInAlgoliaByVenueProviderTest:
 
 
 class BatchIndexingOffersInAlgoliaByVenueTest:
-    @patch("pcapi.scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE", 1)
+    @patch("pcapi.settings.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE", 1)
     @patch("pcapi.scripts.algolia_indexing.indexing.delete_venue_ids")
     @patch("pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id")
     @patch("pcapi.scripts.algolia_indexing.indexing.process_eligible_offers")
@@ -150,7 +150,7 @@ class BatchIndexingOffersInAlgoliaByVenueTest:
         ]
         assert mock_delete_venue_ids.call_count == 1
 
-    @patch("pcapi.scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE", 1)
+    @patch("pcapi.settings.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE", 1)
     @patch("pcapi.scripts.algolia_indexing.indexing.delete_venue_ids")
     @patch("pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id")
     @patch("pcapi.scripts.algolia_indexing.indexing.process_eligible_offers")
@@ -238,9 +238,10 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
 
 @freeze_time("2020-01-01 10:00:00")
 class BatchDeletingExpiredOffersInAlgoliaTest:
-    @patch("pcapi.scripts.algolia_indexing.indexing.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE", 1)
+    @patch("pcapi.settings.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE", 1)
     @patch(
-        "pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_given_booking_limit_datetime_interval"
+        "pcapi.scripts.algolia_indexing.indexing.offer_queries."
+        "get_paginated_offer_ids_given_booking_limit_datetime_interval"
     )
     @patch("pcapi.scripts.algolia_indexing.indexing.delete_expired_offers")
     def test_should_retrieve_expired_offers_in_two_days_interval_by_default(
@@ -258,9 +259,10 @@ class BatchDeletingExpiredOffersInAlgoliaTest:
             call(from_date=datetime(2019, 12, 30, 10, 0, 0), limit=1, page=0, to_date=datetime(2019, 12, 31, 10, 0, 0)),
         ]
 
-    @patch("pcapi.scripts.algolia_indexing.indexing.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE", 1)
+    @patch("pcapi.settings.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE", 1)
     @patch(
-        "pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_given_booking_limit_datetime_interval"
+        "pcapi.scripts.algolia_indexing.indexing.offer_queries."
+        "get_paginated_offer_ids_given_booking_limit_datetime_interval"
     )
     @patch("pcapi.scripts.algolia_indexing.indexing.delete_expired_offers")
     def test_should_retrieve_all_expired_offers_if_requested(
@@ -278,9 +280,10 @@ class BatchDeletingExpiredOffersInAlgoliaTest:
             call(from_date=datetime(2000, 1, 1, 0, 0, 0), limit=1, page=0, to_date=datetime(2019, 12, 31, 10, 0, 0)),
         ]
 
-    @patch("pcapi.scripts.algolia_indexing.indexing.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE", 1)
+    @patch("pcapi.settings.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE", 1)
     @patch(
-        "pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_given_booking_limit_datetime_interval"
+        "pcapi.scripts.algolia_indexing.indexing.offer_queries."
+        "get_paginated_offer_ids_given_booking_limit_datetime_interval"
     )
     @patch("pcapi.scripts.algolia_indexing.indexing.delete_expired_offers")
     def test_should_delete_expired_offers_in_a_paginated_way(
@@ -352,7 +355,7 @@ class BatchProcessingOfferIdsInErrorTest:
 
 
 class ProcessVenueProviderTest:
-    @patch("pcapi.scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 3)
+    @patch("pcapi.settings.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 3)
     @patch("pcapi.scripts.algolia_indexing.indexing.delete_venue_provider_currently_in_sync")
     @patch(
         "pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id"
@@ -381,10 +384,11 @@ class ProcessVenueProviderTest:
         ]
         mock_delete_venue_provider_currently_in_sync.assert_called_once_with(client=client, venue_provider_id=1)
 
-    @patch("pcapi.scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 3)
+    @patch("pcapi.settings.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 3)
     @patch("pcapi.scripts.algolia_indexing.indexing.delete_venue_provider_currently_in_sync")
     @patch(
-        "pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id",
+        "pcapi.scripts.algolia_indexing.indexing.offer_queries."
+        "get_paginated_offer_ids_by_venue_id_and_last_provider_id",
         return_value=Exception,
     )
     def test_should_delete_venue_provider_currently_in_sync_when_exception_is_raised(

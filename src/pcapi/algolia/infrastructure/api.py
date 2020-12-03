@@ -1,18 +1,15 @@
-import os
 from typing import Dict
 from typing import List
 
 from algoliasearch.search_client import SearchClient
 from algoliasearch.search_index import SearchIndex
 
-
-ALGOLIA_API_KEY = os.environ.get("ALGOLIA_API_KEY")
-ALGOLIA_APPLICATION_ID = os.environ.get("ALGOLIA_APPLICATION_ID")
-ALGOLIA_INDEX_NAME = os.environ.get("ALGOLIA_INDEX_NAME")
+from pcapi import settings
 
 
 def init_connection() -> SearchIndex:
-    return SearchClient.create(ALGOLIA_APPLICATION_ID, ALGOLIA_API_KEY).init_index(ALGOLIA_INDEX_NAME)
+    client = SearchClient.create(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY)
+    return client.init_index(settings.ALGOLIA_INDEX_NAME)
 
 
 def add_objects(objects: List[Dict]) -> None:

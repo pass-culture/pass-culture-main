@@ -1,9 +1,9 @@
 from datetime import datetime
 from datetime import timedelta
-import os
 
 from redis import Redis
 
+from pcapi import settings
 from pcapi.algolia.usecase.orchestrator import delete_expired_offers
 from pcapi.algolia.usecase.orchestrator import process_eligible_offers
 from pcapi.connectors.redis import delete_offer_ids
@@ -18,11 +18,6 @@ from pcapi.connectors.redis import get_venue_providers
 from pcapi.repository import offer_queries
 from pcapi.utils.converter import from_tuple_to_int
 from pcapi.utils.logger import logger
-
-
-ALGOLIA_DELETING_OFFERS_CHUNK_SIZE = int(os.environ.get("ALGOLIA_DELETING_OFFERS_CHUNK_SIZE", 10000))
-ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE = int(os.environ.get("ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE", 10000))
-ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE = int(os.environ.get("ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 10000))
 
 
 def batch_indexing_offers_in_algolia_by_offer(client: Redis) -> None:
@@ -59,7 +54,7 @@ def batch_indexing_offers_in_algolia_by_venue(client: Redis) -> None:
 
             while has_still_offers:
                 offer_ids_as_tuple = offer_queries.get_paginated_offer_ids_by_venue_id(
-                    limit=ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE, page=page, venue_id=venue_id
+                    limit=settings.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE, page=page, venue_id=venue_id
                 )
                 offer_ids_as_int = from_tuple_to_int(offer_ids_as_tuple)
 
@@ -108,7 +103,10 @@ def batch_deleting_expired_offers_in_algolia(client: Redis, process_all_expired:
 
     while has_still_offers:
         expired_offer_ids_as_tuple = offer_queries.get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=ALGOLIA_DELETING_OFFERS_CHUNK_SIZE, page=page, from_date=from_date, to_date=one_day_before_now
+            limit=settings.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE,
+            page=page,
+            from_date=from_date,
+            to_date=one_day_before_now,
         )
         expired_offer_ids_as_int = from_tuple_to_int(offer_ids=expired_offer_ids_as_tuple)
 
@@ -136,7 +134,7 @@ def _process_venue_provider(client: Redis, provider_id: str, venue_provider_id: 
         while has_still_offers is True:
             offer_ids_as_tuple = offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id(
                 last_provider_id=provider_id,
-                limit=ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE,
+                limit=settings.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE,
                 page=page,
                 venue_id=venue_id,
             )

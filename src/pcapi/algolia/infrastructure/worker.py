@@ -1,9 +1,9 @@
-import os
 from time import sleep
 from typing import Dict
 
 from redis import Redis
 
+from pcapi import settings
 from pcapi.connectors.redis import add_venue_provider_currently_in_sync
 from pcapi.connectors.redis import delete_venue_providers
 from pcapi.connectors.redis import get_number_of_venue_providers_currently_in_sync
@@ -14,13 +14,12 @@ from pcapi.utils.logger import logger
 
 
 ALGOLIA_WAIT_TIME_FOR_AVAILABLE_WORKER = 60
-ALGOLIA_DEFAULT_SYNC_WORKERS_POOL_SIZE = 10
 
 
-def process_multi_indexing(client: Redis):
+def process_multi_indexing(client: Redis) -> None:
     venue_providers_to_process = get_venue_providers(client=client)
     delete_venue_providers(client=client)
-    sync_worker_pool = int(os.environ.get("ALGOLIA_SYNC_WORKERS_POOL_SIZE", ALGOLIA_DEFAULT_SYNC_WORKERS_POOL_SIZE))
+    sync_worker_pool = settings.ALGOLIA_SYNC_WORKERS_POOL_SIZE
 
     while len(venue_providers_to_process) > 0:
         venue_provider = venue_providers_to_process[0]
@@ -34,7 +33,7 @@ def process_multi_indexing(client: Redis):
             sleep(ALGOLIA_WAIT_TIME_FOR_AVAILABLE_WORKER)
 
 
-def _run_indexing(client: Redis, venue_provider: Dict):
+def _run_indexing(client: Redis, venue_provider: Dict) -> None:
     venue_provider_id = venue_provider["id"]
     provider_id = venue_provider["providerId"]
     venue_id = venue_provider["venueId"]

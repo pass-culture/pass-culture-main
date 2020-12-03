@@ -1,13 +1,6 @@
-# Loading variables should always be the first thing, before any other load
-from pcapi.load_environment_variables import load_environment_variables
-
-
-load_environment_variables()
-
-import os
-
 from apscheduler.schedulers.blocking import BlockingScheduler
 
+from pcapi import settings
 from pcapi.algolia.infrastructure.worker import process_multi_indexing
 from pcapi.flask_app import app
 from pcapi.models.feature import FeatureToggle
@@ -57,32 +50,25 @@ def index_offers_in_error_in_algolia_by_offer(app):
 
 
 if __name__ == "__main__":
-    algolia_cron_indexing_offers_by_offer_frequency = os.environ.get(
-        "ALGOLIA_CRON_INDEXING_OFFERS_BY_OFFER_FREQUENCY", "*"
-    )
-    algolia_cron_indexing_offers_by_venue_frequency = os.environ.get(
-        "ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_FREQUENCY", "10"
-    )
-    algolia_cron_indexing_offers_by_venue_provider_frequency = os.environ.get(
-        "ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_PROVIDER_FREQUENCY", "10"
-    )
-    algolia_cron_indexing_offers_in_error_by_offer_frequency = os.environ.get(
-        "ALGOLIA_CRON_INDEXING_OFFERS_IN_ERROR_BY_OFFER_FREQUENCY", "10"
-    )
-
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
 
     scheduler.add_job(
-        index_offers_in_algolia_by_offer, "cron", [app], minute=algolia_cron_indexing_offers_by_offer_frequency
+        index_offers_in_algolia_by_offer, "cron", [app], minute=settings.ALGOLIA_CRON_INDEXING_OFFERS_BY_OFFER_FREQUENCY
     )
 
     scheduler.add_job(
-        index_offers_in_algolia_by_venue_provider, "cron", [app], minute=algolia_cron_indexing_offers_by_venue_frequency
+        index_offers_in_algolia_by_venue_provider,
+        "cron",
+        [app],
+        minute=settings.ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_FREQUENCY,
     )
 
     scheduler.add_job(
-        index_offers_in_algolia_by_venue, "cron", [app], minute=algolia_cron_indexing_offers_by_venue_provider_frequency
+        index_offers_in_algolia_by_venue,
+        "cron",
+        [app],
+        minute=settings.ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_PROVIDER_FREQUENCY,
     )
 
     scheduler.add_job(delete_expired_offers_in_algolia, "cron", [app], day="*", hour="1")
@@ -91,7 +77,7 @@ if __name__ == "__main__":
         index_offers_in_error_in_algolia_by_offer,
         "cron",
         [app],
-        minute=algolia_cron_indexing_offers_in_error_by_offer_frequency,
+        minute=settings.ALGOLIA_CRON_INDEXING_OFFERS_IN_ERROR_BY_OFFER_FREQUENCY,
     )
 
     scheduler.start()
