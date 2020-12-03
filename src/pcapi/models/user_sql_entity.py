@@ -90,8 +90,8 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     isAdmin = Column(
         Boolean,
         CheckConstraint(
-            '("isBeneficiary" IS FALSE AND "isAdmin" IS TRUE)' + 'OR ("isAdmin" IS FALSE)',
-            name="check_admin_cannot_book_free_offers",
+            '"isBeneficiary" IS FALSE OR "isAdmin" IS FALSE',
+            name="check_admin_is_not_beneficiary",
         ),
         nullable=False,
         server_default=expression.false(),
