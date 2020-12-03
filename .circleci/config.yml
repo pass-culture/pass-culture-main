@@ -1,4 +1,105 @@
 version: 2.1
+
+###################
+#  EXECUTORS
+###################
+
+executors:
+  gcp-sdk:
+    docker:
+      - image: google/cloud-sdk:316.0.0
+
+  helm:
+    docker:
+      - image: passcultureapp/helm-gcp:3.4.1
+
+###################
+#  COMMANDS
+###################
+
+commands:
+  authenticate_gcp:
+    description: Authenticate to a GCP project
+    parameters:
+      gcp-key-name:
+        type: env_var_name
+    steps:
+      - run: echo ${<< parameters.gcp-key-name >>} > ${HOME}/gcp-key.json
+      - run: gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
+      - run: gcloud --quiet config set project ${GCP_PROJECT}
+
+  deploy-cloudrun:
+    description: Authenticate to a GCP project
+    parameters:
+      app_name:
+        type: string
+      app_env:
+        type: string
+      app_image_tag:
+        type: string
+      app_service_account_email:
+        type: string
+    steps:
+      - run: |
+          gcloud run deploy << parameters.app_name >> \
+            --platform=managed \
+            --allow-unauthenticated \
+            --vpc-connector=metier-development \
+            --project ${GCP_PROJECT} \
+            --region ${GCP_REGION} \
+            --port=80 \
+            --memory=1Gi \
+            --service-account << parameters.app_service_account_email >> \
+            --set-env-vars "\
+                ACTIVATION_USER_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_activation_user_recipients, \
+                ADMINISTRATION_EMAIL_ADDRESS=sm://${GCP_PROJECT}/<< parameters.app_name >>_administration_email_address, \
+                ALGOLIA_API_KEY=sm://${GCP_PROJECT}/<< parameters.app_name >>_algolia_api_key, \
+                ALGOLIA_APPLICATION_ID=sm://${GCP_PROJECT}/<< parameters.app_name >>_algolia_application_id, \
+                ALLOCINE_API_KEY=sm://${GCP_PROJECT}/<< parameters.app_name >>_allocine_api_key, \
+                BASTION_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_bastion_token, \
+                DATABASE_URL=sm://${GCP_PROJECT}/<< parameters.app_name >>_database_url, \
+                DEMARCHES_SIMPLIFIEES_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_demarches_simplifiees_token, \
+                DEMARCHES_SIMPLIFIEES_WEBHOOK_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_demarches_simplifiees_webhook_token, \
+                DEV_EMAIL_ADDRESS=sm://${GCP_PROJECT}/<< parameters.app_name >>_dev_email_address, \
+                ENV=<< parameters.app_env >>, \
+                EXPORT_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_export_token, \
+                FLASK_SECRET=sm://${GCP_PROJECT}/<< parameters.app_name >>_flask_secret, \
+                FTP_TITELIVE_PWD=sm://${GCP_PROJECT}/<< parameters.app_name >>_ftp_titelive_pwd, \
+                FTP_TITELIVE_URI=sm://${GCP_PROJECT}/<< parameters.app_name >>_ftp_titelive_uri, \
+                FTP_TITELIVE_USER=sm://${GCP_PROJECT}/<< parameters.app_name >>_ftp_titelive_user, \
+                JOUVE_API_DOMAIN=sm://${GCP_PROJECT}/<< parameters.app_name >>_jouve_api_domain, \
+                JOUVE_PASSWORD=sm://${GCP_PROJECT}/<< parameters.app_name >>_jouve_password, \
+                JOUVE_USERNAME=sm://${GCP_PROJECT}/<< parameters.app_name >>_jouve_username, \
+                JOUVE_VAULT_GUID=sm://${GCP_PROJECT}/<< parameters.app_name >>_jouve_vault_guid, \
+                JWT_SECRET_KEY=sm://${GCP_PROJECT}/<< parameters.app_name >>_jwt_secret_key, \
+                MAILJET_API_KEY=sm://${GCP_PROJECT}/<< parameters.app_name >>_mailjet_api_key, \
+                MAILJET_API_SECRET=sm://${GCP_PROJECT}/<< parameters.app_name >>_mailjet_api_secret, \
+                NLTK_DATA=/root/nltk_data, \
+                OBJECT_STORAGE_URL=sm://${GCP_PROJECT}/<< parameters.app_name >>_object_storage_url, \
+                OVH_BUCKET_NAME=sm://${GCP_PROJECT}/<< parameters.app_name >>_ovh_bucket_name, \
+                OVH_PASSWORD=sm://${GCP_PROJECT}/<< parameters.app_name >>_ovh_password, \
+                OVH_REGION_NAME=sm://${GCP_PROJECT}/<< parameters.app_name >>_ovh_region_name, \
+                OVH_TENANT_NAME=sm://${GCP_PROJECT}/<< parameters.app_name >>_ovh_tenant_name, \
+                OVH_USER=sm://${GCP_PROJECT}/<< parameters.app_name >>_ovh_user, \
+                PASS_CULTURE_BIC=sm://${GCP_PROJECT}/<< parameters.app_name >>_pass_culture_bic, \
+                PASS_CULTURE_IBAN=sm://${GCP_PROJECT}/<< parameters.app_name >>_pass_culture_iban, \
+                PASS_CULTURE_REMITTANCE_CODE=sm://${GCP_PROJECT}/<< parameters.app_name >>_pass_culture_remittance_code, \
+                PAYMENTS_DETAILS_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_payments_details_recipients, \
+                PAYMENTS_REPORT_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_payments_report_recipients, \
+                PC_GOOGLE_KEY=sm://${GCP_PROJECT}/<< parameters.app_name >>_pc_google_key, \
+                PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_provider_fnac_basic_authentication_token, \
+                RECAPTCHA_SECRET=sm://${GCP_PROJECT}/<< parameters.app_name >>_recaptcha_secret, \
+                REDIS_URL=sm://${GCP_PROJECT}/<< parameters.app_name >>_redis_url, \
+                SCALINGO_APP_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_scalingo_app_token, \
+                SUPPORT_EMAIL_ADDRESS=sm://${GCP_PROJECT}/<< parameters.app_name >>_support_email_address, \
+                TRANSACTIONS_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_transactions_recipients, \
+                WALLET_BALANCES_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_wallet_balances_recipients" \
+            --image=${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:<< parameters.app_image_tag >>
+
+###################
+#  JOBS
+###################
+
 jobs:
   run-tests:
     parameters:
@@ -147,6 +248,64 @@ jobs:
           paths:
             - requirements.md5
           when: on_fail
+
+  build-and-push-image:
+    executor: gcp-sdk
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - authenticate_gcp:
+          gcp-key-name: GCP_INFRA_KEY
+      - run: gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
+      - run: |
+          docker build . \
+            -f Dockerfile.gcp \
+            -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}
+      - run: docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}
+
+  deploy-cloudrun:
+    executor: gcp-sdk
+    steps:
+      - authenticate_gcp:
+          gcp-key-name: GCP_METIER_KEY
+      - deploy-cloudrun:
+          app_name: pass-culture-api-dev
+          app_env: testing
+          app_image_tag: ${CIRCLE_SHA1}
+          app_service_account_email: secret-reader@pass-culture-app-projet-test.iam.gserviceaccount.com
+
+  deploy-cron-and-worker:
+    executor: helm
+    environment:
+      GKE_CLUSTER_NAME: cluster-metier-ehp
+      HELM_EXPERIMENTAL_OCI: 1
+      CHART_NAME: passculture-chart
+      HELM_CHART_URI: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG}
+      HELM_CHART_NAME: passculture
+      HELM_RELEASE_NAME: development
+      KUBERNETES_NAMESPACE: development
+      HELM_VALUES_FILE: values.yaml
+      TAG: stable
+    steps:
+      - authenticate_gcp:
+          gcp-key-name: GCP_METIER_KEY
+      - run:
+          name: Get GKE cluster credentials
+          command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
+      - run:
+          name: Login to GCP Artifact Registry with helm
+          command: echo ${GCP_INFRA_KEY} | helm registry login  -u _json_key --password-stdin ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}
+      - run:
+          name: Pull chart from registry
+          command: helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG}
+      - run:
+          name: Export chart in local filesystem
+          command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
+      - run:
+          name: Deploy chart with Helm
+          command: helm upgrade -i --wait ${HELM_RELEASE_NAME} tmp/${HELM_CHART_NAME} -n ${KUBERNETES_NAMESPACE} -f tmp/${HELM_CHART_NAME}/${HELM_VALUES_FILE}
 
   tests-data-analytics:
     docker:
@@ -326,6 +485,10 @@ jobs:
             export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
 
+###################
+#  WORKFLOWS
+###################
+
 workflows:
   version: 2
   commit:
@@ -343,6 +506,32 @@ workflows:
             branches:
               only:
                 - master
+
+  gcp:
+    jobs:
+      - build-and-push-image:
+          filters:
+            branches:
+              only:
+                - master
+          context:
+            - GCP
+      - deploy-cloudrun:
+          requires:
+            - build-and-push-image
+          filters:
+            branches:
+              only:
+                - master
+          context:
+            - GCP
+      - deploy-cron-and-worker:
+          filters:
+            branches:
+              only:
+                - master
+          context:
+            - GCP
 
   nightly:
     triggers:
