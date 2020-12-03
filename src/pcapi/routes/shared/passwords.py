@@ -26,8 +26,7 @@ from pcapi.utils.rest import expect_json_data
 from pcapi.validation.routes.passwords import check_recaptcha_token_is_valid
 
 
-# FIXME(cgaunet, 2020-11-17): change the required score once we have data on production environment
-RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE = float(os.environ.get("RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE", 0.0))
+RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE = float(os.environ.get("RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE", 0.7))
 
 # @debt api-migration
 @private_api.route("/users/current/change-password", methods=["POST"])
