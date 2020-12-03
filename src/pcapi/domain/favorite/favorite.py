@@ -14,7 +14,7 @@ class Favorite:
 
     @property
     def is_booked(self) -> bool:
-        return True if self.booking_identifier else False
+        return bool(self.booking_identifier)
 
     @property
     def thumb_url(self) -> str:

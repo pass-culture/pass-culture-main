@@ -30,7 +30,7 @@ def create_industrial_thing_products():
             mock_index = (type_index + thing_type_dict_index) % len(MOCK_NAMES)
 
             name = "{} / {}".format(thing_type_dict["value"], MOCK_NAMES[mock_index])
-            is_national = True if thing_type_dict["onlineOnly"] else False
+            is_national = thing_type_dict["onlineOnly"]
             url = "https://ilestencoretemps.fr/" if thing_type_dict["onlineOnly"] else None
             thing_product = create_product_with_thing_type(
                 author_name=MOCK_AUTHOR_NAMES[mock_index],
