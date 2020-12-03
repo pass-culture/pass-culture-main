@@ -98,7 +98,7 @@ def find_not_cancelled_bookings_by_stock(stock: Stock) -> List[Booking]:
 
 def find_bookings_eligible_for_payment_for_offerer(offerer_id: int) -> List[Booking]:
     return (
-        _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_thing_or_event_begun_before_today_offers()
+        _find_bookings_eligible_for_payment()
         .join(Offerer)
         .filter(Offerer.id == offerer_id)
         .reset_joinpoint()
@@ -110,7 +110,7 @@ def find_bookings_eligible_for_payment_for_offerer(offerer_id: int) -> List[Book
 
 def find_bookings_eligible_for_payment_for_venue(venue_id: int) -> List[Booking]:
     return (
-        _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_thing_or_event_begun_before_today_offers()
+        _find_bookings_eligible_for_payment()
         .filter(VenueSQLEntity.id == venue_id)
         .reset_joinpoint()
         .outerjoin(Payment)
@@ -136,7 +136,7 @@ def find_user_activation_booking(user: UserSQLEntity) -> Booking:
     )
 
 
-def token_exists(token) -> bool:
+def token_exists(token: str) -> bool:
     return db.session.query(Booking.query.filter_by(token=token).exists()).scalar()
 
 
@@ -367,7 +367,7 @@ def _serialize_event_booking_recap(booking: AbstractKeyedTuple) -> EventBookingR
     )
 
 
-def _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_thing_or_event_begun_before_today_offers() -> Query:
+def _find_bookings_eligible_for_payment() -> Query:
     return _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers().filter(
         ~(cast(Stock.beginningDatetime, Date) >= date.today()) | (Stock.beginningDatetime.is_(None))
     )
