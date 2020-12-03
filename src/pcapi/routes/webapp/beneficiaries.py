@@ -1,5 +1,5 @@
-from typing import Tuple
 import os
+from typing import Tuple
 
 from flask import jsonify
 from flask import request
