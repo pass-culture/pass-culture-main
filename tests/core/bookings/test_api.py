@@ -177,7 +177,8 @@ class CancelByBeneficiaryTest:
         assert not booking.isCancelled
         assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 48h avant le début de l'événement"
+            "Impossible d'annuler une réservation plus de 48h après l'avoir "
+            "réservée et moins de 48h avant le début de l'événement"
         ]
 
     def test_raise_if_booking_created_too_long_ago_to_cancel_booking(self):
@@ -192,7 +193,8 @@ class CancelByBeneficiaryTest:
         assert not booking.isCancelled
         assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 48h avant le début de l'événement"
+            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée"
+            " et moins de 48h avant le début de l'événement"
         ]
 
     def test_raise_if_event_too_close_and_booked_long_ago(self):
@@ -207,7 +209,8 @@ class CancelByBeneficiaryTest:
         assert not booking.isCancelled
         assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
-            "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 48h avant le début de l'événement"
+            "Impossible d'annuler une réservation plus de 48h après l'avoir "
+            "réservée et moins de 48h avant le début de l'événement"
         ]
 
     def test_raise_if_trying_to_cancel_someone_else_s_booking(self):
@@ -399,7 +402,27 @@ class ComputeConfirmationDateTest:
 @freeze_time("2020-11-17 09:21:34")
 @pytest.mark.usefixtures("db_session")
 class UpdateConfirmationDatesTest:
-    def test_should_update_bookings(self):
+    def should_update_bookings_confirmation_date(self):
+        #  Given
+        bookings = [
+            factories.BookingFactory(
+                dateCreated=(datetime.now() - timedelta(days=1)),
+            ),
+            factories.BookingFactory(
+                dateCreated=(datetime.now() - timedelta(days=4)),
+            ),
+        ]
+
+        # When
+        api.update_confirmation_dates(bookings, datetime.now() + timedelta(days=4))
+
+        # Then
+        updated_booking1 = models.Booking.query.get(bookings[0].id)
+        updated_booking2 = models.Booking.query.get(bookings[1].id)
+        assert updated_booking1.confirmationDate == datetime(2020, 11, 18, 9, 21, 34)
+        assert updated_booking2.confirmationDate == datetime(2020, 11, 15, 9, 21, 34)
+
+    def should_return_an_updated_bookings_lis(self):
         #  Given
         bookings = [
             factories.BookingFactory(

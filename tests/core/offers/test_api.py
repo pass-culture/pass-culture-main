@@ -131,16 +131,13 @@ class EditStockTest:
         notified_bookings = mocked_send_email.call_args_list[0][0][0]
         assert notified_bookings == [booking1]
 
-    def should_update_bookings_confirmation_date_if_report_of_event(self):
+    @mock.patch("pcapi.core.offers.api.update_confirmation_dates")
+    def should_update_bookings_confirmation_date_if_report_of_event(self, mock_update_confirmation_dates):
         now = datetime.datetime.now()
         event_in_4_days = now + datetime.timedelta(days=4)
-        confirmation_date_for_event_in_4_days = now + datetime.timedelta(days=2)
         event_reported_in_10_days = now + datetime.timedelta(days=10)
-        confirmation_date_for_event_reported_in_10_days = now + datetime.timedelta(days=2)
-
         stock = factories.EventStockFactory(beginningDatetime=event_in_4_days)
         booking = bookings_factories.BookingFactory(stock=stock, dateCreated=now)
-        initial_confirmation_date = booking.confirmationDate
 
         api.edit_stock(
             stock,
@@ -150,12 +147,10 @@ class EditStockTest:
             booking_limit_datetime=stock.bookingLimitDatetime,
         )
 
-        booking_updated = models.Booking.query.one()
-        assert initial_confirmation_date == confirmation_date_for_event_in_4_days
-        assert booking_updated.confirmationDate == confirmation_date_for_event_reported_in_10_days
+        mock_update_confirmation_dates.assert_called_once_with([booking], event_reported_in_10_days)
 
-    @mock.patch("pcapi.core.offers.api.update_validation")
-    def should_invalidate_booking_token_when_event_is_reported(self, mock_update_validation):
+    @mock.patch("pcapi.core.offers.api.unvalidate_bookings")
+    def should_invalidate_booking_token_when_event_is_reported(self, mock_unvalidate_bookings):
         # Given
         now = datetime.datetime.now()
         booking_made_3_days_ago = now - datetime.timedelta(days=3)
@@ -174,7 +169,7 @@ class EditStockTest:
         )
 
         # Then
-        mock_update_validation.assert_called_once_with([booking])
+        mock_unvalidate_bookings.assert_called_once_with([booking])
 
     def test_checks_number_of_reservations(self):
         stock = factories.EventStockFactory()
