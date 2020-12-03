@@ -6,21 +6,7 @@ export const initReCaptchaScript = () => {
   script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`
   script.async = true
 
-  document.body.appendChild(script)
-
-  return () => {
-    document.body.removeChild(script)
-  }
-}
-
-export const destroyReCaptchaScript = () => {
-  const scriptTag = document.querySelector(
-    'script[src="https://www.google.com/recaptcha/api.js?render=recaptcha-site-key"]'
-  )
-
-  if (scriptTag) {
-    document.body.removeChild(scriptTag)
-  }
+  return document.body.appendChild(script)
 }
 
 export const getReCaptchaToken = action =>

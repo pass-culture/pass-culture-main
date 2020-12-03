@@ -10,7 +10,7 @@ import Main from 'components/layout/Main'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
 
-import { initReCaptchaScript, destroyReCaptchaScript } from '../../../utils/recaptcha'
+import { initReCaptchaScript } from '../../../utils/recaptcha'
 
 class LostPassword extends PureComponent {
   constructor(props) {
@@ -27,11 +27,14 @@ class LostPassword extends PureComponent {
       newPasswordValue: '',
       isPasswordHidden: true,
     }
-    initReCaptchaScript()
+  }
+
+  componentDidMount() {
+    this.gcaptchaScript = initReCaptchaScript()
   }
 
   componentWillUnmount() {
-    destroyReCaptchaScript()
+    this.gcaptchaScript.remove()
   }
 
   redirectToResetPasswordSuccessPage = () => {
