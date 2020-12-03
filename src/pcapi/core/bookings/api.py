@@ -14,6 +14,7 @@ from pcapi.core.bookings import conf
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.offers.models import Stock
 from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from pcapi.models.feature import FeatureToggle
@@ -22,7 +23,6 @@ from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.utils.mailing import send_raw_email
-from pcapi.utils.token import random_token
 
 from . import repository as booking_repository
 from . import validation
@@ -83,14 +83,6 @@ def book_offer(
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     return booking
-
-
-def generate_booking_token():
-    for _i in range(100):
-        token = random_token()
-        if not booking_repository.token_exists(token):
-            return token
-    raise ValueError("Could not generate new booking token")
 
 
 def cancel_booking_by_beneficiary(user: UserSQLEntity, booking: Booking) -> None:
