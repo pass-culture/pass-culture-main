@@ -74,3 +74,9 @@ REDIS_VENUE_PROVIDERS_CHUNK_SIZE = int(os.environ.get("REDIS_VENUE_PROVIDERS_LRA
 #   - mailjet
 #   - log
 SEND_RAW_EMAIL_BACKEND = os.environ.get("SEND_RAW_EMAIL_BACKEND", "mailjet").lower()
+
+
+# NATIVE APP
+NATIVE_ACCOUNT_CREATION_REQUIRES_RECAPTCHA = bool(
+    os.environ.get("NATIVE_ACCOUNT_CREATION_REQUIRES_RECAPTCHA", ENV != "testing")
+)

@@ -2,6 +2,7 @@ from flask import current_app as app
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
+from pcapi import settings
 from pcapi.core.users import api
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.domain.beneficiary import beneficiary_licence
@@ -36,7 +37,9 @@ def get_user_profile() -> serializers.UserProfileResponse:
 @blueprint.native_v1.route("/account", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def create_account(body: serializers.AccountRequest) -> None:
-    if not beneficiary_licence.is_licence_token_valid(body.token):
+    if settings.NATIVE_ACCOUNT_CREATION_REQUIRES_RECAPTCHA and not beneficiary_licence.is_licence_token_valid(
+        body.token
+    ):
         raise ApiErrors(
             {"token": ["Le token est invalide"]},
             status_code=400,
