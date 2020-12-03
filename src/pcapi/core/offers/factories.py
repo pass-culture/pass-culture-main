@@ -148,3 +148,11 @@ class MediationFactory(BaseFactory):
 
     offer = factory.SubFactory(OfferFactory)
     isActive = True
+
+
+class CriterionFactory(BaseFactory):
+    class Meta:
+        model = models.Criterion
+
+    name = factory.Sequence("Criterion {}".format)
+    scoreDelta = 1
