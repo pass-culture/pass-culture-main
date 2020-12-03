@@ -46,7 +46,7 @@ def send_raw_email(data: Dict) -> bool:
     successfully_sent_email = False
     try:
         if settings.SEND_RAW_EMAIL_BACKEND == "log":
-            logger.info("[EMAIL] Sending email %s", data)
+            logger.logger.info("[EMAIL] Sending email %s", data)
         else:
             response = app.mailjet_client.send.create(data=data)
         successfully_sent_email = response.status_code == 200
