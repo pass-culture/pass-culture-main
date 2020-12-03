@@ -1,5 +1,5 @@
 {
   "python.linting.pylintEnabled": true,
-  "python.pythonPath": "./venv/bin/python",
-  "python.sortImports.path": "isort"
+  "python.sortImports.path": "isort",
+  "editor.formatOnSave": true
 }
