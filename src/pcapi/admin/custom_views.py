@@ -1,5 +1,10 @@
+from typing import List
+
 from flask_admin.helpers import get_form_data
 from flask_login import current_user
+from sqlalchemy.orm import query
+from sqlalchemy.sql.expression import distinct
+from sqlalchemy.sql.functions import func
 from wtforms import Form
 from wtforms import SelectField
 from wtforms import StringField
@@ -14,6 +19,8 @@ from pcapi.flask_app import app
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
 from pcapi.models import Offer
+from pcapi.models import UserOfferer
+from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
 
 
@@ -28,7 +35,7 @@ class OfferAdminView(BaseAdminView):
     column_filters = ["type", "criteria.name"]
     form_columns = ["criteria"]
 
-    def on_model_change(self, form: Form, offer: Offer, is_created=False):
+    def on_model_change(self, form: Form, offer: Offer, is_created: bool = False) -> None:
         redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
 
@@ -39,7 +46,7 @@ class CriteriaAdminView(BaseAdminView):
     column_list = ["id", "name", "description", "scoreDelta"]
     column_labels = dict(name="Nom", description="Description", scoreDelta="Score")
     column_searchable_list = ["name", "description"]
-    column_filters = []
+    column_filters: List[str] = []
     form_columns = ["name", "description", "scoreDelta"]
 
 
@@ -52,7 +59,55 @@ class OffererAdminView(BaseAdminView):
     form_columns = ["name", "siren", "city", "postalCode", "address"]
 
 
-class UserAdminView(BaseAdminView):
+class ProUserAdminView(BaseAdminView):
+    can_edit = True
+    column_list = [
+        "id",
+        "isBeneficiary",
+        "email",
+        "firstName",
+        "lastName",
+        "publicName",
+        "dateOfBirth",
+        "departementCode",
+        "phoneNumber",
+        "postalCode",
+        "resetPasswordToken",
+        "validationToken",
+    ]
+    column_labels = dict(
+        email="Email",
+        isBeneficiary="Est bénéficiaire",
+        firstName="Prénom",
+        lastName="Nom",
+        publicName="Nom d'utilisateur",
+        dateOfBirth="Date de naissance",
+        departementCode="Département",
+        phoneNumber="Numéro de téléphone",
+        postalCode="Code postal",
+        resetPasswordToken="Jeton d'activation et réinitialisation de mot de passe",
+        validationToken="Jeton de validation d'adresse email",
+    )
+    column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
+    column_filters = ["postalCode", "isBeneficiary"]
+    form_columns = [
+        "email",
+        "firstName",
+        "lastName",
+        "publicName",
+        "dateOfBirth",
+        "departementCode",
+        "postalCode",
+    ]
+
+    def get_query(self) -> query:
+        return UserSQLEntity.query.join(UserOfferer).distinct(UserSQLEntity.id)
+
+    def get_count_query(self) -> query:
+        return self.session.query(func.count(distinct(UserSQLEntity.id))).select_from(UserSQLEntity).join(UserOfferer)
+
+
+class BeneficiaryUserAdminView(BaseAdminView):
     can_edit = True
     column_list = [
         "id",
@@ -94,12 +149,23 @@ class UserAdminView(BaseAdminView):
         "isBeneficiary",
     ]
 
-    def on_model_change(self, form, model, is_created):
-        # If a user is a pro or an admin, he shouldn't be able to book offers
-        if form.isBeneficiary.data and (model.isAdmin or len(model.offerers) > 0):
-            raise validators.ValidationError("Seul un jeune peut réserver des offres")
+    def on_model_change(self, form: Form, model: UserSQLEntity, is_created: bool) -> None:
+        # If a user is an admin, he shouldn't be able to be beneficiary
+        if form.isBeneficiary.data and model.isAdmin:
+            raise validators.ValidationError("Un admin ne peut pas être bénéficiaire")
 
         super().on_model_change(form, model, is_created)
+
+    def get_query(self) -> query:
+        return UserSQLEntity.query.outerjoin(UserOfferer).filter(UserOfferer.userId.is_(None))
+
+    def get_count_query(self) -> query:
+        return (
+            self.session.query(func.count("*"))
+            .select_from(self.model)
+            .outerjoin(UserOfferer)
+            .filter(UserOfferer.userId.is_(None))
+        )
 
 
 class VenueAdminView(BaseAdminView):
@@ -171,7 +237,7 @@ class BeneficiaryImportView(BaseAdminView):
         "authorEmail",
     ]
 
-    def edit_form(self, obj=None):
+    def edit_form(self, obj=None) -> Form:
         class _NewStatusForm(Form):
             beneficiary = StringField(
                 "Bénéficiaire",
@@ -191,7 +257,7 @@ class BeneficiaryImportView(BaseAdminView):
 
         return _NewStatusForm(get_form_data())
 
-    def update_model(self, new_status_form: Form, beneficiary_import: BeneficiaryImport):
+    def update_model(self, new_status_form: Form, beneficiary_import: BeneficiaryImport) -> None:
         new_status = ImportStatus(new_status_form.status.data)
 
         if is_import_status_change_allowed(beneficiary_import.currentStatus, new_status):
