@@ -1,3 +1,5 @@
+import os
+
 from flask import current_app as app
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
@@ -5,13 +7,16 @@ from flask_jwt_extended import jwt_required
 from pcapi import settings
 from pcapi.core.users import api
 from pcapi.core.users.models import VOID_FIRST_NAME
-from pcapi.domain.beneficiary import beneficiary_licence
 from pcapi.models import ApiErrors
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.validation.routes.passwords import check_recaptcha_token_is_valid
 
 from . import blueprint
 from .serialization import account as serializers
+
+
+RECAPTCHA_LICENCE_MINIMAL_SCORE = float(os.environ.get("RECAPTCHA_LICENCE_MINIMAL_SCORE", 0.5))
 
 
 @blueprint.native_v1.route("/me", methods=["GET"])
@@ -39,13 +44,9 @@ def get_user_profile() -> serializers.UserProfileResponse:
 @blueprint.native_v1.route("/account", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def create_account(body: serializers.AccountRequest) -> None:
-    if settings.NATIVE_ACCOUNT_CREATION_REQUIRES_RECAPTCHA and not beneficiary_licence.is_licence_token_valid(
-        body.token
-    ):
-        raise ApiErrors(
-            {"token": ["Le token est invalide"]},
-            status_code=400,
-        )
+    if settings.NATIVE_ACCOUNT_CREATION_REQUIRES_RECAPTCHA:
+        check_recaptcha_token_is_valid(body.token, "submit", RECAPTCHA_LICENCE_MINIMAL_SCORE)
+
     api.create_account(
         email=body.email,
         password=body.password,

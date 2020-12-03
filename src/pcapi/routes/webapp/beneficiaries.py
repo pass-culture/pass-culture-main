@@ -1,4 +1,5 @@
 from typing import Tuple
+import os
 
 from flask import jsonify
 from flask import request
@@ -8,7 +9,6 @@ from flask_login import login_user
 
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
-from pcapi.domain.beneficiary.beneficiary_licence import is_licence_token_valid
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.models.api_errors import ApiErrors
@@ -21,10 +21,13 @@ from pcapi.utils.includes import BENEFICIARY_INCLUDES
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import login_or_api_key_required
+from pcapi.validation.routes.passwords import check_recaptcha_token_is_valid
 from pcapi.validation.routes.users import check_allowed_changes_for_user
 from pcapi.validation.routes.users import check_valid_signin
 from pcapi.workers.beneficiary_job import beneficiary_job
 
+
+RECAPTCHA_LICENCE_MINIMAL_SCORE = float(os.environ.get("RECAPTCHA_LICENCE_MINIMAL_SCORE", 0.5))
 
 # @debt api-migration
 @private_api.route("/beneficiaries/current", methods=["GET"])
@@ -99,10 +102,7 @@ def verify_id_check_licence_token(
         return serialization_beneficiaries.VerifyIdCheckLicenceResponse()
 
     # Let's try with the legacy webapp tokens
-    licence_token_is_valid = is_licence_token_valid(body.token)
-
-    if not licence_token_is_valid:
-        raise ApiErrors({}, status_code=422)
+    check_recaptcha_token_is_valid(body.token, "submit", RECAPTCHA_LICENCE_MINIMAL_SCORE)
 
     return serialization_beneficiaries.VerifyIdCheckLicenceResponse()
 

@@ -1,12 +1,34 @@
-import os
-
-from pcapi.connectors.api_recaptcha import check_recaptcha_token_is_valid
-from pcapi.models.api_errors import ApiErrors
+from pcapi.connectors.api_recaptcha import get_token_validation_and_score
+from pcapi.models import ApiErrors
 
 
-# FIXME(cgaunet, 2020-11-17): change the required score once we have data on production environment
-RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE = float(os.environ.get("RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE", 0.0))
+class ReCaptchaException(Exception):
+    pass
 
 
-def validate_reset_password_token(token: str):
-    check_recaptcha_token_is_valid(token, "resetPassword", RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE)
+class InvalidRecaptchaTokenException(ApiErrors):
+    def __init__(self):
+        super().__init__()
+        self.add_error("token", "Le token renseigné n'est pas valide")
+
+
+def check_recaptcha_token_is_valid(token: str, original_action: str, minimal_score: float) -> None:
+    response = get_token_validation_and_score(token)
+    is_token_valid = response.get("success")
+
+    if not is_token_valid:
+        errors_found = response.get("error-codes", [])
+
+        if errors_found == ["timeout-or-duplicate"]:
+            raise InvalidRecaptchaTokenException()
+        else:
+            raise ReCaptchaException(f"Encountered the following error(s): {errors_found}")
+
+    response_score = response.get("score", 0)
+
+    if response_score < minimal_score:
+        raise ReCaptchaException(f"Token score is too low ({response_score}) to match minimum score ({minimal_score})")
+
+    action = response.get("action", "")
+    if action != original_action:
+        raise ReCaptchaException(f"The action '{action}' does not match '{original_action}' from the form")

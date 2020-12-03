@@ -64,9 +64,9 @@ class AccountTest:
         assert response.json["first_name"] is None
         assert not response.json["is_beneficiary"]
 
-    @patch("pcapi.domain.beneficiary.beneficiary_licence.is_licence_token_valid", return_value=True)
+    @patch("pcapi.routes.native.v1.account.check_recaptcha_token_is_valid")
     @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
-    def test_account_creation(self, mocked_send_raw_email, mocked_is_licence_token_valid, app):
+    def test_account_creation(self, mocked_send_raw_email, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
         assert UserSQLEntity.query.first() is None
         data = {
