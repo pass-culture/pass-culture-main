@@ -184,6 +184,7 @@ def get_lines_from_thing_file(thing_file: str):
 
 
 def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
+    # pylint: disable=too-many-return-statements
     if titelive_type == "A":
         return None, None
     if titelive_type == "BD":

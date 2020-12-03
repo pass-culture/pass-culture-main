@@ -50,7 +50,7 @@ def create_industrial_recommendations(offers_by_name, users_by_name):
 
             if offer.id not in recommended_offer_ids:
                 continue
-            elif offer.venue.managingOfferer.validationToken:
+            if offer.venue.managingOfferer.validationToken:
                 continue
 
             recommendation_name = "{} / {}".format(offer_name, user_name)

@@ -42,7 +42,7 @@ from pcapi.utils.json_encoder import EnumJSONEncoder
 
 def run_migrations():
     alembic_cfg = Config("alembic.ini")
-    alembic_cfg.attributes["sqlalchemy.url"] = os.environ.get("DATABASE_URL_TEST")
+    alembic_cfg.set_main_option("sqlalchemy.url", os.environ.get("DATABASE_URL_TEST"))
     command.upgrade(alembic_cfg, "head")
 
 

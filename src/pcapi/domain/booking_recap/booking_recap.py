@@ -122,11 +122,8 @@ class BookingRecap:
 
 
 class ThingBookingRecap(BookingRecap):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
     @BookingRecap.booking_token.getter
-    def booking_token(self) -> Optional[str]:
+    def booking_token(self) -> Optional[str]:  # pylint: disable=invalid-overridden-method
         if not self.booking_is_used and not self.booking_is_cancelled:
             return None
         return self._booking_token

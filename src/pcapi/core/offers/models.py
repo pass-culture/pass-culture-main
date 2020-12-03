@@ -80,7 +80,7 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
     bookingLimitDatetime = Column(DateTime, nullable=True)
 
     @property
-    def isBookable(self):
+    def isBookable(self):  # pylint: disable=too-many-return-statements
         if self.hasBookingLimitDatetimePassed:
             return False
         if not self.offer.venue.managingOfferer.isActive:

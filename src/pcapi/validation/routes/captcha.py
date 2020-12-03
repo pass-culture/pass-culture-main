@@ -21,8 +21,7 @@ def check_recaptcha_token_is_valid(token: str, original_action: str, minimal_sco
 
         if errors_found == ["timeout-or-duplicate"]:
             raise InvalidRecaptchaTokenException()
-        else:
-            raise ReCaptchaException(f"Encountered the following error(s): {errors_found}")
+        raise ReCaptchaException(f"Encountered the following error(s): {errors_found}")
 
     response_score = response.get("score", 0)
 

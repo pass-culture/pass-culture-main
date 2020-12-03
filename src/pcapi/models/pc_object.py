@@ -167,7 +167,7 @@ class PcObject:
     @staticmethod
     def _get_keys_to_populate(columns: Iterable[str], data: dict, skipped_keys: Iterable[str]) -> Set[str]:
         requested_columns_to_update = set(data.keys())
-        forbidden_columns = set(["id", "deleted"] + skipped_keys)
+        forbidden_columns = {"id", "deleted"} | set(skipped_keys)
         allowed_columns_to_update = requested_columns_to_update - forbidden_columns
         keys_to_populate = set(columns).intersection(allowed_columns_to_update)
         return keys_to_populate

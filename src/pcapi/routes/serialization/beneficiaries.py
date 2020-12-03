@@ -1,5 +1,5 @@
-from pydantic import BaseModel  # pylint: disable=no-name-in-module
-from pydantic.class_validators import validator  # pylint: disable=no-name-in-module
+from pydantic import BaseModel
+from pydantic.class_validators import validator
 
 from pcapi.models.api_errors import ApiErrors
 

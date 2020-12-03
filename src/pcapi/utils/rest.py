@@ -81,5 +81,5 @@ def load_or_raise_error(obj_class, human_id):
         errors.add_error("global", "Aucun objet ne correspond à cet identifiant dans notre base de données")
         errors.status_code = 400
         raise errors
-    else:
-        return data
+
+    return data

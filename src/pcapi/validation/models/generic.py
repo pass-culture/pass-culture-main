@@ -20,7 +20,7 @@ def validate_generic(model: Model) -> ApiErrors:
         if not isinstance(column, Column):
             continue
 
-        if (
+        if (  # pylint: disable=too-many-boolean-expressions
             not column.nullable
             and not column.foreign_keys
             and not column.primary_key

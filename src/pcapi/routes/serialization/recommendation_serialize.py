@@ -18,10 +18,7 @@ def serialize_recommendations(recommendations: List[Recommendation], user_id: in
     bookings_by_offer = _get_bookings_by_offer(bookings)
     for serialized_recommendation in serialized_recommendations:
         offer_id = dehumanize(serialized_recommendation["offerId"])
-        if offer_id in bookings_by_offer:
-            bookings_for_recommendation = bookings_by_offer[offer_id]
-        else:
-            bookings_for_recommendation = []
+        bookings_for_recommendation = bookings_by_offer.get(offer_id, [])
         serialized_recommendation["bookings"] = _serialize_bookings(bookings_for_recommendation)
 
     return serialized_recommendations

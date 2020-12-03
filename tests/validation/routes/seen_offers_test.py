@@ -20,8 +20,5 @@ class checkPayloadIsValidTest:
         # given
         payload = {"offerId": "AE"}
 
-        # when
-        check = check_payload_is_valid(payload)
-
-        # then
-        assert check is None
+        # then the following should not raise
+        check_payload_is_valid(payload)

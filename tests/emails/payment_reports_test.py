@@ -14,11 +14,11 @@ from pcapi.utils.mailing import make_payments_report_email
 @freeze_time("2018-10-15 09:21:34")
 class MakePaymentsReportEmailTest:
     @classmethod
-    def setup_class(self):
-        self.grouped_payments = {"ERROR": [Mock(), Mock()], "SENT": [Mock()], "PENDING": [Mock(), Mock(), Mock()]}
+    def setup_class(cls):
+        cls.grouped_payments = {"ERROR": [Mock(), Mock()], "SENT": [Mock()], "PENDING": [Mock(), Mock(), Mock()]}
 
-        self.not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
-        self.error_csv = '"header 1","header 2","header 3","header 4"\n"part 1","part 2","part 3","part 4"\n'
+        cls.not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
+        cls.error_csv = '"header 1","header 2","header 3","header 4"\n"part 1","part 2","part 3","part 4"\n'
 
     def test_it_contains_the_two_csv_files_as_attachment(self, app):
         # When

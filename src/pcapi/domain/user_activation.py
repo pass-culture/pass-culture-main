@@ -43,12 +43,11 @@ def create_initial_deposit(user_to_activate: UserSQLEntity) -> Deposit:
         error.add_error("user", "Cet utilisateur a déjà crédité son pass Culture")
         raise error
 
-    else:
-        deposit = Deposit()
-        deposit.amount = 500
-        deposit.user = user_to_activate
-        deposit.source = "fichier csv"
-        return deposit
+    deposit = Deposit()
+    deposit.amount = 500
+    deposit.user = user_to_activate
+    deposit.source = "fichier csv"
+    return deposit
 
 
 def generate_activation_users_csv(activation_users: Iterable[ActivationUser]) -> str:

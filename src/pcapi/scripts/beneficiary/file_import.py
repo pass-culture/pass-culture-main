@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 import os
 import re
+import sys
 from typing import Callable
 from typing import Iterable
 from typing import List
@@ -144,11 +145,11 @@ def run(csv_file_path: str) -> None:
     stock = offers_repository.find_online_activation_stock()
     if not stock:
         logger.error("No activation stock found")
-        exit(1)
+        sys.exit(1)
 
     if not ACTIVATION_USER_RECIPIENTS:
         logger.error("No recipients [ACTIVATION_USER_RECIPIENTS] found")
-        exit(1)
+        sys.exit(1)
 
     logger.info("[STEP 1] Lecture du fichier CSV")
     csv_file = open(csv_file_path)
