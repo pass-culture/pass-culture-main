@@ -17,18 +17,10 @@ class CheckOfferTypeIsValidTest:
         assert error.value.errors["type"] == ["Le type de cette offre est inconnu"]
 
     def test_does_not_raise_exception_when_ThingType_is_given(self):
-        # When
-        try:
-            check_offer_type_is_valid(str(ThingType.JEUX_VIDEO))
-        except:
-            assert False
+        check_offer_type_is_valid(str(ThingType.JEUX_VIDEO))
 
     def test_does_not_raise_exception_when_EventType_is_given(self):
-        # When
-        try:
-            check_offer_type_is_valid(str(EventType.ACTIVATION))
-        except:
-            assert False
+        check_offer_type_is_valid(str(EventType.ACTIVATION))
 
 
 class CheckOfferNameIsValidTest:
@@ -49,8 +41,5 @@ class CheckOfferNameIsValidTest:
         # Given
         offer_title_less_than_90_characters = "Nom de moins de quatre-vingt-dix caractères"
 
-        # When
-        try:
-            check_offer_name_length_is_valid(offer_title_less_than_90_characters)
-        except:
-            assert False
+        # The the following should not raise
+        check_offer_name_length_is_valid(offer_title_less_than_90_characters)

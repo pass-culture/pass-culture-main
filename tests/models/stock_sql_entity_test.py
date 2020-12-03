@@ -157,12 +157,8 @@ def test_quantity_stocks_can_be_changed_even_when_bookings_with_cancellations_ex
     repository.save(cancelled_booking1, cancelled_booking2, booking1, booking2)
     stock.quantity = 3
 
-    # When
-    try:
-        repository.save(stock)
-    except:
-        # Then
-        assert False
+    # Then the following should not raise
+    repository.save(stock)
 
 
 @pytest.mark.usefixtures("db_session")

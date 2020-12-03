@@ -30,12 +30,8 @@ class TestLoadOrRaiseErrorTest:
         venue = create_venue(offerer)
         repository.save(venue)
 
-        # When
-        try:
-            load_or_raise_error(VenueSQLEntity, humanize(venue.id))
-
-        except:
-            assert False
+        # Then the following should not raise
+        load_or_raise_error(VenueSQLEntity, humanize(venue.id))
 
 
 class TestCheckOrderByTest:

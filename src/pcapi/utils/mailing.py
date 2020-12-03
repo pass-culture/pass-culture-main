@@ -211,7 +211,7 @@ def subscribe_newsletter(user: UserSQLEntity):
 
     try:
         contact = get_contact(user)
-    except:
+    except Exception:  # pylint: disable=broad-except
         contact_data = {"Email": user.email, "Name": user.publicName}
         contact_json = app.mailjet_client.contact.create(data=contact_data).json()
         contact = contact_json["Data"][0] if "Data" in contact_json else None

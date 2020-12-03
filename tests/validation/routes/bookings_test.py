@@ -17,17 +17,7 @@ def test_should_raise_error_when_page_number_is_not_a_number():
 
 
 def test_should_not_raise_error_when_page_number_is_a_string_containing_number():
-    # Given
-    page = "1"
-
-    # When
-    try:
-        check_page_format_is_number(page)
-    except:
-        assert False
-
-    # Then
-    assert True
+    check_page_format_is_number("1")
 
 
 def test_should_raise_error_when_page_number_is_inferior_to_1():

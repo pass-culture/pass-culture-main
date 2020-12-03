@@ -67,13 +67,8 @@ class CheckUserCanValidateBookingTestv2:
 
         repository.save(user, offerer, user_offerer)
 
-        # When
-        try:
-            check_user_can_validate_bookings_v2(user, offerer.id)
-
-        # Then
-        except:
-            assert False
+        # Then the following should not raise
+        check_user_can_validate_bookings_v2(user, offerer.id)
 
     def test_check_user_can_validate_v2_bookings_raise_api_error_when_user_is_authenticated_but_does_not_have_editor_rights_on_booking(
         self, app
@@ -106,13 +101,8 @@ class CheckApiKeyAllowsToValidateBookingTest:
 
         repository.save(validApiKey)
 
-        # When
-        try:
-            check_api_key_allows_to_validate_booking(validApiKey, offerer.id)
-
-        # Then
-        except:
-            assert False
+        # The the following should not raise
+        check_api_key_allows_to_validate_booking(validApiKey, offerer.id)
 
     def test_raises_exception_when_api_key_is_provided_but_related_offerer_does_not_have_rights_on_booking(self, app):
         # Given
@@ -134,13 +124,8 @@ class CheckUserCanValidateActivationOfferTest:
         # Given
         admin_user = create_user(is_admin=True)
 
-        # When
-        try:
-            check_user_can_validate_activation_offer(admin_user)
-
-        # Then
-        except:
-            assert False
+        # The the following should not raise
+        check_user_can_validate_activation_offer(admin_user)
 
     def test_raises_exception_when_user_is_not_admin(self, app):
         # Given
