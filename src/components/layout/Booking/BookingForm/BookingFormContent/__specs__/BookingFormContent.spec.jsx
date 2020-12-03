@@ -14,13 +14,13 @@ describe('bookingFormContent', () => {
   beforeEach(() => {
     handleSubmit = jest.fn()
     props = {
+      canExpire: true,
       extraClassName: 'fake className',
       formId: 'fake formId',
       handleSubmit,
       invalid: false,
       isDigital: false,
       isEvent: false,
-      isPressSubscription: true,
       isReadOnly: false,
       isStockDuo: false,
       offerId: 'o1',
@@ -234,7 +234,7 @@ describe('bookingFormContent', () => {
     it('should display a booking modalities message when it is a digital offer but is not a press subscription', () => {
       // given
       props.isEvent = false
-      props.isPressSubscription = false
+      props.canExpire = false
       props.isDigital = true
 
       // when
@@ -252,7 +252,7 @@ describe('bookingFormContent', () => {
     it('should display a booking modalities message when it is a physical offer but is not a press subscription', () => {
       // given
       props.isEvent = false
-      props.isPressSubscription = false
+      props.canExpire = false
       props.isDigital = false
 
       // when

@@ -9,9 +9,10 @@ describe('src | components | BookingFormContentContainer', () => {
           offers: [
             {
               id: 'O1',
+              isDigital: true,
               isDuo: true,
               offerType: {
-                value: 'FAKE_TYPE',
+                canExpire: false,
               },
               url: 'http://fake-url.com',
             },
@@ -38,8 +39,8 @@ describe('src | components | BookingFormContentContainer', () => {
 
       // then
       expect(props).toStrictEqual({
+        canExpire: false,
         isDigital: true,
-        isPressSubscription: false,
         isStockDuo: true,
       })
     })
