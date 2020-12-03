@@ -44,7 +44,7 @@ def create_industrial_venues(offerers_by_name: Dict, venue_types: List[VenueType
                 bic = None
                 iban_count = 3
         else:
-            if iban_count == 0 or iban_count == 1:
+            if iban_count in (0, 1):
                 iban = iban_prefix
                 bic = bic_prefix + str(bic_suffix)
                 iban_count = 2

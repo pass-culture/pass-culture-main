@@ -232,7 +232,7 @@ def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
         return None, None
     if titelive_type == "R":
         return str(ThingType.LIVRE_EDITION), BookFormat.REVUE.value
-    if titelive_type == "T" or titelive_type == "TL":
+    if titelive_type in ("T", "TL"):
         return str(ThingType.LIVRE_EDITION), None
     if titelive_type == "TR":
         return None, None

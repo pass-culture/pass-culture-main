@@ -73,18 +73,17 @@ def do_local_backup_prod_container(dest_folder_name):
 
 
 def do_copy_prod_container_content_to_dest_container(dest_container_name):
-    if dest_container_name == "storage-pc-staging" or dest_container_name == "storage-pc-dev":
-        conn = swift_con(dest_container_name)
-    else:
+    if dest_container_name not in ("storage-pc-staging", "storage-pc-dev"):
         print("Ce conteneur ne semble pas exister")
         return 1
+    conn = swift_con(dest_container_name)
 
-    if "OVH_BUCKET_NAME" in os.environ:
-        prod_container_name = os.environ.get("OVH_BUCKET_NAME")
-        prod_conn = swift_con_prod()
-    else:
+    if "OVH_BUCKET_NAME" not in os.environ:
         print("OVH_BUCKET_NAME does not seem to be set.")
         return 1
+
+    prod_container_name = os.environ.get("OVH_BUCKET_NAME")
+    prod_conn = swift_con_prod()
 
     for data in prod_conn.get_container(prod_container_name)[1]:
         obj_tuple = prod_conn.get_object(prod_container_name, data["name"])
@@ -96,7 +95,7 @@ def do_copy_prod_container_content_to_dest_container(dest_container_name):
 
 # file_name format : "thumbs/venues/SM"
 def do_does_file_exist(container_name, file_name):
-    if container_name == "storage-pc-staging" or container_name == "storage-pc-dev":
+    if container_name in ("storage-pc-staging", "storage-pc-dev"):
         conn = swift_con(container_name)
     elif container_name == "storage-pc":
         conn = swift_con_prod()
@@ -114,7 +113,7 @@ def do_does_file_exist(container_name, file_name):
 
 
 def do_delete_file(container_name, file_name):
-    if container_name == "storage-pc-staging" or container_name == "storage-pc-dev":
+    if container_name in ("storage-pc-staging", "storage-pc-dev"):
         conn = swift_con(container_name)
     elif container_name == "storage-pc":
         conn = swift_con_prod()
