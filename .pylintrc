@@ -34,6 +34,17 @@ enable=
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
+
+# FIXME (dbaty, 2020-11-03): we should enable back "line-too-long".
+# Most cases that cannot be fixed or obviously disabled are test
+# functions. And I believe that they really should be renamed to be
+# less than 120 characters long.
+
+# FIXME (dbaty, 2020-11-03): we probably could enable back
+# "singleton-comparison". Most cases seem to be variations of:
+#     assert some_boolean == True
+#     Model.query.filter_by(Model.boolean_attr == None)
+
 disable=
     arguments-differ,
     attribute-defined-outside-init,
@@ -44,6 +55,7 @@ disable=
     file-ignored,
     import-outside-toplevel,
     invalid-name,
+    line-too-long,
     locally-enabled,
     locally-disabled,
     missing-docstring,
@@ -54,6 +66,7 @@ disable=
     protected-access,
     raise-missing-from,
     redefined-variable-type,
+    singleton-comparison,
     superfluous-parens,
     too-few-public-methods,
     too-many-ancestors,
