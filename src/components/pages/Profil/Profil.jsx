@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { requestData } from 'redux-saga-data'
 
+import AppLayout from 'app/AppLayout'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import Main from 'components/layout/Main'
 import Titles from 'components/layout/Titles/Titles'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
@@ -144,7 +144,7 @@ class Profil extends PureComponent {
 
   render() {
     return (
-      <Main
+      <AppLayout
         layoutConfig={{
           backTo: { path: '/accueil', label: 'Accueil' },
           pageName: 'profile',
@@ -154,7 +154,7 @@ class Profil extends PureComponent {
         <Titles title="Profil" />
         {this.renderForm()}
         <hr />
-      </Main>
+      </AppLayout>
     )
   }
 }

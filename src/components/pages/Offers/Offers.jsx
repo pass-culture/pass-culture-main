@@ -3,10 +3,10 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
+import AppLayout from 'app/AppLayout'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import Main from 'components/layout/Main'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
@@ -629,7 +629,7 @@ class Offers extends PureComponent {
       )
 
     return (
-      <Main
+      <AppLayout
         PageActionsBar={this.getOffersActionsBar}
         layoutConfig={{
           pageName: 'offers',
@@ -670,7 +670,7 @@ class Offers extends PureComponent {
         ) : (
           this.renderNoOffers()
         )}
-      </Main>
+      </AppLayout>
     )
   }
 }

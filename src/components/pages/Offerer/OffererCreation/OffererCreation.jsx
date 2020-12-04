@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 
-import Main from 'components/layout/Main'
+import AppLayout from 'app/AppLayout'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
@@ -46,7 +46,7 @@ class OffererCreation extends PureComponent {
 
   render() {
     return (
-      <Main
+      <AppLayout
         layoutConfig={{
           backTo: { label: 'Structures juridiques', path: '/structures' },
           name: 'offerer',
@@ -60,7 +60,7 @@ class OffererCreation extends PureComponent {
           decorators={this.createDecorators()}
           onSubmit={this.handleSubmit}
         />
-      </Main>
+      </AppLayout>
     )
   }
 }

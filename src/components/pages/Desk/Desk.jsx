@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
+import AppLayout from 'app/AppLayout'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import Main from 'components/layout/Main'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import { formatLocalTimeDateString } from 'utils/timezone'
@@ -169,7 +169,7 @@ class Desk extends Component {
     const { booking, isDisabledButton, isUsedToken, level, message, token } = this.state
 
     return (
-      <Main layoutConfig={{ pageName: 'desk' }}>
+      <AppLayout layoutConfig={{ pageName: 'desk' }}>
         <PageTitle title="Guichet" />
         <Titles title="Guichet" />
         <p className="advice">
@@ -259,7 +259,7 @@ class Desk extends Component {
             {message}
           </div>
         </form>
-      </Main>
+      </AppLayout>
     )
   }
 }

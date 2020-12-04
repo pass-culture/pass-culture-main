@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 
-import Main from 'components/layout/Main'
+import AppLayout from 'app/AppLayout'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
@@ -56,7 +56,7 @@ class BookingsRecap extends PureComponent {
     const { bookingsRecap, isLoading } = this.state
 
     return (
-      <Main layoutConfig={{ pageName: 'bookings-v2' }}>
+      <AppLayout layoutConfig={{ pageName: 'bookings-v2' }}>
         <PageTitle title="Vos réservations" />
         <Titles title="Réservations" />
         {bookingsRecap.length > 0 ? (
@@ -69,7 +69,7 @@ class BookingsRecap extends PureComponent {
         ) : (
           <NoBookingsMessage />
         )}
-      </Main>
+      </AppLayout>
     )
   }
 }

@@ -4,9 +4,9 @@ import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { Link } from 'react-router-dom'
 
+import AppLayout from 'app/AppLayout'
 import Icon from 'components/layout/Icon'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import Main from 'components/layout/Main'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
@@ -193,7 +193,7 @@ class Offerers extends PureComponent {
     )
 
     return (
-      <Main
+      <AppLayout
         layoutConfig={{
           pageName: 'offerers',
         }}
@@ -248,7 +248,7 @@ class Offerers extends PureComponent {
           })}
         </LoadingInfiniteScroll>
         {hasMore === false && 'Fin des résultats'}
-      </Main>
+      </AppLayout>
     )
   }
 }

@@ -2,11 +2,11 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
+import AppLayout from 'app/AppLayout'
 import GenericError from 'components/layout/errors/GenericError'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from 'components/layout/inputs/TextInputWithIcon/TextInputWithIcon'
 import Logo from 'components/layout/Logo'
-import Main from 'components/layout/Main'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
 
@@ -124,7 +124,7 @@ class LostPassword extends PureComponent {
     const { change, envoye, token } = this.props
 
     return (
-      <Main
+      <AppLayout
         layoutConfig={{
           fullscreen: true,
           pageName: 'sign-in',
@@ -273,7 +273,7 @@ class LostPassword extends PureComponent {
             </div>
           </div>
         </div>
-      </Main>
+      </AppLayout>
     )
   }
 }

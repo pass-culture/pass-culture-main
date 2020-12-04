@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Main from 'components/layout/Main'
+import AppLayout from 'app/AppLayout'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
@@ -15,7 +15,7 @@ import StyleguideTitles from './StyleguideElements/StyleguideTitles'
 import StyleguideTitle from './StyleguideTitles'
 
 const Styleguide = () => (
-  <Main layoutConfig={{ pageName: 'styleguide' }}>
+  <AppLayout layoutConfig={{ pageName: 'styleguide' }}>
     <PageTitle title="Guide des styles" />
     <Titles title="Styleguide" />
     <StyleguideAgenda />
@@ -61,7 +61,7 @@ const Styleguide = () => (
       componentName="Bannière"
     />
     <StyleguideBanners />
-  </Main>
+  </AppLayout>
 )
 
 export default Styleguide

@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Route, Switch } from 'react-router-dom/umd/react-router-dom'
 
+import AppLayout from 'app/AppLayout'
 import Logo from 'components/layout/Logo'
-import Main from 'components/layout/Main'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 import SignupConfirmationContainer from './SignupConfirmation/SignupConfirmationContainer'
@@ -11,7 +11,7 @@ import SignupFormContainer from './SignupForm/SignupFormContainer'
 
 const Signup = ({ location }) => {
   return (
-    <Main
+    <AppLayout
       layoutConfig={{
         fullscreen: true,
         pageName: 'sign-up',
@@ -41,7 +41,7 @@ const Signup = ({ location }) => {
           </div>
         </div>
       </div>
-    </Main>
+    </AppLayout>
   )
 }
 

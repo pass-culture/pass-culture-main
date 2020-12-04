@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import Main from 'components/layout/Main'
+import AppLayout from 'app/AppLayout'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
@@ -18,7 +18,7 @@ class OffererDetails extends PureComponent {
   render() {
     const { offerer, venues } = this.props
     return (
-      <Main
+      <AppLayout
         layoutConfig={{
           backTo: { label: 'Structures juridiques', path: '/structures' },
           pageName: 'offerer',
@@ -66,7 +66,7 @@ class OffererDetails extends PureComponent {
           offererId={offerer.id}
           venues={venues}
         />
-      </Main>
+      </AppLayout>
     )
   }
 }

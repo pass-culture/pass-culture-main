@@ -1,15 +1,15 @@
 import React from 'react'
 
+import AppLayout from 'app/AppLayout'
 import Banner from 'components/layout/Banner/Banner'
 import CsvTableButtonContainer from 'components/layout/CsvTableButton/CsvTableButtonContainer'
 import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
-import Main from 'components/layout/Main'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import { API_URL } from 'utils/config'
 
 const Reimbursements = () => (
-  <Main
+  <AppLayout
     layoutConfig={{
       pageName: 'reimbursements',
     }}
@@ -40,7 +40,7 @@ const Reimbursements = () => (
         {'Afficher la liste des remboursements'}
       </CsvTableButtonContainer>
     </div>
-  </Main>
+  </AppLayout>
 )
 
 export default Reimbursements
