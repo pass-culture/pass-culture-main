@@ -8,7 +8,6 @@ from pydantic import BaseModel
 from pydantic import HttpUrl
 from pydantic import validator
 
-from pcapi.serialization.utils import InputBaseModel
 from pcapi.serialization.utils import cast_optional_field_str_to_int
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
@@ -20,7 +19,7 @@ from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 from pcapi.validation.routes.offers import check_offer_type_is_valid
 
 
-class PostOfferBodyModel(InputBaseModel):
+class PostOfferBodyModel(BaseModel):
     venue_id: str
     product_id: Optional[str]
     type: Optional[str]
@@ -54,8 +53,12 @@ class PostOfferBodyModel(InputBaseModel):
             check_offer_type_is_valid(type_field)
         return type_field
 
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
 
-class PatchOfferBodyModel(InputBaseModel):
+
+class PatchOfferBodyModel(BaseModel):
     bookingEmail: Optional[str]
     description: Optional[str]
     isNational: Optional[bool]
@@ -80,6 +83,10 @@ class PatchOfferBodyModel(InputBaseModel):
             check_offer_name_length_is_valid(name)
         return name
 
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
 
 class OfferResponseIdModel(BaseModel):
     id: str
@@ -92,14 +99,17 @@ class OfferResponseIdModel(BaseModel):
         arbitrary_types_allowed = True
 
 
-class PatchOfferActiveStatusBodyModel(InputBaseModel):
+class PatchOfferActiveStatusBodyModel(BaseModel):
     is_active: bool
     ids: List[int]
 
     _dehumanize_ids = dehumanize_list_field("ids")
 
+    class Config:
+        alias_generator = to_camel
 
-class PatchAllOffersActiveStatusBodyModel(InputBaseModel):
+
+class PatchAllOffersActiveStatusBodyModel(BaseModel):
     is_active: bool
     offerer_id: Optional[int]
     venue_id: Optional[int]
@@ -112,6 +122,9 @@ class PatchAllOffersActiveStatusBodyModel(InputBaseModel):
 
     _dehumanize_offerer_id = dehumanize_field("offerer_id")
     _dehumanize_venue_id = dehumanize_field("venue_id")
+
+    class Config:
+        alias_generator = to_camel
 
 
 class ListOffersVenueResponseModel(BaseModel):

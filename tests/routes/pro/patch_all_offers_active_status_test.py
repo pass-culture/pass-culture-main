@@ -21,7 +21,7 @@ class Returns204:
 
         # When
         client = TestClient(app.test_client()).with_auth("pro@example.com")
-        data = {"isActive": True}
+        data = {"isActive": True, "page": 1, "venueId": humanize(venue.id)}
         response = client.patch("/offers/all-active-status", json=data)
 
         # Then
