@@ -37,15 +37,15 @@ def save(*models: Model) -> None:
     try:
         db.session.commit()
     except DataError as data_error:
-        api_errors.add_error(*model.restize_data_error(data_error))
+        api_errors.add_error(*models[0].restize_data_error(data_error))
         db.session.rollback()
         raise api_errors
     except IntegrityError as integrity_error:
-        api_errors.add_error(*model.restize_integrity_error(integrity_error))
+        api_errors.add_error(*models[0].restize_integrity_error(integrity_error))
         db.session.rollback()
         raise api_errors
     except InternalError as internal_error:
-        api_errors.add_error(*model.restize_internal_error(internal_error))
+        api_errors.add_error(*models[0].restize_internal_error(internal_error))
         db.session.rollback()
         raise api_errors
     except TypeError as type_error:
