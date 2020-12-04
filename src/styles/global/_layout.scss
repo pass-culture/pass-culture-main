@@ -13,21 +13,15 @@ body {
   width: 100%;
   min-height: 100%;
   margin: 0 auto;
-  font-size: $font-size;
+  font-size: rem(16px);
+  line-height: 1.1875em;
 }
 
 hr {
   @include dotted($primary);
 }
 
-.pc-form-section {
-  font-size: $size-4;
-  text-transform: uppercase;
-  font-weight: $weight-bold;
-  margin-bottom: 1rem;
-}
-
-ul.main-list {
+.main-list {
   margin-bottom: 1rem;
 
   > li {
@@ -73,15 +67,15 @@ ul.main-list {
     }
 
     .name {
-      font-weight: $weight-bold;
-      font-size: $size-medium;
+      font-weight: 700;
+      font-size: rem(20px);
       margin-bottom: 0.5rem;
     }
 
     ul.actions,
     ul.infos {
       list-style: none;
-      font-size: $size-normal;
+      font-size: rem(16px);
       margin: 0;
       display: flex;
       justify-content: space-between;
@@ -93,23 +87,5 @@ ul.main-list {
         margin-right: 0.2rem;
       }
     }
-  }
-}
-
-.input-icon {
-  height: rem(15px);
-  width: rem(15px);
-  position: absolute;
-  right: rem(10px);
-  top: 0;
-  bottom: 0;
-  margin: auto;
-}
-
-// Bulma overrides
-
-.field {
-  &:not(:last-child) {
-    margin-bottom: 1rem;
   }
 }

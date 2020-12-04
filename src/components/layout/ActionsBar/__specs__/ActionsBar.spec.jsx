@@ -19,7 +19,7 @@ const renderActionsBar = (props, store) => {
       </ActionsBar>
     </Provider>,
     {
-      stylesheet: 'global/_ActionsBar.scss',
+      stylesheet: 'components/layout/ActionsBar/_ActionsBar.scss',
     }
   )
 }

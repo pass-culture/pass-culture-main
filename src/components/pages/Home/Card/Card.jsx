@@ -14,7 +14,7 @@ const Card = ({ svg, title, text, navLink }) => (
       <h1 className="title is-1 is-spaced">
         {title}
       </h1>
-      <p className="subtitle is-2">
+      <p className="subtitle">
         {text}
       </p>
     </div>

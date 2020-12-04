@@ -74,7 +74,7 @@ class NotificationV1 extends PureComponent {
             {tooltip ? (
               <span
                 className={classnames({
-                  'has-text-weight-semibold tooltip small-padding is-2': !isFullscreen,
+                  'tooltip small-padding is-2': !isFullscreen,
                 })}
                 data-place={tooltip.place}
                 data-tip={tooltip.tip}

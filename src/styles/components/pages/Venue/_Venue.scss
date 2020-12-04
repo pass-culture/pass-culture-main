@@ -1,4 +1,20 @@
 .venue-page {
+  .col-66 {
+    $size: 65.5%;
+
+    width: $size;
+    min-width: $size;
+    max-width: $size;
+  }
+
+  .col-33 {
+    $size: 31%;
+
+    width: $size;
+    min-width: $size;
+    max-width: $size;
+  }
+
   .field-number {
     text-align: left;
   }

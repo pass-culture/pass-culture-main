@@ -17,7 +17,7 @@
 }
 
 .bi-external-link {
-  @extend .tertiary-link;
+  @include tertiary();
 
   > img {
     vertical-align: sub;

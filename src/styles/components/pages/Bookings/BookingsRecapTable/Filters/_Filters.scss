@@ -1,6 +1,6 @@
 .vertical-bar {
   background-color: $grey-medium;
-  width: $control-border-width;
+  width: 2px;
   height: rem(40px);
 }
 
@@ -22,10 +22,10 @@
   }
 
   select {
-    border: $control-border-width solid $grey-medium;
+    border: 2px solid $grey-medium;
     border-radius: rem(20px);
     cursor: pointer;
-    font-weight: $weight-bold;
+    font-weight: 700;
     font-size: rem(16px);
     height: rem(40px);
     outline: none;
@@ -61,7 +61,7 @@
   .fw-booking-text-filters-input {
     flex-grow: 1;
     border-radius: 0 rem(20px) rem(20px) 0;
-    border: $control-border-width solid $grey-medium;
+    border: 2px solid $grey-medium;
     padding: rem(10px) rem(16px);
     font-size: rem(16px);
     border-left: none;
@@ -168,7 +168,7 @@
     }
 
     select {
-      border: $control-border-width solid $grey-medium;
+      border: 2px solid $grey-medium;
       cursor: pointer;
       font-size: rem(16px);
       border-radius: rem(20px);
@@ -213,7 +213,7 @@
   .bs-filter-label {
     color: $grey;
     font-size: rem(14px);
-    font-weight: $weight-medium;
+    font-weight: 500;
     padding-bottom: rem(8px);
     white-space: nowrap;
   }

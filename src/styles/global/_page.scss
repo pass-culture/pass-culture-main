@@ -22,15 +22,6 @@
     }
   }
 
-  .small-text {
-    font-size: rem(13px);
-    color: $grey-dark;
-  }
-
-  .align-left {
-    text-align: left;
-  }
-
   &.fullscreen {
     height: 100vh;
     width: 100%;
@@ -49,9 +40,9 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: $footer-height;
+      height: 3.5rem;
       text-align: right;
-      padding: $footer-height-padding $page-padding;
+      padding: 1rem 4rem;
       padding-left: 3em;
       display: flex;
       align-items: center;
@@ -59,7 +50,7 @@
 
       a,
       button {
-        font-size: $size-medium;
+        font-size: rem(20px);
       }
     }
   }
@@ -69,7 +60,7 @@
 
     .page-content {
       position: relative;
-      top: $header-height - $header-display-height;
+      top: 3.375rem - 9.375rem;
       margin: 0 5rem;
       z-index: 10;
       background: $white;
@@ -85,6 +76,7 @@
         }
 
         .back-button {
+          font-weight: 600;
           position: absolute;
           top: rem(24px);
           padding-left: rem(30px);

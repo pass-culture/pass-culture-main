@@ -1,16 +1,20 @@
+input[type='radio'] {
+  vertical-align: middle;
+}
+
 .input-radio {
   appearance: none;
   border: 2px solid $grey-dark;
   border-radius: 50%;
   cursor: pointer;
   font-size: inherit;
-  height: $body-line-height;
+  height: 1.1875em;
   margin-right: rem(8px);
   outline: none;
   padding: 0;
   position: relative;
   vertical-align: middle;
-  width: $body-line-height;
+  width: 1.1875em;
 
   &:checked {
     &::after {

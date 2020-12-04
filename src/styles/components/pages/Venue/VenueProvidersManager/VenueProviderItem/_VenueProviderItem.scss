@@ -4,8 +4,6 @@
   width: 100%;
 
   .provider-name-container {
-    @extend .has-text-weight-bold;
-
     align-content: center;
     display: flex;
     flex: 2;
@@ -13,6 +11,7 @@
     font-size: rem(14px);
     justify-content: center;
     margin-left: rem(20px);
+    text-transform: uppercase;
   }
 
   .venue-id-at-offer-provider-container-with-message {

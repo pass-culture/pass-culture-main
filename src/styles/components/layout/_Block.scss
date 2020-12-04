@@ -21,7 +21,7 @@
     @include dotted($primary, top);
 
     button:first-child {
-      font-weight: $weight-light;
+      font-weight: 300;
     }
   }
 }

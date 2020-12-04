@@ -1,4 +1,13 @@
 .mediation-manager {
+  .small-text {
+    font-size: rem(13px);
+    color: $grey-dark;
+  }
+
+  .align-left {
+    text-align: left;
+  }
+
   .info-message {
     background: $attention;
     border-radius: 6px;

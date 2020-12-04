@@ -81,11 +81,11 @@
 
 .field-input,
 .field-textarea {
-  border-radius: $control-radius;
-  border: $control-border-width solid $grey-medium;
+  border-radius: 1.125em;
+  border: 2px solid $grey-medium;
   flex: 1;
   font-size: rem(16px);
-  font-weight: $weight-medium;
+  font-weight: 500;
   outline: none !important;
   padding: rem(6px) rem(18px);
 
@@ -175,16 +175,11 @@
   }
 }
 
-.label-aligned-with-control {
-  display: table-row;
-
-  .field-label,
-  .field-value {
-    display: table-cell;
-  }
-}
-
 .field {
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+
   &.is-read-only {
     .field-inner {
       border: none;
@@ -253,21 +248,11 @@
   }
 }
 
-.form .label-aligned-with-control {
-  .field {
-    @extend .label-aligned-with-control;
-  }
-}
-
-.field .label-aligned-with-control {
-  @extend .label-aligned-with-control;
-}
-
 .field-errors {
   color: $primary;
   display: flex;
   font-size: rem(14px);
-  font-weight: $weight-medium;
+  font-weight: 500;
   min-height: rem(24px);
 
   .field-error-icon {
@@ -276,4 +261,20 @@
     margin-top: rem(2px);
     width: rem(16px);
   }
+}
+
+// Override Bulma
+.input,
+.textarea,
+.select select {
+  border-color: $grey-medium !important;
+}
+
+.input:focus,
+.input:hover:not([type="checkbox"]),
+.textarea:focus,
+.textarea:hover,
+.select select:focus,
+.select select:hover {
+  border-color: $grey-medium !important;
 }

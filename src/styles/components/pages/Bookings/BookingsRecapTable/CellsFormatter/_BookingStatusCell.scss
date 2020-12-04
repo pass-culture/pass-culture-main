@@ -2,7 +2,7 @@
   .booking-status-label {
     border-radius: rem(5px);
     color: $white;
-    font-weight: $weight-medium;
+    font-weight: 500;
     font-size: rem(14px);
     padding: rem(5px) rem(7px);
   }
@@ -29,7 +29,7 @@
 
   .booking-status-wrapper {
     position: relative;
-    line-height: $body-line-height;
+    line-height: 1.1875em;
   }
 
   .booking-status-wrapper img {
@@ -59,13 +59,13 @@
   .bs-offer-title {
     display: block;
     font-size: rem(16px);
-    font-weight: $weight-bold;
+    font-weight: 700;
   }
 
   .bs-offer-amount {
     display: block;
     font-size: rem(14px);
-    font-weight: $weight-medium;
+    font-weight: 500;
     margin-top: rem(7px);
   }
 

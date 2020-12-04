@@ -234,7 +234,7 @@ class Mediation extends PureComponent {
       <Fragment>
         <div className="thumbnailManager">
           <div className="section ">
-            <h2 className="has-text-primary has-text-weight-semibold active">
+            <h2 className="has-text-primary active">
               {'Comment cadrer votre image d’accroche'}
             </h2>
             <ul>

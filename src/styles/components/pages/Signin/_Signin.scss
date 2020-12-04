@@ -50,8 +50,7 @@
   .text-container {
     flex-grow: 1;
     flex-shrink: 0;
-    padding-left: rem(54px);
-    padding-right: rem(24px);
+    padding-left: rem(43px);
   }
 
   .title,
@@ -65,30 +64,30 @@
 
   h1 {
     @include title1();
-    margin-bottom: $spacing-s;
+    margin-bottom: rem(16px);
   }
 
   h2 {
     @include title2();
 
     line-height: rem(24px);
-    margin-bottom: $spacing-m;
+    margin-bottom: rem(24px);
   }
 
   form {
     margin-top: rem(16px);
 
     label {
-      margin-bottom: $spacing-m;
+      margin-bottom: rem(24px);
     }
   }
 
   .signin-form {
-    margin-bottom: $spacing-xl;
+    margin-bottom: rem(48px);
   }
 
   .cgu-field {
-    font-weight: $weight-bold;
+    font-weight: 700;
   }
 
   .buttons-field {
@@ -99,7 +98,7 @@
 
   h4 {
     float: left;
-    font-size: $size-normal;
+    font-size: rem(16px);
   }
 
   .errors {

@@ -69,7 +69,7 @@ const AppLayout = props => {
               >
                 {backTo && (
                   <NavLink
-                    className="back-button has-text-primary has-text-weight-semibold"
+                    className="back-button has-text-primary"
                     to={backTo.path}
                   >
                     <Icon svg="ico-back" />

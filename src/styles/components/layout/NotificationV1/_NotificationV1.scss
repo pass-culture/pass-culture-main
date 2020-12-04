@@ -39,8 +39,8 @@
     border: none;
     cursor: pointer;
     float: right;
-    font-size: $font-size;
-    font-weight: $weight-semibold;
+    font-size: rem(16px);
+    font-weight: 600;
     height: auto;
     padding-left: rem(12px);
     text-decoration: underline;

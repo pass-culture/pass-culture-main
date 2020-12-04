@@ -10,10 +10,10 @@
       position: absolute;
       z-index: 2000;
       background: $white;
-      left: $control-radius;
-      right: $control-radius;
-      border-bottom-left-radius: $control-radius;
-      border-bottom-right-radius: $control-radius;
+      left: 1.125em;
+      right: 1.125em;
+      border-bottom-left-radius: 1.125em;
+      border-bottom-right-radius: 1.125em;
       border: 2px solid $grey-medium;
       border-top: none;
       overflow: hidden;
@@ -29,7 +29,7 @@
           cursor: pointer;
 
           &.highlighted {
-            font-weight: $weight-bold;
+            font-weight: 700;
           }
 
           &:focus,

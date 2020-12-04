@@ -8,7 +8,7 @@
   }
 
   .info {
-    @extend .level;
+    @include dotted($primary, top);
 
     background-color: $black-with-transparency;
     bottom: 0;
@@ -20,8 +20,6 @@
     z-index: 11000;
 
     .content {
-      @extend .level-item;
-
       background-color: $white;
       margin: auto;
       max-width: 50%;
@@ -137,5 +135,124 @@
         }
       }
     }
+  }
+}
+
+.button {
+  font-weight: 700;
+  font-size: rem(16px);
+  line-height: 1.1875em;
+  border-radius: rem(24px);
+  padding-left: rem(16px);
+  padding-right: rem(16px);
+
+  &:focus {
+    outline: none;
+  }
+
+  &:not(.is-outlined) {
+    border-width: 0;
+  }
+
+  &:focus:not(:active) {
+    box-shadow: none;
+  }
+
+  &.is-primary {
+    &:active {
+      background-color: $primary-dark;
+    }
+
+    &:disabled {
+      opacity: 1;
+      background-color: $grey-medium;
+    }
+
+    &:focus:not(:active) {
+      box-shadow: none;
+      border: rem(3px) solid $primary-dark;
+      padding-left: rem(13px);
+      padding-right: rem(13px);
+    }
+  }
+
+  &.is-secondary {
+    background: none;
+    border: rem(2px) solid $primary;
+    color: $primary;
+    padding-left: rem(14px);
+    padding-right: rem(14px);
+
+    &:active {
+      background-color: $primary-dark;
+      border: none;
+      color: $white;
+      padding-left: rem(16px);
+      padding-right: rem(16px);
+    }
+
+    &:disabled {
+      opacity: 1;
+      border-color: $grey-medium;
+      color: $grey-medium;
+    }
+
+    &:focus:not(:active) {
+      box-shadow: 0 0 4px $primary;
+      border-width: rem(3px);
+      padding-left: rem(13px);
+      padding-right: rem(13px);
+    }
+  }
+
+  &.is-tertiary {
+    background: none;
+    border-color: transparent;
+    color: $primary;
+    text-decoration: none;
+
+    &:active {
+      color: $primary-dark;
+    }
+
+    &:disabled {
+      opacity: 1;
+      color: $grey-dark;
+    }
+
+    &[disabled] {
+      opacity: 1;
+      color: $grey-dark;
+    }
+
+    &:focus:not(:active) {
+      box-shadow: none;
+      border: rem(1px) solid $grey-medium;
+      padding-left: rem(15px);
+      padding-right: rem(15px);
+    }
+
+    &.is-inversed {
+      color: $white;
+    }
+  }
+
+  &.is-outlined {
+    box-shadow: none;
+
+    &:disabled {
+      opacity: 0.3;
+    }
+  }
+
+  &.is-intermediate {
+    background: none;
+    text-decoration: none;
+    border: 1px solid $primary;
+    color: $primary;
+  }
+
+  &.is-flex-button {
+    flex: 0.5;
   }
 }

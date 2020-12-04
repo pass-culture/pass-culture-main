@@ -1,7 +1,14 @@
-@import 'fonts/index.scss';
-@import 'rem';
-@import 'variables/index.scss';
-@import 'vendors/index.scss';
+// L'ordre des imports est important.
 @import 'mixins/index.scss';
+@import 'variables/index.scss';
+@import '~bulma/sass/utilities/_all';
+@import '~bulma/sass/base/_all';
+@import '~bulma/sass/elements/_all';
+@import '~bulma/sass/components/_all';
+@import '~bulma/sass/grid/_all';
+@import '~bulma/sass/layout/_all';
+@import '~react-datepicker/src/stylesheets/datepicker';
+@import '~leaflet/dist/leaflet';
+@import '~input-range-scss';
 @import 'global/index.scss';
 @import 'components/index.scss';

@@ -34,7 +34,7 @@
 }
 
 .provider-explanation {
-  @extend .small-text;
-
+  color: $grey-dark;
+  font-size: rem(13px);
   text-align: justify;
 }

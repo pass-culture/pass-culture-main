@@ -5,13 +5,13 @@
   margin-bottom: rem(30px);
 
   .bookings-header-loading .bookings-header-number {
-    font-weight: $weight-normal;
+    font-weight: 400;
   }
 
   .bookings-header-csv-download a {
     align-items: center;
     display: flex;
-    font-weight: $weight-bold;
+    font-weight: 700;
 
     &:focus,
     &:hover {
