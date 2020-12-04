@@ -52,14 +52,6 @@ jobs:
             . venv/bin/activate
             python -m nltk.downloader punkt stopwords &> /dev/null
             if [ ! -z "$(alembic branches)" ]; then echo "Multiple alembic heads found"; exit 1; fi
-      - run:
-          name: Check imports are well organized with isort
-          when: always
-          command: venv/bin/isort . --check-only
-      - run:
-          name: Check code is well formatted with black
-          when: always
-          command: venv/bin/black . --check
       - when:
           condition: << parameters.is_nightly_build >>
           steps:
@@ -81,6 +73,45 @@ jobs:
           path: test-results
       - store_artifacts:
           path: htmlcov
+
+  quality:
+    working_directory: ~/pass-culture-api-ci
+    docker:
+      - image: circleci/python:3.7.6
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - restore_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - run:
+          name: Install requirements
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: Install pcapi Python package
+          command: |
+            venv/bin/pip install -e .
+            venv/bin/pip freeze
+      - run:
+          name: Check imports are well organized with isort
+          when: always
+          command: venv/bin/isort . --check-only
+      - run:
+          name: Check code is well formatted with black
+          when: always
+          command: venv/bin/black . --check
+      - run:
+          name: Run pylint
+          when: always
+          command: venv/bin/pylint src tests
 
   build-container:
     machine:
@@ -305,6 +336,8 @@ workflows:
             branches:
               ignore:
                 - production
+      - quality:
+          name: "Run quality checks after commit"
       - build-container:
           filters:
             branches:
@@ -326,3 +359,4 @@ workflows:
       - run-tests:
           name: "Run nightly tests"
           is_nightly_build: true
+      - quality
