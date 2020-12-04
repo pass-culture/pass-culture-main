@@ -1,5 +1,3 @@
-import os
-
 from flask import current_app as app
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
@@ -14,9 +12,6 @@ from pcapi.validation.routes.passwords import check_recaptcha_token_is_valid
 
 from . import blueprint
 from .serialization import account as serializers
-
-
-RECAPTCHA_LICENCE_MINIMAL_SCORE = float(os.environ.get("RECAPTCHA_LICENCE_MINIMAL_SCORE", 0.5))
 
 
 @blueprint.native_v1.route("/me", methods=["GET"])
@@ -45,7 +40,7 @@ def get_user_profile() -> serializers.UserProfileResponse:
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def create_account(body: serializers.AccountRequest) -> None:
     if settings.NATIVE_ACCOUNT_CREATION_REQUIRES_RECAPTCHA:
-        check_recaptcha_token_is_valid(body.token, "submit", RECAPTCHA_LICENCE_MINIMAL_SCORE)
+        check_recaptcha_token_is_valid(body.token, "submit", settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE)
 
     api.create_account(
         email=body.email,

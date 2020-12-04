@@ -1,10 +1,9 @@
-import os
-
 from flask import current_app as app
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi import settings
 from pcapi.domain.password import check_password_strength
 from pcapi.domain.password import check_password_validity
 from pcapi.domain.password import check_reset_token_validity
@@ -25,8 +24,6 @@ from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.rest import expect_json_data
 from pcapi.validation.routes.passwords import check_recaptcha_token_is_valid
 
-
-RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE = float(os.environ.get("RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE", 0.7))
 
 # @debt api-migration
 @private_api.route("/users/current/change-password", methods=["POST"])
@@ -49,7 +46,7 @@ def post_change_password():
 @private_api.route("/users/reset-password", methods=["POST"])
 @spectree_serialize(on_success_status=204)
 def post_for_password_token(body: ResetPasswordBodyModel) -> None:
-    check_recaptcha_token_is_valid(body.token, "resetPassword", RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE)
+    check_recaptcha_token_is_valid(body.token, "resetPassword", settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE)
     user = find_user_by_email(body.email)
 
     if not user:
