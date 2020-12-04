@@ -11,6 +11,7 @@ from sqlalchemy import Column
 from sqlalchemy import DDL
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
+from sqlalchemy import Index
 from sqlalchemy import Integer
 from sqlalchemy import Numeric
 from sqlalchemy import String
@@ -230,6 +231,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
     type = Column(String(50), CheckConstraint("type != 'None'"), index=True, nullable=False)
 
     name = Column(String(140), nullable=False)
+    Index("idx_offer_trgm_name", name, postgresql_using="gin")
 
     description = Column(Text, nullable=True)
 
