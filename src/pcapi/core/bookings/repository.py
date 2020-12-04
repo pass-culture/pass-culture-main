@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import time
 import math
 from typing import List
-from typing import Set
 
 from dateutil import tz
 from sqlalchemy import Date

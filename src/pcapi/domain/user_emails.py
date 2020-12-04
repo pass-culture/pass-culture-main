@@ -5,7 +5,6 @@ from typing import Union
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
-from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.domain.beneficiary.beneficiary import Beneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription

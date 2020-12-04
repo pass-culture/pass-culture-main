@@ -21,7 +21,6 @@ from requests.auth import _basic_auth_str
 # because some env variables will get evaluated as soon as the
 # module is imported (utils.mailing for example)
 from pcapi.load_environment_variables import load_environment_variables
-from pcapi.routes.native.v1.blueprint import native_v1
 
 
 load_environment_variables()
