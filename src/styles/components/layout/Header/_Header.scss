@@ -1,29 +1,18 @@
-@mixin navbar-colors($text-color) {
-  a {
-    &,
-    &:focus,
-    &:hover {
-      color: $text-color;
-    }
-
-    &.navbar-link::after {
-      border-color: $text-color;
-    }
-  }
-}
-
 header.navbar {
   align-items: flex-start;
-
   z-index: inherit;
+
   &:not(.is-small) {
     height: 9.375rem;
   }
 
-  @include navbar-colors($primary);
+  a.navbar-item {
+    color: $white;
 
-  &.is-primary {
-    @include navbar-colors($white);
+    &:hover,
+    &:focus {
+      background-color: $primary;
+    }
   }
 
   .navbar-dropdown a {
@@ -31,43 +20,6 @@ header.navbar {
     &:focus,
     &:hover {
       color: $primary;
-    }
-  }
-
-  @media (max-width: $desktop - 1px) {
-    &,
-    &.is-primary {
-      a {
-        &,
-        &:focus,
-        &:hover {
-          color: $primary;
-        }
-      }
-
-      .navbar-dropdown {
-        .navbar-item {
-          padding-left: 2.5rem;
-        }
-      }
-    }
-  }
-
-  @media (min-width: $desktop) {
-    & > .container {
-      max-width: 1000px;
-
-      .navbar-brand {
-        margin-left: 0;
-
-        .navbar-item {
-          padding: 0;
-        }
-      }
-
-      .navbar-menu {
-        margin-right: 0;
-      }
     }
   }
 
@@ -87,20 +39,10 @@ header.navbar {
     }
   }
 
-  @media (min-width: $desktop) {
-    .navbar-dropdown {
-      box-shadow: 0 0 3.75rem $black-shadow;
-    }
-  }
+  background-image: $linear-gradient-to-bottom-right;
 
-  .navbar-burger {
-    background-color: transparent;
-    border: none;
-
-    &:focus,
-    &:hover {
-      background-color: darken(transparent, 90%);
-    }
+  .icon {
+    margin-right: 0.5rem;
   }
 }
 
@@ -154,7 +96,7 @@ header.navbar {
 
 [data-reach-menu-items] {
   background: $white;
-  border: none;q
+  border: none;
 }
 
 [data-reach-menu-item] {
@@ -178,7 +120,7 @@ header.navbar {
     color: $white;
 
     .icon {
-      filter: brightness(100);
+      filter: brightness(0) invert(1);
     }
   }
 }

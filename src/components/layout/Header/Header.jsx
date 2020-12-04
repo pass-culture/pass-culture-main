@@ -14,24 +14,12 @@ import Logo from '../Logo'
 import { HELP_PAGE_URL, STYLEGUIDE_ACTIVE } from './_constants'
 
 class Header extends PureComponent {
-  constructor() {
-    super()
-    this.state = {
-      showMobileMenu: false,
-    }
-  }
-
   onHandleSuccessRedirect = () => '/connexion'
-
-  handleOnClick = showMobileMenu => () => {
-    this.setState({
-      showMobileMenu: !showMobileMenu,
-    })
-  }
 
   onSignoutClick = () => {
     const { dispatch } = this.props
-    pcapi.signout()
+    pcapi
+      .signout()
       .then(() => {
         dispatch(reinitializeData())
       })
@@ -41,37 +29,19 @@ class Header extends PureComponent {
   }
 
   render() {
-    const { isSmall, name, whiteHeader, offerers } = this.props
-    const { showMobileMenu } = this.state
+    const { isSmall, name, offerers } = this.props
 
     return (
       <header
         className={classnames('navbar', {
-          'is-primary': !whiteHeader,
           'is-small': isSmall,
         })}
       >
         <div className="container">
           <div className="navbar-brand">
-            <Logo
-              className="navbar-item"
-              whiteHeader={whiteHeader}
-            />
-            <button
-              className="navbar-burger"
-              onClick={this.handleOnClick(showMobileMenu)}
-              type="button"
-            >
-              <span />
-              <span />
-              <span />
-            </button>
+            <Logo className="navbar-item" />
           </div>
-          <div
-            className={classnames('navbar-menu', {
-              'is-active': showMobileMenu,
-            })}
-          >
+          <div className="navbar-menu">
             <div className="navbar-end">
               <NavLink
                 className="navbar-item"
@@ -84,36 +54,32 @@ class Header extends PureComponent {
                   {'Guichet'}
                 </span>
               </NavLink>
-              {!whiteHeader && (
-                <NavLink
-                  className="navbar-item"
-                  to="/offres"
-                >
-                  <span className="icon">
-                    <Icon svg="ico-offres-w" />
-                  </span>
-                  <span>
-                    {'Offres'}
-                  </span>
-                </NavLink>
-              )}
-              {!whiteHeader && (
-                <NavLink
-                  className="navbar-item"
-                  to="/reservations"
-                >
-                  <span className="icon">
-                    <Icon svg="ico-bookings-w" />
-                  </span>
-                  <span>
-                    {'Réservations'}
-                  </span>
-                </NavLink>
-              )}
+              <NavLink
+                className="navbar-item"
+                to="/offres"
+              >
+                <span className="icon">
+                  <Icon svg="ico-offres-w" />
+                </span>
+                <span>
+                  {'Offres'}
+                </span>
+              </NavLink>
+              <NavLink
+                className="navbar-item"
+                to="/reservations"
+              >
+                <span className="icon">
+                  <Icon svg="ico-bookings-w" />
+                </span>
+                <span>
+                  {'Réservations'}
+                </span>
+              </NavLink>
               <Menu>
                 <MenuButton>
                   <span className="icon">
-                    <Icon svg={`ico-user-circled${whiteHeader ? '' : '-w'}`} />
+                    <Icon svg="ico-user-circled-w" />
                   </span>
                   <span>
                     {name}
@@ -197,7 +163,6 @@ class Header extends PureComponent {
 
 Header.defaultProps = {
   isSmall: false,
-  whiteHeader: false,
 }
 
 Header.propTypes = {
@@ -205,7 +170,6 @@ Header.propTypes = {
   isSmall: PropTypes.bool,
   name: PropTypes.string.isRequired,
   offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  whiteHeader: PropTypes.bool,
 }
 
 export default Header
