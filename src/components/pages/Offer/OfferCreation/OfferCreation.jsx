@@ -394,10 +394,11 @@ class OfferCreation extends PureComponent {
 
     return (
       <Main
-        backTo={{ path: this.computeOffersUrl(), label: 'Offres' }}
         handleDataRequest={this.onHandleDataRequest}
-        id="offer"
-        name="offer"
+        layoutConfig={{
+          pageName: 'offer',
+          backTo: { path: this.computeOffersUrl(), label: 'Offres' },
+        }}
       >
         <PageTitle title={pageTitle} />
         <Titles

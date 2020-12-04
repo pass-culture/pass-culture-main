@@ -12,8 +12,10 @@ import SignupFormContainer from './SignupForm/SignupFormContainer'
 const Signup = ({ location }) => {
   return (
     <Main
-      fullscreen
-      name="sign-up"
+      layoutConfig={{
+        fullscreen: true,
+        pageName: 'sign-up',
+      }}
     >
       <PageTitle title="S’inscrire" />
       <div className="logo-side">

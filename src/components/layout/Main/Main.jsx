@@ -51,15 +51,7 @@ class Main extends PureComponent {
   }
 
   render() {
-    const { PageActionsBar, backTo, children, fullscreen, header, name, whiteHeader } = this.props
-
-    const layoutConfig = {
-      backTo,
-      fullscreen,
-      header,
-      pageName: name,
-      whiteHeader,
-    }
+    const { PageActionsBar, children, layoutConfig } = this.props
 
     return (
       <AppLayout
@@ -74,23 +66,18 @@ class Main extends PureComponent {
 
 Main.defaultProps = {
   PageActionsBar: null,
-  backTo: null,
-  fullscreen: false,
   handleDataRequest: null,
-  whiteHeader: null,
+  layoutConfig: {},
 }
 
 Main.propTypes = {
   PageActionsBar: PropTypes.elementType,
-  backTo: PropTypes.shape(),
   children: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
-  fullscreen: PropTypes.bool,
   handleDataRequest: PropTypes.func,
+  layoutConfig: PropTypes.shape(),
   location: PropTypes.shape().isRequired,
-  name: PropTypes.string.isRequired,
-  whiteHeader: PropTypes.string,
 }
 
 export default Main

@@ -47,8 +47,10 @@ class OffererCreation extends PureComponent {
   render() {
     return (
       <Main
-        backTo={{ label: 'Structures juridiques', path: '/structures' }}
-        name="offerer"
+        layoutConfig={{
+          backTo: { label: 'Structures juridiques', path: '/structures' },
+          name: 'offerer',
+        }}
       >
         <PageTitle title="Créer une structure" />
         <Titles title="Structure" />

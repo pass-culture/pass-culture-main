@@ -169,7 +169,7 @@ class Desk extends Component {
     const { booking, isDisabledButton, isUsedToken, level, message, token } = this.state
 
     return (
-      <Main name="desk">
+      <Main layoutConfig={{ pageName: 'desk' }}>
         <PageTitle title="Guichet" />
         <Titles title="Guichet" />
         <p className="advice">

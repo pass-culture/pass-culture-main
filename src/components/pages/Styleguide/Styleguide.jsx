@@ -15,7 +15,7 @@ import StyleguideTitles from './StyleguideElements/StyleguideTitles'
 import StyleguideTitle from './StyleguideTitles'
 
 const Styleguide = () => (
-  <Main name="styleguide">
+  <Main layoutConfig={{ pageName: 'styleguide' }}>
     <PageTitle title="Guide des styles" />
     <Titles title="Styleguide" />
     <StyleguideAgenda />

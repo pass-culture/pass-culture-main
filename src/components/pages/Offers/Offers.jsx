@@ -631,8 +631,9 @@ class Offers extends PureComponent {
     return (
       <Main
         PageActionsBar={this.getOffersActionsBar}
-        id="offers"
-        name="offers"
+        layoutConfig={{
+          pageName: 'offers',
+        }}
       >
         <PageTitle title="Vos offres" />
         <Titles

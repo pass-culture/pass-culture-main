@@ -75,8 +75,10 @@ class Signin extends PureComponent {
 
     return (
       <Main
-        fullscreen
-        name="sign-in"
+        layoutConfig={{
+          fullscreen: true,
+          pageName: 'sign-in',
+        }}
       >
         <PageTitle title="Se connecter" />
         <div className="logo-side">

@@ -381,9 +381,11 @@ class Mediation extends PureComponent {
 
     return (
       <Main
-        backTo={{ path: backPath, label: 'Revenir à l’offre' }}
         handleDataRequest={this.onHandleDataRequest}
-        name="mediation"
+        layoutConfig={{
+          backTo: { path: backPath, label: 'Revenir à l’offre' },
+          pageName: 'mediation',
+        }}
       >
         <PageTitle title="Ajouter une accroche" />
         <Titles title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`} />

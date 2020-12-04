@@ -9,7 +9,11 @@ import Titles from 'components/layout/Titles/Titles'
 import { API_URL } from 'utils/config'
 
 const Reimbursements = () => (
-  <Main name="reimbursements">
+  <Main
+    layoutConfig={{
+      pageName: 'reimbursements',
+    }}
+  >
     <PageTitle title="Vos remboursements" />
     <Titles title="Remboursements" />
     <p className="advice">

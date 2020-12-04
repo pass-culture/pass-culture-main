@@ -19,8 +19,10 @@ class OffererDetails extends PureComponent {
     const { offerer, venues } = this.props
     return (
       <Main
-        backTo={{ label: 'Structures juridiques', path: '/structures' }}
-        name="offerer"
+        layoutConfig={{
+          backTo: { label: 'Structures juridiques', path: '/structures' },
+          pageName: 'offerer',
+        }}
       >
         <PageTitle title="Détails de votre structure" />
         <Titles

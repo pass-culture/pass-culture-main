@@ -303,10 +303,11 @@ class OfferEdition extends PureComponent {
 
     return (
       <Main
-        backTo={{ path: '/offres', label: 'Offres' }}
         handleDataRequest={this.onHandleDataRequest}
-        id="offer"
-        name="offer"
+        layoutConfig={{
+          backTo: { path: '/offres', label: 'Offres' },
+          pageName: 'offer',
+        }}
       >
         <PageTitle title="Modifier votre offre" />
         <Titles

@@ -56,7 +56,7 @@ class BookingsRecap extends PureComponent {
     const { bookingsRecap, isLoading } = this.state
 
     return (
-      <Main name="bookings-v2">
+      <Main layoutConfig={{ pageName: 'bookings-v2' }}>
         <PageTitle title="Vos réservations" />
         <Titles title="Réservations" />
         {bookingsRecap.length > 0 ? (

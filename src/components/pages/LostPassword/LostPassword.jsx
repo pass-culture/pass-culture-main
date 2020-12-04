@@ -125,8 +125,10 @@ class LostPassword extends PureComponent {
 
     return (
       <Main
-        fullscreen
-        name="sign-in"
+        layoutConfig={{
+          fullscreen: true,
+          pageName: 'sign-in',
+        }}
       >
         <PageTitle title="Mot de passe perdu" />
         <div className="logo-side">

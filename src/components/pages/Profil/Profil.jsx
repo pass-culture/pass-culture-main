@@ -143,12 +143,12 @@ class Profil extends PureComponent {
   }
 
   render() {
-    const backTo = { path: '/accueil', label: 'Accueil' }
-
     return (
       <Main
-        backTo={backTo}
-        name="profile"
+        layoutConfig={{
+          backTo: { path: '/accueil', label: 'Accueil' },
+          pageName: 'profile',
+        }}
       >
         <PageTitle title="Modifier votre profil" />
         <Titles title="Profil" />

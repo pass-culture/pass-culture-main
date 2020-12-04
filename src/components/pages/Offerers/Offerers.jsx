@@ -194,8 +194,9 @@ class Offerers extends PureComponent {
 
     return (
       <Main
-        id="offerers"
-        name="offerers"
+        layoutConfig={{
+          pageName: 'offerers',
+        }}
       >
         <PageTitle title="Vos structures juridiques" />
         <Titles

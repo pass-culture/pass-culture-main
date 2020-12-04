@@ -202,9 +202,11 @@ class VenueEdition extends PureComponent {
 
     return (
       <Main
-        backTo={this.buildBackToInfos(offererName, initialName, offererId)}
         handleDataRequest={noop}
-        name="venue"
+        layoutConfig={{
+          backTo: this.buildBackToInfos(offererName, initialName, offererId),
+          pageName: 'venue',
+        }}
       >
         <PageTitle title={pageTitle} />
         <Titles
