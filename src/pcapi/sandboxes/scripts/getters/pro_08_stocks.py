@@ -52,19 +52,21 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     user = query.first()
 
     for uo in user.UserOfferers:
-        if uo.validationToken == None and uo.offerer.validationToken == None and uo.offerer.iban:
-            for venue in uo.offerer.managedVenues:
-                for offer in venue.offers:
-                    if offer.isEvent and offer.stocks:
-                        for stock in offer.stocks:
-                            if stock.beginningDatetime:
-                                return {
-                                    "offer": get_offer_helper(offer),
-                                    "offerer": get_offerer_helper(uo.offerer),
-                                    "stock": get_stock_helper(stock),
-                                    "user": get_pro_helper(user),
-                                    "venue": get_venue_helper(venue),
-                                }
+        if not uo.isValidated or not uo.offerer.isValidated:
+            continue
+        if not uo.offerer.iban:
+            continue
+        for venue in uo.offerer.managedVenues:
+            for offer in [o for o in venue.offers if o.isEvent]:
+                for stock in offer.stocks:
+                    if stock.beginningDatetime:
+                        return {
+                            "offer": get_offer_helper(offer),
+                            "offerer": get_offerer_helper(uo.offerer),
+                            "stock": get_stock_helper(stock),
+                            "user": get_pro_helper(user),
+                            "venue": get_venue_helper(venue),
+                        }
     return None
 
 
@@ -124,15 +126,17 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
     user = query.first()
 
     for uo in user.UserOfferers:
-        if uo.validationToken == None and uo.offerer.validationToken == None and not uo.offerer.iban:
-            for venue in uo.offerer.managedVenues:
-                if not venue.isVirtual:
-                    for offer in venue.offers:
-                        if offer.isEvent:
-                            return {
-                                "offer": get_offer_helper(offer),
-                                "offerer": get_offerer_helper(uo.offerer),
-                                "user": get_pro_helper(user),
-                                "venue": get_venue_helper(venue),
-                            }
+        if not uo.isValidated or not uo.offerer.isValidated:
+            continue
+        if uo.offerer.iban:
+            continue
+        for venue in [v for v in uo.offerer.managedVenues if not v.isVirtual]:
+            for offer in venue.offers:
+                if offer.isEvent:
+                    return {
+                        "offer": get_offer_helper(offer),
+                        "offerer": get_offerer_helper(uo.offerer),
+                        "user": get_pro_helper(user),
+                        "venue": get_venue_helper(venue),
+                    }
     return None

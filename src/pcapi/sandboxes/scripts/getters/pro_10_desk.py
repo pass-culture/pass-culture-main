@@ -19,19 +19,18 @@ def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_o
     user = query.first()
 
     for uo in user.UserOfferers:
-        if uo.validationToken == None and uo.offerer.validationToken == None:
-            for venue in uo.offerer.managedVenues:
-                for offer in venue.offers:
-                    if offer.isThing:
-                        for stock in offer.stocks:
-                            if stock.bookings:
-                                for booking in stock.bookings:
-                                    if not booking.isUsed:
-                                        return {
-                                            "booking": get_booking_helper(booking),
-                                            "offer": get_offer_helper(offer),
-                                            "offerer": get_offerer_helper(uo.offerer),
-                                            "user": get_pro_helper(user),
-                                            "venue": get_venue_helper(venue),
-                                        }
+        if not uo.isValidated or not uo.offerer.isValidated:
+            continue
+
+        for venue in uo.offerer.managedVenues:
+            for offer in [o for o in venue.offers if o.isThing]:
+                for stock in offer.stocks:
+                    for booking in [b for b in stock.bookings if not b.isUsed]:
+                        return {
+                            "booking": get_booking_helper(booking),
+                            "offer": get_offer_helper(offer),
+                            "offerer": get_offerer_helper(uo.offerer),
+                            "user": get_pro_helper(user),
+                            "venue": get_venue_helper(venue),
+                        }
     return None

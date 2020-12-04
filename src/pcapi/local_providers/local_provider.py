@@ -133,6 +133,7 @@ class LocalProvider(Iterator):
         logger.info("  %d errors in thumb creations/updates", self.erroredThumbs)
 
     def updateObjects(self, limit=None):
+        # pylint: disable=too-many-nested-blocks
         if self.venue_provider and not self.venue_provider.isActive:
             logger.info("Venue provider %s is inactive", self.venue_provider)
             return
