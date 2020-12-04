@@ -117,7 +117,7 @@ describe('src | components | pages | Venue', () => {
         const wrapper = shallow(<VenueCreation {...props} />)
 
         // then
-        expect(wrapper.prop('backTo')).toStrictEqual({
+        expect(wrapper.prop('layoutConfig').backTo).toStrictEqual({
           label: 'Maison du chocolat',
           path: '/structures/APEQ',
         })

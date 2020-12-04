@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import ReactToolTip from 'react-tooltip'
 import { requestData } from 'redux-saga-data'
 
+import AppLayout from 'app/AppLayout'
 import Icon from 'components/layout/Icon'
 import Insert from 'components/layout/Insert/Insert'
 import Main from 'components/layout/Main'
@@ -393,13 +394,13 @@ class OfferCreation extends PureComponent {
     const pageTitle = !isCreatedEntity && offer ? 'Détails de votre offre' : 'Créer une offre'
 
     return (
-      <Main
-        handleDataRequest={this.onHandleDataRequest}
+      <AppLayout
         layoutConfig={{
           pageName: 'offer',
           backTo: { path: this.computeOffersUrl(), label: 'Offres' },
         }}
       >
+        <Main handleDataRequest={this.onHandleDataRequest} />
         <PageTitle title={pageTitle} />
         <Titles
           action={actionLink}
@@ -825,7 +826,7 @@ class OfferCreation extends PureComponent {
             </div>
           </div>
         </Form>
-      </Main>
+      </AppLayout>
     )
   }
 }

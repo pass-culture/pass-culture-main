@@ -1,12 +1,16 @@
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React from 'react'
 
-import AppLayout from 'app/AppLayout'
 import { resetForm } from 'store/reducers/form'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
-class Main extends PureComponent {
+/**
+ * @deprecated Since 04/12/2020. This component should not be used anymore.
+ * It has been cleaned from any rendering utility and only stays lifecycle logic for legacy component using it.
+ * Should be replaced by an hoc, or component using it should be completely rewritten with hooks.
+ */
+class Main extends React.PureComponent {
   componentDidMount() {
     const { currentUser } = this.props
     if (currentUser) {
@@ -51,32 +55,18 @@ class Main extends PureComponent {
   }
 
   render() {
-    const { PageActionsBar, children, layoutConfig } = this.props
-
-    return (
-      <AppLayout
-        PageActionsBar={PageActionsBar}
-        layoutConfig={layoutConfig}
-      >
-        {children}
-      </AppLayout>
-    )
+    return null
   }
 }
 
 Main.defaultProps = {
-  PageActionsBar: null,
   handleDataRequest: null,
-  layoutConfig: {},
 }
 
 Main.propTypes = {
-  PageActionsBar: PropTypes.elementType,
-  children: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
   handleDataRequest: PropTypes.func,
-  layoutConfig: PropTypes.shape(),
   location: PropTypes.shape().isRequired,
 }
 

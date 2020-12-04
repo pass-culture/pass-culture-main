@@ -9,14 +9,6 @@ import Reimbursements from '../Reimbursements'
 
 describe('src | components | pages | Reimbursements', () => {
   describe('render', () => {
-    it('should a Main component with the right props', () => {
-      // when
-      const wrapper = shallow(<Reimbursements />)
-
-      // then
-      expect(wrapper.prop('name')).toBe('reimbursements')
-    })
-
     it('should display the right informations', () => {
       // when
       const wrapper = shallow(<Reimbursements />)

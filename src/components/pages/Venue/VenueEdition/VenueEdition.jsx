@@ -4,8 +4,8 @@ import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { Link } from 'react-router-dom'
 
+import AppLayout from 'app/AppLayout'
 import Icon from 'components/layout/Icon'
-import Main from 'components/layout/Main'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
@@ -21,8 +21,6 @@ import bindGetSuggestionsToLongitude from './../fields/LocationFields/decorators
 import LocationFields from './../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from './../fields/LocationFields/utils/positions'
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
-
-const noop = () => {}
 
 class VenueEdition extends PureComponent {
   constructor() {
@@ -201,8 +199,7 @@ class VenueEdition extends PureComponent {
     )
 
     return (
-      <Main
-        handleDataRequest={noop}
+      <AppLayout
         layoutConfig={{
           backTo: this.buildBackToInfos(offererName, initialName, offererId),
           pageName: 'venue',
@@ -226,7 +223,7 @@ class VenueEdition extends PureComponent {
             render={this.onHandleRender}
           />
         )}
-      </Main>
+      </AppLayout>
     )
   }
 }

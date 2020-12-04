@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 
-import Main from 'components/layout/Main'
+import AppLayout from 'app/AppLayout'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
@@ -19,8 +19,6 @@ import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
 import { formatSiret } from '../siret/formatSiret'
 import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
-
-const noop = () => {}
 
 class VenueCreation extends PureComponent {
   constructor() {
@@ -184,8 +182,7 @@ class VenueCreation extends PureComponent {
     const showForm = !initialIsVirtual && typeof offerer !== 'undefined'
 
     return (
-      <Main
-        handleDataRequest={noop}
+      <AppLayout
         layoutConfig={{
           backTo: this.buildBackToInfos(offererName, initialName, offererId),
           pageName: 'venue',
@@ -209,7 +206,7 @@ class VenueCreation extends PureComponent {
             render={this.onHandleRender}
           />
         )}
-      </Main>
+      </AppLayout>
     )
   }
 }

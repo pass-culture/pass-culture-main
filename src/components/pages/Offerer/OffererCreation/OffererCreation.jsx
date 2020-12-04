@@ -49,7 +49,7 @@ class OffererCreation extends PureComponent {
       <AppLayout
         layoutConfig={{
           backTo: { label: 'Structures juridiques', path: '/structures' },
-          name: 'offerer',
+          pageName: 'offerer',
         }}
       >
         <PageTitle title="Créer une structure" />
