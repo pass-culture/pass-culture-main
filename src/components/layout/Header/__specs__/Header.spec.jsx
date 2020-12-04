@@ -25,7 +25,7 @@ describe('header', () => {
       isSmall: false,
       name: 'fake name',
       offerers: [{}],
-      whiteHeader: false,
+      isSmall: false,
     }
   })
 
@@ -228,7 +228,7 @@ describe('navigation menu', () => {
     process.env.ENVIRONMENT_NAME = initialEnvironmentName
   })
 
-  // reste : les éléments conditionnels (Styleguide et !whiteHeader)
+  // reste : les éléments conditionnels (Styleguide et !isSmall)
   // devnote : comment tester que les élements du menu secondaire s'affichent au hover
   // devnote : qui du menu burger ?
 })

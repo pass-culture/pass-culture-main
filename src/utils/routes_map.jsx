@@ -194,7 +194,7 @@ let routes = [
     title: 'Accueil',
     meta: {
       layoutConfig: {
-        whiteHeader: true,
+        isSmall: false,
       },
     },
   },

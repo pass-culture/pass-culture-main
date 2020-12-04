@@ -45,14 +45,12 @@ Logo.defaultProps = {
   className: '',
   noLink: false,
   signPage: false,
-  whiteHeader: false,
 }
 
 Logo.propTypes = {
   className: PropTypes.string,
   noLink: PropTypes.bool,
   signPage: PropTypes.bool,
-  whiteHeader: PropTypes.bool,
 }
 
 export default Logo

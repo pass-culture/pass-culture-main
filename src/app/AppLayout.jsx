@@ -17,11 +17,11 @@ const AppLayout = props => {
     backTo: null,
     fullscreen: false,
     header: {},
-    pageName: null,
-    whiteHeader: false,
+    pageName: 'Accueil',
+    isSmall: false,
   }
 
-  const { backTo, fullscreen, header, pageName, whiteHeader } = {
+  const { backTo, fullscreen, header, pageName, isSmall } = {
     ...defaultConfig,
     ...layoutConfig,
   }
@@ -30,7 +30,7 @@ const AppLayout = props => {
     <div>
       {!fullscreen && (
         <HeaderContainer
-          whiteHeader={whiteHeader}
+          isSmall={isSmall}
           {...header}
         />
       )}
@@ -47,7 +47,7 @@ const AppLayout = props => {
           page: true,
           [`${pageName}-page`]: true,
           'with-header': Boolean(header),
-          'white-header': whiteHeader,
+          'isSmall': isSmall,
           container: !fullscreen,
           fullscreen,
         })}

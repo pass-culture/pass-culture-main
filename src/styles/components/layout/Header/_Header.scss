@@ -1,5 +1,6 @@
 header.navbar {
   align-items: flex-start;
+  background-image: $linear-gradient-to-bottom-right;
   z-index: inherit;
 
   &:not(.is-small) {
@@ -24,7 +25,7 @@ header.navbar {
   }
 
   .navbar-brand .navbar-item {
-    font-size: rem(20px);
+    font-size: $size-medium;
   }
 
   .navbar-menu {
@@ -32,39 +33,12 @@ header.navbar {
     z-index: 10;
 
     .navbar-item {
-      font-size: rem(12px);
-      font-weight: 700;
-
       @include caption();
     }
   }
 
-  background-image: $linear-gradient-to-bottom-right;
-
   .icon {
     margin-right: 0.5rem;
-  }
-}
-
-.navbar {
-  &.is-primary {
-    background-image: $linear-gradient-to-bottom-right;
-
-    .navbar-brand {
-      & > .navbar-item:focus,
-      & > .navbar-item:hover {
-        background: transparent !important;
-      }
-    }
-  }
-
-  .icon {
-    align-items: center;
-    display: inline-flex;
-    height: 1.5rem;
-    justify-content: center;
-    margin-right: 0.5rem;
-    width: 1.5rem;
   }
 }
 
@@ -91,7 +65,6 @@ header.navbar {
 [data-reach-menu-popover] {
   box-shadow: 0 0 3.75rem $black-shadow;
   z-index: 10;
-
 }
 
 [data-reach-menu-items] {
@@ -110,7 +83,9 @@ header.navbar {
     margin-right: rem(8px);
   }
 
-  &:hover, &:focus, &:active {
+  &:hover,
+  &:focus,
+  &:active {
     background-color: $grey-light;
     color: $primary;
   }
