@@ -65,16 +65,10 @@ class BookingCancellationError(Exception):
 class AlreadyCancelled(BookingCancellationError):
     """Raised when trying to cancel a cancelled Booking"""
 
-    pass
-
 
 class AlreadyUsed(BookingCancellationError):
     """Raised when trying to cancel a used Booking"""
 
-    pass
-
 
 class DoesNotExpire(BookingCancellationError):
     """Raised when trying to cancel a Booking Offer type that does not expire"""
-
-    pass
