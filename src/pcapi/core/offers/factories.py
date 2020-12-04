@@ -21,7 +21,7 @@ class OffererFactory(BaseFactory):
     city = "Paris"
 
     @factory.iterator
-    def siren():
+    def siren():  # pylint: disable=no-method-argument
         for i in range(10 ** 9):
             yield f"{i:09}"
 
@@ -58,7 +58,7 @@ class VenueFactory(BaseFactory):
 
     # FIXME: should depend on self.offerer.siret
     @factory.iterator
-    def siret():
+    def siret():  # pylint: disable=no-method-argument
         for i in range(10 ** 14):
             yield f"{i:014}"
 
