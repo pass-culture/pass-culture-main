@@ -49,7 +49,8 @@ class TiteLiveThingDescriptions(LocalProvider):
 
     def fill_object_attributes(self, product: Product):
         with self.zip_file.open(self.description_zip_info) as f:
-            product.description = f.read().decode("iso-8859-1")
+            description = f.read().decode("iso-8859-1")
+        product.description = description.replace("\x00", "")
 
     def open_next_file(self):
         if self.zip_file:
