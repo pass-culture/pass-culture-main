@@ -47,10 +47,11 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json["email"] == self.identifier
         assert response.json["first_name"] == first_name
+        assert response.json["is_beneficiary"]
 
     def test_get_user_profile_empty_first_name(self, app):
         first_name = ""
-        users_factories.UserFactory(email=self.identifier, firstName=first_name)
+        users_factories.UserFactory(email=self.identifier, firstName=first_name, isBeneficiary=False)
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -61,6 +62,7 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json["email"] == self.identifier
         assert response.json["first_name"] is None
+        assert not response.json["is_beneficiary"]
 
     @patch("pcapi.domain.beneficiary.beneficiary_licence.is_licence_token_valid", return_value=True)
     @patch("pcapi.utils.mailing.send_raw_email", return_value=True)

@@ -25,6 +25,7 @@ class UserFactory(BaseFactory):
     lastName = "Doux"
     publicName = "Jeanne Doux"
     isEmailValidated = True
+    isBeneficiary = True
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):

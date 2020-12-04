@@ -15,3 +15,4 @@ class AccountRequest(BaseModel):
 class UserProfileResponse(BaseModel):
     first_name: Optional[str]
     email: str
+    is_beneficiary: bool

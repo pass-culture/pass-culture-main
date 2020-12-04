@@ -30,7 +30,9 @@ def get_user_profile() -> serializers.UserProfileResponse:
         raise ApiErrors({"email": ["Utilisateur introuvable"]})
 
     return serializers.UserProfileResponse(
-        first_name=user.firstName if user.firstName != VOID_FIRST_NAME else None, email=user.email
+        first_name=user.firstName if user.firstName != VOID_FIRST_NAME else None,
+        email=user.email,
+        is_beneficiary=user.isBeneficiary,
     )
 
 
