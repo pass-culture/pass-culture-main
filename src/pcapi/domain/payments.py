@@ -28,6 +28,7 @@ from pcapi.utils.human_ids import humanize
 
 class UnmatchedPayments(Exception):
     def __init__(self, payment_ids: Set[int]):
+        super().__init__()
         self.payment_ids = payment_ids
 
 
