@@ -3,6 +3,8 @@ import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Redirect, Router } from 'react-router-dom'
 
+import { campaignTracker } from 'tracking/mediaCampaignsTracking'
+
 import SignupValidation from '../SignupValidation'
 
 describe('src | components | pages | Signup | validation', () => {
@@ -22,6 +24,8 @@ describe('src | components | pages | Signup | validation', () => {
       },
     }
   })
+
+  afterEach(jest.resetAllMocks)
 
   it('should render a Redirect component', () => {
     // when
@@ -55,6 +59,24 @@ describe('src | components | pages | Signup | validation', () => {
       },
       type: 'REQUEST_DATA_PATCH_/VALIDATE/USER/AAA',
     })
+  })
+
+  it('should call media campaign tracker on mount only', () => {
+    // when on mount
+    const wrapper = mount(
+      <Router history={history}>
+        <SignupValidation {...props} />
+      </Router>
+    )
+
+    // then
+    expect(campaignTracker.signUpValidation).toHaveBeenCalledTimes(1)
+
+    // when rerender
+    wrapper.setProps(props)
+
+    // then
+    expect(campaignTracker.signUpValidation).toHaveBeenCalledTimes(1)
   })
 
   describe('notifySuccess', () => {

@@ -5,6 +5,7 @@ import { requestData } from 'redux-saga-data'
 
 import { redirectLoggedUser } from 'components/router/helpers'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
+import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 class SignupValidation extends PureComponent {
   constructor(props) {
@@ -12,7 +13,10 @@ class SignupValidation extends PureComponent {
     const { currentUser, history } = props
     redirectLoggedUser(history, currentUser)
   }
+
   componentDidMount() {
+    campaignTracker.signUpValidation()
+
     const {
       dispatch,
       match: {

@@ -6,3 +6,5 @@ import 'babel-polyfill'
 configure({ adapter: new Adapter() })
 
 global.fetch = fetch
+
+jest.mock('tracking/mediaCampaignsTracking')
