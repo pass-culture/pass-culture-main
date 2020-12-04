@@ -3,6 +3,7 @@ from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
+from pcapi.models.deposit import DEPOSIT_DEFAULT_AMOUNT
 from pcapi.models.deposit import Deposit
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
@@ -38,7 +39,7 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> UserSQ
 
 def _attach_deposit(beneficiary: UserSQLEntity, beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
     deposit = Deposit()
-    deposit.amount = 500
+    deposit.amount = DEPOSIT_DEFAULT_AMOUNT
     deposit.source = beneficiary_pre_subscription.deposit_source
 
     beneficiary.deposits = [deposit]

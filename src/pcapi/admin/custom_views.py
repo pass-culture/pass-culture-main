@@ -109,6 +109,7 @@ class ProUserAdminView(BaseAdminView):
 
 class BeneficiaryUserAdminView(BaseAdminView):
     can_edit = True
+    can_create = True
     column_list = [
         "id",
         "isBeneficiary",
@@ -153,6 +154,12 @@ class BeneficiaryUserAdminView(BaseAdminView):
         # If a user is an admin, he shouldn't be able to be beneficiary
         if form.isBeneficiary.data and model.isAdmin:
             raise validators.ValidationError("Un admin ne peut pas être bénéficiaire")
+
+        if is_created:
+            # This is to prevent a circulary import dependency
+            from pcapi.core.users.api import fulfill_user_data
+
+            fulfill_user_data(model, "pass-culture-admin")
 
         super().on_model_change(form, model, is_created)
 

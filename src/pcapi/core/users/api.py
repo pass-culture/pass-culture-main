@@ -7,8 +7,13 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.utils import create_custom_jwt_token
 from pcapi.domain import user_emails
+from pcapi.domain.password import generate_reset_token
+from pcapi.domain.password import random_password
+from pcapi.models.deposit import DEPOSIT_DEFAULT_AMOUNT
+from pcapi.models.deposit import Deposit
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
+from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from pcapi.utils import mailing as mailing_utils
 
 from . import constants
@@ -79,3 +84,15 @@ def request_email_confirmation(user: UserSQLEntity) -> None:
 def is_user_eligible(user: UserSQLEntity) -> bool:
     age = user.calculate_age()
     return age is not None and age == constants.ELIGIBILITY_AGE
+
+
+def fulfill_user_data(user: UserSQLEntity, deposit_source: str) -> UserSQLEntity:
+    user.password = random_password()
+    generate_reset_token(user, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
+
+    deposit = Deposit()
+    deposit.amount = DEPOSIT_DEFAULT_AMOUNT
+    deposit.source = deposit_source
+    user.deposits = [deposit]
+
+    return user
