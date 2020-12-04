@@ -7,11 +7,9 @@ from unittest.mock import Mock
 from alembic import command
 from alembic.config import Config
 from flask import Flask
-from flask import jsonify
 from flask.testing import FlaskClient
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
-from flask_login import login_user
 from mailjet_rest import Client
 import pytest
 from requests import Response
@@ -34,7 +32,6 @@ from pcapi.models.db import db
 from pcapi.models.install import install_activity
 from pcapi.models.install import install_materialized_views
 from pcapi.repository.clean_database import clean_all_database
-from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes import install_routes
 from pcapi.routes.native.v1.blueprint import native_v1
 from pcapi.utils.json_encoder import EnumJSONEncoder
@@ -85,15 +82,6 @@ def app():
     app.register_blueprint(native_v1, url_prefix="/native/v1")
 
     JWTManager(app)
-
-    @app.route("/test/signin", methods=["POST"])
-    def test_signin():
-        from flask import request
-
-        identifier = request.get_json().get("identifier")
-        user = find_user_by_email(identifier)
-        login_user(user, remember=True)
-        return jsonify({}), 204
 
     return app
 
