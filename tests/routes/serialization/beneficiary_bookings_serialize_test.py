@@ -12,8 +12,7 @@ from pcapi.routes.serialization.beneficiary_bookings_serialize import serialize_
 class BeneficiaryBookingsSerializeTest:
     class SerializeBeneficiaryBookingsTest:
         @freeze_time("2019-1-1")
-        @patch("pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url", return_value="http://example.com")
-        def should_return_expected_json_without_qr_code(self, mock_get_storage):
+        def should_return_expected_json_without_qr_code(self):
             # Given
             stocks = [
                 Stock(
@@ -139,7 +138,7 @@ class BeneficiaryBookingsSerializeTest:
                                     "remainingQuantity": "unlimited",
                                 }
                             ],
-                            "thumbUrl": "http://example.com/thumbs/products/BQ",
+                            "thumbUrl": "http://localhost/storage/thumbs/products/BQ",
                             "venue": {
                                 "address": "5 rue du cinéma",
                                 "city": "Lure",
@@ -163,9 +162,8 @@ class BeneficiaryBookingsSerializeTest:
             ]
 
         @freeze_time("2019-1-1")
-        @patch("pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url", return_value="http://example.com")
         @patch("pcapi.core.bookings.api.generate_qr_code", return_value="fake_qr_code")
-        def should_return_expected_json_with_qr_code(self, mock_generate_qr_code, mock_get_storage):
+        def should_return_expected_json_with_qr_code(self, mock_generate_qr_code):
             # Given
             stocks = [
                 Stock(
@@ -292,7 +290,7 @@ class BeneficiaryBookingsSerializeTest:
                                     "remainingQuantity": "unlimited",
                                 }
                             ],
-                            "thumbUrl": "http://example.com/thumbs/products/BQ",
+                            "thumbUrl": "http://localhost/storage/thumbs/products/BQ",
                             "venue": {
                                 "address": "5 rue du cinéma",
                                 "city": "Lure",
@@ -316,8 +314,7 @@ class BeneficiaryBookingsSerializeTest:
             ]
 
         @freeze_time("2019-1-1")
-        @patch("pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url", return_value="http://example.com")
-        def test_offer_should_not_be_bookable_when_all_stock_are_not_bookable(self, mock_get_storage):
+        def test_offer_should_not_be_bookable_when_all_stock_are_not_bookable(self):
             # Given
             stocks = [
                 Stock(
@@ -396,8 +393,7 @@ class BeneficiaryBookingsSerializeTest:
             assert serialized_beneficiary_booking[0]["stock"]["offer"]["isBookable"] is False
 
         @freeze_time("2019-1-1")
-        @patch("pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url", return_value="http://example.com")
-        def test_offer_should_be_bookable_when_at_least_one_stock_is_bookable(self, mock_get_storage):
+        def test_offer_should_be_bookable_when_at_least_one_stock_is_bookable(self):
             # Given
             stocks = [
                 Stock(

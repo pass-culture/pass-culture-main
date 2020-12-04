@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-from unittest.mock import patch
 
 from pcapi.domain.beneficiary_bookings.active_mediation import ActiveMediation
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
@@ -202,11 +201,8 @@ class BeneficiaryBookingTest:
             assert is_event_expired is True
 
     class ThumbUrlTest:
-        @patch("pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url")
-        def should_compute_thumb_url_based_on_product_when_thumb_count_is_more_than_0(self, mock_get_storage_base_url):
+        def should_compute_thumb_url_based_on_product_when_thumb_count_is_more_than_0(self):
             # Given
-            mock_get_storage_base_url.return_value = "http://example.com"
-
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -248,15 +244,10 @@ class BeneficiaryBookingTest:
             )
 
             # When / Then
-            assert beneficiary_booking.thumb_url == "http://example.com/thumbs/products/BQ"
+            assert beneficiary_booking.thumb_url == "http://localhost/storage/thumbs/products/BQ"
 
-        @patch("pcapi.domain.beneficiary_bookings.thumb_url.get_storage_base_url")
-        def should_compute_thumb_url_based_on_mediation_when_active_mediations_is_not_null(
-            self, mock_get_storage_base_url
-        ):
+        def should_compute_thumb_url_based_on_mediation_when_active_mediations_is_not_null(self):
             # Given
-            mock_get_storage_base_url.return_value = "http://example.com"
-
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
                 cancellationDate=datetime(2019, 3, 12),
@@ -304,4 +295,4 @@ class BeneficiaryBookingTest:
             )
 
             # When / Then
-            assert beneficiary_booking.thumb_url == "http://example.com/thumbs/mediations/A4"
+            assert beneficiary_booking.thumb_url == "http://localhost/storage/thumbs/mediations/A4"

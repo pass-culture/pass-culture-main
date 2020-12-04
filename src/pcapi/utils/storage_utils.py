@@ -3,47 +3,51 @@ from pathlib import Path
 
 import swiftclient
 
+from pcapi import settings
 
+
+# TODO: why isn't it common with pcapi.utils.objects_storage ?
 def swift_con(dest_container_name):
+    # TODO: This probably could be simplified. Why do we have several identifiers ?
     if dest_container_name == "storage-pc-dev":
-        user = os.environ.get("OVH_USER_TESTING")
-        key = os.environ.get("OVH_PASSWORD_TESTING")
-        tenant_name = os.environ.get("OVH_TENANT_NAME_TESTING")
-        region_name = os.environ.get("OVH_REGION_NAME_TESTING", "GRA")
+        user = settings.SWIFT_TESTING_USER
+        key = settings.SWIFT_TESTING_KEY
+        tenant_name = settings.SWIFT_TESTING_TENANT_NAME
+        region_name = settings.SWIFT_TESTING_REGION_NAME
     elif dest_container_name == "storage-pc-staging":
-        user = os.environ.get("OVH_USER_STAGING")
-        key = os.environ.get("OVH_PASSWORD_STAGING")
-        tenant_name = os.environ.get("OVH_TENANT_NAME_STAGING")
-        region_name = os.environ.get("OVH_REGION_NAME_STAGING", "GRA")
+        user = settings.SWIFT_STAGING_USER
+        key = settings.SWIFT_STAGING_KEY
+        tenant_name = settings.SWIFT_STAGING_TENANT_NAME
+        region_name = settings.SWIFT_STAGING_REGION_NAME
     else:
         print("Ce conteneur ne semble pas exister")
         return 1
 
-    auth_url = "https://auth.cloud.ovh.net/v3/"
     options = {"region_name": region_name}
-    auth_version = "3"
     return swiftclient.Connection(
-        user=user, key=key, authurl=auth_url, os_options=options, tenant_name=tenant_name, auth_version=auth_version
+        user=user,
+        key=key,
+        authurl=settings.SWIFT_AUTH_URL,
+        os_options=options,
+        tenant_name=tenant_name,
+        auth_version="3",
     )
 
 
 def swift_con_prod():
-    user = os.environ.get("OVH_USER_PROD")
-    key = os.environ.get("OVH_PASSWORD_PROD")
-    tenant_name = os.environ.get("OVH_TENANT_NAME_PROD")
-    region_name = os.environ.get("OVH_REGION_NAME_PROD", "GRA")
-
-    auth_url = "https://auth.cloud.ovh.net/v3/"
-    options = {"region_name": region_name}
-    auth_version = "3"
     return swiftclient.Connection(
-        user=user, key=key, authurl=auth_url, os_options=options, tenant_name=tenant_name, auth_version=auth_version
+        user=settings.SWIFT_PROD_USER,
+        key=settings.SWIFT_PROD_KEY,
+        authurl=settings.SWIFT_AUTH_URL,
+        os_options={"region_name": settings.SWIFT_PROD_REGION_NAME},
+        tenant_name=settings.SWIFT_PROD_TENANT_NAME,
+        auth_version="3",
     )
 
 
 def do_local_backup_prod_container(dest_folder_name):
-    if "OVH_BUCKET_NAME" in os.environ:
-        prod_container_name = os.environ.get("OVH_BUCKET_NAME")
+    if settings.SWIFT_BUCKET_NAME:
+        prod_container_name = settings.SWIFT_BUCKET_NAME
         prod_conn = swift_con_prod()
     else:
         print("OVH_BUCKET_NAME does not seem to be set.")
@@ -78,11 +82,11 @@ def do_copy_prod_container_content_to_dest_container(dest_container_name):
         return 1
     conn = swift_con(dest_container_name)
 
-    if "OVH_BUCKET_NAME" not in os.environ:
+    if settings.SWIFT_BUCKET_NAME:
         print("OVH_BUCKET_NAME does not seem to be set.")
         return 1
 
-    prod_container_name = os.environ.get("OVH_BUCKET_NAME")
+    prod_container_name = settings.SWIFT_BUCKET_NAME
     prod_conn = swift_con_prod()
 
     for data in prod_conn.get_container(prod_container_name)[1]:
@@ -133,13 +137,13 @@ def do_delete_file(container_name, file_name):
 def do_list_content(container_name):
     if container_name == "storage-pc-dev":
         conn = swift_con(container_name)
-        container_url_path = os.environ.get("OVH_URL_PATH_TESTING")
+        container_url_path = settings.SWIFT_TESTING_URL_PATH
     elif container_name == "storage-pc-staging":
         conn = swift_con(container_name)
-        container_url_path = os.environ.get("OVH_URL_PATH_STAGING")
+        container_url_path = settings.SWIFT_STAGING_URL_PATH
     elif container_name == "storage-pc":
         conn = swift_con_prod()
-        container_url_path = os.environ.get("OVH_URL_PATH_PROD")
+        container_url_path = settings.SWIFT_PROD_URL_PATH
     else:
         raise ValueError("Ce conteneur ne semble pas exister")
 

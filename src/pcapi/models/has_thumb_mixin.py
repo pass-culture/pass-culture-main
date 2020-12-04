@@ -1,9 +1,9 @@
 from sqlalchemy import Column
 from sqlalchemy import Integer
 
+from pcapi import settings
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.object_storage import build_thumb_path
-from pcapi.utils.object_storage import get_storage_base_url
 from pcapi.utils.string_processing import get_model_plural_name
 
 
@@ -19,6 +19,5 @@ class HasThumbMixin:
     def thumbUrl(self):
         if self.thumbCount == 0:
             return None
-        base_url = get_storage_base_url()
-        thumb_url = base_url + "/thumbs"
+        thumb_url = settings.OBJECT_STORAGE_URL + "/thumbs"
         return "{}/{}/{}".format(thumb_url, get_model_plural_name(self), humanize(self.id))
