@@ -4,6 +4,7 @@ from enum import Enum
 from sqlalchemy import BigInteger
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
+from sqlalchemy import Index
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import desc
@@ -33,6 +34,14 @@ class BeneficiaryImport(PcObject, Model):
     source = Column(String(255), nullable=False)
 
     beneficiary = relationship("UserSQLEntity", foreign_keys=[beneficiaryId], backref="beneficiaryImports")
+
+    Index(
+        "idx_beneficiary_import_application",
+        applicationId,
+        sourceId,
+        source,
+        unique=True,
+    )
 
     def setStatus(self, status: ImportStatus, detail: str = None, author: UserSQLEntity = None):
         new_status = BeneficiaryImportStatus()
