@@ -12,6 +12,7 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.domain import admin_emails
 from pcapi.domain import user_emails
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from pcapi.models import Booking
 from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Product
@@ -30,8 +31,9 @@ from pcapi.utils.rest import load_or_raise_error
 
 from . import models
 from . import validation
-from ..bookings.api import unvalidate_bookings
+from ..bookings.api import mark_as_unused
 from ..bookings.api import update_confirmation_dates
+from ..bookings.models import Booking
 from .models import Mediation
 
 
@@ -264,7 +266,10 @@ def edit_stock(
         bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
         if bookings:
             bookings = update_confirmation_dates(bookings, beginning)
-            bookings = unvalidate_bookings(bookings)
+            date_in_two_days = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+            check_event_is_in_more_than_48_hours = beginning > date_in_two_days
+            if check_event_is_in_more_than_48_hours:
+                bookings = _invalidate_bookings(bookings)
             try:
                 user_emails.send_batch_stock_postponement_emails_to_users(bookings, send_email=mailing.send_raw_email)
             except mailing.MailServiceException as exc:
@@ -280,6 +285,13 @@ def edit_stock(
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     return stock
+
+
+def _invalidate_bookings(bookings: List[Booking]) -> List[Booking]:
+    for booking in bookings:
+        if booking.isUsed:
+            mark_as_unused(booking)
+    return bookings
 
 
 def delete_stock(stock: Stock) -> None:

@@ -191,13 +191,6 @@ def update_confirmation_dates(
     return bookings
 
 
-def unvalidate_bookings(bookings: typing.List[Booking]) -> typing.List[Booking]:
-    for booking in bookings:
-        if booking.isUsed:
-            mark_as_unused(booking)
-    return bookings
-
-
 def cancel_expired_bookings(
     expired_bookings: typing.List[Booking],
 ) -> typing.Tuple[typing.List[Booking], typing.List[bookings_exceptions.BookingCancellationError]]:

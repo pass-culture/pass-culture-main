@@ -10,6 +10,7 @@ import pytz
 
 from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import Booking
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
@@ -149,8 +150,7 @@ class EditStockTest:
 
         mock_update_confirmation_dates.assert_called_once_with([booking], event_reported_in_10_days)
 
-    @mock.patch("pcapi.core.offers.api.unvalidate_bookings")
-    def should_invalidate_booking_token_when_event_is_reported(self, mock_unvalidate_bookings):
+    def should_invalidate_booking_token_when_event_is_reported(self):
         # Given
         now = datetime.datetime.now()
         booking_made_3_days_ago = now - datetime.timedelta(days=3)
@@ -169,7 +169,36 @@ class EditStockTest:
         )
 
         # Then
-        mock_unvalidate_bookings.assert_called_once_with([booking])
+        updated_booking = Booking.query.get(booking.id)
+        assert updated_booking.isUsed is False
+        assert updated_booking.dateUsed is None
+        assert updated_booking.confirmationDate == booking.confirmationDate
+
+    @mock.patch("pcapi.core.offers.api.mark_as_unused")
+    def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self, mock_mark_as_unused):
+        # Given
+        now = datetime.datetime.now()
+        date_used_in_48_hours = datetime.datetime.now() + datetime.timedelta(days=2)
+        event_in_3_days = now + datetime.timedelta(days=3)
+        event_reported_in_less_48_hours = now + datetime.timedelta(days=1)
+        stock = factories.EventStockFactory(beginningDatetime=event_in_3_days)
+        booking = bookings_factories.BookingFactory(
+            stock=stock, dateCreated=now, isUsed=True, dateUsed=date_used_in_48_hours
+        )
+
+        # When
+        api.edit_stock(
+            stock,
+            price=5,
+            quantity=20,
+            beginning=event_reported_in_less_48_hours,
+            booking_limit_datetime=event_reported_in_less_48_hours,
+        )
+
+        # Then
+        updated_booking = Booking.query.get(booking.id)
+        assert updated_booking.isUsed is True
+        assert updated_booking.dateUsed == date_used_in_48_hours
 
     def test_checks_number_of_reservations(self):
         stock = factories.EventStockFactory()
