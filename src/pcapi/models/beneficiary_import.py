@@ -41,10 +41,7 @@ class BeneficiaryImport(PcObject, Model):
         new_status.date = datetime.utcnow()
         new_status.author = author
 
-        if self.statuses:
-            self.statuses.append(new_status)
-        else:
-            self.statuses = [new_status]
+        self.statuses.append(new_status)
 
     @hybrid_property
     def currentStatus(self):

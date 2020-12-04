@@ -107,7 +107,4 @@ class Payment(PcObject, Model):
         payment_status.date = datetime.utcnow()
         payment_status.detail = detail
 
-        if self.statuses:
-            self.statuses.append(payment_status)
-        else:
-            self.statuses = [payment_status]
+        self.statuses.append(payment_status)
