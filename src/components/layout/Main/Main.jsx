@@ -1,28 +1,12 @@
-import classnames from 'classnames'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
-import React, { PureComponent, Fragment } from 'react'
-import { NavLink } from 'react-router-dom'
-import ReactTooltip from 'react-tooltip'
+import React, { PureComponent } from 'react'
 
-import HeaderContainer from 'components/layout/Header/HeaderContainer'
-import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
-import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
+import AppLayout from 'app/AppLayout'
 import { resetForm } from 'store/reducers/form'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
-import ActionsBar from '../ActionsBar/'
-import Icon from '../Icon'
-import Modal from '../Modal'
-
 class Main extends PureComponent {
-  constructor() {
-    super()
-    this.state = {
-      loading: false,
-    }
-  }
-
   componentDidMount() {
     const { currentUser } = this.props
     if (currentUser) {
@@ -47,28 +31,17 @@ class Main extends PureComponent {
     dispatch(resetForm())
   }
 
-  handleDataSuccess = () => {
-    this.setState({
-      loading: false,
-    })
-  }
+  handleDataSuccess = () => {}
 
   handleDataRequest = () => {
     const { handleDataRequest } = this.props
     if (handleDataRequest) {
-      // possibility of the handleDataRequest to return
-      // false in order to not trigger the loading
-      this.setState({
-        loading: true,
-      })
       handleDataRequest(this.handleDataSuccess, this.handleDataFail)
     }
   }
 
   handleDataFail = (state, action) => {
     const { dispatch, payload } = action
-    this.setState({ loading: false })
-
     dispatch(
       showNotificationV1({
         type: 'danger',
@@ -78,117 +51,45 @@ class Main extends PureComponent {
   }
 
   render() {
-    const {
-      PageActionsBar,
+    const { PageActionsBar, backTo, children, fullscreen, header, name, whiteHeader } = this.props
+
+    const layoutConfig = {
       backTo,
-      children,
       fullscreen,
       header,
-      name,
-      redBg,
-      Tag,
+      pageName: name,
       whiteHeader,
-    } = this.props
-    const { loading } = this.state
-    const footer = [].concat(children).find(e => e && e.type === 'footer')
-    const $content = []
-      .concat(children)
-      .filter(e => e && e.type !== 'header' && e.type !== 'footer')
+    }
 
     return (
-      <Fragment>
-        {!fullscreen && (
-          <HeaderContainer
-            whiteHeader={whiteHeader}
-            {...header}
-          />
-        )}
-        <ReactTooltip
-          className="flex-center items-center"
-          delayHide={500}
-          effect="solid"
-          html
-        />
-        <Tag
-          className={classnames({
-            page: true,
-            [`${name}-page`]: true,
-            'with-header': Boolean(header),
-            'red-bg': redBg,
-            'white-header': whiteHeader,
-            container: !fullscreen,
-            fullscreen,
-            loading,
-          })}
-        >
-          {fullscreen ? (
-            <Fragment>
-              <NotificationV1Container isFullscreen />
-              {$content}
-            </Fragment>
-          ) : (
-            <div className="columns is-gapless">
-              <div className="page-content column is-10 is-offset-1">
-                <NotificationV1Container />
-                <div
-                  className={classnames('after-notification-content', {
-                    'with-padding': backTo,
-                  })}
-                >
-                  {backTo && (
-                    <NavLink
-                      className="back-button has-text-primary has-text-weight-semibold"
-                      to={backTo.path}
-                    >
-                      <Icon svg="ico-back" />
-                      {` ${backTo.label}`}
-                    </NavLink>
-                  )}
-                  <div className="main-content">
-                    {$content}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          {footer}
-        </Tag>
-        <NotificationV2Container />
-        <Modal key="modal" />
-        {PageActionsBar && (
-          <ActionsBar>
-            <PageActionsBar />
-          </ActionsBar>
-        )}
-      </Fragment>
+      <AppLayout
+        PageActionsBar={PageActionsBar}
+        layoutConfig={layoutConfig}
+      >
+        {children}
+      </AppLayout>
     )
   }
 }
 
 Main.defaultProps = {
   PageActionsBar: null,
-  Tag: 'main',
   backTo: null,
   fullscreen: false,
   handleDataRequest: null,
-  header: {},
-  redBg: null,
   whiteHeader: null,
 }
 
 Main.propTypes = {
   PageActionsBar: PropTypes.elementType,
-  Tag: PropTypes.string,
   backTo: PropTypes.shape(),
   children: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
   fullscreen: PropTypes.bool,
   handleDataRequest: PropTypes.func,
-  header: PropTypes.shape(),
   location: PropTypes.shape().isRequired,
   name: PropTypes.string.isRequired,
-  redBg: PropTypes.string,
   whiteHeader: PropTypes.string,
 }
 
