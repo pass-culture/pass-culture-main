@@ -52,7 +52,7 @@ def process_eligible_offers(client: Redis, offer_ids: List[int], from_provider_u
     if len(offers_to_delete) > 0:
         _process_deleting(client=client, offer_ids_to_delete=offers_to_delete)
 
-    if len(offers_to_add) == 0 and len(offers_to_delete):
+    if not (offers_to_add or offers_to_delete):
         logger.info("[ALGOLIA] no objects were added nor deleted!")
 
 

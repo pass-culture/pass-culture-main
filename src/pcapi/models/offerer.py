@@ -87,7 +87,7 @@ class Offerer(
 
         authorizations = [user_offer.isValidated for user_offer in self.UserOfferers if user_offer.userId == user_id]
 
-        if len(authorizations):
+        if authorizations:
             user_has_access_as_editor = authorizations[0]
         else:
             user_has_access_as_editor = False
