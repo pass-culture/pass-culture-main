@@ -45,8 +45,7 @@
 }
 
 .field-select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  appearance: none;
   border-radius: 16px;
   border: none;
   background-repeat: no-repeat;
@@ -61,8 +60,7 @@
   width: rem(250px);
 }
 
-.field-textarea,
-.field-texteditor {
+.field-textarea {
   resize: none;
   width: 100%;
 
@@ -77,14 +75,12 @@
 .field-checkboxes,
 .field-input,
 .field-textarea,
-.field-texteditor,
 .field-select {
   color: $black;
 }
 
 .field-input,
-.field-textarea,
-.field-texteditor {
+.field-textarea {
   border-radius: $control-radius;
   border: $control-border-width solid $grey-medium;
   flex: 1;
@@ -92,18 +88,6 @@
   font-weight: $weight-medium;
   outline: none !important;
   padding: rem(6px) rem(18px);
-
-  &::-webkit-input-placeholder {
-    color: $grey-dark;
-  }
-
-  &::-moz-placeholder {
-    color: $grey-dark;
-  }
-
-  &:-moz-placeholder {
-    color: $grey-dark;
-  }
 
   &:focus {
     border-color: $primary;
@@ -189,25 +173,6 @@
       }
     }
   }
-
-  .field-texteditor {
-    .texteditor {
-      &:focus {
-        outline: 0;
-      }
-    }
-  }
-
-  &.is-read-only {
-    .field-texteditor {
-      .texteditor {
-        img[class*='draftJsEmojiPlugin__image'] {
-          border-radius: 0;
-          box-shadow: none;
-        }
-      }
-    }
-  }
 }
 
 .label-aligned-with-control {
@@ -238,7 +203,6 @@
       .field-checkboxes,
       .field-input,
       .field-textarea,
-      .field-texteditor,
       .field-select {
         background-color: transparent;
         border: 0;

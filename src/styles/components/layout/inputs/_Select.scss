@@ -15,8 +15,7 @@
     padding-left: rem(16px);
     padding-right: rem(30px);
     text-overflow: ellipsis;
-    -moz-appearance: none;
-    -webkit-appearance: none;
+    appearance: none;
 
     &:focus {
       border-color: $primary;

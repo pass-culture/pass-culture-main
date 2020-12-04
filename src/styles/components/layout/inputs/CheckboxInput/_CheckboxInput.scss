@@ -1,7 +1,6 @@
 input[type="checkbox"],
 .input-checkbox {
-  -moz-appearance: none;
-  -webkit-appearance: none;
+  appearance: none;
   border: 2px solid $grey-dark;
   border-radius: 4px;
   cursor: pointer;
