@@ -22,7 +22,7 @@ from pcapi.repository import repository
 class FnacStocksTest:
     class NextTest:
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information")
+        @patch("pcapi.local_providers.fnac.fnac_stocks.FnacStocks.get_provider_stock_information")
         def test_should_return_providable_infos_with_correct_data(self, mock_fnac_api_response, app):
             # Given
             mock_fnac_api_response.return_value = iter([{"ref": "9780199536986", "available": 1, "price": 6.36}])
@@ -56,7 +56,7 @@ class FnacStocksTest:
 
     class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information")
+        @patch("pcapi.local_providers.fnac.fnac_stocks.FnacStocks.get_provider_stock_information")
         def test_fnac_stock_provider_create_one_stock_and_one_offer_with_wanted_attributes(
             self, mock_fnac_api_response, app
         ):
@@ -93,7 +93,7 @@ class FnacStocksTest:
             assert stock.bookingLimitDatetime is None
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information")
+        @patch("pcapi.local_providers.fnac.fnac_stocks.FnacStocks.get_provider_stock_information")
         def test_fnac_stock_provider_update_one_stock_and_update_matching_offer(self, mock_fnac_api_response, app):
             # Given
             mock_fnac_api_response.return_value = iter([{"ref": "9780199536986", "available": 10, "price": 16}])
@@ -124,7 +124,7 @@ class FnacStocksTest:
             assert Offer.query.count() == 1
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information")
+        @patch("pcapi.local_providers.fnac.fnac_stocks.FnacStocks.get_provider_stock_information")
         def test_fnac_stocks_create_2_stocks_and_2_offers_even_if_existing_offer_on_same_product(
             self, mock_fnac_api_response, app
         ):
@@ -160,7 +160,7 @@ class FnacStocksTest:
             assert fnac_stocks.last_processed_isbn == "1550199555555"
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information")
+        @patch("pcapi.local_providers.fnac.fnac_stocks.FnacStocks.get_provider_stock_information")
         def test_fnac_stock_provider_available_stock_is_sum_of_updated_available_and_bookings(
             self, mock_fnac_api_response, app
         ):
@@ -199,7 +199,7 @@ class FnacStocksTest:
 
 class WhenSynchronizedTwiceTest:
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.local_providers.fnac.fnac_stocks.api_fnac_stocks.stocks_information")
+    @patch("pcapi.local_providers.fnac.fnac_stocks.FnacStocks.get_provider_stock_information")
     def test_fnac_stock_provider_iterates_over_pagination(self, mock_fnac_api_response, app):
         # Given
         mock_fnac_api_response.side_effect = [

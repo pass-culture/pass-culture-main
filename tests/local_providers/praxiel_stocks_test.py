@@ -22,7 +22,7 @@ from pcapi.repository import repository
 class PraxielStocksTest:
     class NextTest:
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.local_providers.praxiel.praxiel_stocks.api_praxiel_stocks.stocks_information")
+        @patch("pcapi.local_providers.praxiel.praxiel_stocks.PraxielStocks.get_provider_stock_information")
         def test_should_return_providable_infos_with_correct_data(self, mock_praxiel_api_response, app):
             # Given
             mock_praxiel_api_response.return_value = iter([{"ref": "9780199536986", "available": 1, "price": 6.36}])
@@ -54,7 +54,7 @@ class PraxielStocksTest:
 
     class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.local_providers.praxiel.praxiel_stocks.api_praxiel_stocks.stocks_information")
+        @patch("pcapi.local_providers.praxiel.praxiel_stocks.PraxielStocks.get_provider_stock_information")
         def test_stock_provider_praxiel_create_one_stock_and_one_offer_with_wanted_attributes(
             self, mock_praxiel_api_response, app
         ):
@@ -91,7 +91,7 @@ class PraxielStocksTest:
             assert stock.bookingLimitDatetime is None
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.local_providers.praxiel.praxiel_stocks.api_praxiel_stocks.stocks_information")
+        @patch("pcapi.local_providers.praxiel.praxiel_stocks.PraxielStocks.get_provider_stock_information")
         def test_stock_provider_praxiel_update_one_stock_and_update_matching_offer(
             self, mock_praxiel_api_response, app
         ):
@@ -123,7 +123,7 @@ class PraxielStocksTest:
             assert Offer.query.count() == 1
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.local_providers.praxiel.praxiel_stocks.api_praxiel_stocks.stocks_information")
+        @patch("pcapi.local_providers.praxiel.praxiel_stocks.PraxielStocks.get_provider_stock_information")
         def test_praxiel_stocks_create_2_stocks_and_2_offers_even_if_existing_offer_on_same_product(
             self, mock_praxiel_api_response, app
         ):
@@ -159,7 +159,7 @@ class PraxielStocksTest:
             assert praxiel_stocks_local_provider.last_processed_isbn == "1550199555555"
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.local_providers.praxiel.praxiel_stocks.api_praxiel_stocks.stocks_information")
+        @patch("pcapi.local_providers.praxiel.praxiel_stocks.PraxielStocks.get_provider_stock_information")
         def test_stock_provider_praxiel_available_stock_is_sum_of_updated_available_and_bookings(
             self, mock_praxiel_api_response, app
         ):
@@ -197,7 +197,7 @@ class PraxielStocksTest:
 
     class WhenSynchronizedTwiceTest:
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.local_providers.praxiel.praxiel_stocks.api_praxiel_stocks.stocks_information")
+        @patch("pcapi.local_providers.praxiel.praxiel_stocks.PraxielStocks.get_provider_stock_information")
         def test_stock_provider_praxiel_iterates_over_pagination(self, mock_praxiel_api_response, app):
             # Given
             mock_praxiel_api_response.side_effect = [

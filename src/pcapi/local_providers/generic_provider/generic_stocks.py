@@ -1,7 +1,5 @@
 from datetime import datetime
-from typing import Callable
 from typing import List
-from typing import Optional
 
 from sqlalchemy import Sequence
 
@@ -17,18 +15,19 @@ from pcapi.repository import product_queries
 
 
 class GenericStocks(LocalProvider):
-    name = "Generic Stock Provider Interface"
+    # The following attributes MUST be overriden by subclasses
+    name = None
+    get_provider_stock_information = None  # must be overriden by subclasses
+    # The following attributes MAY be overriden by subclasses
     can_create = True
+    price_divider_to_euro = None
 
     def __init__(
         self,
         venue_provider: VenueProvider,
-        get_provider_stock_information: Callable,
-        price_divider_to_euro: Optional[int],
         **options,
     ):
         super().__init__(venue_provider, **options)
-        self.get_provider_stock_information = get_provider_stock_information
         self.venue = venue_provider.venue
         self.siret = self.venue.siret
         self.last_processed_isbn = ""
@@ -36,13 +35,12 @@ class GenericStocks(LocalProvider):
         self.modified_since = venue_provider.lastSyncDate
         self.product = None
         self.offer_id = None
-        self.price_divider_to_euro = price_divider_to_euro
 
     def __next__(self) -> List[ProvidableInfo]:
         try:
             self.provider_stocks = next(self.stock_data)
         except StopIteration:
-            self.stock_data = self.get_provider_stock_information(
+            self.stock_data = self.get_provider_stock_information(  # pylint: disable=not-callable
                 self.siret, self.last_processed_isbn, self.modified_since
             )
             self.provider_stocks = next(self.stock_data)
