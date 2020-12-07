@@ -13,10 +13,13 @@
         "each",
         "else",
         "extend",
+        "function",
         "if",
         "include",
-        "mixin"
+        "mixin",
+        "return"
       ]
-    }]
+    }],
+    "order/properties-alphabetical-order": true
   }
 }

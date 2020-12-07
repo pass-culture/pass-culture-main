@@ -14,7 +14,7 @@
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
     "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx}' --max-warnings=0",
     "lint:js:fix": "yarn lint:js --fix",
-    "lint:scss": "yarn stylelint '**/*.scss'",
+    "lint:scss": "stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
     "start": "node scripts/start.js",
     "test:cafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chrome:headless' testcafe",
@@ -32,6 +32,9 @@
     "*.{js,jsx}": [
       "prettier --write",
       "eslint --max-warnings=0 --fix"
+    ],
+    "*.scss": [
+      "stylelint --syntax=scss"
     ]
   },
   "dependencies": {
