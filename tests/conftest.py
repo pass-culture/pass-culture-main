@@ -24,7 +24,9 @@ from pcapi.load_environment_variables import load_environment_variables
 load_environment_variables()
 
 import pcapi
+from pcapi.admin.install import install_admin_views
 import pcapi.core.testing
+from pcapi.flask_app import admin
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.local_providers.install import install_local_providers
 from pcapi.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
@@ -77,6 +79,9 @@ def app():
     install_materialized_views()
     install_routes(app)
     install_local_providers()
+    admin.init_app(app)
+    install_admin_views(admin, db.session)
+
     app.mailjet_client = Mock()
     app.redis_client = Mock()
     app.register_blueprint(native_v1, url_prefix="/native/v1")
