@@ -1,7 +1,7 @@
 .field-group {
   display: table;
-  width: 100%;
   margin-bottom: 1rem;
+  width: 100%;
 }
 
 input.input,
@@ -10,8 +10,8 @@ textarea.textarea {
   font-weight: 500;
 
   &[readonly]:not([type="checkbox"]) {
-    border: none;
     background-color: transparent;
+    border: none;
     padding-left: 0.125rem;
     resize: none;
   }
@@ -124,10 +124,10 @@ textarea.textarea {
     }
 
     .field-label {
-      padding-top: 0.5rem;
       padding-right: 1rem;
-      white-space: nowrap;
+      padding-top: 0.5rem;
       vertical-align: top;
+      white-space: nowrap;
 
       .label {
         color: $black;
@@ -148,12 +148,12 @@ textarea.textarea {
         }
 
         select[disabled] {
-          border: none;
           background-color: transparent;
-          cursor: default;
+          border: none;
           color: $black;
-          padding-left: 0.125rem;
+          cursor: default;
           opacity: 1;
+          padding-left: 0.125rem;
         }
       }
 
@@ -197,8 +197,8 @@ textarea.textarea {
 
   .required:not(.readOnly) {
     &::after {
-      content: " *";
       color: $accent;
+      content: " *";
       display: inline;
     }
   }

@@ -22,7 +22,6 @@
       display: inline-block;
       width: 50%;
     }
-
   }
 
   .desk-label {
@@ -37,10 +36,10 @@
   }
 
   .desk-button {
-    background-position: center;
-    background-size: 6px 1px;
-    background-repeat: repeat-x;
     background-image: linear-gradient(to left, $primary 10%, transparent 0%);
+    background-position: center;
+    background-repeat: repeat-x;
+    background-size: 6px 1px;
     margin-bottom: rem(10px);
   }
 

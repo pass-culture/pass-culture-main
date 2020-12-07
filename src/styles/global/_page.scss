@@ -27,8 +27,8 @@
     width: 100%;
 
     .container {
-      min-height: 100%;
       display: flex;
+      min-height: 100%;
 
       .columns {
         min-height: 100%;
@@ -36,17 +36,17 @@
     }
 
     footer {
-      position: absolute;
+      align-items: center;
       bottom: 0;
-      left: 0;
-      right: 0;
+      display: flex;
+      flex-direction: row-reverse;
       height: 3.5rem;
-      text-align: right;
+      left: 0;
       padding: 1rem 4rem;
       padding-left: 3em;
-      display: flex;
-      align-items: center;
-      flex-direction: row-reverse;
+      position: absolute;
+      right: 0;
+      text-align: right;
 
       a,
       button {
@@ -59,13 +59,13 @@
     position: relative;
 
     .page-content {
-      position: relative;
-      top: 3.375rem - 9.375rem;
-      margin: 0 5rem;
-      z-index: 10;
       background: $white;
       box-shadow: 0 0 3.75rem $black-shadow;
+      margin: 0 5rem;
       min-width: rem(850px);
+      position: relative;
+      top: 3.375rem - 9.375rem;
+      z-index: 10;
 
       .after-notification-content {
         padding: rem(24px);
@@ -77,13 +77,13 @@
 
         .back-button {
           font-weight: 600;
+          padding-left: rem(30px);
           position: absolute;
           top: rem(24px);
-          padding-left: rem(30px);
 
           img {
-            position: absolute;
             left: rem(0);
+            position: absolute;
           }
         }
       }

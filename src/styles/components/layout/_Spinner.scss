@@ -2,6 +2,13 @@
   color: $grey-dark;
   text-align: center;
 
+  @media screen and (prefers-reduced-motion: reduce) {
+    img {
+      animation: none;
+      margin-bottom: rem(15px);
+    }
+  }
+
   img {
     animation: rotation 3s infinite linear;
     margin-bottom: rem(15px);

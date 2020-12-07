@@ -12,9 +12,9 @@
 
     background-color: $black-with-transparency;
     bottom: 0;
+    left: 0;
     margin-bottom: 0 !important;
     position: absolute;
-    left: 0;
     right: 0;
     top: 0;
     z-index: 11000;
@@ -30,6 +30,15 @@
 
   .notification {
     max-height: rem(80px);
+
+    @media screen and (prefers-reduced-motion: reduce) {
+      &.fade-out {
+        margin: 0;
+        max-height: 0;
+        padding: 0;
+        transition: none;
+      }
+    }
 
     &.fade-out {
       margin: 0;
@@ -55,6 +64,7 @@
 
     .selw-emphasis {
       @include caption();
+
       font-size: rem(12px);
     }
   }
@@ -62,14 +72,13 @@
   .stocks-table-wrapper {
     display: flex;
     flex-direction: column;
+    max-height: 60vh;
+    min-height: rem(500px);
+    overflow: auto;
 
     .hero-section {
       text-align: left !important;
     }
-
-    max-height: 60vh;
-    min-height: rem(500px);
-    overflow: auto;
 
     table.stocks-table {
       width: 100%;
@@ -84,10 +93,10 @@
           @include dotted($primary, bottom);
 
           td {
-            text-align: center;
             border: none;
             max-width: rem(140px);
             padding: rem(6px);
+            text-align: center;
           }
         }
       }
@@ -95,10 +104,10 @@
       thead {
         tr {
           td {
-            vertical-align: middle;
-            font-size: rem(12px);
             color: $grey-dark;
+            font-size: rem(12px);
             line-height: normal;
+            vertical-align: middle;
           }
         }
       }
@@ -139,10 +148,10 @@
 }
 
 .button {
-  font-weight: 700;
-  font-size: rem(16px);
-  line-height: 1.1875em;
   border-radius: rem(24px);
+  font-size: rem(16px);
+  font-weight: 700;
+  line-height: 1.1875em;
   padding-left: rem(16px);
   padding-right: rem(16px);
 
@@ -164,13 +173,13 @@
     }
 
     &:disabled {
-      opacity: 1;
       background-color: $grey-medium;
+      opacity: 1;
     }
 
     &:focus:not(:active) {
-      box-shadow: none;
       border: rem(3px) solid $primary-dark;
+      box-shadow: none;
       padding-left: rem(13px);
       padding-right: rem(13px);
     }
@@ -192,14 +201,14 @@
     }
 
     &:disabled {
-      opacity: 1;
       border-color: $grey-medium;
       color: $grey-medium;
+      opacity: 1;
     }
 
     &:focus:not(:active) {
-      box-shadow: 0 0 4px $primary;
       border-width: rem(3px);
+      box-shadow: 0 0 4px $primary;
       padding-left: rem(13px);
       padding-right: rem(13px);
     }
@@ -216,18 +225,18 @@
     }
 
     &:disabled {
-      opacity: 1;
       color: $grey-dark;
+      opacity: 1;
     }
 
     &[disabled] {
-      opacity: 1;
       color: $grey-dark;
+      opacity: 1;
     }
 
     &:focus:not(:active) {
-      box-shadow: none;
       border: rem(1px) solid $grey-medium;
+      box-shadow: none;
       padding-left: rem(15px);
       padding-right: rem(15px);
     }
@@ -247,9 +256,9 @@
 
   &.is-intermediate {
     background: none;
-    text-decoration: none;
     border: 1px solid $primary;
     color: $primary;
+    text-decoration: none;
   }
 
   &.is-flex-button {

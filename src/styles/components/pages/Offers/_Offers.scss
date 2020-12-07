@@ -147,7 +147,6 @@
           cursor: not-allowed;
         }
       }
-
     }
 
     th.th-with-filter {
@@ -247,7 +246,7 @@
     text-align: center;
 
     img {
-      margin: rem(10px) 0 rem(30px)
+      margin: rem(10px) 0 rem(30px);
     }
 
     p {
@@ -270,14 +269,16 @@
     font-weight: 500;
     line-height: rem(22px);
 
-    &:hover {
+    &:hover,
+    &:focus {
       text-decoration: underline;
     }
 
     &.disabled {
       color: $grey-dark;
 
-      &:hover {
+      &:hover,
+      &:focus {
         cursor: auto;
         text-decoration: none;
       }
@@ -297,6 +298,7 @@
 
     .highlight {
       @include title4;
+
       margin-bottom: rem(8px);
       margin-top: rem(24px);
     }

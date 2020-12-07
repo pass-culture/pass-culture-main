@@ -34,9 +34,9 @@
 
   a.close,
   button.close {
-    color: $black;
     background: none;
     border: none;
+    color: $black;
     cursor: pointer;
     float: right;
     font-size: rem(16px);
@@ -47,8 +47,8 @@
 
     &:focus,
     &:hover {
-      text-decoration: none;
       opacity: 0.75;
+      text-decoration: none;
     }
   }
 
@@ -68,10 +68,10 @@
   }
 
   .notification-description {
-    display: flex;
-    justify-content: flex-start;
     align-items: center;
+    display: flex;
     flex-grow: 1;
+    justify-content: flex-start;
 
     span {
       margin-bottom: rem(6px);

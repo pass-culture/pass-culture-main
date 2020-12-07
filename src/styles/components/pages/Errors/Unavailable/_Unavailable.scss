@@ -1,18 +1,18 @@
 .unavailable-page {
   background: linear-gradient(125deg, $primary, $secondary);
+  color: $white;
   display: flex;
   flex-direction: column;
-  text-align: center;
-  justify-content: center;
-  color: $white;
   font-weight: 500;
+  justify-content: center;
+  text-align: center;
 
   .error-message {
     display: flex;
-    flex-grow: 1;
     flex-direction: column;
-    text-align: center;
+    flex-grow: 1;
     justify-content: center;
+    text-align: center;
 
     h1 {
       font-size: rem(40px);

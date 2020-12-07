@@ -1,9 +1,9 @@
 .booking-offer-info {
   .offer-name {
     font-weight: 700;
-    text-overflow: ellipsis;
     max-width: rem(130px);
     overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
   }
 

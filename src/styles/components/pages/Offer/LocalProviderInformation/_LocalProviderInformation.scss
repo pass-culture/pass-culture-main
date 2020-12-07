@@ -8,27 +8,27 @@
 }
 
 .provider-details {
-  padding-left: 1rem;
   display: block;
+  padding-left: 1rem;
 }
 
 .provider-header {
-  display: flex;
   align-items: center;
+  display: flex;
 
   .provider-title {
     padding-left: 0.75rem;
 
     h3 {
       display: inline-block;
-      vertical-align: middle;
       padding-bottom: rem(1px);
+      vertical-align: middle;
     }
 
     span {
-      vertical-align: middle;
       padding-left: 0.5rem;
       padding-top: rem(2px);
+      vertical-align: middle;
     }
   }
 }

@@ -2,11 +2,11 @@
   max-width: rem(360px);
 
   ul {
-    margin-right: rem(15px);
-    margin-left: rem(15px);
+    align-items: center;
     display: flex;
     justify-content: flex-start;
-    align-items: center;
+    margin-left: rem(15px);
+    margin-right: rem(15px);
 
     li {
       text-align: left;

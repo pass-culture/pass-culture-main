@@ -2,8 +2,8 @@
   .booking-status-label {
     border-radius: rem(5px);
     color: $white;
-    font-weight: 500;
     font-size: rem(14px);
+    font-weight: 500;
     padding: rem(5px) rem(7px);
   }
 
@@ -28,13 +28,13 @@
   }
 
   .booking-status-wrapper {
-    position: relative;
     line-height: 1.1875em;
+    position: relative;
   }
 
   .booking-status-wrapper img {
-    vertical-align: middle;
     padding-right: rem(4px);
+    vertical-align: middle;
   }
 
   .booking-status-wrapper .bs-tooltip {
@@ -48,8 +48,8 @@
     box-shadow: 0 rem(2px) rem(10px) 0 $black-shadow;
     color: $black;
     display: block;
-    position: absolute;
     padding: rem(16px) rem(24px) rem(16px) rem(24px);
+    position: absolute;
     right: 0;
     top: rem(30px);
     width: rem(340px);

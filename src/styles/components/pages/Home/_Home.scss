@@ -3,9 +3,9 @@
 }
 
 .home-cards {
-  margin: auto;
-  box-shadow: 0 0 60px 0 $black-shadow;
   background-image: $linear-gradient-to-right;
+  box-shadow: 0 0 60px 0 $black-shadow;
+  margin: auto;
 
   .home-card {
     color: $white;
@@ -16,8 +16,8 @@
       border-right: 0.4rem dotted $white;
 
       @media (max-width: $tablet) {
-        border-right: none;
         border-bottom: 0.4rem dotted $white;
+        border-right: none;
       }
     }
 

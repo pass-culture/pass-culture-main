@@ -15,20 +15,20 @@
   }
 
   img {
-    width: rem(30px);
-    height: rem(30px);
     cursor: pointer;
+    height: rem(30px);
+    width: rem(30px);
   }
 
   &:focus-within {
-    box-shadow: 0 0 0 1px $primary inset;
     border: 1px solid $primary;
+    box-shadow: 0 0 0 1px $primary inset;
   }
 
   &.disabled {
     background-color: $grey-light;
-    box-shadow: 0 0 0 1px $grey-light inset;
     border: none;
+    box-shadow: 0 0 0 1px $grey-light inset;
 
     .it-icon {
       background-color: $grey-light;
@@ -36,8 +36,8 @@
     }
 
     img {
-      filter: opacity(0.5);
       cursor: not-allowed;
+      filter: opacity(0.5);
     }
   }
 
@@ -52,16 +52,16 @@
     color: $black;
     flex: 1;
     height: 100%;
-    padding: rem(10px) rem(16px);
     outline: none;
+    padding: rem(10px) rem(16px);
 
     &:focus {
       z-index: -1;
     }
 
     &:disabled {
-      color: $grey-dark;
       background-color: $grey-light;
+      color: $grey-dark;
       opacity: 1;
     }
   }

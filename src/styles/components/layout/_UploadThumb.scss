@@ -1,45 +1,45 @@
 .upload-thumb {
-  position: relative;
   display: block;
-  text-align: center;
   height: auto;
+  position: relative;
+  text-align: center;
 
   .input {
     height: auto;
   }
 
   img.read-only {
-    box-sizing: content-box;
-    object-fit: cover;
-    border-style: solid;
     border-color: transparent;
+    border-style: solid;
+    box-sizing: content-box;
     margin: auto;
+    object-fit: cover;
   }
 
   .drag-n-drop {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: $grey-light;
-    display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    margin: auto;
+    background: $grey-light;
+    bottom: 0;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    left: 0;
+    margin: auto;
+    padding: 2rem;
+    position: absolute;
+    right: 0;
+    top: 0;
 
     &::before {
-      content: '';
-      border-radius: inherit;
-      margin: 1rem;
       border: thin dashed $grey-medium;
-      position: absolute;
-      top: 0;
+      border-radius: inherit;
       bottom: 0;
+      content: '';
       left: 0;
+      margin: 1rem;
+      position: absolute;
       right: 0;
+      top: 0;
     }
 
     &.dragged {
@@ -54,18 +54,18 @@
 
   .editor-zone {
     background: transparent;
-    position: relative;
     margin: auto;
     margin-bottom: 2rem;
+    position: relative;
 
     &.no-drag {
       &::before {
-        position: absolute;
-        top: 0;
         bottom: 0;
-        left: 0;
-        right: 0;
         content: '';
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
       }
     }
 
@@ -76,25 +76,25 @@
     }
 
     .zoom {
-      width: calc(100% - 90px);
       cursor: pointer;
+      width: calc(100% - 90px);
     }
 
     .change-zoom {
-      cursor: pointer;
-      width: rem(40px);
-      height: rem(40px);
-      margin: 0 0 0 rem(5px);
-      border: none;
-      outline: none;
-      display: inline-block;
       background: url(/icons/ico-plus-circled@2x.png) center no-repeat transparent;
       background-size: rem(36px) rem(36px);
+      border: none;
       color: $primary;
+      cursor: pointer;
+      display: inline-block;
       font-size: rem(1px);
-      text-indent: rem(-50px);
+      height: rem(40px);
+      margin: 0 0 0 rem(5px);
+      outline: none;
       overflow: hidden;
       padding: 0;
+      text-indent: rem(-50px);
+      width: rem(40px);
 
       span {
         display: block;
@@ -103,8 +103,8 @@
     }
 
     .change-zoom.decrement {
-      margin: 0 rem(5px) 0 0;
       background-image: url(/icons/ico-minus-circled@2x.png);
+      margin: 0 rem(5px) 0 0;
     }
   }
 
@@ -117,8 +117,8 @@
 #zoomControl {
   display: flex;
   flex: 1;
-  width: 68%;
   margin: rem(10px) auto;
+  width: 68%;
 
   button,
   input {

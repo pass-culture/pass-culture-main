@@ -1,16 +1,16 @@
 .paginate-wrapper {
   align-items: center;
-  justify-content: center;
   color: $black;
   display: flex;
   font-weight: 500;
   height: 100%;
+  justify-content: center;
 
   button {
+    align-items: center;
     border: none;
     cursor: pointer;
     display: flex;
-    align-items: center;
   }
 
   button:disabled {
@@ -20,7 +20,7 @@
 
   span {
     font-size: rem(14px);
-    margin: 0 rem(16px);
     height: inherit;
+    margin: 0 rem(16px);
   }
 }

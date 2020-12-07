@@ -20,13 +20,13 @@
   @include tertiary();
 
   > img {
-    vertical-align: sub;
     margin-right: rem(5px);
+    vertical-align: sub;
   }
 
   &.bi-external-link--mod-topright {
     position: absolute;
-    top: rem(-6px);
     right: 0;
+    top: rem(-6px);
   }
 }

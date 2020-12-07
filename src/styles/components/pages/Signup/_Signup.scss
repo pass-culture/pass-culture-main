@@ -33,8 +33,8 @@
     }
 
     @media (max-width: $tablet) {
-      position: relative;
       height: rem(100px);
+      position: relative;
 
       img {
         left: 0;
@@ -61,11 +61,11 @@
   }
 
   .confirmation-text {
-    margin-bottom: rem(12px);
+    font-size: rem(20px);
     font-style: italic;
     font-weight: 500;
-    font-size: rem(20px);
     line-height: rem(24px);
+    margin-bottom: rem(12px);
 
     span {
       font-weight: bold;
@@ -89,7 +89,6 @@
       font-size: rem(13px);
       line-height: rem(16px);
       text-align: justify;
-
     }
   }
 
@@ -116,11 +115,11 @@
 
   .sign-up-operating-procedures {
     background-color: $notification-info;
-    padding: rem(16px);
     margin-bottom: rem(32px);
+    padding: rem(16px);
 
     div {
-      margin-bottom: rem(10px)
+      margin-bottom: rem(10px);
     }
   }
 
@@ -130,8 +129,8 @@
   }
 
   .tertiary-link {
-    display: flex;
     align-items: center;
+    display: flex;
   }
 
   label {
@@ -140,8 +139,8 @@
 
   .field-password {
     display: flex;
-    position: relative;
     justify-content: space-between;
+    position: relative;
   }
 
   .field-password > label {
@@ -172,7 +171,8 @@
     justify-content: space-between;
     margin-top: rem(16px);
 
-    a, button {
+    a,
+    button {
       margin-bottom: rem(5px);
     }
 

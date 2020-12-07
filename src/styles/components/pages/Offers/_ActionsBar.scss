@@ -1,7 +1,7 @@
 .offers-actions-bar {
+  align-items: center;
   display: flex;
   justify-content: space-between;
-  align-items: center;
 
   .nb-offers-description {
     display: inline-block;
@@ -11,6 +11,7 @@
   .actions-container {
     display: flex;
     margin: auto;
+
     button {
       margin-left: 40px;
     }

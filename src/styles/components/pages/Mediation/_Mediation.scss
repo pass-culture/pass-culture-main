@@ -3,9 +3,9 @@
 }
 
 .crop-explain .column {
+  color: $mediation-green-dark;
   display: flex;
   flex-flow: column nowrap;
-  color: $mediation-green-dark;
 
   &.explain-text {
     padding-left: 0;
@@ -32,8 +32,8 @@
 
 .thumbnailManager {
   background-color: $grey-light;
-  padding: rem(18px);
   margin-bottom: rem(10px);
+  padding: rem(18px);
 
   hr {
     margin: 1rem 0;
@@ -61,18 +61,18 @@
   }
 
   ul li span.li-number {
-    height: rem(20px);
-    width: rem(20px);
-    color: $black;
     background-color: $mediation-green;
-    text-align: center;
+    color: $black;
     font-weight: bold;
+    height: rem(20px);
     margin-right: rem(10px);
+    text-align: center;
+    width: rem(20px);
   }
 
   ul li:first-child span.li-number {
-    color: $white;
     background-color: $mediation-violet;
+    color: $white;
   }
 
   h6 {

@@ -36,25 +36,25 @@
 .checkbox-field,
 .checkboxes-field {
   .field-inner {
-    color: $black;
-    padding-left: rem(4px);
     border: none;
     border-radius: 0;
+    color: $black;
     font-weight: 500;
+    padding-left: rem(4px);
   }
 }
 
 .field-select {
   appearance: none;
-  border-radius: 16px;
-  border: none;
-  background-repeat: no-repeat;
   background-position: 97.5% 50%;
+  background-repeat: no-repeat;
+  border: none;
+  border-radius: 16px;
   font-size: rem(16px);
   font-weight: 500;
   height: rem(36px);
-  min-width: rem(250px);
   min-height: rem(36px);
+  min-width: rem(250px);
   outline: none !important;
   padding-left: rem(24px);
   width: rem(250px);
@@ -81,8 +81,8 @@
 
 .field-input,
 .field-textarea {
-  border-radius: 1.125em;
   border: 2px solid $grey-medium;
+  border-radius: 1.125em;
   flex: 1;
   font-size: rem(16px);
   font-weight: 500;
@@ -108,8 +108,8 @@
     font-size: rem(12px);
     font-weight: 500;
     min-width: rem(60px);
-    width: 100%;
     text-align: center;
+    width: 100%;
 
     &:focus {
       outline: none;
@@ -154,8 +154,8 @@
       margin-right: 0;
 
       &:first-child {
-        border-right: 0;
         border-radius: rem(5px) 0 0 rem(5px);
+        border-right: 0;
       }
 
       &:last-child {
@@ -182,8 +182,8 @@
 
   &.is-read-only {
     .field-inner {
-      border: none;
       background-color: transparent;
+      border: none;
       padding-left: rem(4px);
       resize: none;
 

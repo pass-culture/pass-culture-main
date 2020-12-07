@@ -1,8 +1,8 @@
 .no-filtered-bookings-wrapper {
   align-items: center;
   display: flex;
-  justify-content: center;
   flex-direction: column;
+  justify-content: center;
   min-height: rem(400px);
 
   .nfb-icon {
@@ -21,9 +21,9 @@
   button {
     background: none;
     border: none;
-    cursor: pointer;
     color: $primary;
-    font-weight: 700;
+    cursor: pointer;
     font-size: rem(16px);
+    font-weight: 700;
   }
 }

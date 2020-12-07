@@ -1,8 +1,8 @@
 .period-filter {
   .period-filter-inputs {
-    display: flex;
     border-radius: rem(20px);
     box-shadow: 2px 2px 6px 0 $black-shadow;
+    display: flex;
     height: rem(40px);
     margin-top: rem(12px);
 
@@ -63,9 +63,9 @@
     }
 
     .field-date-begin {
+      border-bottom-right-radius: 0;
       border-right: none;
       border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
       height: rem(40px);
       padding: 0 1px;
 
@@ -76,9 +76,9 @@
     }
 
     .field-date-end {
+      border-bottom-left-radius: 0;
       border-left: none;
       border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
       height: rem(40px);
       padding: 0 1px;
 

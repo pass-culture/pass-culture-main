@@ -35,7 +35,7 @@ $rem-px-only: false !default;
     }
 
     @else if
-    type-of($value) ==
+      type-of($value) ==
       'number' and
       unit($value) ==
       'px' and

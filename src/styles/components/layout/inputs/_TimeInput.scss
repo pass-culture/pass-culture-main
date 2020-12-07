@@ -29,8 +29,8 @@
     width: rem(150px);
 
     &:focus {
-      box-shadow: 0 0 0 1px $primary inset;
       border: 1px solid $primary;
+      box-shadow: 0 0 0 1px $primary inset;
       outline: none;
       outline-offset: 0;
     }

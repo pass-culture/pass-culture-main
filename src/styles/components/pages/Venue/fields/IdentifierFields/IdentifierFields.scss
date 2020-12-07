@@ -1,19 +1,19 @@
 .identifier-field-section {
   .field {
-    display: flex;
     align-items: center;
+    display: flex;
   }
 
   .field-label {
-    flex: 1;
     color: $black;
+    flex: 1;
     font-size: rem(16px);
     white-space: initial;
   }
 
   .is-label-aligned .field-label {
-    padding: 0;
     margin: 0;
+    padding: 0;
   }
 
   .field-select {

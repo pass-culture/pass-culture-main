@@ -10,11 +10,11 @@ html {
 }
 
 body {
-  width: 100%;
-  min-height: 100%;
-  margin: 0 auto;
   font-size: rem(16px);
   line-height: 1.1875em;
+  margin: 0 auto;
+  min-height: 100%;
+  width: 100%;
 }
 
 hr {
@@ -26,8 +26,8 @@ hr {
 
   > li {
     display: flex;
-    padding-bottom: 1rem;
     margin-bottom: 1rem;
+    padding-bottom: 1rem;
 
     &:last-child {
       margin-bottom: 0;
@@ -36,9 +36,9 @@ hr {
     @include dotted($primary, bottom);
 
     > * {
-      padding: 0 0.5rem;
       align-items: center;
       display: flex;
+      padding: 0 0.5rem;
 
       &.field {
         margin: 0;
@@ -54,8 +54,8 @@ hr {
     }
 
     .list-content {
-      flex-grow: 1;
       display: block;
+      flex-grow: 1;
     }
 
     .caret,
@@ -67,24 +67,24 @@ hr {
     }
 
     .name {
-      font-weight: 700;
       font-size: rem(20px);
+      font-weight: 700;
       margin-bottom: 0.5rem;
     }
 
     ul.actions,
     ul.infos {
-      list-style: none;
-      font-size: rem(16px);
-      margin: 0;
       display: flex;
+      font-size: rem(16px);
       justify-content: space-between;
+      list-style: none;
+      margin: 0;
       width: 100%;
 
       img {
         height: 1rem;
-        vertical-align: middle;
         margin-right: 0.2rem;
+        vertical-align: middle;
       }
     }
   }

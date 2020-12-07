@@ -3,9 +3,9 @@
   background-color: $notification-info;
   color: $black;
   display: flex;
-  justify-content: flex-start;
   flex-grow: 1;
   font-size: rem(16px);
+  justify-content: flex-start;
   padding: rem(18px);
 
   span {
@@ -29,10 +29,10 @@
     margin-top: 0.5rem;
 
     a {
-      font-weight: 700;
       display: flex;
-      flex-wrap: wrap;
       flex-start: start;
+      flex-wrap: wrap;
+      font-weight: 700;
 
       p {
         align-self: normal;

@@ -6,52 +6,52 @@
   left: 50%;
   padding: rem(16px) rem(24px);
   position: fixed;
-  transform: translateX(-50%);
   text-align: center;
+  transform: translateX(-50%);
   visibility: hidden;
   z-index: 100;
 
   &.show {
     animation-duration: 0.8s;
     animation-name: animatetop;
-    visibility: visible;
-    transition: all 400ms ease-out;
     transform: translateX(-50%) translateY(- rem(30px));
+    transition: all 400ms ease-out;
+    visibility: visible;
   }
 
   @media screen and (prefers-reduced-motion: reduce) {
     &.show {
       animation: none;
-      visibility: visible;
       opacity: 1;
-      transition: none;
       transform: translateX(-50%) translateY(- rem(30px));
+      transition: none;
+      visibility: visible;
     }
   }
 
   @keyframes animatetop {
     from {
-      opacity: 0;
       bottom: -300px;
+      opacity: 0;
     }
 
     to {
-      opacity: 1;
       bottom: 0;
+      opacity: 1;
     }
   }
 
   &.hide {
     opacity: 0;
-    transition: all 400ms ease-in;
     transform: translateX(-50%) translateY(100%);
+    transition: all 400ms ease-in;
   }
 
   @media screen and (prefers-reduced-motion: reduce) {
     &.hide {
       opacity: 0;
-      transition: none;
       transform: translateX(-50%) translateY(100%);
+      transition: none;
     }
   }
 

@@ -74,12 +74,12 @@ header.navbar {
   }
 
   .navbar-menu {
-    z-index: 30;
     position: relative;
+    z-index: 30;
 
     .navbar-item {
-      font-weight: 700;
       font-size: rem(12px);
+      font-weight: 700;
     }
   }
 

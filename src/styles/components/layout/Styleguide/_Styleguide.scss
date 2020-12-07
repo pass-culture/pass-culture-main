@@ -14,8 +14,8 @@
   }
 
   ul {
-    margin: rem(10px);
     background-color: $grey-light;
+    margin: rem(10px);
     padding: rem(10px);
   }
 
@@ -24,7 +24,8 @@
     text-align: rem(10px);
   }
 
-  li:hover a {
+  li:hover a,
+  li:focus a {
     color: $primary;
   }
 

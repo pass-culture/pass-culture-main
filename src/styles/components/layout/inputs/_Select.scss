@@ -5,6 +5,7 @@
   select {
     @include body();
 
+    appearance: none;
     background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat 92% 56%;
     border: 1px solid $grey-medium;
     border-radius: rem(20px);
@@ -15,7 +16,6 @@
     padding-left: rem(16px);
     padding-right: rem(30px);
     text-overflow: ellipsis;
-    appearance: none;
 
     &:focus {
       border-color: $primary;

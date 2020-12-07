@@ -9,9 +9,9 @@
     width: rem(66px);
 
     .field-input {
-      width: rem(40px);
       padding-left: rem(12px);
       padding-right: rem(12px);
+      width: rem(40px);
     }
   }
 
@@ -21,9 +21,9 @@
     vertical-align: middle;
 
     .field-input {
+      border-radius: 1rem;
       font-size: rem(12px);
       min-width: rem(32px);
-      border-radius: 1rem;
 
       &.field-number {
         text-align: center;

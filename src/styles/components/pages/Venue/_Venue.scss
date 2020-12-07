@@ -2,17 +2,17 @@
   .col-66 {
     $size: 65.5%;
 
-    width: $size;
-    min-width: $size;
     max-width: $size;
+    min-width: $size;
+    width: $size;
   }
 
   .col-33 {
     $size: 31%;
 
-    width: $size;
-    min-width: $size;
     max-width: $size;
+    min-width: $size;
+    width: $size;
   }
 
   .field-number {
@@ -34,8 +34,8 @@
 
   .vp-field > label {
     color: $black;
-    margin-right: rem(5px);
     font-size: rem(16px);
+    margin-right: rem(5px);
   }
 
   .vp-subtitle {

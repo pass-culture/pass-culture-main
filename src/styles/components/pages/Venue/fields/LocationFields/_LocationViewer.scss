@@ -3,20 +3,20 @@
   width: 100%;
 
   .input-wrapper {
-    width: 90%;
     position: relative;
+    width: 90%;
 
     .menu {
-      position: absolute;
-      z-index: 2000;
       background: $white;
-      left: 1.125em;
-      right: 1.125em;
+      border: 2px solid $grey-medium;
       border-bottom-left-radius: 1.125em;
       border-bottom-right-radius: 1.125em;
-      border: 2px solid $grey-medium;
       border-top: none;
+      left: 1.125em;
       overflow: hidden;
+      position: absolute;
+      right: 1.125em;
+      z-index: 2000;
 
       &.empty {
         display: none;
@@ -42,9 +42,9 @@
   }
 
   .map {
-    width: 100%;
     height: 20rem;
-    overflow: hidden;
     margin-top: 1rem;
+    overflow: hidden;
+    width: 100%;
   }
 }
