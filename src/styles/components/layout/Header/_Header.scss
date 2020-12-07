@@ -55,6 +55,8 @@ header.navbar {
 
   @media (min-width: $desktop) {
     & > .container {
+      max-width: 1000px;
+
       .navbar-brand {
         margin-left: 0;
 
