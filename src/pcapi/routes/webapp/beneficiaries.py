@@ -21,7 +21,7 @@ from pcapi.utils.includes import BENEFICIARY_INCLUDES
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import login_or_api_key_required
-from pcapi.validation.routes.passwords import check_recaptcha_token_is_valid
+from pcapi.validation.routes.captcha import check_recaptcha_token_is_valid
 from pcapi.validation.routes.users import check_allowed_changes_for_user
 from pcapi.validation.routes.users import check_valid_signin
 from pcapi.workers.beneficiary_job import beneficiary_job

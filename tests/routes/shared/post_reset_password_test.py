@@ -6,7 +6,7 @@ from pcapi.domain.password import RESET_PASSWORD_TOKEN_LENGTH
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
-from pcapi.validation.routes.passwords import InvalidRecaptchaTokenException
+from pcapi.validation.routes.captcha import InvalidRecaptchaTokenException
 
 from tests.conftest import TestClient
 

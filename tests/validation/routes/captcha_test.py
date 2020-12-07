@@ -3,9 +3,9 @@ import uuid
 
 import pytest
 
-from pcapi.validation.routes.passwords import InvalidRecaptchaTokenException
-from pcapi.validation.routes.passwords import ReCaptchaException
-from pcapi.validation.routes.passwords import check_recaptcha_token_is_valid
+from pcapi.validation.routes.captcha import InvalidRecaptchaTokenException
+from pcapi.validation.routes.captcha import ReCaptchaException
+from pcapi.validation.routes.captcha import check_recaptcha_token_is_valid
 
 
 ORIGINAL_ACTION = "submit"
@@ -16,7 +16,7 @@ def generate_fake_token() -> str:
 
 
 class CheckRecaptchaTokenIsValidTest:
-    @patch("pcapi.validation.routes.passwords.get_token_validation_and_score")
+    @patch("pcapi.validation.routes.captcha.get_token_validation_and_score")
     def test_should_raise_when_score_is_too_low(self, recaptcha_response):
         # Given
         token = generate_fake_token()
@@ -29,7 +29,7 @@ class CheckRecaptchaTokenIsValidTest:
         # Then
         assert str(exception.value) == "Token score is too low (0.2) to match minimum score (0.5)"
 
-    @patch("pcapi.validation.routes.passwords.get_token_validation_and_score")
+    @patch("pcapi.validation.routes.captcha.get_token_validation_and_score")
     def test_should_raise_when_action_is_not_matching_the_original_action(self, recaptcha_response):
         # Given
         token = generate_fake_token()
@@ -42,7 +42,7 @@ class CheckRecaptchaTokenIsValidTest:
         # Then
         assert str(exception.value) == "The action 'fake-action' does not match 'submit' from the form"
 
-    @patch("pcapi.validation.routes.passwords.get_token_validation_and_score")
+    @patch("pcapi.validation.routes.captcha.get_token_validation_and_score")
     def test_should_raise_when_token_is_too_old_or_already_used(self, recaptcha_response):
         # Given
         token = generate_fake_token()
@@ -65,7 +65,7 @@ class CheckRecaptchaTokenIsValidTest:
             "bad-request",
         ],
     )
-    @patch("pcapi.validation.routes.passwords.get_token_validation_and_score")
+    @patch("pcapi.validation.routes.captcha.get_token_validation_and_score")
     def test_should_raise_exception_for_any_other_error_code(self, recaptcha_response, error_code):
         # Given
         token = generate_fake_token()
@@ -78,7 +78,7 @@ class CheckRecaptchaTokenIsValidTest:
         with pytest.raises(ReCaptchaException):
             check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
 
-    @patch("pcapi.validation.routes.passwords.get_token_validation_and_score")
+    @patch("pcapi.validation.routes.captcha.get_token_validation_and_score")
     def test_should_raise_exception_with_details(self, recaptcha_response):
         # Given
         token = generate_fake_token()

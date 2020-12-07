@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from pcapi.validation.routes.passwords import InvalidRecaptchaTokenException
+from pcapi.validation.routes.captcha import InvalidRecaptchaTokenException
 
 from tests.conftest import TestClient
 

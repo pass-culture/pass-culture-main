@@ -8,7 +8,7 @@ from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.models import ApiErrors
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.validation.routes.passwords import check_recaptcha_token_is_valid
+from pcapi.validation.routes.captcha import check_recaptcha_token_is_valid
 
 from . import blueprint
 from .serialization import account as serializers

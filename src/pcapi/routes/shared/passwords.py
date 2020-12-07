@@ -22,7 +22,7 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.rest import expect_json_data
-from pcapi.validation.routes.passwords import check_recaptcha_token_is_valid
+from pcapi.validation.routes.captcha import check_recaptcha_token_is_valid
 
 
 # @debt api-migration
