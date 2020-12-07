@@ -2,6 +2,7 @@ import { mount } from 'enzyme'
 import React from 'react'
 import { act } from 'react-dom/test-utils'
 import { MemoryRouter } from 'react-router'
+import { campaignTracker } from '../../../../tracking/mediaCampaignsTracking'
 
 import { checkIfAgeIsEligible } from '../domain/checkIfAgeIsEligible'
 import { checkIfDepartmentIsEligible } from '../domain/checkIfDepartmentIsEligible'
@@ -46,6 +47,7 @@ describe('eligibility check page', () => {
 
   afterEach(() => {
     Date.prototype.getFullYear = getFullYear
+    jest.clearAllMocks()
   })
 
   describe('when rendering', () => {
@@ -161,6 +163,24 @@ describe('eligibility check page', () => {
 
       // then
       expect(document.querySelector('body').appendChild).toHaveBeenCalledWith(script)
+    })
+
+    it('should call media campaign tracker on mount only', () => {
+      // when mount
+      const wrapper = mount(
+        <MemoryRouter>
+          <EligibilityCheck {...props} />
+        </MemoryRouter>
+      )
+
+      // Then
+      expect(campaignTracker.eligibilityCheck).toHaveBeenCalledTimes(1)
+
+      // when rerender
+      wrapper.setProps({})
+
+      // Then
+      expect(campaignTracker.eligibilityCheck).toHaveBeenCalledTimes(1)
     })
   })
 

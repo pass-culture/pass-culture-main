@@ -1,6 +1,8 @@
 import { mount } from 'enzyme'
 import React from 'react'
+import { act } from 'react-dom/test-utils'
 import { MemoryRouter } from 'react-router'
+import { campaignTracker } from '../../../../tracking/mediaCampaignsTracking'
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import { fetchHomepage } from '../../../../vendor/contentful/contentful'
 import Home from '../Home'
@@ -16,6 +18,8 @@ jest.mock('../../../../vendor/algolia/algolia', () => ({
 jest.mock('../../../../notifications/setUpBatchSDK', () => ({
   setCustomUserId: jest.fn(),
 }))
+
+const flushPromises = () => new Promise(setImmediate)
 
 describe('src | components | home', () => {
   let props
@@ -51,26 +55,27 @@ describe('src | components | home', () => {
     }
   })
 
+  afterEach(jest.clearAllMocks)
+
   it('should show loading screen while waiting for geolocation', async () => {
     // Given
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [],
-          nbHits: 0,
-          nbPages: 1,
-          page: 1,
-        })
-      })
-    )
+    fetchAlgolia.mockResolvedValue({
+      hits: [],
+      nbHits: 0,
+      nbPages: 1,
+      page: 1,
+    })
     fetchHomepage.mockResolvedValue([])
 
     // When
-    const wrapper = await mount(
+    const wrapper = mount(
       <MemoryRouter initialEntries={['/accueil']}>
         <Home {...props} />
       </MemoryRouter>
     )
+    await act(async () => {
+      await flushPromises()
+    })
 
     // Then
     const loadingScreen = wrapper.find({ children: 'Chargement en cours…' })
@@ -79,27 +84,24 @@ describe('src | components | home', () => {
 
   it('should render the main view with a valid geolocation prop', async () => {
     // Given
-    const flushPromises = () => new Promise(setImmediate)
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [],
-          nbHits: 0,
-          nbPages: 1,
-          page: 1,
-        })
-      })
-    )
+    fetchAlgolia.mockResolvedValue({
+      hits: [],
+      nbHits: 0,
+      nbPages: 1,
+      page: 1,
+    })
     fetchHomepage.mockResolvedValue([])
 
     // When
-    const wrapper = await mount(
+    const wrapper = mount(
       <MemoryRouter initialEntries={['/accueil']}>
         <Home {...props} />
       </MemoryRouter>
     )
-    await flushPromises()
-    wrapper.update()
+    await act(async () => {
+      await flushPromises()
+      wrapper.update()
+    })
 
     // Then
     const mainView = wrapper.find('MainView')
@@ -108,51 +110,83 @@ describe('src | components | home', () => {
 
   it('should render the main view when navigating to /accueil', async () => {
     // Given
-    const flushPromises = () => new Promise(setImmediate)
     const offersWithCover = new OffersWithCover({
       algolia: { isDuo: true },
       cover: 'my-cover',
       display: { title: 'Mon module', layout: 'one-item-medium', minOffers: 1 },
     })
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [
-            {
-              objectID: 'NE',
-              offer: {
-                dates: [],
-                id: 'NE',
-                label: 'Cinéma',
-                name: "Dansons jusqu'en 2030",
-                priceMax: 33,
-                priceMin: 33,
-                thumbUrl: 'http://localhost/storage/thumbs/mediations/KQ',
-              },
-              venue: {
-                name: 'Le Sous-sol',
-              },
-            },
-          ],
-          nbHits: 1,
-          nbPages: 1,
-          page: 1,
-        })
-      })
-    )
+    fetchAlgolia.mockResolvedValue({
+      hits: [
+        {
+          objectID: 'NE',
+          offer: {
+            dates: [],
+            id: 'NE',
+            label: 'Cinéma',
+            name: "Dansons jusqu'en 2030",
+            priceMax: 33,
+            priceMin: 33,
+            thumbUrl: 'http://localhost/storage/thumbs/mediations/KQ',
+          },
+          venue: {
+            name: 'Le Sous-sol',
+          },
+        },
+      ],
+      nbHits: 1,
+      nbPages: 1,
+      page: 1,
+    })
     fetchHomepage.mockResolvedValue([offersWithCover])
 
     // When
-    const wrapper = await mount(
+    const wrapper = mount(
       <MemoryRouter initialEntries={['/accueil']}>
         <Home {...props} />
       </MemoryRouter>
     )
 
     // Then
-    await flushPromises()
-    wrapper.update()
+    await act(async () => {
+      await flushPromises()
+      wrapper.update()
+    })
     const moduleName = wrapper.find('Module').find({ children: 'Mon module' })
     expect(moduleName).toHaveLength(1)
+  })
+
+  it('should call media campaign tracker on mount only', async () => {
+    // Given
+    fetchAlgolia.mockResolvedValue({
+      hits: [],
+      nbHits: 0,
+      nbPages: 1,
+      page: 1,
+    })
+    fetchHomepage.mockResolvedValue([])
+
+    // When mount
+    const wrapper = mount(
+      <MemoryRouter initialEntries={['/accueil']}>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+    await act(async () => {
+      await flushPromises()
+      wrapper.update()
+    })
+
+    // Then
+    expect(campaignTracker.home).toHaveBeenCalledTimes(1)
+
+    // when rerender
+    wrapper.setProps({})
+    await act(async () => {
+      await flushPromises()
+      wrapper.update()
+    })
+
+    // Then
+    expect(campaignTracker.home).toHaveBeenCalledTimes(1)
   })
 })

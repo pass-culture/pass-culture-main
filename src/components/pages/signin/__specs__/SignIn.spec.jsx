@@ -5,6 +5,7 @@ import { Router } from 'react-router-dom'
 import SignIn from '../SignIn'
 import EmailField from '../../../forms/inputs/EmailField'
 import PasswordField from '../../../forms/inputs/PasswordField'
+import { campaignTracker } from '../../../../tracking/mediaCampaignsTracking'
 
 describe('component | SignIn', () => {
   let props
@@ -28,10 +29,11 @@ describe('component | SignIn', () => {
       signIn: jest.fn(),
     }
     props.signIn = jest.spyOn(props, 'signIn').mockImplementation((values, fail, success) => {
-      new Promise(resolve => resolve())
-        .then(success(jest.fn())())
+      new Promise(resolve => resolve()).then(success(jest.fn())())
     })
   })
+
+  afterEach(jest.clearAllMocks)
 
   describe('when render', () => {
     it('should have sign in and cancel buttons', () => {
@@ -39,7 +41,7 @@ describe('component | SignIn', () => {
       const wrapper = mount(
         <Router history={history}>
           <SignIn {...props} />
-        </Router>,
+        </Router>
       )
 
       // then
@@ -54,10 +56,16 @@ describe('component | SignIn', () => {
       const wrapper = mount(
         <Router history={history}>
           <SignIn {...props} />
-        </Router>,
+        </Router>
       )
-      wrapper.find(EmailField).find('input').simulate('change', { target: { value: 'pc-beneficiary@example.com' } })
-      wrapper.find(PasswordField).find('input').simulate('change', { target: { value: 'abcdef1234' } })
+      wrapper
+        .find(EmailField)
+        .find('input')
+        .simulate('change', { target: { value: 'pc-beneficiary@example.com' } })
+      wrapper
+        .find(PasswordField)
+        .find('input')
+        .simulate('change', { target: { value: 'abcdef1234' } })
       const signInButton = wrapper.findWhere(node => node.text() === 'Connexion').first()
 
       // when
@@ -65,50 +73,62 @@ describe('component | SignIn', () => {
 
       // then
       expect(props.signIn).toHaveBeenCalledWith(
-        { 'identifier': 'pc-beneficiary@example.com', 'password': 'abcdef1234' },
+        { identifier: 'pc-beneficiary@example.com', password: 'abcdef1234' },
         expect.any(Function),
-        expect.any(Function),
+        expect.any(Function)
       )
     })
 
-    it('should redirect to discovery page when user sign in succeeded and homepage feature is disabled', async () => {
+    it('should redirect to discovery page when user sign in succeeded and homepage feature is disabled', () => {
       // given
       const wrapper = mount(
         <Router history={history}>
           <SignIn {...props} />
-        </Router>,
+        </Router>
       )
-      wrapper.find(EmailField).find('input').simulate('change', { target: { value: 'pc-beneficiary@example.com' } })
-      wrapper.find(PasswordField).find('input').simulate('change', { target: { value: 'abcdef1234' } })
+      wrapper
+        .find(EmailField)
+        .find('input')
+        .simulate('change', { target: { value: 'pc-beneficiary@example.com' } })
+      wrapper
+        .find(PasswordField)
+        .find('input')
+        .simulate('change', { target: { value: 'abcdef1234' } })
       const signInButton = wrapper.findWhere(node => node.text() === 'Connexion').first()
 
       // when
-      await signInButton.simulate('submit')
+      signInButton.simulate('submit')
 
       // then
       expect(history.push).toHaveBeenCalledWith('/decouverte')
     })
 
-    it('should redirect to home page when user sign in succeeded and homepage feature is enabled', async () => {
+    it('should redirect to home page when user sign in succeeded and homepage feature is enabled', () => {
       // given
       props.homepageIsDisabled = false
       const wrapper = mount(
         <Router history={history}>
           <SignIn {...props} />
-        </Router>,
+        </Router>
       )
-      wrapper.find(EmailField).find('input').simulate('change', { target: { value: 'pc-beneficiary@example.com' } })
-      wrapper.find(PasswordField).find('input').simulate('change', { target: { value: 'abcdef1234' } })
+      wrapper
+        .find(EmailField)
+        .find('input')
+        .simulate('change', { target: { value: 'pc-beneficiary@example.com' } })
+      wrapper
+        .find(PasswordField)
+        .find('input')
+        .simulate('change', { target: { value: 'abcdef1234' } })
       const signInButton = wrapper.findWhere(node => node.text() === 'Connexion').first()
 
       // when
-      await signInButton.simulate('submit')
+      signInButton.simulate('submit')
 
       // then
       expect(history.push).toHaveBeenCalledWith('/accueil')
     })
 
-    it('should display inputs error when user sign in failed', async () => {
+    it('should display inputs error when user sign in failed', () => {
       // given
       const state = {}
       const mock = jest.fn()
@@ -118,23 +138,46 @@ describe('component | SignIn', () => {
         },
       }
       props.signIn = jest.spyOn(props, 'signIn').mockImplementation((values, fail) => {
-        new Promise(resolve => resolve())
-          .catch(fail(mock)(state, action))
+        new Promise(resolve => resolve()).catch(fail(mock)(state, action))
       })
       const wrapper = mount(
         <Router history={history}>
           <SignIn {...props} />
-        </Router>,
+        </Router>
       )
-      wrapper.find(EmailField).find('input').simulate('change', { target: { value: 'pc-beneficiary@example.com' } })
-      wrapper.find(PasswordField).find('input').simulate('change', { target: { value: 'abcdef1234' } })
+      wrapper
+        .find(EmailField)
+        .find('input')
+        .simulate('change', { target: { value: 'pc-beneficiary@example.com' } })
+      wrapper
+        .find(PasswordField)
+        .find('input')
+        .simulate('change', { target: { value: 'abcdef1234' } })
       const signInButton = wrapper.findWhere(node => node.text() === 'Connexion').first()
 
       // when
-      await signInButton.simulate('submit')
+      signInButton.simulate('submit')
 
       // then
       expect(mock).toHaveBeenCalledWith({ 0: 'error1' })
+    })
+
+    it('should call media campaign tracker on mount only', () => {
+      // when mount
+      const wrapper = mount(
+        <Router history={history}>
+          <SignIn {...props} />
+        </Router>
+      )
+
+      // Then
+      expect(campaignTracker.signin).toHaveBeenCalledTimes(1)
+
+      // when rerender
+      wrapper.setProps({})
+
+      // Then
+      expect(campaignTracker.signin).toHaveBeenCalledTimes(1)
     })
   })
 })

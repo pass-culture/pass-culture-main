@@ -7,6 +7,8 @@ configure({ adapter: new Adapter() })
 
 global.fetch = fetch
 
+jest.mock('./src/tracking/mediaCampaignsTracking')
+
 process.env.CONTENTFUL_ACCESS_TOKEN = 'ACCESS_TOKEN_ABCDE'
 process.env.CONTENTFUL_ENVIRONMENT = 'testing'
 process.env.CONTENTFUL_PREVIEW_TOKEN = 'PREVIEW_TOKEN_ABCDE'

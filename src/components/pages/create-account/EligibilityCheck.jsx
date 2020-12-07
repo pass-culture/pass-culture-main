@@ -16,6 +16,7 @@ import IneligibleOverEighteen from './IneligibleOverEighteen/IneligibleOverEight
 import IneligibleUnderEighteen from './IneligibleUnderEighteen/IneligibleUnderEighteen'
 import { RecaptchaNotice } from './RecaptchaNotice'
 import { useReCaptchaScript } from '../../../utils/recaptcha'
+import { campaignTracker } from '../../../tracking/mediaCampaignsTracking'
 
 const EligibilityCheck = ({ history, trackEligibility }) => {
   useReCaptchaScript()
@@ -49,6 +50,8 @@ const EligibilityCheck = ({ history, trackEligibility }) => {
   }
 
   useEffect(() => {
+    campaignTracker.eligibilityCheck()
+
     const script = document.createElement('script')
 
     script.src = '/ebOneTag.js'

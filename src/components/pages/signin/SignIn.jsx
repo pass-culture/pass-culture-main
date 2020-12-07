@@ -7,10 +7,15 @@ import PasswordField from '../../forms/inputs/PasswordField'
 import canSubmitForm from './utils/canSubmitForm'
 import FormFooter from '../../forms/FormFooter'
 import parseSubmitErrors from '../../forms/utils/parseSubmitErrors'
+import { campaignTracker } from '../../../tracking/mediaCampaignsTracking'
 
 class SignIn extends PureComponent {
   constructor(props) {
     super(props)
+  }
+
+  componentDidMount() {
+    campaignTracker.signin()
   }
 
   handleFail = formResolver => (state, action) => {

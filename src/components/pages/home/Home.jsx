@@ -4,6 +4,7 @@ import MainView from './MainView/MainView'
 import User from './Profile/ValueObjects/User'
 import { getCurrentPosition } from '../../../utils/geolocation'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
+import { campaignTracker } from '../../../tracking/mediaCampaignsTracking'
 
 const Home = ({
   geolocation,
@@ -16,6 +17,10 @@ const Home = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true)
   const geolocationRef = useRef(geolocation)
+
+  useEffect(() => {
+    campaignTracker.home()
+  }, [])
 
   useEffect(() => {
     const waitForCoordinates = async () => {
