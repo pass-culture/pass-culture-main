@@ -27,21 +27,6 @@ class TiteliveProviderAPITest:
             assert str(exception.value) == "Error 400 when getting ProviderAPI stocks for SIRET: 12345678912345"
 
         @patch("pcapi.infrastructure.repository.stock_provider.provider_api.requests")
-        def should_return_empty_json_body_when_provider_returns_200_with_no_body(self, requests):
-            # Given
-            requests.get = MagicMock()
-            siret = "12345678912345"
-            mock_response = MagicMock()
-            mock_response.side_effect = ValueError
-            requests.get.return_value = MagicMock(status_code=200, json=mock_response)
-
-            # When
-            response = self.provider_api.stocks(siret)
-
-            # Then
-            assert response == {}
-
-        @patch("pcapi.infrastructure.repository.stock_provider.provider_api.requests")
         def should_call_provider_api_with_given_siret(self, requests):
             # Given
             requests.get = MagicMock()
