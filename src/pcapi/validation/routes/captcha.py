@@ -7,9 +7,9 @@ class ReCaptchaException(Exception):
 
 
 class InvalidRecaptchaTokenException(ApiErrors):
-    def __init__(self):
+    def __init__(self, message: str = "Le token renseigné n'est pas valide"):
         super().__init__()
-        self.add_error("token", "Le token renseigné n'est pas valide")
+        self.add_error("token", message)
 
 
 def check_recaptcha_token_is_valid(token: str, original_action: str, minimal_score: float) -> None:
@@ -26,7 +26,9 @@ def check_recaptcha_token_is_valid(token: str, original_action: str, minimal_sco
     response_score = response.get("score", 0)
 
     if response_score < minimal_score:
-        raise InvalidRecaptchaTokenException()
+        raise InvalidRecaptchaTokenException(
+            f"Le token renseigné n'est pas valide : Le score ({response_score}) est trop faible (requis : {minimal_score})"
+        )
 
     action = response.get("action", "")
     if action != original_action:
