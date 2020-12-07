@@ -23,11 +23,8 @@ class CheckRecaptchaTokenIsValidTest:
         recaptcha_response.return_value = {"success": True, "score": 0.2}
 
         # When
-        with pytest.raises(ReCaptchaException) as exception:
+        with pytest.raises(InvalidRecaptchaTokenException) as exception:
             check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
-
-        # Then
-        assert str(exception.value) == "Token score is too low (0.2) to match minimum score (0.5)"
 
     @patch("pcapi.validation.routes.captcha.get_token_validation_and_score")
     def test_should_raise_when_action_is_not_matching_the_original_action(self, recaptcha_response):

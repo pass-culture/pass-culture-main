@@ -27,7 +27,7 @@ def check_recaptcha_token_is_valid(token: str, original_action: str, minimal_sco
     response_score = response.get("score", 0)
 
     if response_score < minimal_score:
-        raise ReCaptchaException(f"Token score is too low ({response_score}) to match minimum score ({minimal_score})")
+        raise InvalidRecaptchaTokenException()
 
     action = response.get("action", "")
     if action != original_action:
