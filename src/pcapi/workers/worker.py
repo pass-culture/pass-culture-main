@@ -13,8 +13,11 @@ from rq import Connection
 from rq import Queue
 from rq import Worker
 from rq.job import Job
+import sentry_sdk
+from sentry_sdk.integrations.rq import RqIntegration
 
 from pcapi import settings
+from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.logger import logger
 from pcapi.workers.logger import JobStatus
 from pcapi.workers.logger import build_job_log_message
@@ -24,6 +27,15 @@ listen = ["default"]
 conn = redis.from_url(settings.REDIS_URL)
 redis_queue = Queue(connection=conn)
 logging.getLogger("rq.worker").setLevel(logging.CRITICAL)
+
+if settings.IS_DEV is False:
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        integrations=[RqIntegration()],
+        release=read_version_from_file(),
+        environment=settings.ENV,
+        traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
+    )
 
 
 def log_worker_error(job: Job, exception_type: Type, exception_value: Exception):

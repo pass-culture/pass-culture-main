@@ -40,11 +40,11 @@ from pcapi.utils.mailing import MAILJET_API_SECRET
 
 if settings.IS_DEV is False:
     sentry_sdk.init(
-        dsn="https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5",
+        dsn=settings.SENTRY_DSN,
         integrations=[FlaskIntegration(), RqIntegration()],
         release=read_version_from_file(),
         environment=settings.ENV,
-        traces_sample_rate=float(os.environ.get("SENTRY_SAMPLE_RATE", 0)),
+        traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
     )
 
 app = Flask(__name__, static_url_path="/static")
