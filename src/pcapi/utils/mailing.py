@@ -159,7 +159,7 @@ def make_validation_email_object(
 
 
 def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict:
-    stock_name = booking.stock.offer.product.name
+    stock_name = booking.stock.offer.name
     venue = booking.stock.offer.venue
     user_name = booking.user.publicName
     user_email = booking.user.email

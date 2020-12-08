@@ -16,7 +16,7 @@ from pcapi.utils.mailing import format_environment_for_email
 def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: List[str]) -> Dict:
     offer = booking.stock.offer
     venue_name = offer.venue.name
-    offer_name = offer.product.name
+    offer_name = offer.name
     price = "Gratuit" if booking.stock.price == 0 else str(booking.stock.price)
     quantity = booking.quantity
     user_email = booking.user.email

@@ -86,6 +86,7 @@ def test_with_event():
 @pytest.mark.usefixtures("db_session")
 def test_with_book():
     booking = make_booking(
+        stock__offer__name="Le récit de voyage",
         stock__offer__product__extraData={"isbn": "123456789"},
         stock__offer__product__name="Le récit de voyage",
         stock__offer__product__type=str(models.ThingType.LIVRE_EDITION),
@@ -114,6 +115,7 @@ def test_with_book():
 @pytest.mark.usefixtures("db_session")
 def test_with_book_with_missing_isbn():
     booking = make_booking(
+        stock__offer__name="Le récit de voyage",
         stock__offer__product__extraData={},  # no ISBN
         stock__offer__product__name="Le récit de voyage",
         stock__offer__product__type=str(models.ThingType.LIVRE_EDITION),
