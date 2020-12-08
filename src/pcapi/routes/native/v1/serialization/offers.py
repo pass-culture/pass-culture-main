@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from pydantic.fields import Field
 
 
-class GetOfferOfferTypeResponse(BaseModel):
+class OfferCategoryResponse(BaseModel):
     appLabel: str = Field(..., alias="label")
     value: str
 
@@ -12,16 +12,16 @@ class GetOfferOfferTypeResponse(BaseModel):
         allow_population_by_field_name = True
 
 
-class GetOfferManaginOffererResponse(BaseModel):
+class OfferOffererResponse(BaseModel):
     name: str
 
     class Config:
         orm_mode = True
 
 
-class GetOfferVenueResponse(BaseModel):
+class OfferVenueResponse(BaseModel):
     city: Optional[str]
-    managingOfferer: GetOfferManaginOffererResponse = Field(..., alias="offerer")
+    managingOfferer: OfferOffererResponse = Field(..., alias="offerer")
     name: str
     publicName: Optional[str]
 
@@ -30,13 +30,13 @@ class GetOfferVenueResponse(BaseModel):
         allow_population_by_field_name = True
 
 
-class GetOfferResponse(BaseModel):
+class OfferResponse(BaseModel):
     id: int
     isDuo: bool
     name: str
-    offerType: GetOfferOfferTypeResponse = Field(..., alias="category")
+    offerType: OfferCategoryResponse = Field(..., alias="category")
     thumbUrl: Optional[str] = Field(None, alias="imageUrl")
-    venue: GetOfferVenueResponse
+    venue: OfferVenueResponse
 
     class Config:
         orm_mode = True
