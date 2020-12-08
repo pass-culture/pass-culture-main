@@ -8,6 +8,7 @@ from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.models import ApiErrors
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.validation.routes.captcha import ReCaptchaException
 from pcapi.validation.routes.captcha import check_recaptcha_token_is_valid
 
 from . import blueprint
@@ -40,7 +41,10 @@ def get_user_profile() -> serializers.UserProfileResponse:
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def create_account(body: serializers.AccountRequest) -> None:
     if settings.NATIVE_ACCOUNT_CREATION_REQUIRES_RECAPTCHA:
-        check_recaptcha_token_is_valid(body.token, "submit", settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE)
+        try:
+            check_recaptcha_token_is_valid(body.token, "submit", settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE)
+        except ReCaptchaException:
+            raise ApiErrors({"token": "The given token is not invalid"})
 
     api.create_account(
         email=body.email,
