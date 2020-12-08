@@ -1,7 +1,7 @@
 """Rename indexes
 
 Revision ID: ad5e76920552
-Revises: df15599370fd
+Revises: 9b82ab681c78
 Create Date: 2020-12-04 09:30:19.933353
 
 """
@@ -10,7 +10,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "ad5e76920552"
-down_revision = "df15599370fd"
+down_revision = "9b82ab681c78"
 branch_labels = None
 depends_on = None
 
