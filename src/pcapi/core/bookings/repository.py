@@ -15,6 +15,7 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
 from pcapi.core.bookings import conf
+from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
@@ -184,6 +185,30 @@ def generate_booking_token():
         if not token_exists(token):
             return token
     raise ValueError("Could not generate new booking token")
+
+
+def find_expired_bookings_ordered_by_user(expired_on: date = date.today()) -> Query:
+    return (
+        Booking.query.filter(Booking.isCancelled.is_(True))
+        .filter(cast(Booking.cancellationDate, Date) == expired_on)
+        .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
+        .order_by(Booking.userId)
+        .all()
+    )
+
+
+def find_expired_bookings_ordered_by_offerer(expired_on: date = date.today()) -> Query:
+    return (
+        Booking.query.join(Stock)
+        .join(Offer)
+        .join(VenueSQLEntity)
+        .join(Offerer)
+        .filter(Booking.isCancelled.is_(True))
+        .filter(cast(Booking.cancellationDate, Date) == expired_on)
+        .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
+        .order_by(Offerer.id)
+        .all()
+    )
 
 
 def _query_keep_on_non_activation_offers() -> Query:
