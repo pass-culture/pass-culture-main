@@ -194,9 +194,9 @@ def send_rejection_email_to_beneficiary_pre_subscription(
     send_email: Callable[..., bool],
 ) -> None:
     if isinstance(error, BeneficiaryIsNotEligible):
-        data = make_not_eligible_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription)
+        data = make_not_eligible_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription.email)
     else:
-        data = make_duplicate_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription)
+        data = make_duplicate_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription.email)
 
     send_email(data=data)
 

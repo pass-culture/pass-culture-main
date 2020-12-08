@@ -1,17 +1,13 @@
 import os
 from typing import Dict
 
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
-
 
 SUPPORT_EMAIL_ADDRESS = os.environ.get("SUPPORT_EMAIL_ADDRESS")
 
 
 def make_duplicate_beneficiary_pre_subscription_rejected_data(
-    beneficiary_pre_subscription: BeneficiaryPreSubscription,
+    beneficiary_email: str,
 ) -> Dict:
-    beneficiary_email = beneficiary_pre_subscription.email
-
     return {
         "FromEmail": SUPPORT_EMAIL_ADDRESS,
         "Mj-TemplateID": 1530996,
@@ -21,10 +17,8 @@ def make_duplicate_beneficiary_pre_subscription_rejected_data(
 
 
 def make_not_eligible_beneficiary_pre_subscription_rejected_data(
-    beneficiary_pre_subscription: BeneficiaryPreSubscription,
+    beneficiary_email: str,
 ) -> Dict:
-    beneficiary_email = beneficiary_pre_subscription.email
-
     return {
         "FromEmail": SUPPORT_EMAIL_ADDRESS,
         "Mj-TemplateID": 1619528,

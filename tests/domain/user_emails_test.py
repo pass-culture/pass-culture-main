@@ -528,7 +528,7 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
         send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, error, mocked_send_email)
 
         # then
-        mocked_make_data.assert_called_once_with(beneficiary_pre_subscription)
+        mocked_make_data.assert_called_once_with(beneficiary_pre_subscription.email)
         mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 1530996})
 
     @patch(
@@ -545,5 +545,5 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
         send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, error, mocked_send_email)
 
         # then
-        mocked_make_data.assert_called_once_with(beneficiary_pre_subscription)
+        mocked_make_data.assert_called_once_with(beneficiary_pre_subscription.email)
         mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 1619528})
