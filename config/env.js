@@ -81,6 +81,8 @@ function getClientEnvironment(publicUrl) {
         MAINTENANCE_PAGE_AVAILABLE: process.env.MAINTENANCE_PAGE_AVAILABLE === 'true' || false,
         DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:
           process.env.DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL,
+        DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL:
+          process.env.DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL,
         ASSETS_URL: process.env.ASSETS_URL,
         NODE_ENV: process.env.NODE_ENV || 'development',
         PUBLIC_URL: publicUrl,
