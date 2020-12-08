@@ -3,10 +3,17 @@ const LARGE_MULTIPLER = 10000000000000
 const TYPE = 'site'
 
 /* Beware : the same function is defined for webapp and id-check */
-const createTrackingIframe = cat => {
+export const createTrackingIframe = cat => {
   const randomInteger = Math.random() * LARGE_MULTIPLER
 
+  const iframeId = `floodlight-cat-${cat}`
+  const existingIframe = document.getElementById(iframeId)
+  if (existingIframe) {
+    return
+  }
+
   const iframe = document.createElement('iframe')
+  iframe.id = iframeId
   iframe.src =
     `https://10483184.fls.doubleclick.net/activityi;src=10483184;type=${TYPE};cat=${cat};dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;tfua=;npa=;` +
     'gdpr=${GDPR};gdpr_consent=${GDPR_CONSENT_755};' +
