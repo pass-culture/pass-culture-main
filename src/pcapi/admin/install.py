@@ -1,6 +1,7 @@
 from flask_admin.base import Admin
 from sqlalchemy.orm.session import Session
 
+from pcapi.admin.custom_views.allocine_pivot_view import AllocinePivotView
 from pcapi.admin.custom_views.beneficiary_import_view import BeneficiaryImportView
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
 from pcapi.admin.custom_views.criteria_view import CriteriaView
@@ -9,6 +10,7 @@ from pcapi.admin.custom_views.offer_view import OfferView
 from pcapi.admin.custom_views.offerer_view import OffererView
 from pcapi.admin.custom_views.pro_user_view import ProUserView
 from pcapi.admin.custom_views.venue_view import VenueView
+from pcapi.models import AllocinePivot
 from pcapi.models import BeneficiaryImport
 from pcapi.models import Criterion
 from pcapi.models import Feature
@@ -33,3 +35,4 @@ def install_admin_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(FeatureView(Feature, session, name="Fonctionnalités", category=None))
     admin.add_view(BeneficiaryImportView(BeneficiaryImport, session, name="Imports DMS", category="Utilisateurs"))
+    admin.add_view(AllocinePivotView(AllocinePivot, session, name="Pivot Allocine", category="Pro"))

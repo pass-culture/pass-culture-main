@@ -1,7 +1,7 @@
 from sqlalchemy.orm import query
 from sqlalchemy.sql.functions import func
-from wtforms import Form, \
-    validators
+from wtforms import Form
+from wtforms import validators
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.models import UserOfferer
