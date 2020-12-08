@@ -10,6 +10,7 @@ from pcapi.admin.custom_views.criteria_view import CriteriaView
 from pcapi.admin.custom_views.feature_view import FeatureView
 from pcapi.admin.custom_views.offer_view import OfferView
 from pcapi.admin.custom_views.offerer_view import OffererView
+from pcapi.admin.custom_views.partner_user_view import PartnerUserView
 from pcapi.admin.custom_views.pro_user_view import ProUserView
 from pcapi.admin.custom_views.user_offerer_view import UserOffererView
 from pcapi.admin.custom_views.venue_view import VenueView
@@ -23,12 +24,14 @@ from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 
+
 class Category(Enum):
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.value)
 
     OFFRES_STRUCTURES_LIEUX = "Offre, Lieux & Structure"
     USERS = "Utilisateurs"
+
 
 def install_admin_views(admin: Admin, session: Session) -> None:
     admin.add_view(OfferView(Offer, session, name="Offres", category=Category.OFFRES_STRUCTURES_LIEUX))
@@ -52,6 +55,11 @@ def install_admin_views(admin: Admin, session: Session) -> None:
     admin.add_view(
         BeneficiaryUserView(
             UserSQLEntity, session, name="Comptes Jeunes", category=Category.USERS, endpoint="/beneficiary_users"
+        )
+    )
+    admin.add_view(
+        PartnerUserView(
+            UserSQLEntity, session, name="Comptes Partenaires", category=Category.USERS, endpoint="/partner_users"
         )
     )
     admin.add_view(FeatureView(Feature, session, name="Fonctionnalités", category=None))
