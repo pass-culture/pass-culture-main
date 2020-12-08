@@ -46,8 +46,8 @@ class AccountTest:
 
         assert response.status_code == 200
         assert response.json["email"] == self.identifier
-        assert response.json["first_name"] == first_name
-        assert response.json["is_beneficiary"]
+        assert response.json["firstName"] == first_name
+        assert response.json["isBeneficiary"]
 
     def test_get_user_profile_empty_first_name(self, app):
         first_name = ""
@@ -61,8 +61,8 @@ class AccountTest:
 
         assert response.status_code == 200
         assert response.json["email"] == self.identifier
-        assert response.json["first_name"] is None
-        assert not response.json["is_beneficiary"]
+        assert response.json["firstName"] is None
+        assert not response.json["isBeneficiary"]
 
     @patch("pcapi.routes.native.v1.account.check_recaptcha_token_is_valid")
     @patch("pcapi.utils.mailing.send_raw_email", return_value=True)

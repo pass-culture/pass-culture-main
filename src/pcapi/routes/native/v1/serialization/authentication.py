@@ -2,6 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from pcapi.serialization.utils import to_camel
+
 
 class SigninRequest(BaseModel):
     identifier: str
@@ -12,12 +14,20 @@ class SigninResponse(BaseModel):
     refresh_token: str
     access_token: str
 
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
 
 class RefreshResponse(BaseModel):
     access_token: str
 
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
 
-class PasswordResetRequestRequest(BaseModel):
+
+class RequestPasswordResetRequest(BaseModel):
     email: str
 
 
@@ -25,12 +35,24 @@ class ResetPasswordRequest(BaseModel):
     reset_password_token: str
     new_password: str
 
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
 
 class ValidateEmailRequest(BaseModel):
     email_validation_token: str
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
 
 
 class ValidateEmailResponse(BaseModel):
     access_token: str
     refresh_token: str
     id_check_token: Optional[str]
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True

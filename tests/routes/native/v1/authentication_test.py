@@ -27,11 +27,11 @@ def test_user_logs_in_and_refreshes_token(app):
     # Get the refresh and access token
     response = test_client.post("/native/v1/signin", json=data)
     assert response.status_code == 200
-    assert response.json["refresh_token"]
-    assert response.json["access_token"]
+    assert response.json["refreshToken"]
+    assert response.json["accessToken"]
 
-    refresh_token = response.json["refresh_token"]
-    access_token = response.json["access_token"]
+    refresh_token = response.json["refreshToken"]
+    access_token = response.json["accessToken"]
 
     # Ensure the access token is valid
     test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
@@ -42,8 +42,8 @@ def test_user_logs_in_and_refreshes_token(app):
     test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
     response = test_client.post("/native/v1/refresh_access_token", json={})
     assert response.status_code == 200, response.json
-    assert response.json["access_token"]
-    access_token = response.json["access_token"]
+    assert response.json["accessToken"]
+    access_token = response.json["accessToken"]
 
     # Ensure the new access token is valid
     test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
@@ -201,7 +201,7 @@ def test_validate_email_when_eligible(app):
     test_client = TestClient(app.test_client())
     response = test_client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
 
-    id_check_token = response.json["id_check_token"]
+    id_check_token = response.json["idCheckToken"]
 
     assert user.isEmailValidated
     assert response.status_code == 200
@@ -213,13 +213,13 @@ def test_validate_email_when_eligible(app):
     assert saved_token.userId == user.id
 
     # Ensure the access token is valid
-    access_token = response.json["access_token"]
+    access_token = response.json["accessToken"]
     test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
     protected_response = test_client.get("/native/v1/protected")
     assert protected_response.status_code == 200
 
     # Ensure the refresh token is valid
-    refresh_token = response.json["refresh_token"]
+    refresh_token = response.json["refreshToken"]
     test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
     refresh_response = test_client.post("/native/v1/refresh_access_token", json={})
     assert refresh_response.status_code == 200
@@ -238,16 +238,16 @@ def test_validate_email_when_not_eligible(app):
 
     assert user.isEmailValidated
     assert response.status_code == 200
-    assert response.json["id_check_token"] is None
+    assert response.json["idCheckToken"] is None
 
     # Ensure the access token is valid
-    access_token = response.json["access_token"]
+    access_token = response.json["accessToken"]
     test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
     protected_response = test_client.get("/native/v1/protected")
     assert protected_response.status_code == 200
 
     # Ensure the refresh token is valid
-    refresh_token = response.json["refresh_token"]
+    refresh_token = response.json["refreshToken"]
     test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
     refresh_response = test_client.post("/native/v1/refresh_access_token", json={})
     assert refresh_response.status_code == 200

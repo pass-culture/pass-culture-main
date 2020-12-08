@@ -15,7 +15,7 @@ from pcapi.domain.user_emails import send_reset_password_email_to_native_app_use
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
-from pcapi.routes.native.v1.serialization.authentication import PasswordResetRequestRequest
+from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
 from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
@@ -57,7 +57,7 @@ def refresh() -> authentication.RefreshResponse:
 
 @blueprint.native_v1.route("/request_password_reset", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])  # type: ignore
-def password_reset_request(body: PasswordResetRequestRequest) -> None:
+def request_password_reset(body: RequestPasswordResetRequest) -> None:
     user = find_user_by_email(body.email)
 
     if not user:
