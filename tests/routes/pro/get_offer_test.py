@@ -121,6 +121,7 @@ class Returns200:
             "name": "Mains, sorts et papiers",
             "offerType": {
                 "appLabel": "Jeux - événement, rencontre ou concours",
+                "canExpire": None,
                 "conditionalFields": [],
                 "description": "Résoudre l’énigme d’un jeu de piste dans votre "
                 "ville ? Jouer en ligne entre amis ? Découvrir "
@@ -248,3 +249,4 @@ class Returns200:
         assert response.status_code == 200
         data = response.json
         assert data["stocks"][0]["cancellationLimitDate"] is None
+        assert data["offerType"]["canExpire"] is True

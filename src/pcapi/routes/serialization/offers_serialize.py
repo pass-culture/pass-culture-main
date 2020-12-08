@@ -196,6 +196,7 @@ class ListOffersQueryModel(BaseModel):
 
 class GetOfferOfferTypeResponseModel(BaseModel):
     appLabel: str
+    canExpire: Optional[bool]
     conditionalFields: List[Optional[str]]
     description: str
     isActive: bool
