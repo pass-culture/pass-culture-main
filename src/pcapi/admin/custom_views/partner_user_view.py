@@ -1,5 +1,6 @@
 from typing import List
 
+from sqlalchemy import distinct
 from sqlalchemy.orm import query
 from sqlalchemy.sql.functions import func
 from wtforms import Form
@@ -62,7 +63,7 @@ class PartnerUserView(BaseAdminView):
         if is_created:
             model.password = random_password()
 
-        model.publicName = "%s %s" % (model.firstName, model.lastName)
+        model.publicName = f"{model.firstName} {model.lastName}"
         model.isBeneficiary = False
         model.isAdmin = False
 
@@ -76,7 +77,7 @@ class PartnerUserView(BaseAdminView):
 
     def get_count_query(self) -> query:
         return (
-            self.session.query(func.count("*"))
+            self.session.query(func.count(distinct(UserSQLEntity.id)))
             .select_from(self.model)
             .outerjoin(UserOfferer)
             .filter(UserOfferer.userId.is_(None))
