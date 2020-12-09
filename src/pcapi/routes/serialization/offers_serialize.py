@@ -270,7 +270,8 @@ class GetOfferManagingOffererResponseModel(BaseModel):
     lastProviderId: Optional[str]
     name: str
     postalCode: str
-    siren: str
+    # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
+    siren: Optional[str]
     thumbCount: int
 
 

@@ -31,6 +31,20 @@ class Returns200:
         assert "validationToken" not in response_json["venue"]["managingOfferer"]
         assert "thumbUrl" in response_json
 
+    def test_access_even_if_offerer_has_no_siren(self, app):
+        # Given
+        beneficiary = users_factories.UserFactory()
+        offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer__siren=None,
+        )
+
+        # When
+        client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
+        response = client.get(f"/offers/{humanize(offer.id)}")
+
+        # Then
+        assert response.status_code == 200
+
     def test_returns_an_active_mediation(self, app):
         # Given
         beneficiary = users_factories.UserFactory()
