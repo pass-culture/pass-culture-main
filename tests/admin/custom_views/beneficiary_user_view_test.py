@@ -4,10 +4,12 @@ import pcapi.core.users.factories as users_factories
 from pcapi.models.user_sql_entity import UserSQLEntity
 
 from tests.conftest import TestClient
+from tests.conftest import clean_database
 
 
 class CustomViewsTest:
-    def test_beneficiary_user_creation(self, app, db_session):
+    @clean_database
+    def test_beneficiary_user_creation(self, app):
         users_factories.UserFactory(email="user@example.com", isAdmin=True, isBeneficiary=False)
 
         data = dict(
