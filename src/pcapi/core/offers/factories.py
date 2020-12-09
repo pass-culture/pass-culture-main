@@ -52,6 +52,7 @@ class VenueFactory(BaseFactory):
     latitude = 48.87004
     longitude = 2.37850
     managingOfferer = factory.SubFactory(OffererFactory)
+    address = "1 boulevard Poissonnière"
     postalCode = "75000"
     city = "Paris"
     publicName = factory.SelfAttribute("name")
@@ -65,6 +66,7 @@ class VenueFactory(BaseFactory):
 
 class VirtualVenueFactory(VenueFactory):
     isVirtual = True
+    address = None
     departementCode = None
     postalCode = None
     city = None
@@ -134,6 +136,10 @@ class StockFactory(BaseFactory):
     offer = factory.SubFactory(OfferFactory)
     price = 10
     quantity = 1000
+
+
+class ThingStockFactory(StockFactory):
+    offer = factory.SubFactory(ThingOfferFactory)
 
 
 class EventStockFactory(StockFactory):

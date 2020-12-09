@@ -3,36 +3,23 @@ from datetime import datetime
 from freezegun import freeze_time
 import pytest
 
-from pcapi.model_creators.generic_creators import create_bank_information
-from pcapi.model_creators.generic_creators import create_mediation
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_stock_with_event_offer
-from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
-from pcapi.repository import repository
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
 
+@pytest.mark.usefixtures("db_session")
 class Returns200:
-    @pytest.mark.usefixtures("db_session")
-    def when_user_has_rights_on_managing_offerer(self, app):
+    def test_access_by_beneficiary(self, app):
         # Given
-        beneficiary = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer)
-        create_bank_information(venue=venue, application_id=1)
-        create_bank_information(offerer=offerer, application_id=2)
-        repository.save(beneficiary, stock)
+        beneficiary = users_factories.UserFactory()
+        offer = offers_factories.ThingOfferFactory()
 
         # When
-        response = TestClient(app.test_client()).with_auth(email=beneficiary.email).get(f"/offers/{humanize(offer.id)}")
+        client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
+        response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
         response_json = response.json
@@ -44,50 +31,57 @@ class Returns200:
         assert "validationToken" not in response_json["venue"]["managingOfferer"]
         assert "thumbUrl" in response_json
 
-    @pytest.mark.usefixtures("db_session")
-    def when_returns_an_active_mediation(self, app):
+    def test_returns_an_active_mediation(self, app):
         # Given
-        beneficiary = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        mediation = create_mediation(offer, is_active=True)
-        repository.save(beneficiary, mediation)
+        beneficiary = users_factories.UserFactory()
+        offer = offers_factories.ThingOfferFactory()
+        mediation = offers_factories.MediationFactory(offer=offer)
 
         # When
-        response = TestClient(app.test_client()).with_auth(email=beneficiary.email).get(f"/offers/{humanize(offer.id)}")
+        client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
+        response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
         assert response.status_code == 200
-        assert response.json["activeMediation"] is not None
+        assert response.json["activeMediation"]["id"] == humanize(mediation.id)
 
-    @pytest.mark.usefixtures("db_session")
-    @freeze_time("2019-10-15 00:00:00")
-    def when_returns_an_event_stock(self, app):
+    @freeze_time("2020-10-15 00:00:00")
+    def test_returns_an_event_stock(self, app):
         # Given
-        date_now = datetime(2020, 10, 15)
-
-        beneficiary = create_user()
-        offerer = create_offerer(date_created=date_now, date_modified_at_last_provider=date_now)
-        venue = create_venue(offerer, date_created=date_now, date_modified_at_last_provider=date_now)
-        stock = create_stock_with_event_offer(
-            offerer=offerer,
-            venue=venue,
-            beginning_datetime=date_now,
-            booking_limit_datetime=date_now,
-            date_created=date_now,
-            date_modified_at_last_provider=date_now,
-            date_modifed=date_now,
+        now = datetime.utcnow()
+        beneficiary = users_factories.UserFactory()
+        stock = offers_factories.EventStockFactory(
+            dateCreated=now,
+            dateModified=now,
+            dateModifiedAtLastProvider=now,
+            beginningDatetime=now,
+            bookingLimitDatetime=now,
+            offer__dateCreated=now,
+            offer__dateModifiedAtLastProvider=now,
+            offer__bookingEmail="offer.booking.email@example.com",
+            offer__name="Derrick",
+            offer__description="Tatort, but slower",
+            offer__durationMinutes=60,
+            offer__product__name="Derrick",
+            offer__product__description="Tatort, but slower",
+            offer__product__durationMinutes=60,
+            offer__product__dateModifiedAtLastProvider=now,
+            offer__venue__siret="12345678912345",
+            offer__venue__name="La petite librairie",
+            offer__venue__dateCreated=now,
+            offer__venue__dateModifiedAtLastProvider=now,
+            offer__venue__managingOfferer__dateCreated=now,
+            offer__venue__managingOfferer__dateModifiedAtLastProvider=now,
+            offer__venue__managingOfferer__siren="123456789",
+            offer__venue__managingOfferer__name="Test Offerer",
         )
-        stock.offer.dateCreated = date_now
-        stock.offer.dateModifiedAtLastProvider = date_now
-        stock.offer.product.dateModifiedAtLastProvider = date_now
-        repository.save(beneficiary, stock)
+        offer = stock.offer
+        venue = offer.venue
+        offerer = venue.managingOfferer
 
         # When
-        response = (
-            TestClient(app.test_client()).with_auth(email=beneficiary.email).get(f"/offers/{humanize(stock.offer.id)}")
-        )
+        client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
+        response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
         assert response.status_code == 200
@@ -99,7 +93,7 @@ class Returns200:
             "conditions": None,
             "dateCreated": "2020-10-15T00:00:00Z",
             "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
-            "description": None,
+            "description": "Tatort, but slower",
             "durationMinutes": 60,
             "extraData": None,
             "fieldsUpdated": [],
@@ -118,28 +112,30 @@ class Returns200:
             "lastProviderId": None,
             "mediaUrls": [],
             "mediations": [],
-            "name": "Mains, sorts et papiers",
+            "name": "Derrick",
             "offerType": {
-                "appLabel": "Jeux - événement, rencontre ou concours",
+                "appLabel": "Cinéma",
                 "canExpire": None,
-                "conditionalFields": [],
-                "description": "Résoudre l’énigme d’un jeu de piste dans votre "
-                "ville ? Jouer en ligne entre amis ? Découvrir "
-                "cet univers étrange avec une manette ?",
+                "conditionalFields": ["author", "visa", "stageDirector"],
+                "description": "Action, science-fiction, documentaire ou "
+                "comédie sentimentale ? En salle, en plein air "
+                "ou bien au chaud chez soi ? Et si c’était "
+                "plutôt cette exposition qui allait faire son "
+                "cinéma ?",
                 "isActive": True,
                 "offlineOnly": True,
                 "onlineOnly": False,
-                "proLabel": "Jeux - événements, rencontres, concours",
-                "sublabel": "Jouer",
+                "proLabel": "Cinéma - projections et autres évènements",
+                "sublabel": "Regarder",
                 "type": "Event",
-                "value": "EventType.JEUX",
+                "value": "EventType.CINEMA",
             },
             "product": {
                 "ageMax": None,
                 "ageMin": None,
                 "conditions": None,
                 "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
-                "description": None,
+                "description": "Tatort, but slower",
                 "durationMinutes": 60,
                 "extraData": None,
                 "fieldsUpdated": [],
@@ -149,7 +145,7 @@ class Returns200:
                 "isNational": False,
                 "lastProviderId": None,
                 "mediaUrls": [],
-                "name": "Mains, sorts et papiers",
+                "name": "Derrick",
                 "owningOffererId": None,
                 "thumbCount": 0,
                 "url": None,
@@ -160,7 +156,7 @@ class Returns200:
                     "beginningDatetime": "2020-10-15T00:00:00Z",
                     "bookingLimitDatetime": "2020-10-15T00:00:00Z",
                     "bookingsQuantity": 0,
-                    "cancellationLimitDate": "2019-10-17T00:00:00Z",
+                    "cancellationLimitDate": "2020-10-15T00:00:00Z",
                     "dateCreated": "2020-10-15T00:00:00Z",
                     "dateModified": "2020-10-15T00:00:00Z",
                     "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
@@ -169,27 +165,27 @@ class Returns200:
                     "idAtProviders": None,
                     "isBookable": True,
                     "isEventDeletable": True,
-                    "isEventExpired": False,
+                    "isEventExpired": True,
                     "isSoftDeleted": False,
                     "lastProviderId": None,
                     "offerId": humanize(stock.offer.id),
                     "price": 10.0,
-                    "quantity": 10,
-                    "remainingQuantity": 10,
+                    "quantity": 1000,
+                    "remainingQuantity": 1000,
                 }
             ],
             "thumbUrl": None,
-            "type": "EventType.JEUX",
+            "type": "EventType.CINEMA",
             "url": None,
             "venue": {
-                "address": "123 rue de Paris",
+                "address": "1 boulevard Poissonnière",
                 "bic": None,
                 "bookingEmail": None,
-                "city": "Montreuil",
+                "city": "Paris",
                 "comment": None,
                 "dateCreated": "2020-10-15T00:00:00Z",
                 "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
-                "departementCode": "93",
+                "departementCode": "75",
                 "fieldsUpdated": [],
                 "iban": None,
                 "id": humanize(venue.id),
@@ -197,12 +193,12 @@ class Returns200:
                 "isValidated": True,
                 "isVirtual": False,
                 "lastProviderId": None,
-                "latitude": None,
-                "longitude": None,
+                "latitude": 48.87004,
+                "longitude": 2.37850,
                 "managingOfferer": {
                     "address": None,
                     "bic": None,
-                    "city": "Montreuil",
+                    "city": "Paris",
                     "dateCreated": "2020-10-15T00:00:00Z",
                     "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
                     "fieldsUpdated": [],
@@ -213,14 +209,14 @@ class Returns200:
                     "isValidated": True,
                     "lastProviderId": None,
                     "name": "Test Offerer",
-                    "postalCode": "93100",
+                    "postalCode": "75000",
                     "siren": "123456789",
                     "thumbCount": 0,
                 },
                 "managingOffererId": humanize(offerer.id),
                 "name": "La petite librairie",
-                "postalCode": "93100",
-                "publicName": None,
+                "postalCode": "75000",
+                "publicName": "La petite librairie",
                 "siret": "12345678912345",
                 "thumbCount": 0,
                 "venueLabelId": None,
@@ -231,19 +227,15 @@ class Returns200:
         }
 
     @freeze_time("2019-10-15 00:00:00")
-    @pytest.mark.usefixtures("db_session")
-    def when_returns_an_thing_stock(self, app):
+    def test_returns_a_thing_stock(self, app):
         # Given
-        beneficiary = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue)
-        repository.save(beneficiary, stock)
+        beneficiary = users_factories.UserFactory()
+        stock = offers_factories.ThingStockFactory()
+        offer = stock.offer
 
         # When
-        response = (
-            TestClient(app.test_client()).with_auth(email=beneficiary.email).get(f"/offers/{humanize(stock.offer.id)}")
-        )
+        client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
+        response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
         assert response.status_code == 200
