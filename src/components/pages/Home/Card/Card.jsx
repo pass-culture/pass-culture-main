@@ -11,10 +11,10 @@ const Card = ({ svg, title, text, navLink }) => (
   >
     <Icon svg={svg} />
     <div className="home-card-text">
-      <h1 className="title is-1 is-spaced">
+      <h1>
         {title}
       </h1>
-      <p className="subtitle">
+      <p>
         {text}
       </p>
     </div>

@@ -19,11 +19,6 @@
 .bi-external-link {
   @include tertiary();
 
-  > img {
-    margin-right: rem(5px);
-    vertical-align: sub;
-  }
-
   &.bi-external-link--mod-topright {
     position: absolute;
     right: 0;

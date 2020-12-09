@@ -28,7 +28,9 @@
 
     .container {
       display: flex;
+      max-width: 1000px;
       min-height: 100%;
+      width: 1000px;
 
       .columns {
         min-height: 100%;

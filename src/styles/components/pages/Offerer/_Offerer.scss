@@ -41,7 +41,7 @@
   }
 
   .op-subtitle {
-    margin-bottom: rem(25px);
+    @include body();
   }
 
   .op-content-section {

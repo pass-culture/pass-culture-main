@@ -6,37 +6,41 @@
   background-image: $linear-gradient-to-right;
   box-shadow: 0 0 60px 0 $black-shadow;
   margin: auto;
+}
 
-  .home-card {
+.home-card {
+  color: $white;
+  padding: 3rem;
+  padding-bottom: 2.6rem;
+
+  &:not(:last-child) {
+    border-right: 0.4rem dotted $white;
+
+    @media (max-width: $tablet) {
+      border-bottom: 0.4rem dotted $white;
+      border-right: none;
+    }
+  }
+
+  img {
+    float: right;
+    width: 6rem;
+  }
+}
+
+.home-card-text {
+  margin-top: 7rem;
+
+  h1 {
+    @include hero();
+
     color: $white;
-    padding: 3rem;
-    padding-bottom: 2.6rem;
+    margin-bottom: 1.5rem;
+  }
 
-    &:not(:last-child) {
-      border-right: 0.4rem dotted $white;
+  p {
+    @include title4();
 
-      @media (max-width: $tablet) {
-        border-bottom: 0.4rem dotted $white;
-        border-right: none;
-      }
-    }
-
-    img {
-      float: right;
-      width: 6rem;
-    }
-
-    .home-card-text {
-      margin-top: 7rem;
-
-      h1 {
-        color: $white;
-        font-size: rem(40px);
-      }
-
-      p {
-        color: $white;
-      }
-    }
+    color: $white;
   }
 }
