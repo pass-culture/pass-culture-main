@@ -6,7 +6,6 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
-from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImport
 from pcapi.models import UserSQLEntity
@@ -49,9 +48,9 @@ def test_saved_a_beneficiary_from_application(
 
     beneficiary_pre_subscription_repository = MagicMock()
     beneficiary_pre_subscription_repository.get_application_by.return_value = beneficiary_pre_subscription
-    create_beneficiary_from_application = CreateBeneficiaryFromApplication(
-        beneficiary_pre_subscription_repository=beneficiary_pre_subscription_repository,
-        beneficiary_repository=BeneficiarySQLRepository(),
+    create_beneficiary_from_application = CreateBeneficiaryFromApplication()
+    create_beneficiary_from_application.beneficiary_pre_subscription_repository = (
+        beneficiary_pre_subscription_repository
     )
 
     # When
@@ -106,9 +105,9 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     )
     beneficiary_pre_subscription_repository = MagicMock()
     beneficiary_pre_subscription_repository.get_application_by.return_value = beneficiary_pre_subscription
-    create_beneficiary_from_application = CreateBeneficiaryFromApplication(
-        beneficiary_pre_subscription_repository=beneficiary_pre_subscription_repository,
-        beneficiary_repository=BeneficiarySQLRepository(),
+    create_beneficiary_from_application = CreateBeneficiaryFromApplication()
+    create_beneficiary_from_application.beneficiary_pre_subscription_repository = (
+        beneficiary_pre_subscription_repository
     )
 
     # When
@@ -145,9 +144,9 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     )
     beneficiary_pre_subscription_repository = MagicMock()
     beneficiary_pre_subscription_repository.get_application_by.return_value = beneficiary_pre_subscription
-    create_beneficiary_from_application = CreateBeneficiaryFromApplication(
-        beneficiary_pre_subscription_repository=beneficiary_pre_subscription_repository,
-        beneficiary_repository=BeneficiarySQLRepository(),
+    create_beneficiary_from_application = CreateBeneficiaryFromApplication()
+    create_beneficiary_from_application.beneficiary_pre_subscription_repository = (
+        beneficiary_pre_subscription_repository
     )
 
     # When
@@ -187,9 +186,9 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
 
     beneficiary_pre_subscription_repository = MagicMock()
     beneficiary_pre_subscription_repository.get_application_by.return_value = beneficiary_pre_subscription
-    create_beneficiary_from_application = CreateBeneficiaryFromApplication(
-        beneficiary_pre_subscription_repository=beneficiary_pre_subscription_repository,
-        beneficiary_repository=BeneficiarySQLRepository(),
+    create_beneficiary_from_application = CreateBeneficiaryFromApplication()
+    create_beneficiary_from_application.beneficiary_pre_subscription_repository = (
+        beneficiary_pre_subscription_repository
     )
 
     # When
@@ -218,9 +217,9 @@ def test_calls_send_rejection_mail_with_validation_error(
     beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription(application_id=application_id)
     beneficiary_pre_subscription_repository = MagicMock()
     beneficiary_pre_subscription_repository.get_application_by.return_value = beneficiary_pre_subscription
-    create_beneficiary_from_application = CreateBeneficiaryFromApplication(
-        beneficiary_pre_subscription_repository=beneficiary_pre_subscription_repository,
-        beneficiary_repository=BeneficiarySQLRepository(),
+    create_beneficiary_from_application = CreateBeneficiaryFromApplication()
+    create_beneficiary_from_application.beneficiary_pre_subscription_repository = (
+        beneficiary_pre_subscription_repository
     )
     error = BeneficiaryIsADuplicate("Some reason")
     stubed_validate.side_effect = error

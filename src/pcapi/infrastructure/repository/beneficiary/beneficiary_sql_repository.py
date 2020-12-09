@@ -1,11 +1,10 @@
 from pcapi.domain.beneficiary.beneficiary import Beneficiary
-from pcapi.domain.beneficiary.beneficiary_repository import BeneficiaryRepository
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.infrastructure.repository.beneficiary import beneficiary_pre_subscription_sql_converter
 from pcapi.repository import repository
 
 
-class BeneficiarySQLRepository(BeneficiaryRepository):
+class BeneficiarySQLRepository:
     @classmethod
     def save(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription) -> Beneficiary:
         user_sql_entity = beneficiary_pre_subscription_sql_converter.to_model(beneficiary_pre_subscription)

@@ -1,4 +1,3 @@
-from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import (
     BeneficiaryBookingsSQLRepository,
 )
@@ -29,7 +28,6 @@ from pcapi.use_cases.list_offerers_for_pro_user import ListOfferersForProUser
 beneficiary_bookings_repository = BeneficiaryBookingsSQLRepository()
 favorite_repository = FavoriteSQLRepository()
 notification_service = MailjetNotificationService()
-user_repository = BeneficiarySQLRepository()
 venue_label_repository = VenueLabelSQLRepository()
 venue_identifier_repository = VenueWithBasicInformationSQLRepository()
 venue_with_offerer_informations_repository = VenueWithOffererNameSQLRepository()

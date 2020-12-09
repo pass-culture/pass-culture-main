@@ -4,9 +4,6 @@ import os
 import requests
 
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_repository import (
-    BeneficiaryPreSubscriptionRepository,
-)
 from pcapi.models import BeneficiaryImportSources
 
 
@@ -21,7 +18,7 @@ class ApiJouveException(Exception):
     pass
 
 
-class BeneficiaryJouveRepository(BeneficiaryPreSubscriptionRepository):
+class BeneficiaryJouveRepository:
     def _get_authentication_token(self) -> str:
         expiration = datetime.datetime.now() + datetime.timedelta(hours=1)
         response = requests.post(
