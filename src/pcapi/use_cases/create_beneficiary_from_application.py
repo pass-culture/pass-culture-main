@@ -32,3 +32,6 @@ class CreateBeneficiaryFromApplication:
         else:
             beneficiary = self.beneficiary_repository.save(beneficiary_pre_subscription)
             send_activation_email(user=beneficiary, send_email=send_raw_email)
+
+
+create_beneficiary_from_application = CreateBeneficiaryFromApplication()
