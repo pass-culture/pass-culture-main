@@ -105,10 +105,15 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         "queryParams": request.query_string.decode("UTF-8"),
         "duration": request_duration_in_milliseconds,
         "size": response.headers.get("Content-Length", type=int),
-        "from": "flask",
     }
 
     json_logger.info("request details", extra=request_data)
+
+    return response
+
+
+@app.after_request
+def add_security_headers(response: flask.wrappers.Response) -> flask.wrappers.Response:
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-XSS-Protection"] = "1; mode=block"

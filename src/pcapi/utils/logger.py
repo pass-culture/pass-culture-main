@@ -19,6 +19,7 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
             "%Y-%m-%dT%H:%M:%S.%fZ"
         )
         log_record["level"] = record.__dict__.get("levelname")
+        log_record["from"] = "flask"
 
 
 logger = logging.getLogger()
