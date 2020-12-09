@@ -21,15 +21,15 @@ const Matomo = ({ history, location, userId }) => {
   }
 
   useEffect(() => {
-    trackPageView()
+    trackPageView() // called on first render
     const unlisten = history.listen(() => {
-      trackPageView()
+      trackPageView() // called on every page change BUT NOT on first render
     })
 
     return () => {
       unlisten()
     }
-  })
+  }, [history])
 
   if (location.pathname == '/connexion') {
     Matomo.push(['resetUserId'])
