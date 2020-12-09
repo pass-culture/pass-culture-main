@@ -33,6 +33,7 @@ export const {
   DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL,
   ASSETS_URL,
   RECAPTCHA_SITE_KEY,
+  OFFER_CREATION_V2,
 } = process.env
 
 function getMobileOperatingSystem() {

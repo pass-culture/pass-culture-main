@@ -23,9 +23,8 @@ import SignupValidationContainer from 'components/pages/Signup/SignupValidation/
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
 import VenueCreationContainer from 'components/pages/Venue/VenueCreation/VenueCreationContainer'
 import VenueEditionContainer from 'components/pages/Venue/VenueEdition/VenueEditionContainer'
-import { IS_PROD } from 'utils/config'
-
-import { UNAVAILABLE_ERROR_PAGE } from './routes'
+import { OFFER_CREATION_V2 } from 'utils/config'
+import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 const RedirectToConnexionComponent = () => <Redirect to="/connexion" />
 
@@ -201,7 +200,7 @@ let routes = [
   },
 ]
 
-if (!IS_PROD) {
+if (OFFER_CREATION_V2) {
   routes = [
     ...routes,
     {
