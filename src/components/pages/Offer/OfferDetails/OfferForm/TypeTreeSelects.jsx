@@ -160,6 +160,7 @@ const TypeTreeSelects = props => {
             options={subTypeOptions['musicType']}
             required
             selectedValue={typeValues.musicType}
+            sublabel="Optionnel"
           />
         </div>
       )}
@@ -178,6 +179,7 @@ const TypeTreeSelects = props => {
             options={subTypeOptions['musicSubType']}
             required
             selectedValue={typeValues.musicSubType}
+            sublabel="Optionnel"
           />
         </div>
       )}
@@ -196,6 +198,7 @@ const TypeTreeSelects = props => {
             options={subTypeOptions['showType']}
             required
             selectedValue={typeValues.showType}
+            sublabel="Optionnel"
           />
         </div>
       )}
@@ -214,6 +217,7 @@ const TypeTreeSelects = props => {
             options={subTypeOptions['showSubType']}
             required
             selectedValue={typeValues.showSubType}
+            sublabel="Optionnel"
           />
         </div>
       )}

@@ -10,6 +10,8 @@ import { configureTestStore } from 'store/testUtils'
 
 import OfferDetailsContainer from '../OfferDetailsContainer'
 
+import { fieldLabels } from './helpers'
+
 jest.mock('repository/pcapi/pcapi', () => ({
   createOffer: jest.fn(),
   getValidatedOfferers: jest.fn(),
@@ -201,6 +203,309 @@ describe('offerDetails - Edition', () => {
       // Then
       const newTitleValue = await screen.findByDisplayValue('Mon nouveau titre')
       expect(newTitleValue).toBeInTheDocument()
+    })
+
+    it('should allow edition of editable fields only', async () => {
+      // Given
+      const editedOffer = {
+        id: 'ABC12',
+        name: 'My edited offer',
+        type: 'EventType.FULL_CONDITIONAL_FIELDS',
+        musicType: 501, // Jazz
+        musicSubType: 502, // Acid Jazz
+        description: 'Offer description',
+        venueId: 'LOCAL_VENUE_ID',
+        withdrawalDetails: 'Offer withdrawal details',
+        author: 'Mr Offer Author',
+        performer: 'Mr Offer Performer',
+        bookingEmail: 'booking@email.net',
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+      types.push({
+        conditionalFields: [
+          'author',
+          'musicType',
+          'performer',
+          'isbn',
+          'stageDirector',
+          'speaker',
+          'visa',
+        ],
+        offlineOnly: false,
+        onlineOnly: false,
+        proLabel: 'Musique - concerts, festivals',
+        type: 'Event',
+        value: 'EventType.FULL_CONDITIONAL_FIELDS',
+      })
+      pcapi.loadTypes.mockResolvedValue(types)
+      venues.push({
+        id: 'LOCAL_VENUE_ID',
+        isVirtual: true,
+        managingOffererId: offerers[0].id,
+        name: 'Le lieu',
+        offererName: 'La structure',
+      })
+      pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+
+      renderOffers({}, store)
+
+      // Edition read only fields
+      const typeInput = await screen.findByLabelText(fieldLabels.type.label, {
+        exact: fieldLabels.type.exact,
+      })
+      expect(typeInput).toHaveAttribute('disabled')
+      const musicSubTypeInput = await screen.findByLabelText(fieldLabels.musicSubType.label, {
+        exact: fieldLabels.musicSubType.exact,
+      })
+      expect(musicSubTypeInput).toHaveAttribute('disabled')
+      const musicTypeInput = await screen.findByLabelText(fieldLabels.musicType.label, {
+        exact: fieldLabels.musicType.exact,
+      })
+      expect(musicTypeInput).toHaveAttribute('disabled')
+      const offererIdInput = await screen.findByLabelText(fieldLabels.offererId.label, {
+        exact: fieldLabels.offererId.exact,
+      })
+      expect(offererIdInput).toHaveAttribute('disabled')
+
+      // Editable fields
+      const authorInput = await screen.findByLabelText(fieldLabels.author.label, {
+        exact: fieldLabels.author.exact,
+      })
+      expect(authorInput).not.toHaveAttribute('disabled')
+      const bookingEmailInput = await screen.findByLabelText(fieldLabels.bookingEmail.label, {
+        exact: fieldLabels.bookingEmail.exact,
+      })
+      expect(bookingEmailInput).not.toHaveAttribute('disabled')
+      const descriptionInput = await screen.findByLabelText(fieldLabels.description.label, {
+        exact: fieldLabels.description.exact,
+      })
+      expect(descriptionInput).not.toHaveAttribute('disabled')
+      const durationMinutesInput = await screen.findByLabelText(fieldLabels.durationMinutes.label, {
+        exact: fieldLabels.durationMinutes.exact,
+      })
+      expect(durationMinutesInput).not.toHaveAttribute('disabled')
+      const isbnInput = await screen.findByLabelText(fieldLabels.isbn.label, {
+        exact: fieldLabels.isbn.exact,
+      })
+      expect(isbnInput).not.toHaveAttribute('disabled')
+      const isDuoInput = await screen.findByLabelText(fieldLabels.isDuo.label, {
+        exact: fieldLabels.isDuo.exact,
+      })
+      expect(isDuoInput).not.toHaveAttribute('disabled')
+      const nameInput = await screen.findByLabelText(fieldLabels.name.label, {
+        exact: fieldLabels.name.exact,
+      })
+      expect(nameInput).not.toHaveAttribute('disabled')
+      const performerInput = await screen.findByLabelText(fieldLabels.performer.label, {
+        exact: fieldLabels.performer.exact,
+      })
+      expect(performerInput).not.toHaveAttribute('disabled')
+      const stageDirectorInput = await screen.findByLabelText(fieldLabels.stageDirector.label, {
+        exact: fieldLabels.stageDirector.exact,
+      })
+      expect(stageDirectorInput).not.toHaveAttribute('disabled')
+      const speakerInput = await screen.findByLabelText(fieldLabels.speaker.label, {
+        exact: fieldLabels.speaker.exact,
+      })
+      expect(speakerInput).not.toHaveAttribute('disabled')
+      const urlInput = await screen.findByLabelText(fieldLabels.url.label, {
+        exact: fieldLabels.url.exact,
+      })
+      expect(urlInput).not.toHaveAttribute('disabled')
+      const venueIdInput = await screen.findByLabelText(fieldLabels.venueId.label, {
+        exact: fieldLabels.venueId.exact,
+      })
+      expect(venueIdInput).not.toHaveAttribute('disabled')
+      const visaInput = await screen.findByLabelText(fieldLabels.visa.label, {
+        exact: fieldLabels.visa.exact,
+      })
+      expect(visaInput).not.toHaveAttribute('disabled')
+      const withdrawalDetailsInput = await screen.findByLabelText(
+        fieldLabels.withdrawalDetails.label,
+        { exact: fieldLabels.withdrawalDetails.exact }
+      )
+      expect(withdrawalDetailsInput).not.toHaveAttribute('disabled')
+    })
+
+    describe('for synchronized offers', () => {
+      it('should not allow any edition', async () => {
+        // Given
+        const editedOffer = {
+          id: 'ABC12',
+          name: 'My edited offer',
+          type: 'EventType.FULL_CONDITIONAL_FIELDS',
+          showType: 400,
+          showSubType: 401,
+          description: 'Offer description',
+          venueId: 'LOCAL_VENUE_ID',
+          withdrawalDetails: 'Offer withdrawal details',
+          author: 'Mr Offer Author',
+          performer: 'Mr Offer Performer',
+          bookingEmail: 'booking@email.net',
+          lastProvider: {
+            name: 'Leslibraires.fr',
+          },
+        }
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+        types.push({
+          conditionalFields: [
+            'author',
+            'showType',
+            'performer',
+            'isbn',
+            'stageDirector',
+            'speaker',
+            'visa',
+          ],
+          offlineOnly: false,
+          onlineOnly: false,
+          proLabel: 'Musique - concerts, festivals',
+          type: 'Event',
+          value: 'EventType.FULL_CONDITIONAL_FIELDS',
+        })
+        pcapi.loadTypes.mockResolvedValue(types)
+        venues.push({
+          id: 'LOCAL_VENUE_ID',
+          isVirtual: true,
+          managingOffererId: offerers[0].id,
+          name: 'Le lieu',
+          offererName: 'La structure',
+        })
+        pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+
+        renderOffers({}, store)
+
+        // Edition read only fields
+        const typeInput = await screen.findByLabelText(fieldLabels.type.label, {
+          exact: fieldLabels.type.exact,
+        })
+        expect(typeInput).toHaveAttribute('disabled')
+        const showSubTypeInput = await screen.findByLabelText(fieldLabels.showSubType.label, {
+          exact: fieldLabels.showSubType.exact,
+        })
+        expect(showSubTypeInput).toHaveAttribute('disabled')
+        const showTypeInput = await screen.findByLabelText(fieldLabels.showType.label, {
+          exact: fieldLabels.showType.exact,
+        })
+        expect(showTypeInput).toHaveAttribute('disabled')
+        const offererIdInput = await screen.findByLabelText(fieldLabels.offererId.label, {
+          exact: fieldLabels.offererId.exact,
+        })
+        expect(offererIdInput).toHaveAttribute('disabled')
+        const authorInput = await screen.findByLabelText(fieldLabels.author.label, {
+          exact: fieldLabels.author.exact,
+        })
+        expect(authorInput).toHaveAttribute('disabled')
+        const bookingEmailInput = await screen.findByLabelText(fieldLabels.bookingEmail.label, {
+          exact: fieldLabels.bookingEmail.exact,
+        })
+        expect(bookingEmailInput).toHaveAttribute('disabled')
+        const descriptionInput = await screen.findByLabelText(fieldLabels.description.label, {
+          exact: fieldLabels.description.exact,
+        })
+        expect(descriptionInput).toHaveAttribute('disabled')
+        const durationMinutesInput = await screen.findByLabelText(
+          fieldLabels.durationMinutes.label,
+          {
+            exact: fieldLabels.durationMinutes.exact,
+          }
+        )
+        expect(durationMinutesInput).toHaveAttribute('disabled')
+        const isbnInput = await screen.findByLabelText(fieldLabels.isbn.label, {
+          exact: fieldLabels.isbn.exact,
+        })
+        expect(isbnInput).toHaveAttribute('disabled')
+        const isDuoInput = await screen.findByLabelText(fieldLabels.isDuo.label, {
+          exact: fieldLabels.isDuo.exact,
+        })
+        expect(isDuoInput).toHaveAttribute('disabled')
+        const nameInput = await screen.findByLabelText(fieldLabels.name.label, {
+          exact: fieldLabels.name.exact,
+        })
+        expect(nameInput).toHaveAttribute('disabled')
+        const performerInput = await screen.findByLabelText(fieldLabels.performer.label, {
+          exact: fieldLabels.performer.exact,
+        })
+        expect(performerInput).toHaveAttribute('disabled')
+        const stageDirectorInput = await screen.findByLabelText(fieldLabels.stageDirector.label, {
+          exact: fieldLabels.stageDirector.exact,
+        })
+        expect(stageDirectorInput).toHaveAttribute('disabled')
+        const speakerInput = await screen.findByLabelText(fieldLabels.speaker.label, {
+          exact: fieldLabels.speaker.exact,
+        })
+        expect(speakerInput).toHaveAttribute('disabled')
+        const urlInput = await screen.findByLabelText(fieldLabels.url.label, {
+          exact: fieldLabels.url.exact,
+        })
+        expect(urlInput).toHaveAttribute('disabled')
+        const venueIdInput = await screen.findByLabelText(fieldLabels.venueId.label, {
+          exact: fieldLabels.venueId.exact,
+        })
+        expect(venueIdInput).toHaveAttribute('disabled')
+        const visaInput = await screen.findByLabelText(fieldLabels.visa.label, {
+          exact: fieldLabels.visa.exact,
+        })
+        expect(visaInput).toHaveAttribute('disabled')
+        const withdrawalDetailsInput = await screen.findByLabelText(
+          fieldLabels.withdrawalDetails.label,
+          { exact: fieldLabels.withdrawalDetails.exact }
+        )
+        expect(withdrawalDetailsInput).toHaveAttribute('disabled')
+      })
+
+      it('should allow edition of "isDuo" for "Allociné" offers', async () => {
+        const editedOffer = {
+          id: 'ABC12',
+          name: 'My edited offer',
+          type: 'EventType.FULL_CONDITIONAL_FIELDS',
+          showType: 400,
+          showSubType: 401,
+          description: 'Offer description',
+          venueId: 'LOCAL_VENUE_ID',
+          withdrawalDetails: 'Offer withdrawal details',
+          author: 'Mr Offer Author',
+          performer: 'Mr Offer Performer',
+          bookingEmail: 'booking@email.net',
+          lastProvider: {
+            name: 'Allociné',
+          },
+        }
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+        types.push({
+          conditionalFields: [
+            'author',
+            'showType',
+            'performer',
+            'isbn',
+            'stageDirector',
+            'speaker',
+            'visa',
+          ],
+          offlineOnly: false,
+          onlineOnly: false,
+          proLabel: 'Musique - concerts, festivals',
+          type: 'Event',
+          value: 'EventType.FULL_CONDITIONAL_FIELDS',
+        })
+        pcapi.loadTypes.mockResolvedValue(types)
+        venues.push({
+          id: 'LOCAL_VENUE_ID',
+          isVirtual: true,
+          managingOffererId: offerers[0].id,
+          name: 'Le lieu',
+          offererName: 'La structure',
+        })
+        pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+
+        renderOffers({}, store)
+
+        // Edition read only fields
+        const isDuoInput = await screen.findByLabelText(fieldLabels.isDuo.label, {
+          exact: fieldLabels.isDuo.exact,
+        })
+        expect(isDuoInput).not.toHaveAttribute('disabled')
+      })
     })
   })
 })

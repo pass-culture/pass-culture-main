@@ -9,7 +9,7 @@ import TimeInput from 'components/layout/inputs/TimeInput'
 import Spinner from 'components/layout/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { isSynchronizedOffer } from '../../domain/localProvider'
+import { isAllocineOffer, isSynchronizedOffer } from '../../domain/localProvider'
 import offerIsRefundable from '../../domain/offerIsRefundable'
 import MediationsManager from '../../MediationsManager/MediationsManagerContainer'
 import { SELECT_DEFAULT_VALUE, TEXT_INPUT_DEFAULT_VALUE } from '../_constants'
@@ -42,6 +42,8 @@ export const DEFAULT_FORM_VALUES = {
   withdrawalDetails: TEXT_INPUT_DEFAULT_VALUE,
 }
 
+const mandatoryFields = ['name', 'venueId', 'offererId', 'url']
+
 const getOfferConditionalFields = ({
   offerType = null,
   isUserAdmin = null,
@@ -71,7 +73,7 @@ const getOfferConditionalFields = ({
 }
 
 const OfferForm = props => {
-  const { offer, initialValues, onSubmit, onChange, isUserAdmin, submitErrors } = props
+  const { initialValues, isUserAdmin, offer, onSubmit, onChange, submitErrors } = props
 
   const [formValues, setFormValues] = useState({})
   const [offererOptions, setOffererOptions] = useState([])
@@ -124,7 +126,11 @@ const OfferForm = props => {
       const isSynchronized = isSynchronizedOffer(offer)
       setHasSynchronizedStocks(isSynchronized)
       if (isSynchronized) {
-        setReadOnlyFields(Object.keys(DEFAULT_FORM_VALUES))
+        let syncReadOnlyFields = Object.keys(DEFAULT_FORM_VALUES)
+        if (isAllocineOffer(offer)) {
+          syncReadOnlyFields = syncReadOnlyFields.filter(fieldName => fieldName !== 'isDuo')
+        }
+        setReadOnlyFields(syncReadOnlyFields)
       } else {
         setReadOnlyFields([
           'type',
@@ -134,6 +140,9 @@ const OfferForm = props => {
           'showType',
           'showSubType',
         ])
+      }
+      if (offer.bookingEmail && offer.bookingEmail.length) {
+        setReceiveNotificationEmails(true)
       }
     } else {
       values = { ...DEFAULT_FORM_VALUES, ...initialValues }
@@ -176,14 +185,14 @@ const OfferForm = props => {
         setFormValues({ ...formValues, venueId: DEFAULT_FORM_VALUES.venueId })
       }
       const venueFieldIdx = readOnlyFields.findIndex(fieldName => fieldName === 'venueId')
-      if (venueFieldIdx !== -1) {
+      if (!hasSynchronizedStocks && venueFieldIdx !== -1) {
         readOnlyFields.splice(venueFieldIdx, 1)
         setReadOnlyFields(readOnlyFields)
       }
     } else if (!readOnlyFields.includes('venueId')) {
       setReadOnlyFields([...readOnlyFields, 'venueId'])
     }
-  }, [formValues, offerType, readOnlyFields, venues])
+  }, [formValues, hasSynchronizedStocks, offerType, readOnlyFields, venues])
 
   useEffect(() => {
     // store useful objects for selected venueId and type
@@ -225,38 +234,16 @@ const OfferForm = props => {
   }, [offerType, isUserAdmin, receiveNotificationEmails, venue])
 
   const isValid = useCallback(() => {
-    const optionalFields = [
-      'author',
-      'bookingEmail',
-      'isbn',
-      'isDuo',
-      'isNational',
-      'musicType',
-      'musicSubType',
-      'performer',
-      'showType',
-      'showSubType',
-      'stageDirector',
-      'speaker',
-      'url',
-      'visa',
-      'withdrawalDetails',
-    ]
-
     let newFormErrors = {}
-    formFields.forEach(fieldName => {
-      if (optionalFields.includes(fieldName)) {
-        return
-      }
-
-      if (formValues[fieldName] === DEFAULT_FORM_VALUES[fieldName]) {
+    mandatoryFields.forEach(fieldName => {
+      if (fieldName in formValues && formValues[fieldName] === DEFAULT_FORM_VALUES[fieldName]) {
         newFormErrors[fieldName] = 'Ce champs est obligatoire.'
       }
     })
 
     setFormErrors(newFormErrors)
     return Object.keys(newFormErrors).length === 0
-  }, [formFields, formValues])
+  }, [formValues])
 
   useEffect(() => {
     if (onChange) {
@@ -390,12 +377,13 @@ const OfferForm = props => {
 
             <div className="form-row">
               <TextInput
+                disabled={readOnlyFields.includes('name')}
                 error={getErrorMessage('name')}
                 label="Titre de l'offre"
                 name="name"
                 onChange={handleSingleFormUpdate}
-                readOnly={readOnlyFields.includes('name')}
                 required
+                sublabel={!mandatoryFields.includes('name') ? 'Optionnel' : ''}
                 type="text"
                 value={formValues.name}
               />
@@ -403,87 +391,106 @@ const OfferForm = props => {
             <div className="form-row">
               <TextareaInput
                 countCharacters
+                disabled={readOnlyFields.includes('description')}
                 error={getErrorMessage('description')}
                 label="Description"
                 maxLength={1000}
                 name="description"
                 onChange={handleSingleFormUpdate}
-                readOnly={readOnlyFields.includes('description')}
                 required
                 rows={6}
+                sublabel={!mandatoryFields.includes('description') ? 'Optionnel' : ''}
                 value={formValues.description}
               />
             </div>
             {formFields.includes('speaker') && (
-              <TextInput
-                error={getErrorMessage('speaker')}
-                label="Intervenant"
-                name="speaker"
-                onChange={handleSingleFormUpdate}
-                readOnly={readOnlyFields.includes('speaker')}
-                type="text"
-                value={formValues.speaker}
-              />
+              <div className="form-row">
+                <TextInput
+                  disabled={readOnlyFields.includes('speaker')}
+                  error={getErrorMessage('speaker')}
+                  label="Intervenant"
+                  name="speaker"
+                  onChange={handleSingleFormUpdate}
+                  sublabel={!mandatoryFields.includes('speaker') ? 'Optionnel' : ''}
+                  type="text"
+                  value={formValues.speaker}
+                />
+              </div>
             )}
 
             {formFields.includes('author') && (
-              <TextInput
-                error={getErrorMessage('author')}
-                label="Auteur"
-                name="author"
-                onChange={handleSingleFormUpdate}
-                readOnly={readOnlyFields.includes('author')}
-                type="text"
-                value={formValues.author}
-              />
+              <div className="form-row">
+                <TextInput
+                  disabled={readOnlyFields.includes('author')}
+                  error={getErrorMessage('author')}
+                  label="Auteur"
+                  name="author"
+                  onChange={handleSingleFormUpdate}
+                  sublabel={!mandatoryFields.includes('author') ? 'Optionnel' : ''}
+                  type="text"
+                  value={formValues.author}
+                />
+              </div>
             )}
 
             {formFields.includes('visa') && (
-              <TextInput
-                error={getErrorMessage('visa')}
-                label="Visa d’exploitation"
-                name="visa"
-                onChange={handleSingleFormUpdate}
-                readOnly={readOnlyFields.includes('visa')}
-                type="text"
-                value={formValues.visa}
-              />
+              <div className="form-row">
+                <TextInput
+                  disabled={readOnlyFields.includes('visa')}
+                  error={getErrorMessage('visa')}
+                  label="Visa d’exploitation"
+                  name="visa"
+                  onChange={handleSingleFormUpdate}
+                  sublabel={!mandatoryFields.includes('visa') ? 'Optionnel' : ''}
+                  type="text"
+                  value={formValues.visa}
+                />
+              </div>
             )}
 
             {formFields.includes('isbn') && (
-              <TextInput
-                error={getErrorMessage('isbn')}
-                label="ISBN"
-                name="isbn"
-                onChange={handleSingleFormUpdate}
-                readOnly={readOnlyFields.includes('isbn')}
-                type="text"
-                value={formValues.isbn}
-              />
+              <div className="form-row">
+                <TextInput
+                  disabled={readOnlyFields.includes('isbn')}
+                  error={getErrorMessage('isbn')}
+                  label="ISBN"
+                  name="isbn"
+                  onChange={handleSingleFormUpdate}
+                  sublabel={!mandatoryFields.includes('isbn') ? 'Optionnel' : ''}
+                  type="text"
+                  value={formValues.isbn}
+                />
+              </div>
             )}
 
             {formFields.includes('stageDirector') && (
-              <TextInput
-                error={getErrorMessage('stageDirector')}
-                label="Metteur en scène"
-                name="stageDirector"
-                onChange={handleSingleFormUpdate}
-                readOnly={readOnlyFields.includes('stageDirector')}
-                type="text"
-                value={formValues.stageDirector}
-              />
+              <div className="form-row">
+                <TextInput
+                  disabled={readOnlyFields.includes('stageDirector')}
+                  error={getErrorMessage('stageDirector')}
+                  label="Metteur en scène"
+                  name="stageDirector"
+                  onChange={handleSingleFormUpdate}
+                  sublabel={!mandatoryFields.includes('stageDirector') ? 'Optionnel' : ''}
+                  type="text"
+                  value={formValues.stageDirector}
+                />
+              </div>
             )}
 
             {formFields.includes('performer') && (
-              <TextInput
-                error={getErrorMessage('perforer')}
-                label="Interprète"
-                name="performer"
-                onChange={handleSingleFormUpdate}
-                readOnly={readOnlyFields.includes('performer')}
-                type="text"
-                value={formValues.performer}
-              />
+              <div className="form-row">
+                <TextInput
+                  disabled={readOnlyFields.includes('performer')}
+                  error={getErrorMessage('perforer')}
+                  label="Interprète"
+                  name="performer"
+                  onChange={handleSingleFormUpdate}
+                  sublabel={!mandatoryFields.includes('performer') ? 'Optionnel' : ''}
+                  type="text"
+                  value={formValues.performer}
+                />
+              </div>
             )}
           </section>
 
@@ -500,15 +507,15 @@ const OfferForm = props => {
             <div className="form-row">
               <TextareaInput
                 countCharacters
+                disabled={readOnlyFields.includes('withdrawalDetails')}
                 error={getErrorMessage('withdrawalDetails')}
                 label="Informations de retrait"
                 maxLength={500}
                 name="withdrawalDetails"
                 onChange={handleSingleFormUpdate}
-                readOnly={readOnlyFields.includes('withdrawalDetails')}
                 required
                 rows={4}
-                sublabel="Optionnel"
+                sublabel={!mandatoryFields.includes('withdrawalDetails') ? 'Optionnel' : ''}
                 value={formValues.withdrawalDetails}
               />
             </div>
@@ -516,11 +523,11 @@ const OfferForm = props => {
             {formFields.includes('url') && (
               <div className="form-row">
                 <TextInput
+                  disabled={readOnlyFields.includes('url')}
                   error={getErrorMessage('url')}
                   label="URL"
                   name="url"
                   onChange={handleSingleFormUpdate}
-                  readOnly={readOnlyFields.includes('url')}
                   required
                   sublabel={
                     !readOnlyFields.includes('url') &&
@@ -540,6 +547,8 @@ const OfferForm = props => {
                   name="durationMinutes"
                   onChange={handleDurationChange}
                   placeholder="HH:MM"
+                  readOnly={readOnlyFields.includes('durationMinutes')}
+                  sublabel={!mandatoryFields.includes('duration') ? 'Optionnel' : ''}
                   type="duration"
                   value={formValues.durationMinutes}
                 />
@@ -559,6 +568,7 @@ const OfferForm = props => {
                 name="offererId"
                 options={offererOptions}
                 selectedValue={formValues.offererId}
+                sublabel={!mandatoryFields.includes('offererId') ? 'Optionnel' : ''}
               />
             </div>
             <div className="form-row">
@@ -574,6 +584,7 @@ const OfferForm = props => {
                 name="venueId"
                 options={venueOptions}
                 selectedValue={formValues.venueId}
+                sublabel={!mandatoryFields.includes('venueId') ? 'Optionnel' : ''}
               />
             </div>
             {displayRefundWarning && (
@@ -636,6 +647,7 @@ const OfferForm = props => {
             {formFields.includes('bookingEmail') && (
               <div className="form-row">
                 <TextInput
+                  disabled={readOnlyFields.includes('bookingEmail')}
                   error={getErrorMessage('bookingEmail')}
                   label="Être notifié par email des réservations à :"
                   name="bookingEmail"

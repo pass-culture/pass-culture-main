@@ -10,8 +10,9 @@ import { synchronizableProviders } from '../enums'
 const SynchronizableProviderInformation = props => {
   const { offer } = props
   const { lastProvider, thumbUrl, offererId, venueId } = offer
-  const providerName = lastProvider.name.toLowerCase()
-  const providerInfo = synchronizableProviders[providerName]
+  const providerInfo = synchronizableProviders.find(
+    providerData => providerData.name === lastProvider.name
+  )
 
   useEffect(() => {
     ReactTooltip.rebuild()
