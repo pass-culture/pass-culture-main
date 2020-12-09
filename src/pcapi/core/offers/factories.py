@@ -73,6 +73,13 @@ class VirtualVenueFactory(VenueFactory):
     siret = None
 
 
+class VirtualVenueTypeFactory(BaseFactory):
+    class Meta:
+        model = models.VenueType
+
+    label = "Offre numérique"
+
+
 class ProductFactory(BaseFactory):
     class Meta:
         model = models.Product
