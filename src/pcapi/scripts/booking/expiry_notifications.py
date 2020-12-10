@@ -36,8 +36,8 @@ def notify_users_of_expired_bookings(expired_on: datetime.date = datetime.date.t
     else:
         logger.info(
             "%d Users would have been notified of expired booking cancellation: %s",
-            len(notified_users),
-            notified_users,
+            len(expired_bookings_grouped_by_user),
+            expired_bookings_grouped_by_user,
         )
 
     logger.info("[notify_users_of_expired_bookings] End")
@@ -74,8 +74,8 @@ def notify_offerers_of_expired_bookings(expired_on: datetime.date = datetime.dat
     else:
         logger.info(
             "%d Offerers would have been notified of expired booking cancellation: %s",
-            len(notified_offerers),
-            notified_offerers,
+            len(expired_bookings_grouped_by_offerer),
+            expired_bookings_grouped_by_offerer,
         )
 
     logger.info("[notify_offerers_of_expired_bookings] End")
