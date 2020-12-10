@@ -22,7 +22,9 @@ from mailjet_rest import Client
 import redis
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.rq import RqIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from spectree import SpecTree
 from sqlalchemy import orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
@@ -41,7 +43,7 @@ from pcapi.utils.mailing import MAILJET_API_SECRET
 if settings.IS_DEV is False:
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
-        integrations=[FlaskIntegration(), RqIntegration()],
+        integrations=[FlaskIntegration(), RedisIntegration(), RqIntegration(), SqlalchemyIntegration()],
         release=read_version_from_file(),
         environment=settings.ENV,
         traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
