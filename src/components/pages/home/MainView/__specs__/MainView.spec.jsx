@@ -1,6 +1,7 @@
 import { mount } from 'enzyme'
 import { parse } from 'query-string'
 import React from 'react'
+import { act } from 'react-dom/test-utils'
 import { MemoryRouter } from 'react-router'
 
 import { fetchHomepage } from '../../../../../vendor/contentful/contentful'
@@ -325,7 +326,9 @@ describe('src | components | MainView', () => {
 
       // When
       const homeWrapper = wrapper.find('div').first()
-      homeWrapper.invoke('onScroll')()
+      act(() => {
+        homeWrapper.invoke('onScroll')()
+      })
 
       // Then
       expect(props.trackAllModulesSeen).toHaveBeenCalledWith(3)
@@ -353,7 +356,9 @@ describe('src | components | MainView', () => {
 
       // When
       const homeWrapper = wrapper.find('div').first()
-      homeWrapper.invoke('onScroll')()
+      act(() => {
+        homeWrapper.invoke('onScroll')()
+      })
 
       // Then
       expect(props.trackAllModulesSeen).not.toHaveBeenCalled()

@@ -25,8 +25,8 @@ const MainView = props => {
   const { trackAllModulesSeen, trackAllTilesSeen } = props
   const [modules, setModules] = useState([])
   const [fetchingError, setFetchingError] = useState(false)
-  const [haveSeenAllModules, setHaveSeenAllModules] = useState(false)
 
+  const haveSeenAllModules = useRef(false)
   const modulesListRef = useRef(null)
 
   useEffect(() => {
@@ -41,13 +41,8 @@ const MainView = props => {
       .catch(() => setFetchingError(true))
   }, [history.location.search])
 
-  useEffect(() => {
-    if (haveSeenAllModules) {
-      trackAllModulesSeen(modules.length)
-    }
-  }, [haveSeenAllModules, trackAllModulesSeen, modules.length])
-
   const checkIfAllModulesHaveBeenSeen = useCallback(() => {
+    if (!modulesListRef.current || haveSeenAllModules.current) return
     const navbarHeight = 60
     const modulePaddingBottom = 24
     const hasReachedEndOfPage =
@@ -56,10 +51,11 @@ const MainView = props => {
         modulePaddingBottom -
         document.documentElement.clientHeight <=
       0
-    if (hasReachedEndOfPage) {
-      setHaveSeenAllModules(true)
+    if (hasReachedEndOfPage && modulesListRef.current.children.length > 0) {
+      trackAllModulesSeen()
+      haveSeenAllModules.current = true
     }
-  }, [])
+  }, [trackAllModulesSeen])
 
   const renderModule = (module, row) => {
     if (module instanceof Offers || module instanceof OffersWithCover) {
