@@ -3,37 +3,12 @@ from typing import Optional
 
 from pcapi.core.bookings.api import compute_confirmation_date
 from pcapi.core.offers.models import Mediation
-from pcapi.domain.beneficiary.beneficiary import Beneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
 from pcapi.domain.booking_recap.booking_recap import ThingBookingRecap
 from pcapi.domain.favorite.favorite import Favorite
 from pcapi.models import Offer
-
-
-def create_domain_beneficiary(
-    identifier: int = None,
-    email: str = "john.doe@example.com",
-    first_name: str = None,
-    last_name: str = None,
-    department_code: str = "93",
-    is_beneficiary: bool = True,
-    wallet_balance: int = None,
-    reset_password_token: str = "",
-) -> Beneficiary:
-    user = Beneficiary(
-        identifier=identifier,
-        is_beneficiary=is_beneficiary,
-        email=email,
-        first_name=first_name,
-        last_name=last_name,
-        department_code=department_code,
-        wallet_balance=wallet_balance,
-        reset_password_token=reset_password_token,
-    )
-
-    return user
 
 
 def create_domain_beneficiary_pre_subcription(

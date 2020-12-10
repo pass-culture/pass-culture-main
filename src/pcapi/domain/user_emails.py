@@ -1,12 +1,10 @@
 from datetime import datetime
 from typing import Callable
 from typing import List
-from typing import Union
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.users import models as users_models
-from pcapi.domain.beneficiary.beneficiary import Beneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.emails import beneficiary_activation
 from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
@@ -164,7 +162,7 @@ def send_pro_user_waiting_for_validation_by_admin_email(
 
 
 def send_activation_email(
-    user: Union[UserSQLEntity, Beneficiary],
+    user: UserSQLEntity,
     send_email: Callable[..., bool],
     native_version: bool = False,
     token: users_models.Token = None,

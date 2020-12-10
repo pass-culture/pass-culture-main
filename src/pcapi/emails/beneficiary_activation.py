@@ -1,10 +1,8 @@
 from typing import Dict
-from typing import Union
 from urllib.parse import quote
 
 from pcapi import settings
 from pcapi.core.users import models
-from pcapi.domain.beneficiary.beneficiary import Beneficiary
 from pcapi.models import UserSQLEntity
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.utils.mailing import DEV_EMAIL_ADDRESS
@@ -12,7 +10,7 @@ from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS
 from pcapi.utils.mailing import format_environment_for_email
 
 
-def get_activation_email_data(user: Union[UserSQLEntity, Beneficiary]) -> Dict:
+def get_activation_email_data(user: UserSQLEntity) -> Dict:
     first_name = user.firstName.capitalize()
     email = user.email
     token = user.resetPasswordToken

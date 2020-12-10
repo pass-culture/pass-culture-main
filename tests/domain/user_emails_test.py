@@ -35,7 +35,6 @@ from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.models import Offerer
 from pcapi.repository import repository
 
-from tests.domain_creators.generic_creators import create_domain_beneficiary
 from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
 from tests.test_utils import create_mocked_bookings
 
@@ -377,7 +376,7 @@ class SendActivationEmailTest:
     @patch("pcapi.emails.beneficiary_activation.get_activation_email_data")
     def test_send_activation_email(self, mocked_get_activation_email_data):
         # given
-        beneficiary = create_domain_beneficiary()
+        beneficiary = users_factories.UserFactory.build()
         mocked_send_email = Mock()
         mocked_get_activation_email_data.return_value = {"Html-part": ""}
 
