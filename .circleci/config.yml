@@ -41,7 +41,7 @@ commands:
         type: string
     steps:
       - run: |
-          gcloud run deploy << parameters.app_name >> \
+          gcloud beta run deploy << parameters.app_name >> \
             --platform=managed \
             --allow-unauthenticated \
             --vpc-connector=metier-development \
@@ -50,6 +50,7 @@ commands:
             --port=80 \
             --memory=1Gi \
             --service-account << parameters.app_service_account_email >> \
+            --min-instances=1 \
             --set-env-vars "\
                 ACTIVATION_USER_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_activation_user_recipients, \
                 ADMINISTRATION_EMAIL_ADDRESS=sm://${GCP_PROJECT}/<< parameters.app_name >>_administration_email_address, \
