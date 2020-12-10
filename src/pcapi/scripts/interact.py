@@ -56,6 +56,8 @@ def set_python_prompt():
         color = "\x1b[1;49;31m"  # red
     elif env == "staging":
         color = "\x1b[1;49;35m"  # purple
+    elif env == "testing":
+        color = "\x1b[1;49;36m"  # cyan
     else:
         color = None
     if color:
