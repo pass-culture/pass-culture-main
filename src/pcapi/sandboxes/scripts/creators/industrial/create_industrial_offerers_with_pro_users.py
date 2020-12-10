@@ -203,7 +203,7 @@ def create_industrial_offerers_with_pro_users():
             if user_offerer_name in user_offerers_by_name:
                 continue
 
-            if offerer.validationToken is None and user_offerer_index % VALIDATED_USER_OFFERER_REMOVE_MODULO == 0:
+            if offerer.isValidated and user_offerer_index % VALIDATED_USER_OFFERER_REMOVE_MODULO == 0:
                 user_offerer_validation_token = None
             else:
                 user_offerer_validation_token = "{}{}".format(

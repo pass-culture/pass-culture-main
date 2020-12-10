@@ -86,9 +86,9 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
             return False
         if not self.offer.venue.managingOfferer.isActive:
             return False
-        if self.offer.venue.managingOfferer.validationToken:
+        if not self.offer.venue.managingOfferer.isValidated:
             return False
-        if self.offer.venue.validationToken:
+        if not self.offer.venue.isValidated:
             return False
         if not self.offer.isActive:
             return False
