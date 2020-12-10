@@ -66,7 +66,7 @@ class BeneficiaryImportView(BaseAdminView):
             )
             applicationId = StringField("Dossier DMS", default=obj.applicationId, render_kw={"readonly": True})
             statuses = TextAreaField(
-                "Status précédents", default=obj.history, render_kw={"readonly": True, "rows": len(obj.statuses)}
+                "Statuts précédents", default=obj.history, render_kw={"readonly": True, "rows": len(obj.statuses)}
             )
             detail = StringField("Raison du changement de statut")
             status = SelectField(
