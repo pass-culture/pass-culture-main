@@ -12,3 +12,7 @@ class InvalidPassword(CredentialsException):
 
 class UnvalidatedAccount(CredentialsException):
     pass
+
+
+class UserAlreadyExistsException(Exception):
+    pass

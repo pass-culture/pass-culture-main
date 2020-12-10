@@ -10,6 +10,7 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import TokenType
+from pcapi.core.users.utils import format_email
 from pcapi.domain.password import check_password_strength
 from pcapi.domain.user_emails import send_reset_password_email_to_native_app_user
 from pcapi.models.api_errors import ApiErrors
@@ -41,9 +42,11 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
             status_code=400,
         ) from exc
 
+    user_email = format_email(body.identifier)
+
     return authentication.SigninResponse(
-        access_token=create_access_token(identity=body.identifier),
-        refresh_token=create_refresh_token(identity=body.identifier),
+        access_token=create_access_token(identity=user_email),
+        refresh_token=create_refresh_token(identity=user_email),
     )
 
 

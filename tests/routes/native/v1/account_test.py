@@ -86,10 +86,14 @@ class AccountTest:
         assert user.email == "john.doe@example.com"
         assert user.isEmailValidated is False
         mocked_send_raw_email.assert_called()
+        mocked_check_recaptcha_token_is_valid.assert_called()
 
-    def test_account_creation_taken_email(self, app):
+    @patch("pcapi.routes.native.v1.account.check_recaptcha_token_is_valid")
+    @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
+    def test_account_creation_taken_email(self, mocked_send_raw_email, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
         users_factories.UserFactory(email=self.identifier)
+        mocked_check_recaptcha_token_is_valid.return_value = None
 
         data = {
             "email": "eMail@example.com",
@@ -103,3 +107,4 @@ class AccountTest:
         response = test_client.post("/native/v1/account", json=data)
         assert response.status_code == 400
         assert response.json["email"] == "Un compte lié à cet email existe déjà"
+        mocked_send_raw_email.assert_not_called()

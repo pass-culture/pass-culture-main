@@ -3,6 +3,7 @@ from datetime import datetime
 from datetime import timedelta
 from typing import Optional
 
+from pcapi.core.users import exceptions
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.utils import create_custom_jwt_token
@@ -10,7 +11,6 @@ from pcapi.core.users.utils import format_email
 from pcapi.domain import user_emails
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.deposit import DEPOSIT_DEFAULT_AMOUNT
 from pcapi.models.deposit import Deposit
 from pcapi.models.user_sql_entity import UserSQLEntity
@@ -62,7 +62,7 @@ def create_account(
     send_activation_mail: bool = True,
 ) -> UserSQLEntity:
     if find_user_by_email(email):
-        raise ApiErrors({"email": "Un compte lié à cet email existe déjà"})
+        raise exceptions.UserAlreadyExistsException()
 
     user = UserSQLEntity(
         email=format_email(email),

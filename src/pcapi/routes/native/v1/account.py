@@ -4,9 +4,10 @@ from flask_jwt_extended import jwt_required
 
 from pcapi import settings
 from pcapi.core.users import api
+from pcapi.core.users.exceptions import UserAlreadyExistsException
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.models import ApiErrors
-from pcapi.models.user_sql_entity import UserSQLEntity
+from pcapi.repository.user_queries import find_user_by_email
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes.captcha import ReCaptchaException
 from pcapi.validation.routes.captcha import check_recaptcha_token_is_valid
@@ -24,7 +25,7 @@ from .serialization import account as serializers
 @jwt_required
 def get_user_profile() -> serializers.UserProfileResponse:
     identifier = get_jwt_identity()
-    user = UserSQLEntity.query.filter_by(email=identifier).first()
+    user = find_user_by_email(identifier)
 
     if user is None:
         app.logger.error("Authenticated user with email %s not found", identifier)
@@ -45,11 +46,13 @@ def create_account(body: serializers.AccountRequest) -> None:
             check_recaptcha_token_is_valid(body.token, "submit", settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE)
         except ReCaptchaException:
             raise ApiErrors({"token": "The given token is not invalid"})
-
-    api.create_account(
-        email=body.email,
-        password=body.password,
-        brithdate=body.birthdate,
-        has_allowed_recommendations=body.has_allowed_recommendations,
-        is_email_validated=False,
-    )
+    try:
+        api.create_account(
+            email=body.email,
+            password=body.password,
+            brithdate=body.birthdate,
+            has_allowed_recommendations=body.has_allowed_recommendations,
+            is_email_validated=False,
+        )
+    except UserAlreadyExistsException:
+        raise ApiErrors({"email": "Un compte lié à cet email existe déjà"})
